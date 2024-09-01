@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import {
-    Grid,
+    Grid2,
     Toolbar,
     FormControlLabel,
     Checkbox,
@@ -78,11 +78,11 @@ class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, WizardAuthSSLTab
     render() {
         return <Paper style={styles.paper}>
             <form style={styles.form} noValidate autoComplete="off">
-                <Grid container direction="column">
-                    <Grid item>
+                <Grid2 container direction="column">
+                    <Grid2>
                         <Box component="h2" sx={styles.title}>{this.props.t('It is suggested to enable the authentication in admin')}</Box>
-                    </Grid>
-                    <Grid item style={styles.inputLine}>
+                    </Grid2>
+                    <Grid2 style={styles.inputLine}>
                         <FormGroup>
                             <FormControlLabel
                                 style={styles.input}
@@ -96,8 +96,8 @@ class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, WizardAuthSSLTab
                             />
                             <FormHelperText>{this.props.t('Activate the check of password in admin if you plan to access your ioBroker is not in "Demilitarized Zone"')}</FormHelperText>
                         </FormGroup>
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         <FormControl variant="standard" style={styles.input}>
                             <InputLabel>{this.props.t('Certificates')}</InputLabel>
                             <Select
@@ -114,8 +114,8 @@ class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, WizardAuthSSLTab
                                     this.props.t('Your communication with admin is not encrypted')}
                             </FormHelperText>
                         </FormControl>
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
             </form>
             <Toolbar style={styles.toolbar}>
                 <div style={styles.grow} />

@@ -256,10 +256,8 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
 
     /**
      * Renders the info text component, which explains the rating section
-     *
-     * @return {JSX.Element}
      */
-    renderInfoText() {
+    renderInfoText(): React.JSX.Element {
         return <div style={styles.infoTextContainer}>
             <InfoIcon />
             <Typography style={styles.infoText}>{this.props.t('use GitHub for issues')}</Typography>
@@ -351,7 +349,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                     value={this.props.version ? this.state.ratingNumber : this.props.currentRating?.rating?.r}
                     size="large"
                     readOnly={!this.props.version}
-                    onChange={(event, newValue) =>
+                    onChange={(_event, newValue) =>
                         this.setState({ ratingNumber: newValue })}
                 />
                 {this.props.version ? <div style={{ width: '100%', textAlign: 'left' }}>
@@ -360,20 +358,23 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                         style={styles.ratingTextControl}
                         value={this.state.ratingComment}
                         label={this.props.t('Comment to version')}
-                        inputProps={{ maxLength: 200 }}
                         helperText={this.props.t('Max length %s characters', 200)}
                         onChange={e =>
                             this.setState({ ratingComment: e.target.value })}
-                        // eslint-disable-next-line react/jsx-no-duplicate-props
-                        InputProps={{
-                            endAdornment: this.state.ratingComment ? <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={() => this.setState({ ratingComment: '' })}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment> : null,
+                        slotProps={{
+                            input: {
+                                endAdornment: this.state.ratingComment ? <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.setState({ ratingComment: '' })}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null,
+                            },
+                            htmlInput: {
+                                maxLength: 200,
+                            },
                         }}
                     />
                     <FormControl variant="standard" style={styles.ratingLanguageControl}>

@@ -289,7 +289,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
         return <Box>
             <Tooltip
                 title={this.props.tooltip || I18n.t('Change current host')}
-                componentsProps={{ popper: { sx: styles.tooltip } }}
+                slotProps={{ popper: { sx: styles.tooltip } }}
             >
                 <span>
                     <Button

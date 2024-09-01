@@ -263,7 +263,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                 <AppBar position="static">
                     <Tabs
                         value={this.state.currentTab}
-                        onChange={(event, newTab) => {
+                        onChange={(_event, newTab) => {
                             Router.doNavigate(null, null, null, newTab === 1 ? 'table' : (newTab === 2 ? 'chart' : 'config'));
                             this.setState({ currentTab: newTab });
                             ((window as any)._localStorage as Storage || window.localStorage).setItem('App.objectCustomTab', newTab);

@@ -264,22 +264,22 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                     <AccordionDetails style={({ ...schema.style, ...(this.props.themeType ? schema.darkStyle : undefined) })}>
                         {this.itemAccordion(value[i], i)}
                         <Toolbar sx={styles.toolbar}>
-                            {i ? <Tooltip title={I18n.t('ra_Move up')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                            {i ? <Tooltip title={I18n.t('ra_Move up')} slotProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={() => this.onMoveUp(i)}>
                                     <UpIcon />
                                 </IconButton>
                             </Tooltip> : <div style={styles.buttonEmpty} />}
-                            {i < value.length - 1 ? <Tooltip title={I18n.t('ra_Move down')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                            {i < value.length - 1 ? <Tooltip title={I18n.t('ra_Move down')} slotProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={() => this.onMoveDown(i)}>
                                     <DownIcon />
                                 </IconButton>
                             </Tooltip> : <div style={styles.buttonEmpty} />}
-                            {!schema.noDelete ? <Tooltip title={I18n.t('ra_Delete current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                            {!schema.noDelete ? <Tooltip title={I18n.t('ra_Delete current row')} slotProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={this.onDelete(i)}>
                                     <DeleteIcon />
                                 </IconButton>
                             </Tooltip> : null}
-                            {schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                            {schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')} slotProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={this.onClone(i)}>
                                     <CopyContentIcon />
                                 </IconButton>

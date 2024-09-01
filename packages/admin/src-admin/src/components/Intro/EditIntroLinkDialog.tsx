@@ -7,7 +7,7 @@ import {
     DialogContent,
     DialogTitle,
     TextField,
-    Grid,
+    Grid2,
     IconButton,
     Typography,
     FormControlLabel,
@@ -214,19 +214,20 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                 </Typography>
             </DialogTitle>
             <DialogContent dividers>
-                <Grid
+                <Grid2
                     style={styles.rootGrid}
                     container
                     direction="row"
                 >
-                    <Grid
-                        item
-                        xs={12}
-                        sm={6}
-                        md={8}
-                        lg={9}
+                    <Grid2
+                        size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 8,
+                            lg: 9,
+                        }}
                     >
-                        <Grid
+                        <Grid2
                             container
                             direction="column"
                         >
@@ -257,15 +258,17 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                         this.setState({ link: e.target.value });
                                     }
                                 }}
-                                InputProps={{
-                                    endAdornment: this.state.link ? <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => this.setState({ link: '' })}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment> : null,
+                                slotProps={{
+                                    input: {
+                                        endAdornment: this.state.link ? <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.setState({ link: '' })}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment> : null,
+                                    },
                                 }}
                             />
 
@@ -275,15 +278,17 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                 label={this.props.t('Name')}
                                 value={this.state.name || ''}
                                 onChange={e => this.setState({ name: e.target.value })}
-                                InputProps={{
-                                    endAdornment: this.state.name ? <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => this.setState({ name: '' })}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment> : null,
+                                slotProps={{
+                                    input: {
+                                        endAdornment: this.state.name ? <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.setState({ name: '' })}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment> : null,
+                                    },
                                 }}
                             />
 
@@ -293,15 +298,17 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                 label={this.props.t('Link name')}
                                 value={this.state.linkName || ''}
                                 onChange={e => this.setState({ linkName: e.target.value })}
-                                InputProps={{
-                                    endAdornment: this.state.linkName ? <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => this.setState({ linkName: '' })}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment> : null,
+                                slotProps={{
+                                    input: {
+                                        endAdornment: this.state.linkName ? <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.setState({ linkName: '' })}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment> : null,
+                                    },
                                 }}
                             /> : null}
 
@@ -311,15 +318,17 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                 label={this.state.camera === 'custom' ? this.props.t('Camera URL') : this.props.t('Description')}
                                 value={this.state.desc || ''}
                                 onChange={e => this.setState({ desc: e.target.value })}
-                                InputProps={{
-                                    endAdornment: this.state.desc ? <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => this.setState({ desc: '' })}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment> : null,
+                                slotProps={{
+                                    input: {
+                                        endAdornment: this.state.desc ? <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.setState({ desc: '' })}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment> : null,
+                                    },
                                 }}
                             /> : null}
 
@@ -363,14 +372,15 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                 onChange={base64 => this.setState({ image: base64 })}
                                 // t={this.props.t}
                             />
-                        </Grid>
-                    </Grid>
-                    <Grid
-                        item
-                        xs={12}
-                        sm={6}
-                        md={4}
-                        lg={3}
+                        </Grid2>
+                    </Grid2>
+                    <Grid2
+                        size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 4,
+                            lg: 3,
+                        }}
                     >
                         {this.state.camera === 'text' ? <IntroCard
                             image={this.state.image}
@@ -401,8 +411,8 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                 cameraUrl={this.state.desc}
                                 theme={this.props.theme}
                             />}
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
             </DialogContent>
             <DialogActions>
                 <Button

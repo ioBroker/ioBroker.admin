@@ -908,12 +908,12 @@ class Logs extends Component<LogsProps, LogsState> {
         </Button>;
 
         return <TabHeader>
-            <Tooltip title={this.props.t('Refresh log')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Refresh log')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="large" onClick={() => this.readLogs(true)}>
                     <RefreshIcon />
                 </IconButton>
             </Tooltip>
-            <Tooltip title={this.props.t('Pause output')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Pause output')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton
                     size="large"
                     style={styles.pauseButton}
@@ -922,17 +922,17 @@ class Logs extends Component<LogsProps, LogsState> {
                     {pauseChild}
                 </IconButton>
             </Tooltip>
-            <Tooltip title={this.props.t('Clear log')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Clear log')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="large" onClick={() => this.clearLog()}>
                     <DeleteIcon />
                 </IconButton>
             </Tooltip>
-            <Tooltip title={this.props.t('Clear on disk permanent')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Clear on disk permanent')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="large" onClick={() => this.setState({ logDeleteDialog: true })}>
                     <DeleteForeverIcon />
                 </IconButton>
             </Tooltip>
-            <Tooltip title={this.props.t('Show/hide PID')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Show/hide PID')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton
                     size="large"
                     onClick={() => this.changePid()}
@@ -941,7 +941,7 @@ class Logs extends Component<LogsProps, LogsState> {
                     <div style={styles.pidSize}>{this.props.t('PID')}</div>
                 </IconButton>
             </Tooltip>
-            <Tooltip title={this.props.t('Show/hide colors')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Show/hide colors')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton
                     size="large"
                     onClick={() => {
@@ -953,7 +953,7 @@ class Logs extends Component<LogsProps, LogsState> {
                     <ColorsIcon style={{ width: '0.8em', height: '0.8em' }} />
                 </IconButton>
             </Tooltip>
-            <Tooltip title={this.props.t('Reverse output direction')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Reverse output direction')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton
                     size="large"
                     onClick={() => {
@@ -970,7 +970,7 @@ class Logs extends Component<LogsProps, LogsState> {
                     {this.state.reverse ? <ArrowDownward /> : <ArrowUpward />}
                 </IconButton>
             </Tooltip>
-            <Tooltip title={this.props.t('Show errors')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Show errors')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <Badge
                     badgeContent={this.state.logErrors}
                     color="error"
@@ -991,7 +991,7 @@ class Logs extends Component<LogsProps, LogsState> {
                     </IconButton>
                 </Badge>
             </Tooltip>
-            <Tooltip title={this.props.t('Show errors and warnings')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Show errors and warnings')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <Badge
                     badgeContent={this.state.logWarnings}
                     color="default"
@@ -1109,9 +1109,9 @@ class Logs extends Component<LogsProps, LogsState> {
                             placeholder={this.t('Message')}
                             onChange={event => this.handleMessageChange(event)}
                             value={this.state.message}
-                            InputProps={{
-                                endAdornment:
-                                    this.state.message ? <IconButton
+                            slotProps={{
+                                input: {
+                                    endAdornment: this.state.message ? <IconButton
                                         size="small"
                                         onClick={() => {
                                             ((window as any)._localStorage as Storage || window.localStorage).removeItem('Log.message');
@@ -1120,6 +1120,7 @@ class Logs extends Component<LogsProps, LogsState> {
                                     >
                                         <CloseIcon />
                                     </IconButton> : null,
+                                },
                             }}
                         />
                     </FormControl>

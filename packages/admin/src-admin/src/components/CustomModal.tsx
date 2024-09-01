@@ -118,15 +118,17 @@ const CustomModal = ({
                 multiline
                 value={value}
                 onChange={e => setValue(e.target.value)}
-                InputProps={{
-                    endAdornment: value ? <InputAdornment position="end">
-                        <IconButton
-                            size="small"
-                            onClick={() => setValue('')}
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    </InputAdornment> : null,
+                slotProps={{
+                    input: {
+                        endAdornment: value ? <InputAdornment position="end">
+                            <IconButton
+                                size="small"
+                                onClick={() => setValue('')}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </InputAdornment> : null,
+                    },
                 }}
                 // customValue
             />}

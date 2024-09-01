@@ -205,7 +205,7 @@ function onLink(
     instanceId: string,
     onClose: () => void,
 ) {
-    let target = '_self';
+    let target;
     let url = '';
     if (!linkCommand.url) {
         url = `#tab-instances/config/${instanceId}`;
@@ -314,7 +314,7 @@ const NotificationsDialog = ({
             {!notificationManagerInstalled ? <Tooltip
                 sx={{ position: 'absolute', right: 24, color: 'text.primary' }}
                 title={I18n.t('Tip: Use the "notification-manager" adapter to receive notifications automatically via messaging adapters.')}
-                componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
             >
                 <InfoIcon />
             </Tooltip> : null}

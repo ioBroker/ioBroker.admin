@@ -594,7 +594,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     // returns:
     // grey   - daemon / disabled
-    // green  - daemon / run,connected,alive
+    // green  - daemon / run, connected, alive
     // blue   - schedule
     // orangeDevice - daemon / run, connected to controller, not connected to device
     // orange - daemon / run,not connected
@@ -1104,7 +1104,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return <TabContainer>
             {this.renderFilterDialog()}
             <TabHeader>
-                <Tooltip title={this.t('Show / hide List')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                <Tooltip title={this.t('Show / hide List')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => {
@@ -1116,7 +1116,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     </IconButton>
                 </Tooltip>
 
-                {!this.state.viewMode && <Tooltip title={this.t('Category')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                {!this.state.viewMode && <Tooltip title={this.t('Category')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => {
@@ -1129,7 +1129,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 </Tooltip>}
 
                 {!this.state.viewMode && this.state.viewCategory && <>
-                    <Tooltip title={this.t('expand all')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                    <Tooltip title={this.t('expand all')} slotProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => {
@@ -1144,7 +1144,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                             <FolderOpenIcon />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={this.t('collapse all')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                    <Tooltip title={this.t('collapse all')} slotProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => {
@@ -1156,12 +1156,12 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         </IconButton>
                     </Tooltip>
                 </>}
-                <Tooltip title={this.t('Reload')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                <Tooltip title={this.t('Reload')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton size="large" onClick={() => this.getData(true)}>
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
-                {this.props.hosts.length > 1 ? <Tooltip title={this.t('Show instances only for current host')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                {this.props.hosts.length > 1 ? <Tooltip title={this.t('Show instances only for current host')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => {
@@ -1178,7 +1178,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         this.state.playArrow === 1 ?
                             'Showed only running instances' :
                             'Showed only stopped instances')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton size="large" onClick={() => this.changeStartedStopped()}>
                         <PlayArrowIcon
@@ -1187,7 +1187,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         />
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.t('Filter instances')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                <Tooltip title={this.t('Filter instances')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => this.setState({ showFilterDialog: true })}
@@ -1196,7 +1196,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         <FilterListIcon style={{ width: 16, height: 16 }} />
                     </IconButton>
                 </Tooltip>
-                {/* this.props.expertMode && <Tooltip title="sentry" componentsProps={{ popper: { sx: styles.tooltip } }}>
+                {/* this.props.expertMode && <Tooltip title="sentry" slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="small"
                         style={styles.button}
@@ -1235,20 +1235,22 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     sx={{ margin: { xs: '0 0 2px 16px', md: '5px 0 5px 0' } }}
                     defaultValue={this.state.filterText}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.handleFilterChange(event)}
-                    InputProps={{
-                        endAdornment: this.state.filterText ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => {
-                                    this.inputRef.current.value = '';
-                                    this._cacheList = null;
-                                    this.setState({ filterText: '' });
-                                    this.localStorage.setItem('instances.filter', '');
-                                }}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.filterText ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                        this.inputRef.current.value = '';
+                                        this._cacheList = null;
+                                        this.setState({ filterText: '' });
+                                        this.localStorage.setItem('instances.filter', '');
+                                    }}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
                     }}
                 />
                 <div style={styles.grow} />

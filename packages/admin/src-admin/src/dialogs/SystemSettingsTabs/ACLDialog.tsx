@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 
 import {
-    Grid,
+    Grid2,
     Typography,
     FormControl,
     Checkbox,
@@ -198,19 +198,19 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
             </MenuItem>);
 
         const objectRights = ACLDialog.getTypes().map((ee, ii) =>
-            <Grid item lg={4} xs={12} md={6} key={ii}>
+            <Grid2 size={{ lg: 4, xs: 12, md: 6 }} key={ii}>
                 <Typography variant="h6" component="div">
                     {this.props.t(ee.title)}
                 </Typography>
                 {this.getTable(ee.type)}
-            </Grid>);
+            </Grid2>);
 
         return <div style={styles.tabPanel}>
             <Typography variant="h5" component="div">
                 {this.props.t('Access control list')}
             </Typography>
-            <Grid container spacing={3}>
-                <Grid item lg={3} md={6} xs={12}>
+            <Grid2 container spacing={3}>
+                <Grid2 size={{ lg: 3, xs: 12, md: 6 }}>
                     <FormControl variant="standard" style={styles.formControl}>
                         <InputLabel shrink id="owner-label">
                             {this.props.t('Owner user')}
@@ -228,8 +228,8 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
                             {users}
                         </Select>
                     </FormControl>
-                </Grid>
-                <Grid item lg={3} md={6} xs={12}>
+                </Grid2>
+                <Grid2 size={{ lg: 3, xs: 12, md: 6 }}>
                     <FormControl variant="standard" style={styles.formControl}>
                         <InputLabel shrink id="ownerGroup-label">
                             {this.props.t('Owner group')}
@@ -247,11 +247,11 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
                             {groups}
                         </Select>
                     </FormControl>
-                </Grid>
-            </Grid>
-            <Grid container spacing={3}>
+                </Grid2>
+            </Grid2>
+            <Grid2 container spacing={3}>
                 {objectRights}
-            </Grid>
+            </Grid2>
         </div>;
     }
 }

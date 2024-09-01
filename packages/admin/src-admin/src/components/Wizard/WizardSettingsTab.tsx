@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import {
-    Grid,
+    Grid2,
     Toolbar,
     InputLabel,
     MenuItem,
@@ -294,16 +294,16 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
 
     render() {
         return <Paper style={styles.paper}>
-            <Grid container direction="column" style={styles.mainGrid}>
-                <Grid item style={styles.gridSettings}>
-                    <Grid container direction="column" style={{ width: 'calc(100% - 16px)' }}>
-                        <Grid item>
+            <Grid2 container direction="column" style={styles.mainGrid}>
+                <Grid2 style={styles.gridSettings}>
+                    <Grid2 container direction="column" style={{ width: 'calc(100% - 16px)' }}>
+                        <Grid2>
                             <Box component="h2" sx={styles.title}>
                                 {this.props.t('Important main settings')}
                             </Box>
-                        </Grid>
-                        <Grid container direction="column" style={styles.settingsGrid}>
-                            <Grid item style={{ textAlign: 'left' }}>
+                        </Grid2>
+                        <Grid2 container direction="column" style={styles.settingsGrid}>
+                            <Grid2 style={{ textAlign: 'left' }}>
                                 <FormControl variant="standard" style={styles.controlItem}>
                                     <InputLabel>{this.props.t('Temperature unit')}</InputLabel>
                                     <Select
@@ -315,8 +315,8 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         <MenuItem value="°F">°F</MenuItem>
                                     </Select>
                                 </FormControl>
-                            </Grid>
-                            <Grid item>
+                            </Grid2>
+                            <Grid2>
                                 <Autocomplete
                                     freeSolo
                                     options={CURRENCY}
@@ -336,8 +336,8 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         />
                                     )}
                                 />
-                            </Grid>
-                            <Grid item style={{ textAlign: 'left' }}>
+                            </Grid2>
+                            <Grid2 style={{ textAlign: 'left' }}>
                                 <FormControl variant="standard" style={styles.controlItem}>
                                     <InputLabel>{this.props.t('Date format')}</InputLabel>
                                     <Select
@@ -350,8 +350,8 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         <MenuItem value="MM/DD/YYYY">MM/DD/YYYY</MenuItem>
                                     </Select>
                                 </FormControl>
-                            </Grid>
-                            <Grid item style={{ textAlign: 'left' }}>
+                            </Grid2>
+                            <Grid2 style={{ textAlign: 'left' }}>
                                 <FormControl variant="standard" style={styles.controlItem}>
                                     <InputLabel>{this.props.t('Float divider')}</InputLabel>
                                     <Select
@@ -369,8 +369,8 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         </MenuItem>
                                     </Select>
                                 </FormControl>
-                            </Grid>
-                            <Grid item style={{ textAlign: 'left' }}>
+                            </Grid2>
+                            <Grid2 style={{ textAlign: 'left' }}>
                                 <FormControl variant="standard" style={styles.controlItem}>
                                     <InputLabel>{this.props.t('Country')}</InputLabel>
                                     <Select
@@ -695,29 +695,29 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         <MenuItem value="Zimbabwe">{this.props.t('Zimbabwe')}</MenuItem>
                                     </Select>
                                 </FormControl>
-                            </Grid>
-                            <Grid item>
+                            </Grid2>
+                            <Grid2>
                                 <TextField
                                     variant="standard"
                                     label={this.props.t('City')}
                                     style={styles.controlItem}
                                     value={this.state.city}
                                     onChange={e => this.setState({ city: e.target.value })}
-                                    InputProps={{
-                                        endAdornment: this.state.city ? (
-                                            <InputAdornment position="end">
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: this.state.city ? <InputAdornment position="end">
                                                 <IconButton
                                                     size="small"
                                                     onClick={() => this.setState({ city: '' })}
                                                 >
                                                     <CloseIcon />
                                                 </IconButton>
-                                            </InputAdornment>
-                                        ) : null,
+                                            </InputAdornment> : null,
+                                        },
                                     }}
                                 />
-                            </Grid>
-                            <Grid item>
+                            </Grid2>
+                            <Grid2>
                                 <TextField
                                     variant="standard"
                                     label={this.props.t('Address')}
@@ -726,24 +726,24 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                     onKeyUp={e => e.key === 'Enter' && this.getPositionForAddress()}
                                     onChange={e => this.setState({ address: e.target.value })}
                                     helperText={this.props.t('Used only to calculate position.')}
-                                    InputProps={{
-                                        endAdornment: this.state.address ? (
-                                            <InputAdornment position="end">
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: this.state.address ? <InputAdornment position="end">
                                                 <IconButton
                                                     size="small"
                                                     onClick={() => this.setState({ address: '' })}
                                                 >
                                                     <CloseIcon />
                                                 </IconButton>
-                                            </InputAdornment>
-                                        ) : null,
+                                            </InputAdornment> : null,
+                                        }
                                     }}
                                 />
                                 <Fab size="small" onClick={() => this.getPositionForAddress()}>
                                     <GeoIcon />
                                 </Fab>
-                            </Grid>
-                            <Grid item>
+                            </Grid2>
+                            <Grid2>
                                 <TextField
                                     variant="standard"
                                     label={this.props.t('Longitude')}
@@ -751,21 +751,21 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                     value={this.state.longitude}
                                     onChange={e =>
                                         this.setState({ longitude: parseFloat(e.target.value.replace(',', '.')) })}
-                                    InputProps={{
-                                        endAdornment: this.state.longitude ? (
-                                            <InputAdornment position="end">
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: this.state.longitude ? <InputAdornment position="end">
                                                 <IconButton
                                                     size="small"
                                                     onClick={() => this.setState({ longitude: '' })}
                                                 >
                                                     <CloseIcon />
                                                 </IconButton>
-                                            </InputAdornment>
-                                        ) : null,
+                                            </InputAdornment> : null,
+                                        }
                                     }}
                                 />
-                            </Grid>
-                            <Grid item>
+                            </Grid2>
+                            <Grid2>
                                 <TextField
                                     variant="standard"
                                     label={this.props.t('Latitude')}
@@ -773,21 +773,21 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                     value={this.state.latitude}
                                     onChange={e =>
                                         this.setState({ latitude: parseFloat(e.target.value.replace(',', '.')) })}
-                                    InputProps={{
-                                        endAdornment: this.state.latitude ? (
-                                            <InputAdornment position="end">
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: this.state.latitude ? <InputAdornment position="end">
                                                 <IconButton
                                                     size="small"
                                                     onClick={() => this.setState({ latitude: '' })}
                                                 >
                                                     <CloseIcon />
                                                 </IconButton>
-                                            </InputAdornment>
-                                        ) : null,
+                                            </InputAdornment> : null,
+                                        }
                                     }}
                                 />
-                            </Grid>
-                            <Grid item style={{ textAlign: 'left' }}>
+                            </Grid2>
+                            <Grid2 style={{ textAlign: 'left' }}>
                                 <FormControl variant="standard" style={styles.controlItem}>
                                     <InputLabel>{this.props.t('Week starts with')}</InputLabel>
                                     <Select
@@ -800,14 +800,14 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         <MenuItem value="sunday">{this.props.t('sunday')}</MenuItem>
                                     </Select>
                                 </FormControl>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item style={styles.mapGrid}>
+                            </Grid2>
+                        </Grid2>
+                    </Grid2>
+                </Grid2>
+                <Grid2 style={styles.mapGrid}>
                     <div id="map" style={styles.map} />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
             <Toolbar style={styles.toolbar}>
                 <div style={styles.grow} />
                 <Button

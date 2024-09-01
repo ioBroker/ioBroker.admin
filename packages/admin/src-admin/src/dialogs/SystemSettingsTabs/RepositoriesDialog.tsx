@@ -396,7 +396,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
             <TableCell style={styles.stableColumn} className="float_cell">
                 <Tooltip
                     title={I18n.t('Flag will be automatically detected as repository will be read for the first time')}
-                    componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                 >
                     <span>
                         <Checkbox
@@ -411,7 +411,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
             <TableCell style={styles.upgradePolicyColumn} className="float_cell">
                 <Tooltip
                     title={I18n.t('Allow automatic adapter upgrades for this repository')}
-                    componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                 >
                     <span>
                         <Checkbox
@@ -437,20 +437,23 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     variant="standard"
                     disabled={this.props.saving}
                     value={item.title}
-                    InputLabelProps={{ shrink: true }}
                     style={styles.input}
                     className="xs-centered"
                     onChange={evt => this.onValueChanged(evt.target.value, item.title, 'title')}
-                    InputProps={{
-                        readOnly: false,
-                        endAdornment: item.title ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.onValueChanged('', item.title, 'title')}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        inputLabel: {
+                            shrink: true,
+                        },
+                        input: {
+                            endAdornment: item.title ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.onValueChanged('', item.title, 'title')}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
                     }}
                 />
             </TableCell>
@@ -460,20 +463,24 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     variant="standard"
                     id={`default_${index}`}
                     value={item.link}
-                    InputLabelProps={{ shrink: true }}
                     style={styles.input}
                     className="xs-centered"
                     onChange={evt => this.onValueChanged(evt.target.value, item.title, 'link')}
-                    InputProps={{
-                        readOnly: false,
-                        endAdornment: item.link ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.onValueChanged('', item.title, 'link')}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        inputLabel: {
+                            shrink: true,
+                        },
+                        input: {
+                            readOnly: false,
+                            endAdornment: item.link ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.onValueChanged('', item.title, 'link')}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
                     }}
                 />
             </TableCell>

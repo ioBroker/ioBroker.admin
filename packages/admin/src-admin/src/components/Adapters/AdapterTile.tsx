@@ -272,7 +272,7 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
             {this.props.context.sortPopularFirst ? <div style={this.styles.versionDate}>{available.stat}</div> : null}
             {this.props.context.sortRecentlyUpdated ? <div style={this.styles.versionDate}>{this.props.cached.daysAgoText}</div> : null}
             {!this.props.context.sortPopularFirst && !this.props.context.sortRecentlyUpdated ? this.renderRating() : null}
-            {!this.state.openCollapse ? <Tooltip title={this.props.context.t('Info')} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+            {!this.state.openCollapse ? <Tooltip title={this.props.context.t('Info')} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                 <Fab
                     onClick={() => this.setState({ openCollapse: !this.state.openCollapse })}
                     style={this.styles.fab}

@@ -7,7 +7,7 @@ import {
     Checkbox,
     CircularProgress,
     FormControlLabel,
-    Grid,
+    Grid2,
     Link,
     Paper,
     TextField,
@@ -29,8 +29,7 @@ const styles: Record<string, any> = {
         justifyContent: 'center',
     },
     paper: (theme: IobTheme) => ({
-        background: theme.palette.background.paper + (theme.palette.background.paper.length < 7 ? 'd' : 'dd'),
-        backgroundColor: console.log(theme.palette.background.paper),
+        backgroundColor: theme.palette.background.paper + (theme.palette.background.paper.length < 7 ? 'd' : 'dd'),
         p: '24px',
         overflowY: 'auto',
         display: 'flex',
@@ -132,7 +131,7 @@ class Login extends Component<LoginProps, LoginState> {
 
         return <Paper component="main" style={{ ...styles.root, ...style }}>
             <Paper sx={styles.paper}>
-                <Grid
+                <Grid2
                     container
                     direction="column"
                     alignItems="center"
@@ -224,7 +223,7 @@ class Login extends Component<LoginProps, LoginState> {
                             {this.state.inProcess ? <CircularProgress size={24} /> : this.props.t('login')}
                         </Button>}
                     </form>
-                </Grid>
+                </Grid2>
                 <Box style={styles.marginTop}>
                     <Typography
                         variant="body2"

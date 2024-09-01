@@ -17,7 +17,7 @@ export default function TooltipButton(props: TooltipButtonProps): React.JSX.Elem
     const text = !!label && <Typography variant="button" style={{ marginLeft: 4 }}>{label}</Typography>;
 
     if (tooltip) {
-        return <Tooltip title={tooltip} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+        return <Tooltip title={tooltip} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
             <span>
                 <IconButton onClick={onClick} disabled={disabled} size="small">
                     {Icon}

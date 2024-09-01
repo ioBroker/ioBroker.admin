@@ -31,8 +31,7 @@ export type Repository = Record<string, RepositoryEntry>
 /**
  * Specific value or a string in general
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type ValueOrString<T> = T | string & {}
+export type ValueOrString<T> = T | string & object;
 
 export type ioBrokerObject<Native extends object = object, Common extends object = object> = ioBroker.AnyObject & {
     common: Record<string, any> & Common;

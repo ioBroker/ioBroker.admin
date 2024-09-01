@@ -87,6 +87,7 @@ module.exports = {
         'no-alert': 'off',
         'class-methods-use-this': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-empty-object-type': 'error',
         '@stylistic/member-delimiter-style': ['error', {
             multiline: {
                 delimiter: 'semi',

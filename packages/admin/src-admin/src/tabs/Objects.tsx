@@ -43,7 +43,7 @@ import ObjectViewFileDialog from '../dialogs/ObjectViewFileDialog';
 import ObjectAliasEditor from '../dialogs/ObjectAliasEditor';
 
 const IconDeleteAll = IconDeleteOne;
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     buttonIcon: {
         marginRight: 4,
     },

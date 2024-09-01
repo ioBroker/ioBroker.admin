@@ -297,7 +297,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
     getExportImportButtons(): React.JSX.Element {
         return <div style={styles.exportImportButtons}>
-            <Tooltip title={this.props.t('Import settings from JSON file')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Import settings from JSON file')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <Fab
                     size="small"
                     sx={{ '&.MuiFab-root': styles.button }}
@@ -314,7 +314,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                     <PublishIcon />
                 </Fab>
             </Tooltip>
-            <Tooltip title={this.props.t('Export setting to JSON file')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Export setting to JSON file')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <Fab
                     size="small"
                     sx={{ '&.MuiFab-root': styles.button }}

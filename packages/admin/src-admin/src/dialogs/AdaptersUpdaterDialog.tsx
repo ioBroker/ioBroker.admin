@@ -6,7 +6,7 @@ import {
     DialogTitle,
     Button,
     Dialog,
-    Grid,
+    Grid2,
     FormControlLabel,
     Toolbar,
     IconButton,
@@ -184,7 +184,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             <DialogTitle id="update-dialog-title">
                 <div style={styles.wrapperHead}>
                     {this.props.t('Update %s adapter(s)', this.state.selected.length)}
-                    {!this.state.finished && !this.state.inProcess && <Tooltip title={this.props.t('Select/Unselect all')} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                    {!this.state.finished && !this.state.inProcess && <Tooltip title={this.props.t('Select/Unselect all')} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                         <Checkbox
                             checked={this.state.selected.length === this.updateAvailable.length}
                             style={styles.checkbox}
@@ -211,8 +211,8 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                 </div>
             </DialogTitle>
             <DialogContent sx={{ '&.MuiDialogContent-root': styles.content }} style={{ height: '100%' }}>
-                <Grid container direction="row" sx={styles.container}>
-                    <Grid item style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
+                <Grid2 container direction="row" sx={styles.container}>
+                    <Grid2 style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
                         <div style={{ height: '100%', overflow: 'auto' }}>
                             <AdaptersUpdater
                                 finished={this.state.finished}
@@ -235,9 +235,8 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                 theme={this.props.theme}
                             />
                         </div>
-                    </Grid>
-                    {!!this.state.current && <Grid
-                        item
+                    </Grid2>
+                    {!!this.state.current && <Grid2
                         style={{
                             height: '100%',
                             overflow: 'hidden',
@@ -264,8 +263,8 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                 }
                             }}
                         />
-                    </Grid>}
-                </Grid>
+                    </Grid2>}
+                </Grid2>
                 <Toolbar variant="dense" disableGutters sx={styles.appBar}>
                     <FormControlLabel
                         control={<Checkbox

@@ -208,7 +208,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
 
     buttonRemoveKey(nameKey: string, cb: () => void) {
         const { t } = this.props;
-        return <Tooltip title={t(`Remove ${nameKey}`)} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+        return <Tooltip title={t(`Remove ${nameKey}`)} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
             <Box component="div" sx={styles.close} onClick={cb} />
         </Tooltip>;
     }
@@ -229,15 +229,17 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
                             fullWidth
                             value={json.common.title}
                             onChange={el => this.setCommonItem(json, 'title', el.target.value)}
-                            InputProps={{
-                                endAdornment: json.common.title ? <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => this.setCommonItem(json, 'title', '')}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment> : null,
+                            slotProps={{
+                                input: {
+                                    endAdornment: json.common.title ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.setCommonItem(json, 'title', '')}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                },
                             }}
                         /> :
                         this.buttonAddKey('title', () => this.setCommonItem(json, 'title', ''))}
@@ -251,15 +253,17 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
                                 type="color"
                                 value={json.common.color}
                                 onChange={el => this.setCommonItem(json, 'color', el.target.value)}
-                                InputProps={{
-                                    endAdornment: json.common.color ? <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => this.setCommonItem(json, 'color', '')}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment> : null,
+                                slotProps={{
+                                    input: {
+                                        endAdornment: json.common.color ? <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.setCommonItem(json, 'color', '')}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment> : null,
+                                    },
                                 }}
                             />
                             {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}

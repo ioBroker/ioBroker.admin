@@ -298,11 +298,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
             return false;
         }
 
-        if (typeof common.max === 'number' && numVal > common.max) {
-            return false;
-        }
-
-        return true;
+        return !(typeof common.max === 'number' && numVal > common.max);
     }
 
     /**
@@ -437,7 +433,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 control={<Checkbox defaultChecked={false} onChange={e => (this.ack = e.target.checked)} />}
                 label={this.props.t('Acknowledged')}
             />
-            <Tooltip title={this.props.t('Acknowledged explanation')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Acknowledged explanation')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <InfoIcon color="primary" />
             </Tooltip>
         </div>;

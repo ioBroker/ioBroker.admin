@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import {
-    Grid,
+    Grid2,
     InputLabel,
     MenuItem,
     FormControl,
@@ -250,7 +250,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                 id: 'activeRepo',
                 title: 'Default Repository',
                 translate: false,
-                values: AdminUtils.objectMap(this.props.dataAux.native.repositories, (repo, name) =>
+                values: AdminUtils.objectMap(this.props.dataAux.native.repositories, (_repo, name) =>
                     ({
                         id: name,
                         title: name,
@@ -320,14 +320,14 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         }
 
         if (e.autocomplete && e.values) {
-            return <Grid item sm={6} xs={12} key={i}>
+            return <Grid2 size={{ sm: 6, xs: 12 }} key={i}>
                 <Autocomplete<Setting['values'][0], false, false, true>
                     // variant="standard"
                     freeSolo
                     disabled={this.props.saving}
                     options={e.values}
                     inputValue={value.toString()}
-                    onChange={(evt, newValue) => {
+                    onChange={(_evt, newValue) => {
                         const id = this.getSettings()[i].id;
                         if (typeof newValue === 'string') {
                             this.doChange(id, newValue);
@@ -335,7 +335,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                         }
                         this.doChange(id, newValue ? newValue.id : '');
                     }}
-                    onInputChange={(event, newValue) => {
+                    onInputChange={(_event, newValue) => {
                         const id = this.getSettings()[i].id;
                         this.doChange(id, newValue);
                     }}
@@ -352,13 +352,13 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                     renderInput={params =>
                         <TextField {...params} variant="standard" label={this.props.t(e.title)} />}
                 />
-            </Grid>;
+            </Grid2>;
         }
 
         // If value is not in known values, show text input
         if (e.allowText && value && !e.values.find(elem => elem.id === value)) {
             return (
-                <Grid item sm={6} xs={12} key={i}>
+                <Grid2 size={{ sm: 6, xs: 12 }} key={i}>
                     <FormControl style={styles.formControl} variant="standard">
                         <InputLabel shrink id={`${e.id}-label`}>
                             {this.props.t(e.title)}
@@ -368,22 +368,24 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                             variant="standard"
                             id={e.id}
                             value={value.toString()}
-                            InputLabelProps={{ shrink: true }}
                             onChange={evt => this.handleChange(evt, i)}
                             helperText={e.help ? this.props.t(e.help) : ''}
-                            InputProps={{
-                                readOnly: false,
-                                endAdornment: value.toString() ? (
-                                    <InputAdornment position="end">
+                            slotProps={{
+                                inputLabel: {
+                                    shrink: true,
+                                },
+                                input: {
+                                    readOnly: false,
+                                    endAdornment: value.toString() ? <InputAdornment position="end">
                                         <IconButton size="small" onClick={() => this.handleChange({ target: { value: '' } }, i)}>
                                             <CloseIcon />
                                         </IconButton>
-                                    </InputAdornment>
-                                ) : null,
+                                    </InputAdornment> : null,
+                                },
                             }}
                         />
                     </FormControl>
-                </Grid>
+                </Grid2>
             );
         }
 
@@ -391,7 +393,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
             {e.translate ? this.props.t(elem.title || elem.id.toString()) : elem.title || elem.id}
         </MenuItem>);
 
-        return <Grid item sm={6} xs={12} key={i}>
+        return <Grid2 size={{ sm: 6, xs: 12 }} key={i}>
             <FormControl style={styles.formControl} variant="standard">
                 <InputLabel shrink id={`${e.id}-label`}>
                     {this.props.t(e.title)}
@@ -409,7 +411,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                 </Select>
                 {e.help ? <FormHelperText>{this.props.t(e.help)}</FormHelperText> : null}
             </FormControl>
-        </Grid>;
+        </Grid2>;
     }
 
     renderConfirmDialog() {
@@ -540,10 +542,10 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
 
         return <div style={styles.tabPanel}>
             {this.renderConfirmDialog()}
-            <Grid container spacing={3}>
-                <Grid item lg={6} md={12}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12}>
+            <Grid2 container spacing={3}>
+                <Grid2 size={{ lg: 6, md: 12 }}>
+                    <Grid2 container spacing={3}>
+                        <Grid2 size={{ xs: 12 }}>
                             <TextField
                                 disabled={this.props.saving}
                                 fullWidth
@@ -554,23 +556,25 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                                 value={this.props.data.common.siteName || ''}
                                 onChange={e => this.doChange('siteName', e.target.value)}
                                 helperText={this.props.t('This name will be shown in admin\'s header. Just to identify the whole installation')}
-                                InputProps={{
-                                    // @ts-expect-error will be fixed in js-controller
-                                    endAdornment: this.props.data.common.siteName ? <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => this.doChange('siteName', '')}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment> : null,
+                                slotProps={{
+                                    input: {
+                                        // @ts-expect-error will be fixed in js-controller
+                                        endAdornment: this.props.data.common.siteName ? <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.doChange('siteName', '')}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment> : null,
+                                    },
                                 }}
                             />
-                        </Grid>
+                        </Grid2>
                         {selectors}
-                    </Grid>
-                </Grid>
-                <Grid item lg={6} md={12} style={{ width: '100%' }}>
+                    </Grid2>
+                </Grid2>
+                <Grid2 size={{ lg: 6, md: 12 }} style={{ width: '100%' }}>
                     <MapContainer
                         style={styles.map}
                         center={center}
@@ -584,16 +588,16 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                         // animate
                         easeLinearity={0.35}
                     >
-                        <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
+                        <TileLayer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />
                         <MyMapComponent addMap={map => this.onMap(map)} />
                     </MapContainer>
-                </Grid>
-            </Grid>
-            <Grid container spacing={6}>
-                <Grid item md={3} sm={6} xs={12}>
+                </Grid2>
+            </Grid2>
+            <Grid2 container spacing={6}>
+                <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
                     {this.getCounters()}
-                </Grid>
-                <Grid item md={3} sm={6} xs={12}>
+                </Grid2>
+                <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
                     <FormControl style={styles.formControl} variant="standard">
                         <InputLabel shrink id="city-label">
                             {this.props.t('City:')}
@@ -604,23 +608,27 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                             id="city"
                             label={this.props.t('City:')}
                             value={this.props.data.common.city}
-                            InputLabelProps={{ shrink: true }}
                             onChange={evt => this.onChangeCity(evt)}
-                            InputProps={{
-                                readOnly: false,
-                                endAdornment: this.props.data.common.city ? <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => this.onChangeCity({ target: { value: '' } })}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment> : null,
+                            slotProps={{
+                                inputLabel: {
+                                    shrink: true,
+                                },
+                                input: {
+                                    readOnly: false,
+                                    endAdornment: this.props.data.common.city ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.onChangeCity({ target: { value: '' } })}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                },
                             }}
                         />
                     </FormControl>
-                </Grid>
-                <Grid item md={3} sm={6} xs={12}>
+                </Grid2>
+                <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
                     <FormControl style={styles.formControl} variant="standard">
                         <InputLabel shrink id="latitude-label">
                             {this.props.t('Latitude:')}
@@ -631,13 +639,19 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                             id="latitude"
                             label={this.props.t('Latitude:')}
                             value={this.props.data.common.latitude || 0}
-                            InputLabelProps={{ shrink: true }}
-                            InputProps={{ readOnly: false }}
+                            slotProps={{
+                                inputLabel: {
+                                    shrink: true,
+                                },
+                                input: {
+                                    readOnly: false,
+                                },
+                            }}
                             onChange={evt => this.onChangeText(evt, 'latitude')}
                         />
                     </FormControl>
-                </Grid>
-                <Grid item md={3} sm={6} xs={12}>
+                </Grid2>
+                <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
                     <FormControl style={styles.formControl} variant="standard">
                         <InputLabel shrink id="longitude-label">
                             {this.props.t('Longitude:')}
@@ -648,13 +662,19 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                             id="longitude"
                             label={this.props.t('Longitude:')}
                             value={this.props.data.common.longitude || 0}
-                            InputLabelProps={{ shrink: true }}
-                            InputProps={{ readOnly: false }}
+                            slotProps={{
+                                inputLabel: {
+                                    shrink: true,
+                                },
+                                input: {
+                                    readOnly: false,
+                                },
+                            }}
                             onChange={evt => this.onChangeText(evt, 'longitude')}
                         />
                     </FormControl>
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
         </div>;
     }
 }

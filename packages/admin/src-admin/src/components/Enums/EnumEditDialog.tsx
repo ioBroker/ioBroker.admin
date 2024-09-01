@@ -5,7 +5,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Grid,
+    Grid2,
     Button,
 } from '@mui/material';
 
@@ -114,8 +114,8 @@ function EnumEditDialog(props: EnumEditDialogProps) {
             {props.t('Enum parameters')}
         </DialogTitle>
         <DialogContent sx={{ '&.MuiDialogContent-root': styles.contentRoot }}>
-            <Grid container spacing={2} style={styles.dialog}>
-                <Grid item xs={12} md={6}>
+            <Grid2 container spacing={2} style={styles.dialog}>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="Name"
                         t={props.t}
@@ -135,8 +135,8 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         icon={TextFieldsIcon}
                         styles={styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="ID edit"
                         t={props.t}
@@ -150,8 +150,8 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         icon={LocalOfferIcon}
                         styles={styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="ID preview"
                         t={props.t}
@@ -160,8 +160,8 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         icon={PageviewIcon}
                         styles={styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="Description"
                         t={props.t}
@@ -174,8 +174,8 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         icon={DescriptionIcon}
                         styles={styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IconPicker
                         label="Icon"
                         onlyDevices={props.enum._id.startsWith('enum.functions.')}
@@ -190,8 +190,8 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         icon={ImageIcon}
                         customStyles={styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOColorPicker
                         label="Color"
                         value={props.enum.common.color}
@@ -206,8 +206,8 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         styles={styles}
                         t={props.t}
                     />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
         </DialogContent>
         <DialogActions style={styles.dialogActions}>
             <Button

@@ -1078,7 +1078,7 @@ function DiscoveryDialog({
                     {I18n.t('Discover')}
                 </Button>}
                 {step !== 2 && step !== 4 && <Tooltip
-                    componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                     title={
                         step === 0
                             ? I18n.t('Skip discovery process and go to install with last scan results')

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
 import {
-    AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar,
+    AppBar, CardMedia, CircularProgress,
+    IconButton, Paper, Toolbar,
 } from '@mui/material';
 
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';

@@ -2450,7 +2450,7 @@ class App extends Router<AppProps, AppState> {
                 <MenuIcon />
             </IconButton>
             <div style={styles.wrapperButtons}>
-                <Tooltip title={I18n.t('Notifications')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                <Tooltip title={I18n.t('Notifications')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         disableRipple={!this.state.noNotifications}
@@ -2466,7 +2466,7 @@ class App extends Router<AppProps, AppState> {
                     </IconButton>
                 </Tooltip>
                 <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
-                    {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                    {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')} slotProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => Router.doNavigate(null, 'discovery')}
@@ -2476,7 +2476,7 @@ class App extends Router<AppProps, AppState> {
                     </Tooltip>}
                 </IsVisible>
                 <IsVisible name="admin.appBar.systemSettings" config={this.adminGuiConfig}>
-                    <Tooltip title={I18n.t('System settings')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                    <Tooltip title={I18n.t('System settings')} slotProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => Router.doNavigate(null, 'system')}
@@ -2500,7 +2500,7 @@ class App extends Router<AppProps, AppState> {
                                 ? ''
                                 : ` (${I18n.t('only in this browser session')})`
                         }`}
-                        componentsProps={{ popper: { sx: styles.tooltip } }}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
                     >
                         <Badge
                             color="secondary"
@@ -2559,7 +2559,7 @@ class App extends Router<AppProps, AppState> {
                     title={I18n.t(
                         'Synchronize admin settings between all opened browser windows',
                     )}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         size="large"

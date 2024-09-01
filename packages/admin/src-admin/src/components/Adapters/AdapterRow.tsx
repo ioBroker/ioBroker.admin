@@ -2,7 +2,7 @@ import React from 'react';
 
 import {
     Avatar,
-    Grid,
+    Grid2,
     TableCell,
     TableRow,
     Tooltip,
@@ -54,25 +54,25 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
         return <TableRow hover>
             <TableCell />
             <TableCell>
-                <Grid container spacing={1} alignItems="center" style={this.styles.name}>
-                    <Tooltip title={this.props.adapterName} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
-                        <Grid item style={this.styles.paddingNone}>
+                <Grid2 container spacing={1} alignItems="center" style={this.styles.name}>
+                    <Tooltip title={this.props.adapterName} slotProps={{ popper: { sx: this.styles.tooltip } }}>
+                        <Grid2 style={this.styles.paddingNone}>
                             <Avatar
                                 variant="square"
                                 alt={this.props.cached.title}
                                 src={this.props.cached.image}
                                 style={this.styles.smallAvatar}
                             />
-                        </Grid>
+                        </Grid2>
                     </Tooltip>
                     {allowAdapterRating !== false ?
-                        <Grid item style={this.styles.nameCell}>
+                        <Grid2 style={this.styles.nameCell}>
                             <div>{this.props.cached.title}</div>
                             {this.renderRating()}
-                        </Grid>
+                        </Grid2>
                         :
-                        <Grid item>{this.props.cached.title}</Grid>}
-                </Grid>
+                        <Grid2>{this.props.cached.title}</Grid2>}
+                </Grid2>
             </TableCell>
             {!this.props.context.descHidden &&
                 <TableCell title={this.props.cached.desc} style={{ width: 20, wordWrap: 'break-word' }}>{this.props.cached.desc}</TableCell>}
@@ -86,12 +86,12 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
             </TableCell>
             <TableCell>{this.renderInstalledVersion(true)}</TableCell>
             <TableCell>
-                <Grid
+                <Grid2
                     container
                     alignItems="center"
                 >
                     {this.renderVersion()}
-                </Grid>
+                </Grid2>
             </TableCell>
             <TableCell style={{ fontSize: 'smaller' }}>{adapter?.licenseInformation?.license || adapter?.license}</TableCell>
             <TableCell>
