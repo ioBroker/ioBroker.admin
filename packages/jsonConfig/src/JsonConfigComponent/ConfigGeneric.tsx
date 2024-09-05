@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Grid, Button } from '@mui/material';
+import { Grid2, Button } from '@mui/material';
 
 import {
     Info as IconInfo,
@@ -1043,12 +1043,14 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             }
 
             if (schema.hideOnlyControl) {
-                const item = <Grid
-                    item
-                    xs={schema.xs || undefined}
-                    lg={schema.lg || undefined}
-                    md={schema.md || undefined}
-                    sm={schema.sm || undefined}
+                const item = <Grid2
+                    size={{
+                        xs: schema.xs || undefined,
+                        sm: schema.sm || undefined,
+                        md: schema.md || undefined,
+                        lg: schema.lg || undefined,
+                        xl: schema.xl || undefined,
+                    }}
                     style={({
                         marginBottom: 0, /* marginRight: 8, */
                         textAlign: 'left',
@@ -1098,13 +1100,15 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             return renderedItem;
         }
 
-        const item = <Grid
-            item
+        const item = <Grid2
             title={this.getText(schema.tooltip)}
-            xs={schema.xs || undefined}
-            lg={schema.lg || undefined}
-            md={schema.md || undefined}
-            sm={schema.sm || undefined}
+            size={{
+                xs: schema.xs || undefined,
+                sm: schema.sm || undefined,
+                md: schema.md || undefined,
+                lg: schema.lg || undefined,
+                xl: schema.xl || undefined,
+            }}
             style={({
                 marginBottom: 0,
                 // marginRight: 8,
@@ -1117,11 +1121,11 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             })}
         >
             {this.props.schema.defaultSendTo && this.props.schema.button ?
-                <Grid container style={{ width: '100%' }}>
-                    <Grid item flex={1}>
+                <Grid2 container style={{ width: '100%' }}>
+                    <Grid2 flex={1}>
                         {renderedItem}
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         <Button
                             variant="outlined"
                             onClick={() => this.sendTo()}
@@ -1136,9 +1140,9 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                         >
                             {this.getText(this.props.schema.button as ioBroker.StringOrTranslated)}
                         </Button>
-                    </Grid>
-                </Grid> : renderedItem}
-        </Grid>;
+                    </Grid2>
+                </Grid2> : renderedItem}
+        </Grid2>;
 
         if (schema.newLine) {
             return <>
