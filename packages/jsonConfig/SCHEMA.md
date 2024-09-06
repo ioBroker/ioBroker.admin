@@ -480,8 +480,27 @@ adapter.on('message', obj => {
   - `version` - Check version
 
 - `uuid` - Show iobroker UUID
+
 - `port` - Special input for ports. It checks automatically if port is used by other instances and shows a warning
   - `min` - minimal allowed port number. It could be 0. And if the value is then zero, the check if the port is occupied will not happen. 
+- 
+- `state` - Show control or information from the state
+  - `oid` - Which object ID should be taken for the controlling. The ID is without "adapter.X." prefix
+  - `system` - If true, the state will be taken from system.adapter.XX.I. and not from XX.I
+  - `control` - How the value of the state should be shown: `text`, `html`, `input`, `slider`, `select`, `button`, `switch`, `number`
+  - `controlled` - If true, the state will be shown as switch, select, button, slider or text input. Used only if no control property is defined
+  - `unit` - Add unit to the value
+  - `trueText` - this text will be shown if the value is true
+  - `trueTextStyle` - Style of the text if the value is true
+  - `falseText` - this text will be shown if the value is false or if the control is a "button"
+  - `falseTextStyle` - Style of the text if the value is false or if the control is a "button"
+  - `trueImage` - This image will be shown if the value is true
+  - `falseImage` - This image will be shown if the value is false or if the control is a "button"
+  - `min` - Minimum value for control type slider or number
+  - `max` - Maximum value for control type slider or number
+  - `step` - Step value for control type slider or number
+  - `controlDelay` - delay in ms for slider or number
+  - `variant` - Variant of button: `contained`, `outlined`, `text`
 
 - `deviceManager` - show device manager. For that, the adapter must support device manager protocol. See iobroker/dm-utils.
   Here is an example of how to show device manager in a tab:
