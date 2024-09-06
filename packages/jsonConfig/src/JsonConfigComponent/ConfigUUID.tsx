@@ -34,16 +34,18 @@ class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
             fullWidth
             error={!!error}
             disabled={!!disabled}
-            inputProps={{ readOnly: true }}
-            // eslint-disable-next-line react/jsx-no-duplicate-props
-            InputProps={{
-                endAdornment: <IconButton onClick={() => {
-                    Utils.copyToClipboard(this.state.uuid);
-                    window.alert(I18n.t('ra_Copied %s', this.state.uuid));
-                }}
-                >
-                    <IconCopy />
-                </IconButton>,
+            slotProps={{
+                htmlInput: { readOnly: true },
+                input: {
+                    endAdornment: <IconButton
+                        onClick={() => {
+                            Utils.copyToClipboard(this.state.uuid);
+                            window.alert(I18n.t('ra_Copied %s', this.state.uuid));
+                        }}
+                    >
+                        <IconCopy />
+                    </IconButton>,
+                },
             }}
             value={this.state.uuid || ''}
             label={this.getText(this.props.schema.label) || I18n.t('ra_Serial number (UUID)')}

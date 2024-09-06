@@ -36,7 +36,11 @@ class ConfigTopic extends ConfigGeneric<ConfigTopicProps, ConfigGenericState> {
         return <TextField
             variant="standard"
             fullWidth
-            inputProps={{ maxLength: this.props.schema.maxLength || this.props.schema.max || undefined }}
+            slotProps={{
+                htmlInput: {
+                    maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                },
+            }}
             value={this.state.value}
             error={!!error}
             disabled={disabled}
