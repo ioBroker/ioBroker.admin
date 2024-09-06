@@ -260,9 +260,10 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 const item = <Grid2
                     size={{
                         xs: schema.xs || undefined,
-                        lg: schema.lg || undefined,
-                        md: schema.md || undefined,
                         sm: schema.sm || undefined,
+                        md: schema.md || undefined,
+                        lg: schema.lg || undefined,
+                        xl: schema.xl || undefined,
                     }}
                     sx={Utils.getStyle(
                         this.props.theme,
@@ -292,7 +293,8 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 key={`${this.props.attr}_${this.props.index}`}
                 container
                 style={styles.fullWidth}
-                spacing={2}
+                columnSpacing={2}
+                rowSpacing={1}
                 sx={schemaStyle}
             >
                 {this.renderItems(items, disabled)}
@@ -325,7 +327,8 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 <AccordionDetails>
                     <Grid2
                         container
-                        spacing={2}
+                        columnSpacing={2}
+                        rowSpacing={1}
                         sx={{ ...schemaStyle, width: '100%', padding: '10px' }}
                     >
                         {this.renderItems(items, disabled)}
@@ -348,7 +351,8 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
             >
                 <Grid2
                     container
-                    spacing={2}
+                    columnSpacing={2}
+                    rowSpacing={1}
                     sx={Utils.getStyle(
                         this.props.theme,
                         { width: '100%' },
@@ -366,9 +370,10 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 title={this.getText(schema.tooltip)}
                 size={{
                     xs: schema.xs || undefined,
-                    lg: schema.lg || undefined,
-                    md: schema.md || undefined,
                     sm: schema.sm || undefined,
+                    md: schema.md || undefined,
+                    lg: schema.lg || undefined,
+                    xl: schema.xl || undefined,
                 }}
                 sx={({ marginBottom: 0, /* marginRight: 8, */ textAlign: 'left', ...schemaStyle })}
             >

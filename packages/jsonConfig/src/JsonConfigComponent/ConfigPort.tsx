@@ -194,10 +194,12 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
             variant="standard"
             type="number"
             fullWidth
-            inputProps={{
-                min,
-                max,
-                readOnly: this.props.schema.readOnly || false,
+            slotProps={{
+                htmlInput: {
+                    min,
+                    max,
+                    readOnly: this.props.schema.readOnly || false,
+                },
             }}
             value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
             error={!!error}

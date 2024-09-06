@@ -338,11 +338,13 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 style={{ width: '100%' }}
                 value={this.state.stateValue}
                 type="number"
-                inputProps={{ min, max, step }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                InputProps={{
-                    endAdornment: this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || undefined,
+                slotProps={{
+                    htmlInput: { min, max, step },
+                    input: {
+                        endAdornment: this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || undefined,
+                    },
                 }}
+                // eslint-disable-next-line react/jsx-no-duplicate-props
                 onChange={e => {
                     this.setState({ stateValue: e.target.value }, async () => {
                         if (this.controlTimeout) {

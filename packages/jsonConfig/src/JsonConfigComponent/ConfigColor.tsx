@@ -57,27 +57,30 @@ class ConfigColor extends ConfigGeneric<ConfigColorProps, ConfigColorState> {
                     const color = e.target.value;
                     this.onChange(this.props.attr, color);
                 }}
-                inputProps={{
-                    style: {
-                        // paddingLeft: noPadding ? 0 : 8,
-                        backgroundColor: value,
-                        color: textColor ? '#FFF' : '#000',
+                slotProps={{
+                    htmlInput: {
+                        style: {
+                            // paddingLeft: noPadding ? 0 : 8,
+                            backgroundColor: value,
+                            color: textColor ? '#FFF' : '#000',
+                        },
+                        readOnly: this.props.schema.readOnly || false,
                     },
-                    readOnly: this.props.schema.readOnly || false,
+                    input: {
+                        endAdornment: value && !this.props.schema.noClearButton ? <IconButton
+                            size="small"
+                            onClick={e => {
+                                e.stopPropagation();
+                                this.onChange(this.props.attr, '');
+                            }}
+                        >
+                            <ClearIcon />
+                        </IconButton> : undefined,
+                    },
+                    inputLabel: {
+                        shrink: true,
+                    },
                 }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                InputProps={{
-                    endAdornment: value && !this.props.schema.noClearButton ? <IconButton
-                        size="small"
-                        onClick={e => {
-                            e.stopPropagation();
-                            this.onChange(this.props.attr, '');
-                        }}
-                    >
-                        <ClearIcon />
-                    </IconButton> : undefined,
-                }}
-                InputLabelProps={{ shrink: true }}
             />
         </>;
     }

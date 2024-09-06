@@ -214,9 +214,10 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
             const item = <Grid2
                 size={{
                     xs: schema.xs || undefined,
-                    lg: schema.lg || undefined,
-                    md: schema.md || undefined,
                     sm: schema.sm || undefined,
+                    md: schema.md || undefined,
+                    lg: schema.lg || undefined,
+                    xl: schema.xl || undefined,
                 }}
                 style={({
                     marginBottom: 0,

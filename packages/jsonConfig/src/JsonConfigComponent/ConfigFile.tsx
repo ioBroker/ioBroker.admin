@@ -161,9 +161,11 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
                 value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                 error={!!error}
                 disabled={!!disabled}
-                inputProps={{
-                    maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                    readOnly: !!this.props.schema.disableEdit,
+                slotProps={{
+                    htmlInput: {
+                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                        readOnly: !!this.props.schema.disableEdit,
+                    },
                 }}
                 onChange={e => {
                     const value = e.target.value;
