@@ -72,6 +72,7 @@ interface ConfigSelectSendToProps extends ConfigGenericProps {
 
 interface ConfigSelectSendToState extends ConfigGenericState {
     list?: { label: string; value: string; hidden?: boolean }[];
+    running?: boolean;
 }
 
 class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSelectSendToState> {
@@ -94,14 +95,15 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
             if (data === undefined) {
                 data = null;
             }
-
-            this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
-                .then(list =>
-                    this.setState({ list }));
+            this.setState({ running: true }, () => {
+                this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
+                    .then(list =>
+                        this.setState({ list, running: false }));
+            });
         } else {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-            this.setState({ value });
+            this.setState({ value, running: false });
         }
     }
 
@@ -142,7 +144,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
 
         const value = this._getValue();
 
-        if (!this.props.alive) {
+        if (!this.props.alive || (!this.state.running && !this.state.list?.length)) {
             if (this.props.schema.multiple || this.props.schema.manual === false) {
                 return I18n.t('ra_Cannot retrieve options, as instance is offline');
             }
@@ -160,22 +162,24 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-                InputProps={{
-                    endAdornment: this.state.value && !this.props.schema.noClearButton ? <InputAdornment position="end">
-                        <IconButton
-                            size="small"
-                            onClick={() => this.setState({ value: '' }, () =>
-                                this.onChange(this.props.attr, ''))}
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    </InputAdornment> : null,
+                slotProps={{
+                    input: {
+                        endAdornment: this.state.value && !this.props.schema.noClearButton ? <InputAdornment position="end">
+                            <IconButton
+                                size="small"
+                                onClick={() => this.setState({ value: '' }, () =>
+                                    this.onChange(this.props.attr, ''))}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </InputAdornment> : null,
+                    },
                 }}
             />;
         }
 
-        if (!this.state.list) {
-            return <CircularProgress size="small" />;
+        if (this.state.running) {
+            return <CircularProgress size="24" />;
         }
 
         const selectOptions = this.state.list.filter(item => {

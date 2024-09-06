@@ -196,9 +196,11 @@ class ConfigCoordinates extends ConfigGeneric<ConfigCoordinatesProps, ConfigCoor
                     value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                     error={!!error}
                     disabled={!!disabled}
-                    inputProps={{
-                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                        readOnly: this.state.useSystem,
+                    slotProps={{
+                        htmlInput: {
+                            maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                            readOnly: this.state.useSystem,
+                        },
                     }}
                     onChange={e => {
                         const value = e.target.value;
