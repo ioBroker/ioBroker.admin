@@ -260,8 +260,10 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 });
         } else {
             this.defaultSendToDone = false;
-            // show error, that instance did not start
-            this.onError(this.props.attr, I18n.t('ra_Instance %s is not alive', this.props.instance.toString()));
+            if (!this.props.schema.allowSaveWithError) {
+                // show error, that instance did not start
+                this.onError(this.props.attr, I18n.t('ra_Instance %s is not alive', this.props.instance.toString()));
+            }
         }
     }
 

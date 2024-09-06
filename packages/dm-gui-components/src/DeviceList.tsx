@@ -211,8 +211,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
     }
 
     renderContent(): React.JSX.Element | React.JSX.Element[] | null {
-        /** @type {object} */
-        const emptyStyle = {
+        const emptyStyle: React.CSSProperties = {
             padding: 25,
         };
 
@@ -299,20 +298,21 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
                     onChange={e => this.handleFilterChange(e.target.value)}
                     value={this.state.filter}
                     autoComplete="off"
-                    inputProps={{
-                        autoComplete: 'new-password',
-                        form: { autoComplete: 'off' },
-                    }}
-                    // eslint-disable-next-line react/jsx-no-duplicate-props
-                    InputProps={{
-                        endAdornment: this.state.filter ? <InputAdornment position="end">
-                            <IconButton
-                                onClick={() => this.handleFilterChange('')}
-                                edge="end"
-                            >
-                                <Clear />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        input: {
+                            autoComplete: 'new-password',
+                            endAdornment: this.state.filter ? <InputAdornment position="end">
+                                <IconButton
+                                    onClick={() => this.handleFilterChange('')}
+                                    edge="end"
+                                >
+                                    <Clear />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
+                        htmlInput: {
+                            autoComplete: 'off',
+                        },
                     }}
                 /> : null}
             </Toolbar>

@@ -53,6 +53,8 @@ export interface ConfigItem {
     default?: boolean | number | string;
     defaultFunc?: string;
     defaultSendTo?: string;
+    /** Allow saving of configuration even with error */
+    allowSaveWithError?: boolean;
     data?: string | number | boolean;
     jsonData?: string;
     button?: ioBroker.StringOrTranslated;

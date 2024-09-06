@@ -541,6 +541,7 @@ All types could have:
   - `button` - button label to re-trigger request from instance
   - `buttonTooltip` - Button tooltip (default: `Request data by instance`)
   - `buttonTooltipNoTranslation` - Do not translate button tooltip
+  - `allowSaveWithError` - Allow saving of configuration even if the instance is offline
 - `placeholder` - placeholder (for text control)
 - `noTranslation` - do not translate selects or other options (not for help, label or placeholder)
 - `onChange` - Structure in form `{"alsoDependsOn": ["attr1", "attr2"], "calculateFunc": "data.attr1 + data.attr2", "ignoreOwnChanges": true}`
