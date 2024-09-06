@@ -195,8 +195,9 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 data={this.props.data}
                 originalData={this.props.originalData}
                 systemConfig={this.props.systemConfig}
-                onError={this.props.onError}
                 onChange={this.props.onChange}
+                onError={this.props.onError}
+                onBackEndCommand={this.props.onBackEndCommand}
                 multiEdit={this.props.multiEdit}
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}

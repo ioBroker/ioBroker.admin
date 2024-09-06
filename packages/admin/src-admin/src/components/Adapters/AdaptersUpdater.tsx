@@ -5,7 +5,6 @@ import {
     List,
     ListItem,
     ListItemIcon,
-    ListItemSecondaryAction,
     ListItemText,
     Checkbox,
     Avatar, Button,
@@ -13,7 +12,7 @@ import {
     Dialog, DialogActions,
     DialogContent,
     DialogTitle,
-    Grid,
+    Grid2,
     IconButton,
     Typography, Box,
 } from '@mui/material';
@@ -236,6 +235,24 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                 '&.MuiListItem-root': Utils.getStyle(this.props.theme, styles.listItem, this.props.updated.includes(adapter) && styles.updateDone),
             }}
             ref={this.props.current === adapter ? this.currentRef : null}
+            secondaryAction={!this.props.finished && !this.props.inProcess ? <Checkbox
+                edge="end"
+                checked={checked}
+                tabIndex={-1}
+                disableRipple
+                disabled={this.props.inProcess}
+                onClick={() => {
+                    const selected = [...this.props.selected];
+                    const pos = selected.indexOf(adapter);
+                    if (pos !== -1) {
+                        selected.splice(pos, 1);
+                    } else {
+                        selected.push(adapter);
+                        selected.sort();
+                    }
+                    this.props.onUpdateSelected(selected);
+                }}
+            /> : (this.props.current === adapter && !this.props.stopped && !this.props.finished && <CircularProgress />)}
         >
             <ListItemIcon sx={styles.minWidthCss}>
                 <Avatar
@@ -271,29 +288,6 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                     </IconButton>
                 </span>}
             />
-            {!this.props.finished && !this.props.inProcess && <ListItemSecondaryAction>
-                <Checkbox
-                    edge="end"
-                    checked={checked}
-                    tabIndex={-1}
-                    disableRipple
-                    disabled={this.props.inProcess}
-                    onClick={() => {
-                        const selected = [...this.props.selected];
-                        const pos = selected.indexOf(adapter);
-                        if (pos !== -1) {
-                            selected.splice(pos, 1);
-                        } else {
-                            selected.push(adapter);
-                            selected.sort();
-                        }
-                        this.props.onUpdateSelected(selected);
-                    }}
-                />
-            </ListItemSecondaryAction>}
-            {this.props.current === adapter && !this.props.stopped && !this.props.finished && <ListItemSecondaryAction>
-                <CircularProgress />
-            </ListItemSecondaryAction>}
         </ListItem>;
     }
 
@@ -320,14 +314,14 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                                 .trim())
                             .filter(line => !!line);
 
-                        result.push(<Grid item key={version}>
+                        result.push(<Grid2 key={version}>
                             <Typography sx={styles.versionHeader}>
                                 {version}
                             </Typography>
                             {news.map((value, index) => <Typography key={`${version}-${index}`} component="div" variant="body2">
                                 {`• ${value}`}
                             </Typography>)}
-                        </Grid>);
+                        </Grid2>);
                     }
                 } catch {
                     // ignore it
@@ -368,24 +362,24 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                     </Typography>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Grid
+                    <Grid2
                         container
                         direction="column"
                         spacing={2}
                         wrap="nowrap"
                     >
-                        {news.length ? <Grid item>
+                        {news.length ? <Grid2>
                             <Typography variant="h6" gutterBottom>{I18n.t('Change log')}</Typography>
-                            <Grid
+                            <Grid2
                                 container
                                 spacing={2}
                                 direction="column"
                                 wrap="nowrap"
                             >
                                 {news}
-                            </Grid>
-                        </Grid> : I18n.t('No change log available')}
-                    </Grid>
+                            </Grid2>
+                        </Grid2> : I18n.t('No change log available')}
+                    </Grid2>
                 </DialogContent>
                 <DialogActions style={styles.wrapperButton}>
                     <Button

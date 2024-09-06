@@ -1,7 +1,7 @@
 import React, { createRef, Component } from 'react';
 
 import {
-    Grid,
+    Grid2,
     Toolbar,
     Button,
     Paper, Box,
@@ -92,21 +92,21 @@ class WizardPortForwarding extends Component<WizardPortForwardingProps, WizardPo
     render() {
         return <Paper style={styles.paper}>
             <form style={styles.form} noValidate autoComplete="off">
-                <Grid container direction="column">
-                    <Grid item>
+                <Grid2 container direction="column">
+                    <Grid2>
                         <Box component="h2" sx={styles.title}>{this.props.t('Important information about port forwarding')}</Box>
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         {!this.props.auth ? <div style={styles.error}>{this.props.t('Warning!')}</div> : null}
                         {this.props.auth && !this.props.secure ? <div style={styles.warning}>{this.props.t('Be aware!')}</div> : null}
                         {this.props.auth && this.props.secure ? <div style={styles.information}>{this.props.t('Information')}</div> : null}
 
                         <div style={styles.text}>{this.props.t('Do not expose iobroker Admin or Web interfaces to the internet directly via the port forwarding!')}</div>
-                    </Grid>
-                    <Grid item style={{ marginTop: 16 }}>
+                    </Grid2>
+                    <Grid2 style={{ marginTop: 16 }}>
                         <div style={styles.text}>{this.props.t('The Cloud services from iobroker.net/pro can help here to do that securely:')}</div>
-                    </Grid>
-                    <Grid item style={{ marginTop: 16 }}>
+                    </Grid2>
+                    <Grid2 style={{ marginTop: 16 }}>
                         <Button
                             style={styles.button}
                             color="secondary"
@@ -124,8 +124,8 @@ ioBroker.pro
                         >
 ioBroker.net
                         </Button>
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
             </form>
             <Toolbar style={styles.toolbar}>
                 <div style={styles.grow} />

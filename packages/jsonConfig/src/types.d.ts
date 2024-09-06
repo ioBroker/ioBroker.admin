@@ -34,6 +34,7 @@ export interface ConfigItem {
     md?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
     lg?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
     xs?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+    xl?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
     newLine?: boolean;
     label?: ioBroker.StringOrTranslated;
     /** @deprecated use label */
@@ -52,6 +53,8 @@ export interface ConfigItem {
     default?: boolean | number | string;
     defaultFunc?: string;
     defaultSendTo?: string;
+    /** Allow saving of configuration even with error */
+    allowSaveWithError?: boolean;
     data?: string | number | boolean;
     jsonData?: string;
     button?: ioBroker.StringOrTranslated;
@@ -321,6 +324,10 @@ export interface ConfigItemStaticText extends Omit<ConfigItem, 'button'> {
     label?: ioBroker.StringOrTranslated;
     /** link. Link could be dynamic like `#tab-objects/customs/${data.parentId} */
     href?: string;
+    /** target of the link: _self, _blank or window name. For relative links default is _self and for absolute - _blank */
+    target?: string;
+    /** If the GUI should be closed after a link was opened (only if the target is equal to '_self') */
+    close?: boolean;
     /** show a link as button */
     button?: boolean;
     /** type of button (`outlined`, `contained`, `text`) */
@@ -329,6 +336,8 @@ export interface ConfigItemStaticText extends Omit<ConfigItem, 'button'> {
     color?: 'primary' | 'secondary' | 'grey';
     /** if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (it starts with `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`) . (Request via issue if you need more icons) */
     icon?: ConfigIconType;
+    /** styles for the button */
+    controlStyle: CustomCSSProperties;
 }
 
 export interface ConfigItemRoom extends ConfigItem {
@@ -502,6 +511,8 @@ export interface ConfigItemSendTo extends Omit<ConfigItem, 'data'> {
     alsoDependsOn?: string[];
     container?: 'text' | 'div' | 'html';
     copyToClipboard?: boolean;
+    /** Styles for button itself */
+    controlStyle?: CustomCSSProperties;
 }
 
 export interface ConfigItemState extends ConfigItem {
@@ -519,11 +530,11 @@ export interface ConfigItemState extends ConfigItem {
     /** this text will be shown if the value is true */
     trueText?: string;
     /** Style of the text if the value is true */
-    trueTextStyle?: React.CSSProperties;
+    trueTextStyle?: CustomCSSProperties;
     /** this text will be shown if the value is false or if the control is a "button" */
     falseText?: string;
     /** Style of the text if the value is false or if the control is a "button" */
-    falseTextStyle?: React.CSSProperties;
+    falseTextStyle?: CustomCSSProperties;
     /** This image will be shown if the value is true */
     trueImage?: string;
     /** This image will be shown if the value is false or if the control is a "button" */
@@ -786,3 +797,48 @@ export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete |
     ConfigItemSetState | ConfigItemStaticDivider | ConfigItemStaticHeader |
     ConfigItemStaticImage | ConfigItemStaticText | ConfigItemTopic |
     ConfigItemObjectId | ConfigItemQrCode;
+
+// Notification GUI
+
+export type BackEndCommandType = 'nop' | 'refresh' | 'link' | 'message';
+
+export interface BackEndCommandGeneric {
+    command: BackEndCommandType;
+    /** New GUI schema */
+    schema?: ConfigItemPanel;
+    /** New GUI data */
+    data?: Record<string, any>;
+    refresh?: boolean;
+}
+
+export interface BackEndCommandNoOperation extends BackEndCommandGeneric {
+    command: 'nop';
+}
+
+export interface BackEndCommandRefresh extends BackEndCommandGeneric {
+    command: 'refresh';
+    /** If refresh the GUI */
+    fullRefresh?: boolean;
+}
+
+export interface BackEndCommandOpenLink extends BackEndCommandGeneric {
+    command: 'link';
+    /** Link url. Could be relative ('#blabla') or absolute ('https://blabla') */
+    url: string;
+    /** Target of the link. Default is `_self` for relative and '_blank' for absolute links */
+    target?: '_self' | '_blank' | string;
+    /** If GUI should be closed after the link was opened (Only for target='_self') */
+    close?: boolean;
+}
+
+export interface BackEndCommandMessage extends BackEndCommandGeneric {
+    command: 'message';
+    /** Message text */
+    message: ioBroker.StringOrTranslated;
+    /** If GUI should be closed after the message shown */
+    close?: boolean;
+    /** Type of message. Default is 'popup' */
+    variant: 'popup' | 'dialog';
+}
+
+export type BackEndCommand = BackEndCommandMessage | BackEndCommandOpenLink | BackEndCommandRefresh;

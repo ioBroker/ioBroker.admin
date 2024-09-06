@@ -5,7 +5,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Grid,
+    Grid2,
     Button,
 } from '@mui/material';
 
@@ -132,8 +132,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                 '&.MuiDialogContent-root': { ...(props.innerWidth < 500 ? props.styles.narrowContent : undefined), ...styles.contentRoot },
             }}
         >
-            <Grid container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog}>
-                <Grid item xs={12} md={6}>
+            <Grid2 container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog}>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="Name"
                         t={props.t}
@@ -150,8 +150,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         icon={TextFieldsIcon}
                         styles={props.styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="ID edit"
                         t={props.t}
@@ -165,8 +165,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         icon={LocalOfferIcon}
                         styles={props.styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="ID preview"
                         t={props.t}
@@ -175,8 +175,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         icon={PageviewIcon}
                         styles={props.styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="Description"
                         t={props.t}
@@ -189,8 +189,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         icon={DescriptionIcon}
                         styles={props.styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="Password"
                         t={props.t}
@@ -206,8 +206,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         icon={VpnKeyIcon}
                         styles={props.styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="Password repeat"
                         t={props.t}
@@ -219,8 +219,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         icon={VpnKeyIcon}
                         styles={props.styles}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IconPicker
                         icons={USER_ICONS}
                         label="Icon"
@@ -236,8 +236,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         icon={ImageIcon}
                         // classes={props.classes}
                     />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <IOColorPicker
                         label="Color"
                         t={props.t}
@@ -252,8 +252,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         style={props.styles.colorPicker}
                         styles={props.styles}
                     />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
         </DialogContent>
         <DialogActions style={props.styles.dialogActions}>
             <Button

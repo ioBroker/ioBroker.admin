@@ -106,7 +106,9 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
         const isIndeterminate = Array.isArray(this.state._value) || this.state._value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
-            this.updateTimeout && clearTimeout(this.updateTimeout);
+            if (this.updateTimeout) {
+                clearTimeout(this.updateTimeout);
+            }
             this.updateTimeout = setTimeout(() => {
                 this.updateTimeout = undefined;
                 this.setState({ oldValue: null });
@@ -142,7 +144,12 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                         {...params}
                         label={this.getText(this.props.schema.label)}
                         variant="standard"
-                        inputProps={{ ...params.inputProps, readOnly: this.props.schema.readOnly || false }}
+                        slotProps={{
+                            htmlInput: {
+                                ...params.inputProps,
+                                readOnly: this.props.schema.readOnly || false,
+                            },
+                        }}
                         error={!!error}
                         placeholder={this.getText(this.props.schema.placeholder)}
                         helperText={this.renderHelp(
@@ -167,11 +174,13 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                 variant="standard"
                 type="number"
                 fullWidth
-                inputProps={{
-                    min: this.props.schema.min,
-                    max: this.props.schema.max,
-                    step: this.props.schema.step,
-                    readOnly: this.props.schema.readOnly || false,
+                slotProps={{
+                    htmlInput: {
+                        min: this.props.schema.min,
+                        max: this.props.schema.max,
+                        step: this.props.schema.step,
+                        readOnly: this.props.schema.readOnly || false,
+                    },
                 }}
                 value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
                 error={!!error}

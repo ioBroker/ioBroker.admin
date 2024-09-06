@@ -7,7 +7,7 @@ import { usePreview } from 'react-dnd-preview';
 
 import {
     LinearProgress,
-    Grid,
+    Grid2,
     Typography,
     Fab, Box,
 } from '@mui/material';
@@ -521,11 +521,9 @@ class UsersList extends Component<UsersListProps, UsersListState> {
             <Box component="div" sx={styles.descriptionPanel}>
                 {this.props.t('You can drag users to groups.')}
             </Box>
-            <Grid container spacing={2} style={styles.mainGridCont}>
-                <Grid
-                    item
-                    xs={12}
-                    md={6}
+            <Grid2 container spacing={2} style={styles.mainGridCont}>
+                <Grid2
+                    size={{ xs: 12, md: 6 }}
                     style={{ ...styles.childGridCont, ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined) }}
                 >
                     <div style={styles.headContainer}>
@@ -568,11 +566,9 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                 {...this.props}
                             />)}
                     </div>
-                </Grid>
-                <Grid
-                    item
-                    xs={12}
-                    md={6}
+                </Grid2>
+                <Grid2
+                    size={{ xs: 12, md: 6 }}
                     style={{ ...styles.childGridCont, ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined) }}
                 >
                     <div style={styles.headContainer}>
@@ -624,8 +620,8 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                 {...this.props}
                             />)}
                     </div>
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
             {this.state.userEditDialog ? <UserEditDialog
                 onClose={() => this.setState({ userEditDialog: false })}
                 users={this.state.users}

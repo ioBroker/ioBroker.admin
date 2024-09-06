@@ -1,7 +1,7 @@
 import React, { createRef } from 'react';
 
 import {
-    Grid, Skeleton,
+    Grid2, Skeleton,
 } from '@mui/material';
 
 import {
@@ -165,8 +165,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
                 }
             }
 
-            return <Grid
-                item
+            return <Grid2
                 container
                 style={styles.imgContainer}
                 justifyContent="center"
@@ -189,7 +188,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
                     />}
                 {this.state.error &&
                     <ErrorIcon fontSize="large" />}
-            </Grid>;
+            </Grid2>;
         }
 
         if (this.props.camera.startsWith('cameras.')) {

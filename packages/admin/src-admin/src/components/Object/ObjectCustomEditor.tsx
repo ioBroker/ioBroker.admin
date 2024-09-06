@@ -683,7 +683,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 this.setState({ progress: Math.round(((this.state.maxOids - keys.length) / this.state.maxOids) * 50) + 50 });
                 const id = keys.shift() as string;
                 if (JSON.stringify(_objects[id].common) !== JSON.stringify(_oldObjects[id].common)) {
-                    !this.changedIds.includes(id) && this.changedIds.push(id);
+                    if (!this.changedIds.includes(id)) {
+                        this.changedIds.push(id);
+                    }
 
                     this.props.socket.setObject(id, _objects[id])
                         .then(async () => {

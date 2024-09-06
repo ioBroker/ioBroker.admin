@@ -295,8 +295,8 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                         this.adminInstance.native.secure = false;
 
                         await this.props.socket.setObject(this.adminInstance._id, this.adminInstance);
-                        // @ts-expect-error check later
-                        setTimeout(() => window.location = `http://${window.location.host}/#tab-adapters${discovery?.val ? '/discovery' : ''}`, 1000);
+                        setTimeout(() =>
+                            window.location.href = `http://${window.location.host}/#tab-adapters${discovery?.val ? '/discovery' : ''}`, 1000);
                         this.props.onClose();
                         return;
                     }

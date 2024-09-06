@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-target-blank */
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -273,7 +272,13 @@ const JsControllerDialog = ({
         <Box component="div" sx={styles.standardText}>
             {I18n.t('For an update from js-controller 1.x to 2.x please always read the information at')}
             {' '}
-            <a href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable" target="_blank">forum</a>
+            <a
+                href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable"
+                target="_blank"
+                rel="noreferrer"
+            >
+                forum
+            </a>
 .
         </Box>
         <Box component="div" sx={styles.standardText}>{I18n.t('Otherwise please update the slaves first with an update of master-slave systems and the master last!')}</Box>
@@ -366,7 +371,13 @@ cd
             <Box component="h2" sx={styles.h2}>{I18n.t('Windows')}</Box>
             <Box component="div" sx={styles.standardText}>
                 {I18n.t('For updating ioBroker on Windows, download the appropriate installer with the desired js-controller version from the download page ')}
-                <a href="https://www.iobroker.net/#en/download" target="_blank">https://www.iobroker.net/#en/download</a>
+                <a
+                    rel="noreferrer"
+                    href="https://www.iobroker.net/#en/download"
+                    target="_blank"
+                >
+                    https://www.iobroker.net/#en/download
+                </a>
                 {I18n.t(' and make the update with it. With the Windows Installer, previously manually installed servers or installations from other operating systems can be migrated to Windows and updated.')}
             </Box>
 

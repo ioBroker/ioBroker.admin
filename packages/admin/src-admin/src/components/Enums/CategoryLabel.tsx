@@ -45,7 +45,7 @@ const CategoryLabel = (props: CategoryLabelProps) => {
             style={{ color: textColor }}
             onClick={() => { props.showEnumEditDialog(props.categoryData, false); }}
         >
-            <Tooltip title={props.t('Edit')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+            <Tooltip title={props.t('Edit')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                 <EditIcon />
             </Tooltip>
         </IconButton>
@@ -54,7 +54,7 @@ const CategoryLabel = (props: CategoryLabelProps) => {
             style={{ color: textColor }}
             onClick={() => props.showEnumDeleteDialog(props.categoryData)}
         >
-            <Tooltip title={props.t('Delete')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+            <Tooltip title={props.t('Delete')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                 <DeleteIcon />
             </Tooltip>
         </IconButton>}

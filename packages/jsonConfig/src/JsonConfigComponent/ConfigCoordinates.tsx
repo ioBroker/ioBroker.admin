@@ -60,7 +60,9 @@ class ConfigCoordinates extends ConfigGeneric<ConfigCoordinatesProps, ConfigCoor
                 setTimeout(() => this.getCoordinates(), 300);
             }
         }
-        Object.keys(newState).length && setTimeout(() => this.setState(newState as ConfigCoordinatesState), 50);
+        if (Object.keys(newState).length) {
+            setTimeout(() => this.setState(newState as ConfigCoordinatesState), 50);
+        }
     }
 
     async getSystemCoordinates() {
@@ -194,9 +196,11 @@ class ConfigCoordinates extends ConfigGeneric<ConfigCoordinatesProps, ConfigCoor
                     value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                     error={!!error}
                     disabled={!!disabled}
-                    inputProps={{
-                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                        readOnly: this.state.useSystem,
+                    slotProps={{
+                        htmlInput: {
+                            maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                            readOnly: this.state.useSystem,
+                        },
                     }}
                     onChange={e => {
                         const value = e.target.value;

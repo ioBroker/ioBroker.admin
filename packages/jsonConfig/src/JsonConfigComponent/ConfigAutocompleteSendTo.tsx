@@ -32,7 +32,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                     if (typeof data === 'string') {
                         data = JSON.parse(data);
                     }
-                } catch (e) {
+                } catch {
                     console.error(`Cannot parse json data: ${data}`);
                 }
             }
@@ -84,12 +84,8 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
             }
         }
 
-        if (!this.state.selectOptions) {
-            return null;
-        }
-
         let item;
-        const options = JSON.parse(JSON.stringify(this.state.selectOptions));
+        const options = this.state.selectOptions ? JSON.parse(JSON.stringify(this.state.selectOptions)) : [];
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_LABEL;
 
         if (isIndeterminate) {
@@ -118,7 +114,11 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                 value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                 error={!!error}
                 disabled={disabled}
-                inputProps={{ maxLength: this.props.schema.maxLength || this.props.schema.max || undefined }}
+                slotProps={{
+                    htmlInput: {
+                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                    },
+                }}
                 onChange={e => {
                     const value = e.target.value;
                     this.setState({ value }, () =>

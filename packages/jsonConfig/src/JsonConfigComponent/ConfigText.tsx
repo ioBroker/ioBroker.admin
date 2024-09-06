@@ -118,7 +118,11 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                 value={time}
                 error={!!error || !!this.state.jsonError}
                 disabled={!!disabled}
-                inputProps={{ readOnly: true }}
+                slotProps={{
+                    htmlInput: {
+                        readOnly: true,
+                    },
+                }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
@@ -126,7 +130,9 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
         }
 
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
-            this.updateTimeout && clearTimeout(this.updateTimeout);
+            if (this.updateTimeout) {
+                clearTimeout(this.updateTimeout);
+            }
             this.updateTimeout = setTimeout(() => {
                 this.updateTimeout = null;
                 this.setState({ oldValue: null });
@@ -161,10 +167,12 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                     {...params}
                     error={!!error}
                     placeholder={this.getText(this.props.schema.placeholder)}
-                    inputProps={{
-                        ...params.inputProps,
-                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                        readOnly: this.props.schema.readOnly || false,
+                    slotProps={{
+                        htmlInput: {
+                            ...params.inputProps,
+                            maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                            readOnly: this.props.schema.readOnly || false,
+                        },
                     }}
                     label={this.getText(this.props.schema.label)}
                     helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
@@ -205,21 +213,22 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
             value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
             error={!!error || !!this.state.jsonError}
             disabled={!!disabled}
-            inputProps={{
-                maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                readOnly: this.props.schema.readOnly || false,
-            }}
-            // eslint-disable-next-line react/jsx-no-duplicate-props
-            InputProps={{
-                endAdornment: this.state.value && !this.props.schema.noClearButton ? <InputAdornment position="end">
-                    <IconButton
-                        size="small"
-                        onClick={() => this.setState({ value: '', oldValue: this.state.value }, () =>
-                            this.onChange(this.props.attr, ''))}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                </InputAdornment> : null,
+            slotProps={{
+                htmlInput: {
+                    maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                    readOnly: this.props.schema.readOnly || false,
+                },
+                input: {
+                    endAdornment: this.state.value && !this.props.schema.noClearButton ? <InputAdornment position="end">
+                        <IconButton
+                            size="small"
+                            onClick={() => this.setState({ value: '', oldValue: this.state.value }, () =>
+                                this.onChange(this.props.attr, ''))}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </InputAdornment> : null,
+                },
             }}
             onChange={e => {
                 const value = e.target.value;

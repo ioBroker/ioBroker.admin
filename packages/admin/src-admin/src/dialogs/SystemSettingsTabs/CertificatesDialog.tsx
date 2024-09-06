@@ -146,22 +146,26 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                         disabled={this.props.saving}
                         variant="standard"
                         value={e.title}
-                        InputLabelProps={{ shrink: true }}
                         style={styles.input}
                         className="xs-centered"
                         onChange={evt => this.onChangeText(evt.target.value, e.title, 'title')}
                         error={!type}
                         helperText={type || I18n.t('Unknown type: use in name "private", "public" or "chained" to define the certificate type')}
-                        InputProps={{
-                            readOnly: false,
-                            endAdornment: e.title ? <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={() => this.onChangeText('', e.title, 'title')}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment> : null,
+                        slotProps={{
+                            inputLabel: {
+                                shrink: true,
+                            },
+                            input: {
+                                readOnly: false,
+                                endAdornment: e.title ? <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.onChangeText('', e.title, 'title')}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null,
+                            },
                         }}
                     />
                 </TableCell>
@@ -171,7 +175,6 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                         variant="standard"
                         id={`default_${i}`}
                         value={e.data}
-                        InputLabelProps={{ shrink: true }}
                         style={styles.input}
                         className="xs-centered"
                         onChange={evt => {
@@ -184,16 +187,21 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
 
                             this.onChangeText(value, e.title, 'data');
                         }}
-                        InputProps={{
-                            readOnly: false,
-                            endAdornment: e.data ? <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={() => this.onChangeText('', e.title, 'data')}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment> : null,
+                        slotProps={{
+                            inputLabel: {
+                                shrink: true,
+                            },
+                            input: {
+                                readOnly: false,
+                                endAdornment: e.data ? <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.onChangeText('', e.title, 'data')}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null,
+                            },
                         }}
                     />
                 </TableCell>

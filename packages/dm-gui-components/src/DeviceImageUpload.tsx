@@ -66,7 +66,9 @@ function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | 
                         const response = await socket.writeFile64(uploadImagesToInstance, fileName, base64Data);
                         console.log(`saveImage response: ${JSON.stringify(response)}`);
 
-                        onImageSelect && onImageSelect(resizedImage);
+                        if (onImageSelect) {
+                            onImageSelect(resizedImage);
+                        }
                     }
                 };
             };

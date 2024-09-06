@@ -246,9 +246,13 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
                 helperText={this.props.t('for ioBroker.net portal')}
                 label={this.props.t('Login/Email')}
                 onChange={e => this.doChange('login', e.target.value)}
-                inputProps={{
-                    autoComplete: 'new-password',
-                    form: { autoComplete: 'off' },
+                slotProps={{
+                    input: {
+                        autoComplete: 'new-password',
+                    },
+                    htmlInput: {
+                        autoComplete: 'off',
+                    },
                 }}
             />
             <TextField
@@ -260,9 +264,13 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
                 helperText={this.props.t('for ioBroker.net portal')}
                 label={this.props.t('Password')}
                 onChange={e => this.doChange('password', e.target.value)}
-                inputProps={{
-                    autoComplete: 'new-password',
-                    form: { autoComplete: 'off' },
+                slotProps={{
+                    input: {
+                        autoComplete: 'new-password',
+                    },
+                    htmlInput: {
+                        autoComplete: 'off',
+                    },
                 }}
             />
             <Button

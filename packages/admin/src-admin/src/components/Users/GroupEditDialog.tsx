@@ -5,7 +5,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Grid,
+    Grid2,
     Button,
     Checkbox,
     FormControlLabel,
@@ -119,9 +119,9 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
         read: true, list: true, write: false, delete: false, create: false, ...acl.file,
     };
 
-    return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog} key="PermissionsTab">
+    return <Grid2 container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog} key="PermissionsTab">
         {mapObject(props.group.common.acl || {}, (block, blockKey) =>
-            <Grid item xs={12} md={12} key={blockKey}>
+            <Grid2 size={{ xs: 12, md: 12 }} key={blockKey}>
                 <Box component="h2" sx={props.styles.permHeaders}>{props.t(`group_acl_${blockKey}`)}</Box>
                 {mapObject(block as Record<string, boolean>, (perm, permKey) =>
                     <FormControlLabel
@@ -138,8 +138,8 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
                         label={props.t(`group_acl_${permKey}`)}
                         labelPlacement="top"
                     />)}
-            </Grid>)}
-    </Grid>;
+            </Grid2>)}
+    </Grid2>;
 }
 
 const styles: Record<string, React.CSSProperties> = {
@@ -209,8 +209,8 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
     const description = props.getText(props.group.common.desc);
     const name = props.getText(props.group.common.name);
 
-    const mainTab = <Grid container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog}>
-        <Grid item xs={12} md={6}>
+    const mainTab = <Grid2 container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog}>
+        <Grid2 size={{ xs: 12, md: 6 }}>
             <IOTextField
                 label="Name"
                 t={props.t}
@@ -227,8 +227,8 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 icon={TextFieldsIcon}
                 styles={props.styles}
             />
-        </Grid>
-        <Grid item xs={12} md={6}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, md: 6 }}>
             <IOTextField
                 label="ID edit"
                 t={props.t}
@@ -242,8 +242,8 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 icon={LocalOfferIcon}
                 styles={props.styles}
             />
-        </Grid>
-        <Grid item xs={12} md={6}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, md: 6 }}>
             <IOTextField
                 label="ID preview"
                 t={props.t}
@@ -252,8 +252,8 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 icon={PageviewIcon}
                 styles={props.styles}
             />
-        </Grid>
-        <Grid item xs={12} md={6}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, md: 6 }}>
             <IOTextField
                 label="Description"
                 t={props.t}
@@ -266,8 +266,8 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 icon={DescriptionIcon}
                 styles={props.styles}
             />
-        </Grid>
-        <Grid item xs={12} md={6}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, md: 6 }}>
             <IconPicker
                 label="Icon"
                 icons={GROUPS_ICONS}
@@ -283,8 +283,8 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 icon={ImageIcon}
                 // classes={props.classes}
             />
-        </Grid>
-        <Grid item xs={12} md={6}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, md: 6 }}>
             <IOColorPicker
                 label="Color"
                 t={props.t}
@@ -299,8 +299,8 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 style={props.styles.colorPicker}
                 styles={props.styles}
             />
-        </Grid>
-    </Grid>;
+        </Grid2>
+    </Grid2>;
 
     const selectedTab = [mainTab, PermissionsTab(props)][tab];
 

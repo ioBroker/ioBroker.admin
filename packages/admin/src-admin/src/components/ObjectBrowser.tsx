@@ -23,7 +23,7 @@ import {
     Fab,
     FormControl,
     FormControlLabel,
-    Grid,
+    Grid2,
     IconButton,
     Input,
     List,
@@ -4652,7 +4652,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             >
                 <Tooltip
                     title={this.props.t('ra_Refresh tree')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <div>
                         <IconButton
@@ -4666,7 +4666,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Tooltip>
                 {this.props.showExpertButton && !this.props.expertMode && <Tooltip
                     title={this.props.t('ra_expertMode')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         key="expertMode"
@@ -4679,7 +4679,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Tooltip>}
                 {!this.props.disableColumnSelector && this.props.width !== 'xs' && <Tooltip
                     title={this.props.t('ra_Configure')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         key="columnSelector"
@@ -4692,7 +4692,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Tooltip>}
                 {this.props.width !== 'xs' && this.state.expandAllVisible && <Tooltip
                     title={this.props.t('ra_Expand all nodes')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton key="expandAll" onClick={() => this.onExpandAll()} size="large">
                         <IconOpen />
@@ -4700,7 +4700,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Tooltip>}
                 <Tooltip
                     title={this.props.t('ra_Collapse all nodes')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton key="collapseAll" onClick={() => this.onCollapseAll()} size="large">
                         <IconClosed />
@@ -4708,7 +4708,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Tooltip>
                 {this.props.width !== 'xs' && <Tooltip
                     title={this.props.t('ra_Expand one step node')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         key="expandVisible"
@@ -4734,7 +4734,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Tooltip>}
                 {this.props.width !== 'xs' && <Tooltip
                     title={this.props.t('ra_Collapse one step node')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         key="collapseVisible"
@@ -4760,7 +4760,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Tooltip>}
                 {this.props.objectStatesView && <Tooltip
                     title={this.props.t('ra_Toggle the states view')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton onClick={() => this.onStatesViewVisible()} size="large">
                         <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
@@ -4769,7 +4769,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
                 <Tooltip
                     title={this.props.t('ra_Show/Hide object descriptions')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         onClick={() => {
@@ -4787,7 +4787,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
                 {this.props.objectAddBoolean ? <Tooltip
                     title={this.toolTipObjectCreating()}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <div>
                         <IconButton
@@ -4806,7 +4806,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
                 {this.props.objectImportExport && <Tooltip
                     title={this.props.t('ra_Add objects tree from JSON file')}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         onClick={() => {
@@ -4826,7 +4826,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     (!!this.state.selected.length || this.state.selectedNonObject) &&
                     <Tooltip
                         title={this.props.t('ra_Save objects tree as JSON file')}
-                        componentsProps={{ popper: { sx: styles.tooltip } }}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
                     >
                         <IconButton
                             onClick={() =>
@@ -4846,7 +4846,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             </div>}
             {this.props.objectEditBoolean && <Tooltip
                 title={this.props.t('ra_Edit custom config')}
-                componentsProps={{ popper: { sx: styles.tooltip } }}
+                slotProps={{ popper: { sx: styles.tooltip } }}
             >
                 <IconButton
                     onClick={() => {
@@ -5051,7 +5051,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <Tooltip
                 key="acl"
                 title={item.data.aclTooltip}
-                componentsProps={{ popper: { sx: styles.tooltip } }}
+                slotProps={{ popper: { sx: styles.tooltip } }}
             >
                 <IconButton
                     sx={{
@@ -5380,7 +5380,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         return <Tooltip
             key="value"
             title={this.state.tooltipInfo?.el}
-            componentsProps={{
+            slotProps={{
                 popper: { sx: styles.cellValueTooltipBox },
                 tooltip: { sx: styles.cellValueTooltip },
             }}
@@ -5546,6 +5546,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             }
                             this.setState({ enumDialogEnums });
                         }}
+                        secondaryAction={icon}
                     >
                         <ListItemIcon sx={{ '&.MuiListItemIcon-root': styles.enumCheckbox }}>
                             <Checkbox
@@ -5557,7 +5558,6 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             />
                         </ListItemIcon>
                         <ListItemText id={labelId}>{name}</ListItemText>
-                        {icon ? <ListItemSecondaryAction>{icon}</ListItemSecondaryAction> : null}
                     </ListItem>;
                 })}
             </List>
@@ -6211,19 +6211,18 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         const narrowStyleWithDetails = this.props.width === 'xs' && this.state.focused === id;
 
-        const colID = <Grid
+        const colID = <Grid2
             container
             wrap="nowrap"
             direction="row"
             sx={styles.cellId}
             style={{ width: this.columnsVisibility.id, paddingLeft }}
         >
-            <Grid item container alignItems="center">
+            <Grid2 container alignItems="center">
                 {checkbox}
                 {iconFolder}
-            </Grid>
-            <Grid
-                item
+            </Grid2>
+            <Grid2
                 style={{
                     ...styles.cellIdSpan,
                     ...(invertBackground ? this.styles.invertedBackground : undefined),
@@ -6233,17 +6232,17 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             >
                 <Tooltip
                     title={getIdFieldTooltip(item.data, this.props.lang)}
-                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <div>{item.data.name}</div>
                 </Tooltip>
                 {alias}
                 {icons}
-            </Grid>
+            </Grid2>
             <div style={{ ...styles.grow, ...(invertBackground ? this.styles.invertedBackgroundFlex : {}) }} />
-            <Grid item container alignItems="center">
+            <Grid2 container alignItems="center">
                 {iconItem}
-            </Grid>
+            </Grid2>
             {this.props.width !== 'xs' ? <div>
                 <IconCopy
                     className={narrowStyleWithDetails ? '' : 'copyButton'}
@@ -6251,7 +6250,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     onClick={e => this.onCopy(e, id)}
                 />
             </div> : null}
-        </Grid>;
+        </Grid2>;
 
         let colName = (narrowStyleWithDetails && name) || this.columnsVisibility.name ? <Box
             component="div"
@@ -6597,7 +6596,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             colButtons = null;
         }
 
-        const row = <Grid
+        const row = <Grid2
             container
             direction="row"
             wrap="nowrap"
@@ -6652,7 +6651,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             {colCustom}
             {colValue}
             {colButtons}
-        </Grid>;
+        </Grid2>;
         return { row, details: colDetails };
     }
 
@@ -7751,7 +7750,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 if (ITEMS[key].subMenu) {
                     items.push(<MenuItem
                         key={key}
-                        onClick={(e: React.MouseEvent<HTMLLIElement>) => this.state.showContextMenu && this.setState({
+                        href=""
+                        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => this.state.showContextMenu && this.setState({
                             showContextMenu: {
                                 item: this.state.showContextMenu.item,
                                 subItem: key,

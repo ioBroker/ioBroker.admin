@@ -7,7 +7,7 @@ import {
     DialogContent,
     DialogTitle,
     FormControl,
-    Grid,
+    Grid2,
     IconButton,
     InputLabel,
     MenuItem,
@@ -205,32 +205,30 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
     }
 
     renderOneMessage(message: Message, index: number) {
-        return <Grid item key={index}>
+        return <Grid2 key={index}>
             <Typography sx={styles[`messageTitle_${message.level || 'warn'}`]}>
                 {this.getText(message.title, this.props.noTranslation) || ''}
             </Typography>
             <Typography component="div" variant="body2" style={styles.messageText}>
                 {this.getText(message.text, this.props.noTranslation) || ''}
             </Typography>
-            {message.link ?
-                <Button
-                    onClick={() => {
-                        const w = window.open(message.link, '_blank');
-                        w.focus();
-                    }}
-                    startIcon={<IconWeb />}
-                    variant="contained"
-                    color="grey"
-                >
-                    {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
-                </Button>
-                : null}
-        </Grid>;
+            {message.link ? <Button
+                onClick={() => {
+                    const w = window.open(message.link, '_blank');
+                    w.focus();
+                }}
+                startIcon={<IconWeb />}
+                variant="contained"
+                color="grey"
+            >
+                {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
+            </Button> : null}
+        </Grid2>;
     }
 
     renderMessages() {
         if (this.messages) {
-            return <Grid
+            return <Grid2
                 container
                 spacing={2}
                 direction="column"
@@ -238,7 +236,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                 sx={{ marginBottom: 1 }}
             >
                 {this.messages.map((message, i) => this.renderOneMessage(message, i))}
-            </Grid>;
+            </Grid2>;
         }
         return null;
     }
@@ -275,7 +273,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
             </DialogTitle>
             <DialogContent dividers>
                 {this.renderMessages()}
-                {!checkDeps && this.props.expertMode ? <Grid
+                {!checkDeps && this.props.expertMode ? <Grid2
                     container
                     direction="column"
                 >
@@ -299,7 +297,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                             {this.getAvailableInstances()}
                         </Select>
                     </FormControl>
-                </Grid> : null}
+                </Grid2> : null}
                 <Box component="div" sx={styles.deps}>
                     {checkDeps}
                 </Box>

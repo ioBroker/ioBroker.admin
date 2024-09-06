@@ -440,7 +440,7 @@ class Hosts extends Component<HostsProps, HostsState> {
             <style>{blinkClasses}</style>
             {this.renderSlowConnectionWarning()}
             <TabHeader>
-                <Tooltip title={this.t('Show / hide List')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                <Tooltip title={this.t('Show / hide List')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => {
@@ -451,7 +451,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                         {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.t('Reload')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                <Tooltip title={this.t('Reload')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton size="large" onClick={() => this.forceUpdate()}>
                         <RefreshIcon />
                     </IconButton>
@@ -466,18 +466,20 @@ class Hosts extends Component<HostsProps, HostsState> {
                         ((window as any)._localStorage as Storage || window.localStorage).setItem('Hosts.viewMode', event.target.value);
                         this.setState({ filterText: event.target.value });
                     }}
-                    InputProps={{
-                        endAdornment: this.state.filterText ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => {
-                                    ((window as any)._localStorage as Storage || window.localStorage).setItem('Hosts.viewMode', '');
-                                    this.setState({ filterText: '' });
-                                }}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.filterText ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                        ((window as any)._localStorage as Storage || window.localStorage).setItem('Hosts.viewMode', '');
+                                        this.setState({ filterText: '' });
+                                    }}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
                     }}
                 /> : null}
                 <div style={styles.grow} />

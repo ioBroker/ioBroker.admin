@@ -36,7 +36,7 @@ jobs:
         run: npm ci -f
 
       - name: 'Build backend'
-        run: npm run build:ts -w packages/admin
+        run: npm run build:backend -w packages/admin
 
       - name: Test
         run: npm test -w packages/admin/

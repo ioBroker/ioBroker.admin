@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-    Grid,
+    Grid2,
     Accordion,
     AccordionSummary,
     AccordionDetails,
@@ -51,7 +51,7 @@ import ConfigPort from './ConfigPort';
 import ConfigRoom from './ConfigRoom';
 import ConfigSelect from './ConfigSelect';
 import ConfigSelectSendTo from './ConfigSelectSendTo';
-import ConfigSendto from './ConfigSendto';
+import ConfigSendTo from './ConfigSendto';
 import ConfigSetState from './ConfigSetState';
 import ConfigSlider from './ConfigSlider';
 import ConfigState from './ConfigState';
@@ -109,8 +109,8 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     room: ConfigRoom,
     select: ConfigSelect,
     selectSendTo: ConfigSelectSendTo,
-    sendto: ConfigSendto,
-    sendTo: ConfigSendto,
+    sendto: ConfigSendTo,
+    sendTo: ConfigSendTo,
     setState: ConfigSetState,
     slider: ConfigSlider,
     state: ConfigState,
@@ -223,6 +223,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 systemConfig={this.props.systemConfig}
                 onError={this.props.onError}
                 onChange={this.props.onChange}
+                onBackEndCommand={this.props.onBackEndCommand}
                 multiEdit={this.props.multiEdit}
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
@@ -256,12 +257,14 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
 
         if (hidden) {
             if (schema.hideOnlyControl) {
-                const item = <Grid
-                    item
-                    xs={schema.xs || undefined}
-                    lg={schema.lg || undefined}
-                    md={schema.md || undefined}
-                    sm={schema.sm || undefined}
+                const item = <Grid2
+                    size={{
+                        xs: schema.xs || undefined,
+                        sm: schema.sm || undefined,
+                        md: schema.md || undefined,
+                        lg: schema.lg || undefined,
+                        xl: schema.xl || undefined,
+                    }}
                     sx={Utils.getStyle(
                         this.props.theme,
                         { marginBottom: 0, textAlign: 'left' /* marginRight: 8, */ },
@@ -286,15 +289,16 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
         }
 
         if (this.props.custom) {
-            return <Grid
+            return <Grid2
                 key={`${this.props.attr}_${this.props.index}`}
                 container
                 style={styles.fullWidth}
-                spacing={2}
+                columnSpacing={2}
+                rowSpacing={1}
                 sx={schemaStyle}
             >
                 {this.renderItems(items, disabled)}
-            </Grid>;
+            </Grid2>;
         }
 
         let content;
@@ -321,13 +325,14 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                     <Typography style={styles.heading}>{this.getText(schema.label)}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Grid
+                    <Grid2
                         container
-                        spacing={2}
+                        columnSpacing={2}
+                        rowSpacing={1}
                         sx={{ ...schemaStyle, width: '100%', padding: '10px' }}
                     >
                         {this.renderItems(items, disabled)}
-                    </Grid>
+                    </Grid2>
                 </AccordionDetails>
             </Accordion>;
         } else {
@@ -344,9 +349,10 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                     this.props.isParentTab && (this.props.withIcons ? styles.paperWithIcons : styles.paperWithoutIcons),
                 )}
             >
-                <Grid
+                <Grid2
                     container
-                    spacing={2}
+                    columnSpacing={2}
+                    rowSpacing={1}
                     sx={Utils.getStyle(
                         this.props.theme,
                         { width: '100%' },
@@ -355,22 +361,24 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                     )}
                 >
                     {this.renderItems(items, disabled)}
-                </Grid>
+                </Grid2>
             </Box>;
         }
 
         if (!this.props.isParentTab) {
-            const item = <Grid
-                item
+            const item = <Grid2
                 title={this.getText(schema.tooltip)}
-                xs={schema.xs || undefined}
-                lg={schema.lg || undefined}
-                md={schema.md || undefined}
-                sm={schema.sm || undefined}
+                size={{
+                    xs: schema.xs || undefined,
+                    sm: schema.sm || undefined,
+                    md: schema.md || undefined,
+                    lg: schema.lg || undefined,
+                    xl: schema.xl || undefined,
+                }}
                 sx={({ marginBottom: 0, /* marginRight: 8, */ textAlign: 'left', ...schemaStyle })}
             >
                 {content}
-            </Grid>;
+            </Grid2>;
 
             if (schema.newLine) {
                 return <>

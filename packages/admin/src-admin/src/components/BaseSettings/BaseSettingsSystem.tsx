@@ -1,7 +1,7 @@
 import React, { createRef, Component } from 'react';
 
 import {
-    Grid,
+    Grid2,
     FormControlLabel,
     Checkbox,
     TextField,
@@ -108,9 +108,9 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
 
     render() {
         return <Paper style={styles.paper}>
-            <Grid item style={styles.gridSettings}>
-                <Grid container direction="column">
-                    <Grid item>
+            <Grid2 style={styles.gridSettings}>
+                <Grid2 container direction="column">
+                    <Grid2>
                         <TextField
                             variant="standard"
                             label={this.props.t('Host name')}
@@ -119,32 +119,32 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                             onChange={e => this.setState({ hostname: e.target.value }, () => this.onChange())}
                             helperText={this.props.t('You can change the host name, but be aware, that all instances must be assigned anew')}
                         />
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         <TextField
                             variant="standard"
                             label={this.props.t('Check disk space interval')}
                             style={styles.controlItem}
                             value={this.state.checkDiskInterval}
                             type="number"
-                            InputProps={{ inputProps: { min: 1000 } }}
+                            slotProps={{ htmlInput: { min: 1000 } }}
                             onChange={e => this.setState({ checkDiskInterval: parseInt(e.target.value, 10) }, () => this.onChange())}
                             helperText={this.props.t('How oft the disk will be checked. Do not set it to low, because it can affect system performance. Value is in ms')}
                         />
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         <TextField
                             variant="standard"
                             label={this.props.t('Instance statistics update interval')}
                             style={styles.controlItem}
                             value={this.state.statisticsInterval}
                             type="number"
-                            InputProps={{ inputProps: { min: 5000 } }}
+                            slotProps={{ htmlInput: { min: 5000 } }}
                             onChange={e => this.setState({ statisticsInterval: parseInt(e.target.value, 10) }, () => this.onChange())}
                             helperText={this.props.t('How oft the instance statistics will be updated. Used RAM, CPU and so on. Value is in ms')}
                         />
-                    </Grid>
-                    <Grid item style={styles.controlItem}>
+                    </Grid2>
+                    <Grid2 style={styles.controlItem}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -155,8 +155,8 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                             label={this.props.t('Compact mode')}
                         />
                         <div>{ this.props.t('When enabled adapter instances can run in one or few processes to save RAM usage.') }</div>
-                    </Grid>
-                    <Grid item style={styles.controlItem}>
+                    </Grid2>
+                    <Grid2 style={styles.controlItem}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -167,8 +167,8 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                             label={this.props.t('Allow shell\'s commands')}
                         />
                         <div>{ this.props.t('Allow execution of sendToHost("shell", "cli command")') }</div>
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         <TextField
                             variant="standard"
                             label={this.props.t('Limit RAM size for controller')}
@@ -178,10 +178,10 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                             onChange={e => this.setState({ memoryLimitMB: parseInt(e.target.value, 10) }, () => this.onChange())}
                             helperText={this.props.t('MB')}
                         />
-                    </Grid>
-                    <Grid item>
-                        <Grid container direction="row" style={styles.controlItem}>
-                            <Grid item>
+                    </Grid2>
+                    <Grid2>
+                        <Grid2 container direction="row" style={styles.controlItem}>
+                            <Grid2>
                                 <TextField
                                     variant="standard"
                                     label={this.props.t('Show warning im log if RAM less than')}
@@ -191,8 +191,8 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                     onChange={e => this.setState({ memLimitWarn: parseInt(e.target.value, 10) }, () => this.onChange())}
                                     helperText={this.props.t('MB')}
                                 />
-                            </Grid>
-                            <Grid item>
+                            </Grid2>
+                            <Grid2>
                                 <TextField
                                     variant="standard"
                                     label={this.props.t('Show error in log if RAM less than')}
@@ -202,11 +202,11 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                     onChange={e => this.setState({ memLimitError: parseInt(e.target.value, 10) }, () => this.onChange())}
                                     helperText={this.props.t('MB')}
                                 />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
+                            </Grid2>
+                        </Grid2>
+                    </Grid2>
+                </Grid2>
+            </Grid2>
         </Paper>;
     }
 }

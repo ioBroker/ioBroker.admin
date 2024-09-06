@@ -297,20 +297,30 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
     }
 
     componentWillUnmount() {
-        this.readTimeout && clearTimeout(this.readTimeout);
-        this.readTimeout = null;
+        if (this.readTimeout) {
+            clearTimeout(this.readTimeout);
+            this.readTimeout = null;
+        }
 
-        this.timeTimer && clearTimeout(this.timeTimer);
-        this.timeTimer = null;
+        if (this.timeTimer) {
+            clearTimeout(this.timeTimer);
+            this.timeTimer = null;
+        }
 
-        this.maxYLenTimeout && clearTimeout(this.maxYLenTimeout);
-        this.maxYLenTimeout = null;
+        if (this.maxYLenTimeout) {
+            clearTimeout(this.maxYLenTimeout);
+            this.maxYLenTimeout = null;
+        }
 
-        this.timerResize && clearTimeout(this.timerResize);
-        this.timerResize = null;
+        if (this.timerResize) {
+            clearTimeout(this.timerResize);
+            this.timerResize = null;
+        }
 
-        this.updateTimer && clearTimeout(this.updateTimer);
-        this.updateTimer = null;
+        if (this.updateTimer) {
+            clearTimeout(this.updateTimer);
+            this.updateTimer = null;
+        }
 
         if (this.echartsReact) {
             this.echartsReact.getEchartsInstance().dispose();
@@ -326,7 +336,9 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
     }
 
     onResize = () => {
-        this.timerResize && clearTimeout(this.timerResize);
+        if (this.timerResize) {
+            clearTimeout(this.timerResize);
+        }
         this.timerResize = setTimeout(() => {
             this.timerResize = null;
             this.componentDidUpdate();
@@ -341,7 +353,9 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             (!this.rangeValues.length || this.rangeValues[this.rangeValues.length - 1].ts < state.ts)
         ) {
             if (!this.state.max || state.ts - this.state.max < 120_000) {
-                this.chartValues && this.chartValues.push({ val: state.val, ts: state.ts });
+                if (this.chartValues) {
+                    this.chartValues.push({ val: state.val, ts: state.ts });
+                }
                 this.rangeValues.push({ val: state.val, ts: state.ts });
 
                 // update only if an end is near to now
@@ -697,7 +711,9 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                     }
 
                     if (this.state.maxYLen < text.length) {
-                        this.maxYLenTimeout && clearTimeout(this.maxYLenTimeout);
+                        if (this.maxYLenTimeout) {
+                            clearTimeout(this.maxYLenTimeout);
+                        }
                         this.maxYLenTimeout = setTimeout(
                             maxYLen => {
                                 this.maxYLenTimeout = null;
@@ -839,7 +855,9 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         start = start || this.start;
         end = end || this.end;
 
-        this.readTimeout && clearTimeout(this.readTimeout);
+        if (this.readTimeout) {
+            clearTimeout(this.readTimeout);
+        }
 
         this.readTimeout = setTimeout(() => {
             this.readTimeout = null;
@@ -853,7 +871,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
 
             if (withReadData) {
                 this.readHistory(start, end).then((values: HistoryItem[]) => {
-                    typeof this.echartsReact?.getEchartsInstance === 'function' &&
+                    if (typeof this.echartsReact?.getEchartsInstance === 'function') {
                         this.echartsReact.getEchartsInstance().setOption({
                             series: [{ data: this.convertData(values) }],
                             xAxis: {
@@ -861,10 +879,13 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                                 max: this.chart.max,
                             },
                         });
-                    cb && cb();
+                    }
+                    if (cb) {
+                        cb();
+                    }
                 });
             } else {
-                typeof this.echartsReact?.getEchartsInstance === 'function' &&
+                if (typeof this.echartsReact?.getEchartsInstance === 'function') {
                     this.echartsReact.getEchartsInstance().setOption({
                         series: [{ data: this.convertData() }],
                         xAxis: {
@@ -872,7 +893,10 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                             max: this.chart.max,
                         },
                     });
-                cb && cb();
+                }
+                if (cb) {
+                    cb();
+                }
             }
         }, 400);
     }
@@ -891,8 +915,10 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         if (this.state.relativeRange !== 'absolute') {
             this.setState({ relativeRange: 'absolute' });
             // stop shift timer
-            this.timeTimer && clearTimeout(this.timeTimer);
-            this.timeTimer = null;
+            if (this.timeTimer) {
+                clearTimeout(this.timeTimer);
+                this.timeTimer = null;
+            }
         } else if (typeof this.echartsReact?.getEchartsInstance === 'function') {
             this.echartsReact.getEchartsInstance().setOption({
                 xAxis: {
@@ -901,7 +927,9 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                 },
             });
 
-            readData && this.updateChart(this.chart.min, this.chart.max, true);
+            if (readData) {
+                this.updateChart(this.chart.min, this.chart.max, true);
+            }
         }
     }
 
@@ -988,8 +1016,10 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             this.setState({ relativeRange: mins });
         }
         if (mins === 'absolute') {
-            this.timeTimer && clearTimeout(this.timeTimer);
-            this.timeTimer = null;
+            if (this.timeTimer) {
+                clearTimeout(this.timeTimer);
+                this.timeTimer = null;
+            }
             this.updateChart(this.chart.min, this.chart.max, true, cb);
             return;
         }
@@ -1217,7 +1247,9 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             const height = this.divRef.current.offsetHeight;
             if (this.state.chartHeight !== height) {
                 // || this.state.chartHeight !== height) {
-                this.updateTimer && clearTimeout(this.updateTimer);
+                if (this.updateTimer) {
+                    clearTimeout(this.updateTimer);
+                }
                 this.updateTimer = setTimeout(() => {
                     this.updateTimer = null;
                     this.setState({ chartHeight: height, chartWidth: width });

@@ -26,7 +26,7 @@ interface ConfigStateState extends ConfigGenericState {
 class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
     controlTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    delayedUpdate: { timer: ReturnType<typeof setTimeout> | null, value: string | boolean | number | null } = { timer: null, value: null };
+    delayedUpdate: { timer: ReturnType<typeof setTimeout> | null; value: string | boolean | number | null } = { timer: null, value: null };
 
     getObjectID() {
         return `${this.props.schema.system ? 'system.adapter.' : ''}${this.props.adapterName}.${this.props.instance}.${this.props.schema.oid}`;
@@ -338,11 +338,13 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 style={{ width: '100%' }}
                 value={this.state.stateValue}
                 type="number"
-                inputProps={{ min, max, step }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                InputProps={{
-                    endAdornment: this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || undefined,
+                slotProps={{
+                    htmlInput: { min, max, step },
+                    input: {
+                        endAdornment: this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || undefined,
+                    },
                 }}
+                // eslint-disable-next-line react/jsx-no-duplicate-props
                 onChange={e => {
                     this.setState({ stateValue: e.target.value }, async () => {
                         if (this.controlTimeout) {

@@ -10,7 +10,7 @@ import {
     DialogContentText,
     DialogTitle, FormControl,
     FormControlLabel,
-    Grid, IconButton, Input,
+    Grid2, IconButton, Input,
     InputAdornment, InputLabel,
     LinearProgress, MenuItem,
     Select, Slider,
@@ -164,14 +164,15 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         // eslint-disable-next-line react/no-unused-class-component-methods
         this.instanceHandler = action => () => {
             if (action.confirmation) {
-                return this.setState({ showConfirmation: action });
+                this.setState({ showConfirmation: action });
+                return;
             }
             if (action.inputBefore) {
                 this.setState({ showInput: action });
                 return;
             }
 
-            return this.sendActionToInstance('dm:instanceAction', { actionId: action.id });
+            this.sendActionToInstance('dm:instanceAction', { actionId: action.id });
         };
 
         // eslint-disable-next-line react/no-unused-class-component-methods
@@ -185,7 +186,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 return;
             }
 
-            return this.sendActionToInstance('dm:deviceAction', { deviceId, actionId: action.id }, refresh);
+            this.sendActionToInstance('dm:deviceAction', { deviceId, actionId: action.id }, refresh);
         };
 
         // eslint-disable-next-line react/no-unused-class-component-methods
@@ -194,7 +195,9 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         // eslint-disable-next-line react/no-unused-class-component-methods
         this.controlStateHandler = (deviceId, control) => () => this.sendControlToInstance('dm:deviceControlState', { deviceId, controlId: control.id });
 
-        this.props.registerHandler && this.props.registerHandler(() => this.loadData());
+        if (this.props.registerHandler) {
+            this.props.registerHandler(() => this.loadData());
+        }
     }
 
     // eslint-disable-next-line class-methods-use-this
@@ -533,7 +536,10 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         let okDisabled = false;
         if (!this.state.showInput.inputBefore.allowEmptyValue && this.state.showInput.inputBefore.type !== 'checkbox') {
             if (this.state.showInput.inputBefore.type === 'number' || this.state.showInput.inputBefore.type === 'slider') {
-                okDisabled = this.state.inputValue === '' || this.state.inputValue === null || !window.isFinite(this.state.inputValue as number);
+                okDisabled = this.state.inputValue === '' ||
+                    this.state.inputValue === null ||
+                    // eslint-disable-next-line no-restricted-properties
+                    !window.isFinite(this.state.inputValue as number);
             } else {
                 okDisabled = !this.state.inputValue;
             }
@@ -549,25 +555,27 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     autoFocus
                     margin="dense"
                     label={getTranslation(this.state.showInput.inputBefore.label)}
-                    inputProps={this.state.showInput.inputBefore.type === 'number' ? {
-                        min: this.state.showInput.inputBefore.min,
-                        max: this.state.showInput.inputBefore.max,
-                        step: this.state.showInput.inputBefore.step,
-                    } : undefined}
+                    slotProps={{
+                        htmlInput: this.state.showInput.inputBefore.type === 'number' ? {
+                            min: this.state.showInput.inputBefore.min,
+                            max: this.state.showInput.inputBefore.max,
+                            step: this.state.showInput.inputBefore.step,
+                        } : undefined,
+                        input: {
+                            endAdornment: this.state.inputValue ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ inputValue: '' })}
+                                >
+                                    <Close />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
+                    }}
                     type={this.state.showInput.inputBefore.type === 'number' ? 'number' : 'text'}
                     fullWidth
                     value={this.state.inputValue}
                     onChange={e => this.setState({ inputValue: e.target.value })}
-                    InputProps={{
-                        endAdornment: this.state.inputValue ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ inputValue: '' })}
-                            >
-                                <Close />
-                            </IconButton>
-                        </InputAdornment> : null,
-                    }}
                 /> : null}
                 {this.state.showInput.inputBefore.type === 'checkbox' ? <FormControlLabel
                     control={<Checkbox
@@ -591,14 +599,14 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     <Typography gutterBottom>
                         {getTranslation(this.state.showInput.inputBefore.label)}
                     </Typography>
-                    <Grid container spacing={2} alignItems="center">
-                        <Grid item xs>
+                    <Grid2 container spacing={2} alignItems="center">
+                        <Grid2>
                             <Slider
                                 value={typeof this.state.inputValue === 'number' ? this.state.inputValue : 0}
                                 onChange={(event: Event, newValue: number) => this.setState({ inputValue: newValue })}
                             />
-                        </Grid>
-                        <Grid item>
+                        </Grid2>
+                        <Grid2>
                             <Input
                                 value={this.state.inputValue}
                                 size="small"
@@ -624,8 +632,8 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                     type: 'number',
                                 }}
                             />
-                        </Grid>
-                    </Grid>
+                        </Grid2>
+                    </Grid2>
                 </Box> : null}
             </DialogContent>
             <DialogActions>

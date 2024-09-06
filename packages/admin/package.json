@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "7.0.25",
+  "version": "7.1.0",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
@@ -30,7 +30,7 @@
     "@types/leaflet": "^1.9.12",
     "ajv": "^8.17.1",
     "archiver": "^7.0.1",
-    "axios": "^1.7.4",
+    "axios": "^1.7.7",
     "body-parser": "^1.20.2",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
@@ -48,12 +48,13 @@
   "devDependencies": {
     "@iobroker/dm-gui-components": "file:../dm-gui-components",
     "@iobroker/json-config": "file:../jsonConfig",
-    "@iobroker/types": "^6.0.10",
+    "@iobroker/types": "^6.0.11",
     "@types/ace": "^0.0.52",
     "@types/body-parser": "^1.19.5",
     "@types/connect-flash": "^0.0.40",
     "@types/cookie-parser": "^1.4.7",
     "@types/express-session": "^1.18.0",
+    "@types/less": "^3.0.6",
     "mocha": "^10.7.3"
   },
   "bugs": {
@@ -77,11 +78,20 @@
     "test:integration": "mocha test/integration --exit",
     "test:rule": "mocha test/rule --exit",
     "test:gui": "mocha test/*.gui.js --exit",
-    "prepublishOnly": "npm run build && npm run build:ts",
-    "build": "gulp && npm run build:ts",
-    "build:ts": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:backend": "tsc -p tsconfig.build.json",
     "clean": "rimraf src-admin/build",
-    "lint-backend": "eslint src"
+    "lint-backend": "eslint src",
+    "react-0-configCSS": "node tasks --react-0-configCSS",
+    "react-0-iobCSS": "node tasks --react-0-iobCSS",
+    "react-0-treeTableCSS": "node tasks --react-0-treeTableCSS",
+    "react-1-clean": "node tasks --react-1-clean",
+    "react-2-npm": "node tasks --react-2-npm",
+    "react-3-build": "node tasks --react-3-build",
+    "react-5-copy": "node tasks --react-5-copy",
+    "react-6-patch": "node tasks --react-6-patch",
+    "build:frontend": "node tasks"
   },
   "author": "bluefox <dogafox@gmail.com>"
 }

@@ -11,7 +11,7 @@ import {
     type ConfigItemPanel,
 } from '@iobroker/json-config';
 
-interface JsonConfigProps {
+interface JsonConfigDmProps {
     instanceId: string;
     socket: Connection;
     schema: ConfigItemPanel;
@@ -24,7 +24,7 @@ interface JsonConfigProps {
     dateFormat?: string;
 }
 
-export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | null {
+export default function JsonConfig(props: JsonConfigDmProps): React.JSX.Element | null {
     const {
         instanceId, socket, schema, data, onChange,
     } = props;

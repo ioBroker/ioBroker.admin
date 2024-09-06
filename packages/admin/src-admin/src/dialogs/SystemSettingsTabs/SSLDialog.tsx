@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-    Grid,
+    Grid2,
     FormControl,
     TextField,
     Paper,
@@ -79,8 +79,8 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
                     dangerouslySetInnerHTML={{ __html: this.props.t('letsnecrypt_help') }}
                 />
             </div>
-            <Grid container spacing={6}>
-                <Grid item md={3} xs={12}>
+            <Grid2 container spacing={6}>
+                <Grid2 size={{ md: 3, xs: 12 }}>
                     <FormControl variant="standard" style={styles.formControl}>
                         <TextField
                             variant="standard"
@@ -88,25 +88,27 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
                             disabled={this.props.saving}
                             label={this.props.t('Email for account:')}
                             value={letsEncrypt?.email || ''}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
                             onChange={evt => this.onChangeText(evt, 'email')}
-                            InputProps={{
-                                readOnly: false,
-                                endAdornment: letsEncrypt?.email ? <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => this.onChangeText({ target: { value: '' } }, 'email')}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment> : null,
+                            slotProps={{
+                                inputLabel: {
+                                    shrink: true,
+                                },
+                                input: {
+                                    readOnly: false,
+                                    endAdornment: letsEncrypt?.email ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.onChangeText({ target: { value: '' } }, 'email')}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                },
                             }}
                         />
                     </FormControl>
-                </Grid>
-                <Grid item md={3} xs={12}>
+                </Grid2>
+                <Grid2 size={{ md: 3, xs: 12 }}>
                     <FormControl variant="standard" style={styles.formControl}>
                         <TextField
                             disabled={this.props.saving}
@@ -114,25 +116,27 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
                             id="domains"
                             label={this.props.t('Domains:')}
                             value={letsEncrypt?.domains || ''}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
                             onChange={evt => this.onChangeText(evt, 'domains')}
-                            InputProps={{
-                                readOnly: false,
-                                endAdornment: letsEncrypt?.domains ? <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => this.onChangeText({ target: { value: '' } }, 'domains')}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment> : null,
+                            slotProps={{
+                                inputLabel: {
+                                    shrink: true,
+                                },
+                                input: {
+                                    readOnly: false,
+                                    endAdornment: letsEncrypt?.domains ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.onChangeText({ target: { value: '' } }, 'domains')}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                },
                             }}
                         />
                     </FormControl>
-                </Grid>
-                <Grid item md={3} xs={12}>
+                </Grid2>
+                <Grid2 size={{ md: 3, xs: 12 }}>
                     <FormControl variant="standard" style={styles.formControl}>
                         <TextField
                             variant="standard"
@@ -140,25 +144,27 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
                             disabled={this.props.saving}
                             label={this.props.t('Path to storage:')}
                             value={letsEncrypt?.path || ''}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
                             onChange={evt => this.onChangeText(evt, 'path')}
-                            InputProps={{
-                                readOnly: false,
-                                endAdornment: letsEncrypt?.path ? <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => this.onChangeText({ target: { value: '' } }, 'path')}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment> : null,
+                            slotProps={{
+                                inputLabel: {
+                                    shrink: true,
+                                },
+                                input: {
+                                    readOnly: false,
+                                    endAdornment: letsEncrypt?.path ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.onChangeText({ target: { value: '' } }, 'path')}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                },
                             }}
                         />
                     </FormControl>
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
         </div>;
     }
 

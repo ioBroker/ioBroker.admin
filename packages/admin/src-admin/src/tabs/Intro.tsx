@@ -3,7 +3,7 @@ import React from 'react';
 import semver from 'semver';
 
 import {
-    Fab, Snackbar, Tooltip, Grid, LinearProgress,
+    Fab, Snackbar, Tooltip, Grid2, LinearProgress,
     Skeleton,
 } from '@mui/material';
 
@@ -1357,7 +1357,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 const updateSupported = this.state.nodeUpdateSupported && hostData.Platform === 'linux';
 
                 nodeUpdate =
-                    <Tooltip title={this.props.t('Some updates available')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                    <Tooltip title={this.props.t('Some updates available')} slotProps={{ popper: { sx: styles.tooltip } }}>
                         <span style={{ ...styles.nodeUpdate, display: 'inline-flex' }}>
 (
                             {nodeUpdate}
@@ -1388,7 +1388,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 // ignore
             }
             if (npmUpdate) {
-                npmUpdate = <Tooltip title={this.props.t('Some updates available')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                npmUpdate = <Tooltip title={this.props.t('Some updates available')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <span style={styles.nodeUpdate}>
 (
                         {npmUpdate}
@@ -1540,10 +1540,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
             {this.renderCopiedToast()}
             {this.state.nodeUpdateDialog ? <NodeUpdateDialog onClose={() => this.setState({ nodeUpdateDialog: null })} socket={this.props.socket} {...this.state.nodeUpdateDialog} /> : null}
             <TabContent style={styles.container}>
-                <Grid container spacing={2}>
+                <Grid2 container spacing={2}>
                     {this.getInstancesCards()}
                     {this.getLinkCards()}
-                </Grid>
+                </Grid2>
                 {this.getButtons()}
                 {this.editLinkCard()}
             </TabContent>

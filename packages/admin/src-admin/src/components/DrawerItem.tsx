@@ -95,7 +95,7 @@ const DrawerItem = (props: DrawerItemProps) => {
             sx={Utils.getStyle(props.theme, selected && styles.selected, compact && styles.compactBadge)}
             onClick={onClick}
         >
-            <Tooltip title={compact ? content : ''} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+            <Tooltip title={compact ? content : ''} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                 <Grid
                     container
                     spacing={1}

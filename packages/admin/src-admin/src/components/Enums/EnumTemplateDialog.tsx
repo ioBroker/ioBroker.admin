@@ -143,13 +143,15 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                     onChange={e => this.setState({ filter: e.target.value.toLowerCase() })}
                     placeholder={this.props.t('Filter')}
                     margin="dense"
-                    InputProps={{
-                        endAdornment: this.state.filter ? <IconButton
-                            size="small"
-                            onClick={() => this.setState({ filter: '' })}
-                        >
-                            <ClearIcon />
-                        </IconButton> : null,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.filter ? <IconButton
+                                size="small"
+                                onClick={() => this.setState({ filter: '' })}
+                            >
+                                <ClearIcon />
+                            </IconButton> : null,
+                        },
                     }}
                 />
             </DialogTitle>

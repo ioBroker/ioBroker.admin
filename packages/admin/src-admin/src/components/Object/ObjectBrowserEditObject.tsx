@@ -851,7 +851,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
     buttonRemoveKey(nameKey: string, cb: () => void): React.JSX.Element {
         const { t } = this.props;
-        return <Tooltip title={t('Remove attribute %s', nameKey)} componentsProps={{ popper: { sx: styles.tooltip } }}>
+        return <Tooltip title={t('Remove attribute %s', nameKey)} slotProps={{ popper: { sx: styles.tooltip } }}>
             <Box component="div" sx={styles.close} onClick={cb} />
         </Tooltip>;
     }

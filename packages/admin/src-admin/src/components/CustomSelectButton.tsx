@@ -37,7 +37,7 @@ const CustomSelectButton = ({
     translateSuffix = translateSuffix || '';
 
     return <>
-        <Tooltip title={title || ''} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+        <Tooltip title={title || ''} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
             <Button
                 style={styles.button}
                 variant={contained ? 'contained' : 'outlined'}

@@ -592,7 +592,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties) {
         return upgradeAvailable ? <Tooltip
             title={this.props.t('Update')}
-            componentsProps={{ popper: { sx: genericStyles.tooltip } }}
+            slotProps={{ popper: { sx: genericStyles.tooltip } }}
         >
             <Box
                 component="div"
@@ -616,7 +616,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     renderHostBaseEdit() {
         return this.props.expertMode ? <Tooltip
             title={this.props.t('Host Base Settings')}
-            componentsProps={{ popper: { sx: genericStyles.tooltip } }}
+            slotProps={{ popper: { sx: genericStyles.tooltip } }}
         >
             <div>
                 <IconButton
@@ -642,7 +642,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         /** if host is expanded */
         open: boolean,
     ) {
-        return <Tooltip title={this.props.t(open ? 'collapse' : 'Expand')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
+        return <Tooltip title={this.props.t(open ? 'collapse' : 'Expand')} slotProps={{ popper: { sx: genericStyles.tooltip } }}>
             <div>
                 <IconButton
                     size="large"
@@ -655,7 +655,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderRestartButton() {
-        return <Tooltip title={this.props.t('Restart host')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
+        return <Tooltip title={this.props.t('Restart host')} slotProps={{ popper: { sx: genericStyles.tooltip } }}>
             <div>
                 <IconButton
                     size="large"
@@ -689,7 +689,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     renderRemoveButton() {
         return !this.props.alive && !this.props.isCurrentHost ? <Tooltip
             title={this.props.alive || this.props.isCurrentHost ? this.props.t('You cannot delete host, when it is alive') : this.props.t('Remove')}
-            componentsProps={{ popper: { sx: genericStyles.tooltip } }}
+            slotProps={{ popper: { sx: genericStyles.tooltip } }}
         >
             <IconButton
                 size="large"
@@ -707,7 +707,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderCopyButton(style?: React.CSSProperties) {
-        return <Tooltip title={this.props.t('Copy')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
+        return <Tooltip title={this.props.t('Copy')} slotProps={{ popper: { sx: genericStyles.tooltip } }}>
             <IconButton
                 size="large"
                 onClick={() => this.onCopy()}
@@ -722,7 +722,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     renderLogLevel() {
         return <Tooltip
             title={`${this.props.t('loglevel')} ${this.state.logLevel}`}
-            componentsProps={{ popper: { sx: genericStyles.tooltip } }}
+            slotProps={{ popper: { sx: genericStyles.tooltip } }}
         >
             <IconButton
                 size="large"

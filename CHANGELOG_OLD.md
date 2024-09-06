@@ -1,4 +1,10 @@
 # Older changes
+## 7.0.18 (2024-07-22)
+* (bluefox) Corrected export from JSON table
+* (foxriver76) added `qrCode` component to JSON config
+* (bluefox) Corrected adding of adapters with licenses (other than MIT)
+* (bluefox) Improved license dialog
+
 ## 7.0.17 (2024-07-15)
 * (bluefox) Corrected the CRON description
 * (bluefox) Corrected the Device Manager Component

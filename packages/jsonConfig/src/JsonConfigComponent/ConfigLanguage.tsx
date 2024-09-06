@@ -118,7 +118,9 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
                                     return;
                                 }
                                 I18n.setLanguage(value);
-                                this.props.changeLanguage && this.props.changeLanguage();
+                                if (this.props.changeLanguage) {
+                                    this.props.changeLanguage();
+                                }
                             } else {
                                 this.props.socket.getSystemConfig()
                                     .then((systemConfig: ioBroker.SystemConfigObject) => {
@@ -127,7 +129,9 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
                                         }
                                         if (systemConfig.common.language) {
                                             I18n.setLanguage(systemConfig.common.language);
-                                            this.props.changeLanguage && this.props.changeLanguage();
+                                            if (this.props.changeLanguage) {
+                                                this.props.changeLanguage();
+                                            }
                                         }
                                     });
                             }

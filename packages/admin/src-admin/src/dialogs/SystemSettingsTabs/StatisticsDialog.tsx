@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-    Grid, Paper, Card, Typography, MenuItem,
+    Grid2, Paper, Card, Typography, MenuItem,
     FormControl, Select, InputLabel, type SelectChangeEvent,
 } from '@mui/material';
 
@@ -125,14 +125,13 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
 
     render() {
         return <div style={{ ...styles.tabPanel, height: '100%' }}>
-            <Grid container spacing={3} className="sendData-grid" style={{ height: '100%' }}>
-                <Grid item lg={4} md={4} xs={12} style={{ display: 'flex', flexDirection: 'column' }}>
+            <Grid2 container spacing={3} className="sendData-grid" style={{ height: '100%' }}>
+                <Grid2 size={{ lg: 4, md: 4, xs: 12 }} style={{ display: 'flex', flexDirection: 'column' }}>
                     <Card style={styles.note}>
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t('Note:')}
                         </Typography>
                         <Typography
-                            paragraph
                             variant="body2"
                             component="div"
                             dangerouslySetInnerHTML={{ __html: this.props.t('diag-note') }}
@@ -147,12 +146,9 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
                             {Object.keys(this.props.dataAux).map(key => <li key={key}>{key}</li>)}
                         </ul>
                     </Paper> : null}
-                </Grid>
-                <Grid
-                    item
-                    lg={8}
-                    md={4}
-                    xs={12}
+                </Grid2>
+                <Grid2
+                    size={{ lg: 8, md: 4, xs: 12 }}
                     className="sendData-grid"
                     style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                 >
@@ -166,8 +162,8 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
                         themeType={this.props.themeType}
                         value={JSON.stringify(this.props.dataAux, null, 2)}
                     />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
         </div>;
     }
 }

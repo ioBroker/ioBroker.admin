@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, LinearProgress } from '@mui/material';
+import { Grid2, LinearProgress } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCustom } from '#JC/types';
@@ -21,15 +21,15 @@ const getOrLoadRemote = (
                 if ((window as any)[remote]) {
                     if (!(window as any)[remote].__initialized) {
                         // if share scope doesn't exist (like in webpack 4) then expect shareScope to be a manual object
-                        // eslint-disable-next-line camelcase
                         // @ts-expect-error it is a trick and must be so
+                        // eslint-disable-next-line camelcase
                         if (typeof __webpack_share_scopes__ === 'undefined') {
                             // use a default share scope object passed in manually
                             await (window as any)[remote].init(shareScope);
                         } else {
                             // otherwise, init share scope as usual
-                            // eslint-disable-next-line
                             // @ts-expect-error it is a trick and must be so
+                            // eslint-disable-next-line no-undef,camelcase
                             await (window as any)[remote].init((__webpack_share_scopes__ as any)[shareScope]);
                         }
                         // mark remote as initialized
@@ -211,12 +211,14 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
         if (!CustomComponent) {
             const schema = this.props.schema || {} as ConfigItemCustom;
 
-            const item = <Grid
-                item
-                xs={schema.xs || undefined}
-                lg={schema.lg || undefined}
-                md={schema.md || undefined}
-                sm={schema.sm || undefined}
+            const item = <Grid2
+                size={{
+                    xs: schema.xs || undefined,
+                    sm: schema.sm || undefined,
+                    md: schema.md || undefined,
+                    lg: schema.lg || undefined,
+                    xl: schema.xl || undefined,
+                }}
                 style={({
                     marginBottom: 0,
                     // marginRight: 8,
@@ -226,7 +228,7 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                 })}
             >
                 {this.state.error ? <div>{this.state.error}</div> : <LinearProgress />}
-            </Grid>;
+            </Grid2>;
 
             if (schema.newLine) {
                 return <>

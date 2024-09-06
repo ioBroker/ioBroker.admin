@@ -44,7 +44,9 @@ class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGene
 
         try {
             await this.props.socket.setState(id, { val, ack: !!this.props.schema.ack });
-            this.props.schema.okText && window.alert(this.getText(this.props.schema.okText));
+            if (this.props.schema.okText) {
+                window.alert(this.getText(this.props.schema.okText));
+            }
         } catch (e) {
             if (this.props.schema.error && this.props.schema.error[e.toString()]) {
                 window.alert(this.getText(this.props.schema.error[e.toString()]));

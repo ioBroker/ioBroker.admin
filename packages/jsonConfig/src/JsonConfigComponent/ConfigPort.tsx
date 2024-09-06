@@ -70,13 +70,15 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
                     instance.native.leUpdate
                 ) {
                     const port = parseInt(instance.native.leCheckPort || instance.native.lePort, 10);
-                    port && ports.push({
-                        name: `${instance._id.replace('system.adapter.', '')} (LE)`,
-                        port,
-                        v6bind: instance.native.bind.includes(':') ? instance.native.bind : instance.native.v6bind,
-                        bind: instance.native.bind,
-                        enabled: !!instance.common?.enabled,
-                    });
+                    if (port) {
+                        ports.push({
+                            name: `${instance._id.replace('system.adapter.', '')} (LE)`,
+                            port,
+                            v6bind: instance.native.bind.includes(':') ? instance.native.bind : instance.native.v6bind,
+                            bind: instance.native.bind,
+                            enabled: !!instance.common?.enabled,
+                        });
+                    }
                 }
 
                 const port = parseInt(instance?.native?.port, 10);
@@ -141,7 +143,9 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
 
     renderItem(error: unknown, disabled: boolean): React.JSX.Element {
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
-            this.updateTimeout && clearTimeout(this.updateTimeout);
+            if (this.updateTimeout) {
+                clearTimeout(this.updateTimeout);
+            }
             this.updateTimeout = setTimeout(() => {
                 this.updateTimeout = undefined;
                 this.setState({ oldValue: null });
@@ -190,10 +194,12 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
             variant="standard"
             type="number"
             fullWidth
-            inputProps={{
-                min,
-                max,
-                readOnly: this.props.schema.readOnly || false,
+            slotProps={{
+                htmlInput: {
+                    min,
+                    max,
+                    readOnly: this.props.schema.readOnly || false,
+                },
             }}
             value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
             error={!!error}
