@@ -293,7 +293,8 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 key={`${this.props.attr}_${this.props.index}`}
                 container
                 style={styles.fullWidth}
-                spacing={2}
+                columnSpacing={2}
+                rowSpacing={1}
                 sx={schemaStyle}
             >
                 {this.renderItems(items, disabled)}
@@ -326,7 +327,8 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 <AccordionDetails>
                     <Grid2
                         container
-                        spacing={2}
+                        columnSpacing={2}
+                        rowSpacing={1}
                         sx={{ ...schemaStyle, width: '100%', padding: '10px' }}
                     >
                         {this.renderItems(items, disabled)}
@@ -349,7 +351,8 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
             >
                 <Grid2
                     container
-                    spacing={2}
+                    columnSpacing={2}
+                    rowSpacing={1}
                     sx={Utils.getStyle(
                         this.props.theme,
                         { width: '100%' },
