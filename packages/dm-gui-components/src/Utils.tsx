@@ -3,36 +3,42 @@ import React from 'react';
 import type { ControlBase } from '@iobroker/dm-utils/build/types/base';
 import type { ActionBase } from '@iobroker/dm-utils/build/types/api';
 import {
-    Add, Delete, Edit,
-    Refresh, Search,
-    Wifi, WifiOff, Bluetooth,
+    Add,
+    Bluetooth,
     BluetoothDisabled,
-    Visibility,
-    LinkOff, Link as LinkIcon,
-    NotListedLocation,
-    PlayArrow,
-    Stop,
+    Delete,
+    Edit,
     FastForward,
     FastRewind,
-    Pause,
-    Lightbulb,
-    Power,
     Fluorescent,
-    WbIncandescent,
-    Settings,
-    QuestionMark,
     Group,
+    Lightbulb,
+    Link as LinkIcon,
+    LinkOff,
+    NotListedLocation,
+    Pause,
     Person,
+    PlayArrow,
+    Power,
     QrCode,
+    QuestionMark,
+    Refresh,
+    Search,
+    Settings,
+    Stop,
+    Visibility,
+    WbIncandescent,
+    Wifi,
+    WifiOff,
 } from '@mui/icons-material';
 
-import {
-    I18n,
-    Icon,
-} from '@iobroker/adapter-react-v5';
+import { I18n, Icon } from '@iobroker/adapter-react-v5';
 
 function getFaIcon(icon: string, color?: string): React.JSX.Element | null {
-    const iconStyle = icon.split(' ').map(s => s.trim()).filter(s => s !== 'fa-solid');
+    const iconStyle = icon
+        .split(' ')
+        .map(s => s.trim())
+        .filter(s => s !== 'fa-solid');
 
     if (iconStyle.includes('fa-trash-can') || iconStyle.includes('fa-trash')) {
         return <Delete style={{ color }} />;
@@ -195,9 +201,7 @@ export function renderControlIcon(
     return getIconByName(action.id, color);
 }
 
-export function renderActionIcon(
-    action: ActionBase,
-): React.JSX.Element | null {
+export function renderActionIcon(action: ActionBase): React.JSX.Element | null {
     if (!action) {
         return null;
     }
@@ -223,8 +227,7 @@ export function getTranslation(
     language = language || I18n.getLanguage();
 
     if (typeof text === 'object') {
-        const words = text;
-        return words[language] || text.en;
+        return text[language] || text.en;
     }
 
     return I18n.t(text);
