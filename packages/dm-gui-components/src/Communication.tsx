@@ -10,7 +10,7 @@ import {
     DialogContentText,
     DialogTitle, FormControl,
     FormControlLabel,
-    Grid, IconButton, Input,
+    Grid2, IconButton, Input,
     InputAdornment, InputLabel,
     LinearProgress, MenuItem,
     Select, Slider,
@@ -555,26 +555,27 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     autoFocus
                     margin="dense"
                     label={getTranslation(this.state.showInput.inputBefore.label)}
-                    inputProps={this.state.showInput.inputBefore.type === 'number' ? {
-                        min: this.state.showInput.inputBefore.min,
-                        max: this.state.showInput.inputBefore.max,
-                        step: this.state.showInput.inputBefore.step,
-                    } : undefined}
+                    slotProps={{
+                        htmlInput: this.state.showInput.inputBefore.type === 'number' ? {
+                            min: this.state.showInput.inputBefore.min,
+                            max: this.state.showInput.inputBefore.max,
+                            step: this.state.showInput.inputBefore.step,
+                        } : undefined,
+                        input: {
+                            endAdornment: this.state.inputValue ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ inputValue: '' })}
+                                >
+                                    <Close />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
+                    }}
                     type={this.state.showInput.inputBefore.type === 'number' ? 'number' : 'text'}
                     fullWidth
                     value={this.state.inputValue}
                     onChange={e => this.setState({ inputValue: e.target.value })}
-                    // eslint-disable-next-line react/jsx-no-duplicate-props
-                    InputProps={{
-                        endAdornment: this.state.inputValue ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ inputValue: '' })}
-                            >
-                                <Close />
-                            </IconButton>
-                        </InputAdornment> : null,
-                    }}
                 /> : null}
                 {this.state.showInput.inputBefore.type === 'checkbox' ? <FormControlLabel
                     control={<Checkbox
@@ -598,14 +599,14 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     <Typography gutterBottom>
                         {getTranslation(this.state.showInput.inputBefore.label)}
                     </Typography>
-                    <Grid container spacing={2} alignItems="center">
-                        <Grid item xs>
+                    <Grid2 container spacing={2} alignItems="center">
+                        <Grid2>
                             <Slider
                                 value={typeof this.state.inputValue === 'number' ? this.state.inputValue : 0}
                                 onChange={(event: Event, newValue: number) => this.setState({ inputValue: newValue })}
                             />
-                        </Grid>
-                        <Grid item>
+                        </Grid2>
+                        <Grid2>
                             <Input
                                 value={this.state.inputValue}
                                 size="small"
@@ -631,8 +632,8 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                     type: 'number',
                                 }}
                             />
-                        </Grid>
-                    </Grid>
+                        </Grid2>
+                    </Grid2>
                 </Box> : null}
             </DialogContent>
             <DialogActions>

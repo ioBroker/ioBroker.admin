@@ -85,7 +85,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.1.0 (2024-09-02)
 * (bluefox) Added the possibility to show button in notifications
 * (bluefox) Removed gulp from the build process
 
@@ -108,12 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Corrected installation of adapter with the license unequal to MIT
 * (bluefox) Corrected width of a side menu
 * (bluefox) Allowed the pasting into object JSON editor
-
-### 7.0.18 (2024-07-22)
-* (bluefox) Corrected export from JSON table
-* (foxriver76) added `qrCode` component to JSON config
-* (bluefox) Corrected adding of adapters with licenses (other than MIT)
-* (bluefox) Improved license dialog
 
 ## License
 The MIT License (MIT)

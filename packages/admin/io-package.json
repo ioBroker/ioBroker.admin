@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.25",
+    "version": "7.1.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.1.0": {
+        "en": "Added the possibility to show button in notifications\nRemoved gulp from the build process",
+        "de": "Zusätzlich die Möglichkeit, Schaltfläche in Benachrichtigungen anzeigen\nAus dem Build-Prozess entfernt",
+        "ru": "Добавлена возможность показать кнопку в уведомлениях\nУдаленный глоток из строительного процесса",
+        "pt": "Adicionado a possibilidade de mostrar botão em notificações\nGulp removido do processo de compilação",
+        "nl": "De mogelijkheid toegevoegd om de knop in meldingen te tonen\nGulp uit het bouwproces verwijderd",
+        "fr": "Ajout de la possibilité d'afficher le bouton dans les notifications\nSupprimé gulp du processus de construction",
+        "it": "Aggiunto la possibilità di mostrare pulsante in notifiche\nGolp rimosso dal processo di costruzione",
+        "es": "Se agregó la posibilidad de mostrar botón en notificaciones\nGolp eliminado del proceso de construcción",
+        "pl": "Dodano możliwość wyświetlenia przycisku w powiadomieniach\nUsunięto przełyk z procesu budowania",
+        "uk": "Додано можливість показати кнопку в повідомленнях\nЗняти ковпачок з процесу будівництва",
+        "zh-cn": "添加在通知中显示按钮的可能性\n从构建过程中移除 gulp"
+      },
       "7.0.25": {
         "en": "Improvement for automatic tests\nAdded the possibility to style the response text for `textSendTo` in JSON Config",
         "de": "Verbesserung für automatische Tests\nHinzufügen der Möglichkeit, den Antworttext für `textSendTo` in JSON Config",
@@ -95,19 +108,6 @@
         "pl": "Poprawiono opis CRON\nNaprawiono element menedżera urządzeń",
         "uk": "Виправлено опис CRON\nВиправлено компонент диспетчера пристроїв",
         "zh-cn": "更正了CRON描述\n纠正了设备管理器组件"
-      },
-      "7.0.16": {
-        "en": "Allowed playing mp3 and video files in the file browser",
-        "de": "Erlaubt, mp3 und Videodateien im Dateibrowser zu spielen",
-        "ru": "Позволяет играть в mp3 и видео файлы в браузере файла",
-        "pt": "Permitiram reproduzir mp3 e arquivos de vídeo no navegador de arquivos",
-        "nl": "Toegestaan het afspelen van mp3 en videobestanden in de bestandsbrowser",
-        "fr": "Permet de lire des fichiers mp3 et vidéo dans le navigateur de fichiers",
-        "it": "Consentito di giocare mp3 e file video nel browser del file",
-        "es": "Permitido reproducir archivos mp3 y de vídeo en el navegador de archivos",
-        "pl": "Dozwolone odtwarzanie plików mp3 i wideo w przeglądarce plików",
-        "uk": "Дозволено відтворення mp3 та відео файлів у браузері файлів",
-        "zh-cn": "允许在文件浏览器中播放 mp3 和视频文件"
       }
     },
     "desc": {
