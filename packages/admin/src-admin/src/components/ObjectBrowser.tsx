@@ -987,7 +987,7 @@ function walkThroughArray(object: any[], iteratee: (result: any[], value: any, k
  */
 function walkThroughObject(
     object: Record<string, any>,
-    iteratee: (result: Record<string, any>, value: any, key: string) => void
+    iteratee: (result: Record<string, any>, value: any, key: string) => void,
 ): Record<string, any> {
     const copiedObject: Record<string, any> = {};
     for (const key in object) {
@@ -2017,8 +2017,8 @@ function formatValue(
  * Get CSS style for given state value
  */
 function getValueStyle(options: GetValueStyleOptions): { color: string } {
-    const { state, isExpertMode, isButton } = options;
-    let color = state?.ack ? (state.q ? '#ffa500' : '') : '#ff2222c9';
+    const { state/* , isExpertMode, isButton*/ } = options;
+    const color = state?.ack ? (state.q ? '#ffa500' : '') : '#ff2222c9';
 
     // do not show the color of the button in non-expert mode
     // if (!isExpertMode && isButton) {
