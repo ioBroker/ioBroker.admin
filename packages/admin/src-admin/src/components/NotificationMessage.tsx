@@ -110,7 +110,7 @@ interface NotificationAction {
 interface NotificationMessageProps {
     entry: Message;
     instanceId: string;
-    message: { message: string; ts: number; actionData?: NotificationAction };
+    message: { message: string; ts: number; contextData?: NotificationAction };
     onClose: () => void;
     onLink: (linkCommand: BackEndCommandOpenLink) => void;
     dateFormat: string;
@@ -144,7 +144,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
     }
 
     async componentDidMount() {
-        if (this.props.message.actionData) {
+        if (this.props.message.contextData) {
             // request GUI for this notification
             const alive = await this.props.socket.getState(`${this.props.instanceId}.alive`);
             this.lastAlive = alive?.val ? Date.now() : 0;
@@ -154,17 +154,17 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
     }
 
     getGui() {
-        if (this.state.alive && this.props.message.actionData) {
-            const actionData = JSON.parse(JSON.stringify(this.props.message.actionData));
-            /** remove offline message from actionData */
-            if (actionData.offlineMessage) {
-                delete actionData.offlineMessage;
+        if (this.state.alive && this.props.message.contextData) {
+            const contextData = JSON.parse(JSON.stringify(this.props.message.contextData));
+            /** remove the offline message from contextData */
+            if (contextData.offlineMessage) {
+                delete contextData.offlineMessage;
             }
             // request GUI for this notification
             this.props.socket.sendTo(
                 this.props.instanceId.replace('system.adapter.', ''),
                 'getNotificationSchema',
-                actionData,
+                contextData,
             )
                 .then((result: { data: Record<string, any> | null; schema: ConfigItemPanel | null }) => {
                     if (result) {
@@ -193,13 +193,13 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
 
     renderCustomGui() {
         if (!this.state.schema || !this.state.data || !this.state.alive) {
-            if (this.props.message.actionData) {
+            if (this.props.message.contextData) {
                 if (!this.state.alive) {
-                    if (this.props.message.actionData.offlineMessage) {
-                        const text = typeof this.props.message.actionData.offlineMessage === 'string' ?
-                            this.props.message.actionData.offlineMessage :
-                            this.props.message.actionData.offlineMessage[this.props.socket.systemLang] ||
-                            this.props.message.actionData.offlineMessage.en;
+                    if (this.props.message.contextData.offlineMessage) {
+                        const text = typeof this.props.message.contextData.offlineMessage === 'string' ?
+                            this.props.message.contextData.offlineMessage :
+                            this.props.message.contextData.offlineMessage[this.props.socket.systemLang] ||
+                            this.props.message.contextData.offlineMessage.en;
 
                         return <Box sx={styles.offline}>
                             {Utils.renderTextWithA(text)}
