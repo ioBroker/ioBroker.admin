@@ -29,7 +29,7 @@ function build() {
 }
 
 function copyAllFiles() {
-    deleteFoldersRecursive(`${__dirname}/dest`);
+    deleteFoldersRecursive(`${__dirname}/build`);
     deleteFoldersRecursive(`${__dirname}/admin/custom`);
     deleteFoldersRecursive(`${__dirname}/${srcRx}public/lib/js/crypto-js`);
     deleteFoldersRecursive(`${__dirname}/../dm-gui-components/build/src`);
@@ -39,16 +39,16 @@ function copyAllFiles() {
     readme = readme.replaceAll('packages/admin/', '');
     fs.writeFileSync(`${__dirname}/README.md`, readme);
 
-    copyFiles([`${srcRx}build/**/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
+    copyFiles([`${srcRx}build/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
 
     // copy source files of jsonConfig
-    copyFiles(`${__dirname}/../jsonConfig/src/**/*`, `${__dirname}/../jsonConfig/build/src`);
+    copyFiles(`${__dirname}/../jsonConfig/src/*`, `${__dirname}/../jsonConfig/build/src`);
 
     // copy source files of dm-gui-components
-    copyFiles(`${__dirname}/../dm-gui-components/src/**/*`, `${__dirname}/../dm-gui-components/build/src`);
+    copyFiles(`${__dirname}/../dm-gui-components/src/*`, `${__dirname}/../dm-gui-components/build/src`);
 
     // copy custom plugin
-    copyFiles(`${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
+    copyFiles(`${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/*`, `admin/`);
 
     // copy crypto-js
     copyFiles(
