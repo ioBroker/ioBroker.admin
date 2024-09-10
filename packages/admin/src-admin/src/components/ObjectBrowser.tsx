@@ -2017,7 +2017,7 @@ function formatValue(
  * Get CSS style for given state value
  */
 function getValueStyle(options: GetValueStyleOptions): { color: string } {
-    const { state/* , isExpertMode, isButton*/ } = options;
+    const { state /* , isExpertMode, isButton */ } = options;
     const color = state?.ack ? (state.q ? '#ffa500' : '') : '#ff2222c9';
 
     // do not show the color of the button in non-expert mode
