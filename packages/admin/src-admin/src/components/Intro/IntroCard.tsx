@@ -268,6 +268,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                 sm: 6,
                 md: 4,
                 lg: 3,
+                xl: 2,
             }}
             sx={Utils.getStyle(this.props.theme, styles.root, this.props.style)}
         >
@@ -339,8 +340,8 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                                 {this.renderContent()}
                             </Grid2>
                         </CardContent>
-                        {this.props.action && this.props.action.link && <Divider />}
-                        {this.props.action && this.props.action.link && <CardActions style={styles.action}>
+                        {this.props.action?.link && <Divider />}
+                        {this.props.action?.link && <CardActions style={styles.action}>
                             <div style={styles.colorOrange}>
                                 {AdminUtils.getText(buttonTitle, this.props.lang)}
                             </div>

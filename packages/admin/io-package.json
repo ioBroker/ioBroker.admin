@@ -12,6 +12,7 @@
       "nl": "Admin",
       "it": "Admin",
       "es": "Admin",
+      "uk": "Admin",
       "zh-cn": "Admin"
     },
     "title": "Admin",
@@ -118,6 +119,9 @@
       "fr": "La configuration de ioBroker via Web-Interface",
       "nl": "De configuratie van ioBroker via de webinterface",
       "it": "La configurazione di ioBroker tramite interfaccia Web",
+      "es": "La configuración de ioBroker a través de la interfaz web",
+      "pl": "Konfiguracja ioBroker za pomocą interfejsu WWW",
+      "uk": "Конфігурація ioBroker через веб-інтерфейс",
       "zh-cn": "配置ioBroker的Web界面"
     },
     "docs": {
