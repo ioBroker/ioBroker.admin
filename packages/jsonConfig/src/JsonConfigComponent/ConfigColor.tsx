@@ -67,7 +67,7 @@ class ConfigColor extends ConfigGeneric<ConfigColorProps, ConfigColorState> {
                         readOnly: this.props.schema.readOnly || false,
                     },
                     input: {
-                        endAdornment: value && !this.props.schema.noClearButton ? <IconButton
+                        endAdornment: !this.props.schema.readOnly && value && !this.props.schema.noClearButton ? <IconButton
                             size="small"
                             onClick={e => {
                                 e.stopPropagation();

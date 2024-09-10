@@ -88,7 +88,7 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
             slotProps={{
                 input: {
                     autoComplete: 'new-password',
-                    endAdornment: this.state.value && this.state.value !== PASSWORD_PLACEHOLDER && (this.props.schema.visible || this.props.schema.readOnly) ? <InputAdornment position="end">
+                    endAdornment: !this.props.schema.readOnly && this.state.value && this.state.value !== PASSWORD_PLACEHOLDER && (this.props.schema.visible || this.props.schema.readOnly) ? <InputAdornment position="end">
                         <IconButton
                             size="large"
                             tabIndex={-1}
@@ -125,7 +125,7 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
                 label={`${this.getText(this.props.schema.label)} (${I18n.t('ra_repeat')})`}
                 slotProps={{
                     input: {
-                        endAdornment: this.state._repeat && this.state._repeat !== PASSWORD_PLACEHOLDER && this.props.schema.visible ? <InputAdornment position="end">
+                        endAdornment: !this.props.schema.readOnly && this.state._repeat && this.state._repeat !== PASSWORD_PLACEHOLDER && this.props.schema.visible ? <InputAdornment position="end">
                             <IconButton
                                 size="large"
                                 tabIndex={-1}
