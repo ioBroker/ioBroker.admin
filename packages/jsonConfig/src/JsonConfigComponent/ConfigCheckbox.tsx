@@ -41,7 +41,7 @@ class ConfigCheckbox extends ConfigGeneric<ConfigCheckboxProps, ConfigGenericSta
                             this.onChange(this.props.attr, e.target.checked);
                         }
                     }}
-                    disabled={disabled}
+                    disabled={disabled || this.props.schema.readOnly}
                 />}
                 label={this.getText(this.props.schema.label)}
             />

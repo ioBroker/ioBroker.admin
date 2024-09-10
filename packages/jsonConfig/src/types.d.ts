@@ -29,20 +29,33 @@ export interface ConfigItemConfirmData {
 }
 
 export interface ConfigItem {
+    /** Type of the JSON config item */
     type: ConfigItemType;
-    sm?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-    md?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-    lg?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+    /** Width of the control on "extra small" displays */
     xs?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+    /** Width of the control on "small" displays */
+    sm?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+    /** Width of the control on "medium" displays */
+    md?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+    /** Width of the control on "large" displays */
+    lg?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+    /** Width of the control on "extra large" displays */
     xl?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+    /** If the control should be shown in a new line */
     newLine?: boolean;
+    /** Label of the control */
     label?: ioBroker.StringOrTranslated;
     /** @deprecated use label */
     text?: ioBroker.StringOrTranslated;
+    /** Formula or false to hide the control: "data.attr === 5" */
     hidden?: string | boolean;
+    /** If true and the control is hidden, the place of the control will be still reserved for it */
     hideOnlyControl?: boolean;
+    /** JS function to calculate if the control is disabled. You can write "true" too */
     disabled?: string | boolean;
+    /** Help text of the control */
     help?: ioBroker.StringOrTranslated;
+    /** Link that will be opened by clicking on the help text */
     helpLink?: string;
     style?: CustomCSSProperties;
     darkStyle?: CustomCSSProperties;
@@ -193,6 +206,8 @@ export interface ConfigItemColor extends ConfigItem {
 
 export interface ConfigItemCheckbox extends ConfigItem {
     type: 'checkbox';
+    /** Same as disabled */
+    readOnly?: boolean;
 }
 
 export interface ConfigItemNumber extends ConfigItem {

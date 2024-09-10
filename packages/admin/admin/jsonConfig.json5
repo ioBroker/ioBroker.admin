@@ -149,6 +149,38 @@
           "md": 4,
           "lg": 4,
           "hidden": "!!data.auth"
+        },
+        "table2": {
+          "type": "table",
+          "newLine": true,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "label": "",
+          "noDelete": true,
+          "items": [
+            {
+              "type": "checkbox",
+              "attr": "table2Chk",
+              "width": "5% ",
+              "title": "checkbox (changeable)",
+              "tooltip": "Click on it",
+              "filter": false,
+              "sort": false,
+              "default": true
+            },
+            {
+              "type": "text",
+              "attr": "table2Text1",
+              "width": "8% ",
+              "title": "Text (fixed, not changeable)",
+              "tooltip": "enter any text",
+              "filter": false,
+              "sort": false,
+              "readOnly": true,
+              "default": ""
+            }
+          ]
         }
       }
     },

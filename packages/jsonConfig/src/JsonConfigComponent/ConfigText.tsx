@@ -219,7 +219,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                     readOnly: this.props.schema.readOnly || false,
                 },
                 input: {
-                    endAdornment: this.state.value && !this.props.schema.noClearButton ? <InputAdornment position="end">
+                    endAdornment: !this.props.schema.readOnly && this.state.value && !this.props.schema.noClearButton ? <InputAdornment position="end">
                         <IconButton
                             size="small"
                             onClick={() => this.setState({ value: '', oldValue: this.state.value }, () =>
