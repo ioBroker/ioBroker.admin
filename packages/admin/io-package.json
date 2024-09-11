@@ -186,7 +186,6 @@
     },
     "logTransporter": true,
     "stopBeforeUpdate": true,
-    "wwwDontUpload": true,
     "eraseOnUpload": true,
     "nogit": true,
     "welcomeScreenPro": [
