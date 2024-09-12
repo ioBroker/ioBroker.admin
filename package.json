@@ -32,7 +32,7 @@
     "@eslint/js": "^9.9.1",
     "@fnando/sparkline": "^0.3.10",
     "@honkhonk/vite-plugin-svgr": "^1.1.0",
-    "@iobroker/adapter-react-v5": "^7.0.2",
+    "@iobroker/adapter-react-v5": "^7.1.0",
     "@iobroker/admin-component-easy-access": "^1.0.1",
     "@iobroker/build-tools": "^0.0.6",
     "@iobroker/dm-utils": "^0.5.0",
