@@ -216,7 +216,7 @@ Possible types:
     - `timeout` - timeout for request in ms. Default: none.
     - `onLoaded` - execute the button logic once initially
 
-- `setState` - button that set instance's state (admin >= 7.??.??)
+- `setState` - button that set instance's state (admin >= 7.1.0)
     - `id` - `system.adapter.myAdapter.%INSTANCE%.test`, you can use the placeholder `%INSTANCE%` to replace it with the current instance name
     - `ack` - false (default false)
     - `val` - '${data.myText}_test' or number. Type will be detected automatically from the state type and converting done too
