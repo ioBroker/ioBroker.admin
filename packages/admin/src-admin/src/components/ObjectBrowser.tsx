@@ -6,7 +6,7 @@
  * To all editors: please merge asap the changes to https://github.com/ioBroker/adapter-react/blob/master/src/Components/ObjectBrowser.js
  * This file is here only temporary for better debugging
  * */
-import React, { Component, createRef } from 'react';
+import React, { Component, createRef, type JSX } from 'react';
 import SVG from 'react-inlinesvg';
 
 import {
@@ -112,7 +112,7 @@ import {
 declare global {
     interface Window {
         sparkline: {
-            sparkline: (el: HTMLDivElement, data: number[]) => React.JSX.Element;
+            sparkline: (el: HTMLDivElement, data: number[]) => JSX.Element;
         };
     }
 }
@@ -126,11 +126,11 @@ const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = 16;
 const SMALL_BUTTON_SIZE = 20;
-const COLOR_NAME_USERDATA = (themeType: ThemeType) => (themeType === 'dark' ? '#62ff25' : '#37c400');
-const COLOR_NAME_ALIAS = (themeType: ThemeType) => (themeType === 'dark' ? '#ee56ff' : '#a204b4');
-const COLOR_NAME_JAVASCRIPT = (themeType: ThemeType) => (themeType === 'dark' ? '#fff46e' : '#b89101');
-const COLOR_NAME_SYSTEM = (themeType: ThemeType) => (themeType === 'dark' ? '#ff6d69' : '#ff6d69');
-const COLOR_NAME_SYSTEM_ADAPTER = (themeType: ThemeType) => (themeType === 'dark' ? '#5773ff' : '#5773ff');
+const COLOR_NAME_USERDATA = (themeType: ThemeType): string => (themeType === 'dark' ? '#62ff25' : '#37c400');
+const COLOR_NAME_ALIAS = (themeType: ThemeType): string => (themeType === 'dark' ? '#ee56ff' : '#a204b4');
+const COLOR_NAME_JAVASCRIPT = (themeType: ThemeType): string => (themeType === 'dark' ? '#fff46e' : '#b89101');
+const COLOR_NAME_SYSTEM = (themeType: ThemeType): string => (themeType === 'dark' ? '#ff6d69' : '#ff6d69');
+const COLOR_NAME_SYSTEM_ADAPTER = (themeType: ThemeType): string => (themeType === 'dark' ? '#5773ff' : '#5773ff');
 const COLOR_NAME_ERROR_DARK = '#ff413c';
 const COLOR_NAME_ERROR_LIGHT = '#86211f';
 const COLOR_NAME_CONNECTED_DARK = '#57ff45';
@@ -166,7 +166,7 @@ interface ContextMenuItem {
     /** hotkey */
     key?: string;
     visibility: boolean;
-    icon: React.JSX.Element | string;
+    icon: JSX.Element | string;
     label: string;
     onClick?: () => void;
     listItemIconStyle?: React.CSSProperties;
@@ -174,8 +174,8 @@ interface ContextMenuItem {
     subMenu?: {
         label: string;
         visibility: boolean;
-        icon: React.JSX.Element;
-        onClick:  () => void;
+        icon: JSX.Element;
+        onClick: () => void;
         iconStyle?: React.CSSProperties;
         style?: React.CSSProperties;
         listItemIconStyle?: React.CSSProperties;
@@ -192,10 +192,9 @@ export interface TreeItemData {
     /** translated common.name in lower case for filtering */
     fName?: string;
     /** Link to parent item */
-    // eslint-disable-next-line no-use-before-define
     parent?: TreeItem;
     level?: number;
-    icon?: string | React.JSX.Element | null;
+    icon?: string | JSX.Element | null;
     /** If the item existing object or generated folder */
     generated?: boolean;
     title?: string;
@@ -224,16 +223,16 @@ export interface TreeItemData {
     // language in what the rooms and functions where translated
     lang?: ioBroker.Languages;
     state?: {
-        valTextRx?: React.JSX.Element[] | null;
+        valTextRx?: JSX.Element[] | null;
         style?: React.CSSProperties;
     };
-    aclTooltip?: null | React.JSX.Element;
+    aclTooltip?: null | JSX.Element;
 }
 
 interface InputSelectItem {
     value: string;
     name: string;
-    icon?: null | React.JSX.Element;
+    icon?: null | JSX.Element;
 }
 
 type ioBrokerObjectForExport = ioBroker.Object & Partial<ioBroker.State>;
@@ -247,7 +246,8 @@ interface ObjectBrowserCustomFilter {
         // If "_dataSources" - only data sources (history, sql, influxdb, ...)
         // Else "telegram." or something like this
         // `true` - If common.custom not empty
-        custom?: '_' | '_dataSources' | true | string | string [];
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+        custom?: '_' | '_dataSources' | true | string | string[];
     };
 }
 
@@ -477,9 +477,7 @@ const styles: Record<string, any> = {
         width: SMALL_BUTTON_SIZE,
         height: SMALL_BUTTON_SIZE,
     },
-    cellIdIconOwn: {
-
-    },
+    cellIdIconOwn: {},
     cellIdTooltip: {
         fontSize: 14,
     },
@@ -536,9 +534,7 @@ const styles: Record<string, any> = {
     cellNameWithDesc: {
         lineHeight: 'normal',
     },
-    cellNameDivDiv: {
-
-    },
+    cellNameDivDiv: {},
     cellDescription: {
         fontSize: 10,
         opacity: 0.5,
@@ -729,7 +725,7 @@ const styles: Record<string, any> = {
         cursor: 'pointer',
     },
     cellButtonsValueButtonEdit: {
-        right: (SMALL_BUTTON_SIZE / 2) + 16,
+        right: SMALL_BUTTON_SIZE / 2 + 16,
     },
     cellDetailsLine: {
         display: 'flex',
@@ -877,7 +873,7 @@ const styles: Record<string, any> = {
         backgroundColor: 'background.default',
     },
     iconDeviceConnected: (theme: IobTheme) => ({
-        color:  theme.palette.mode === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT,
+        color: theme.palette.mode === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT,
         opacity: 0.8,
         position: 'absolute',
         top: 4,
@@ -964,13 +960,22 @@ const styles: Record<string, any> = {
     },
 };
 
-function ButtonIcon(props?: { style?: React.CSSProperties }) {
-    return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 436 436" style={props?.style} width="24" height="24" className="admin-button">
-        <g fill="currentColor">
-            <path d="m195.23077,24.30769c-36,3 -67,12 -96,26c-49,24 -82,61 -93,104l-3,11l-1,50c0,46 0,49 2,59l5,20c21,58 84,103 165,116c16,3 53,4 70,2c60,-6 111,-28 147,-64c21,-21 36,-49 40,-74a866,866 0 0 0 1,-104c-3,-18 -6,-28 -13,-43c-26,-52 -87,-90 -162,-101c-16,-2 -48,-3 -63,-2l1,0zm60,23c36,5 70,18 95,35c31,20 51,47 59,77c2,7 2,11 2,25c1,15 0,18 -2,26c-19,69 -104,117 -200,114c-47,-2 -90,-15 -124,-38c-31,-20 -51,-47 -59,-77c-3,-11 -4,-32 -2,-43c8,-42 41,-78 91,-101a260,260 0 0 1 140,-19l0,1zm-221,222c21,26 57,49 95,62c81,27 174,14 239,-32c14,-10 31,-27 41,-41c2,-2 2,-2 2,7c-1,23 -16,50 -38,72c-78,74 -233,74 -311,-1a121,121 0 0 1 -39,-76l0,-6l3,4l8,11z" />
-            <path d="m201.23077,47.30769c-40,3 -79,19 -104,44c-55,55 -38,133 37,171c52,26 122,24 172,-5c30,-17 51,-42 58,-71c3,-11 3,-34 0,-45c-6,-23 -21,-44 -40,-60l-27,-16a184,184 0 0 0 -96,-18zm30,21c56,5 100,35 112,75c4,11 4,30 0,41c-8,25 -26,45 -54,59a166,166 0 0 1 -160,-8a98,98 0 0 1 -41,-53c-5,-18 -2,-39 8,-57c23,-39 79,-62 135,-57z" />
-        </g>
-    </svg>;
+function ButtonIcon(props?: { style?: React.CSSProperties }): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 436 436"
+            style={props?.style}
+            width="24"
+            height="24"
+            className="admin-button"
+        >
+            <g fill="currentColor">
+                <path d="m195.23077,24.30769c-36,3 -67,12 -96,26c-49,24 -82,61 -93,104l-3,11l-1,50c0,46 0,49 2,59l5,20c21,58 84,103 165,116c16,3 53,4 70,2c60,-6 111,-28 147,-64c21,-21 36,-49 40,-74a866,866 0 0 0 1,-104c-3,-18 -6,-28 -13,-43c-26,-52 -87,-90 -162,-101c-16,-2 -48,-3 -63,-2l1,0zm60,23c36,5 70,18 95,35c31,20 51,47 59,77c2,7 2,11 2,25c1,15 0,18 -2,26c-19,69 -104,117 -200,114c-47,-2 -90,-15 -124,-38c-31,-20 -51,-47 -59,-77c-3,-11 -4,-32 -2,-43c8,-42 41,-78 91,-101a260,260 0 0 1 140,-19l0,1zm-221,222c21,26 57,49 95,62c81,27 174,14 239,-32c14,-10 31,-27 41,-41c2,-2 2,-2 2,7c-1,23 -16,50 -38,72c-78,74 -233,74 -311,-1a121,121 0 0 1 -39,-76l0,-6l3,4l8,11z" />
+                <path d="m201.23077,47.30769c-40,3 -79,19 -104,44c-55,55 -38,133 37,171c52,26 122,24 172,-5c30,-17 51,-42 58,-71c3,-11 3,-34 0,-45c-6,-23 -21,-44 -40,-60l-27,-16a184,184 0 0 0 -96,-18zm30,21c56,5 100,35 112,75c4,11 4,30 0,41c-8,25 -26,45 -54,59a166,166 0 0 1 -160,-8a98,98 0 0 1 -41,-53c-5,-18 -2,-39 8,-57c23,-39 79,-62 135,-57z" />
+            </g>
+        </svg>
+    );
 }
 
 /**
@@ -1012,7 +1017,7 @@ function filterObject(
     excludeTranslations?: boolean,
 ): Record<string, any> | any[] {
     if (Array.isArray(obj)) {
-        return walkThroughArray(obj as any[], (result: any[], value: any, key: number) => {
+        return walkThroughArray(obj, (result: any[], value: any, key: number) => {
             if (value === undefined || value === null) {
                 return;
             }
@@ -1070,7 +1075,10 @@ function generateFile(
     if (options.excludeSystemRepositories) {
         filterKeys.push('system.repositories');
     }
-    const filteredObject = filterKeys.length > 0 || options.excludeTranslations ? filterObject(obj, filterKeys, options.excludeTranslations) : obj;
+    const filteredObject =
+        filterKeys.length > 0 || options.excludeTranslations
+            ? filterObject(obj, filterKeys, options.excludeTranslations)
+            : obj;
     const data = options.beautify ? JSON.stringify(filteredObject, null, 2) : JSON.stringify(filteredObject);
     el.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(data)}`);
     el.setAttribute('download', fileName);
@@ -1119,25 +1127,38 @@ function getName(name: ioBroker.StringOrTranslated, lang: ioBroker.Languages): s
 export function getSelectIdIconFromObjects(
     objects: Record<string, ioBroker.Object>,
     id: string,
+    lang: ioBroker.Languages,
     imagePrefix?: string,
-): string | React.JSX.Element | null {
+): string | JSX.Element | null {
     // `admin` has prefix '.' and `web` has '../..'
     imagePrefix = imagePrefix || '.'; // http://localhost:8081';
-    let src: string | React.JSX.Element = '';
+    let src: string | JSX.Element = '';
     const _id_ = `system.adapter.${id}`;
     const aIcon = id && objects[_id_] && objects[_id_].common && objects[_id_].common.icon;
     if (aIcon) {
         // if not BASE64
         if (!aIcon.startsWith('data:image/')) {
             if (aIcon.includes('.')) {
-                src = `${imagePrefix}/adapter/${objects[_id_].common.name}/${aIcon}`;
+                const name = objects[_id_].common.name;
+                if (typeof name === 'object') {
+                    src = `${imagePrefix}/adapter/${name[lang] || name.en}/${aIcon}`;
+                } else {
+                    src = `${imagePrefix}/adapter/${name}/${aIcon}`;
+                }
             } else if (aIcon && aIcon.length < 3) {
                 return aIcon; // utf-8
             } else {
                 return null; // '<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
             }
         } else if (aIcon.startsWith('data:image/svg')) {
-            src = <SVG className="iconOwn" src={aIcon} width={28} height={28} />;
+            src = (
+                <SVG
+                    className="iconOwn"
+                    src={aIcon}
+                    width={28}
+                    height={28}
+                />
+            );
         } else {
             src = aIcon;
         }
@@ -1151,7 +1172,11 @@ export function getSelectIdIconFromObjects(
                     if (cIcon.includes('.')) {
                         let instance;
                         if (objects[id].type === 'instance' || objects[id].type === 'adapter') {
-                            src = `${imagePrefix}/adapter/${common.name}/${cIcon}`;
+                            if (typeof common.name === 'object') {
+                                src = `${imagePrefix}/adapter/${common.name[lang] || common.name.en}/${cIcon}`;
+                            } else {
+                                src = `${imagePrefix}/adapter/${common.name}/${cIcon}`;
+                            }
                         } else if (id && id.startsWith('system.adapter.')) {
                             instance = id.split('.', 3);
                             if (cIcon[0] === '/') {
@@ -1176,7 +1201,14 @@ export function getSelectIdIconFromObjects(
                     }
                 } else if (cIcon.startsWith('data:image/svg')) {
                     // if base 64 image
-                    src = <SVG className="iconOwn" src={cIcon} width={28} height={28} />;
+                    src = (
+                        <SVG
+                            className="iconOwn"
+                            src={cIcon}
+                            width={28}
+                            height={28}
+                        />
+                    );
                 } else {
                     src = cIcon;
                 }
@@ -1201,12 +1233,20 @@ function applyFilter(
     },
     lang: ioBroker.Languages,
     objects: Record<string, ioBroker.Object>,
-    context?: { id?: string; name?: string; type?: string; custom?: string; role?: string; room?: string[]; func?: string[] },
+    context?: {
+        id?: string;
+        name?: string;
+        type?: string;
+        custom?: string;
+        role?: string;
+        room?: string[];
+        func?: string[];
+    },
     counter?: { count: number },
     customFilter?: ObjectBrowserCustomFilter,
     selectedTypes?: string[],
     _depth?: number,
-) {
+): boolean {
     _depth = _depth || 0;
     let filteredOut = false;
     if (!context) {
@@ -1293,7 +1333,8 @@ function applyFilter(
                     ) {
                         filteredOut = true;
                     }
-                } else if (Array.isArray(filterOfCustom)) { // here are ['influxdb.', 'telegram.']
+                } else if (Array.isArray(filterOfCustom)) {
+                    // here are ['influxdb.', 'telegram.']
                     const customs = Object.keys(common.custom); // here are ['influxdb.0', 'telegram.2']
                     if (filterOfCustom.find(cst => customs.find(id => id.startsWith(cst)))) {
                         filteredOut = true;
@@ -1415,8 +1456,7 @@ function getVisibleItems(
         if (data.id && objects[data.id] && (!type || objects[data.id].type === type)) {
             _result.push(data.id);
         }
-        item.children?.forEach(_item =>
-            getVisibleItems(_item, type, objects, _result));
+        item.children?.forEach(_item => getVisibleItems(_item, type, objects, _result));
     }
 
     return _result;
@@ -1427,19 +1467,40 @@ function getSystemIcon(
     id: string,
     level: number,
     themeType: ThemeType,
+    lang: ioBroker.Languages,
     imagePrefix?: string,
-): string | React.JSX.Element | null {
+): string | JSX.Element | null {
     let icon;
 
     // system or design has special icons
     if (id === 'alias' || id === 'alias.0') {
-        icon = <IconLink className="iconOwn" style={{ color: COLOR_NAME_ALIAS(themeType) }} />;
+        icon = (
+            <IconLink
+                className="iconOwn"
+                style={{ color: COLOR_NAME_ALIAS(themeType) }}
+            />
+        );
     } else if (id === '0_userdata' || id === '0_userdata.0') {
-        icon = <IconData className="iconOwn" style={{ color: COLOR_NAME_USERDATA(themeType) }} />;
+        icon = (
+            <IconData
+                className="iconOwn"
+                style={{ color: COLOR_NAME_USERDATA(themeType) }}
+            />
+        );
     } else if (id.startsWith('_design/') || id === 'system') {
-        icon = <IconSystem className="iconOwn" style={{ color: COLOR_NAME_SYSTEM(themeType) }} />;
+        icon = (
+            <IconSystem
+                className="iconOwn"
+                style={{ color: COLOR_NAME_SYSTEM(themeType) }}
+            />
+        );
     } else if (id === 'system.adapter') {
-        icon = <IconSystem className="iconOwn" style={{ color: COLOR_NAME_SYSTEM_ADAPTER(themeType) }} />;
+        icon = (
+            <IconSystem
+                className="iconOwn"
+                style={{ color: COLOR_NAME_SYSTEM_ADAPTER(themeType) }}
+            />
+        );
     } else if (id === 'system.group') {
         icon = <IconGroup className="iconOwn" />;
     } else if (id === 'system.user') {
@@ -1455,17 +1516,14 @@ function getSystemIcon(
     } else if (level < 2) {
         // detect "cloud.0"
         if (objects[`system.adapter.${id}`]) {
-            icon = getSelectIdIconFromObjects(objects, `system.adapter.${id}`, imagePrefix);
+            icon = getSelectIdIconFromObjects(objects, `system.adapter.${id}`, lang, imagePrefix);
         }
     }
 
     return icon || null;
 }
 
-function getObjectTooltip(
-    data: TreeItemData,
-    lang: ioBroker.Languages,
-): string | null {
+function getObjectTooltip(data: TreeItemData, lang: ioBroker.Languages): string | null {
     if (data?.obj?.common?.desc) {
         return getName(data.obj.common.desc, lang) || null;
     }
@@ -1473,21 +1531,20 @@ function getObjectTooltip(
     return null;
 }
 
-function getIdFieldTooltip(
-    data: TreeItemData,
-    lang: ioBroker.Languages,
-) {
+function getIdFieldTooltip(data: TreeItemData, lang: ioBroker.Languages): JSX.Element {
     const tooltip = getObjectTooltip(data, lang);
     if (tooltip?.startsWith('http')) {
-        return <Box
-            component="a"
-            sx={styles.cellIdTooltipLink}
-            href={tooltip}
-            target="_blank"
-            rel="noreferrer"
-        >
-            {tooltip}
-        </Box>;
+        return (
+            <Box
+                component="a"
+                sx={styles.cellIdTooltipLink}
+                href={tooltip}
+                target="_blank"
+                rel="noreferrer"
+            >
+                {tooltip}
+            </Box>
+        );
     }
     return <span style={styles.cellIdTooltip}>{tooltip || data.id || ''}</span>;
 }
@@ -1628,12 +1685,19 @@ function buildTree(
                         if (!binarySearch(info.ids, curPath)) {
                             const _cRoot: TreeItem = {
                                 data: {
-                                    name:      parts[k],
-                                    parent:    cRoot,
-                                    id:        curPath,
-                                    obj:       objects[curPath],
-                                    level:     k,
-                                    icon:      getSystemIcon(objects, curPath, k, options.themeType, imagePrefix),
+                                    name: parts[k],
+                                    parent: cRoot,
+                                    id: curPath,
+                                    obj: objects[curPath],
+                                    level: k,
+                                    icon: getSystemIcon(
+                                        objects,
+                                        curPath,
+                                        k,
+                                        options.themeType,
+                                        options.lang,
+                                        imagePrefix,
+                                    ),
                                     generated: true,
                                 },
                             };
@@ -1650,23 +1714,28 @@ function buildTree(
 
                 const _cRoot: TreeItem = {
                     data: {
-                        name:       parts[parts.length - 1],
-                        title:      getName(obj?.common?.name, options.lang),
+                        name: parts[parts.length - 1],
+                        title: getName(obj?.common?.name, options.lang),
                         obj,
-                        parent:     cRoot,
-                        icon:       getSelectIdIconFromObjects(objects, id, imagePrefix) ||
-                            getSystemIcon(objects, id, 0, options.themeType, imagePrefix),
+                        parent: cRoot,
+                        icon:
+                            getSelectIdIconFromObjects(objects, id, options.lang, imagePrefix) ||
+                            getSystemIcon(objects, id, 0, options.themeType, options.lang, imagePrefix),
                         id,
                         hasCustoms: !!(obj.common?.custom && Object.keys(obj.common.custom).length),
-                        level:      parts.length - 1,
-                        generated:  false,
-                        button:     obj.type === 'state' &&
-                                    !!obj.common?.role &&
-                                    typeof obj.common.role === 'string' &&
-                                    obj.common.role.startsWith('button') &&
-                                    obj.common?.write !== false,
-                        switch:     obj.type === 'state' && obj.common?.type === 'boolean' &&
-                                    obj.common?.write !== false && obj.common?.read !== false,
+                        level: parts.length - 1,
+                        generated: false,
+                        button:
+                            obj.type === 'state' &&
+                            !!obj.common?.role &&
+                            typeof obj.common.role === 'string' &&
+                            obj.common.role.startsWith('button') &&
+                            obj.common?.write !== false,
+                        switch:
+                            obj.type === 'state' &&
+                            obj.common?.type === 'boolean' &&
+                            obj.common?.write !== false &&
+                            obj.common?.read !== false,
                     },
                 };
 
@@ -1709,8 +1778,8 @@ function buildTree(
     }
 
     info.roomEnums.sort((a, b) => {
-        const aName: string = getName(objects[a]?.common?.name, options.lang) || a.split('.').pop() as string;
-        const bName: string = getName(objects[b]?.common?.name, options.lang) || b.split('.').pop() as string;
+        const aName: string = getName(objects[a]?.common?.name, options.lang) || (a.split('.').pop() as string);
+        const bName: string = getName(objects[b]?.common?.name, options.lang) || (b.split('.').pop() as string);
         if (aName > bName) {
             return 1;
         }
@@ -1720,8 +1789,8 @@ function buildTree(
         return 0;
     });
     info.funcEnums.sort((a, b) => {
-        const aName: string = getName(objects[a]?.common?.name, options.lang) || a.split('.').pop() as string;
-        const bName: string = getName(objects[b]?.common?.name, options.lang) || b.split('.').pop() as string;
+        const aName: string = getName(objects[a]?.common?.name, options.lang) || (a.split('.').pop() as string);
+        const bName: string = getName(objects[b]?.common?.name, options.lang) || (b.split('.').pop() as string);
         if (aName > bName) {
             return 1;
         }
@@ -1736,13 +1805,7 @@ function buildTree(
     return { info, root };
 }
 
-function findNode(
-    root: TreeItem,
-    id: string,
-    _parts?: string[],
-    _path?: string,
-    _level?: number,
-): TreeItem | null {
+function findNode(root: TreeItem, id: string, _parts?: string[], _path?: string, _level?: number): TreeItem | null {
     if (root.data.id === id) {
         return root;
     }
@@ -1817,7 +1880,7 @@ function findEnumsForObjectAsIds(
     id: string,
     enumName: 'roomEnums' | 'funcEnums',
     funcs?: string[],
-) {
+): string[] {
     if (!id) {
         return [];
     }
@@ -1890,9 +1953,7 @@ function quality2text(q) {
 /**
  * Format a state value for visualization
  */
-function formatValue(
-    options: FormatValueOptions,
-): {
+function formatValue(options: FormatValueOptions): {
     valText: {
         /** value as string */
         v: string;
@@ -1901,19 +1962,19 @@ function formatValue(
         /** value not replaced by `common.states` */
         s?: string;
     };
-    valFull: {
+    valFull:
+        | {
         /** label */
         t: string;
         /** value */
         v: string;
         /** no break */
         nbr?: boolean;
-    }[] | undefined;
+    }[]
+        | undefined;
     fileViewer: 'image' | 'text' | 'json' | 'html' | 'pdf' | 'audio' | 'video' | undefined;
 } {
-    const {
-        dateFormat, state, isFloatComma, texts, obj,
-    } = options;
+    const { dateFormat, state, isFloatComma, texts, obj } = options;
     const states = Utils.getStates(obj);
     const isCommon = obj.common;
     let fileViewer: 'image' | 'text' | 'json' | 'html' | 'pdf' | 'audio' | 'video' | undefined;
@@ -1997,13 +2058,15 @@ function formatValue(
     if (isCommon?.unit) {
         valText.u = isCommon.unit;
     }
-    let valFull: {
+    let valFull:
+        | {
         /** label */
         t: string;
         /** value */
         v: string;
         nbr?: boolean;
-    }[] | undefined;
+    }[]
+        | undefined;
     if (options.full) {
         valFull = [{ t: texts.value, v }];
 
@@ -2060,10 +2123,7 @@ function getValueStyle(options: GetValueStyleOptions): { color: string } {
     return { color };
 }
 
-function prepareSparkData(
-    values: ioBroker.GetHistoryResult,
-    from: number,
-): number[] {
+function prepareSparkData(values: ioBroker.GetHistoryResult, from: number): number[] {
     // set one point every hour
     let time = from;
     let i = 1;
@@ -2099,22 +2159,97 @@ function prepareSparkData(
     return v;
 }
 
-export const ITEM_IMAGES: Record<string, React.JSX.Element> = {
-    state: <IconState className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    channel: <IconChannel className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    device: <IconDevice className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    adapter: <IconAdapter className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    meta: <IconMeta className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    instance: <IconInstance className="itemIcon" style={{ color: '#7da7ff', verticalAlign: 'middle' }} />,
-    enum: <IconEnum className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    chart: <IconChart className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    config: <IconConfig className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    group: <IconGroup className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    user: <IconUser className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    host: <IconHost className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    schedule: <IconSchedule className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    script: <IconScript className="itemIcon" style={{ verticalAlign: 'middle' }} />,
-    folder: <IconClosed className="itemIcon itemIconFolder" style={{ verticalAlign: 'middle' }} />,
+export const ITEM_IMAGES: Record<string, JSX.Element> = {
+    state: (
+        <IconState
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    channel: (
+        <IconChannel
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    device: (
+        <IconDevice
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    adapter: (
+        <IconAdapter
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    meta: (
+        <IconMeta
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    instance: (
+        <IconInstance
+            className="itemIcon"
+            style={{ color: '#7da7ff', verticalAlign: 'middle' }}
+        />
+    ),
+    enum: (
+        <IconEnum
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    chart: (
+        <IconChart
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    config: (
+        <IconConfig
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    group: (
+        <IconGroup
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    user: (
+        <IconUser
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    host: (
+        <IconHost
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    schedule: (
+        <IconSchedule
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    script: (
+        <IconScript
+            className="itemIcon"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
+    folder: (
+        <IconClosed
+            className="itemIcon itemIconFolder"
+            style={{ verticalAlign: 'middle' }}
+        />
+    ),
 };
 
 interface ScreenWidthOne {
@@ -2158,7 +2293,6 @@ const SCREEN_WIDTHS: ScreenWidth = {
             func: 150,
             val: 120,
             buttons: 120,
-
         },
     },
     // large: 1280px
@@ -2279,7 +2413,7 @@ interface DragWrapperProps {
     item: TreeItem;
     className?: string;
     style?: React.CSSProperties;
-    children: React.JSX.Element | null;
+    children: JSX.Element | null;
 }
 
 interface ObjectCustomDialogProps {
@@ -2327,7 +2461,7 @@ interface ObjectBrowserValueProps {
     isFloatComma: boolean;
     t: Translate;
     lang: ioBroker.Languages;
-    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 interface ObjectBrowserEditObjectProps {
@@ -2345,7 +2479,7 @@ interface ObjectBrowserEditObjectProps {
     isFloatComma: boolean;
     onNewObject: (obj: ioBroker.AnyObject) => void;
     t: Translate;
-    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 interface ObjectAliasEditorProps {
@@ -2385,19 +2519,18 @@ interface ObjectBrowserProps {
 
     // components
     objectCustomDialog?: React.FC<ObjectCustomDialogProps>;
-    objectAddBoolean?: boolean;   // optional toolbar button
-    objectEditBoolean?: boolean;  // optional toolbar button
-    objectStatesView?: boolean;   // optional toolbar button
+    objectAddBoolean?: boolean; // optional toolbar button
+    objectEditBoolean?: boolean; // optional toolbar button
+    objectStatesView?: boolean; // optional toolbar button
     objectImportExport?: boolean; // optional toolbar button
     objectEditOfAccessControl?: boolean; // Access Control
     /** modal add object */
-    // eslint-disable-next-line no-use-before-define
-    modalNewObject?: (oBrowser: ObjectBrowserClass) => React.JSX.Element;
+    modalNewObject?: (oBrowser: ObjectBrowserClass) => JSX.Element;
     /** modal Edit Of Access Control */
-    // eslint-disable-next-line no-use-before-define
-    modalEditOfAccessControl: (oBrowser: ObjectBrowserClass, data: TreeItemData) => React.JSX.Element;
+    modalEditOfAccessControl: (oBrowser: ObjectBrowserClass, data: TreeItemData) => JSX.Element;
     onObjectDelete?: (id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) => void;
-    /** optional filter
+    /**
+     * Optional filter
      *   `{common: {custom: true}}` - show only objects with some custom settings
      *   `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
      *   `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb' or 'sql' or 'history'
@@ -2427,9 +2560,10 @@ interface ObjectBrowserProps {
 
     /** cache of objects */
     objectsWorker?: ObjectsWorker;
-    /** function to filter out all unnecessary objects. It cannot be used together with "types"
+    /**
+     * function to filter out all unnecessary objects. It cannot be used together with "types"
      * Example for function: `obj => obj.common?.type === 'boolean'` to show only boolean states
-     * */
+     */
     filterFunc?: (obj: ioBroker.Object) => boolean;
     /** Used for enums dragging */
     DragWrapper?: React.FC<DragWrapperProps>;
@@ -2494,20 +2628,31 @@ interface ObjectBrowserState {
     excludeTranslations: boolean;
     updating?: boolean;
     modalNewObj?: null | { id: string; initialType?: ioBroker.ObjectType; initialStateType?: ioBroker.CommonType };
-    error?: undefined | any;
+    error?: any;
     modalEditOfAccess?: boolean;
     modalEditOfAccessObjData?: TreeItemData;
     updateOpened?: boolean;
-    tooltipInfo: null | { el: React.JSX.Element[]; id: string };
+    tooltipInfo: null | { el: JSX.Element[]; id: string };
     /** Show the menu with aliases for state */
     aliasMenu: string;
 }
 
 export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrowserState> {
     // do not define the type as null to save the performance, so we must check it every time
-    private info: TreeInfo;
+    private info: TreeInfo = {
+        funcEnums: [],
+        roomEnums: [],
+        roles: [],
+        ids: [],
+        types: [],
+        objects: {},
+        customs: [],
+        enums: [],
+        hasSomeCustoms: false,
+        aliasesMap: {},
+    };
 
-    private localStorage: Storage = (window as any)._localStorage as Storage || window.localStorage;
+    private localStorage: Storage = ((window as any)._localStorage as Storage) || window.localStorage;
 
     private lastAppliedFilter: string | null = null;
 
@@ -2551,11 +2696,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         ack: boolean;
         id: string;
     } = {
-            id: '',
-            val: '',
-            q: 0,
-            ack: false,
-        };
+        id: '',
+        val: '',
+        q: 0,
+        ack: false,
+    };
 
     private readonly levelPadding: number;
 
@@ -2607,7 +2752,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         lastChange?: number;
         val?: number;
         buttons?: number;
-    };
+    } = {};
 
     private changedIds: null | string[] = null;
 
@@ -2652,6 +2797,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         const lastSelectedItemStr: string =
             this.localStorage.getItem(`${props.dialogName || 'App'}.objectSelected`) || '';
+
+        this.selectFirst = '';
+
         if (lastSelectedItemStr.startsWith('[')) {
             try {
                 const lastSelectedItems = JSON.parse(lastSelectedItemStr) as string[];
@@ -2690,7 +2838,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         filter.expertMode =
             props.expertMode !== undefined
                 ? props.expertMode
-                : ((window as any)._sessionStorage as Storage || window.sessionStorage).getItem('App.expertMode') === 'true';
+                : (((window as any)._sessionStorage as Storage) || window.sessionStorage).getItem('App.expertMode') ===
+                'true';
         this.tableRef = createRef();
         this.filterRefs = {};
 
@@ -2878,8 +3027,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     } else if (id === 'nameHeader') {
                         SCREEN_WIDTHS[width].widths.name = resizerCurrentWidths[id];
                     } else if ((SCREEN_WIDTHS[width].widths as Record<string, number>)[id] !== undefined) {
-                        (SCREEN_WIDTHS[width].widths as Record<string, number>)[id] =
-                            resizerCurrentWidths[id];
+                        (SCREEN_WIDTHS[width].widths as Record<string, number>)[id] = resizerCurrentWidths[id];
                     }
                 });
 
@@ -3049,11 +3197,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 // reset filter
                 this.setState({ filter: { ...DEFAULT_FILTER }, columnsForAdmin }, () => {
                     this.setState({ loaded: true, updating: false }, () =>
-                        this.expandAllSelected(() => this.onAfterSelect()));
+                        this.expandAllSelected(() => this.onAfterSelect()),
+                    );
                 });
             } else {
                 this.setState({ loaded: true, updating: false, columnsForAdmin }, () =>
-                    this.expandAllSelected(() => this.onAfterSelect()));
+                    this.expandAllSelected(() => this.onAfterSelect()),
+                );
             }
         } catch (e1) {
             this.showError(e1);
@@ -3096,12 +3246,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * @param isDouble is double click
      */
-    private onAfterSelect(isDouble?: boolean) {
+    private onAfterSelect(isDouble?: boolean): void {
         if (this.state.selected?.length && this.state.selected[0]) {
-            this.localStorage.setItem(
-                `${this.props.dialogName || 'App'}.objectSelected`,
-                this.state.selected[0],
-            );
+            this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, this.state.selected[0]);
 
             // remove a task to select the pre-selected item if now we want to see another object
             if (this.selectFirst && this.selectFirst !== this.state.selected[0]) {
@@ -3109,8 +3256,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
 
             if (this.state.selected.length === 1 && this.objects[this.state.selected[0]]) {
-                const name =
-                    Utils.getObjectName(this.objects, this.state.selected[0], null, { language: this.props.lang });
+                const name = Utils.getObjectName(this.objects, this.state.selected[0], null, {
+                    language: this.props.lang,
+                });
                 if (this.props.onSelect) {
                     this.props.onSelect(this.state.selected, name, isDouble);
                 }
@@ -3126,7 +3274,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    private static getDerivedStateFromProps(props: ObjectBrowserProps, state: ObjectBrowserState) {
+    private static getDerivedStateFromProps(
+        props: ObjectBrowserProps,
+        state: ObjectBrowserState,
+    ): Partial<ObjectBrowserState> | null {
         const newState: Partial<ObjectBrowserState> = {};
         let changed = false;
         if (props.expertMode !== undefined && props.expertMode !== state.filter.expertMode) {
@@ -3140,7 +3291,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Called when component is mounted.
      */
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         await this.loadAllObjects(!objectsAlreadyLoaded);
         if (this.props.objectsWorker) {
             this.props.objectsWorker.registerHandler(this.onObjectChangeFromWorker);
@@ -3156,7 +3307,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Called when component is unmounted.
      */
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.filterTimer) {
             clearTimeout(this.filterTimer);
             this.filterTimer = null;
@@ -3166,7 +3317,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (this.props.objectsWorker) {
             this.props.objectsWorker.unregisterHandler(this.onObjectChangeFromWorker, true);
         } else {
-            this.props.socket.unsubscribeObject('*', this.onObjectChange);
+            void this.props.socket
+                .unsubscribeObject('*', this.onObjectChange)
+                .catch(e => console.error(`Cannot unsubscribe *: ${e}`));
         }
 
         // remove all subscribes
@@ -3182,7 +3335,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Show the deletion dialog for a given object
      */
-    showDeleteDialog(options: { id: string; obj: ioBroker.Object; item: TreeItem }) {
+    showDeleteDialog(options: { id: string; obj: ioBroker.Object; item: TreeItem }): void {
         const { id, obj, item } = options;
 
         // calculate the number of children
@@ -3206,7 +3359,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Context menu handler.
      */
-    onContextMenu = (e: MouseEvent) => {
+    onContextMenu = (e: MouseEvent): void => {
         // console.log(`CONTEXT MENU: ${this.contextMenu ? Date.now() - this.contextMenu.ts : 'false'}`);
         if (this.contextMenu && Date.now() - this.contextMenu.ts < 2000) {
             e.preventDefault();
@@ -3226,7 +3379,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Called when component is mounted.
      */
-    refreshComponent() {
+    refreshComponent(): void {
         // remove all subscribes
         this.subscribes.forEach(pattern => {
             console.log(`- unsubscribe ${pattern}`);
@@ -3235,43 +3388,47 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         this.subscribes = [];
 
-        this.loadAllObjects(true).then(() => console.log('updated!'));
+        this.loadAllObjects(true)
+            .then(() => console.log('updated!'))
+            .catch(e => this.showError(e));
     }
 
     /**
      * Renders the error dialog.
      */
-    renderErrorDialog(): React.JSX.Element | null {
-        return this.state.error ? <Dialog
-            open={!0}
-            maxWidth="sm"
-            fullWidth
-            onClose={() => this.setState({ error: '' })}
-            aria-labelledby="error-dialog-title"
-            aria-describedby="error-dialog-description"
-        >
-            <DialogTitle id="alert-dialog-title">{this.props.t('ra_Error')}</DialogTitle>
-            <DialogContent>
-                <DialogContentText id="alert-dialog-description">{this.state.error}</DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    onClick={() => this.setState({ error: '' })}
-                    color="primary"
-                    autoFocus
-                    startIcon={<IconCheck />}
-                >
-                    {this.props.t('ra_Ok')}
-                </Button>
-            </DialogActions>
-        </Dialog> : null;
+    renderErrorDialog(): JSX.Element | null {
+        return this.state.error ? (
+            <Dialog
+                open={!0}
+                maxWidth="sm"
+                fullWidth
+                onClose={() => this.setState({ error: '' })}
+                aria-labelledby="error-dialog-title"
+                aria-describedby="error-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{this.props.t('ra_Error')}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">{this.state.error}</DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ error: '' })}
+                        color="primary"
+                        autoFocus
+                        startIcon={<IconCheck />}
+                    >
+                        {this.props.t('ra_Ok')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        ) : null;
     }
 
     /**
      * Show the error dialog.
      */
-    showError(error: any) {
+    showError(error: any): void {
         this.setState({
             error:
                 typeof error === 'object'
@@ -3285,7 +3442,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Called when an item is selected/deselected.
      */
-    onSelect(toggleItem: string, isDouble?: boolean, cb?: () => void) {
+    onSelect(toggleItem: string, isDouble?: boolean, cb?: () => void): void {
         this.localStorage.setItem(`${this.props.dialogName || 'App'}.focused`, toggleItem);
 
         if (!this.props.multiSelect) {
@@ -3337,7 +3494,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    private _renderDefinedList(isLast: boolean) {
+    private _renderDefinedList(isLast: boolean): JSX.Element[] {
         const cols = [...this.possibleCols];
         cols.unshift('id');
         if (this.props.columns && !this.props.columns.includes('buttons')) {
@@ -3347,43 +3504,44 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
         return cols
-            .filter(id =>
-                (isLast && (id === 'val' || id === 'buttons')) ||
-                (!isLast && id !== 'val' && id !== 'buttons'))
-            .map(id => <ListItemButton
-                onClick={() => {
-                    if (!this.state.columnsAuto && id !== 'id') {
-                        const columns = [...(this.state.columns || [])];
-                        const pos = columns.indexOf(id);
-                        if (pos === -1) {
-                            columns.push(id);
-                            columns.sort();
-                        } else {
-                            columns.splice(pos, 1);
+            .filter(
+                id => (isLast && (id === 'val' || id === 'buttons')) || (!isLast && id !== 'val' && id !== 'buttons'),
+            )
+            .map(id => (
+                <ListItemButton
+                    onClick={() => {
+                        if (!this.state.columnsAuto && id !== 'id') {
+                            const columns = [...(this.state.columns || [])];
+                            const pos = columns.indexOf(id);
+                            if (pos === -1) {
+                                columns.push(id);
+                                columns.sort();
+                            } else {
+                                columns.splice(pos, 1);
+                            }
+                            this.localStorage.setItem(
+                                `${this.props.dialogName || 'App'}.columns`,
+                                JSON.stringify(columns),
+                            );
+                            this.calculateColumnsVisibility(null, columns);
+                            this.setState({ columns });
                         }
-                        this.localStorage.setItem(
-                            `${this.props.dialogName || 'App'}.columns`,
-                            JSON.stringify(columns),
-                        );
-                        this.calculateColumnsVisibility(null, columns);
-                        this.setState({ columns });
-                    }
-                }}
-                key={id}
-            >
-                <Checkbox
-                    edge="start"
-                    disabled={id === 'id' || this.state.columnsAuto}
-                    checked={
-                        id === 'id' ||
-                        !!(this.state.columnsAuto
-                            ? this.visibleCols.includes(id)
-                            : this.state.columns?.includes(id))
-                    }
-                    disableRipple
-                />
-                <ListItemText primary={this.texts[`filter_${id}`] || this.props.t(`ra_${id}`)} />
-                {/*
+                    }}
+                    key={id}
+                >
+                    <Checkbox
+                        edge="start"
+                        disabled={id === 'id' || this.state.columnsAuto}
+                        checked={
+                            id === 'id' ||
+                            !!(this.state.columnsAuto
+                                ? this.visibleCols.includes(id)
+                                : this.state.columns?.includes(id))
+                        }
+                        disableRipple
+                    />
+                    <ListItemText primary={this.texts[`filter_${id}`] || this.props.t(`ra_${id}`)} />
+                    {/*
                 <ListItemSecondaryAction>
                     <FormControl
                         variant="standard"
@@ -3406,133 +3564,139 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     </FormControl>
                 </ListItemSecondaryAction>
                 */}
-            </ListItemButton>);
+                </ListItemButton>
+            ));
     }
 
     /**
      * Renders the columns' selector.
      */
-    renderColumnsSelectorDialog(): React.JSX.Element | null {
+    renderColumnsSelectorDialog(): JSX.Element | null {
         if (!this.state.columnsSelectorShow) {
             return null;
         }
-        return <Dialog
-            onClose={() => this.setState({ columnsSelectorShow: false })}
-            open={!0}
-            sx={{
-                '& .MuiPaper-root': Utils.getStyle(
-                    this.props.theme,
-                    styles.dialogColumns,
-                    styles[`transparent_${this.state.columnsDialogTransparent}`],
-                ),
-            }}
-        >
-            <DialogTitle sx={styles.fontSizeTitle}>{this.props.t('ra_Configure')}</DialogTitle>
-            <DialogContent sx={styles.fontSizeTitle}>
-                <FormControlLabel
-                    style={styles.switchColumnAuto}
-                    control={
-                        <Switch
-                            checked={this.state.foldersFirst}
-                            onChange={() => {
-                                this.localStorage.setItem(
-                                    `${this.props.dialogName || 'App'}.foldersFirst`,
-                                    this.state.foldersFirst ? 'false' : 'true',
-                                );
-                                this.setState({ foldersFirst: !this.state.foldersFirst });
-                            }}
-                        />
-                    }
-                    label={this.props.t('ra_Folders always first')}
-                />
-                <FormControlLabel
-                    style={styles.switchColumnAuto}
-                    control={
-                        <Switch
-                            checked={this.state.linesEnabled}
-                            onChange={() => {
-                                this.localStorage.setItem(
-                                    `${this.props.dialogName || 'App'}.lines`,
-                                    this.state.linesEnabled ? 'false' : 'true',
-                                );
-                                this.setState({ linesEnabled: !this.state.linesEnabled });
-                            }}
-                        />
-                    }
-                    label={this.props.t('ra_Show lines between rows')}
-                />
-                <FormControlLabel
-                    style={styles.switchColumnAuto}
-                    control={
-                        <Switch
-                            checked={this.state.columnsAuto}
-                            onChange={() => {
-                                this.localStorage.setItem(
-                                    `${this.props.dialogName || 'App'}.columnsAuto`,
-                                    this.state.columnsAuto ? 'false' : 'true',
-                                );
-                                if (!this.state.columnsAuto) {
-                                    this.calculateColumnsVisibility(true);
-                                    this.setState({ columnsAuto: true });
-                                } else if (!this.state.columns) {
-                                    this.calculateColumnsVisibility(false, [...this.visibleCols]);
-                                    this.setState({ columnsAuto: false, columns: [...this.visibleCols] });
-                                } else {
-                                    this.calculateColumnsVisibility(false);
-                                    this.setState({ columnsAuto: false });
-                                }
-                            }}
-                        />
-                    }
-                    label={this.props.t('ra_Auto (no custom columns)')}
-                />
-                {/*
+        return (
+            <Dialog
+                onClose={() => this.setState({ columnsSelectorShow: false })}
+                open={!0}
+                sx={{
+                    '& .MuiPaper-root': Utils.getStyle(
+                        this.props.theme,
+                        styles.dialogColumns,
+                        styles[`transparent_${this.state.columnsDialogTransparent}`],
+                    ),
+                }}
+            >
+                <DialogTitle sx={styles.fontSizeTitle}>{this.props.t('ra_Configure')}</DialogTitle>
+                <DialogContent sx={styles.fontSizeTitle}>
+                    <FormControlLabel
+                        style={styles.switchColumnAuto}
+                        control={
+                            <Switch
+                                checked={this.state.foldersFirst}
+                                onChange={() => {
+                                    this.localStorage.setItem(
+                                        `${this.props.dialogName || 'App'}.foldersFirst`,
+                                        this.state.foldersFirst ? 'false' : 'true',
+                                    );
+                                    this.setState({ foldersFirst: !this.state.foldersFirst });
+                                }}
+                            />
+                        }
+                        label={this.props.t('ra_Folders always first')}
+                    />
+                    <FormControlLabel
+                        style={styles.switchColumnAuto}
+                        control={
+                            <Switch
+                                checked={this.state.linesEnabled}
+                                onChange={() => {
+                                    this.localStorage.setItem(
+                                        `${this.props.dialogName || 'App'}.lines`,
+                                        this.state.linesEnabled ? 'false' : 'true',
+                                    );
+                                    this.setState({ linesEnabled: !this.state.linesEnabled });
+                                }}
+                            />
+                        }
+                        label={this.props.t('ra_Show lines between rows')}
+                    />
+                    <FormControlLabel
+                        style={styles.switchColumnAuto}
+                        control={
+                            <Switch
+                                checked={this.state.columnsAuto}
+                                onChange={() => {
+                                    this.localStorage.setItem(
+                                        `${this.props.dialogName || 'App'}.columnsAuto`,
+                                        this.state.columnsAuto ? 'false' : 'true',
+                                    );
+                                    if (!this.state.columnsAuto) {
+                                        this.calculateColumnsVisibility(true);
+                                        this.setState({ columnsAuto: true });
+                                    } else if (!this.state.columns) {
+                                        this.calculateColumnsVisibility(false, [...this.visibleCols]);
+                                        this.setState({ columnsAuto: false, columns: [...this.visibleCols] });
+                                    } else {
+                                        this.calculateColumnsVisibility(false);
+                                        this.setState({ columnsAuto: false });
+                                    }
+                                }}
+                            />
+                        }
+                        label={this.props.t('ra_Auto (no custom columns)')}
+                    />
+                    {/*
             <Typography classes={{ root: styles.dialogColumnsLabel }}>{this.props.t('ra_Transparent dialog')}</Typography>
         <Slider classes={{ root: styles.width100 }} value={this.state.columnsDialogTransparent} min={20} max={100} step={10} onChange={(event, newValue) =>
             this.setState({ columnsDialogTransparent: newValue })
         } />
             */}
-                <List>
-                    {this._renderDefinedList(false)}
+                    <List>
+                        {this._renderDefinedList(false)}
 
-                    {this.state.columnsForAdmin && Object.keys(this.state.columnsForAdmin)
-                        .sort()
-                        .map(adapter =>
-                            this.state.columnsForAdmin && this.state.columnsForAdmin[adapter].map(column => <ListItemButton
-                                onClick={() => {
-                                    if (!this.state.columnsAuto) {
-                                        const columns = [...(this.state.columns || [])];
-                                        const id = `_${adapter}_${column.path}`;
-                                        const pos = columns.indexOf(id);
-                                        if (pos === -1) {
-                                            columns.push(id);
-                                            columns.sort();
-                                        } else {
-                                            columns.splice(pos, 1);
-                                        }
-                                        this.calculateColumnsVisibility(null, columns);
-                                        this.localStorage.setItem(
-                                            `${this.props.dialogName || 'App'}.columns`,
-                                            JSON.stringify(columns),
-                                        );
-                                        this.setState({ columns });
-                                    }
-                                }}
-                                key={`${adapter}_${column.name}`}
-                            >
-                                <ListItemIcon>
-                                    <Checkbox
-                                        disabled={this.state.columnsAuto}
-                                        edge="start"
-                                        checked={
-                                            !this.state.columnsAuto &&
-                                            this.state.columns?.includes(`_${adapter}_${column.path}`)
-                                        }
-                                        disableRipple
-                                    />
-                                </ListItemIcon>
-                                <ListItemText primary={`${column.name} (${adapter})`} />
-                                {/*
+                        {this.state.columnsForAdmin &&
+                            Object.keys(this.state.columnsForAdmin)
+                                .sort()
+                                .map(
+                                    adapter =>
+                                        this.state.columnsForAdmin &&
+                                        this.state.columnsForAdmin[adapter].map(column => (
+                                            <ListItemButton
+                                                onClick={() => {
+                                                    if (!this.state.columnsAuto) {
+                                                        const columns = [...(this.state.columns || [])];
+                                                        const id = `_${adapter}_${column.path}`;
+                                                        const pos = columns.indexOf(id);
+                                                        if (pos === -1) {
+                                                            columns.push(id);
+                                                            columns.sort();
+                                                        } else {
+                                                            columns.splice(pos, 1);
+                                                        }
+                                                        this.calculateColumnsVisibility(null, columns);
+                                                        this.localStorage.setItem(
+                                                            `${this.props.dialogName || 'App'}.columns`,
+                                                            JSON.stringify(columns),
+                                                        );
+                                                        this.setState({ columns });
+                                                    }
+                                                }}
+                                                key={`${adapter}_${column.name}`}
+                                            >
+                                                <ListItemIcon>
+                                                    <Checkbox
+                                                        disabled={this.state.columnsAuto}
+                                                        edge="start"
+                                                        checked={
+                                                            !this.state.columnsAuto &&
+                                                            this.state.columns?.includes(`_${adapter}_${column.path}`)
+                                                        }
+                                                        disableRipple
+                                                    />
+                                                </ListItemIcon>
+                                                <ListItemText primary={`${column.name} (${adapter})`} />
+                                                {/*
                                 <ListItemSecondaryAction>
                                     <FormControl
                                         variant="standard"
@@ -3555,27 +3719,29 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                     </FormControl>
                                 </ListItemSecondaryAction>
                                 */}
-                            </ListItemButton>))}
-                    {this._renderDefinedList(true)}
-                </List>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    onClick={() => this.setState({ columnsSelectorShow: false })}
-                    color="primary"
-                    startIcon={<IconClose />}
-                >
-                    {this.texts.close}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                                            </ListItemButton>
+                                        )),
+                                )}
+                        {this._renderDefinedList(true)}
+                    </List>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ columnsSelectorShow: false })}
+                        color="primary"
+                        startIcon={<IconClose />}
+                    >
+                        {this.texts.close}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
     private async getAdditionalColumns(): Promise<Record<string, CustomAdminColumnStored[]> | null> {
         try {
-            const instances = await this.props.socket
-                .getAdapters();
+            const instances = await this.props.socket.getAdapters();
 
             let columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null = null;
             // find all additional columns
@@ -3590,7 +3756,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    private checkUnsubscribes() {
+    private checkUnsubscribes(): void {
         // Remove unused subscriptions
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
             if (!this.recordStates.includes(this.subscribes[i])) {
@@ -3603,12 +3769,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Find an item.
      */
-    findItem(
-        id: string,
-        _parts?: string[],
-        _root?: TreeItem | null,
-        _partyId?: string,
-    ): TreeItem | null {
+    findItem(id: string, _parts?: string[], _root?: TreeItem | null, _partyId?: string): TreeItem | null {
         _parts = _parts || id.split('.');
         _root = _root || this.root;
         if (!_root || !_parts.length) {
@@ -3637,7 +3798,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Called when a state changes.
      */
-    onStateChange = (id: string, state?: ioBroker.State | null) => {
+    onStateChange = (id: string, state?: ioBroker.State | null): void => {
         console.log(`> stateChange ${id}`);
         if (this.states[id]) {
             const item = this.findItem(id);
@@ -3678,9 +3839,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 cColumns = (columns as (string | ioBroker.CustomAdminColumn)[])
                     .map((_item: string | ioBroker.CustomAdminColumn) => {
                         if (typeof _item !== 'object') {
-                            return { path: _item, name: (_item as string).split('.').pop() };
+                            return { path: _item, name: _item.split('.').pop() };
                         }
-                        const item: ioBroker.CustomAdminColumn = _item as ioBroker.CustomAdminColumn;
+                        const item: ioBroker.CustomAdminColumn = _item;
                         // string => array
                         if (item.objTypes && typeof item.objTypes !== 'object') {
                             item.objTypes = [item.objTypes];
@@ -3719,7 +3880,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (cColumns && cColumns.length) {
                 columnsForAdmin = columnsForAdmin || {};
                 columnsForAdmin[obj.common.name] = cColumns.sort((a, b) =>
-                    (a.path > b.path ? -1 : a.path < b.path ? 1 : 0));
+                    a.path > b.path ? -1 : a.path < b.path ? 1 : 0,
+                );
             }
         } else if (obj.common && obj.common.name && columnsForAdmin && columnsForAdmin[obj.common.name]) {
             delete columnsForAdmin[obj.common.name];
@@ -3761,7 +3923,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         this.afterObjectUpdated();
     };
 
-    afterObjectUpdated() {
+    afterObjectUpdated(): void {
         if (!this.objectsUpdateTimer && this.objects) {
             this.objectsUpdateTimer = setTimeout(() => {
                 this.objectsUpdateTimer = null;
@@ -3790,8 +3952,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             return;
         }
         // Rebuild aliases map
-        const aliasesIds = Object.keys(this.objects)
-            .filter(id => id.startsWith('alias.0'));
+        const aliasesIds = Object.keys(this.objects).filter(id => id.startsWith('alias.0'));
 
         this.info.aliasesMap = {};
 
@@ -3829,12 +3990,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     /**
      * Processes a single element in regard to certain filters, columns for admin and updates object dict
+     *
+     * @param id The id of the object
+     * @param obj The object itself
      * @returns Returns an object containing the new state (if any) and whether the object was filtered.
      */
     processOnObjectChangeElement(
-        /** The id of the object */
         id: string,
-        /** The object itself */
         obj?: ioBroker.Object | null,
     ): {
         filtered: boolean;
@@ -3859,7 +4021,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         let newInnerState = null;
         if (id.startsWith('system.adapter.') && obj?.type === 'adapter') {
-            const columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
+            const columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null = JSON.parse(
+                JSON.stringify(this.state.columnsForAdmin),
+            );
 
             this.parseObjectForAdmins(columnsForAdmin, obj as ioBroker.AdapterObject);
 
@@ -3881,17 +4045,19 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         return { newInnerState, filtered: false };
     }
 
-    private subscribe(id: string) {
+    private subscribe(id: string): void {
         if (!this.subscribes.includes(id)) {
             this.subscribes.push(id);
             console.log(`+ subscribe ${id}`);
             if (!this.pausedSubscribes) {
-                this.props.socket.subscribeState(id, this.onStateChange);
+                this.props.socket
+                    .subscribeState(id, this.onStateChange)
+                    .catch(e => console.error(`Cannot subscribe on state ${id}: ${e}`));
             }
         }
     }
 
-    private unsubscribe(id: string) {
+    private unsubscribe(id: string): void {
         const pos = this.subscribes.indexOf(id);
         if (pos !== -1) {
             this.subscribes.splice(pos, 1);
@@ -3907,7 +4073,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    private pauseSubscribe(isPause: boolean) {
+    private pauseSubscribe(isPause: boolean): void {
         if (!this.pausedSubscribes && isPause) {
             this.pausedSubscribes = true;
             this.subscribes.forEach(id => this.props.socket.unsubscribeState(id, this.onStateChange));
@@ -3917,13 +4083,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    private onFilter(name?: string, value?: string | boolean) {
+    private onFilter(name?: string, value?: string | boolean): void {
         this.filterTimer = null;
         const filter: ObjectBrowserFilter = { ...this.state.filter };
 
         Object.keys(this.filterRefs).forEach(_name => {
             if (this.filterRefs[_name] && this.filterRefs[_name].current) {
-                const filterRef: HTMLSelectElement = this.filterRefs[_name].current as HTMLSelectElement;
+                const filterRef: HTMLSelectElement = this.filterRefs[_name].current;
                 for (let i = 0; i < filterRef.children.length; i++) {
                     if (filterRef.children[i].tagName === 'INPUT') {
                         (filter as Record<string, string>)[_name] = (filterRef.children[i] as HTMLInputElement).value;
@@ -3936,7 +4102,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (name) {
             (filter as Record<string, string | boolean | undefined>)[name] = value;
             if (name === 'expertMode') {
-                ((window as any)._sessionStorage as Storage || window.sessionStorage).setItem(
+                (((window as any)._sessionStorage as Storage) || window.sessionStorage).setItem(
                     'App.expertMode',
                     value ? 'true' : 'false',
                 );
@@ -3949,12 +4115,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    clearFilter() {
+    clearFilter(): void {
         const filter: ObjectBrowserFilter = { ...this.state.filter };
 
         Object.keys(this.filterRefs).forEach(name => {
             if (this.filterRefs[name] && this.filterRefs[name].current) {
-                const filterRef: HTMLSelectElement = this.filterRefs[name].current as HTMLSelectElement;
+                const filterRef: HTMLSelectElement = this.filterRefs[name].current;
                 for (let i = 0; i < filterRef.childNodes.length; i++) {
                     const item = filterRef.childNodes[i];
                     if ((item as HTMLInputElement).tagName === 'INPUT') {
@@ -3975,148 +4141,178 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    isFilterEmpty() {
-        const someNotEmpty = Object.keys(this.state.filter)
-            .find(attr => attr !== 'expertMode' && (this.state.filter as Record<string, string>)[attr]);
+    isFilterEmpty(): boolean {
+        const someNotEmpty = Object.keys(this.state.filter).find(
+            attr => attr !== 'expertMode' && (this.state.filter as Record<string, string>)[attr],
+        );
         return !someNotEmpty;
     }
 
-    private getFilterInput(filterName: string) {
-        return <FormControl
-            sx={this.styles.filterInput}
-            key={`${filterName}_${this.state.filterKey}`}
-            // style={{ marginTop: 0, marginBottom: 0 }}
-            margin="dense"
-        >
-            <Input
-                ref={this.filterRefs[filterName]}
-                classes={{ underline: 'no-underline' }}
-                id={filterName}
-                placeholder={this.texts[`filter_${filterName}`]}
-                defaultValue={(this.state.filter as Record<string, string>)[filterName] || ''}
-                onChange={() => {
-                    if (this.filterTimer) {
-                        clearTimeout(this.filterTimer);
-                    }
-                    this.filterTimer = setTimeout(() => this.onFilter(), 400);
-                }}
-                autoComplete="off"
-            />
-            {(this.filterRefs[filterName]?.current?.firstChild as HTMLInputElement)?.value ? <div
-                style={{
-                    position: 'absolute',
-                    right: 0,
-                }}
+    private getFilterInput(filterName: string): JSX.Element {
+        return (
+            <FormControl
+                sx={this.styles.filterInput}
+                key={`${filterName}_${this.state.filterKey}`}
+                // style={{ marginTop: 0, marginBottom: 0 }}
+                margin="dense"
             >
-                <IconButton
-                    size="small"
-                    onClick={() => {
-                        (this.filterRefs[filterName].current?.firstChild as HTMLInputElement).value = '';
-                        this.onFilter(filterName, '');
+                <Input
+                    ref={this.filterRefs[filterName]}
+                    classes={{ underline: 'no-underline' }}
+                    id={filterName}
+                    placeholder={this.texts[`filter_${filterName}`]}
+                    defaultValue={(this.state.filter as Record<string, string>)[filterName] || ''}
+                    onChange={() => {
+                        if (this.filterTimer) {
+                            clearTimeout(this.filterTimer);
+                        }
+                        this.filterTimer = setTimeout(() => this.onFilter(), 400);
                     }}
-                >
-                    <IconClose />
-                </IconButton>
-            </div> : null}
-        </FormControl>;
+                    autoComplete="off"
+                />
+                {(this.filterRefs[filterName]?.current?.firstChild as HTMLInputElement)?.value ? (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            right: 0,
+                        }}
+                    >
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                (this.filterRefs[filterName].current?.firstChild as HTMLInputElement).value = '';
+                                this.onFilter(filterName, '');
+                            }}
+                        >
+                            <IconClose />
+                        </IconButton>
+                    </div>
+                ) : null}
+            </FormControl>
+        );
     }
 
-    private getFilterSelect(
-        name: string,
-        values?: (string | InputSelectItem)[],
-    ) {
-        const hasIcons = !!values?.find(item =>
-            (item as InputSelectItem).icon);
+    private getFilterSelect(name: string, values?: (string | InputSelectItem)[]): JSX.Element {
+        const hasIcons = !!values?.find(item => (item as InputSelectItem).icon);
 
-        return <div style={{ position: 'relative' }}>
-            <Select
-                variant="standard"
-                key={`${name}_${this.state.filterKey}`}
-                ref={this.filterRefs[name]}
-                sx={styles.headerCellInput}
-                className="no-underline"
-                onChange={() => {
-                    if (this.filterTimer) {
-                        clearTimeout(this.filterTimer);
-                    }
-                    this.filterTimer = setTimeout(() => this.onFilter(), 400);
-                }}
-                defaultValue={(this.state.filter as Record<string, string>)[name] || ''}
-                inputProps={{ name, id: name }}
-                displayEmpty
-            >
-                <MenuItem key="empty" value="">
-                    <span style={styles.selectNone}>{this.texts[`filter_${name}`]}</span>
-                </MenuItem>
-                {values?.map(item => {
-                    let id: string;
-                    let _name: string;
-                    let icon: null | React.JSX.Element | undefined;
-                    if (typeof item === 'object') {
-                        id = (item as InputSelectItem).value;
-                        _name = (item as InputSelectItem).name;
-                        icon = (item as InputSelectItem).icon;
-                    } else {
-                        id = item as string;
-                        _name = item as string;
-                    }
-                    return <MenuItem sx={styles.headerCellSelectItem} key={id} value={id}>
-                        {icon || (hasIcons ? <div className="itemIcon" /> : null)}
-                        {_name}
-                    </MenuItem>;
-                })}
-            </Select>
-            {(this.filterRefs[name]?.current?.childNodes[1] as HTMLInputElement)?.value ? <Box
-                component="div"
-                sx={styles.selectClearButton}
-            >
-                <IconButton
-                    size="small"
-                    onClick={() => {
-                        const newFilter: ObjectBrowserFilter = { ...this.state.filter };
-                        (newFilter as Record<string, string>)[name] = '';
-                        (this.filterRefs[name].current?.childNodes[1] as HTMLInputElement).value = '';
-                        this.localStorage.setItem(
-                            `${this.props.dialogName || 'App'}.objectFilter`,
-                            JSON.stringify(newFilter),
-                        );
-                        this.setState(
-                            { filter: newFilter, filterKey: this.state.filterKey + 1 },
-                            () => this.props.onFilterChanged && this.props.onFilterChanged(newFilter),
-                        );
+        return (
+            <div style={{ position: 'relative' }}>
+                <Select
+                    variant="standard"
+                    key={`${name}_${this.state.filterKey}`}
+                    ref={this.filterRefs[name]}
+                    sx={styles.headerCellInput}
+                    className="no-underline"
+                    onChange={() => {
+                        if (this.filterTimer) {
+                            clearTimeout(this.filterTimer);
+                        }
+                        this.filterTimer = setTimeout(() => this.onFilter(), 400);
                     }}
+                    defaultValue={(this.state.filter as Record<string, string>)[name] || ''}
+                    inputProps={{ name, id: name }}
+                    displayEmpty
                 >
-                    <IconClose />
-                </IconButton>
-            </Box> : null}
-        </div>;
+                    <MenuItem
+                        key="empty"
+                        value=""
+                    >
+                        <span style={styles.selectNone}>{this.texts[`filter_${name}`]}</span>
+                    </MenuItem>
+                    {values?.map(item => {
+                        let id: string;
+                        let _name: string;
+                        let icon: null | JSX.Element | undefined;
+                        if (typeof item === 'object') {
+                            id = item.value;
+                            _name = item.name;
+                            icon = item.icon;
+                        } else {
+                            id = item;
+                            _name = item;
+                        }
+                        return (
+                            <MenuItem
+                                sx={styles.headerCellSelectItem}
+                                key={id}
+                                value={id}
+                            >
+                                {icon || (hasIcons ? <div className="itemIcon" /> : null)}
+                                {_name}
+                            </MenuItem>
+                        );
+                    })}
+                </Select>
+                {(this.filterRefs[name]?.current?.childNodes[1] as HTMLInputElement)?.value ? (
+                    <Box
+                        component="div"
+                        sx={styles.selectClearButton}
+                    >
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                const newFilter: ObjectBrowserFilter = { ...this.state.filter };
+                                (newFilter as Record<string, string>)[name] = '';
+                                (this.filterRefs[name].current?.childNodes[1] as HTMLInputElement).value = '';
+                                this.localStorage.setItem(
+                                    `${this.props.dialogName || 'App'}.objectFilter`,
+                                    JSON.stringify(newFilter),
+                                );
+                                this.setState(
+                                    { filter: newFilter, filterKey: this.state.filterKey + 1 },
+                                    () => this.props.onFilterChanged && this.props.onFilterChanged(newFilter),
+                                );
+                            }}
+                        >
+                            <IconClose />
+                        </IconButton>
+                    </Box>
+                ) : null}
+            </div>
+        );
     }
 
-    private getFilterSelectRole() {
+    private getFilterSelectRole(): JSX.Element {
         return this.getFilterSelect('role', this.info.roles);
     }
 
-    private getFilterSelectRoom() {
-        const rooms: InputSelectItem[] = this.info.roomEnums.map(id => ({
-            name: getName(this.objects[id]?.common?.name, this.props.lang) || id.split('.').pop(),
-            value: id,
-            icon: <Icon src={this.objects[id]?.common?.icon || ''} style={styles.selectIcon} />,
-        } as InputSelectItem));
+    private getFilterSelectRoom(): JSX.Element {
+        const rooms: InputSelectItem[] = this.info.roomEnums.map(
+            id =>
+                ({
+                    name: getName(this.objects[id]?.common?.name, this.props.lang) || id.split('.').pop(),
+                    value: id,
+                    icon: (
+                        <Icon
+                            src={this.objects[id]?.common?.icon || ''}
+                            style={styles.selectIcon}
+                        />
+                    ),
+                }) as InputSelectItem,
+        );
 
         return this.getFilterSelect('room', rooms);
     }
 
-    private getFilterSelectFunction() {
-        const func: InputSelectItem[] = this.info.funcEnums.map(id => ({
-            name: getName(this.objects[id]?.common?.name, this.props.lang) || id.split('.').pop(),
-            value: id,
-            icon: <Icon src={this.objects[id]?.common?.icon || ''} style={styles.selectIcon} /> as React.JSX.Element,
-        } as InputSelectItem));
+    private getFilterSelectFunction(): JSX.Element {
+        const func: InputSelectItem[] = this.info.funcEnums.map(
+            id =>
+                ({
+                    name: getName(this.objects[id]?.common?.name, this.props.lang) || id.split('.').pop(),
+                    value: id,
+                    icon: (
+                        <Icon
+                            src={this.objects[id]?.common?.icon || ''}
+                            style={styles.selectIcon}
+                        />
+                    ),
+                }) as InputSelectItem,
+        );
 
         return this.getFilterSelect('func', func);
     }
 
-    private getFilterSelectType() {
+    private getFilterSelectType(): JSX.Element {
         const types = this.info.types.map(type => ({
             name: type,
             value: type,
@@ -4126,22 +4322,25 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         return this.getFilterSelect('type', types);
     }
 
-    private getFilterSelectCustoms() {
+    private getFilterSelectCustoms(): JSX.Element | null {
         if (this.info.customs.length > 1) {
             const customs = this.info.customs.map(id => ({
                 name: id === '_' ? this.texts.filterCustomsWithout : id,
                 value: id,
-                icon: id === '_' ? null : <Icon
-                    src={getSelectIdIconFromObjects(this.objects, id, this.imagePrefix) || ''}
-                    style={styles.selectIcon}
-                />,
+                icon:
+                    id === '_' ? null : (
+                        <Icon
+                            src={getSelectIdIconFromObjects(this.objects, id, this.props.lang, this.imagePrefix) || ''}
+                            style={styles.selectIcon}
+                        />
+                    ),
             }));
             return this.getFilterSelect('custom', customs);
         }
         return null;
     }
 
-    private onExpandAll(root?: TreeItem, expanded?: string[]) {
+    private onExpandAll(root?: TreeItem, expanded?: string[]): void {
         const _root: TreeItem | null = root || this.root;
         expanded = expanded || [];
 
@@ -4160,17 +4359,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    private onCollapseAll() {
+    private onCollapseAll(): void {
         this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectExpanded`, JSON.stringify([]));
         this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, '[]');
         this.setState({ expanded: [], depth: 0, selected: [] }, () => this.onAfterSelect());
     }
 
-    private expandDepth(
-        root: TreeItem,
-        depth: number,
-        expanded: string[],
-    ) {
+    private expandDepth(root: TreeItem, depth: number, expanded: string[]): void {
         root = root || this.root;
         if (depth > 0) {
             root.children?.forEach(item => {
@@ -4187,11 +4382,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    private static collapseDepth(depth: number, expanded: string[]) {
+    private static collapseDepth(depth: number, expanded: string[]): string[] {
         return expanded.filter(id => id.split('.').length <= depth);
     }
 
-    private onExpandVisible() {
+    private onExpandVisible(): void {
         if (this.state.depth < 9) {
             const depth = this.state.depth + 1;
             const expanded = [...this.state.expanded];
@@ -4203,13 +4398,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    private onStatesViewVisible() {
+    private onStatesViewVisible(): void {
         const statesView = !this.state.statesView;
         this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectStatesView`, JSON.stringify(statesView));
         this.setState({ statesView });
     }
 
-    private onCollapseVisible() {
+    private onCollapseVisible(): void {
         if (this.state.depth > 0) {
             const depth = this.state.depth - 1;
             const expanded = ObjectBrowserClass.collapseDepth(depth, this.state.expanded);
@@ -4241,7 +4436,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         return result.length ? result : undefined;
     };
 
-    private _createAllEnums = async (enums: (string | ioBroker.EnumObject)[], objId: string) => {
+    private _createAllEnums = async (enums: (string | ioBroker.EnumObject)[], objId: string): Promise<void> => {
         for (let e = 0; e < enums.length; e++) {
             const item: string | ioBroker.EnumObject = enums[e];
             let id: string;
@@ -4249,33 +4444,35 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
             // some admin version delivered enums as string
             if (typeof item === 'object') {
-                newObj = item as ioBroker.EnumObject;
+                newObj = item;
                 id = newObj._id;
             } else {
-                id = item as string;
+                id = item;
             }
 
             let oldObj: ioBroker.EnumObject | undefined = this.objects[id] as ioBroker.EnumObject | undefined;
             // if enum does not exist
             if (!oldObj) {
                 // create a new one
-                oldObj = newObj || {
-                    _id: id,
-                    common: {
-                        name: id.split('.').pop(),
-                        members: [],
-                    },
-                    native: {},
-                    type: 'enum',
-                } as ioBroker.EnumObject;
+                oldObj =
+                    newObj ||
+                    ({
+                        _id: id,
+                        common: {
+                            name: id.split('.').pop(),
+                            members: [],
+                        },
+                        native: {},
+                        type: 'enum',
+                    } as ioBroker.EnumObject);
 
-                oldObj.common = oldObj.common || {} as ioBroker.EnumCommon;
+                oldObj.common = oldObj.common || ({} as ioBroker.EnumCommon);
                 oldObj.common.members = [objId];
                 oldObj.type = 'enum';
 
                 await this.props.socket.setObject(id, oldObj);
             } else if (!oldObj.common?.members?.includes(objId)) {
-                oldObj.common = oldObj.common || {} as ioBroker.EnumCommon;
+                oldObj.common = oldObj.common || ({} as ioBroker.EnumCommon);
                 oldObj.type = 'enum';
                 oldObj.common.members = oldObj.common.members || [];
                 // add the missing object
@@ -4286,7 +4483,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     };
 
-    private async loadObjects(objs: Record<string, ioBrokerObjectForExport>) {
+    private async loadObjects(objs: Record<string, ioBrokerObjectForExport>): Promise<void> {
         if (objs) {
             for (const id in objs) {
                 if (!Object.prototype.hasOwnProperty.call(objs, id) || !objs[id]) {
@@ -4349,7 +4546,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    _getSelectedIdsForExport() {
+    _getSelectedIdsForExport(): string[] {
         if (this.state.selected.length || this.state.selectedNonObject) {
             const result = [];
             const keys = Object.keys(this.objects);
@@ -4424,119 +4621,132 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         generateFile(`${id}.json`, result, options);
     }
 
-    renderExportDialog() {
+    renderExportDialog(): JSX.Element | null {
         if (this.state.showExportDialog === false) {
             return null;
         }
-        return <Dialog open={!0} maxWidth="lg">
-            <DialogTitle>{this.props.t('ra_Select type of export')}</DialogTitle>
-            <DialogContent>
-                <DialogContentText>
-                    {this.state.filter.expertMode || this.state.showAllExportOptions ? <>
-                        {this.props.t('ra_You can export all objects or just the selected branch.')}
-                        <br />
-                        {this.props.t('ra_Selected %s object(s)', this.state.showExportDialog)}
-                        <br />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={this.state.noStatesByExportImport}
-                                    onChange={e => this.setState({ noStatesByExportImport: e.target.checked })}
+        return (
+            <Dialog
+                open={!0}
+                maxWidth="lg"
+            >
+                <DialogTitle>{this.props.t('ra_Select type of export')}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {this.state.filter.expertMode || this.state.showAllExportOptions ? (
+                            <>
+                                {this.props.t('ra_You can export all objects or just the selected branch.')}
+                                <br />
+                                {this.props.t('ra_Selected %s object(s)', this.state.showExportDialog)}
+                                <br />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={this.state.noStatesByExportImport}
+                                            onChange={e => this.setState({ noStatesByExportImport: e.target.checked })}
+                                        />
+                                    }
+                                    label={this.props.t('ra_Do not export values of states')}
                                 />
-                            }
-                            label={this.props.t('ra_Do not export values of states')}
-                        />
-                        <br />
-                        {this.props.t('These options can reduce the size of the export file:')}
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={this.state.beautifyJsonExport}
-                                    onChange={e => this.setState({ beautifyJsonExport: e.target.checked })}
+                                <br />
+                                {this.props.t('These options can reduce the size of the export file:')}
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={this.state.beautifyJsonExport}
+                                            onChange={e => this.setState({ beautifyJsonExport: e.target.checked })}
+                                        />
+                                    }
+                                    label={this.props.t('Beautify JSON output')}
                                 />
-                            }
-                            label={this.props.t('Beautify JSON output')}
-                        />
-                        <br />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={this.state.excludeSystemRepositoriesFromExport}
-                                    onChange={e =>
-                                        this.setState({ excludeSystemRepositoriesFromExport: e.target.checked })}
+                                <br />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={this.state.excludeSystemRepositoriesFromExport}
+                                            onChange={e =>
+                                                this.setState({ excludeSystemRepositoriesFromExport: e.target.checked })
+                                            }
+                                        />
+                                    }
+                                    label={this.props.t('Exclude system repositories from export JSON')}
                                 />
-                            }
-                            label={this.props.t('Exclude system repositories from export JSON')}
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={this.state.excludeTranslations}
-                                    onChange={e => this.setState({ excludeTranslations: e.target.checked })}
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={this.state.excludeTranslations}
+                                            onChange={e => this.setState({ excludeTranslations: e.target.checked })}
+                                        />
+                                    }
+                                    label={this.props.t('Exclude translations (except english) from export JSON')}
                                 />
+                            </>
+                        ) : null}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    {this.state.filter.expertMode || this.state.showAllExportOptions ? (
+                        <Button
+                            color="grey"
+                            variant="outlined"
+                            onClick={() =>
+                                this.setState({ showExportDialog: false, showAllExportOptions: false }, () =>
+                                    this._exportObjects({
+                                        isAll: true,
+                                        noStatesByExportImport: this.state.noStatesByExportImport,
+                                        beautify: this.state.beautifyJsonExport,
+                                        excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
+                                        excludeTranslations: this.state.excludeTranslations,
+                                    }),
+                                )
                             }
-                            label={this.props.t('Exclude translations (except english) from export JSON')}
-                        />
-                    </> : null}
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                {this.state.filter.expertMode || this.state.showAllExportOptions ? <Button
-                    color="grey"
-                    variant="outlined"
-                    onClick={() => this.setState({ showExportDialog: false, showAllExportOptions: false }, () =>
-                        this._exportObjects({
-                            isAll: true,
-                            noStatesByExportImport: this.state.noStatesByExportImport,
-                            beautify: this.state.beautifyJsonExport,
-                            excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
-                            excludeTranslations: this.state.excludeTranslations,
-                        }))}
-                >
-                    <span style={{ marginRight: 8 }}>{this.props.t('ra_All objects')}</span>
-                    (
-                    {Object.keys(this.objects).length}
-                    )
-                </Button> : <Button
-                    color="grey"
-                    variant="outlined"
-                    startIcon={<IconExpert />}
-                    onClick={() => this.setState({ showAllExportOptions: true })}
-                >
-                    {this.props.t('ra_Advanced options')}
-                </Button>}
-                <Button
-                    color="primary"
-                    variant="contained"
-                    autoFocus
-                    onClick={() =>
-                        this.setState({ showExportDialog: false, showAllExportOptions: false }, () =>
-                            this._exportObjects({
-                                isAll: false,
-                                noStatesByExportImport: this.state.noStatesByExportImport,
-                                beautify: this.state.beautifyJsonExport,
-                                excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
-                                excludeTranslations: this.state.excludeTranslations,
-                            }))}
-                >
-                    <span style={{ marginRight: 8 }}>{this.props.t('ra_Only selected')}</span>
-                    (
-                    {this.state.showExportDialog}
-                    )
-                </Button>
-                <Button
-                    color="grey"
-                    variant="contained"
-                    onClick={() => this.setState({ showExportDialog: false, showAllExportOptions: false })}
-                    startIcon={<IconClose />}
-                >
-                    {this.props.t('ra_Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                        >
+                            <span style={{ marginRight: 8 }}>{this.props.t('ra_All objects')}</span>(
+                            {Object.keys(this.objects).length})
+                        </Button>
+                    ) : (
+                        <Button
+                            color="grey"
+                            variant="outlined"
+                            startIcon={<IconExpert />}
+                            onClick={() => this.setState({ showAllExportOptions: true })}
+                        >
+                            {this.props.t('ra_Advanced options')}
+                        </Button>
+                    )}
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        autoFocus
+                        onClick={() =>
+                            this.setState({ showExportDialog: false, showAllExportOptions: false }, () =>
+                                this._exportObjects({
+                                    isAll: false,
+                                    noStatesByExportImport: this.state.noStatesByExportImport,
+                                    beautify: this.state.beautifyJsonExport,
+                                    excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
+                                    excludeTranslations: this.state.excludeTranslations,
+                                }),
+                            )
+                        }
+                    >
+                        <span style={{ marginRight: 8 }}>{this.props.t('ra_Only selected')}</span>(
+                        {this.state.showExportDialog})
+                    </Button>
+                    <Button
+                        color="grey"
+                        variant="contained"
+                        onClick={() => this.setState({ showExportDialog: false, showAllExportOptions: false })}
+                        startIcon={<IconClose />}
+                    >
+                        {this.props.t('ra_Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
-    private handleJsonUpload(evt: Event) {
+    private handleJsonUpload(evt: Event): void {
         const target = evt.target as HTMLInputElement;
         const f = target.files?.length && target.files[0];
         if (f) {
@@ -4616,7 +4826,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    toolTipObjectCreating = () => {
+    toolTipObjectCreating = (): JSX.Element[] | string => {
         const { t } = this.props;
 
         let value = [
@@ -4626,7 +4836,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
             <div key={5}>{t('ra_Device → Channel → State')}</div>,
             <div key={6}>{t('ra_Channel → State')}</div>,
-            <div key={7} style={{ height: 10 }} />,
+            <div
+                key={7}
+                style={{ height: 10 }}
+            />,
             <div key={8}>{t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
             <div key={9}>
                 {t(
@@ -4645,7 +4858,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         value = [
                             <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
                             <div key={5}>{t('ra_Device → Channel → State')}</div>,
-                            <div key={7} style={{ height: 10 }} />,
+                            <div
+                                key={7}
+                                style={{ height: 10 }}
+                            />,
                             <div key={8}>
                                 {t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}
                             </div>,
@@ -4662,7 +4878,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             <div key={2}>{t('ra_Folder → State')}</div>,
                             <div key={3}>{t('ra_Folder → Channel → State')}</div>,
                             <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
-                            <div key={7} style={{ height: 10 }} />,
+                            <div
+                                key={7}
+                                style={{ height: 10 }}
+                            />,
                             <div key={8}>
                                 {t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}
                             </div>,
@@ -4677,7 +4896,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         value = [
                             <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
                             <div key={1}>{t('ra_Channel → State')}</div>,
-                            <div key={7} style={{ height: 10 }} />,
+                            <div
+                                key={7}
+                                style={{ height: 10 }}
+                            />,
                             <div key={8}>
                                 {t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}
                             </div>,
@@ -4699,7 +4921,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
                     <div key={5}>{t('ra_Device → Channel → State')}</div>,
                     <div key={6}>{t('ra_Channel → State')}</div>,
-                    <div key={7} style={{ height: 10 }} />,
+                    <div
+                        key={7}
+                        style={{ height: 10 }}
+                    />,
                     <div key={7}>
                         {t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}
                     </div>,
@@ -4718,7 +4943,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Renders the toolbar.
      */
-    getToolbar(): React.JSX.Element {
+    getToolbar(): JSX.Element {
         let allowObjectCreation = false;
         if (this.state.selected.length || this.state.selectedNonObject) {
             const id = this.state.selected[0] || this.state.selectedNonObject;
@@ -4732,245 +4957,282 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        return <div
-            style={{
-                display: 'flex',
-                width: '100%',
-                alignItems: 'center',
-                overflowX: 'auto',
-            }}
-        >
+        return (
             <div
                 style={{
                     display: 'flex',
                     width: '100%',
                     alignItems: 'center',
+                    overflowX: 'auto',
                 }}
             >
-                <Tooltip
-                    title={this.props.t('ra_Refresh tree')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
+                <div
+                    style={{
+                        display: 'flex',
+                        width: '100%',
+                        alignItems: 'center',
+                    }}
                 >
-                    <div>
-                        <IconButton
-                            onClick={() => this.refreshComponent()}
-                            disabled={this.state.updating}
-                            size="large"
-                        >
-                            <RefreshIcon />
-                        </IconButton>
-                    </div>
-                </Tooltip>
-                {this.props.showExpertButton && !this.props.expertMode && <Tooltip
-                    title={this.props.t('ra_expertMode')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton
-                        key="expertMode"
-                        color={this.state.filter.expertMode ? 'secondary' : 'default'}
-                        onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
-                        size="large"
-                    >
-                        <IconExpert />
-                    </IconButton>
-                </Tooltip>}
-                {!this.props.disableColumnSelector && this.props.width !== 'xs' && <Tooltip
-                    title={this.props.t('ra_Configure')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton
-                        key="columnSelector"
-                        color={this.state.columnsAuto ? 'primary' : 'default'}
-                        onClick={() => this.setState({ columnsSelectorShow: true })}
-                        size="large"
-                    >
-                        <IconColumns />
-                    </IconButton>
-                </Tooltip>}
-                {this.props.width !== 'xs' && this.state.expandAllVisible && <Tooltip
-                    title={this.props.t('ra_Expand all nodes')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton key="expandAll" onClick={() => this.onExpandAll()} size="large">
-                        <IconOpen />
-                    </IconButton>
-                </Tooltip>}
-                <Tooltip
-                    title={this.props.t('ra_Collapse all nodes')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton key="collapseAll" onClick={() => this.onCollapseAll()} size="large">
-                        <IconClosed />
-                    </IconButton>
-                </Tooltip>
-                {this.props.width !== 'xs' && <Tooltip
-                    title={this.props.t('ra_Expand one step node')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton
-                        key="expandVisible"
-                        color="primary"
-                        onClick={() => this.onExpandVisible()}
-                        size="large"
-                    >
-                        <Badge
-                            badgeContent={this.state.depth}
-                            color="secondary"
-                            sx={(theme: Theme) => ({
-                                badge: {
-                                    right: 3,
-                                    top: 3,
-                                    border: `2px solid ${theme.palette.background.paper}`,
-                                    padding: '0 4px',
-                                },
-                            })}
-                        >
-                            <IconOpen />
-                        </Badge>
-                    </IconButton>
-                </Tooltip>}
-                {this.props.width !== 'xs' && <Tooltip
-                    title={this.props.t('ra_Collapse one step node')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton
-                        key="collapseVisible"
-                        color="primary"
-                        onClick={() => this.onCollapseVisible()}
-                        size="large"
-                    >
-                        <Badge
-                            sx={(theme: Theme) => ({
-                                badge: {
-                                    right: 3,
-                                    top: 3,
-                                    border: `2px solid ${theme.palette.background.paper}`,
-                                    padding: '0 4px',
-                                },
-                            })}
-                            badgeContent={this.state.depth}
-                            color="secondary"
-                        >
-                            <IconClosed />
-                        </Badge>
-                    </IconButton>
-                </Tooltip>}
-                {this.props.objectStatesView && <Tooltip
-                    title={this.props.t('ra_Toggle the states view')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton onClick={() => this.onStatesViewVisible()} size="large">
-                        <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
-                    </IconButton>
-                </Tooltip>}
-
-                <Tooltip
-                    title={this.props.t('ra_Show/Hide object descriptions')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton
-                        onClick={() => {
-                            this.localStorage.setItem(
-                                `${this.props.dialogName || 'App'}.desc`,
-                                this.state.showDescription ? 'false' : 'true',
-                            );
-                            this.setState({ showDescription: !this.state.showDescription });
-                        }}
-                        size="large"
-                    >
-                        <TextFieldsIcon color={this.state.showDescription ? 'primary' : 'inherit'} />
-                    </IconButton>
-                </Tooltip>
-
-                {this.props.objectAddBoolean ? <Tooltip
-                    title={this.toolTipObjectCreating()}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <div>
-                        <IconButton
-                            disabled={!allowObjectCreation}
-                            onClick={() => this.setState({
-                                modalNewObj: {
-                                    id: this.state.selected[0] || this.state.selectedNonObject,
-                                },
-                            })}
-                            size="large"
-                        >
-                            <AddIcon />
-                        </IconButton>
-                    </div>
-                </Tooltip> : null}
-
-                {this.props.objectImportExport && <Tooltip
-                    title={this.props.t('ra_Add objects tree from JSON file')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton
-                        onClick={() => {
-                            const input = document.createElement('input');
-                            input.setAttribute('type', 'file');
-                            input.setAttribute('id', 'files');
-                            input.setAttribute('opacity', '0');
-                            input.addEventListener('change', (e: Event) => this.handleJsonUpload(e), false);
-                            input.click();
-                        }}
-                        size="large"
-                    >
-                        <PublishIcon />
-                    </IconButton>
-                </Tooltip>}
-                {this.props.objectImportExport &&
-                    (!!this.state.selected.length || this.state.selectedNonObject) &&
                     <Tooltip
-                        title={this.props.t('ra_Save objects tree as JSON file')}
+                        title={this.props.t('ra_Refresh tree')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <div>
+                            <IconButton
+                                onClick={() => this.refreshComponent()}
+                                disabled={this.state.updating}
+                                size="large"
+                            >
+                                <RefreshIcon />
+                            </IconButton>
+                        </div>
+                    </Tooltip>
+                    {this.props.showExpertButton && !this.props.expertMode && (
+                        <Tooltip
+                            title={this.props.t('ra_expertMode')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton
+                                key="expertMode"
+                                color={this.state.filter.expertMode ? 'secondary' : 'default'}
+                                onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                                size="large"
+                            >
+                                <IconExpert />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    {!this.props.disableColumnSelector && this.props.width !== 'xs' && (
+                        <Tooltip
+                            title={this.props.t('ra_Configure')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton
+                                key="columnSelector"
+                                color={this.state.columnsAuto ? 'primary' : 'default'}
+                                onClick={() => this.setState({ columnsSelectorShow: true })}
+                                size="large"
+                            >
+                                <IconColumns />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    {this.props.width !== 'xs' && this.state.expandAllVisible && (
+                        <Tooltip
+                            title={this.props.t('ra_Expand all nodes')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton
+                                key="expandAll"
+                                onClick={() => this.onExpandAll()}
+                                size="large"
+                            >
+                                <IconOpen />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    <Tooltip
+                        title={this.props.t('ra_Collapse all nodes')}
                         slotProps={{ popper: { sx: styles.tooltip } }}
                     >
                         <IconButton
-                            onClick={() =>
-                                this.setState({ showExportDialog: this._getSelectedIdsForExport().length })}
+                            key="collapseAll"
+                            onClick={() => this.onCollapseAll()}
                             size="large"
                         >
-                            <PublishIcon style={{ transform: 'rotate(180deg)' }} />
+                            <IconClosed />
                         </IconButton>
-                    </Tooltip>}
-            </div>
-            {!!this.props.objectBrowserEditObject && this.props.width !== 'xs' && <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
-                {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t(
-                    'ra_States',
-                )}: ${
-                    Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length
-                }`}
-            </div>}
-            {this.props.objectEditBoolean && <Tooltip
-                title={this.props.t('ra_Edit custom config')}
-                slotProps={{ popper: { sx: styles.tooltip } }}
-            >
-                <IconButton
-                    onClick={() => {
-                        // get all visible states
-                        const ids = this.root ? getVisibleItems(this.root, 'state', this.objects) : [];
+                    </Tooltip>
+                    {this.props.width !== 'xs' && (
+                        <Tooltip
+                            title={this.props.t('ra_Expand one step node')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton
+                                key="expandVisible"
+                                color="primary"
+                                onClick={() => this.onExpandVisible()}
+                                size="large"
+                            >
+                                <Badge
+                                    badgeContent={this.state.depth}
+                                    color="secondary"
+                                    sx={(theme: Theme) => ({
+                                        badge: {
+                                            right: 3,
+                                            top: 3,
+                                            border: `2px solid ${theme.palette.background.paper}`,
+                                            padding: '0 4px',
+                                        },
+                                    })}
+                                >
+                                    <IconOpen />
+                                </Badge>
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    {this.props.width !== 'xs' && (
+                        <Tooltip
+                            title={this.props.t('ra_Collapse one step node')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton
+                                key="collapseVisible"
+                                color="primary"
+                                onClick={() => this.onCollapseVisible()}
+                                size="large"
+                            >
+                                <Badge
+                                    sx={(theme: Theme) => ({
+                                        badge: {
+                                            right: 3,
+                                            top: 3,
+                                            border: `2px solid ${theme.palette.background.paper}`,
+                                            padding: '0 4px',
+                                        },
+                                    })}
+                                    badgeContent={this.state.depth}
+                                    color="secondary"
+                                >
+                                    <IconClosed />
+                                </Badge>
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    {this.props.objectStatesView && (
+                        <Tooltip
+                            title={this.props.t('ra_Toggle the states view')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton
+                                onClick={() => this.onStatesViewVisible()}
+                                size="large"
+                            >
+                                <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
+                            </IconButton>
+                        </Tooltip>
+                    )}
 
-                        if (ids.length) {
-                            this.pauseSubscribe(true);
-
-                            if (ids.length === 1) {
+                    <Tooltip
+                        title={this.props.t('ra_Show/Hide object descriptions')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            onClick={() => {
                                 this.localStorage.setItem(
-                                    `${this.props.dialogName || 'App'}.objectSelected`,
-                                    this.state.selected[0],
+                                    `${this.props.dialogName || 'App'}.desc`,
+                                    this.state.showDescription ? 'false' : 'true',
                                 );
-                                this.props.router?.doNavigate(null, 'custom', this.state.selected[0]);
-                            }
-                            this.setState({ customDialog: ids, customDialogAll: true });
-                        } else {
-                            this.setState({ toast: this.props.t('ra_please select object') });
-                        }
-                    }}
-                    size="large"
-                >
-                    <BuildIcon />
-                </IconButton>
-            </Tooltip>}
-        </div>;
+                                this.setState({ showDescription: !this.state.showDescription });
+                            }}
+                            size="large"
+                        >
+                            <TextFieldsIcon color={this.state.showDescription ? 'primary' : 'inherit'} />
+                        </IconButton>
+                    </Tooltip>
+
+                    {this.props.objectAddBoolean ? (
+                        <Tooltip
+                            title={this.toolTipObjectCreating()}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <div>
+                                <IconButton
+                                    disabled={!allowObjectCreation}
+                                    onClick={() =>
+                                        this.setState({
+                                            modalNewObj: {
+                                                id: this.state.selected[0] || this.state.selectedNonObject,
+                                            },
+                                        })
+                                    }
+                                    size="large"
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </div>
+                        </Tooltip>
+                    ) : null}
+
+                    {this.props.objectImportExport && (
+                        <Tooltip
+                            title={this.props.t('ra_Add objects tree from JSON file')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton
+                                onClick={() => {
+                                    const input = document.createElement('input');
+                                    input.setAttribute('type', 'file');
+                                    input.setAttribute('id', 'files');
+                                    input.setAttribute('opacity', '0');
+                                    input.addEventListener('change', (e: Event) => this.handleJsonUpload(e), false);
+                                    input.click();
+                                }}
+                                size="large"
+                            >
+                                <PublishIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    {this.props.objectImportExport &&
+                        (!!this.state.selected.length || this.state.selectedNonObject) && (
+                            <Tooltip
+                                title={this.props.t('ra_Save objects tree as JSON file')}
+                                slotProps={{ popper: { sx: styles.tooltip } }}
+                            >
+                                <IconButton
+                                    onClick={() =>
+                                        this.setState({ showExportDialog: this._getSelectedIdsForExport().length })
+                                    }
+                                    size="large"
+                                >
+                                    <PublishIcon style={{ transform: 'rotate(180deg)' }} />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                </div>
+                {!!this.props.objectBrowserEditObject && this.props.width !== 'xs' && (
+                    <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+                        {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t(
+                            'ra_States',
+                        )}: ${
+                            Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length
+                        }`}
+                    </div>
+                )}
+                {this.props.objectEditBoolean && (
+                    <Tooltip
+                        title={this.props.t('ra_Edit custom config')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            onClick={() => {
+                                // get all visible states
+                                const ids = this.root ? getVisibleItems(this.root, 'state', this.objects) : [];
+
+                                if (ids.length) {
+                                    this.pauseSubscribe(true);
+
+                                    if (ids.length === 1) {
+                                        this.localStorage.setItem(
+                                            `${this.props.dialogName || 'App'}.objectSelected`,
+                                            this.state.selected[0],
+                                        );
+                                        this.props.router?.doNavigate(null, 'custom', this.state.selected[0]);
+                                    }
+                                    this.setState({ customDialog: ids, customDialogAll: true });
+                                } else {
+                                    this.setState({ toast: this.props.t('ra_please select object') });
+                                }
+                            }}
+                            size="large"
+                        >
+                            <BuildIcon />
+                        </IconButton>
+                    </Tooltip>
+                )}
+            </div>
+        );
     }
 
     private toggleExpanded(id: string): void {
@@ -4988,7 +5250,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         this.setState({ expanded });
     }
 
-    private onCopy(e: React.MouseEvent, text: string) {
+    private onCopy(e: React.MouseEvent, text: string): void {
         e.stopPropagation();
         e.preventDefault();
         Utils.copyToClipboard(text);
@@ -4999,7 +5261,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    renderTooltipAccessControl = (acl: ioBroker.StateACL): null | React.JSX.Element => {
+    renderTooltipAccessControl = (acl: ioBroker.StateACL): null | JSX.Element => {
         // acl ={object,state,owner,ownerGroup}
         if (!acl) {
             return null;
@@ -5043,93 +5305,96 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             },
         ];
         const arrayTooltipText = [];
-        const funcRenderStateObject = (value: 'object' | 'state') => {
+        const funcRenderStateObject = (value: 'object' | 'state'): void => {
             const rights: number = acl[value];
             check.forEach((el, i) => {
-                // eslint-disable-next-line no-bitwise
                 if (rights & el.valueNum) {
-                    arrayTooltipText.push(<span key={value + i}>
-                        {this.texts[`acl${el.group}_${el.title}_${value}`]}
-                        ,
-                        <span
-                            style={value === 'object'
-                                ? styles.rightsObject
-                                : styles.rightsState}
-                        >
-                            {el.value}
-                        </span>
-                    </span>);
+                    arrayTooltipText.push(
+                        <span key={value + i}>
+                            {this.texts[`acl${el.group}_${el.title}_${value}`]},
+                            <span style={value === 'object' ? styles.rightsObject : styles.rightsState}>
+                                {el.value}
+                            </span>
+                        </span>,
+                    );
                 }
             });
         };
 
-        arrayTooltipText.push(<span key="group">
-            {`${this.texts.ownerGroup}: ${(acl.ownerGroup || '').replace('system.group.', '')}`}
-        </span>);
-        arrayTooltipText.push(<span key="owner">
-            {`${this.texts.ownerUser}: ${(acl.owner || '').replace('system.user.', '')}`}
-        </span>);
+        arrayTooltipText.push(
+            <span key="group">
+                {`${this.texts.ownerGroup}: ${(acl.ownerGroup || '').replace('system.group.', '')}`}
+            </span>,
+        );
+        arrayTooltipText.push(
+            <span key="owner">{`${this.texts.ownerUser}: ${(acl.owner || '').replace('system.user.', '')}`}</span>,
+        );
         funcRenderStateObject('object');
         if (acl.state) {
             funcRenderStateObject('state');
         }
 
-        return arrayTooltipText.length ? <span style={styles.tooltipAccessControl}>
-            {arrayTooltipText.map(el => el)}
-        </span> : null;
+        return arrayTooltipText.length ? (
+            <span style={styles.tooltipAccessControl}>{arrayTooltipText.map(el => el)}</span>
+        ) : null;
     };
 
-    renderColumnButtons(
-        id: string,
-        item: TreeItem,
-    ) {
+    renderColumnButtons(id: string, item: TreeItem): (JSX.Element | null)[] | JSX.Element | null {
         if (!item.data.obj) {
-            return this.props.onObjectDelete || this.props.objectEditOfAccessControl ? <div style={styles.buttonDiv}>
-                {this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <IconButton
-                    sx={{
-                        ...styles.cellButtonsButton,
-                        ...styles.cellButtonsEmptyButton,
-                        ...styles.cellButtonMinWidth,
-                    }}
-                    onClick={() =>
-                        this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
-                    size="large"
-                >
-                    <div style={{ height: 15 }}>---</div>
-                </IconButton> : null}
-                {this.props.onObjectDelete && item.children && item.children.length ? <IconButton
-                    sx={{
-                        ...styles.cellButtonsButton,
-                        ...styles.cellButtonsButtonAlone,
-                    }}
-                    size="small"
-                    aria-label="delete"
-                    title={this.texts.deleteObject}
-                    onClick={() => {
-                        // calculate the number of children
-                        const keys = Object.keys(this.objects);
-                        keys.sort();
-                        let count = 0;
-                        const start = `${id}.`;
-                        for (let i = 0; i < keys.length; i++) {
-                            if (keys[i].startsWith(start)) {
-                                count++;
-                            } else if (keys[i] > start) {
-                                break;
+            return this.props.onObjectDelete || this.props.objectEditOfAccessControl ? (
+                <div style={styles.buttonDiv}>
+                    {this.state.filter.expertMode && this.props.objectEditOfAccessControl ? (
+                        <IconButton
+                            sx={{
+                                ...styles.cellButtonsButton,
+                                ...styles.cellButtonsEmptyButton,
+                                ...styles.cellButtonMinWidth,
+                            }}
+                            onClick={() =>
+                                this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
                             }
-                        }
+                            size="large"
+                        >
+                            <div style={{ height: 15 }}>---</div>
+                        </IconButton>
+                    ) : null}
+                    {this.props.onObjectDelete && item.children && item.children.length ? (
+                        <IconButton
+                            sx={{
+                                ...styles.cellButtonsButton,
+                                ...styles.cellButtonsButtonAlone,
+                            }}
+                            size="small"
+                            aria-label="delete"
+                            title={this.texts.deleteObject}
+                            onClick={() => {
+                                // calculate the number of children
+                                const keys = Object.keys(this.objects);
+                                keys.sort();
+                                let count = 0;
+                                const start = `${id}.`;
+                                for (let i = 0; i < keys.length; i++) {
+                                    if (keys[i].startsWith(start)) {
+                                        count++;
+                                    } else if (keys[i] > start) {
+                                        break;
+                                    }
+                                }
 
-                        if (this.props.onObjectDelete) {
-                            this.props.onObjectDelete(id, !!item.children?.length, false, count + 1);
-                        }
-                    }}
-                >
-                    <IconDelete style={styles.cellButtonsButtonIcon} />
-                </IconButton> : null}
-            </div> : null;
+                                if (this.props.onObjectDelete) {
+                                    this.props.onObjectDelete(id, !!item.children?.length, false, count + 1);
+                                }
+                            }}
+                        >
+                            <IconDelete style={styles.cellButtonsButtonIcon} />
+                        </IconButton>
+                    ) : null}
+                </div>
+            ) : null;
         }
 
-        item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl as ioBroker.StateACL);
+        item.data.aclTooltip =
+            item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl as ioBroker.StateACL);
 
         const acl = item.data.obj.acl
             ? item.data.obj.type === 'state'
@@ -5145,83 +5410,99 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         const showEdit = this.state.filter.expertMode || ObjectBrowserClass.isNonExpertId(item.data.id);
 
         return [
-            this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <Tooltip
-                key="acl"
-                title={item.data.aclTooltip}
-                slotProps={{ popper: { sx: styles.tooltip } }}
-            >
-                <IconButton
-                    sx={{
-                        ...styles.cellButtonsButton,
-                        ...styles.cellButtonMinWidth,
-                        opacity: 1,
-                    }}
-                    onClick={() => this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
-                    size="large"
+            this.state.filter.expertMode && this.props.objectEditOfAccessControl ? (
+                <Tooltip
+                    key="acl"
+                    title={item.data.aclTooltip}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
-                    <div style={styles.aclText}>
-                        {Number.isNaN(Number(acl))
-                            ? Number(aclSystemConfig).toString(16)
-                            : Number(acl).toString(16)}
-                    </div>
+                    <IconButton
+                        sx={{
+                            ...styles.cellButtonsButton,
+                            ...styles.cellButtonMinWidth,
+                            opacity: 1,
+                        }}
+                        onClick={() => this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
+                        size="large"
+                    >
+                        <div style={styles.aclText}>
+                            {Number.isNaN(Number(acl))
+                                ? Number(aclSystemConfig).toString(16)
+                                : Number(acl).toString(16)}
+                        </div>
+                    </IconButton>
+                </Tooltip>
+            ) : (
+                <div
+                    key="aclEmpty"
+                    style={styles.cellButtonMinWidth}
+                />
+            ),
+
+            showEdit ? (
+                <IconButton
+                    key="edit"
+                    sx={{
+                        marginRight: '2px',
+                        ...styles.cellButtonsButton,
+                    }}
+                    size="small"
+                    aria-label="edit"
+                    title={this.texts.editObject}
+                    onClick={() => {
+                        this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, id);
+                        this.setState({ editObjectDialog: id, editObjectAlias: false });
+                    }}
+                >
+                    <IconEdit style={styles.cellButtonsButtonIcon} />
                 </IconButton>
-            </Tooltip> :
-                <div key="aclEmpty" style={styles.cellButtonMinWidth} />,
+            ) : (
+                <Box
+                    component="div"
+                    key="editDisabled"
+                    sx={styles.cellButtonsButton}
+                />
+            ),
 
-            showEdit ? <IconButton
-                key="edit"
-                sx={{
-                    marginRight: '2px',
-                    ...styles.cellButtonsButton,
-                }}
-                size="small"
-                aria-label="edit"
-                title={this.texts.editObject}
-                onClick={() => {
-                    this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, id);
-                    this.setState({ editObjectDialog: id, editObjectAlias: false });
-                }}
-            >
-                <IconEdit style={styles.cellButtonsButtonIcon} />
-            </IconButton> :
-                <Box component="div" key="editDisabled" sx={styles.cellButtonsButton} />,
-
-            this.props.onObjectDelete && (item.children?.length || !item.data.obj.common?.dontDelete) ? <IconButton
-                key="delete"
-                sx={styles.cellButtonsButton}
-                size="small"
-                aria-label="delete"
-                onClick={() => {
-                    const keys = Object.keys(this.objects);
-                    keys.sort();
-                    let count = 0;
-                    const start = `${id}.`;
-                    for (let i = 0; i < keys.length; i++) {
-                        if (keys[i].startsWith(start)) {
-                            count++;
-                        } else if (keys[i] > start) {
-                            break;
+            this.props.onObjectDelete && (item.children?.length || !item.data.obj.common?.dontDelete) ? (
+                <IconButton
+                    key="delete"
+                    sx={styles.cellButtonsButton}
+                    size="small"
+                    aria-label="delete"
+                    onClick={() => {
+                        const keys = Object.keys(this.objects);
+                        keys.sort();
+                        let count = 0;
+                        const start = `${id}.`;
+                        for (let i = 0; i < keys.length; i++) {
+                            if (keys[i].startsWith(start)) {
+                                count++;
+                            } else if (keys[i] > start) {
+                                break;
+                            }
                         }
-                    }
-                    if (this.props.onObjectDelete) {
-                        this.props.onObjectDelete(
-                            id,
-                            !!item.children?.length,
-                            !item.data.obj?.common?.dontDelete,
-                            count,
-                        );
-                    }
-                }}
-                title={this.texts.deleteObject}
-            >
-                <IconDelete style={styles.cellButtonsButtonIcon} />
-            </IconButton> : null,
+                        if (this.props.onObjectDelete) {
+                            this.props.onObjectDelete(
+                                id,
+                                !!item.children?.length,
+                                !item.data.obj?.common?.dontDelete,
+                                count,
+                            );
+                        }
+                    }}
+                    title={this.texts.deleteObject}
+                >
+                    <IconDelete style={styles.cellButtonsButtonIcon} />
+                </IconButton>
+            ) : null,
 
             this.props.objectCustomDialog &&
-                this.info.hasSomeCustoms &&
-                item.data.obj.type === 'state' &&
-                // @ts-expect-error deprecated from js-controller 6
-                item.data.obj.common?.type !== 'file' ? <IconButton
+            this.info.hasSomeCustoms &&
+            item.data.obj.type === 'state' &&
+            // @ts-expect-error deprecated from js-controller 6
+            item.data.obj.common?.type !== 'file' ? (
+                <IconButton
                     sx={{
                         ...styles.cellButtonsButton,
                         ...(item.data.hasCustoms
@@ -5241,11 +5522,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     }}
                 >
                     <IconConfig style={styles.cellButtonsButtonIcon} />
-                </IconButton> : null,
+                </IconButton>
+            ) : null,
         ];
     }
 
-    private readHistory(id: string) {
+    private readHistory(id: string): void {
         /* interface GetHistoryOptions {
             instance?: string;
             start?: number;
@@ -5287,8 +5569,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     aggregate: 'minmax',
                 })
                 .then(values => {
-                    const sparks: HTMLDivElement[] =
-                        window.document.getElementsByClassName('sparkline') as any as HTMLDivElement[];
+                    const sparks: HTMLDivElement[] = window.document.getElementsByClassName(
+                        'sparkline',
+                    ) as any as HTMLDivElement[];
 
                     for (let s = 0; s < sparks.length; s++) {
                         if (sparks[s].dataset.id === id) {
@@ -5303,7 +5586,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    private getTooltipInfo(id: string, cb?: () => void) {
+    private getTooltipInfo(id: string, cb?: () => void): void {
         const obj = this.objects[id];
         const state = this.states[id];
 
@@ -5312,30 +5595,46 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             obj: obj as ioBroker.StateObject,
             texts: this.texts,
             dateFormat: this.props.dateFormat || this.systemConfig.common.dateFormat,
-            isFloatComma: this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma,
+            isFloatComma:
+                this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma,
             full: true,
         });
-        const valFullRx: React.JSX.Element[] = [];
+        const valFullRx: JSX.Element[] = [];
 
         valFull?.forEach(_item => {
             if (_item.t === this.texts.quality && state.q) {
-                valFullRx.push(<div style={styles.cellValueTooltipBoth} key={_item.t}>
-                    {_item.t}
-                    :&nbsp;
-                    {_item.v}
-                </div>);
+                valFullRx.push(
+                    <div
+                        style={styles.cellValueTooltipBoth}
+                        key={_item.t}
+                    >
+                        {_item.t}
+                        :&nbsp;
+                        {_item.v}
+                    </div>,
+                );
                 // <div style={styles.cellValueTooltipValue} key={item.t + '_v'}>{item.v}</div>,
                 if (!_item.nbr) {
                     valFullRx.push(<br key={`${_item.t}_br`} />);
                 }
             } else {
-                valFullRx.push(<div style={styles.cellValueTooltipTitle} key={_item.t}>
-                    {_item.t}
-                    :&nbsp;
-                </div>);
-                valFullRx.push(<div style={styles.cellValueTooltipValue} key={`${_item.t}_v`}>
-                    {_item.v}
-                </div>);
+                valFullRx.push(
+                    <div
+                        style={styles.cellValueTooltipTitle}
+                        key={_item.t}
+                    >
+                        {_item.t}
+                        :&nbsp;
+                    </div>,
+                );
+                valFullRx.push(
+                    <div
+                        style={styles.cellValueTooltipValue}
+                        key={`${_item.t}_v`}
+                    >
+                        {_item.v}
+                    </div>,
+                );
                 if (!_item.nbr) {
                     valFullRx.push(<br key={`${_item.t}_br`} />);
                 }
@@ -5343,42 +5642,49 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         });
 
         if (fileViewer === 'image') {
-            valFullRx.push(<img
-                style={styles.cellValueTooltipImage}
-                src={state.val as string}
-                alt={id}
-            />);
+            valFullRx.push(
+                <img
+                    style={styles.cellValueTooltipImage}
+                    src={state.val as string}
+                    alt={id}
+                />,
+            );
         } else if (
             this.defaultHistory &&
             this.objects[id]?.common?.custom &&
             this.objects[id].common.custom[this.defaultHistory]
         ) {
-            valFullRx.push(<svg
-                key="sparkline"
-                className="sparkline"
-                data-id={id}
-                style={{ fill: '#3d85de' }}
-                width="200"
-                height="30"
-                strokeWidth="3"
-            />);
+            valFullRx.push(
+                <svg
+                    key="sparkline"
+                    className="sparkline"
+                    data-id={id}
+                    style={{ fill: '#3d85de' }}
+                    width="200"
+                    height="30"
+                    strokeWidth="3"
+                />,
+            );
         }
 
         this.setState({ tooltipInfo: { el: valFullRx, id } }, () => cb && cb());
     }
 
-    private renderColumnValue(
-        id: string,
-        item: TreeItem,
-        narrowStyleWithDetails?: boolean,
-    ): React.JSX.Element | null {
+    private renderColumnValue(id: string, item: TreeItem, narrowStyleWithDetails?: boolean): JSX.Element | null {
         const obj = item.data.obj;
         if (!obj || !this.states) {
             return null;
         }
 
         if (obj.common?.type === 'file') {
-            return <Box component="div" sx={{ ...styles.cellValueText, ...styles.cellValueFile }}>[file]</Box>;
+            return (
+                <Box
+                    component="div"
+                    sx={{ ...styles.cellValueText, ...styles.cellValueFile }}
+                >
+                    [file]
+                </Box>
+            );
         }
         if (!this.states[id]) {
             if (obj.type === 'state') {
@@ -5404,51 +5710,60 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 obj: obj as ioBroker.StateObject,
                 texts: this.texts,
                 dateFormat: this.props.dateFormat || this.systemConfig.common.dateFormat,
-                isFloatComma: this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma,
+                isFloatComma:
+                    this.props.isFloatComma === undefined
+                        ? this.systemConfig.common.isFloatComma
+                        : this.props.isFloatComma,
             });
-            const valTextRx: React.JSX.Element[] = [];
+            const valTextRx: JSX.Element[] = [];
             item.data.state = { valTextRx };
 
             const copyText = valText.v || '';
-            valTextRx.push(<span
-                className={`newValueBrowser-${this.props.themeType || 'light'}`}
-                key={`${valText.v.toString()}valText`}
-                style={{
-                    whiteSpace: 'nowrap',
-                    display: 'inline-block',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                }}
-            >
-                {valText.v.toString()}
-            </span>);
-            if (valText.u) {
-                valTextRx.push(<span
+            valTextRx.push(
+                <span
                     className={`newValueBrowser-${this.props.themeType || 'light'}`}
-                    style={styles.cellValueTextUnit}
-                    key={`${valText.v.toString()}unit`}
+                    key={`${valText.v.toString()}valText`}
+                    style={{
+                        whiteSpace: 'nowrap',
+                        display: 'inline-block',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                    }}
                 >
-                    {valText.u}
-                </span>);
+                    {valText.v.toString()}
+                </span>,
+            );
+            if (valText.u) {
+                valTextRx.push(
+                    <span
+                        className={`newValueBrowser-${this.props.themeType || 'light'}`}
+                        style={styles.cellValueTextUnit}
+                        key={`${valText.v.toString()}unit`}
+                    >
+                        {valText.u}
+                    </span>,
+                );
             }
             if (valText.s !== undefined) {
-                valTextRx.push(<span
-                    style={styles.cellValueTextState}
-                    className={`newValueBrowser-${this.props.themeType || 'light'}`}
-                    key={`${valText.v.toString()}states`}
-                >
-                    (
-                    {valText.s}
-                    )
-                </span>);
+                valTextRx.push(
+                    <span
+                        style={styles.cellValueTextState}
+                        className={`newValueBrowser-${this.props.themeType || 'light'}`}
+                        key={`${valText.v.toString()}states`}
+                    >
+                        ({valText.s})
+                    </span>,
+                );
             }
             if (!narrowStyleWithDetails) {
-                valTextRx.push(<IconCopy
-                    className="copyButton"
-                    style={this.styles.iconCopy}
-                    onClick={e => this.onCopy(e, copyText)}
-                    key="cc"
-                />);
+                valTextRx.push(
+                    <IconCopy
+                        className="copyButton"
+                        style={this.styles.iconCopy}
+                        onClick={e => this.onCopy(e, copyText)}
+                        key="cc"
+                    />,
+                );
             }
             // <IconEdit className="copyButton" style={{{ ...styles.cellButtonsValueButton, styles.cellButtonsValueButtonEdit)} key="ce" />
 
@@ -5457,55 +5772,65 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         info.style = getValueStyle({ state, isExpertMode: this.state.filter.expertMode, isButton: item.data.button });
 
-        let val: React.JSX.Element[] = info.valTextRx as React.JSX.Element[];
+        let val: JSX.Element[] = info.valTextRx as JSX.Element[];
         if (!this.state.filter.expertMode) {
             if (item.data.button) {
-                val = [<ButtonIcon key="button" style={{ color: info.style.color, ...styles.cellValueButton }} />];
+                val = [
+                    <ButtonIcon
+                        key="button"
+                        style={{ color: info.style.color, ...styles.cellValueButton }}
+                    />,
+                ];
             } else if (item.data.switch) {
-                val = [<Switch
-                    key="switch"
-                    sx={{
-                        '& .MuiSwitch-thumb': { color: info.style.color },
-                        '& .MuiSwitch-track': !!this.states[id].val && this.state.selected.includes(id) ?
-                            { backgroundColor: this.props.themeType === 'dark' ? '#FFF !important' : '#111 !important' } : undefined,
-                    }}
-                    checked={!!this.states[id].val}
-                />];
+                val = [
+                    <Switch
+                        key="switch"
+                        sx={{
+                            '& .MuiSwitch-thumb': { color: info.style.color },
+                            '& .MuiSwitch-track': {
+                                backgroundColor:
+                                    !!this.states[id].val && this.state.selected.includes(id)
+                                        ? this.props.themeType === 'dark'
+                                            ? '#FFF !important'
+                                            : '#111 !important'
+                                        : undefined,
+                            },
+                        }}
+                        checked={!!this.states[id].val}
+                    />,
+                ];
             }
         }
 
-        return <Tooltip
-            key="value"
-            title={this.state.tooltipInfo?.el}
-            slotProps={{
-                popper: { sx: styles.cellValueTooltipBox },
-                tooltip: { sx: styles.cellValueTooltip },
-            }}
-            onOpen={() => this.getTooltipInfo(id, () => this.readHistory(id))}
-            onClose={() => this.state.tooltipInfo?.id === id && this.setState({ tooltipInfo: null })}
-        >
-            <Box
-                component="div"
-                style={info.style}
-                sx={{
-                    ...styles.cellValueText,
-                    height: narrowStyleWithDetails ? undefined : ROW_HEIGHT,
-                    '& .admin-button:active': {
-                        transform: 'translate(0, 2px)',
-                    },
+        return (
+            <Tooltip
+                key="value"
+                title={this.state.tooltipInfo?.el}
+                slotProps={{
+                    popper: { sx: styles.cellValueTooltipBox },
+                    tooltip: { sx: styles.cellValueTooltip },
                 }}
+                onOpen={() => this.getTooltipInfo(id, () => this.readHistory(id))}
+                onClose={() => this.state.tooltipInfo?.id === id && this.setState({ tooltipInfo: null })}
             >
-                {val}
-            </Box>
-        </Tooltip>;
+                <Box
+                    component="div"
+                    style={info.style}
+                    sx={{
+                        ...styles.cellValueText,
+                        height: narrowStyleWithDetails ? undefined : ROW_HEIGHT,
+                        '& .admin-button:active': {
+                            transform: 'translate(0, 2px)',
+                        },
+                    }}
+                >
+                    {val}
+                </Box>
+            </Tooltip>
+        );
     }
 
-    private _syncEnum(
-        id: string,
-        enumIds: string[],
-        newArray: string[],
-        cb: () => void,
-    ): void {
+    private _syncEnum(id: string, enumIds: string[], newArray: string[], cb: () => void): void {
         if (!enumIds || !enumIds.length) {
             if (cb) {
                 cb();
@@ -5546,17 +5871,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        Promise.all(promises)
-            .then(() => {
-                setTimeout(() => this._syncEnum(id, enumIds, newArray, cb), 0);
-            });
+        void Promise.all(promises).then(() => {
+            setTimeout(() => this._syncEnum(id, enumIds, newArray, cb), 0);
+        });
     }
 
-    private syncEnum(
-        id: string,
-        enumName: 'func' | 'room',
-        newArray: string[],
-    ): Promise<void> {
+    private syncEnum(id: string, enumName: 'func' | 'room', newArray: string[]): Promise<void> {
         const toCheck = [...this.info[enumName === 'func' ? 'funcEnums' : 'roomEnums']];
 
         return new Promise<void>(resolve => {
@@ -5567,7 +5887,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         });
     }
 
-    private renderEnumDialog(): React.JSX.Element | null {
+    private renderEnumDialog(): JSX.Element | null {
         if (!this.state.enumDialog) {
             return null;
         }
@@ -5580,88 +5900,101 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             .map(id => ({
                 name: getName(this.objects[id]?.common?.name || id.split('.').pop() || '', this.props.lang),
                 value: id,
-                icon: getSelectIdIconFromObjects(this.objects, id, this.imagePrefix),
+                icon: getSelectIdIconFromObjects(this.objects, id, this.props.lang, this.imagePrefix),
             }))
             .sort((a, b) => (a.name > b.name ? 1 : -1));
 
         enums.forEach(_item => {
             if (_item.icon && typeof _item.icon === 'string') {
-                _item.icon = <Box style={styles.enumIconDiv}>
-                    <img src={_item.icon} style={styles.enumIcon} alt={_item.name} />
-                </Box>;
+                _item.icon = (
+                    <Box style={styles.enumIconDiv}>
+                        <img
+                            src={_item.icon}
+                            style={styles.enumIcon}
+                            alt={_item.name}
+                        />
+                    </Box>
+                );
             }
         });
 
         // const hasIcons = !!enums.find(item => item.icon);
 
-        return <Dialog
-            sx={{ '& .MuiPaper-root': styles.enumDialog }}
-            onClose={() => this.setState({ enumDialog: null })}
-            aria-labelledby="enum-dialog-title"
-            open={!0} // true
-        >
-            <DialogTitle id="enum-dialog-title">
-                {type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms')}
-                <Fab
-                    sx={styles.enumButton}
-                    color="primary"
-                    disabled={enumsOriginal === JSON.stringify(itemEnums)}
-                    size="small"
-                    onClick={() => this.syncEnum(item.data.id, type, itemEnums).then(() =>
-                        this.setState({ enumDialog: null, enumDialogEnums: null }))}
-                >
-                    <IconCheck />
-                </Fab>
-            </DialogTitle>
-            <List sx={{ '&.MuiList-root': styles.enumList }}>
-                {enums.map(_item => {
-                    let id;
-                    let name;
-                    let icon;
-
-                    if (typeof _item === 'object') {
-                        id = _item.value;
-                        name = _item.name;
-                        icon = _item.icon;
-                    } else {
-                        id = _item;
-                        name = _item;
-                    }
-                    const labelId = `checkbox-list-label-${id}`;
-
-                    return <ListItem
-                        sx={styles.headerCellSelectItem}
-                        key={id}
-                        onClick={() => {
-                            const pos = itemEnums.indexOf(id);
-                            const enumDialogEnums = JSON.parse(JSON.stringify(this.state.enumDialogEnums));
-                            if (pos === -1) {
-                                enumDialogEnums.push(id);
-                                enumDialogEnums.sort();
-                            } else {
-                                enumDialogEnums.splice(pos, 1);
-                            }
-                            this.setState({ enumDialogEnums });
-                        }}
-                        secondaryAction={icon}
+        return (
+            <Dialog
+                sx={{ '& .MuiPaper-root': styles.enumDialog }}
+                onClose={() => this.setState({ enumDialog: null })}
+                aria-labelledby="enum-dialog-title"
+                open={!0} // true
+            >
+                <DialogTitle id="enum-dialog-title">
+                    {type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms')}
+                    <Fab
+                        sx={styles.enumButton}
+                        color="primary"
+                        disabled={enumsOriginal === JSON.stringify(itemEnums)}
+                        size="small"
+                        onClick={() =>
+                            this.syncEnum(item.data.id, type, itemEnums).then(() =>
+                                this.setState({ enumDialog: null, enumDialogEnums: null }),
+                            )
+                        }
                     >
-                        <ListItemIcon sx={{ '&.MuiListItemIcon-root': styles.enumCheckbox }}>
-                            <Checkbox
-                                edge="start"
-                                checked={itemEnums.includes(id)}
-                                tabIndex={-1}
-                                disableRipple
-                                inputProps={{ 'aria-labelledby': labelId }}
-                            />
-                        </ListItemIcon>
-                        <ListItemText id={labelId}>{name}</ListItemText>
-                    </ListItem>;
-                })}
-            </List>
-        </Dialog>;
+                        <IconCheck />
+                    </Fab>
+                </DialogTitle>
+                <List sx={{ '&.MuiList-root': styles.enumList }}>
+                    {enums.map(_item => {
+                        let id;
+                        let name;
+                        let icon;
+
+                        if (typeof _item === 'object') {
+                            id = _item.value;
+                            name = _item.name;
+                            icon = _item.icon;
+                        } else {
+                            id = _item;
+                            name = _item;
+                        }
+                        const labelId = `checkbox-list-label-${id}`;
+
+                        return (
+                            <ListItem
+                                sx={styles.headerCellSelectItem}
+                                key={id}
+                                onClick={() => {
+                                    const pos = itemEnums.indexOf(id);
+                                    const enumDialogEnums = JSON.parse(JSON.stringify(this.state.enumDialogEnums));
+                                    if (pos === -1) {
+                                        enumDialogEnums.push(id);
+                                        enumDialogEnums.sort();
+                                    } else {
+                                        enumDialogEnums.splice(pos, 1);
+                                    }
+                                    this.setState({ enumDialogEnums });
+                                }}
+                                secondaryAction={icon}
+                            >
+                                <ListItemIcon sx={{ '&.MuiListItemIcon-root': styles.enumCheckbox }}>
+                                    <Checkbox
+                                        edge="start"
+                                        checked={itemEnums.includes(id)}
+                                        tabIndex={-1}
+                                        disableRipple
+                                        inputProps={{ 'aria-labelledby': labelId }}
+                                    />
+                                </ListItemIcon>
+                                <ListItemText id={labelId}>{name}</ListItemText>
+                            </ListItem>
+                        );
+                    })}
+                </List>
+            </Dialog>
+        );
     }
 
-    private renderEditRoleDialog(): React.JSX.Element | null {
+    private renderEditRoleDialog(): JSX.Element | null {
         if (!this.state.roleDialog || !this.props.objectBrowserEditRole) {
             return null;
         }
@@ -5669,24 +6002,26 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (this.state.roleDialog && this.props.objectBrowserEditRole) {
             const ObjectBrowserEditRole = this.props.objectBrowserEditRole;
 
-            return <ObjectBrowserEditRole
-                key="objectBrowserEditRole"
-                id={this.state.roleDialog}
-                socket={this.props.socket}
-                t={this.props.t}
-                roles={this.info.roles}
-                onClose={(obj?: ioBroker.Object | null | undefined) => {
-                    if (obj) {
-                        this.info.objects[this.state.roleDialog as string] = obj;
-                    }
-                    this.setState({ roleDialog: null });
-                }}
-            />;
+            return (
+                <ObjectBrowserEditRole
+                    key="objectBrowserEditRole"
+                    id={this.state.roleDialog}
+                    socket={this.props.socket}
+                    t={this.props.t}
+                    roles={this.info.roles}
+                    onClose={(obj?: ioBroker.Object | null) => {
+                        if (obj) {
+                            this.info.objects[this.state.roleDialog as string] = obj;
+                        }
+                        this.setState({ roleDialog: null });
+                    }}
+                />
+            );
         }
         return null;
     }
 
-    private onColumnsEditCustomDialogClose(isSave?: boolean) {
+    private onColumnsEditCustomDialogClose(isSave?: boolean): void {
         // cannot be null
         const customColumnDialog: {
             value: boolean | number | string;
@@ -5709,7 +6044,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.props.socket
                 .getObject(this.state.columnsEditCustomDialog?.obj?._id || '')
                 .then(obj => {
-                    if (obj && ObjectBrowserClass.setCustomValue(obj, this.state.columnsEditCustomDialog?.it as AdapterColumn, value)) {
+                    if (
+                        obj &&
+                        ObjectBrowserClass.setCustomValue(
+                            obj,
+                            this.state.columnsEditCustomDialog?.it as AdapterColumn,
+                            value,
+                        )
+                    ) {
                         return this.props.socket.setObject(obj._id, obj);
                     }
                     throw new Error(this.props.t('ra_Cannot update attribute, because not found in the object'));
@@ -5722,7 +6064,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    private renderColumnsEditCustomDialog() {
+    private renderColumnsEditCustomDialog(): JSX.Element | null {
         if (!this.state.columnsEditCustomDialog) {
             return null;
         }
@@ -5738,23 +6080,52 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             };
         }
 
-        return <Dialog
-            onClose={() => this.setState({ columnsEditCustomDialog: null })}
-            maxWidth="md"
-            aria-labelledby="custom-dialog-title"
-            open={!0}
-        >
-            <DialogTitle id="custom-dialog-title">
-                {`${this.props.t('ra_Edit object field')}: ${this.state.columnsEditCustomDialog.obj._id}`}
-            </DialogTitle>
-            <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    {this.customColumnDialog.type === 'boolean' ? <FormControlLabel
-                        control={
-                            <Checkbox
-                                onKeyUp={e =>
-                                    e.key === 'Enter' && this.onColumnsEditCustomDialogClose(true)}
-                                defaultChecked={this.customColumnDialog.value === 'true'}
+        return (
+            <Dialog
+                onClose={() => this.setState({ columnsEditCustomDialog: null })}
+                maxWidth="md"
+                aria-labelledby="custom-dialog-title"
+                open={!0}
+            >
+                <DialogTitle id="custom-dialog-title">
+                    {`${this.props.t('ra_Edit object field')}: ${this.state.columnsEditCustomDialog.obj._id}`}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {this.customColumnDialog.type === 'boolean' ? (
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        onKeyUp={e => e.key === 'Enter' && this.onColumnsEditCustomDialogClose(true)}
+                                        defaultChecked={this.customColumnDialog.value === 'true'}
+                                        onChange={e => {
+                                            const customColumnDialog: {
+                                                value: boolean | number | string;
+                                                type: 'boolean' | 'number' | 'string';
+                                                initValue: boolean | number | string;
+                                            } = this.customColumnDialog as {
+                                                value: boolean | number | string;
+                                                type: 'boolean' | 'number' | 'string';
+                                                initValue: boolean | number | string;
+                                            };
+
+                                            customColumnDialog.value = e.target.checked.toString();
+                                            const changed = customColumnDialog.value !== customColumnDialog.initValue;
+                                            if (changed === !this.state.customColumnDialogValueChanged) {
+                                                this.setState({ customColumnDialogValueChanged: changed });
+                                            }
+                                        }}
+                                    />
+                                }
+                                label={`${this.state.columnsEditCustomDialog.it.name} (${this.state.columnsEditCustomDialog.it.pathText})`}
+                            />
+                        ) : (
+                            <TextField
+                                variant="standard"
+                                defaultValue={this.customColumnDialog.value}
+                                fullWidth
+                                onKeyUp={e => e.key === 'Enter' && this.onColumnsEditCustomDialogClose(true)}
+                                label={`${this.state.columnsEditCustomDialog.it.name} (${this.state.columnsEditCustomDialog.it.pathText})`}
                                 onChange={e => {
                                     const customColumnDialog: {
                                         value: boolean | number | string;
@@ -5766,70 +6137,41 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                         initValue: boolean | number | string;
                                     };
 
-                                    customColumnDialog.value = e.target.checked.toString();
-                                    const changed =
-                                        customColumnDialog.value !== customColumnDialog.initValue;
+                                    customColumnDialog.value = e.target.value;
+                                    const changed = customColumnDialog.value !== customColumnDialog.initValue;
                                     if (changed === !this.state.customColumnDialogValueChanged) {
                                         this.setState({ customColumnDialogValueChanged: changed });
                                     }
                                 }}
+                                autoFocus
                             />
-                        }
-                        label={`${this.state.columnsEditCustomDialog.it.name} (${this.state.columnsEditCustomDialog.it.pathText})`}
-                    /> : <TextField
-                        variant="standard"
-                        defaultValue={this.customColumnDialog.value}
-                        fullWidth
-                        onKeyUp={e => e.key === 'Enter' && this.onColumnsEditCustomDialogClose(true)}
-                        label={`${this.state.columnsEditCustomDialog.it.name} (${this.state.columnsEditCustomDialog.it.pathText})`}
-                        onChange={e => {
-                            const customColumnDialog: {
-                                value: boolean | number | string;
-                                type: 'boolean' | 'number' | 'string';
-                                initValue: boolean | number | string;
-                            } = this.customColumnDialog as {
-                                value: boolean | number | string;
-                                type: 'boolean' | 'number' | 'string';
-                                initValue: boolean | number | string;
-                            };
-
-                            customColumnDialog.value = e.target.value;
-                            const changed =
-                                customColumnDialog.value !== customColumnDialog.initValue;
-                            if (changed === !this.state.customColumnDialogValueChanged) {
-                                this.setState({ customColumnDialogValueChanged: changed });
-                            }
-                        }}
-                        autoFocus
-                    />}
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    onClick={() => this.onColumnsEditCustomDialogClose(true)}
-                    disabled={!this.state.customColumnDialogValueChanged}
-                    color="primary"
-                    startIcon={<IconCheck />}
-                >
-                    {this.props.t('ra_Update')}
-                </Button>
-                <Button
-                    color="grey"
-                    variant="contained"
-                    onClick={() => this.onColumnsEditCustomDialogClose()}
-                    startIcon={<IconClose />}
-                >
-                    {this.props.t('ra_Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                        )}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.onColumnsEditCustomDialogClose(true)}
+                        disabled={!this.state.customColumnDialogValueChanged}
+                        color="primary"
+                        startIcon={<IconCheck />}
+                    >
+                        {this.props.t('ra_Update')}
+                    </Button>
+                    <Button
+                        color="grey"
+                        variant="contained"
+                        onClick={() => this.onColumnsEditCustomDialogClose()}
+                        startIcon={<IconClose />}
+                    >
+                        {this.props.t('ra_Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
-    private static getCustomValue(
-        obj: ioBroker.Object,
-        it: AdapterColumn,
-    ): string | number | boolean | null {
+    private static getCustomValue(obj: ioBroker.Object, it: AdapterColumn): string | number | boolean | null {
         if (obj?._id?.startsWith(`${it.adapter}.`) && it.path.length > 1) {
             const p = it.path;
             let value;
@@ -5839,7 +6181,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     // most common case
                     value = anyObj[p[0]][p[1]];
                 } else if (p.length === 3) {
-                    value = anyObj[p[0]][p[1]] && typeof anyObj[p[0]][p[1]] === 'object' ? anyObj[p[0]][p[1]][p[2]] : null;
+                    value =
+                        anyObj[p[0]][p[1]] && typeof anyObj[p[0]][p[1]] === 'object' ? anyObj[p[0]][p[1]][p[2]] : null;
                 } else if (p.length === 4) {
                     value =
                         anyObj[p[0]][p[1]] && typeof anyObj[p[0]][p[1]] === 'object' && anyObj[p[0]][p[1]][p[2]]
@@ -5873,11 +6216,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         return null;
     }
 
-    private static setCustomValue(
-        obj: ioBroker.Object,
-        it: AdapterColumn,
-        value: string | number | boolean,
-    ): boolean {
+    private static setCustomValue(obj: ioBroker.Object, it: AdapterColumn, value: string | number | boolean): boolean {
         if (obj?._id?.startsWith(`${it.adapter}.`) && it.path.length > 1) {
             const p = it.path;
             const anyObj: Record<string, any> = obj as Record<string, any>;
@@ -5937,68 +6276,75 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Renders a custom value.
      */
-    renderCustomValue(
-        obj: ioBroker.Object,
-        it: AdapterColumn,
-        item: TreeItem,
-    ): React.JSX.Element | null {
+    renderCustomValue(obj: ioBroker.Object, it: AdapterColumn, item: TreeItem): JSX.Element | null {
         const text = ObjectBrowserClass.getCustomValue(obj, it);
         if (text !== null && text !== undefined) {
             if (it.edit && !this.props.notEditable && (!it.objTypes || it.objTypes.includes(obj.type))) {
-                return <Box
+                return (
+                    <Box
+                        component="div"
+                        style={{
+                            ...styles.columnCustom,
+                            ...styles.columnCustomEditable,
+                            ...styles[`columnCustom_${it.align}`],
+                        }}
+                        onClick={() =>
+                            this.setState({
+                                columnsEditCustomDialog: { item, it, obj },
+                                customColumnDialogValueChanged: false,
+                            })
+                        }
+                    >
+                        {text}
+                    </Box>
+                );
+            }
+            return (
+                <Box
                     component="div"
                     style={{
                         ...styles.columnCustom,
-                        ...styles.columnCustomEditable,
                         ...styles[`columnCustom_${it.align}`],
                     }}
-                    onClick={() => this.setState({
-                        columnsEditCustomDialog: { item, it, obj },
-                        customColumnDialogValueChanged: false,
-                    })}
                 >
                     {text}
-                </Box>;
-            }
-            return <Box
-                component="div"
-                style={{
-                    ...styles.columnCustom,
-                    ...styles[`columnCustom_${it.align}`],
-                }}
-            >
-                {text}
-            </Box>;
+                </Box>
+            );
         }
         return null;
     }
 
-    renderAliasLink(id: string, index?: number, customStyle?: Record<string, any>): React.JSX.Element | null {
+    renderAliasLink(id: string, index?: number, customStyle?: Record<string, any>): JSX.Element | null {
+        const _index = index || 0;
         // read the type of operation
-        const aliasObj = this.objects[this.info.aliasesMap[id][index]].common.alias.id;
+        const aliasObj = this.objects[this.info.aliasesMap[id][_index]].common.alias.id;
         if (aliasObj) {
-            index = index || 0;
-            return <Box
-                component="div"
-                onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    const aliasId = this.info.aliasesMap[id][index];
-                    // if more than one alias, close the menu
-                    if (this.info.aliasesMap[id].length > 1) {
-                        this.setState({ aliasMenu: '' });
-                    }
-                    this.onSelect(aliasId);
-                    setTimeout(() => this.expandAllSelected(() => this.scrollToItem(aliasId)), 100);
-                }}
-                sx={customStyle || this.styles.aliasAlone}
-            >
-                <span className="admin-browser-arrow">
-                    {(typeof aliasObj === 'string' ||
-                        (aliasObj.read === id && aliasObj.write === id)) ? '↔' : (aliasObj.read === id ? '→' : '←')}
-                </span>
-                {this.info.aliasesMap[id][index]}
-            </Box>;
+            return (
+                <Box
+                    component="div"
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const aliasId = this.info.aliasesMap[id][_index];
+                        // if more than one alias, close the menu
+                        if (this.info.aliasesMap[id].length > 1) {
+                            this.setState({ aliasMenu: '' });
+                        }
+                        this.onSelect(aliasId);
+                        setTimeout(() => this.expandAllSelected(() => this.scrollToItem(aliasId)), 100);
+                    }}
+                    sx={customStyle || this.styles.aliasAlone}
+                >
+                    <span className="admin-browser-arrow">
+                        {typeof aliasObj === 'string' || (aliasObj.read === id && aliasObj.write === id)
+                            ? '↔'
+                            : aliasObj.read === id
+                                ? '→'
+                                : '←'}
+                    </span>
+                    {this.info.aliasesMap[id][_index]}
+                </Box>
+            );
         }
 
         return null;
@@ -6011,7 +6357,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         item: TreeItem,
         isExpanded: boolean | undefined,
         counter: { count: number },
-    ): { row: React.JSX.Element; details: React.JSX.Element | null } {
+    ): { row: JSX.Element; details: JSX.Element | null } {
         const id = item.data.id;
         counter.count++;
         isExpanded = isExpanded === undefined ? this.state.expanded.includes(id) : isExpanded;
@@ -6028,9 +6374,17 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             itemType === 'channel' ||
             itemType === 'meta'
         ) {
-            iconFolder = isExpanded ?
-                <IconOpen style={this.styles.cellIdIconFolder} onClick={() => this.toggleExpanded(id)} /> :
-                <IconClosed style={this.styles.cellIdIconFolder} onClick={() => this.toggleExpanded(id)} />;
+            iconFolder = isExpanded ? (
+                <IconOpen
+                    style={this.styles.cellIdIconFolder}
+                    onClick={() => this.toggleExpanded(id)}
+                />
+            ) : (
+                <IconClosed
+                    style={this.styles.cellIdIconFolder}
+                    onClick={() => this.toggleExpanded(id)}
+                />
+            );
         } else if (obj && obj.common && obj.common.write === false && obj.type === 'state') {
             iconFolder = <IconDocumentReadOnly style={this.styles.cellIdIconDocument} />;
         } else {
@@ -6041,14 +6395,23 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (item.data.icon) {
             if (typeof item.data.icon === 'string') {
                 if (item.data.icon.length < 3) {
-                    iconItem = <span className="iconOwn" style={styles.cellIdIconOwn}>{item.data.icon}</span>; // utf-8 char
+                    iconItem = (
+                        <span
+                            className="iconOwn"
+                            style={styles.cellIdIconOwn}
+                        >
+                            {item.data.icon}
+                        </span>
+                    ); // utf-8 char
                 } else {
-                    iconItem = <Icon
-                        style={styles.cellIdIconOwn}
-                        className="iconOwn"
-                        src={item.data.icon}
-                        alt=""
-                    />;
+                    iconItem = (
+                        <Icon
+                            style={styles.cellIdIconOwn}
+                            className="iconOwn"
+                            src={item.data.icon}
+                            alt=""
+                        />
+                    );
                 }
             } else {
                 iconItem = item.data.icon;
@@ -6075,8 +6438,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         const checkbox =
             this.props.multiSelect &&
             this.objects[id] &&
-            (!this.props.types || this.props.types.includes(this.objects[id].type)) ?
-                <Checkbox style={styles.checkBox} checked={this.state.selected.includes(id)} /> : null;
+            (!this.props.types || this.props.types.includes(this.objects[id].type)) ? (
+                <Checkbox
+                    style={styles.checkBox}
+                    checked={this.state.selected.includes(id)}
+                />
+            ) : null;
 
         let valueEditable =
             !this.props.notEditable &&
@@ -6126,76 +6493,83 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        let readWriteAlias: boolean = false;
-        let alias: React.JSX.Element | null = null;
+        let readWriteAlias = false;
+        let alias: JSX.Element | null = null;
         if (id.startsWith('alias.') && common?.alias?.id) {
             readWriteAlias = typeof common.alias.id === 'object';
             if (readWriteAlias) {
-                alias = <div style={styles.cellIdAliasReadWriteDiv}>
-                    {common.alias.id.read ? <Box
-                        component="div"
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            this.onSelect(common.alias.id.read);
-                            setTimeout(
-                                () => this.expandAllSelected(() => this.scrollToItem(common.alias.id.read)),
-                                100,
-                            );
-                        }}
-                        sx={this.styles.aliasReadWrite}
-                    >
-                        ←
-                        {common.alias.id.read}
-                    </Box> : null}
-                    {common.alias.id.write ? <Box
-                        component="div"
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            this.onSelect(common.alias.id.write);
-                            setTimeout(
-                                () => this.expandAllSelected(() => this.scrollToItem(common.alias.id.write)),
-                                100,
-                            );
-                        }}
-                        sx={this.styles.aliasReadWrite}
-                    >
-                        →
-                        {common.alias.id.write}
-                    </Box> : null}
-                </div>;
+                alias = (
+                    <div style={styles.cellIdAliasReadWriteDiv}>
+                        {common.alias.id.read ? (
+                            <Box
+                                component="div"
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    this.onSelect(common.alias.id.read);
+                                    setTimeout(
+                                        () => this.expandAllSelected(() => this.scrollToItem(common.alias.id.read)),
+                                        100,
+                                    );
+                                }}
+                                sx={this.styles.aliasReadWrite}
+                            >
+                                ←{common.alias.id.read}
+                            </Box>
+                        ) : null}
+                        {common.alias.id.write ? (
+                            <Box
+                                component="div"
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    this.onSelect(common.alias.id.write);
+                                    setTimeout(
+                                        () => this.expandAllSelected(() => this.scrollToItem(common.alias.id.write)),
+                                        100,
+                                    );
+                                }}
+                                sx={this.styles.aliasReadWrite}
+                            >
+                                →{common.alias.id.write}
+                            </Box>
+                        ) : null}
+                    </div>
+                );
             } else {
-                alias = <Box
-                    component="div"
-                    onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        this.onSelect(common.alias.id);
-                        setTimeout(() => this.expandAllSelected(() => this.scrollToItem(common.alias.id)), 100);
-                    }}
-                    sx={this.styles.aliasAlone}
-                >
-                    →
-                    {common.alias.id}
-                </Box>;
+                alias = (
+                    <Box
+                        component="div"
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            this.onSelect(common.alias.id);
+                            setTimeout(() => this.expandAllSelected(() => this.scrollToItem(common.alias.id)), 100);
+                        }}
+                        sx={this.styles.aliasAlone}
+                    >
+                        →{common.alias.id}
+                    </Box>
+                );
             }
         } else if (this.info.aliasesMap[id]) {
             // Some alias points to this object. It can be more than one
             if (this.info.aliasesMap[id].length > 1) {
                 // Show number of aliases and open a menu by click
-                alias = <Box
-                    component="div"
-                    id={`alias_${id}`}
-                    onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        this.setState({ aliasMenu: id });
-                    }}
-                    sx={this.styles.aliasAlone}
-                >
-                    {this.props.t('ra_%s links from aliases', this.info.aliasesMap[id].length)}
-                </Box>;
+                alias = (
+                    <Box
+                        component="div"
+                        id={`alias_${id}`}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            this.setState({ aliasMenu: id });
+                        }}
+                        sx={this.styles.aliasAlone}
+                    >
+                        {this.props.t('ra_%s links from aliases', this.info.aliasesMap[id].length)}
+                    </Box>
+                );
             } else {
                 // Show name of alias and open it by click
                 alias = this.renderAliasLink(id, 0);
@@ -6261,11 +6635,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (common.statusStates.errorId && this.states[ids.errorId] && this.states[ids.errorId].val) {
                 checkColor = this.props.themeType === 'dark' ? COLOR_NAME_ERROR_DARK : COLOR_NAME_ERROR_LIGHT;
                 colorSet = true;
-                icons.push(<IconError
-                    key="error"
-                    // title={this.texts.deviceError}
-                    style={this.styles.iconDeviceError}
-                />);
+                icons.push(
+                    <IconError
+                        key="error"
+                        // title={this.texts.deviceError}
+                        style={this.styles.iconDeviceError}
+                    />,
+                );
             }
 
             if (ids.onlineId && this.states[ids.onlineId]) {
@@ -6273,34 +6649,42 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     if (this.states[ids.onlineId].val) {
                         checkColor =
                             this.props.themeType === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT;
-                        icons.push(<IconConnection
-                            key="conn"
-                            // title={this.texts.deviceError}
-                            style={this.styles.iconDeviceConnected}
-                        />);
+                        icons.push(
+                            <IconConnection
+                                key="conn"
+                                // title={this.texts.deviceError}
+                                style={this.styles.iconDeviceConnected}
+                            />,
+                        );
                     } else {
                         checkColor =
                             this.props.themeType === 'dark'
                                 ? COLOR_NAME_DISCONNECTED_DARK
                                 : COLOR_NAME_DISCONNECTED_LIGHT;
-                        icons.push(<IconDisconnected
+                        icons.push(
+                            <IconDisconnected
+                                key="disc"
+                                // title={this.texts.deviceError}
+                                style={this.styles.iconDeviceDisconnected}
+                            />,
+                        );
+                    }
+                } else if (this.states[ids.onlineId].val) {
+                    icons.push(
+                        <IconConnection
+                            key="conn"
+                            // title={this.texts.deviceError}
+                            style={this.styles.iconDeviceConnected}
+                        />,
+                    );
+                } else {
+                    icons.push(
+                        <IconDisconnected
                             key="disc"
                             // title={this.texts.deviceError}
                             style={this.styles.iconDeviceDisconnected}
-                        />);
-                    }
-                } else if (this.states[ids.onlineId].val) {
-                    icons.push(<IconConnection
-                        key="conn"
-                        // title={this.texts.deviceError}
-                        style={this.styles.iconDeviceConnected}
-                    />);
-                } else {
-                    icons.push(<IconDisconnected
-                        key="disc"
-                        // title={this.texts.deviceError}
-                        style={this.styles.iconDeviceDisconnected}
-                    />);
+                        />,
+                    );
                 }
             } else if (ids.offlineId && this.states[ids.offlineId]) {
                 if (!colorSet) {
@@ -6309,48 +6693,62 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             this.props.themeType === 'dark'
                                 ? COLOR_NAME_DISCONNECTED_DARK
                                 : COLOR_NAME_DISCONNECTED_LIGHT;
-                        icons.push(<IconDisconnected
-                            key="disc"
-                            // title={this.texts.deviceError}
-                            style={this.styles.iconDeviceDisconnected}
-                        />);
+                        icons.push(
+                            <IconDisconnected
+                                key="disc"
+                                // title={this.texts.deviceError}
+                                style={this.styles.iconDeviceDisconnected}
+                            />,
+                        );
                     } else {
                         checkColor =
                             this.props.themeType === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT;
-                        icons.push(<IconConnection
+                        icons.push(
+                            <IconConnection
+                                key="conn"
+                                // title={this.texts.deviceError}
+                                style={this.styles.iconDeviceConnected}
+                            />,
+                        );
+                    }
+                } else if (this.states[ids.offlineId].val) {
+                    icons.push(
+                        <IconDisconnected
+                            key="disc"
+                            // title={this.texts.deviceError}
+                            style={this.styles.iconDeviceDisconnected}
+                        />,
+                    );
+                } else {
+                    icons.push(
+                        <IconConnection
                             key="conn"
                             // title={this.texts.deviceError}
                             style={this.styles.iconDeviceConnected}
-                        />);
-                    }
-                } else if (this.states[ids.offlineId].val) {
-                    icons.push(<IconDisconnected
-                        key="disc"
-                        // title={this.texts.deviceError}
-                        style={this.styles.iconDeviceDisconnected}
-                    />);
-                } else {
-                    icons.push(<IconConnection
-                        key="conn"
-                        // title={this.texts.deviceError}
-                        style={this.styles.iconDeviceConnected}
-                    />);
+                        />,
+                    );
                 }
             }
         }
 
         const q = checkVisibleObjectType ? Utils.quality2text(this.states[id]?.q || 0).join(', ') : null;
 
-        let name: React.JSX.Element[] | string = item.data?.title || '';
-        let useDesc: boolean = false;
+        let name: JSX.Element[] | string = item.data?.title || '';
+        let useDesc = false;
         if (this.state.showDescription) {
             const oTooltip: string | null = getObjectTooltip(item.data, this.props.lang);
             if (oTooltip) {
                 name = [
-                    <div key="name" style={styles.cellNameDivDiv}>
+                    <div
+                        key="name"
+                        style={styles.cellNameDivDiv}
+                    >
                         {name}
                     </div>,
-                    <div key="desc" style={styles.cellDescription}>
+                    <div
+                        key="desc"
+                        style={styles.cellDescription}
+                    >
                         {oTooltip}
                     </div>,
                 ];
@@ -6360,383 +6758,521 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         const narrowStyleWithDetails = this.props.width === 'xs' && this.state.focused === id;
 
-        const colID = <Grid2
-            container
-            wrap="nowrap"
-            direction="row"
-            sx={styles.cellId}
-            style={{ width: this.columnsVisibility.id, paddingLeft }}
-        >
-            <Grid2 container alignItems="center">
-                {checkbox}
-                {iconFolder}
-            </Grid2>
+        const colID = (
             <Grid2
-                style={{
-                    ...styles.cellIdSpan,
-                    ...(invertBackground ? this.styles.invertedBackground : undefined),
-                    color: checkColor,
-                    fontWeight: bold ? 'bold' : undefined,
-                }}
+                container
+                wrap="nowrap"
+                direction="row"
+                sx={styles.cellId}
+                style={{ width: this.columnsVisibility.id, paddingLeft }}
             >
-                <Tooltip
-                    title={getIdFieldTooltip(item.data, this.props.lang)}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
+                <Grid2
+                    container
+                    alignItems="center"
                 >
-                    <div>{item.data.name}</div>
-                </Tooltip>
-                {alias}
-                {icons}
+                    {checkbox}
+                    {iconFolder}
+                </Grid2>
+                <Grid2
+                    style={{
+                        ...styles.cellIdSpan,
+                        ...(invertBackground ? this.styles.invertedBackground : undefined),
+                        color: checkColor,
+                        fontWeight: bold ? 'bold' : undefined,
+                    }}
+                >
+                    <Tooltip
+                        title={getIdFieldTooltip(item.data, this.props.lang)}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <div>{item.data.name}</div>
+                    </Tooltip>
+                    {alias}
+                    {icons}
+                </Grid2>
+                <div style={{ ...styles.grow, ...(invertBackground ? this.styles.invertedBackgroundFlex : {}) }} />
+                <Grid2
+                    container
+                    alignItems="center"
+                >
+                    {iconItem}
+                </Grid2>
+                {this.props.width !== 'xs' ? (
+                    <div>
+                        <IconCopy
+                            className={narrowStyleWithDetails ? '' : 'copyButton'}
+                            style={styles.cellCopyButton}
+                            onClick={e => this.onCopy(e, id)}
+                        />
+                    </div>
+                ) : null}
             </Grid2>
-            <div style={{ ...styles.grow, ...(invertBackground ? this.styles.invertedBackgroundFlex : {}) }} />
-            <Grid2 container alignItems="center">
-                {iconItem}
-            </Grid2>
-            {this.props.width !== 'xs' ? <div>
-                <IconCopy
-                    className={narrowStyleWithDetails ? '' : 'copyButton'}
-                    style={styles.cellCopyButton}
-                    onClick={e => this.onCopy(e, id)}
-                />
-            </div> : null}
-        </Grid2>;
+        );
 
-        let colName = (narrowStyleWithDetails && name) || this.columnsVisibility.name ? <Box
-            component="div"
-            sx={{
-                ...styles.cellName,
-                ...(useDesc ? styles.cellNameWithDesc : undefined),
-                width: this.props.width !== 'xs' ? this.columnsVisibility.name : undefined,
-                ml: narrowStyleWithDetails ? 0 : '5px',
-            }}
-        >
-            {name}
-            {!narrowStyleWithDetails && item.data?.title ? <Box
-                style={{ color: checkColor }}
-            >
-                <IconCopy
-                    className="copyButton"
-                    style={styles.cellCopyButton}
-                    onClick={e => this.onCopy(e, item.data?.title as string)}
-                />
-            </Box> : null}
-        </Box> : null;
+        let colName =
+            (narrowStyleWithDetails && name) || this.columnsVisibility.name ? (
+                <Box
+                    component="div"
+                    sx={{
+                        ...styles.cellName,
+                        ...(useDesc ? styles.cellNameWithDesc : undefined),
+                        width: this.props.width !== 'xs' ? this.columnsVisibility.name : undefined,
+                        ml: narrowStyleWithDetails ? 0 : '5px',
+                    }}
+                >
+                    {name}
+                    {!narrowStyleWithDetails && item.data?.title ? (
+                        <Box style={{ color: checkColor }}>
+                            <IconCopy
+                                className="copyButton"
+                                style={styles.cellCopyButton}
+                                onClick={e => this.onCopy(e, item.data?.title as string)}
+                            />
+                        </Box>
+                    ) : null}
+                </Box>
+            ) : null;
 
-        let colMiddle: ({
-            el: React.JSX.Element;
-            type: 'filter_type' | 'filter_role' | 'filter_func' | 'filter_room' | 'quality' | 'from' | 'lc' | 'ts';
+        let colMiddle:
+            | ({
+            el: JSX.Element;
+            type:
+                | 'filter_type'
+                | 'filter_role'
+                | 'filter_func'
+                | 'filter_room'
+                | 'quality'
+                | 'from'
+                | 'lc'
+                | 'ts';
             onClick?: (() => void) | null | undefined;
-        } | null)[] | null;
+        } | null)[]
+            | null;
         if (!this.state.statesView) {
             colMiddle = [
-                (narrowStyleWithDetails && obj?.type) || this.columnsVisibility.type ? {
-                    el: <div
-                        key="type"
-                        style={{
-                            ...styles.cellType,
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.type : undefined,
-                        }}
-                    >
-                        {typeImg}
-                        &nbsp;
-                        {obj?.type}
-                    </div>,
-                    type: 'filter_type',
-                } : null,
-                (narrowStyleWithDetails && common) || this.columnsVisibility.role ? {
-                    el: <div
-                        key="role"
-                        style={{
-                            ...styles.cellRole,
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.role : '100%',
-                            cursor:
-                                this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
-                                    ? 'text'
-                                    : 'default',
-                        }}
-                        onClick={
-                            !narrowStyleWithDetails && this.state.filter.expertMode &&
-                            enumEditable && this.props.objectBrowserEditRole
+                (narrowStyleWithDetails && obj?.type) || this.columnsVisibility.type
+                    ? {
+                        el: (
+                            <div
+                                key="type"
+                                style={{
+                                    ...styles.cellType,
+                                    width: this.props.width !== 'xs' ? this.columnsVisibility.type : undefined,
+                                }}
+                            >
+                                {typeImg}
+                                &nbsp;
+                                {obj?.type}
+                            </div>
+                        ),
+                        type: 'filter_type',
+                    }
+                    : null,
+                (narrowStyleWithDetails && common) || this.columnsVisibility.role
+                    ? {
+                        el: (
+                            <div
+                                key="role"
+                                style={{
+                                    ...styles.cellRole,
+                                    width: this.props.width !== 'xs' ? this.columnsVisibility.role : '100%',
+                                    cursor:
+                                        this.state.filter.expertMode &&
+                                        enumEditable &&
+                                        this.props.objectBrowserEditRole
+                                            ? 'text'
+                                            : 'default',
+                                }}
+                                onClick={
+                                    !narrowStyleWithDetails &&
+                                    this.state.filter.expertMode &&
+                                    enumEditable &&
+                                    this.props.objectBrowserEditRole
+                                        ? () => this.setState({ roleDialog: item.data.id })
+                                        : undefined
+                                }
+                            >
+                                {common?.role}
+                            </div>
+                        ),
+                        type: 'filter_role',
+                        onClick:
+                            narrowStyleWithDetails &&
+                            this.state.filter.expertMode &&
+                            enumEditable &&
+                            this.props.objectBrowserEditRole
                                 ? () => this.setState({ roleDialog: item.data.id })
-                                : undefined
-                        }
-                    >
-                        {common?.role}
-                    </div>,
-                    type: 'filter_role',
-                    onClick: narrowStyleWithDetails && this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
-                        ? () => this.setState({ roleDialog: item.data.id })
-                        : undefined,
-                } : null,
-                (narrowStyleWithDetails && common) || this.columnsVisibility.room ? {
-                    el: <div
-                        key="room"
-                        style={{
-                            ...styles.cellRoom,
-                            ...(item.data.per ? styles.cellEnumParent : {}),
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.room : '100%',
-                            cursor: enumEditable ? 'text' : 'default',
-                        }}
-                        onClick={!narrowStyleWithDetails && enumEditable ? () => {
-                            const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums');
-                            this.setState({
-                                enumDialogEnums: enums,
-                                enumDialog: {
-                                    item,
-                                    type: 'room',
-                                    enumsOriginal: JSON.stringify(enums),
-                                },
-                            });
-                        } : undefined}
-                    >
-                        {item.data.rooms}
-                    </div>,
-                    type: 'filter_room',
-                    onClick: narrowStyleWithDetails && enumEditable ? () => {
-                        const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums');
-                        this.setState({
-                            enumDialogEnums: enums,
-                            enumDialog: {
-                                item,
-                                type: 'room',
-                                enumsOriginal: JSON.stringify(enums),
-                            },
-                        });
-                    } : undefined,
-                } : null,
-                (narrowStyleWithDetails && common) || this.columnsVisibility.func ? {
-                    el: <div
-                        key="func"
-                        style={{
-                            ...styles.cellFunc,
-                            ...(item.data.pef ? styles.cellEnumParent : {}),
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.func : '100%',
-                            cursor: enumEditable ? 'text' : 'default',
-                        }}
-                        onClick={!narrowStyleWithDetails && enumEditable ? () => {
-                            const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums');
-                            this.setState({
-                                enumDialogEnums: enums,
-                                enumDialog: {
-                                    item,
-                                    type: 'func',
-                                    enumsOriginal: JSON.stringify(enums),
-                                },
-                            });
-                        } : undefined}
-                    >
-                        {item.data.funcs}
-                    </div>,
-                    type: 'filter_func',
-                    onClick: narrowStyleWithDetails && enumEditable ? () => {
-                        const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums');
-                        this.setState({
-                            enumDialogEnums: enums,
-                            enumDialog: {
-                                item,
-                                type: 'func',
-                                enumsOriginal: JSON.stringify(enums),
-                            },
-                        });
-                    } : undefined,
-                } : null,
+                                : undefined,
+                    }
+                    : null,
+                (narrowStyleWithDetails && common) || this.columnsVisibility.room
+                    ? {
+                        el: (
+                            <div
+                                key="room"
+                                style={{
+                                    ...styles.cellRoom,
+                                    ...(item.data.per ? styles.cellEnumParent : {}),
+                                    width: this.props.width !== 'xs' ? this.columnsVisibility.room : '100%',
+                                    cursor: enumEditable ? 'text' : 'default',
+                                }}
+                                onClick={
+                                    !narrowStyleWithDetails && enumEditable
+                                        ? () => {
+                                            const enums = findEnumsForObjectAsIds(
+                                                this.info,
+                                                item.data.id,
+                                                'roomEnums',
+                                            );
+                                            this.setState({
+                                                enumDialogEnums: enums,
+                                                enumDialog: {
+                                                    item,
+                                                    type: 'room',
+                                                    enumsOriginal: JSON.stringify(enums),
+                                                },
+                                            });
+                                        }
+                                        : undefined
+                                }
+                            >
+                                {item.data.rooms}
+                            </div>
+                        ),
+                        type: 'filter_room',
+                        onClick:
+                            narrowStyleWithDetails && enumEditable
+                                ? () => {
+                                    const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums');
+                                    this.setState({
+                                        enumDialogEnums: enums,
+                                        enumDialog: {
+                                            item,
+                                            type: 'room',
+                                            enumsOriginal: JSON.stringify(enums),
+                                        },
+                                    });
+                                }
+                                : undefined,
+                    }
+                    : null,
+                (narrowStyleWithDetails && common) || this.columnsVisibility.func
+                    ? {
+                        el: (
+                            <div
+                                key="func"
+                                style={{
+                                    ...styles.cellFunc,
+                                    ...(item.data.pef ? styles.cellEnumParent : {}),
+                                    width: this.props.width !== 'xs' ? this.columnsVisibility.func : '100%',
+                                    cursor: enumEditable ? 'text' : 'default',
+                                }}
+                                onClick={
+                                    !narrowStyleWithDetails && enumEditable
+                                        ? () => {
+                                            const enums = findEnumsForObjectAsIds(
+                                                this.info,
+                                                item.data.id,
+                                                'funcEnums',
+                                            );
+                                            this.setState({
+                                                enumDialogEnums: enums,
+                                                enumDialog: {
+                                                    item,
+                                                    type: 'func',
+                                                    enumsOriginal: JSON.stringify(enums),
+                                                },
+                                            });
+                                        }
+                                        : undefined
+                                }
+                            >
+                                {item.data.funcs}
+                            </div>
+                        ),
+                        type: 'filter_func',
+                        onClick:
+                            narrowStyleWithDetails && enumEditable
+                                ? () => {
+                                    const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums');
+                                    this.setState({
+                                        enumDialogEnums: enums,
+                                        enumDialog: {
+                                            item,
+                                            type: 'func',
+                                            enumsOriginal: JSON.stringify(enums),
+                                        },
+                                    });
+                                }
+                                : undefined,
+                    }
+                    : null,
             ];
         } else {
             colMiddle = [
-                (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.from) || this.columnsVisibility.changedFrom ? {
-                    el: <div
-                        key="from"
-                        style={{
-                            ...styles.cellRole,
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.changedFrom : undefined,
-                        }}
-                        title={newValueTitle.join('\n')}
-                    >
-                        {checkVisibleObjectType && this.states[id]?.from ? newValue : null}
-                    </div>,
-                    type: 'from',
-                } : null,
-                (narrowStyleWithDetails && q) || this.columnsVisibility.qualityCode ? {
-                    el: <div
-                        key="q"
-                        style={{
-                            ...styles.cellRole,
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.qualityCode : undefined,
-                        }}
-                        title={q || ''}
-                    >
-                        {q}
-                    </div>,
-                    type: 'quality',
-                } : null,
-                (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.ts) || this.columnsVisibility.timestamp ? {
-                    el: <div
-                        key="ts"
-                        style={{
-                            ...styles.cellRole,
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.timestamp : undefined,
-                        }}
-                    >
-                        {checkVisibleObjectType && this.states[id]?.ts
-                            ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat || this.systemConfig.common.dateFormat)
-                            : null}
-                    </div>,
-                    type: 'ts',
-                } : null,
-                (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.lc) || this.columnsVisibility.lastChange ? {
-                    el: <div
-                        key="lc"
-                        style={{
-                            ...styles.cellRole,
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.lastChange : undefined,
-                        }}
-                    >
-                        {checkVisibleObjectType && this.states[id]?.lc
-                            ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat || this.systemConfig.common.dateFormat)
-                            : null}
-                    </div>,
-                    type: 'lc',
-                } : null,
+                (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.from) ||
+                this.columnsVisibility.changedFrom
+                    ? {
+                        el: (
+                            <div
+                                key="from"
+                                style={{
+                                    ...styles.cellRole,
+                                    width: this.props.width !== 'xs' ? this.columnsVisibility.changedFrom : undefined,
+                                }}
+                                title={newValueTitle.join('\n')}
+                            >
+                                {checkVisibleObjectType && this.states[id]?.from ? newValue : null}
+                            </div>
+                        ),
+                        type: 'from',
+                    }
+                    : null,
+                (narrowStyleWithDetails && q) || this.columnsVisibility.qualityCode
+                    ? {
+                        el: (
+                            <div
+                                key="q"
+                                style={{
+                                    ...styles.cellRole,
+                                    width: this.props.width !== 'xs' ? this.columnsVisibility.qualityCode : undefined,
+                                }}
+                                title={q || ''}
+                            >
+                                {q}
+                            </div>
+                        ),
+                        type: 'quality',
+                    }
+                    : null,
+                (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.ts) ||
+                this.columnsVisibility.timestamp
+                    ? {
+                        el: (
+                            <div
+                                key="ts"
+                                style={{
+                                    ...styles.cellRole,
+                                    width: this.props.width !== 'xs' ? this.columnsVisibility.timestamp : undefined,
+                                }}
+                            >
+                                {checkVisibleObjectType && this.states[id]?.ts
+                                    ? Utils.formatDate(
+                                        new Date(this.states[id].ts),
+                                        this.props.dateFormat || this.systemConfig.common.dateFormat,
+                                    )
+                                    : null}
+                            </div>
+                        ),
+                        type: 'ts',
+                    }
+                    : null,
+                (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.lc) ||
+                this.columnsVisibility.lastChange
+                    ? {
+                        el: (
+                            <div
+                                key="lc"
+                                style={{
+                                    ...styles.cellRole,
+                                    width: this.props.width !== 'xs' ? this.columnsVisibility.lastChange : undefined,
+                                }}
+                            >
+                                {checkVisibleObjectType && this.states[id]?.lc
+                                    ? Utils.formatDate(
+                                        new Date(this.states[id].lc),
+                                        this.props.dateFormat || this.systemConfig.common.dateFormat,
+                                    )
+                                    : null}
+                            </div>
+                        ),
+                        type: 'lc',
+                    }
+                    : null,
             ];
         }
 
-        let colCustom = this.adapterColumns?.map(it => <div
-            style={{
-                ...styles.cellAdapter,
-                width: this.props.width !== 'xs' ? (this.columnsVisibility as Record<string, number>)[it.id] : undefined,
-            }}
-            key={it.id}
-            title={`${it.adapter} => ${it.pathText}`}
-        >
-            {obj ? this.renderCustomValue(obj, it, item) : null}
-        </div>) || null;
+        let colCustom: JSX.Element[] | null =
+            this.adapterColumns?.map(it => (
+                <div
+                    style={{
+                        ...styles.cellAdapter,
+                        width:
+                            this.props.width !== 'xs'
+                                ? (this.columnsVisibility as Record<string, number>)[it.id]
+                                : undefined,
+                    }}
+                    key={it.id}
+                    title={`${it.adapter} => ${it.pathText}`}
+                >
+                    {obj ? this.renderCustomValue(obj, it, item) : null}
+                </div>
+            )) || null;
 
-        const columnValue = narrowStyleWithDetails || this.columnsVisibility.val ? this.renderColumnValue(id, item, narrowStyleWithDetails) : null;
+        const columnValue =
+            narrowStyleWithDetails || this.columnsVisibility.val
+                ? this.renderColumnValue(id, item, narrowStyleWithDetails)
+                : null;
 
-        let colValue = (narrowStyleWithDetails && columnValue) || this.columnsVisibility.val ? <div
-            style={{
-                ...styles.cellValue,
-                width: this.props.width !== 'xs' ? this.columnsVisibility.val : 'calc(100% - 100px)',
-                cursor: valueEditable ? (common?.type === 'file' ? 'zoom-in' : (item.data.button ? 'grab' : 'text')) : 'default',
-            }}
-            onClick={valueEditable ? () => {
-                if (!obj || !this.states) {
-                    // return;
-                } else if (common?.type === 'file') {
-                    this.setState({ viewFileDialog: id });
-                    // eslint-disable-next-line brace-style
-                } else if (!this.state.filter.expertMode && item.data.button) {
-                    // in non-expert mode control button directly
-                    this.props.socket
-                        .setState(id, true)
-                        .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
-                } else if (!this.state.filter.expertMode && item.data.switch) {
-                    // in non-expert mode control switch directly
-                    this.props.socket
-                        .setState(id, !this.states[id].val)
-                        .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
-                } else {
-                    this.edit = {
-                        val: this.states[id] ? this.states[id].val : '',
-                        q: this.states[id] ? this.states[id].q || 0 : 0,
-                        ack: false,
-                        id,
-                    };
-                    this.setState({ updateOpened: true });
-                }
-            } : undefined}
-        >
-            {columnValue}
-        </div> : null;
+        let colValue =
+            (narrowStyleWithDetails && columnValue) || this.columnsVisibility.val ? (
+                <div
+                    style={{
+                        ...styles.cellValue,
+                        width: this.props.width !== 'xs' ? this.columnsVisibility.val : 'calc(100% - 100px)',
+                        cursor: valueEditable
+                            ? common?.type === 'file'
+                                ? 'zoom-in'
+                                : item.data.button
+                                    ? 'grab'
+                                    : 'text'
+                            : 'default',
+                    }}
+                    onClick={
+                        valueEditable
+                            ? () => {
+                                if (!obj || !this.states) {
+                                    // return;
+                                } else if (common?.type === 'file') {
+                                    this.setState({ viewFileDialog: id });
+                                } else if (!this.state.filter.expertMode && item.data.button) {
+                                    // in non-expert mode control button directly
+                                    this.props.socket
+                                        .setState(id, true)
+                                        .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
+                                } else if (!this.state.filter.expertMode && item.data.switch) {
+                                    // in non-expert mode control switch directly
+                                    this.props.socket
+                                        .setState(id, !this.states[id].val)
+                                        .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
+                                } else {
+                                    this.edit = {
+                                        val: this.states[id] ? this.states[id].val : '',
+                                        q: this.states[id] ? this.states[id].q || 0 : 0,
+                                        ack: false,
+                                        id,
+                                    };
+                                    this.setState({ updateOpened: true });
+                                }
+                            }
+                            : undefined
+                    }
+                >
+                    {columnValue}
+                </div>
+            ) : null;
 
-        let colButtons = narrowStyleWithDetails || this.columnsVisibility.buttons ? <div
-            style={{
-                ...styles.cellButtons,
-                width: this.props.width !== 'xs' ? this.columnsVisibility.buttons : undefined,
-            }}
-        >
-            {this.renderColumnButtons(id, item)}
-        </div> : null;
+        let colButtons =
+            narrowStyleWithDetails || this.columnsVisibility.buttons ? (
+                <div
+                    style={{
+                        ...styles.cellButtons,
+                        width: this.props.width !== 'xs' ? this.columnsVisibility.buttons : undefined,
+                    }}
+                >
+                    {this.renderColumnButtons(id, item)}
+                </div>
+            ) : null;
 
-        let colDetails: React.JSX.Element | null = null;
+        let colDetails: JSX.Element | null = null;
         if (this.props.width === 'xs' && this.state.focused === id) {
             colMiddle = colMiddle.filter(a => a);
-            let renderedMiddle: React.JSX.Element[] | null;
+            let renderedMiddle: (JSX.Element | null)[] | null;
             if (!colMiddle.length) {
                 renderedMiddle = null;
             } else {
-                renderedMiddle = colMiddle.map(it => <div style={styles.cellDetailsLine}>
-                    <span style={styles.cellDetailsName}>
-                        {this.texts[it.type]}
-                        :
-                    </span>
-                    {it.el}
-                    <div style={{ flexGrow: 1 }} />
-                    {it.onClick ? <IconEdit
-                        style={styles.cellCopyButtonInDetails}
-                        onClick={() => it.onClick()}
-                    /> : null}
-                </div>);
+                renderedMiddle = colMiddle.map(it => {
+                    if (!it) {
+                        return null;
+                    }
+                    return (
+                        <div
+                            key={it.type}
+                            style={styles.cellDetailsLine}
+                        >
+                            <span style={styles.cellDetailsName}>{this.texts[it.type]}:</span>
+                            {it.el}
+                            <div style={{ flexGrow: 1 }} />
+                            {it.onClick ? (
+                                <IconEdit
+                                    style={styles.cellCopyButtonInDetails}
+                                    onClick={() => {
+                                        if (it?.onClick) {
+                                            it.onClick();
+                                        }
+                                    }}
+                                />
+                            ) : null}
+                        </div>
+                    );
+                });
             }
             if (!colCustom.length) {
                 colCustom = null;
             }
-            colDetails = <Paper
-                style={{
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: 10,
-                    backgroundColor: this.props.theme.palette.mode === 'dark' ? '#333' : '#ccc',
-                }}
-            >
-                <div style={styles.cellDetailsLine}>
-                    <div style={{ flexGrow: 1 }} />
-                    <IconCopy
-                        style={styles.cellCopyButtonInDetails}
-                        onClick={e => this.onCopy(e, id)}
-                    />
-                </div>
-                {colName && <div style={styles.cellDetailsLine}>
-                    <span style={styles.cellDetailsName}>
-                        {this.texts.name}
-                        :
-                    </span>
-                    {colName}
-                    <div style={{ flexGrow: 1 }} />
-                    {item.data?.title ? <IconCopy
-                        className="copyButton"
-                        style={styles.cellCopyButtonInDetails}
-                        onClick={e => this.onCopy(e, item.data?.title as string)}
-                    /> : null}
-                </div>}
-                {renderedMiddle}
-                {colCustom && <div style={styles.cellDetailsLine}>{colCustom}</div>}
-                {this.objects[id]?.type === 'state' && <div style={styles.cellDetailsLine}>
-                    <span style={styles.cellDetailsName}>
-                        {this.texts.value}
-                        :
-                    </span>
-                    {colValue}
-                    <div style={{ flexGrow: 1 }} />
-                    <IconCopy
-                        className="copyButton"
-                        style={styles.cellCopyButtonInDetails}
-                        onClick={e => {
-                            const { valText } = formatValue({
-                                state: this.states[id],
-                                obj: this.objects[id] as ioBroker.StateObject,
-                                texts: this.texts,
-                                dateFormat: this.props.dateFormat || this.systemConfig.common.dateFormat,
-                                isFloatComma: this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma,
-                            });
-                            this.onCopy(e, valText.v.toString());
-                        }}
-                        key="cc"
-                    />
-                </div>}
-                {colButtons && <div style={{ ...styles.cellDetailsLine, justifyContent: 'right' }}>{colButtons}</div>}
-            </Paper>;
+            colDetails = (
+                <Paper
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        padding: 10,
+                        backgroundColor: this.props.theme.palette.mode === 'dark' ? '#333' : '#ccc',
+                    }}
+                >
+                    <div style={styles.cellDetailsLine}>
+                        <div style={{ flexGrow: 1 }} />
+                        <IconCopy
+                            style={styles.cellCopyButtonInDetails}
+                            onClick={e => this.onCopy(e, id)}
+                        />
+                    </div>
+                    {colName && (
+                        <div style={styles.cellDetailsLine}>
+                            <span style={styles.cellDetailsName}>{this.texts.name}:</span>
+                            {colName}
+                            <div style={{ flexGrow: 1 }} />
+                            {item.data?.title ? (
+                                <IconCopy
+                                    className="copyButton"
+                                    style={styles.cellCopyButtonInDetails}
+                                    onClick={e => this.onCopy(e, item.data?.title as string)}
+                                />
+                            ) : null}
+                        </div>
+                    )}
+                    {renderedMiddle}
+                    {colCustom && <div style={styles.cellDetailsLine}>{colCustom}</div>}
+                    {this.objects[id]?.type === 'state' && (
+                        <div style={styles.cellDetailsLine}>
+                            <span style={styles.cellDetailsName}>{this.texts.value}:</span>
+                            {colValue}
+                            <div style={{ flexGrow: 1 }} />
+                            <IconCopy
+                                className="copyButton"
+                                style={styles.cellCopyButtonInDetails}
+                                onClick={e => {
+                                    const { valText } = formatValue({
+                                        state: this.states[id],
+                                        obj: this.objects[id] as ioBroker.StateObject,
+                                        texts: this.texts,
+                                        dateFormat: this.props.dateFormat || this.systemConfig.common.dateFormat,
+                                        isFloatComma:
+                                            this.props.isFloatComma === undefined
+                                                ? this.systemConfig.common.isFloatComma
+                                                : this.props.isFloatComma,
+                                    });
+                                    this.onCopy(e, valText.v.toString());
+                                }}
+                                key="cc"
+                            />
+                        </div>
+                    )}
+                    {colButtons && (
+                        <div style={{ ...styles.cellDetailsLine, justifyContent: 'right' }}>{colButtons}</div>
+                    )}
+                </Paper>
+            );
 
             colName = null;
             colMiddle = null;
@@ -6745,92 +7281,97 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             colButtons = null;
         }
 
-        const row = <Grid2
-            container
-            direction="row"
-            wrap="nowrap"
-            sx={Utils.getStyle(
-                this.props.theme,
-                styles.tableRow,
-                this.state.linesEnabled && styles.tableRowLines,
-                !this.props.dragEnabled && styles.tableRowNoDragging,
-                alias && styles.tableRowAlias,
-                readWriteAlias && styles.tableRowAliasReadWrite,
-                this.state.focused === id && this.props.multiSelect && styles.tableRowFocused,
-                !item.data.visible && styles.filteredOut,
-                item.data.hasVisibleParent &&
+        const row = (
+            <Grid2
+                container
+                direction="row"
+                wrap="nowrap"
+                sx={Utils.getStyle(
+                    this.props.theme,
+                    styles.tableRow,
+                    this.state.linesEnabled && styles.tableRowLines,
+                    !this.props.dragEnabled && styles.tableRowNoDragging,
+                    alias && styles.tableRowAlias,
+                    readWriteAlias && styles.tableRowAliasReadWrite,
+                    this.state.focused === id && this.props.multiSelect && styles.tableRowFocused,
+                    !item.data.visible && styles.filteredOut,
+                    item.data.hasVisibleParent &&
                     !item.data.visible &&
                     !item.data.hasVisibleChildren &&
                     styles.filteredParentOut,
-                this.state.selected.includes(id) && styles.itemSelected,
-                this.state.selectedNonObject === id && styles.itemSelected,
-            )}
-            key={id}
-            id={id}
-            onMouseDown={e => {
-                this.onSelect(id);
-                let isRightMB;
-                if ('which' in e) {
-                    // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-                    isRightMB = e.which === 3;
-                } else if ('button' in e) {
-                    // IE, Opera
-                    isRightMB = e.button === 2;
-                }
-                if (isRightMB) {
-                    this.contextMenu = {
-                        item,
-                        ts: Date.now(),
-                    };
-                } else {
-                    this.contextMenu = null;
-                }
-            }}
-            onDoubleClick={() => {
-                if (!item.children) {
-                    this.onSelect(id, true);
-                } else {
-                    this.toggleExpanded(id);
-                }
-            }}
-        >
-            {colID}
-            {colName}
-            {colMiddle?.map(it => it?.el)}
-            {colCustom}
-            {colValue}
-            {colButtons}
-        </Grid2>;
+                    this.state.selected.includes(id) && styles.itemSelected,
+                    this.state.selectedNonObject === id && styles.itemSelected,
+                )}
+                key={id}
+                id={id}
+                onMouseDown={e => {
+                    this.onSelect(id);
+                    let isRightMB;
+                    if ('which' in e) {
+                        // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+                        isRightMB = e.which === 3;
+                    } else if ('button' in e) {
+                        // IE, Opera
+                        isRightMB = e.button === 2;
+                    }
+                    if (isRightMB) {
+                        this.contextMenu = {
+                            item,
+                            ts: Date.now(),
+                        };
+                    } else {
+                        this.contextMenu = null;
+                    }
+                }}
+                onDoubleClick={() => {
+                    if (!item.children) {
+                        this.onSelect(id, true);
+                    } else {
+                        this.toggleExpanded(id);
+                    }
+                }}
+            >
+                {colID}
+                {colName}
+                {colMiddle?.map(it => it?.el)}
+                {colCustom}
+                {colValue}
+                {colButtons}
+            </Grid2>
+        );
         return { row, details: colDetails };
     }
 
     /**
      * Renders an item.
      */
-    renderItem(
-        root: TreeItem,
-        isExpanded: boolean | undefined,
-        counter?: { count: number },
-    ): React.JSX.Element[] {
-        const items: (React.JSX.Element | null)[] = [];
+    renderItem(root: TreeItem, isExpanded: boolean | undefined, counter?: { count: number }): JSX.Element[] {
+        const items: (JSX.Element | null)[] = [];
         counter = counter || { count: 0 };
         const result = this.renderLeaf(root, isExpanded, counter);
-        let leaf: React.JSX.Element;
+        let leaf: JSX.Element;
         const DragWrapper = this.props.DragWrapper;
         if (this.props.dragEnabled && DragWrapper) {
             if (root.data.sumVisibility) {
-                leaf = <DragWrapper
-                    key={root.data.id}
-                    item={root}
-                    style={styles.draggable}
-                >
-                    {result.row}
-                </DragWrapper>;
+                leaf = (
+                    <DragWrapper
+                        key={root.data.id}
+                        item={root}
+                        style={styles.draggable}
+                    >
+                        {result.row}
+                    </DragWrapper>
+                );
             } else {
                 // change cursor
-                leaf = <div key={root.data.id} style={styles.nonDraggable}>
-                    {result.row}
-                </div>;
+                leaf = (
+                    <div
+                        key={root.data.id}
+                        style={styles.nonDraggable}
+                    >
+                        {result.row}
+                    </div>
+                );
             }
         } else {
             leaf = result.row;
@@ -6847,47 +7388,53 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (!root.data.id || isExpanded) {
             if (!this.state.foldersFirst) {
                 if (root.children) {
-                    items.push(root.children.map(item => {
-                        // do not render too many items in column editor mode
-                        if (!this.state.columnsSelectorShow || counter.count < 15) {
-                            if (item.data.sumVisibility) {
-                                return this.renderItem(item, undefined, counter);
+                    items.push(
+                        root.children.map(item => {
+                            // do not render too many items in column editor mode
+                            if (!this.state.columnsSelectorShow || counter.count < 15) {
+                                if (item.data.sumVisibility) {
+                                    return this.renderItem(item, undefined, counter);
+                                }
                             }
-                        }
-                        return null;
-                    }) as any as React.JSX.Element);
+                            return null;
+                        }) as any as JSX.Element,
+                    );
                 }
             } else if (root.children) {
                 // first only folder
-                items.push(root.children.map(item => {
-                    if (item.children) {
-                        // do not render too many items in column editor mode
-                        if (!this.state.columnsSelectorShow || counter.count < 15) {
-                            if (item.data.sumVisibility) {
-                                return this.renderItem(item, undefined, counter);
+                items.push(
+                    root.children.map(item => {
+                        if (item.children) {
+                            // do not render too many items in column editor mode
+                            if (!this.state.columnsSelectorShow || counter.count < 15) {
+                                if (item.data.sumVisibility) {
+                                    return this.renderItem(item, undefined, counter);
+                                }
                             }
                         }
-                    }
 
-                    return null;
-                }) as any as React.JSX.Element);
+                        return null;
+                    }) as any as JSX.Element,
+                );
 
                 // then items
-                items.push(root.children.map(item => {
-                    if (!item.children) {
-                        // do not render too many items in column editor mode
-                        if (!this.state.columnsSelectorShow || counter.count < 15) {
-                            if (item.data.sumVisibility) {
-                                return this.renderItem(item, undefined, counter);
+                items.push(
+                    root.children.map(item => {
+                        if (!item.children) {
+                            // do not render too many items in column editor mode
+                            if (!this.state.columnsSelectorShow || counter.count < 15) {
+                                if (item.data.sumVisibility) {
+                                    return this.renderItem(item, undefined, counter);
+                                }
                             }
                         }
-                    }
-                    return null;
-                }) as any as React.JSX.Element);
+                        return null;
+                    }) as any as JSX.Element,
+                );
             }
         }
 
-        return items as React.JSX.Element[];
+        return items as JSX.Element[];
     }
 
     private calculateColumnsVisibility(
@@ -6931,7 +7478,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
             // in xs name is not visible
             if (this.columnsVisibility.name && !this.customWidth) {
-                let widthSum: number = this.columnsVisibility.id as number || 0; // id is always visible
+                let widthSum: number = (this.columnsVisibility.id as number) || 0; // id is always visible
                 if (this.state.statesView) {
                     widthSum += this.columnsVisibility.changedFrom || 0;
                     widthSum += this.columnsVisibility.qualityCode || 0;
@@ -6997,38 +7544,39 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 Object.keys(columnsForAdmin)
                     .sort()
                     .forEach(adapter =>
-                        columnsForAdmin[adapter]
-                            .forEach(column => {
-                                const id = `_${adapter}_${column.path}`;
-                                if (columns.includes(id)) {
-                                    const item: AdapterColumn = {
-                                        adapter,
-                                        id: `_${adapter}_${column.path}`,
-                                        name: column.name,
-                                        path: column.path.split('.'),
-                                        pathText: column.path,
-                                    };
-                                    if (column.edit) {
-                                        item.edit = true;
-                                        if (column.type) {
-                                            item.type = column.type as 'number' | 'boolean' | 'string';
-                                        }
-                                        if (column.objTypes) {
-                                            item.objTypes = column.objTypes;
-                                        }
+                        columnsForAdmin[adapter].forEach(column => {
+                            const id = `_${adapter}_${column.path}`;
+                            if (columns.includes(id)) {
+                                const item: AdapterColumn = {
+                                    adapter,
+                                    id: `_${adapter}_${column.path}`,
+                                    name: column.name,
+                                    path: column.path.split('.'),
+                                    pathText: column.path,
+                                };
+                                if (column.edit) {
+                                    item.edit = true;
+                                    if (column.type) {
+                                        item.type = column.type as 'number' | 'boolean' | 'string';
                                     }
-
-                                    this.adapterColumns.push(item);
-                                    (this.columnsVisibility as Record<string, number>)[id] =
-                                        columnsWidths[item.id] ||
-                                        column.width ||
-                                        SCREEN_WIDTHS[width].widths.func ||
-                                        SCREEN_WIDTHS.xl.widths.func || 0;
-                                    widthSum += (this.columnsVisibility as Record<string, number>)[id];
-                                } else {
-                                    (this.columnsVisibility as Record<string, number>)[id] = 0;
+                                    if (column.objTypes) {
+                                        item.objTypes = column.objTypes;
+                                    }
                                 }
-                            }));
+
+                                this.adapterColumns.push(item);
+                                (this.columnsVisibility as Record<string, number>)[id] =
+                                    columnsWidths[item.id] ||
+                                    column.width ||
+                                    SCREEN_WIDTHS[width].widths.func ||
+                                    SCREEN_WIDTHS.xl.widths.func ||
+                                    0;
+                                widthSum += (this.columnsVisibility as Record<string, number>)[id];
+                            } else {
+                                (this.columnsVisibility as Record<string, number>)[id] = 0;
+                            }
+                        }),
+                    );
             }
             this.adapterColumns.sort((a, b) => (a.id > b.id ? -1 : a.id < b.id ? 1 : 0));
             this.columnsVisibility.val = columns.includes('val')
@@ -7048,18 +7596,17 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 this.columnsVisibility.name = `calc(100% - ${widthSum}px)`;
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
             } else {
-                const newWidth = Object.keys(this.columnsVisibility)
-                    .reduce((accumulator: number, name: string) => {
-                        // do not summarize strings
-                        if (
-                            name === 'id' ||
-                            typeof (this.columnsVisibility as Record<string, number | string>)[name] === 'string' ||
-                            !(this.columnsVisibility as Record<string, number | string>)[name]
-                        ) {
-                            return accumulator;
-                        }
-                        return accumulator + (this.columnsVisibility as Record<string, number>)[name];
-                    }, 0);
+                const newWidth = Object.keys(this.columnsVisibility).reduce((accumulator: number, name: string) => {
+                    // do not summarize strings
+                    if (
+                        name === 'id' ||
+                        typeof (this.columnsVisibility as Record<string, number | string>)[name] === 'string' ||
+                        !(this.columnsVisibility as Record<string, number | string>)[name]
+                    ) {
+                        return accumulator;
+                    }
+                    return accumulator + (this.columnsVisibility as Record<string, number>)[name];
+                }, 0);
                 this.columnsVisibility.id = `calc(100% - ${newWidth}px)`;
             }
         }
@@ -7077,7 +7624,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 widthNext = this.resizerOldWidthNext - e.clientX + this.resizerPosition;
             }
 
-            if (this.resizerActiveName && this.resizerNextName &&
+            if (
+                this.resizerActiveName &&
+                this.resizerNextName &&
                 (!this.resizerMin || width > this.resizerMin) &&
                 (!this.resizerNextMin || widthNext > this.resizerNextMin)
             ) {
@@ -7110,7 +7659,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     };
 
-    resizerMouseUp = () => {
+    resizerMouseUp = (): void => {
         this.localStorage.setItem(`${this.props.dialogName || 'App'}.table`, JSON.stringify(this.resizerCurrentWidths));
         this.resizerActiveName = null;
         this.resizerNextName = null;
@@ -7120,8 +7669,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         window.removeEventListener('mouseup', this.resizerMouseUp);
     };
 
-    resizerMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-        this.storedWidths = this.storedWidths || JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width || 'lg'])) as ScreenWidthOne;
+    resizerMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
+        this.storedWidths =
+            this.storedWidths ||
+            (JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width || 'lg'])) as ScreenWidthOne);
 
         this.resizerCurrentWidths = this.resizerCurrentWidths || {};
         this.resizerActiveDiv = (e.target as HTMLDivElement).parentNode as HTMLDivElement;
@@ -7131,7 +7682,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if ((e.target as HTMLDivElement).dataset.left === 'true') {
                 this.resizeLeft = true;
                 this.resizerNextDiv = this.resizerActiveDiv.previousElementSibling as HTMLDivElement;
-                let handle: HTMLDivElement | null = this.resizerNextDiv.querySelector('.iob-ob-resize-handler') as HTMLDivElement;
+                let handle: HTMLDivElement | null = this.resizerNextDiv.querySelector(
+                    '.iob-ob-resize-handler',
+                ) as HTMLDivElement;
                 while (this.resizerNextDiv && !handle && i < 10) {
                     this.resizerNextDiv = this.resizerNextDiv.previousElementSibling as HTMLDivElement;
                     handle = this.resizerNextDiv.querySelector('.iob-ob-resize-handler');
@@ -7171,7 +7724,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Handle keyboard events for navigation
      */
-    navigateKeyPress(event: React.KeyboardEvent) {
+    navigateKeyPress(event: React.KeyboardEvent): void {
         const selectedId = this.state.selectedNonObject || this.state.selected[0];
 
         if (!selectedId) {
@@ -7181,8 +7734,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
             event.preventDefault();
             const ids: string[] = [];
-            this.tableRef.current?.childNodes
-                .forEach((node: any) => ids.push((node as HTMLDivElement).id));
+            this.tableRef.current?.childNodes.forEach((node: any) => ids.push((node as HTMLDivElement).id));
             const idx = ids.indexOf(selectedId);
             const newIdx = event.code === 'ArrowDown' ? idx + 1 : idx - 1;
             const newId = ids[newIdx] || selectedId;
@@ -7229,7 +7781,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         return _root || null;
     }
 
-    resizerReset = () => {
+    resizerReset = (): void => {
         this.customWidth = false;
         SCREEN_WIDTHS[this.props.width || 'lg'] = JSON.parse(JSON.stringify(this.storedWidths));
         this.calculateColumnsVisibility();
@@ -7240,203 +7792,249 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Render the right handle for resizing
      */
-    renderHandleRight(): React.JSX.Element {
-        return <Box
-            component="div"
-            className="iob-ob-resize-handler"
-            sx={{ ...styles.resizeHandle, ...styles.resizeHandleRight }}
-            onMouseDown={this.resizerMouseDown}
-            onDoubleClick={this.resizerReset}
-            title={this.props.t('ra_Double click to reset table layout')}
-        />;
+    renderHandleRight(): JSX.Element {
+        return (
+            <Box
+                component="div"
+                className="iob-ob-resize-handler"
+                sx={{ ...styles.resizeHandle, ...styles.resizeHandleRight }}
+                onMouseDown={this.resizerMouseDown}
+                onDoubleClick={this.resizerReset}
+                title={this.props.t('ra_Double click to reset table layout')}
+            />
+        );
     }
 
-    private renderHeader(): React.JSX.Element {
+    private renderHeader(): JSX.Element {
         let filterClearInValue = null;
 
         if (!this.columnsVisibility.buttons && !this.isFilterEmpty()) {
-            filterClearInValue = <IconButton
-                onClick={() => this.clearFilter()}
-                style={styles.buttonClearFilter}
-                title={this.props.t('ra_Clear filter')}
-                size="large"
-            >
-                <IconClearFilter />
-                <IconClose style={styles.buttonClearFilterIcon} />
-            </IconButton>;
+            filterClearInValue = (
+                <IconButton
+                    onClick={() => this.clearFilter()}
+                    style={styles.buttonClearFilter}
+                    title={this.props.t('ra_Clear filter')}
+                    size="large"
+                >
+                    <IconClearFilter />
+                    <IconClose style={styles.buttonClearFilterIcon} />
+                </IconButton>
+            );
         }
 
         if (this.props.width === 'xs') {
-            return <div style={styles.headerRow}>
-                <div
-                    style={{ ...styles.headerCell, width: '100%' }}
-                >
-                    {this.getFilterInput('id')}
+            return (
+                <div style={styles.headerRow}>
+                    <div style={{ ...styles.headerCell, width: '100%' }}>{this.getFilterInput('id')}</div>
                 </div>
-            </div>;
+            );
         }
 
-        return <div style={styles.headerRow}>
-            <div
-                style={{ ...styles.headerCell, width: this.columnsVisibility.id, position: 'relative' }}
-                data-min={240}
-                data-name="id"
-            >
-                {this.getFilterInput('id')}
-                {this.renderHandleRight()}
+        return (
+            <div style={styles.headerRow}>
+                <div
+                    style={{ ...styles.headerCell, width: this.columnsVisibility.id, position: 'relative' }}
+                    data-min={240}
+                    data-name="id"
+                >
+                    {this.getFilterInput('id')}
+                    {this.renderHandleRight()}
+                </div>
+                {this.columnsVisibility.name ? (
+                    <div
+                        style={{ ...styles.headerCell, width: this.columnsVisibility.nameHeader, position: 'relative' }}
+                        data-min={100}
+                        data-name="nameHeader"
+                    >
+                        {this.getFilterInput('name')}
+                        {this.renderHandleRight()}
+                    </div>
+                ) : null}
+                {!this.state.statesView && (
+                    <>
+                        {this.columnsVisibility.type ? (
+                            <div
+                                style={{
+                                    ...styles.headerCell,
+                                    width: this.columnsVisibility.type,
+                                    position: 'relative',
+                                }}
+                                data-min={100}
+                                data-name="type"
+                            >
+                                {this.getFilterSelectType()}
+                                {this.renderHandleRight()}
+                            </div>
+                        ) : null}
+                        {this.columnsVisibility.role ? (
+                            <div
+                                style={{
+                                    ...styles.headerCell,
+                                    width: this.columnsVisibility.role,
+                                    position: 'relative',
+                                }}
+                                data-min={100}
+                                data-name="role"
+                            >
+                                {this.getFilterSelectRole()}
+                                {this.renderHandleRight()}
+                            </div>
+                        ) : null}
+                        {this.columnsVisibility.room ? (
+                            <div
+                                style={{
+                                    ...styles.headerCell,
+                                    width: this.columnsVisibility.room,
+                                    position: 'relative',
+                                }}
+                                data-min={100}
+                                data-name="room"
+                            >
+                                {this.getFilterSelectRoom()}
+                                {this.renderHandleRight()}
+                            </div>
+                        ) : null}
+                        {this.columnsVisibility.func ? (
+                            <div
+                                style={{
+                                    ...styles.headerCell,
+                                    width: this.columnsVisibility.func,
+                                    position: 'relative',
+                                }}
+                                data-min={100}
+                                data-name="func"
+                            >
+                                {this.getFilterSelectFunction()}
+                                {this.renderHandleRight()}
+                            </div>
+                        ) : null}
+                    </>
+                )}
+                {this.state.statesView && (
+                    <>
+                        <div
+                            style={{
+                                ...styles.headerCell,
+                                ...styles.headerCellValue,
+                                width: this.columnsVisibility.changedFrom,
+                                position: 'relative',
+                            }}
+                            data-min={100}
+                            data-name="changedFrom"
+                        >
+                            {this.props.t('ra_Changed from')}
+                            {this.renderHandleRight()}
+                        </div>
+                        <div
+                            style={{
+                                ...styles.headerCell,
+                                ...styles.headerCellValue,
+                                width: this.columnsVisibility.qualityCode,
+                                position: 'relative',
+                            }}
+                            data-min={100}
+                            data-name="qualityCode"
+                        >
+                            {this.props.t('ra_Quality code')}
+                            {this.renderHandleRight()}
+                        </div>
+                        <div
+                            style={{
+                                ...styles.headerCell,
+                                ...styles.headerCellValue,
+                                width: this.columnsVisibility.timestamp,
+                                position: 'relative',
+                            }}
+                            data-min={100}
+                            data-name="timestamp"
+                        >
+                            {this.props.t('ra_Timestamp')}
+                            {this.renderHandleRight()}
+                        </div>
+                        <div
+                            style={{
+                                ...styles.headerCell,
+                                ...styles.headerCellValue,
+                                width: this.columnsVisibility.lastChange,
+                                position: 'relative',
+                            }}
+                            data-min={100}
+                            data-name="lastChange"
+                        >
+                            {this.props.t('ra_Last change')}
+                            {this.renderHandleRight()}
+                        </div>
+                    </>
+                )}
+                {this.adapterColumns.map(item => (
+                    <div
+                        style={{
+                            ...styles.headerCell,
+                            ...styles.headerCellValue,
+                            width: (this.columnsVisibility as Record<string, number | string>)[item.id],
+                        }}
+                        title={item.adapter}
+                        key={item.id}
+                        data-min={100}
+                        data-name={item.id}
+                    >
+                        {item.name}
+                    </div>
+                ))}
+                {this.columnsVisibility.val ? (
+                    <div
+                        style={{
+                            ...styles.headerCell,
+                            ...styles.headerCellValue,
+                            width: this.columnsVisibility.val,
+                            position: 'relative',
+                        }}
+                        data-min={120}
+                        data-name="val"
+                    >
+                        {this.props.t('ra_Value')}
+                        {filterClearInValue}
+                    </div>
+                ) : null}
+                {this.columnsVisibility.buttons ? (
+                    <div
+                        title={this.texts.filter_custom}
+                        style={{ ...styles.headerCell, width: this.columnsVisibility.buttons }}
+                    >
+                        {' '}
+                        {this.getFilterSelectCustoms()}
+                    </div>
+                ) : null}
             </div>
-            {this.columnsVisibility.name ? <div
-                style={{ ...styles.headerCell, width: this.columnsVisibility.nameHeader, position: 'relative' }}
-                data-min={100}
-                data-name="nameHeader"
-            >
-                {this.getFilterInput('name')}
-                {this.renderHandleRight()}
-            </div> : null}
-            {!this.state.statesView && <>
-                {this.columnsVisibility.type ? <div
-                    style={{ ...styles.headerCell, width: this.columnsVisibility.type, position: 'relative' }}
-                    data-min={100}
-                    data-name="type"
-                >
-                    {this.getFilterSelectType()}
-                    {this.renderHandleRight()}
-                </div> : null}
-                {this.columnsVisibility.role ? <div
-                    style={{ ...styles.headerCell, width: this.columnsVisibility.role, position: 'relative' }}
-                    data-min={100}
-                    data-name="role"
-                >
-                    {this.getFilterSelectRole()}
-                    {this.renderHandleRight()}
-                </div> : null}
-                {this.columnsVisibility.room ? <div
-                    style={{ ...styles.headerCell, width: this.columnsVisibility.room, position: 'relative' }}
-                    data-min={100}
-                    data-name="room"
-                >
-                    {this.getFilterSelectRoom()}
-                    {this.renderHandleRight()}
-                </div> : null}
-                {this.columnsVisibility.func ? <div
-                    style={{ ...styles.headerCell, width: this.columnsVisibility.func, position: 'relative' }}
-                    data-min={100}
-                    data-name="func"
-                >
-                    {this.getFilterSelectFunction()}
-                    {this.renderHandleRight()}
-                </div> : null}
-            </>}
-            {this.state.statesView && <>
-                <div
-                    style={{
-                        ...styles.headerCell,
-                        ...styles.headerCellValue,
-                        width: this.columnsVisibility.changedFrom,
-                        position: 'relative',
-                    }}
-                    data-min={100}
-                    data-name="changedFrom"
-                >
-                    {this.props.t('ra_Changed from')}
-                    {this.renderHandleRight()}
-                </div>
-                <div
-                    style={{
-                        ...styles.headerCell,
-                        ...styles.headerCellValue,
-                        width: this.columnsVisibility.qualityCode,
-                        position: 'relative',
-                    }}
-                    data-min={100}
-                    data-name="qualityCode"
-                >
-                    {this.props.t('ra_Quality code')}
-                    {this.renderHandleRight()}
-                </div>
-                <div
-                    style={{
-                        ...styles.headerCell,
-                        ...styles.headerCellValue,
-                        width: this.columnsVisibility.timestamp,
-                        position: 'relative',
-                    }}
-                    data-min={100}
-                    data-name="timestamp"
-                >
-                    {this.props.t('ra_Timestamp')}
-                    {this.renderHandleRight()}
-                </div>
-                <div
-                    style={{
-                        ...styles.headerCell,
-                        ...styles.headerCellValue,
-                        width: this.columnsVisibility.lastChange,
-                        position: 'relative',
-                    }}
-                    data-min={100}
-                    data-name="lastChange"
-                >
-                    {this.props.t('ra_Last change')}
-                    {this.renderHandleRight()}
-                </div>
-            </>}
-            {this.adapterColumns.map(item => <div
-                style={{ ...styles.headerCell, ...styles.headerCellValue, width: (this.columnsVisibility as Record<string, number | string>)[item.id] }}
-                title={item.adapter}
-                key={item.id}
-                data-min={100}
-                data-name={item.id}
-            >
-                {item.name}
-            </div>)}
-            {this.columnsVisibility.val ? <div
-                style={{
-                    ...styles.headerCell,
-                    ...styles.headerCellValue,
-                    width: this.columnsVisibility.val,
-                    position: 'relative',
-                }}
-                data-min={120}
-                data-name="val"
-            >
-                {this.props.t('ra_Value')}
-                {filterClearInValue}
-            </div> : null}
-            {this.columnsVisibility.buttons ? <div
-                title={this.texts.filter_custom}
-                style={{ ...styles.headerCell, width: this.columnsVisibility.buttons }}
-            >
-                {' '}
-                {this.getFilterSelectCustoms()}
-            </div> : null}
-        </div>;
+        );
     }
 
-    private renderToast(): React.JSX.Element {
-        return <Snackbar
-            open={!!this.state.toast}
-            autoHideDuration={3000}
-            onClick={() => this.setState({ toast: '' })}
-            onClose={() => this.setState({ toast: '' })}
-            message={this.state.toast}
-            action={
-                <IconButton
-                    size="small"
-                    aria-label="close"
-                    color="inherit"
-                    onClick={() => this.setState({ toast: '' })}
-                >
-                    <IconClose fontSize="small" />
-                </IconButton>
-            }
-        />;
+    private renderToast(): JSX.Element {
+        return (
+            <Snackbar
+                open={!!this.state.toast}
+                autoHideDuration={3000}
+                onClick={() => this.setState({ toast: '' })}
+                onClose={() => this.setState({ toast: '' })}
+                message={this.state.toast}
+                action={
+                    <IconButton
+                        size="small"
+                        aria-label="close"
+                        color="inherit"
+                        onClick={() => this.setState({ toast: '' })}
+                    >
+                        <IconClose fontSize="small" />
+                    </IconButton>
+                }
+            />
+        );
     }
 
     /**
      * Called when component is updated.
      */
-    componentDidUpdate() {
+    componentDidUpdate(): void {
         if (this.tableRef.current) {
             const scrollBarWidth = this.tableRef.current.offsetWidth - this.tableRef.current.clientWidth;
             if (this.state.scrollBarWidth !== scrollBarWidth) {
@@ -7458,37 +8056,43 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         });
     }
 
-    private renderCustomDialog(): React.JSX.Element | null {
+    private renderCustomDialog(): JSX.Element | null {
         if (this.state.customDialog && this.props.objectCustomDialog) {
             const ObjectCustomDialog = this.props.objectCustomDialog;
 
-            return <ObjectCustomDialog
-                reportChangedIds={(changedIds: string[]) => (this.changedIds = [...changedIds])}
-                objectIDs={this.state.customDialog}
-                allVisibleObjects={!!this.state.customDialogAll}
-                expertMode={this.state.filter.expertMode}
-                isFloatComma={this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma}
-                t={this.props.t}
-                lang={this.props.lang}
-                socket={this.props.socket}
-                themeName={this.props.themeName}
-                themeType={this.props.themeType}
-                theme={this.props.theme}
-                objects={this.objects}
-                customsInstances={this.info.customs}
-                onClose={() => {
-                    this.pauseSubscribe(false);
-                    this.setState({ customDialog: null });
-                    if (this.changedIds) {
-                        this.changedIds = null;
-                        // update all changed IDs
-                        this.forceUpdate();
+            return (
+                <ObjectCustomDialog
+                    reportChangedIds={(changedIds: string[]) => (this.changedIds = [...changedIds])}
+                    objectIDs={this.state.customDialog}
+                    allVisibleObjects={!!this.state.customDialogAll}
+                    expertMode={this.state.filter.expertMode}
+                    isFloatComma={
+                        this.props.isFloatComma === undefined
+                            ? this.systemConfig.common.isFloatComma
+                            : this.props.isFloatComma
                     }
+                    t={this.props.t}
+                    lang={this.props.lang}
+                    socket={this.props.socket}
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                    theme={this.props.theme}
+                    objects={this.objects}
+                    customsInstances={this.info.customs}
+                    onClose={() => {
+                        this.pauseSubscribe(false);
+                        this.setState({ customDialog: null });
+                        if (this.changedIds) {
+                            this.changedIds = null;
+                            // update all changed IDs
+                            this.forceUpdate();
+                        }
 
-                    this.props.router?.doNavigate('tab-objects');
-                }}
-                systemConfig={this.systemConfig}
-            />;
+                        this.props.router?.doNavigate('tab-objects');
+                    }}
+                    systemConfig={this.systemConfig}
+                />
+            );
         }
         return null;
     }
@@ -7498,7 +8102,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         ack: boolean;
         q: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY];
         expire: number | undefined;
-    }) {
+    }): void {
         this.props.socket
             .setState(this.edit.id, {
                 val: valAck.val,
@@ -7509,107 +8113,127 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             .catch(e => this.showError(`Cannot write value: ${e}`));
     }
 
-    private renderEditObjectDialog(): React.JSX.Element | null {
+    private renderEditObjectDialog(): JSX.Element | null {
         if (!this.state.editObjectDialog || !this.props.objectBrowserEditObject) {
             return null;
         }
 
         const ObjectBrowserEditObject = this.props.objectBrowserEditObject;
 
-        return <ObjectBrowserEditObject
-            key={this.state.editObjectDialog}
-            obj={this.objects[this.state.editObjectDialog]}
-            roleArray={this.info.roles}
-            objects={this.objects}
-            dateFormat={this.props.dateFormat || this.systemConfig.common.dateFormat}
-            isFloatComma={this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma}
-            themeType={this.props.themeType}
-            theme={this.props.theme}
-            socket={this.props.socket}
-            dialogName={this.props.dialogName}
-            aliasTab={this.state.editObjectAlias}
-            t={this.props.t}
-            expertMode={!!this.state.filter.expertMode}
-            onNewObject={(obj: ioBroker.AnyObject) =>
-                this.props.socket
-                    .setObject(obj._id, obj)
-                    .then(() => this.setState({ editObjectDialog: obj._id, editObjectAlias: false }, () =>
-                        this.onSelect(obj._id)))
-                    .catch(e => this.showError(`Cannot write object: ${e}`))}
-            onClose={(obj?: ioBroker.AnyObject) => {
-                if (obj) {
-                    let updateAlias: string;
-                    if (this.state.editObjectDialog.startsWith('alias.')) {
-                        if (
-                            JSON.stringify(this.objects[this.state.editObjectDialog].common?.alias) !==
-                            JSON.stringify((obj as ioBroker.StateObject).common?.alias)
-                        ) {
-                            updateAlias = this.state.editObjectDialog;
-                        }
-                    }
-
+        return (
+            <ObjectBrowserEditObject
+                key={this.state.editObjectDialog}
+                obj={this.objects[this.state.editObjectDialog]}
+                roleArray={this.info.roles}
+                objects={this.objects}
+                dateFormat={this.props.dateFormat || this.systemConfig.common.dateFormat}
+                isFloatComma={
+                    this.props.isFloatComma === undefined
+                        ? this.systemConfig.common.isFloatComma
+                        : this.props.isFloatComma
+                }
+                themeType={this.props.themeType}
+                theme={this.props.theme}
+                socket={this.props.socket}
+                dialogName={this.props.dialogName}
+                aliasTab={this.state.editObjectAlias}
+                t={this.props.t}
+                expertMode={!!this.state.filter.expertMode}
+                onNewObject={(obj: ioBroker.AnyObject) =>
                     this.props.socket
                         .setObject(obj._id, obj)
-                        .then(() => {
-                            if (updateAlias && this.subscribes.includes(updateAlias)) {
-                                this.unsubscribe(updateAlias);
-                                setTimeout(() => this.subscribe(updateAlias), 100);
-                            }
-                        })
-                        .catch(e => this.showError(`Cannot write object: ${e}`));
+                        .then(() =>
+                            this.setState({ editObjectDialog: obj._id, editObjectAlias: false }, () =>
+                                this.onSelect(obj._id),
+                            ),
+                        )
+                        .catch(e => this.showError(`Cannot write object: ${e}`))
                 }
-                this.setState({ editObjectDialog: '', editObjectAlias: false });
-            }}
-            width={this.props.width}
-        />;
+                onClose={(obj?: ioBroker.AnyObject) => {
+                    if (obj) {
+                        let updateAlias: string;
+                        if (this.state.editObjectDialog.startsWith('alias.')) {
+                            if (
+                                JSON.stringify(this.objects[this.state.editObjectDialog].common?.alias) !==
+                                JSON.stringify((obj as ioBroker.StateObject).common?.alias)
+                            ) {
+                                updateAlias = this.state.editObjectDialog;
+                            }
+                        }
+
+                        this.props.socket
+                            .setObject(obj._id, obj)
+                            .then(() => {
+                                if (updateAlias && this.subscribes.includes(updateAlias)) {
+                                    this.unsubscribe(updateAlias);
+                                    setTimeout(() => this.subscribe(updateAlias), 100);
+                                }
+                            })
+                            .catch(e => this.showError(`Cannot write object: ${e}`));
+                    }
+                    this.setState({ editObjectDialog: '', editObjectAlias: false });
+                }}
+                width={this.props.width}
+            />
+        );
     }
 
-    private renderViewObjectFileDialog(): React.JSX.Element | null {
+    private renderViewObjectFileDialog(): JSX.Element | null {
         if (!this.state.viewFileDialog || !this.props.objectBrowserViewFile) {
             return null;
         }
         const ObjectBrowserViewFile = this.props.objectBrowserViewFile;
 
-        return <ObjectBrowserViewFile
-            key="viewFile"
-            obj={this.objects[this.state.viewFileDialog]}
-            socket={this.props.socket}
-            t={this.props.t}
-            onClose={() => this.setState({ viewFileDialog: '' })}
-        />;
+        return (
+            <ObjectBrowserViewFile
+                key="viewFile"
+                obj={this.objects[this.state.viewFileDialog]}
+                socket={this.props.socket}
+                t={this.props.t}
+                onClose={() => this.setState({ viewFileDialog: '' })}
+            />
+        );
     }
 
-    private renderAliasEditorDialog(): React.JSX.Element | null {
+    private renderAliasEditorDialog(): JSX.Element | null {
         if (!this.props.objectBrowserAliasEditor || !this.state.showAliasEditor) {
             return null;
         }
         const ObjectBrowserAliasEditor = this.props.objectBrowserAliasEditor;
 
-        return <ObjectBrowserAliasEditor
-            key="editAlias"
-            obj={this.objects[this.state.showAliasEditor]}
-            objects={this.objects}
-            socket={this.props.socket}
-            t={this.props.t}
-            onClose={() => this.setState({ showAliasEditor: '' })}
-            onRedirect={(id: string, timeout?: number) => setTimeout(() =>
-                this.onSelect(id, false, () =>
-                    this.expandAllSelected(() => {
-                        this.scrollToItem(id);
-                        setTimeout(() => this.setState({
-                            editObjectDialog: id,
-                            showAliasEditor: '',
-                            editObjectAlias: true,
-                        }), 300);
-                    })), timeout || 0)}
-        />;
+        return (
+            <ObjectBrowserAliasEditor
+                key="editAlias"
+                obj={this.objects[this.state.showAliasEditor]}
+                objects={this.objects}
+                socket={this.props.socket}
+                t={this.props.t}
+                onClose={() => this.setState({ showAliasEditor: '' })}
+                onRedirect={(id: string, timeout?: number) =>
+                    setTimeout(
+                        () =>
+                            this.onSelect(id, false, () =>
+                                this.expandAllSelected(() => {
+                                    this.scrollToItem(id);
+                                    setTimeout(
+                                        () =>
+                                            this.setState({
+                                                editObjectDialog: id,
+                                                showAliasEditor: '',
+                                                editObjectAlias: true,
+                                            }),
+                                        300,
+                                    );
+                                }),
+                            ),
+                        timeout || 0,
+                    )
+                }
+            />
+        );
     }
 
-    showAddDataPointDialog(
-        id: string,
-        initialType: ioBroker.ObjectType,
-        initialStateType?: ioBroker.CommonType,
-    ): void {
+    showAddDataPointDialog(id: string, initialType: ioBroker.ObjectType, initialStateType?: ioBroker.CommonType): void {
         this.setState({
             showContextMenu: null,
             modalNewObj: {
@@ -7621,42 +8245,46 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     }
 
     /** Renders the aliases list for one state (if more than 2) */
-    private renderAliasMenu(): React.JSX.Element | null {
+    private renderAliasMenu(): JSX.Element | null {
         if (!this.state.aliasMenu) {
             return null;
         }
 
-        return <Menu
-            key="aliasmenu"
-            open={!0}
-            anchorEl={window.document.getElementById(`alias_${this.state.aliasMenu}`)}
-            onClose={() => this.setState({ aliasMenu: '' })}
-        >
-            {this.info.aliasesMap[this.state.aliasMenu].map((aliasId, i) => <MenuItem
-                key={aliasId}
-                onClick={() => this.onSelect(aliasId)}
+        return (
+            <Menu
+                key="aliasmenu"
+                open={!0}
+                anchorEl={window.document.getElementById(`alias_${this.state.aliasMenu}`)}
+                onClose={() => this.setState({ aliasMenu: '' })}
             >
-                <ListItemText>
-                    {this.renderAliasLink(this.state.aliasMenu, i, {
-                        '& .admin-browser-arrow': {
-                            mr: '8px',
-                        },
-                    })}
-                </ListItemText>
-            </MenuItem>)}
-        </Menu>;
+                {this.info.aliasesMap[this.state.aliasMenu].map((aliasId, i) => (
+                    <MenuItem
+                        key={aliasId}
+                        onClick={() => this.onSelect(aliasId)}
+                    >
+                        <ListItemText>
+                            {this.renderAliasLink(this.state.aliasMenu, i, {
+                                '& .admin-browser-arrow': {
+                                    mr: '8px',
+                                },
+                            })}
+                        </ListItemText>
+                    </MenuItem>
+                ))}
+            </Menu>
+        );
     }
 
     /**
      * Renders the right mouse button context menu
      */
-    private renderContextMenu(): React.JSX.Element | null {
+    private renderContextMenu(): JSX.Element | null {
         if (!this.state.showContextMenu) {
             return null;
         }
         const item = this.state.showContextMenu.item;
         const id = item.data.id;
-        const items: React.JSX.Element[] = [];
+        const items: JSX.Element[] = [];
         // const ctrl = isIOS() ? '⌘' : (this.props.lang === 'de' ? 'Strg+' : 'Ctrl+');
 
         const obj = item.data.obj;
@@ -7708,26 +8336,38 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         const ITEMS: Record<string, ContextMenuItem> = {
             EDIT: {
                 key: '0',
-                visibility:
-                    !!(this.props.objectBrowserEditObject &&
+                visibility: !!(
+                    this.props.objectBrowserEditObject &&
                     obj &&
-                    (this.state.filter.expertMode || ObjectBrowserClass.isNonExpertId(id))),
-                icon: <IconEdit fontSize="small" style={this.styles.contextMenuEdit} />,
+                    (this.state.filter.expertMode || ObjectBrowserClass.isNonExpertId(id))
+                ),
+                icon: (
+                    <IconEdit
+                        fontSize="small"
+                        style={this.styles.contextMenuEdit}
+                    />
+                ),
                 label: this.texts.editObject,
                 onClick: () =>
                     this.setState({ editObjectDialog: item.data.id, showContextMenu: null, editObjectAlias: false }),
             },
             EDIT_VALUE: {
                 key: '1',
-                visibility:
-                    !!(this.states &&
+                visibility: !!(
+                    this.states &&
                     !this.props.notEditable &&
                     obj &&
                     obj.type === 'state' &&
                     // @ts-expect-error deprecated from js-controller 6
                     obj.common?.type !== 'file' &&
-                    (this.state.filter.expertMode || obj.common.write !== false)),
-                icon: <IconValueEdit fontSize="small" style={this.styles.contextMenuEditValue} />,
+                    (this.state.filter.expertMode || obj.common.write !== false)
+                ),
+                icon: (
+                    <IconValueEdit
+                        fontSize="small"
+                        style={this.styles.contextMenuEditValue}
+                    />
+                ),
                 label: this.props.t('ra_Edit value'),
                 onClick: () => {
                     this.edit = {
@@ -7741,28 +8381,39 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             },
             VIEW: {
                 visibility:
-                    !!this.props.objectBrowserViewFile && obj?.type === 'state' &&
+                    !!this.props.objectBrowserViewFile &&
+                    obj?.type === 'state' &&
                     // @ts-expect-error deprecated from js-controller 6
                     obj.common?.type === 'file',
-                icon: <FindInPage fontSize="small" style={this.styles.contextMenuView} />,
+                icon: (
+                    <FindInPage
+                        fontSize="small"
+                        style={this.styles.contextMenuView}
+                    />
+                ),
                 label: this.props.t('ra_View file'),
                 onClick: () => this.setState({ viewFileDialog: obj?._id || '', showContextMenu: null }),
             },
             CUSTOM: {
                 key: '2',
-                visibility:
-                    !(this.props.objectCustomDialog &&
+                visibility: !(
+                    this.props.objectCustomDialog &&
                     this.info.hasSomeCustoms &&
                     obj &&
                     obj.type === 'state' &&
                     // @ts-expect-error deprecated from js-controller 6
-                    obj.common?.type !== 'file'),
-                icon: <IconConfig
-                    fontSize="small"
-                    style={item.data.hasCustoms
-                        ? this.styles.cellButtonsButtonWithCustoms
-                        : styles.cellButtonsButtonWithoutCustoms}
-                />,
+                    obj.common?.type !== 'file'
+                ),
+                icon: (
+                    <IconConfig
+                        fontSize="small"
+                        style={
+                            item.data.hasCustoms
+                                ? this.styles.cellButtonsButtonWithCustoms
+                                : styles.cellButtonsButtonWithoutCustoms
+                        }
+                    />
+                ),
                 style: this.styles.contextMenuCustom,
                 label: this.texts.customConfig,
                 onClick: () => {
@@ -7789,14 +8440,24 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             ROLE: {
                 key: '4',
                 visibility: !!(this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole),
-                icon: <BorderColor fontSize="small" style={this.styles.contextMenuRole} />,
+                icon: (
+                    <BorderColor
+                        fontSize="small"
+                        style={this.styles.contextMenuRole}
+                    />
+                ),
                 label: this.props.t('ra_Edit role'),
                 onClick: () => this.setState({ roleDialog: item.data.id, showContextMenu: null }),
             },
             FUNCTION: {
                 key: '5',
                 visibility: !!enumEditable,
-                icon: <BedroomParent fontSize="small" style={this.styles.contextMenuRole} />,
+                icon: (
+                    <BedroomParent
+                        fontSize="small"
+                        style={this.styles.contextMenuRole}
+                    />
+                ),
                 label: this.props.t('ra_Edit function'),
                 onClick: () => {
                     const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums');
@@ -7814,7 +8475,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             ROOM: {
                 key: '6',
                 visibility: !!enumEditable,
-                icon: <Construction fontSize="small" style={this.styles.contextMenuRoom} />,
+                icon: (
+                    <Construction
+                        fontSize="small"
+                        style={this.styles.contextMenuRoom}
+                    />
+                ),
                 label: this.props.t('ra_Edit room'),
                 onClick: () => {
                     const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums');
@@ -7831,20 +8497,27 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             },
             ALIAS: {
                 key: '7',
-                visibility:
-                    !!(!this.props.notEditable &&
+                visibility: !!(
+                    !this.props.notEditable &&
                     this.props.objectBrowserAliasEditor &&
                     this.props.objectBrowserEditObject &&
                     this.state.filter.expertMode &&
                     obj?.type === 'state' &&
                     // @ts-expect-error deprecated from js-controller 6
-                    obj.common?.type !== 'file'),
-                icon: <IconLink
-                    style={obj?.common?.alias
-                        ? this.styles.cellButtonsButtonWithCustoms
-                        : styles.cellButtonsButtonWithoutCustoms}
-                />,
-                label: this.info.aliasesMap[item.data.id] ? this.props.t('ra_Edit alias') : this.props.t('ra_Create alias'),
+                    obj.common?.type !== 'file'
+                ),
+                icon: (
+                    <IconLink
+                        style={
+                            obj?.common?.alias
+                                ? this.styles.cellButtonsButtonWithCustoms
+                                : styles.cellButtonsButtonWithoutCustoms
+                        }
+                    />
+                ),
+                label: this.info.aliasesMap[item.data.id]
+                    ? this.props.t('ra_Edit alias')
+                    : this.props.t('ra_Create alias'),
                 onClick: () => {
                     if (obj?.common?.alias) {
                         this.setState({ showContextMenu: null, editObjectDialog: item.data.id, editObjectAlias: true });
@@ -7858,7 +8531,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 visibility:
                     (item.data.id.startsWith('0_userdata.0') || item.data.id.startsWith('javascript.')) &&
                     (createStateVisible || createChannelVisible || createDeviceVisible || createFolderVisible),
-                icon: <AddIcon fontSize="small" style={this.styles.cellButtonsButtonWithCustoms} />,
+                icon: (
+                    <AddIcon
+                        fontSize="small"
+                        style={this.styles.cellButtonsButtonWithCustoms}
+                    />
+                ),
                 style: styles.contextMenuWithSubMenu,
                 label: this.texts.create,
                 subMenu: [
@@ -7908,92 +8586,120 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             },
             DELETE: {
                 key: 'Delete',
-                visibility: !!(this.props.onObjectDelete && (item.children?.length || (obj && !obj.common?.dontDelete))),
-                icon: <IconDelete fontSize="small" style={this.styles.contextMenuDelete} />,
+                visibility: !!(
+                    this.props.onObjectDelete &&
+                    (item.children?.length || (obj && !obj.common?.dontDelete))
+                ),
+                icon: (
+                    <IconDelete
+                        fontSize="small"
+                        style={this.styles.contextMenuDelete}
+                    />
+                ),
                 style: this.styles.contextMenuDelete,
                 label: this.texts.deleteObject,
                 onClick: () =>
-                    this.setState({ showContextMenu: null }, () => this.showDeleteDialog({
-                        id,
-                        obj: obj || {} as ioBroker.Object,
-                        item,
-                    })),
+                    this.setState({ showContextMenu: null }, () =>
+                        this.showDeleteDialog({
+                            id,
+                            obj: obj || ({} as ioBroker.Object),
+                            item,
+                        }),
+                    ),
             },
         };
 
         Object.keys(ITEMS).forEach(key => {
             if (ITEMS[key].visibility) {
                 if (ITEMS[key].subMenu) {
-                    items.push(<MenuItem
-                        key={key}
-                        href=""
-                        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => this.state.showContextMenu && this.setState({
-                            showContextMenu: {
-                                item: this.state.showContextMenu.item,
-                                position: this.state.showContextMenu.position,
-                                subItem: key,
-                                subAnchor: e.target as HTMLLIElement,
-                            },
-                        })}
-                        style={ITEMS[key].style}
-                    >
-                        <ListItemIcon style={{ ...ITEMS[key].iconStyle, ...ITEMS[key].listItemIconStyle }}>
-                            {ITEMS[key].icon}
-                        </ListItemIcon>
-                        <ListItemText>
-                            {ITEMS[key].label}
-                            ...
-                        </ListItemText>
-                        <ListItemSecondaryAction>
-                            <ArrowRightIcon />
-                        </ListItemSecondaryAction>
-                    </MenuItem>);
+                    items.push(
+                        <MenuItem
+                            key={key}
+                            href=""
+                            onClick={(e: React.MouseEvent<HTMLAnchorElement>) =>
+                                this.state.showContextMenu &&
+                                this.setState({
+                                    showContextMenu: {
+                                        item: this.state.showContextMenu.item,
+                                        position: this.state.showContextMenu.position,
+                                        subItem: key,
+                                        subAnchor: e.target as HTMLLIElement,
+                                    },
+                                })
+                            }
+                            style={ITEMS[key].style}
+                        >
+                            <ListItemIcon style={{ ...ITEMS[key].iconStyle, ...ITEMS[key].listItemIconStyle }}>
+                                {ITEMS[key].icon}
+                            </ListItemIcon>
+                            <ListItemText>
+                                {ITEMS[key].label}
+                                ...
+                            </ListItemText>
+                            <ListItemSecondaryAction>
+                                <ArrowRightIcon />
+                            </ListItemSecondaryAction>
+                        </MenuItem>,
+                    );
 
                     if (this.state.showContextMenu?.subItem === key) {
-                        items.push(<Menu
-                            key="subContextMenu"
-                            open={!0}
-                            anchorEl={this.state.showContextMenu.subAnchor}
-                            onClose={() => {
-                                if (this.state.showContextMenu) {
-                                    this.setState({
-                                        showContextMenu: {
-                                            item: this.state.showContextMenu.item,
-                                            position: this.state.showContextMenu.position,
-                                        },
-                                    });
-                                }
-                                this.contextMenu = null;
-                            }}
-                        >
-                            {ITEMS[key].subMenu?.map(subItem => (subItem.visibility ? <MenuItem
-                                key={subItem.label}
-                                onClick={subItem.onClick}
-                                style={subItem.style}
+                        items.push(
+                            <Menu
+                                key="subContextMenu"
+                                open={!0}
+                                anchorEl={this.state.showContextMenu.subAnchor}
+                                onClose={() => {
+                                    if (this.state.showContextMenu) {
+                                        this.setState({
+                                            showContextMenu: {
+                                                item: this.state.showContextMenu.item,
+                                                position: this.state.showContextMenu.position,
+                                            },
+                                        });
+                                    }
+                                    this.contextMenu = null;
+                                }}
                             >
-                                <ListItemIcon
-                                    style={{ ...subItem.iconStyle, ...(subItem.listItemIconStyle || undefined) }}
-                                >
-                                    {subItem.icon}
-                                </ListItemIcon>
-                                <ListItemText>{subItem.label}</ListItemText>
-                            </MenuItem> : null))}
-                        </Menu>);
+                                {ITEMS[key].subMenu?.map(subItem =>
+                                    subItem.visibility ? (
+                                        <MenuItem
+                                            key={subItem.label}
+                                            onClick={subItem.onClick}
+                                            style={subItem.style}
+                                        >
+                                            <ListItemIcon
+                                                style={{
+                                                    ...subItem.iconStyle,
+                                                    ...(subItem.listItemIconStyle || undefined),
+                                                }}
+                                            >
+                                                {subItem.icon}
+                                            </ListItemIcon>
+                                            <ListItemText>{subItem.label}</ListItemText>
+                                        </MenuItem>
+                                    ) : null,
+                                )}
+                            </Menu>,
+                        );
                     }
                 } else {
-                    items.push(<MenuItem
-                        key={key}
-                        onClick={ITEMS[key].onClick}
-                        sx={ITEMS[key].style}
-                    >
-                        <ListItemIcon style={{ ...ITEMS[key].iconStyle, ...ITEMS[key].listItemIconStyle }}>
-                            {ITEMS[key].icon}
-                        </ListItemIcon>
-                        <ListItemText>{ITEMS[key].label}</ListItemText>
-                        {ITEMS[key].key ? <div style={styles.contextMenuKeys}>
-                            {`Alt+${ITEMS[key].key === 'Delete' ? this.props.t('ra_Del') : ITEMS[key].key}`}
-                        </div> : null}
-                    </MenuItem>);
+                    items.push(
+                        <MenuItem
+                            key={key}
+                            onClick={ITEMS[key].onClick}
+                            sx={ITEMS[key].style}
+                        >
+                            <ListItemIcon style={{ ...ITEMS[key].iconStyle, ...ITEMS[key].listItemIconStyle }}>
+                                {ITEMS[key].icon}
+                            </ListItemIcon>
+                            <ListItemText>{ITEMS[key].label}</ListItemText>
+                            {ITEMS[key].key ? (
+                                <div style={styles.contextMenuKeys}>
+                                    {`Alt+${ITEMS[key].key === 'Delete' ? this.props.t('ra_Del') : ITEMS[key].key}`}
+                                </div>
+                            ) : null}
+                        </MenuItem>,
+                    );
                 }
             }
         });
@@ -8003,31 +8709,33 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             return null;
         }
 
-        return <Menu
-            key="contextMenu"
-            open={!0}
-            onKeyUp={e => {
-                e.preventDefault();
-                if (e.altKey) {
-                    Object.keys(ITEMS).forEach(key => {
-                        if (e.key === ITEMS[key].key && ITEMS[key].onClick) {
-                            ITEMS[key].onClick();
-                        }
-                    });
-                }
-            }}
-            anchorReference="anchorPosition"
-            anchorPosition={this.state.showContextMenu.position}
-            onClose={() => {
-                this.setState({ showContextMenu: null });
-                this.contextMenu = null;
-            }}
-        >
-            {items}
-        </Menu>;
+        return (
+            <Menu
+                key="contextMenu"
+                open={!0}
+                onKeyUp={e => {
+                    e.preventDefault();
+                    if (e.altKey) {
+                        Object.keys(ITEMS).forEach(key => {
+                            if (e.key === ITEMS[key].key && ITEMS[key].onClick) {
+                                ITEMS[key].onClick();
+                            }
+                        });
+                    }
+                }}
+                anchorReference="anchorPosition"
+                anchorPosition={this.state.showContextMenu.position}
+                onClose={() => {
+                    this.setState({ showContextMenu: null });
+                    this.contextMenu = null;
+                }}
+            >
+                {items}
+            </Menu>
+        );
     }
 
-    private renderEditValueDialog(): React.JSX.Element | null {
+    private renderEditValueDialog(): JSX.Element | null {
         if (!this.state.updateOpened || !this.props.objectBrowserValue) {
             return null;
         }
@@ -8050,35 +8758,46 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         const ObjectBrowserValue = this.props.objectBrowserValue;
 
-        return <ObjectBrowserValue
-            t={this.props.t}
-            lang={this.props.lang}
-            type={type}
-            role={role || ''}
-            states={Utils.getStates(this.objects[this.edit.id] as ioBroker.StateObject)}
-            themeType={this.props.themeType}
-            theme={this.props.theme}
-            expertMode={!!this.state.filter.expertMode}
-            value={this.edit.val}
-            socket={this.props.socket}
-            object={this.objects[this.edit.id] as ioBroker.StateObject}
-            defaultHistory={this.defaultHistory}
-            dateFormat={this.props.dateFormat || this.systemConfig.common.dateFormat}
-            isFloatComma={this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma}
-            onClose={(res?: { val: ioBroker.StateValue; ack: boolean; q: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY]; expire: number | undefined }) => {
-                this.setState({ updateOpened: false });
-                if (res) {
-                    this.onUpdate(res);
+        return (
+            <ObjectBrowserValue
+                t={this.props.t}
+                lang={this.props.lang}
+                type={type}
+                role={role || ''}
+                states={Utils.getStates(this.objects[this.edit.id] as ioBroker.StateObject)}
+                themeType={this.props.themeType}
+                theme={this.props.theme}
+                expertMode={!!this.state.filter.expertMode}
+                value={this.edit.val}
+                socket={this.props.socket}
+                object={this.objects[this.edit.id] as ioBroker.StateObject}
+                defaultHistory={this.defaultHistory}
+                dateFormat={this.props.dateFormat || this.systemConfig.common.dateFormat}
+                isFloatComma={
+                    this.props.isFloatComma === undefined
+                        ? this.systemConfig.common.isFloatComma
+                        : this.props.isFloatComma
                 }
-            }}
-            width={this.props.width}
-        />;
+                onClose={(res?: {
+                    val: ioBroker.StateValue;
+                    ack: boolean;
+                    q: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY];
+                    expire: number | undefined;
+                }) => {
+                    this.setState({ updateOpened: false });
+                    if (res) {
+                        this.onUpdate(res);
+                    }
+                }}
+                width={this.props.width}
+            />
+        );
     }
 
     /**
      * The rendering method of this component.
      */
-    render(): React.JSX.Element {
+    render(): JSX.Element {
         this.recordStates = [];
         if (this.unsubscribeTimer) {
             clearTimeout(this.unsubscribeTimer);
@@ -8103,7 +8822,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 contextMenuRole: Utils.getStyle(this.props.theme, styles.contextMenuRole),
                 contextMenuDelete: Utils.getStyle(this.props.theme, styles.contextMenuDelete),
                 filterInput: Utils.getStyle(this.props.theme, styles.headerCellInput, styles.filterInput),
-                iconCopy: Utils.getStyle(this.props.theme, styles.cellButtonsValueButton, styles.cellButtonsValueButtonCopy),
+                iconCopy: Utils.getStyle(
+                    this.props.theme,
+                    styles.cellButtonsValueButton,
+                    styles.cellButtonsValueButtonCopy,
+                ),
                 aliasReadWrite: Utils.getStyle(this.props.theme, styles.cellIdAlias, styles.cellIdAliasReadWrite),
                 aliasAlone: Utils.getStyle(this.props.theme, styles.cellIdAlias, styles.cellIdAliasAlone),
             };
@@ -8146,9 +8869,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
         const items = this.root ? this.renderItem(this.root, undefined) : null;
 
-        return <TabContainer key={this.props.dialogName}>
-            <style>
-                {`
+        return (
+            <TabContainer key={this.props.dialogName}>
+                <style>
+                    {`
 @keyframes newValueAnimation-light {
     0% {
         color: #00f900;
@@ -8178,38 +8902,39 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     animation: newValueAnimation-light 2s ease-in-out;
 }
 `}
-            </style>
-            <TabHeader>{this.getToolbar()}</TabHeader>
-            <TabContent>
-                {this.renderHeader()}
-                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
-                <div
-                    style={styles.tableDiv}
-                    ref={this.tableRef}
-                    onKeyDown={event => this.navigateKeyPress(event)}
-                >
-                    {items}
-                </div>
-            </TabContent>
-            {this.renderContextMenu()}
-            {this.renderAliasMenu()}
-            {this.renderToast()}
-            {this.renderColumnsEditCustomDialog()}
-            {this.renderColumnsSelectorDialog()}
-            {this.renderCustomDialog()}
-            {this.renderEditValueDialog()}
-            {this.renderEditObjectDialog()}
-            {this.renderViewObjectFileDialog()}
-            {this.renderAliasEditorDialog()}
-            {this.renderEditRoleDialog()}
-            {this.renderEnumDialog()}
-            {this.renderErrorDialog()}
-            {this.renderExportDialog()}
-            {this.state.modalNewObj && this.props.modalNewObject && this.props.modalNewObject(this)}
-            {this.state.modalEditOfAccess && this.state.modalEditOfAccessObjData &&
-                this.props.modalEditOfAccessControl &&
-                this.props.modalEditOfAccessControl(this, this.state.modalEditOfAccessObjData)}
-        </TabContainer>;
+                </style>
+                <TabHeader>{this.getToolbar()}</TabHeader>
+                <TabContent>
+                    {this.renderHeader()}
+                    <div
+                        style={styles.tableDiv}
+                        ref={this.tableRef}
+                        onKeyDown={event => this.navigateKeyPress(event)}
+                    >
+                        {items}
+                    </div>
+                </TabContent>
+                {this.renderContextMenu()}
+                {this.renderAliasMenu()}
+                {this.renderToast()}
+                {this.renderColumnsEditCustomDialog()}
+                {this.renderColumnsSelectorDialog()}
+                {this.renderCustomDialog()}
+                {this.renderEditValueDialog()}
+                {this.renderEditObjectDialog()}
+                {this.renderViewObjectFileDialog()}
+                {this.renderAliasEditorDialog()}
+                {this.renderEditRoleDialog()}
+                {this.renderEnumDialog()}
+                {this.renderErrorDialog()}
+                {this.renderExportDialog()}
+                {this.state.modalNewObj && this.props.modalNewObject && this.props.modalNewObject(this)}
+                {this.state.modalEditOfAccess &&
+                    this.state.modalEditOfAccessObjData &&
+                    this.props.modalEditOfAccessControl &&
+                    this.props.modalEditOfAccessControl(this, this.state.modalEditOfAccessObjData)}
+            </TabContainer>
+        );
     }
 }
 

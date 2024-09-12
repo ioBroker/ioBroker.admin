@@ -268,7 +268,6 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                 sm: 6,
                 md: 4,
                 lg: 3,
-                xl: 2,
             }}
             sx={Utils.getStyle(this.props.theme, styles.root, this.props.style)}
         >

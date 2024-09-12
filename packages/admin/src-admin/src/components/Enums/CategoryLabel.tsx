@@ -11,7 +11,10 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
+import {
+    Icon, type ThemeType,
+    type Translate, Utils,
+} from '@iobroker/adapter-react-v5';
 
 interface CategoryLabelProps {
     categoryData: Record<string, any>;
@@ -36,8 +39,9 @@ const CategoryLabel = (props: CategoryLabelProps) => {
     const textColor = Utils.getInvertedColor(props.categoryData.common.color, props.themeType, true);
 
     return <span ref={drop} style={{ ...props.styles.categoryTitle, color: textColor }}>
-        {props.categoryData.common.icon ? <span
-            style={{ ...props.styles.icon, backgroundImage: `url(${props.categoryData.common.icon})` }}
+        {props.categoryData.common.icon ? <Icon
+            style={props.styles.icon}
+            src={props.categoryData.common.icon}
         /> : null}
         {typeof props.categoryData.common.name === 'string' ? props.categoryData.common.name : (props.categoryData.common.name[props.lang] || props.categoryData.common.name.en)}
         <IconButton

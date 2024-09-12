@@ -153,10 +153,10 @@
     "mode": "daemon",
     "platform": "Javascript/Node.js",
     "loglevel": "info",
-    "icon": "admin.png",
+    "icon": "admin.svg",
     "messagebox": true,
     "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.png",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.svg",
     "keywords": [
       "setup",
       "config",
@@ -192,7 +192,7 @@
       {
         "link": "admin/index.html",
         "name": "Admin",
-        "img": "admin/img/admin.png",
+        "img": "admin/img/admin.svg",
         "color": "pink",
         "order": 5,
         "localLinks": "_default",
@@ -207,7 +207,7 @@
           "ru": "Админ"
         },
         "pro": "admin/index.html",
-        "icon": "admin/img/admin.png",
+        "icon": "admin/img/admin.svg",
         "color": "pink",
         "order": 5,
         "intro": true

@@ -28,6 +28,7 @@ interface DragWrapperProps {
     item: TreeItem;
     style: React.CSSProperties;
     children: React.JSX.Element | null;
+    lang: ioBroker.Languages;
 }
 
 interface DragSettings {
@@ -85,7 +86,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps) => {
                         {dragProps.item.data.obj.common?.icon ?
                             <Icon
                                 style={props.stylesParent.icon}
-                                src={objectRef.current ? getSelectIdIconFromObjects(objectRef.current, dragProps.item.data.obj._id) : dragProps.item.data.obj.common.icon}
+                                src={objectRef.current ? getSelectIdIconFromObjects(objectRef.current, dragProps.item.data.obj._id, props.lang) : dragProps.item.data.obj.common.icon}
                             />
                             :
                             (ITEM_IMAGES[dragProps.item.data.obj.type] || <ListIcon style={props.stylesParent.icon} />)}
