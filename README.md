@@ -1,4 +1,4 @@
-![Logo](packages/admin/admin/admin.png)
+![Logo](packages/admin/admin/admin.svg)
 # ioBroker.admin
 
 ![Number of Installations](http://iobroker.live/badges/admin-installed.svg)
