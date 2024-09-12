@@ -368,6 +368,10 @@ class Config extends Component<ConfigProps, ConfigState> {
     }
 
     closeConfig = (event: MessageEvent & { message: string }): void => {
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+
         if (event.data === 'close' || event.message === 'close') {
             if (this.props.easyMode) {
                 Router.doNavigate('easy');

@@ -169,6 +169,9 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
     }
 
     onMessage = (event: MessageEvent & { message: string }): void => {
+        if (event.origin !== window.location.origin) {
+            return;
+        }
         if (event.data === 'close' || event.message === 'close') {
             Router.doNavigate('tab-instances');
         }else if (event.data === 'change' || event.message === 'change') {
