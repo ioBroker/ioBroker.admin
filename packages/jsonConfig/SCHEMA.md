@@ -88,7 +88,7 @@ Possible types:
   - `step` - (default `(max - min) / 100`)
   - `unit` - Unit of slider
 
-- `qrCode` - show data in a QR Code (up from Admin 7)
+- `qrCode` - show data in a QR Code (admin >= 7.0.18)
   - `data` - the data to be encoded in the QR Code
   - `size` - size of the QR code
   - `fgColor` - Foreground color
@@ -216,7 +216,7 @@ Possible types:
     - `timeout` - timeout for request in ms. Default: none.
     - `onLoaded` - execute the button logic once initially
 
-- `setState` - button that set instance's state
+- `setState` - button that set instance's state (admin >= 7.??.??)
     - `id` - `system.adapter.myAdapter.%INSTANCE%.test`, you can use the placeholder `%INSTANCE%` to replace it with the current instance name
     - `ack` - false (default false)
     - `val` - '${data.myText}_test' or number. Type will be detected automatically from the state type and converting done too
