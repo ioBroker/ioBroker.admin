@@ -30,7 +30,6 @@ import {
     ListItem,
     ListItemButton,
     ListItemIcon,
-    ListItemSecondaryAction,
     ListItemText,
     Menu,
     MenuItem,
@@ -8635,9 +8634,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 {ITEMS[key].label}
                                 ...
                             </ListItemText>
-                            <ListItemSecondaryAction>
+                            <div style={{ ...styles.contextMenuKeys, opacity: 1 }}>
                                 <ArrowRightIcon />
-                            </ListItemSecondaryAction>
+                            </div>
                         </MenuItem>,
                     );
 

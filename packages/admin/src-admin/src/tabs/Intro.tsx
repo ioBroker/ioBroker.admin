@@ -1537,7 +1537,17 @@ class Intro extends React.Component<IntroProps, IntroState> {
             {this.renderCopiedToast()}
             {this.state.nodeUpdateDialog ? <NodeUpdateDialog onClose={() => this.setState({ nodeUpdateDialog: null })} socket={this.props.socket} {...this.state.nodeUpdateDialog} /> : null}
             <TabContent style={styles.container}>
-                <Grid2 container spacing={2}>
+                <Grid2
+                    className="denis"
+                    container
+                    spacing={1}
+                    columns={{
+                        xs: 12,
+                        md: 12,
+                        lg: 12,
+                        sm: 12,
+                    }}
+                >
                     {this.getInstancesCards()}
                     {this.getLinkCards()}
                 </Grid2>
