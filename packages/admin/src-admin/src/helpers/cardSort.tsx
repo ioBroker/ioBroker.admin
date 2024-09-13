@@ -1,9 +1,6 @@
 import _ from 'lodash';
 
-const funcSet = _.throttle(
-    (setTabs, tabs) => setTabs(tabs),
-    200,
-);
+const funcSet = _.throttle((setTabs, tabs) => setTabs(tabs), 200);
 
 const findCard = (id: string, cards: { name: string }[]) => {
     const card = cards.find(c => c.name === id);
@@ -19,7 +16,7 @@ const moveCard = (
     tabs: { name: string }[],
     setTabs: (newTabs: { name: string }[]) => void,
     hoverClientY: number,
-    hoverMiddleY: number,
+    hoverMiddleY: number
 ) => {
     const { card, index } = findCard(id, tabs);
     if (index === atIndex) {

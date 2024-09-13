@@ -199,7 +199,7 @@ class AdminUtils {
         placeholder: string,
         hosts: Record<string, ioBroker.HostObject>,
         hostname: string,
-        adminInstance: string,
+        adminInstance: string
     ): string {
         if (attr === 'protocol') {
             attr = 'secure';
@@ -278,7 +278,8 @@ class AdminUtils {
                     ip.family === 'IPv4' &&
                     localIp.includes('.') &&
                     // eslint-disable-next-line no-bitwise
-                    (AdminUtils.ip2int(localIp) & AdminUtils.ip2int(ip.netmask)) === (AdminUtils.ip2int(ip.address) & AdminUtils.ip2int(ip.netmask))
+                    (AdminUtils.ip2int(localIp) & AdminUtils.ip2int(ip.netmask)) ===
+                        (AdminUtils.ip2int(ip.address) & AdminUtils.ip2int(ip.netmask))
                 ) {
                     hostIp = ip.address;
                 } else {
@@ -328,7 +329,7 @@ class AdminUtils {
         objects: Record<string, ioBroker.InstanceObject>,
         hosts: Record<string, ioBroker.HostObject>,
         currentHostname: string,
-        adminInstance: string,
+        adminInstance: string
     ) {
         if (!instanceObj || !instanceObj.common) {
             return null;
@@ -374,7 +375,7 @@ class AdminUtils {
             hostname: string;
             adminInstance: string;
             hosts: Record<string, ioBroker.HostObject>;
-        },
+        }
     ): {
         url: string;
         port: number;
@@ -406,7 +407,7 @@ class AdminUtils {
                                 context.instances,
                                 context.hosts,
                                 context.hostname,
-                                context.adminInstance,
+                                context.adminInstance
                             );
                         }
 
@@ -462,8 +463,8 @@ class AdminUtils {
                                             placeholder,
                                             context.hosts,
                                             context.hostname,
-                                            context.adminInstance,
-                                        )),
+                                            context.adminInstance
+                                        ))
                                 );
                             } else {
                                 link = AdminUtils._replaceLink(
@@ -474,7 +475,7 @@ class AdminUtils {
                                     placeholder,
                                     context.hosts,
                                     context.hostname,
-                                    context.adminInstance,
+                                    context.adminInstance
                                 );
                                 port = context.instances[`system.adapter.${adapterInstance}`]?.native?.port;
                             }
@@ -490,7 +491,11 @@ class AdminUtils {
                                     ids = [`${adapter}.${instance}`];
                                 } else {
                                     ids = Object.keys(context.instances)
-                                        .filter(id => id.startsWith(`system.adapter.${adapterInstance}.`) && context.instances[id].common.enabled)
+                                        .filter(
+                                            id =>
+                                                id.startsWith(`system.adapter.${adapterInstance}.`) &&
+                                                context.instances[id].common.enabled
+                                        )
                                         .map(id => id.substring(15));
 
                                     // try to get disabled instances
@@ -513,7 +518,7 @@ class AdminUtils {
                                                 placeholder,
                                                 context.hosts,
                                                 context.hostname,
-                                                context.adminInstance,
+                                                context.adminInstance
                                             );
                                         } else {
                                             // add new
@@ -525,9 +530,10 @@ class AdminUtils {
                                                 placeholder,
                                                 context.hosts,
                                                 context.hostname,
-                                                context.adminInstance,
+                                                context.adminInstance
                                             );
-                                            const _port: number = context.instances[`system.adapter.${id}`]?.native?.port as number;
+                                            const _port: number = context.instances[`system.adapter.${id}`]?.native
+                                                ?.port as number;
                                             _urls.push({ url: _link, port: _port, instance: id });
                                         }
                                     } else {
@@ -539,9 +545,10 @@ class AdminUtils {
                                             placeholder,
                                             context.hosts,
                                             context.hostname,
-                                            context.adminInstance,
+                                            context.adminInstance
                                         );
-                                        const _port: number = context.instances[`system.adapter.${id}`]?.native?.port as number;
+                                        const _port: number = context.instances[`system.adapter.${id}`]?.native
+                                            ?.port as number;
                                         _urls.push({ url: _link, port: _port, instance: id });
                                     }
                                 });
@@ -554,7 +561,7 @@ class AdminUtils {
                                     placeholder,
                                     context.hosts,
                                     context.hostname,
-                                    context.adminInstance,
+                                    context.adminInstance
                                 );
                                 port = context.instances[`system.adapter.${adapterInstance}`]?.native?.port as number;
                             }
@@ -572,7 +579,7 @@ class AdminUtils {
 
     static objectMap<Result = any, Value = any>(
         object: Record<string, Value>,
-        callback: (res: Value, key: string) => Result,
+        callback: (res: Value, key: string) => Result
     ): Result[] {
         const result: Result[] = [];
         for (const key in object) {
@@ -616,7 +623,7 @@ class AdminUtils {
 
                 if (obj.common.adminUI) {
                     console.warn(
-                        `Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`,
+                        `Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`
                     );
                 }
             } else {
@@ -664,7 +671,7 @@ class AdminUtils {
                 }
                 if (changed) {
                     console.warn(
-                        `Please modify "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`,
+                        `Please modify "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`
                     );
                 }
             }

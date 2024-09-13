@@ -5,22 +5,11 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
 
-import {
-    LinearProgress,
-    Grid2,
-    Typography,
-    Fab, Box,
-} from '@mui/material';
+import { LinearProgress, Grid2, Typography, Fab, Box } from '@mui/material';
 
-import {
-    PersonAdd as PersonAddIcon,
-    GroupAdd as GroupAddIcon,
-} from '@mui/icons-material';
+import { PersonAdd as PersonAddIcon, GroupAdd as GroupAddIcon } from '@mui/icons-material';
 
-import {
-    Utils, type AdminConnection,
-    type Translate, type IobTheme, type ThemeType,
-} from '@iobroker/adapter-react-v5';
+import { Utils, type AdminConnection, type Translate, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
 
 import UserBlock from './UserBlock';
 import GroupBlock from './GroupBlock';
@@ -35,7 +24,7 @@ const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, 
 const styles: Record<string, any> = {
     mainGridCont: {
         height: 'calc(100% - 55px)',
-        overflowY:'auto',
+        overflowY: 'auto',
     },
     childGridCont: {
         display: 'flex',
@@ -114,20 +103,19 @@ const styles: Record<string, any> = {
     icon: {
         height: 32,
         width: 32,
-        marginRight:5,
+        marginRight: 5,
         backgroundSize: 'cover',
-        backgroundPosition:'center',
+        backgroundPosition: 'center',
     },
     right: {
         float: 'right',
     },
     left: {
         float: 'left',
-        marginRight:10,
+        marginRight: 10,
     },
     dialog: {
         // padding: 10,
-
         // maxWidth: '100vw',
         // maxHeight: '100vh',
         // overflowY: 'hidden',
@@ -144,8 +132,8 @@ const styles: Record<string, any> = {
     },
     formContainer: {
         display: 'flex',
-        justifyContent:'center',
-        alignItems:'center',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     formIcon: {
         margin: 10,
@@ -168,23 +156,23 @@ const styles: Record<string, any> = {
     }),
     dialogTitle: {
         borderBottom: '1px solid #00000020',
-        padding : 0,
-        width:'100%',
+        padding: 0,
+        width: '100%',
     },
     dialogActions: {
         borderTop: '1px solid #00000020',
-        width:'100%',
+        width: '100%',
     },
     dialogPaper: {
         overflowY: 'initial',
-        display:'flex',
-        flexDirection:'column',
-        justifyContent:'center',
-        alignItems:'center',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
         width: 'calc(100% - 100px)',
         height: 'calc(100% - 100px)',
         maxWidth: 800,
-        maxHeight:  '100%',
+        maxHeight: '100%',
     },
     dialogPaperMini: {
         maxHeight: 300,
@@ -223,9 +211,7 @@ declare global {
 }
 
 function isTouchDevice() {
-    return (('ontouchstart' in window) ||
-        (window.navigator.maxTouchPoints > 0) ||
-        (window.navigator.msMaxTouchPoints > 0));
+    return 'ontouchstart' in window || window.navigator.maxTouchPoints > 0 || window.navigator.msMaxTouchPoints > 0;
 }
 
 const USER_TEMPLATE: ioBroker.UserObject = {
@@ -244,9 +230,7 @@ const USER_TEMPLATE: ioBroker.UserObject = {
 
 const GROUP_TEMPLATE: ioBroker.GroupObject = {
     _id: undefined,
-    native: {
-
-    },
+    native: {},
     type: 'group',
     common: {
         name: '',
@@ -333,8 +317,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
     }
 
     componentDidMount() {
-        this.setState({ innerWidth: window.innerWidth }, () =>
-            this.updateData());
+        this.setState({ innerWidth: window.innerWidth }, () => this.updateData());
     }
 
     componentDidUpdate(/* prevProps, prevState, snapshot */) {
@@ -359,7 +342,8 @@ class UsersList extends Component<UsersListProps, UsersListState> {
 
     updateData = () => {
         let users: ioBroker.UserObject[];
-        return this.props.socket.getForeignObjects('system.user.*', 'user')
+        return this.props.socket
+            .getForeignObjects('system.user.*', 'user')
             .then(_users => {
                 users = Object.values(_users).sort((o1, o2) => (o1._id > o2._id ? 1 : -1));
                 // remove deprecated field "description"
@@ -388,14 +372,14 @@ class UsersList extends Component<UsersListProps, UsersListState> {
             });
     };
 
-    changeUserFormData = (user: ioBroker.UserObject) =>
-        this.setState({ userEditDialog: user });
+    changeUserFormData = (user: ioBroker.UserObject) => this.setState({ userEditDialog: user });
 
-    changeGroupFormData = (group: ioBroker.GroupObject) =>
-        this.setState({ groupEditDialog: group });
+    changeGroupFormData = (group: ioBroker.GroupObject) => this.setState({ groupEditDialog: group });
 
     saveUser = async (originalId: ioBroker.ObjectIDs.User) => {
-        const user: ioBroker.UserObject = Utils.clone(this.state.userEditDialog as ioBroker.UserObject) as ioBroker.UserObject;
+        const user: ioBroker.UserObject = Utils.clone(
+            this.state.userEditDialog as ioBroker.UserObject
+        ) as ioBroker.UserObject;
         const originalUser = this.state.users.find(element => element._id === user._id);
         const newPassword = user.common.password && user.common.password !== PASSWORD_SET ? user.common.password : '';
 
@@ -406,7 +390,11 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         }
 
         await this.props.socket.setObject(user._id, user);
-        if (typeof this.state.userEditDialog === 'object' && originalId && originalId !== this.state.userEditDialog._id) {
+        if (
+            typeof this.state.userEditDialog === 'object' &&
+            originalId &&
+            originalId !== this.state.userEditDialog._id
+        ) {
             try {
                 await this.props.socket.delObject(originalId);
                 for (let i = 0; i < this.state.groups.length; i++) {
@@ -428,8 +416,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                 window.alert(`Cannot change password: ${e}`);
             }
         }
-        this.setState({ userEditDialog: false }, () =>
-            this.updateData());
+        this.setState({ userEditDialog: false }, () => this.updateData());
     };
 
     saveGroup = async (originalId: string) => {
@@ -446,33 +433,35 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         }
     };
 
-    showUserDeleteDialog = (user: ioBroker.UserObject) =>
-        this.setState({ userDeleteDialog: user });
+    showUserDeleteDialog = (user: ioBroker.UserObject) => this.setState({ userDeleteDialog: user });
 
-    showGroupDeleteDialog = (group: ioBroker.GroupObject) =>
-        this.setState({ groupDeleteDialog: group });
+    showGroupDeleteDialog = (group: ioBroker.GroupObject) => this.setState({ groupDeleteDialog: group });
 
     deleteUser = (userId: ioBroker.ObjectIDs.User) => {
-        this.props.socket.delObject(userId)
-            .then(() => Promise.all(this.state.groups.map(group => {
-                if (group.common.members.includes(userId)) {
-                    const groupChanged: ioBroker.GroupObject = Utils.clone(group) as ioBroker.GroupObject;
-                    groupChanged.common.members.splice(groupChanged.common.members.indexOf(userId), 1);
-                    return this.props.socket.setObject(groupChanged._id, groupChanged);
-                }
-                return Promise.resolve(null);
-            })))
+        this.props.socket
+            .delObject(userId)
+            .then(() =>
+                Promise.all(
+                    this.state.groups.map(group => {
+                        if (group.common.members.includes(userId)) {
+                            const groupChanged: ioBroker.GroupObject = Utils.clone(group) as ioBroker.GroupObject;
+                            groupChanged.common.members.splice(groupChanged.common.members.indexOf(userId), 1);
+                            return this.props.socket.setObject(groupChanged._id, groupChanged);
+                        }
+                        return Promise.resolve(null);
+                    })
+                )
+            )
             .catch(e => window.alert(`Cannot delete user: ${e}`))
             .then(() => {
-                this.setState({ userDeleteDialog: false }, () =>
-                    this.updateData());
+                this.setState({ userDeleteDialog: false }, () => this.updateData());
             });
     };
 
     deleteGroup = (groupId: string) =>
-        this.props.socket.delObject(groupId)
-            .then(() => this.setState({ groupDeleteDialog: false }, () =>
-                this.updateData()))
+        this.props.socket
+            .delObject(groupId)
+            .then(() => this.setState({ groupDeleteDialog: false }, () => this.updateData()))
             .catch(e => window.alert(`Cannot delete user: ${e}`));
 
     addUserToGroup = (userId: ioBroker.ObjectIDs.User, groupId: string) => {
@@ -480,9 +469,9 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         const members = group.common.members;
         if (!members.includes(userId)) {
             members.push(userId);
-            this.props.socket.setObject(group._id, group)
-                .then(() =>
-                    this.updateData())
+            this.props.socket
+                .setObject(group._id, group)
+                .then(() => this.updateData())
                 .catch(e => window.alert(`Cannot delete user: ${e}`));
         }
     };
@@ -492,20 +481,19 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         const members = group.common.members;
         if (members.includes(userId)) {
             members.splice(members.indexOf(userId), 1);
-            this.props.socket.setObject(group._id, group).then(() =>
-                this.updateData());
+            this.props.socket.setObject(group._id, group).then(() => this.updateData());
         }
     };
 
     static _isUniqueName(list: ioBroker.Object[], word: string, i: number) {
-        return !list.find(item =>
-            item._id === (`system.user.${word.toLowerCase()}_${i}`) ||
-            item.common.name === `${word} ${i}`);
+        return !list.find(
+            item => item._id === `system.user.${word.toLowerCase()}_${i}` || item.common.name === `${word} ${i}`
+        );
     }
 
     static findNewUniqueName(isGroup: boolean, list: ioBroker.Object[], word: string) {
         let i = 1;
-        while (!UsersList._isUniqueName(list,  word, i)) {
+        while (!UsersList._isUniqueName(list, word, i)) {
             i++;
         }
         return { _id: `system.${isGroup ? 'group' : 'user'}.${word.toLowerCase()}_${i}`, name: `${word} ${i}` };
@@ -516,150 +504,183 @@ class UsersList extends Component<UsersListProps, UsersListState> {
             return <LinearProgress />;
         }
 
-        return <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
-            <DndPreview />
-            <Box component="div" sx={styles.descriptionPanel}>
-                {this.props.t('You can drag users to groups.')}
-            </Box>
-            <Grid2 container spacing={2} style={styles.mainGridCont}>
-                <Grid2
-                    size={{ xs: 12, md: 6 }}
-                    style={{ ...styles.childGridCont, ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined) }}
-                >
-                    <div style={styles.headContainer}>
-                        <Fab
-                            size="small"
-                            style={styles.right}
-                            onClick={() => {
-                                const { _id, name } = UsersList.findNewUniqueName(true, this.state.groups, this.props.t('Group'));
-                                const template: ioBroker.GroupObject = Utils.clone(GROUP_TEMPLATE) as ioBroker.GroupObject;
-                                template._id = _id as ioBroker.ObjectIDs.Group;
-                                template.common.name = name;
-                                this.showGroupEditDialog(template, true);
-                            }}
-                        >
-                            <GroupAddIcon />
-                        </Fab>
-                        <Typography gutterBottom variant="h4" component="h4">{this.props.t('Groups')}</Typography>
-                    </div>
-                    <div style={styles.blocksContainer}>
-                        {this.state.groups
-                            .sort((a, b) => {
-                                const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
-                                const _b = (this.getText(b?.common?.name) || b._id).toLowerCase();
-                                if (_a > _b) {
-                                    return 1;
-                                } if (_a < _b) {
-                                    return -1;
-                                }
-                                return 0;
-                            }).map(group => <GroupBlock
-                                themeType={this.props.themeType}
-                                group={group}
-                                key={group._id}
-                                users={this.state.users}
-                                showGroupEditDialog={this.showGroupEditDialog}
-                                showGroupDeleteDialog={this.showGroupDeleteDialog}
-                                removeUserFromGroup={this.removeUserFromGroup}
-                                getText={this.getText}
-                                styles={styles}
-                                {...this.props}
-                            />)}
-                    </div>
+        return (
+            <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
+                <DndPreview />
+                <Box component="div" sx={styles.descriptionPanel}>
+                    {this.props.t('You can drag users to groups.')}
+                </Box>
+                <Grid2 container spacing={2} style={styles.mainGridCont}>
+                    <Grid2
+                        size={{ xs: 12, md: 6 }}
+                        style={{
+                            ...styles.childGridCont,
+                            ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined),
+                        }}
+                    >
+                        <div style={styles.headContainer}>
+                            <Fab
+                                size="small"
+                                style={styles.right}
+                                onClick={() => {
+                                    const { _id, name } = UsersList.findNewUniqueName(
+                                        true,
+                                        this.state.groups,
+                                        this.props.t('Group')
+                                    );
+                                    const template: ioBroker.GroupObject = Utils.clone(
+                                        GROUP_TEMPLATE
+                                    ) as ioBroker.GroupObject;
+                                    template._id = _id as ioBroker.ObjectIDs.Group;
+                                    template.common.name = name;
+                                    this.showGroupEditDialog(template, true);
+                                }}
+                            >
+                                <GroupAddIcon />
+                            </Fab>
+                            <Typography gutterBottom variant="h4" component="h4">
+                                {this.props.t('Groups')}
+                            </Typography>
+                        </div>
+                        <div style={styles.blocksContainer}>
+                            {this.state.groups
+                                .sort((a, b) => {
+                                    const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
+                                    const _b = (this.getText(b?.common?.name) || b._id).toLowerCase();
+                                    if (_a > _b) {
+                                        return 1;
+                                    }
+                                    if (_a < _b) {
+                                        return -1;
+                                    }
+                                    return 0;
+                                })
+                                .map(group => (
+                                    <GroupBlock
+                                        themeType={this.props.themeType}
+                                        group={group}
+                                        key={group._id}
+                                        users={this.state.users}
+                                        showGroupEditDialog={this.showGroupEditDialog}
+                                        showGroupDeleteDialog={this.showGroupDeleteDialog}
+                                        removeUserFromGroup={this.removeUserFromGroup}
+                                        getText={this.getText}
+                                        styles={styles}
+                                        {...this.props}
+                                    />
+                                ))}
+                        </div>
+                    </Grid2>
+                    <Grid2
+                        size={{ xs: 12, md: 6 }}
+                        style={{
+                            ...styles.childGridCont,
+                            ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined),
+                        }}
+                    >
+                        <div style={styles.headContainer}>
+                            <Fab
+                                size="small"
+                                style={styles.right}
+                                onClick={() => {
+                                    const { _id, name } = UsersList.findNewUniqueName(
+                                        false,
+                                        this.state.users,
+                                        this.props.t('User')
+                                    );
+                                    const template: ioBroker.UserObject = Utils.clone(
+                                        USER_TEMPLATE
+                                    ) as ioBroker.UserObject;
+                                    template._id = _id as ioBroker.ObjectIDs.User;
+                                    template.common.name = name;
+                                    this.showUserEditDialog(template, true);
+                                }}
+                            >
+                                <PersonAddIcon />
+                            </Fab>
+                            <Typography gutterBottom variant="h4" component="h4">
+                                {this.props.t('Users')}
+                            </Typography>
+                        </div>
+                        <div style={styles.blocksContainer}>
+                            {this.state.users
+                                .sort((a, b) => {
+                                    const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
+                                    const _b = (this.getText(b?.common?.name) || b._id).toLowerCase();
+                                    if (_a > _b) {
+                                        return 1;
+                                    }
+                                    if (_a < _b) {
+                                        return -1;
+                                    }
+                                    return 0;
+                                })
+                                .map(user => (
+                                    <UserBlock
+                                        themeType={this.props.themeType}
+                                        user={user}
+                                        key={user._id}
+                                        groups={this.state.groups}
+                                        showUserEditDialog={this.showUserEditDialog}
+                                        showUserDeleteDialog={this.showUserDeleteDialog}
+                                        updateData={this.updateData}
+                                        addUserToGroup={this.addUserToGroup}
+                                        removeUserFromGroup={this.removeUserFromGroup}
+                                        getText={this.getText}
+                                        styles={styles}
+                                        {...this.props}
+                                    />
+                                ))}
+                        </div>
+                    </Grid2>
                 </Grid2>
-                <Grid2
-                    size={{ xs: 12, md: 6 }}
-                    style={{ ...styles.childGridCont, ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined) }}
-                >
-                    <div style={styles.headContainer}>
-                        <Fab
-                            size="small"
-                            style={styles.right}
-                            onClick={() => {
-                                const { _id, name } = UsersList.findNewUniqueName(false,  this.state.users, this.props.t('User'));
-                                const template: ioBroker.UserObject = Utils.clone(USER_TEMPLATE) as ioBroker.UserObject;
-                                template._id = _id as ioBroker.ObjectIDs.User;
-                                template.common.name = name;
-                                this.showUserEditDialog(template, true);
-                            }}
-                        >
-                            <PersonAddIcon />
-                        </Fab>
-                        <Typography
-                            gutterBottom
-                            variant="h4"
-                            component="h4"
-                        >
-                            {this.props.t('Users')}
-                        </Typography>
-                    </div>
-                    <div style={styles.blocksContainer}>
-                        {this.state.users
-                            .sort((a, b) => {
-                                const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
-                                const _b = (this.getText(b?.common?.name) || b._id).toLowerCase();
-                                if (_a > _b) {
-                                    return 1;
-                                } if (_a < _b) {
-                                    return -1;
-                                }
-                                return 0;
-                            })
-                            .map(user => <UserBlock
-                                themeType={this.props.themeType}
-                                user={user}
-                                key={user._id}
-                                groups={this.state.groups}
-                                showUserEditDialog={this.showUserEditDialog}
-                                showUserDeleteDialog={this.showUserDeleteDialog}
-                                updateData={this.updateData}
-                                addUserToGroup={this.addUserToGroup}
-                                removeUserFromGroup={this.removeUserFromGroup}
-                                getText={this.getText}
-                                styles={styles}
-                                {...this.props}
-                            />)}
-                    </div>
-                </Grid2>
-            </Grid2>
-            {this.state.userEditDialog ? <UserEditDialog
-                onClose={() => this.setState({ userEditDialog: false })}
-                users={this.state.users}
-                user={this.state.userEditDialog}
-                isNew={this.state.userEditDialogNew}
-                t={this.props.t}
-                getText={this.getText}
-                styles={styles}
-                onChange={this.changeUserFormData}
-                saveData={this.saveUser}
-                innerWidth={this.state.innerWidth}
-            /> : null}
-            {this.state.groupEditDialog ? <GroupEditDialog
-                onClose={() => this.setState({ groupEditDialog: false })}
-                groups={this.state.groups}
-                group={this.state.groupEditDialog}
-                isNew={this.state.groupEditDialogNew}
-                t={this.props.t}
-                getText={this.getText}
-                styles={styles}
-                onChange={this.changeGroupFormData}
-                innerWidth={this.state.innerWidth}
-                saveData={this.saveGroup}
-            /> : null}
-            {this.state.userDeleteDialog ? <UserDeleteDialog
-                onClose={() => this.setState({ userDeleteDialog: false })}
-                user={this.state.userDeleteDialog}
-                t={this.props.t}
-                deleteUser={this.deleteUser}
-            /> : null}
-            {this.state.groupDeleteDialog ? <GroupDeleteDialog
-                onClose={() => this.setState({ groupDeleteDialog: false })}
-                group={this.state.groupDeleteDialog}
-                t={this.props.t}
-                styles={styles}
-                deleteGroup={this.deleteGroup}
-            /> : null}
-        </DndProvider>;
+                {this.state.userEditDialog ? (
+                    <UserEditDialog
+                        onClose={() => this.setState({ userEditDialog: false })}
+                        users={this.state.users}
+                        user={this.state.userEditDialog}
+                        isNew={this.state.userEditDialogNew}
+                        t={this.props.t}
+                        getText={this.getText}
+                        styles={styles}
+                        onChange={this.changeUserFormData}
+                        saveData={this.saveUser}
+                        innerWidth={this.state.innerWidth}
+                    />
+                ) : null}
+                {this.state.groupEditDialog ? (
+                    <GroupEditDialog
+                        onClose={() => this.setState({ groupEditDialog: false })}
+                        groups={this.state.groups}
+                        group={this.state.groupEditDialog}
+                        isNew={this.state.groupEditDialogNew}
+                        t={this.props.t}
+                        getText={this.getText}
+                        styles={styles}
+                        onChange={this.changeGroupFormData}
+                        innerWidth={this.state.innerWidth}
+                        saveData={this.saveGroup}
+                    />
+                ) : null}
+                {this.state.userDeleteDialog ? (
+                    <UserDeleteDialog
+                        onClose={() => this.setState({ userDeleteDialog: false })}
+                        user={this.state.userDeleteDialog}
+                        t={this.props.t}
+                        deleteUser={this.deleteUser}
+                    />
+                ) : null}
+                {this.state.groupDeleteDialog ? (
+                    <GroupDeleteDialog
+                        onClose={() => this.setState({ groupDeleteDialog: false })}
+                        group={this.state.groupDeleteDialog}
+                        t={this.props.t}
+                        styles={styles}
+                        deleteGroup={this.deleteGroup}
+                    />
+                ) : null}
+            </DndProvider>
+        );
     }
 }
 

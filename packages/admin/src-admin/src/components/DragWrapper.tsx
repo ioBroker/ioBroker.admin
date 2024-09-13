@@ -24,7 +24,19 @@ interface DragWrapperProps {
 }
 
 const DragWrapper = ({
-    canDrag, setEndDrag, iconJSX, selected, compact, badgeContent, badgeColor, tab, tabs, setTabs, _id, children, name,
+    canDrag,
+    setEndDrag,
+    iconJSX,
+    selected,
+    compact,
+    badgeContent,
+    badgeColor,
+    tab,
+    tabs,
+    setTabs,
+    _id,
+    children,
+    name,
 }: DragWrapperProps) => {
     const ref = useRef(null);
     const [{ handlerId }, drop] = useDrop({
@@ -44,14 +56,7 @@ const DragWrapper = ({
             const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
             const clientOffset = monitor.getClientOffset();
             const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-            moveCard(
-                draggedId,
-                overIndexActions,
-                tabs,
-                setTabs,
-                hoverClientY,
-                hoverMiddleY,
-            );
+            moveCard(draggedId, overIndexActions, tabs, setTabs, hoverClientY, hoverMiddleY);
         },
     });
 
@@ -78,22 +83,24 @@ const DragWrapper = ({
     const opacity = isDragging ? 0 : 1;
     drag(drop(ref));
 
-    return <div ref={ref} style={{ ...styles, opacity }} data-handler-id={handlerId}>
-        <a
-            type="box"
-            data-handler-id={handlerId}
-            onClick={event => event.preventDefault()}
-            href={`/#${name}`}
-            style={{
-                ...styles,
-                opacity,
-                color: 'inherit',
-                textDecoration: 'none',
-            }}
-        >
-            {children}
-        </a>
-    </div>;
+    return (
+        <div ref={ref} style={{ ...styles, opacity }} data-handler-id={handlerId}>
+            <a
+                type="box"
+                data-handler-id={handlerId}
+                onClick={event => event.preventDefault()}
+                href={`/#${name}`}
+                style={{
+                    ...styles,
+                    opacity,
+                    color: 'inherit',
+                    textDecoration: 'none',
+                }}
+            >
+                {children}
+            </a>
+        </div>
+    );
 };
 
 export default DragWrapper;

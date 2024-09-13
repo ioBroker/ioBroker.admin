@@ -43,12 +43,12 @@ function authorize(options) {
     const auth = Object.assign({}, defaults, options);
 
     if (!auth.passport) {
-        throw new Error("passport is required to use require('passport'), please install passport");
+        throw new Error('passport is required to use require(\'passport\'), please install passport');
     }
 
     if (!auth.cookieParser) {
         throw new Error(
-            "cookieParser is required use require('cookie-parser'), connect.cookieParser or express.cookieParser"
+            'cookieParser is required use require(\'cookie-parser\'), connect.cookieParser or express.cookieParser'
         );
     }
 
@@ -59,13 +59,14 @@ function authorize(options) {
             return options.checkUser(data.query.user, data.query.pass, (error, result) => {
                 if (error) {
                     return auth.fail(data, 'Cannot check user', false, accept);
-                } else if (!result) {
-                    return auth.fail(data, 'User not found', false, accept);
-                } else {
-                    data[auth.userProperty] = result;
-                    data[auth.userProperty].logged_in = true;
-                    auth.success(data, accept);
                 }
+                if (!result) {
+                    return auth.fail(data, 'User not found', false, accept);
+                }
+
+                data[auth.userProperty] = result;
+                data[auth.userProperty].logged_in = true;
+                auth.success(data, accept);
             });
         }
 
@@ -77,10 +78,12 @@ function authorize(options) {
 
         auth.store.get(data.sessionID, (err, session) => {
             if (err) {
-                return auth.fail(data, 'Error in session store:\n' + err.message, true, accept);
-            } else if (!session) {
+                return auth.fail(data, `Error in session store:\n${err.message}`, true, accept);
+            }
+            if (!session) {
                 return auth.fail(data, 'No session found', false, accept);
-            } else if (!session[auth.passport._key]) {
+            }
+            if (!session[auth.passport._key]) {
                 return auth.fail(data, 'Passport was not initialized', true, accept);
             }
 
@@ -91,7 +94,7 @@ function authorize(options) {
                     data,
                     'User not authorized through passport. (User Property not found)',
                     false,
-                    accept
+                    accept,
                 );
             }
 

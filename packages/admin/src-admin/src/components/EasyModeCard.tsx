@@ -92,24 +92,20 @@ interface EasyModeCardProps {
     navigate: () => void;
 }
 
-const EasyModeCard = ({
-    icon,
-    id,
-    desc,
-    lang,
-    navigate,
-}: EasyModeCardProps) => <Card onClick={navigate} sx={styles.root}>
-    <div style={{ ...styles.imageBlock, ...styles.instanceStateNotAlive1 }}>
-        <CardMedia
-            sx={styles.img}
-            component="img"
-            image={`adapter/${id.split('.')[0]}/${icon}` || 'img/no-image.png'}
-        />
-    </div>
-    <div style={styles.wrapperDesc}>
-        <div style={styles.desc}>{getText(desc, lang)}</div>
-        <div style={styles.adapter}>{id}</div>
-    </div>
-</Card>;
+const EasyModeCard = ({ icon, id, desc, lang, navigate }: EasyModeCardProps) => (
+    <Card onClick={navigate} sx={styles.root}>
+        <div style={{ ...styles.imageBlock, ...styles.instanceStateNotAlive1 }}>
+            <CardMedia
+                sx={styles.img}
+                component="img"
+                image={`adapter/${id.split('.')[0]}/${icon}` || 'img/no-image.png'}
+            />
+        </div>
+        <div style={styles.wrapperDesc}>
+            <div style={styles.desc}>{getText(desc, lang)}</div>
+            <div style={styles.adapter}>{id}</div>
+        </div>
+    </Card>
+);
 
 export default EasyModeCard;

@@ -28,10 +28,10 @@ export default class AdaptersWorker {
     private repoTimer: ReturnType<typeof setTimeout> | null;
 
     constructor(socket: AdminConnection) {
-        this.socket   = socket;
+        this.socket = socket;
         this.handlers = [];
         this.repositoryHandlers = [];
-        this.promise  = null;
+        this.promise = null;
         this.forceUpdate = false;
 
         socket.registerConnectionHandler(this.connectionHandler);
@@ -81,9 +81,16 @@ export default class AdaptersWorker {
             this.forceUpdate = true;
             this.promise = null;
 
-            this.handlers.forEach(cb => cb([{
-                id, obj, type, oldObj,
-            }]));
+            this.handlers.forEach(cb =>
+                cb([
+                    {
+                        id,
+                        obj,
+                        type,
+                        oldObj,
+                    },
+                ])
+            );
         }
     };
 
@@ -100,10 +107,11 @@ export default class AdaptersWorker {
         update = update || this.forceUpdate;
         this.forceUpdate = false;
 
-        this.promise = this.socket.getAdapters(null, update)
+        this.promise = this.socket
+            .getAdapters(null, update)
             .then(objects => {
                 this.objects = {};
-                objects.forEach(obj => this.objects[obj._id] = obj);
+                objects.forEach(obj => (this.objects[obj._id] = obj));
                 return this.objects;
             })
             .catch(e => window.alert(`Cannot get adapters: ${e}`));
@@ -116,12 +124,14 @@ export default class AdaptersWorker {
             this.connected = true;
 
             if (this.handlers.length) {
-                this.socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
+                this.socket
+                    .subscribeObject('system.adapter.*', this.objectChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
 
-                this.getAdapters(true)
-                    .then(adapters => adapters && Object.keys(adapters)
-                        .forEach(id => this.objectChangeHandler(id, adapters[id])));
+                this.getAdapters(true).then(
+                    adapters =>
+                        adapters && Object.keys(adapters).forEach(id => this.objectChangeHandler(id, adapters[id]))
+                );
             }
         } else if (!isConnected && this.connected) {
             this.connected = false;
@@ -133,7 +143,8 @@ export default class AdaptersWorker {
             this.handlers.push(cb);
 
             if (this.handlers.length === 1 && this.connected) {
-                this.socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
+                this.socket
+                    .subscribeObject('system.adapter.*', this.objectChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
             }
         }
@@ -146,7 +157,8 @@ export default class AdaptersWorker {
         }
 
         if (!this.handlers.length && this.connected) {
-            this.socket.unsubscribeObject('system.adapter.*', this.objectChangeHandler)
+            this.socket
+                .unsubscribeObject('system.adapter.*', this.objectChangeHandler)
                 .catch(e => window.alert(`Cannot unsubscribe on object: ${e}`));
         }
     }
@@ -166,7 +178,8 @@ export default class AdaptersWorker {
             this.repositoryHandlers.push(cb);
 
             if (this.repositoryHandlers.length === 1 && this.connected) {
-                this.socket.subscribeObject('system.repositories', this.repoChangeHandler)
+                this.socket
+                    .subscribeObject('system.repositories', this.repoChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
             }
         }
@@ -179,7 +192,8 @@ export default class AdaptersWorker {
         }
 
         if (!this.repositoryHandlers.length && this.connected) {
-            this.socket.unsubscribeObject('system.repositories', this.repoChangeHandler)
+            this.socket
+                .unsubscribeObject('system.repositories', this.repoChangeHandler)
                 .catch(e => window.alert(`Cannot unsubscribe on object: ${e}`));
         }
     }

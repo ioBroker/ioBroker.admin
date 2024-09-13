@@ -25,20 +25,21 @@ import {
     TableCell,
     TextField,
     TableBody,
-    TableContainer, Box,
+    TableContainer,
+    Box,
 } from '@mui/material';
 
 // icons
 import { FaPlusSquare as InsertIcon, FaDownload as ExportIcon } from 'react-icons/fa';
-import {
-    Edit as IconEdit,
-    Delete as IconDelete,
-    Close as IconClose,
-} from '@mui/icons-material';
+import { Edit as IconEdit, Delete as IconDelete, Close as IconClose } from '@mui/icons-material';
 
 import {
-    Utils, withWidth, TableResize, type AdminConnection,
-    type IobTheme, type Translate,
+    Utils,
+    withWidth,
+    TableResize,
+    type AdminConnection,
+    type IobTheme,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { localeMap } from './utils';
@@ -189,9 +190,7 @@ const styles: Record<string, any> = {
         height: 4,
     },
 
-    colValue: {
-
-    },
+    colValue: {},
     colAck: {
         // width: 50,
     },
@@ -369,8 +368,9 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 resolve([]);
             }, 2_000);
 
-            this.props.socket.sendTo(historyInstance, 'features', null)
-                .then((result: { supportedFeatures: SupportedFeatures}) => {
+            this.props.socket
+                .sendTo(historyInstance, 'features', null)
+                .then((result: { supportedFeatures: SupportedFeatures }) => {
                     if (this.readSupportedFeaturesTimeout) {
                         clearTimeout(this.readSupportedFeaturesTimeout);
                         this.readSupportedFeaturesTimeout = undefined;
@@ -402,10 +402,12 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
     }
 
     onChange = (id: string, state: ioBroker.State) => {
-        if (id === this.props.obj._id &&
+        if (
+            id === this.props.obj._id &&
             state &&
             this.state.values &&
-            (!this.state.values.length || this.state.values[this.state.values.length - 1].ts < state.ts)) {
+            (!this.state.values.length || this.state.values[this.state.values.length - 1].ts < state.ts)
+        ) {
             const values = [...this.state.values, state];
             this.setState({ values });
         } else if (id.startsWith('system.adapter.') && id.endsWith('.alive')) {
@@ -419,8 +421,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                     this.setState({ historyInstances }, () => {
                         // read data if the instance becomes alive
                         if (historyInstances[itemIndex].alive && this.state.historyInstance === instance) {
-                            this.readHistoryRange()
-                                .then(() => this.readHistory());
+                            this.readHistoryRange().then(() => this.readHistory());
                         }
                     });
                 }
@@ -456,13 +457,16 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         await new Promise<void>(resolve => {
             // supportedFeatures = ['insert', 'update', 'delete'];
 
-            this.setState({
-                ampm: (config.common.dateFormat || '').includes('/'),
-                historyInstances: list,
-                // defaultHistory,
-                historyInstance,
-                supportedFeatures,
-            }, () => resolve());
+            this.setState(
+                {
+                    ampm: (config.common.dateFormat || '').includes('/'),
+                    historyInstances: list,
+                    // defaultHistory,
+                    historyInstance,
+                    supportedFeatures,
+                },
+                () => resolve()
+            );
         });
     }
 
@@ -479,53 +483,56 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         });
 
         if (ids.length) {
-            return this.props.socket.getForeignStates(ids)
-                .then(async (alives: Record<string, ioBroker.State>) => {
-                    Object.keys(alives).forEach(id => {
-                        const item = list.find(it => id.endsWith(`${it.id}.alive`));
-                        if (item) {
-                            item.alive = !!alives[id]?.val;
-                        }
-                    });
-                    this.subscribes = ids;
-                    for (let i = 0; i < ids.length; i++) {
-                        await this.props.socket.subscribeState(ids[i], this.onChange);
+            return this.props.socket.getForeignStates(ids).then(async (alives: Record<string, ioBroker.State>) => {
+                Object.keys(alives).forEach(id => {
+                    const item = list.find(it => id.endsWith(`${it.id}.alive`));
+                    if (item) {
+                        item.alive = !!alives[id]?.val;
                     }
-
-                    return list;
                 });
+                this.subscribes = ids;
+                for (let i = 0; i < ids.length; i++) {
+                    await this.props.socket.subscribeState(ids[i], this.onChange);
+                }
+
+                return list;
+            });
         }
         return Promise.resolve(list);
     }
 
     readHistory(start?: number, end?: number) {
         start = start || this.state.start;
-        end   = end   || this.state.end;
+        end = end || this.state.end;
 
-        if (!this.state.historyInstance || !this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)) {
+        if (
+            !this.state.historyInstance ||
+            !this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)
+        ) {
             return null;
         }
 
         this.setState({ loading: true });
 
-        return this.props.socket.getHistory(this.props.obj._id, {
-            instance:  this.state.historyInstance,
-            start,
-            end,
-            from:      true,
-            ack:       true,
-            q:         true,
-            addID:     false,
-            aggregate: 'none',
-            returnNewestEntries: true,
-        })
+        return this.props.socket
+            .getHistory(this.props.obj._id, {
+                instance: this.state.historyInstance,
+                start,
+                end,
+                from: true,
+                ack: true,
+                q: true,
+                addID: false,
+                aggregate: 'none',
+                returnNewestEntries: true,
+            })
             .then((values: ioBroker.GetHistoryResult) => {
                 // merge range and chart
-                const chart       = [];
-                const range       = this.rangeValues;
-                let lcVisible   = false;
+                const chart = [];
+                const range = this.rangeValues;
+                let lcVisible = false;
                 // let qVisible    = false;
-                let ackVisible  = false;
+                let ackVisible = false;
                 let fromVisible = false;
                 // let cVisible    = false;
 
@@ -576,7 +583,10 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                             //     cVisible = true;
                             // }
                             console.log(`add value ${new Date(values[t].ts).toISOString()}: ${values[t].val}`);
-                        } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
+                        } else if (
+                            chart[chart.length - 1].ts === values[t].ts &&
+                            chart[chart.length - 1].val !== values[t].ts
+                        ) {
                             console.error('Strange data!');
                         }
                     }
@@ -604,7 +614,8 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         const now = new Date();
         const oldest = new Date(2_000, 0, 1);
 
-        if (!this.state.historyInstance ||
+        if (
+            !this.state.historyInstance ||
             !this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)
         ) {
             return Promise.resolve();
@@ -612,18 +623,19 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
         this.setState({ loading: true });
         // this is a code that makes problems. It is no good idea doing this!
-        return this.props.socket.getHistory(this.props.obj._id, {
-            instance:  this.state.historyInstance,
-            start:     oldest.getTime(),
-            end:       now.getTime(),
-            // step:      3600000 * 24 * 30, // monthly
-            limit:     1, // is that a way to make it faster?
-            from:      false,
-            ack:       false,
-            q:         false,
-            addID:     false,
-            aggregate: 'none',
-        })
+        return this.props.socket
+            .getHistory(this.props.obj._id, {
+                instance: this.state.historyInstance,
+                start: oldest.getTime(),
+                end: now.getTime(),
+                // step:      3600000 * 24 * 30, // monthly
+                limit: 1, // is that a way to make it faster?
+                from: false,
+                ack: false,
+                q: false,
+                addID: false,
+                aggregate: 'none',
+            })
             .then((values: ioBroker.GetHistoryResult) => {
                 if (values.length) {
                     // remove interpolated first value
@@ -631,7 +643,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                         values.shift();
                     }
                     // @ts-expect-error mark interpolated
-                    values.forEach(it => it.i = true);
+                    values.forEach(it => (it.i = true));
                     this.rangeValues = values;
                     this.setState({
                         loading: false,
@@ -673,17 +685,16 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                     selected.push(this.state.values[i].ts);
                 }
             }
-        } else
-            if (e.ctrlKey) {
-                if (pos !== -1) {
-                    selected.splice(pos, 1);
-                } else {
-                    selected.push(ts);
-                }
-                selected.sort();
+        } else if (e.ctrlKey) {
+            if (pos !== -1) {
+                selected.splice(pos, 1);
             } else {
-                selected = [ts];
+                selected.push(ts);
             }
+            selected.sort();
+        } else {
+            selected = [ts];
+        }
 
         this.localStorage.setItem('App.historyLastSelected', ts.toString());
         this.localStorage.setItem('App.historyLastSelectedColumn', column);
@@ -697,46 +708,50 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             const state = this.state.values[r];
             const ts = state.ts;
             if (state.e) {
-                rows.push(<TableRow
-                    sx={{ ...styles.row, ...styles.updatedRow, ...styles.rowInterpolated }}
-                    key={ts}
-                    hover
-                >
-                    <TableCell />
-                    <TableCell>...</TableCell>
-                    {this.state.ackVisible ? <TableCell /> : null}
-                    {this.state.fromVisible ? <TableCell /> : null}
-                    {this.state.lcVisible ? <TableCell /> : null}
-                </TableRow>);
-            } else
-                if (state.noData || state.noDataForPeriod) {
-                    rows.push(<TableRow
+                rows.push(
+                    <TableRow sx={{ ...styles.row, ...styles.updatedRow, ...styles.rowInterpolated }} key={ts} hover>
+                        <TableCell />
+                        <TableCell>...</TableCell>
+                        {this.state.ackVisible ? <TableCell /> : null}
+                        {this.state.fromVisible ? <TableCell /> : null}
+                        {this.state.lcVisible ? <TableCell /> : null}
+                    </TableRow>
+                );
+            } else if (state.noData || state.noDataForPeriod) {
+                rows.push(
+                    <TableRow
                         sx={{ ...styles.row, ...styles.updatedRow, ...styles.rowNoData }}
                         key={state.noData ? 'nodata' : ''}
                         hover
                     >
                         <TableCell />
-                        <TableCell>{ state.noData ? this.props.t('No data in history') : this.props.t('No data in history for selected period')}</TableCell>
-                        {this.state.ackVisible  ? <TableCell /> : null}
+                        <TableCell>
+                            {state.noData
+                                ? this.props.t('No data in history')
+                                : this.props.t('No data in history for selected period')}
+                        </TableCell>
+                        {this.state.ackVisible ? <TableCell /> : null}
                         {this.state.fromVisible ? <TableCell /> : null}
-                        {this.state.lcVisible  ? <TableCell /> : null}
-                    </TableRow>);
-                } else {
-                    const interpolated = state.i;
-                    const selected = this.state.lastSelected === ts;
-                    let val = state.val;
-                    if (this.props.isFloatComma && this.props.obj.common.type === 'number' && val) {
-                        val = val.toString().replace('.', ',');
-                    }
-                    if (val === null) {
-                        val = 'null';
-                    }
-                    if (val === undefined) {
-                        val = '_';
-                    }
-                    const selectedClass = this.state.selected.includes(ts);
+                        {this.state.lcVisible ? <TableCell /> : null}
+                    </TableRow>
+                );
+            } else {
+                const interpolated = state.i;
+                const selected = this.state.lastSelected === ts;
+                let val = state.val;
+                if (this.props.isFloatComma && this.props.obj.common.type === 'number' && val) {
+                    val = val.toString().replace('.', ',');
+                }
+                if (val === null) {
+                    val = 'null';
+                }
+                if (val === undefined) {
+                    val = '_';
+                }
+                const selectedClass = this.state.selected.includes(ts);
 
-                    rows.push(<TableRow
+                rows.push(
+                    <TableRow
                         sx={{
                             ...styles.row,
                             ...styles.updatedRow,
@@ -747,26 +762,58 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                     >
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ts')}>
                             {`${this.formatTimestamp(state.ts)}`}
-                            {selected && this.state.lastSelectedColumn === 'ts' ? <Box component="div" sx={styles.rowFocused} /> : ''}
+                            {selected && this.state.lastSelectedColumn === 'ts' ? (
+                                <Box component="div" sx={styles.rowFocused} />
+                            ) : (
+                                ''
+                            )}
                         </TableCell>
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'val')}>
                             {val + this.unit}
-                            {selected && this.state.lastSelectedColumn === 'val' ? <Box component="div" sx={styles.rowFocused} /> : ''}
+                            {selected && this.state.lastSelectedColumn === 'val' ? (
+                                <Box component="div" sx={styles.rowFocused} />
+                            ) : (
+                                ''
+                            )}
                         </TableCell>
-                        {this.state.ackVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ack')} sx={state.ack ? styles.cellAckTrue : styles.cellAckFalse}>
-                            {state.ack ? 'true' : 'false' }
-                            {selected && this.state.lastSelectedColumn === 'ack' ? <Box component="div" sx={styles.rowFocused} /> : ''}
-                        </TableCell> : null}
-                        {this.state.fromVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'from')}>
-                            {state.from || ''}
-                            {selected && this.state.lastSelectedColumn === 'from' ? <Box component="div" sx={styles.rowFocused} /> : ''}
-                        </TableCell> : null}
-                        {this.state.lcVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'lc')}>
-                            {state.lc ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${(state.ts % 1000).toString().padStart(3, '0')}` : ''}
-                            {selected && this.state.lastSelectedColumn === 'lc' ? <Box component="div" sx={styles.rowFocused} /> : ''}
-                        </TableCell> : null}
-                    </TableRow>);
-                }
+                        {this.state.ackVisible ? (
+                            <TableCell
+                                onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ack')}
+                                sx={state.ack ? styles.cellAckTrue : styles.cellAckFalse}
+                            >
+                                {state.ack ? 'true' : 'false'}
+                                {selected && this.state.lastSelectedColumn === 'ack' ? (
+                                    <Box component="div" sx={styles.rowFocused} />
+                                ) : (
+                                    ''
+                                )}
+                            </TableCell>
+                        ) : null}
+                        {this.state.fromVisible ? (
+                            <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'from')}>
+                                {state.from || ''}
+                                {selected && this.state.lastSelectedColumn === 'from' ? (
+                                    <Box component="div" sx={styles.rowFocused} />
+                                ) : (
+                                    ''
+                                )}
+                            </TableCell>
+                        ) : null}
+                        {this.state.lcVisible ? (
+                            <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'lc')}>
+                                {state.lc
+                                    ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${(state.ts % 1000).toString().padStart(3, '0')}`
+                                    : ''}
+                                {selected && this.state.lastSelectedColumn === 'lc' ? (
+                                    <Box component="div" sx={styles.rowFocused} />
+                                ) : (
+                                    ''
+                                )}
+                            </TableCell>
+                        ) : null}
+                    </TableRow>
+                );
+            }
         }
 
         return rows;
@@ -932,8 +979,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             start = end - mins * 60_000;
         }
 
-        this.setState({ start, end }, () =>
-            this.readHistory());
+        this.setState({ start, end }, () => this.readHistory());
     }
 
     renderTable() {
@@ -960,78 +1006,90 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 minWidths.push(190);
             }
 
-            return <TableContainer style={styles.container}>
-                <TableResize
-                    stickyHeader
-                    sx={styles.table}
-                    initialWidths={initialWidths}
-                    minWidths={minWidths}
-                    dblTitle={this.props.t('ra_Double click to reset table layout')}
-                >
-                    <TableHead>
-                        <TableRow>
-                            <TableCell style={styles.colTs}>
-                                {this.props.t('Timestamp')}
-                            </TableCell>
-                            <TableCell style={styles.colValue}>
-                                {this.props.t('Value')}
-                            </TableCell>
-                            {this.state.ackVisible  ? <TableCell style={styles.colAck}>
-                                {this.props.t('Ack')}
-                            </TableCell> : null}
-                            {this.state.fromVisible ? <TableCell style={styles.colFrom}>
-                                {this.props.t('From')}
-                            </TableCell> : null}
-                            {this.state.lcVisible   ? <TableCell style={styles.colLastChange}>
-                                {this.props.t('lc')}
-                            </TableCell> : null}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>{this.getTableRows()}</TableBody>
-                </TableResize>
-            </TableContainer>;
+            return (
+                <TableContainer style={styles.container}>
+                    <TableResize
+                        stickyHeader
+                        sx={styles.table}
+                        initialWidths={initialWidths}
+                        minWidths={minWidths}
+                        dblTitle={this.props.t('ra_Double click to reset table layout')}
+                    >
+                        <TableHead>
+                            <TableRow>
+                                <TableCell style={styles.colTs}>{this.props.t('Timestamp')}</TableCell>
+                                <TableCell style={styles.colValue}>{this.props.t('Value')}</TableCell>
+                                {this.state.ackVisible ? (
+                                    <TableCell style={styles.colAck}>{this.props.t('Ack')}</TableCell>
+                                ) : null}
+                                {this.state.fromVisible ? (
+                                    <TableCell style={styles.colFrom}>{this.props.t('From')}</TableCell>
+                                ) : null}
+                                {this.state.lcVisible ? (
+                                    <TableCell style={styles.colLastChange}>{this.props.t('lc')}</TableCell>
+                                ) : null}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>{this.getTableRows()}</TableBody>
+                    </TableResize>
+                </TableContainer>
+            );
         }
         return <LinearProgress />;
     }
 
     renderConfirmDialog() {
-        return <Dialog
-            open={!!this.state.areYouSure}
-            onClose={() => this.setState({ areYouSure: false })}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-        >
-
-            <DialogTitle id="alert-dialog-title">{ }</DialogTitle>
-            <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    { this.props.t('Are you sure?') }
-                </DialogContentText>
-                <FormControlLabel
-                    control={<Checkbox value={this.state.suppressMessage} onChange={() => this.setState({ suppressMessage: true })} />}
-                    label={this.props.t('Suppress for 5 minutes')}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    onClick={() => this.setState({ areYouSure: false, suppressMessage: this.state.suppressMessage && Date.now() }, () => this.onDelete())}
-                    color="primary"
-                    autoFocus
-                    startIcon={<IconDelete />}
-                >
-                    { this.props.t('Delete') }
-                </Button>
-                <Button variant="contained" onClick={() => this.setState({ areYouSure: false })} color="secondary" startIcon={<IconClose />}>{ this.props.t('Cancel') }</Button>
-            </DialogActions>
-        </Dialog>;
+        return (
+            <Dialog
+                open={!!this.state.areYouSure}
+                onClose={() => this.setState({ areYouSure: false })}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">{this.props.t('Are you sure?')}</DialogContentText>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                value={this.state.suppressMessage}
+                                onChange={() => this.setState({ suppressMessage: true })}
+                            />
+                        }
+                        label={this.props.t('Suppress for 5 minutes')}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={() =>
+                            this.setState(
+                                { areYouSure: false, suppressMessage: this.state.suppressMessage && Date.now() },
+                                () => this.onDelete()
+                            )
+                        }
+                        color="primary"
+                        autoFocus
+                        startIcon={<IconDelete />}
+                    >
+                        {this.props.t('Delete')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ areYouSure: false })}
+                        color="secondary"
+                        startIcon={<IconClose />}
+                    >
+                        {this.props.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
     onDelete() {
         const tasks = this.state.selected.map(ts => ({ state: { ts }, id: this.props.obj._id }));
-        this.props.socket.sendTo(this.state.historyInstance, 'delete', tasks)
-            .then(() =>
-                this.readHistory());
+        this.props.socket.sendTo(this.state.historyInstance, 'delete', tasks).then(() => this.readHistory());
     }
 
     onUpdate() {
@@ -1049,10 +1107,10 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
         const state: ioBroker.SettableState = {
             val,
-            ack:  this.state.edit.ack,
-            ts:   this.state.selected[0],
+            ack: this.state.edit.ack,
+            ts: this.state.selected[0],
             from: `system.adapter.admin.${this.adminInstance}`,
-            q:    this.state.edit.q,
+            q: this.state.edit.q,
         };
 
         for (const [attr, stateVal] of Object.entries(state)) {
@@ -1065,9 +1123,9 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         if (!this.state.lcVisible && state.lc) {
             delete state.lc;
         }
-        this.props.socket.sendTo(this.state.historyInstance, 'update', [{ id: this.props.obj._id, state }])
-            .then(() =>
-                this.readHistory());
+        this.props.socket
+            .sendTo(this.state.historyInstance, 'update', [{ id: this.props.obj._id, state }])
+            .then(() => this.readHistory());
     }
 
     onInsert() {
@@ -1088,11 +1146,11 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         ts.setMilliseconds(parseInt(this.state.edit.ms as any as string, 10));
 
         const state: ioBroker.SettableState = {
-            ts:   ts.getTime(),
+            ts: ts.getTime(),
             val,
-            ack:  this.state.edit.ack,
+            ack: this.state.edit.ack,
             from: `system.adapter.admin.${this.adminInstance}`,
-            q:    this.state.edit.q || 0,
+            q: this.state.edit.q || 0,
         };
 
         if (!this.state.lcVisible && state.lc) {
@@ -1106,9 +1164,9 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             }
         }
 
-        this.props.socket.sendTo(this.state.historyInstance, 'insert', [{ id: this.props.obj._id, state }])
-            .then(() =>
-                this.readHistory());
+        this.props.socket
+            .sendTo(this.state.historyInstance, 'insert', [{ id: this.props.obj._id, state }])
+            .then(() => this.readHistory());
     }
 
     updateEdit(name: string, value: string | number | boolean | Date): void {
@@ -1121,92 +1179,110 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
     }
 
     renderEditDialog(): React.JSX.Element {
-        return <Dialog
-            open={this.state.updateOpened || this.state.insertOpened}
-            onClose={() => this.setState({ updateOpened: false, insertOpened: false })}
-            aria-labelledby="edit-dialog-title"
-            aria-describedby="edit-dialog-description"
-        >
-            <DialogTitle id="edit-dialog-title">{this.state.updateOpened ? this.props.t('Update entry') : this.props.t('Insert entry')}</DialogTitle>
-            <DialogContent>
-                <form noValidate autoComplete="off">
-                    {typeof this.state.edit.val === 'boolean' ?
+        return (
+            <Dialog
+                open={this.state.updateOpened || this.state.insertOpened}
+                onClose={() => this.setState({ updateOpened: false, insertOpened: false })}
+                aria-labelledby="edit-dialog-title"
+                aria-describedby="edit-dialog-description"
+            >
+                <DialogTitle id="edit-dialog-title">
+                    {this.state.updateOpened ? this.props.t('Update entry') : this.props.t('Insert entry')}
+                </DialogTitle>
+                <DialogContent>
+                    <form noValidate autoComplete="off">
+                        {typeof this.state.edit.val === 'boolean' ? (
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={this.state.edit.val}
+                                        onChange={e => this.updateEdit('val', e.target.checked)}
+                                    />
+                                }
+                                label={this.props.t('Value')}
+                            />
+                        ) : (
+                            <TextField
+                                variant="standard"
+                                label={this.props.t('Value')}
+                                value={this.state.edit.val}
+                                onChange={e => this.updateEdit('val', e.target.value)}
+                            />
+                        )}
+                        <br />
                         <FormControlLabel
-                            control={<Checkbox
-                                checked={this.state.edit.val}
-                                onChange={e => this.updateEdit('val', e.target.checked)}
-                            />}
-                            label={this.props.t('Value')}
+                            control={
+                                <Checkbox
+                                    checked={this.state.edit.ack}
+                                    onChange={e => this.updateEdit('ack', e.target.checked)}
+                                />
+                            }
+                            label={this.props.t('Acknowledged')}
                         />
-                        :
-                        <TextField
-                            variant="standard"
-                            label={this.props.t('Value')}
-                            value={this.state.edit.val}
-                            onChange={e => this.updateEdit('val', e.target.value)}
-                        />}
-                    <br />
-                    <FormControlLabel
-                        control={<Checkbox
-                            checked={this.state.edit.ack}
-                            onChange={e => this.updateEdit('ack', e.target.checked)}
-                        />}
-                        label={this.props.t('Acknowledged')}
-                    />
 
-                    {this.state.insertOpened ?
-                        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                            <div style={styles.toolbarTimeGrid}>
-                                <div style={styles.toolbarTimeLabel}>
-                                    {this.props.t('Time')}
+                        {this.state.insertOpened ? (
+                            <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                                adapterLocale={localeMap[this.props.lang]}
+                            >
+                                <div style={styles.toolbarTimeGrid}>
+                                    <div style={styles.toolbarTimeLabel}>{this.props.t('Time')}</div>
+                                    <DatePicker
+                                        sx={styles.toolbarDate}
+                                        value={this.state.edit.date}
+                                        onChange={date => this.updateEdit('date', date)}
+                                    />
+                                    <TimePicker
+                                        sx={styles.toolbarTime}
+                                        ampm={this.state.ampm}
+                                        views={['hours', 'minutes', 'seconds']}
+                                        value={this.state.edit.time}
+                                        onChange={time => this.updateEdit('time', time)}
+                                    />
+                                    <TextField
+                                        variant="standard"
+                                        sx={styles.msInput}
+                                        helperText={this.props.t('ms')}
+                                        type="number"
+                                        slotProps={{
+                                            htmlInput: {
+                                                max: 999,
+                                                min: 0,
+                                            },
+                                        }}
+                                        value={this.state.edit.ms}
+                                        onChange={e => this.updateEdit('ms', e.target.value)}
+                                    />
                                 </div>
-                                <DatePicker
-                                    sx={styles.toolbarDate}
-                                    value={this.state.edit.date}
-                                    onChange={date => this.updateEdit('date', date)}
-                                />
-                                <TimePicker
-                                    sx={styles.toolbarTime}
-                                    ampm={this.state.ampm}
-                                    views={['hours', 'minutes', 'seconds']}
-                                    value={this.state.edit.time}
-                                    onChange={time => this.updateEdit('time', time)}
-                                />
-                                <TextField
-                                    variant="standard"
-                                    sx={styles.msInput}
-                                    helperText={this.props.t('ms')}
-                                    type="number"
-                                    slotProps={{
-                                        htmlInput: {
-                                            max: 999,
-                                            min: 0,
-                                        },
-                                    }}
-                                    value={this.state.edit.ms}
-                                    onChange={e => this.updateEdit('ms', e.target.value)}
-                                />
-                            </div>
-                        </LocalizationProvider> : null}
-                </form>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    disabled={this.state.edit.val === ''}
-                    onClick={() => {
-                        const isUpdate = this.state.updateOpened;
-                        this.setState({ updateOpened: false, insertOpened: false }, () =>
-                            (isUpdate ? this.onUpdate() : this.onInsert()));
-                    }}
-                    color="primary"
-                    autoFocus
-                >
-                    {this.state.updateOpened ? this.props.t('Update') : this.props.t('Add')}
-                </Button>
-                <Button variant="contained" onClick={() => this.setState({ updateOpened: false, insertOpened: false })} color="grey">{ this.props.t('Cancel') }</Button>
-            </DialogActions>
-        </Dialog>;
+                            </LocalizationProvider>
+                        ) : null}
+                    </form>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        disabled={this.state.edit.val === ''}
+                        onClick={() => {
+                            const isUpdate = this.state.updateOpened;
+                            this.setState({ updateOpened: false, insertOpened: false }, () =>
+                                isUpdate ? this.onUpdate() : this.onInsert()
+                            );
+                        }}
+                        color="primary"
+                        autoFocus
+                    >
+                        {this.state.updateOpened ? this.props.t('Update') : this.props.t('Add')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ updateOpened: false, insertOpened: false })}
+                        color="grey"
+                    >
+                        {this.props.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
     setStartDate(startDate: Date): void {
@@ -1230,200 +1306,208 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             clearTimeout(this.timeTimer);
             this.timeTimer = undefined;
         }
-        this.setState({ end, relativeRange: 'absolute'  }, () => this.readHistory());
+        this.setState({ end, relativeRange: 'absolute' }, () => this.readHistory());
     }
 
     renderToolbar() {
-        return <Toolbar>
-            <FormControl variant="standard" style={styles.selectHistoryControl}>
-                <InputLabel>{this.props.t('History instance')}</InputLabel>
-                <Select
-                    variant="standard"
-                    value={this.state.historyInstance || ''}
-                    onChange={e => {
-                        const historyInstance = e.target.value;
-                        this.localStorage.setItem(
-                            'App.historyInstance',
-                            historyInstance,
-                        );
-                        this.readSupportedFeatures(historyInstance)
-                            .then((supportedFeatures: SupportedFeatures) =>
-                                this.setState({ historyInstance, supportedFeatures }, () =>
-                                    this.readHistory()));
-                    }}
-                >
-                    {this.state.historyInstances?.map(it => <MenuItem
-                        key={it.id}
-                        value={it.id}
-                        style={!it.alive ? styles.notAliveInstance : undefined}
-                    >
-                        {it.id}
-                    </MenuItem>)}
-                </Select>
-            </FormControl>
-            <FormControl variant="standard" style={styles.selectRelativeTime}>
-                <InputLabel>{this.props.t('Relative')}</InputLabel>
-                <Select
-                    variant="standard"
-                    ref={this.rangeRef}
-                    value={this.state.relativeRange}
-                    onChange={e => this.setRelativeInterval(e.target.value)}
-                >
-                    <MenuItem key="custom" value="absolute" sx={styles.customRange}>
-                        {this.props.t('custom range')}
-                    </MenuItem>
-                    <MenuItem key="1" value={10}>
-                        {this.props.t('last 10 minutes')}
-                    </MenuItem>
-                    <MenuItem key="2" value={30}>
-                        {this.props.t('last 30 minutes')}
-                    </MenuItem>
-                    <MenuItem key="3" value={60}>
-                        {this.props.t('last hour')}
-                    </MenuItem>
-                    <MenuItem key="4" value="day">
-                        {this.props.t('this day')}
-                    </MenuItem>
-                    <MenuItem key="5" value={24 * 60}>
-                        {this.props.t('last 24 hours')}
-                    </MenuItem>
-                    <MenuItem key="6" value="week">
-                        {this.props.t('this week')}
-                    </MenuItem>
-                    <MenuItem key="7" value={24 * 60 * 7}>
-                        {this.props.t('last week')}
-                    </MenuItem>
-                    <MenuItem key="8" value="2weeks">
-                        {this.props.t('this 2 weeks')}
-                    </MenuItem>
-                    <MenuItem key="9" value={24 * 60 * 14}>
-                        {this.props.t('last 2 weeks')}
-                    </MenuItem>
-                    <MenuItem key="10" value="month">
-                        {this.props.t('this month')}
-                    </MenuItem>
-                    <MenuItem key="11" value={30 * 24 * 60}>
-                        {this.props.t('last 30 days')}
-                    </MenuItem>
-                    <MenuItem key="12" value="year">
-                        {this.props.t('this year')}
-                    </MenuItem>
-                    <MenuItem key="13" value="12months">
-                        {this.props.t('last 12 months')}
-                    </MenuItem>
-                </Select>
-            </FormControl>
-
-            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                <div style={styles.toolbarTimeGrid}>
-                    <div
-                        style={{
-                            ...styles.toolbarTimeLabel,
-                            opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined,
+        return (
+            <Toolbar>
+                <FormControl variant="standard" style={styles.selectHistoryControl}>
+                    <InputLabel>{this.props.t('History instance')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={this.state.historyInstance || ''}
+                        onChange={e => {
+                            const historyInstance = e.target.value;
+                            this.localStorage.setItem('App.historyInstance', historyInstance);
+                            this.readSupportedFeatures(historyInstance).then((supportedFeatures: SupportedFeatures) =>
+                                this.setState({ historyInstance, supportedFeatures }, () => this.readHistory())
+                            );
                         }}
                     >
-                        {this.props.t('Start time')}
+                        {this.state.historyInstances?.map(it => (
+                            <MenuItem key={it.id} value={it.id} style={!it.alive ? styles.notAliveInstance : undefined}>
+                                {it.id}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl variant="standard" style={styles.selectRelativeTime}>
+                    <InputLabel>{this.props.t('Relative')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        ref={this.rangeRef}
+                        value={this.state.relativeRange}
+                        onChange={e => this.setRelativeInterval(e.target.value)}
+                    >
+                        <MenuItem key="custom" value="absolute" sx={styles.customRange}>
+                            {this.props.t('custom range')}
+                        </MenuItem>
+                        <MenuItem key="1" value={10}>
+                            {this.props.t('last 10 minutes')}
+                        </MenuItem>
+                        <MenuItem key="2" value={30}>
+                            {this.props.t('last 30 minutes')}
+                        </MenuItem>
+                        <MenuItem key="3" value={60}>
+                            {this.props.t('last hour')}
+                        </MenuItem>
+                        <MenuItem key="4" value="day">
+                            {this.props.t('this day')}
+                        </MenuItem>
+                        <MenuItem key="5" value={24 * 60}>
+                            {this.props.t('last 24 hours')}
+                        </MenuItem>
+                        <MenuItem key="6" value="week">
+                            {this.props.t('this week')}
+                        </MenuItem>
+                        <MenuItem key="7" value={24 * 60 * 7}>
+                            {this.props.t('last week')}
+                        </MenuItem>
+                        <MenuItem key="8" value="2weeks">
+                            {this.props.t('this 2 weeks')}
+                        </MenuItem>
+                        <MenuItem key="9" value={24 * 60 * 14}>
+                            {this.props.t('last 2 weeks')}
+                        </MenuItem>
+                        <MenuItem key="10" value="month">
+                            {this.props.t('this month')}
+                        </MenuItem>
+                        <MenuItem key="11" value={30 * 24 * 60}>
+                            {this.props.t('last 30 days')}
+                        </MenuItem>
+                        <MenuItem key="12" value="year">
+                            {this.props.t('this year')}
+                        </MenuItem>
+                        <MenuItem key="13" value="12months">
+                            {this.props.t('last 12 months')}
+                        </MenuItem>
+                    </Select>
+                </FormControl>
+
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
+                    <div style={styles.toolbarTimeGrid}>
+                        <div
+                            style={{
+                                ...styles.toolbarTimeLabel,
+                                opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined,
+                            }}
+                        >
+                            {this.props.t('Start time')}
+                        </div>
+                        <DatePicker
+                            sx={styles.toolbarDate}
+                            disabled={this.state.relativeRange !== 'absolute'}
+                            value={new Date(this.state.start)}
+                            onChange={date => this.setStartDate(date)}
+                        />
+                        <TimePicker
+                            disabled={this.state.relativeRange !== 'absolute'}
+                            sx={styles.toolbarTime}
+                            ampm={this.state.ampm}
+                            value={new Date(this.state.start)}
+                            onChange={date => this.setStartDate(date)}
+                        />
                     </div>
-                    <DatePicker
-                        sx={styles.toolbarDate}
-                        disabled={this.state.relativeRange !== 'absolute'}
-                        value={new Date(this.state.start)}
-                        onChange={date => this.setStartDate(date)}
-                    />
-                    <TimePicker
-                        disabled={this.state.relativeRange !== 'absolute'}
-                        sx={styles.toolbarTime}
-                        ampm={this.state.ampm}
-                        value={new Date(this.state.start)}
-                        onChange={date => this.setStartDate(date)}
-                    />
-                </div>
-                <div style={styles.toolbarTimeGrid}>
-                    <div
-                        style={{
-                            ...styles.toolbarTimeLabel,
-                            opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined,
+                    <div style={styles.toolbarTimeGrid}>
+                        <div
+                            style={{
+                                ...styles.toolbarTimeLabel,
+                                opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined,
+                            }}
+                        >
+                            {this.props.t('End time')}
+                        </div>
+                        <DatePicker
+                            disabled={this.state.relativeRange !== 'absolute'}
+                            sx={styles.toolbarDate}
+                            value={new Date(this.state.end)}
+                            onChange={date => this.setEndDate(date)}
+                        />
+                        <TimePicker
+                            disabled={this.state.relativeRange !== 'absolute'}
+                            sx={styles.toolbarTime}
+                            ampm={this.state.ampm}
+                            value={new Date(this.state.end)}
+                            onChange={date => this.setEndDate(date)}
+                        />
+                    </div>
+                </LocalizationProvider>
+                <Box component="div" sx={styles.grow} />
+
+                {this.state.values?.length ? (
+                    <IconButton size="large" onClick={() => this.exportData()} title={this.props.t('Save data as csv')}>
+                        <ExportIcon />
+                    </IconButton>
+                ) : null}
+
+                {this.state.supportedFeatures.includes('insert') && this.props.expertMode ? (
+                    <IconButton
+                        size="large"
+                        onClick={() => {
+                            const time = new Date();
+
+                            const edit: ObjectHistoryDataEdit = {
+                                ack: this.state.values[this.state.values.length - 1].ack,
+                                val: this.state.values[this.state.values.length - 1].val,
+                                date: new Date(time),
+                                ms: 0,
+                                time: new Date(time),
+                                q: 0,
+                            };
+
+                            this.setState({
+                                edit,
+                                insertOpened: true,
+                            });
                         }}
                     >
-                        {this.props.t('End time')}
-                    </div>
-                    <DatePicker
-                        disabled={this.state.relativeRange !== 'absolute'}
-                        sx={styles.toolbarDate}
-                        value={new Date(this.state.end)}
-                        onChange={date => this.setEndDate(date)}
-                    />
-                    <TimePicker
-                        disabled={this.state.relativeRange !== 'absolute'}
-                        sx={styles.toolbarTime}
-                        ampm={this.state.ampm}
-                        value={new Date(this.state.end)}
-                        onChange={date => this.setEndDate(date)}
-                    />
-                </div>
-            </LocalizationProvider>
-            <Box component="div" sx={styles.grow} />
+                        <InsertIcon />
+                    </IconButton>
+                ) : null}
+                {this.state.supportedFeatures.includes('update') && this.props.expertMode ? (
+                    <IconButton
+                        size="large"
+                        disabled={this.state.selected.length !== 1}
+                        onClick={() => {
+                            const state = JSON.parse(
+                                JSON.stringify(
+                                    this.state.values.find((it: HistoryItem) => it.ts === this.state.lastSelected)
+                                )
+                            );
+                            const time = new Date(state.ts);
+                            state.date = new Date(time);
+                            state.time = new Date(time);
 
-            {this.state.values?.length ? <IconButton size="large" onClick={() => this.exportData()} title={this.props.t('Save data as csv')}>
-                <ExportIcon />
-            </IconButton> : null}
-
-            {this.state.supportedFeatures.includes('insert') && this.props.expertMode ? <IconButton
-                size="large"
-                onClick={() => {
-                    const time = new Date();
-
-                    const edit: ObjectHistoryDataEdit = {
-                        ack:  this.state.values[this.state.values.length - 1].ack,
-                        val:  this.state.values[this.state.values.length - 1].val,
-                        date: new Date(time),
-                        ms:   0,
-                        time: new Date(time),
-                        q:    0,
-                    };
-
-                    this.setState({
-                        edit,
-                        insertOpened: true,
-                    });
-                }}
-            >
-                <InsertIcon />
-            </IconButton> : null}
-            {this.state.supportedFeatures.includes('update') && this.props.expertMode ? <IconButton
-                size="large"
-                disabled={this.state.selected.length !== 1}
-                onClick={() => {
-                    const state = JSON.parse(JSON.stringify(this.state.values.find((it: HistoryItem) => it.ts === this.state.lastSelected)));
-                    const time = new Date(state.ts);
-                    state.date = new Date(time);
-                    state.time = new Date(time);
-
-                    this.setState({
-                        edit: state,
-                        updateOpened: true,
-                    });
-                }}
-            >
-                <IconEdit />
-            </IconButton> : null}
-            {this.state.supportedFeatures.includes('delete') && this.props.expertMode ? <IconButton
-                size="large"
-                disabled={!this.state.selected.length}
-                onClick={() => {
-                    if (
-                        typeof this.state.suppressMessage === 'number' &&
-                        Date.now() - this.state.suppressMessage < 300_000
-                    ) {
-                        this.onDelete();
-                    } else {
-                        this.setState({ areYouSure: true });
-                    }
-                }}
-            >
-                <IconDelete />
-            </IconButton> : null}
-        </Toolbar>;
+                            this.setState({
+                                edit: state,
+                                updateOpened: true,
+                            });
+                        }}
+                    >
+                        <IconEdit />
+                    </IconButton>
+                ) : null}
+                {this.state.supportedFeatures.includes('delete') && this.props.expertMode ? (
+                    <IconButton
+                        size="large"
+                        disabled={!this.state.selected.length}
+                        onClick={() => {
+                            if (
+                                typeof this.state.suppressMessage === 'number' &&
+                                Date.now() - this.state.suppressMessage < 300_000
+                            ) {
+                                this.onDelete();
+                            } else {
+                                this.setState({ areYouSure: true });
+                            }
+                        }}
+                    >
+                        <IconDelete />
+                    </IconButton>
+                ) : null}
+            </Toolbar>
+        );
     }
 
     exportData() {
@@ -1437,16 +1521,25 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
         const lines = ['timestamp;value;acknowledged;from;'];
 
-        this.state.values.forEach((state: HistoryItem) => !state.i && !state.e &&
-            lines.push([
-                this.formatTimestamp(state.ts),
-                state.val === null || state.val === undefined ? 'null' : state.val.toString(),
-                state.ack ? 'true' : 'false',
-                state.from || '',
-            ].join(';')));
+        this.state.values.forEach(
+            (state: HistoryItem) =>
+                !state.i &&
+                !state.e &&
+                lines.push(
+                    [
+                        this.formatTimestamp(state.ts),
+                        state.val === null || state.val === undefined ? 'null' : state.val.toString(),
+                        state.ack ? 'true' : 'false',
+                        state.from || '',
+                    ].join(';')
+                )
+        );
 
         element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(lines.join('\n'))}`);
-        element.setAttribute('download', `${Utils.getObjectName({ [this.props.obj._id]: this.props.obj }, this.props.obj._id, this.props.lang)}.csv`);
+        element.setAttribute(
+            'download',
+            `${Utils.getObjectName({ [this.props.obj._id]: this.props.obj }, this.props.obj._id, this.props.lang)}.csv`
+        );
 
         element.click();
 
@@ -1458,15 +1551,17 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             return <LinearProgress />;
         }
 
-        return <Paper style={styles.paper}>
-            {this.state.loading ? <LinearProgress /> : <div style={styles.noLoadingProgress} />}
-            {this.renderToolbar()}
-            <Box component="div" sx={styles.tableDiv}>
-                {this.renderTable()}
-            </Box>
-            {this.renderConfirmDialog()}
-            {this.renderEditDialog()}
-        </Paper>;
+        return (
+            <Paper style={styles.paper}>
+                {this.state.loading ? <LinearProgress /> : <div style={styles.noLoadingProgress} />}
+                {this.renderToolbar()}
+                <Box component="div" sx={styles.tableDiv}>
+                    {this.renderTable()}
+                </Box>
+                {this.renderConfirmDialog()}
+                {this.renderEditDialog()}
+            </Paper>
+        );
     }
 
     /**

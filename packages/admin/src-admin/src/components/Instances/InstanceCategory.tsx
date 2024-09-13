@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
@@ -45,40 +41,20 @@ interface InstanceCategoryProps {
     onExpand: (expanded: boolean) => void;
 }
 
-const InstanceCategory = ({
-    name,
-    key,
-    children,
-    expanded,
-    onExpand,
-}: InstanceCategoryProps) => <Accordion
-    expanded={!!expanded}
-    onChange={() => onExpand(!expanded)}
-    style={styles.accordion}
-    key={key}
-    square
->
-    <AccordionSummary
-        style={styles.row}
-        expandIcon={<ExpandMoreIcon />}
-    >
-        <div style={styles.wrapperName}>
-            <MaterialDynamicIcon
-                objIconBool
-                iconName={name}
-                style={styles.iconStyle}
-            />
-            {name}
-        </div>
-    </AccordionSummary>
-    <AccordionDetails style={styles.accordionDetails}>
-        <div style={styles.wrapperChildren}>
-            {children}
-        </div>
-    </AccordionDetails>
-</Accordion>;
+const InstanceCategory = ({ name, key, children, expanded, onExpand }: InstanceCategoryProps) => (
+    <Accordion expanded={!!expanded} onChange={() => onExpand(!expanded)} style={styles.accordion} key={key} square>
+        <AccordionSummary style={styles.row} expandIcon={<ExpandMoreIcon />}>
+            <div style={styles.wrapperName}>
+                <MaterialDynamicIcon objIconBool iconName={name} style={styles.iconStyle} />
+                {name}
+            </div>
+        </AccordionSummary>
+        <AccordionDetails style={styles.accordionDetails}>
+            <div style={styles.wrapperChildren}>{children}</div>
+        </AccordionDetails>
+    </Accordion>
+);
 
-InstanceCategory.propTypes = {
-};
+InstanceCategory.propTypes = {};
 
 export default InstanceCategory;

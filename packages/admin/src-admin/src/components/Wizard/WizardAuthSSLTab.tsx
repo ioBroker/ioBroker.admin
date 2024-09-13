@@ -12,7 +12,8 @@ import {
     FormHelperText,
     FormControl,
     Select,
-    FormGroup, Box,
+    FormGroup,
+    Box,
 } from '@mui/material';
 
 import { Check as IconCheck } from '@mui/icons-material';
@@ -76,59 +77,69 @@ class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, WizardAuthSSLTab
     }
 
     render() {
-        return <Paper style={styles.paper}>
-            <form style={styles.form} noValidate autoComplete="off">
-                <Grid2 container direction="column">
-                    <Grid2>
-                        <Box component="h2" sx={styles.title}>{this.props.t('It is suggested to enable the authentication in admin')}</Box>
+        return (
+            <Paper style={styles.paper}>
+                <form style={styles.form} noValidate autoComplete="off">
+                    <Grid2 container direction="column">
+                        <Grid2>
+                            <Box component="h2" sx={styles.title}>
+                                {this.props.t('It is suggested to enable the authentication in admin')}
+                            </Box>
+                        </Grid2>
+                        <Grid2 style={styles.inputLine}>
+                            <FormGroup>
+                                <FormControlLabel
+                                    style={styles.input}
+                                    control={
+                                        <Checkbox
+                                            checked={this.state.auth}
+                                            onChange={() => this.setState({ auth: !this.state.auth })}
+                                        />
+                                    }
+                                    label={this.props.t('Authentication in Admin')}
+                                />
+                                <FormHelperText>
+                                    {this.props.t(
+                                        'Activate the check of password in admin if you plan to access your ioBroker is not in "Demilitarized Zone"'
+                                    )}
+                                </FormHelperText>
+                            </FormGroup>
+                        </Grid2>
+                        <Grid2>
+                            <FormControl variant="standard" style={styles.input}>
+                                <InputLabel>{this.props.t('Certificates')}</InputLabel>
+                                <Select
+                                    variant="standard"
+                                    value={this.state.secure ? 'true' : 'false'}
+                                    onChange={e => this.setState({ secure: e.target.value === 'true' })}
+                                >
+                                    <MenuItem value="false">{this.props.t('No SSL')}</MenuItem>
+                                    <MenuItem value="true">{this.props.t('Use self signed certificates')}</MenuItem>
+                                </Select>
+                                <FormHelperText>
+                                    {this.state.secure
+                                        ? this.props.t(
+                                              'Browsers will inform you about the problem with self-signed certificates, but the communication is encrypted.'
+                                          )
+                                        : this.props.t('Your communication with admin is not encrypted')}
+                                </FormHelperText>
+                            </FormControl>
+                        </Grid2>
                     </Grid2>
-                    <Grid2 style={styles.inputLine}>
-                        <FormGroup>
-                            <FormControlLabel
-                                style={styles.input}
-                                control={
-                                    <Checkbox
-                                        checked={this.state.auth}
-                                        onChange={() => this.setState({ auth: !this.state.auth })}
-                                    />
-                                }
-                                label={this.props.t('Authentication in Admin')}
-                            />
-                            <FormHelperText>{this.props.t('Activate the check of password in admin if you plan to access your ioBroker is not in "Demilitarized Zone"')}</FormHelperText>
-                        </FormGroup>
-                    </Grid2>
-                    <Grid2>
-                        <FormControl variant="standard" style={styles.input}>
-                            <InputLabel>{this.props.t('Certificates')}</InputLabel>
-                            <Select
-                                variant="standard"
-                                value={this.state.secure ? 'true' : 'false'}
-                                onChange={e => this.setState({ secure: e.target.value === 'true' })}
-                            >
-                                <MenuItem value="false">{this.props.t('No SSL')}</MenuItem>
-                                <MenuItem value="true">{this.props.t('Use self signed certificates')}</MenuItem>
-                            </Select>
-                            <FormHelperText>
-                                {this.state.secure ?
-                                    this.props.t('Browsers will inform you about the problem with self-signed certificates, but the communication is encrypted.') :
-                                    this.props.t('Your communication with admin is not encrypted')}
-                            </FormHelperText>
-                        </FormControl>
-                    </Grid2>
-                </Grid2>
-            </form>
-            <Toolbar style={styles.toolbar}>
-                <div style={styles.grow} />
-                <Button
-                    color="primary"
-                    variant="contained"
-                    onClick={() => this.props.onDone({ auth: this.state.auth, secure: this.state.secure })}
-                    startIcon={<IconCheck />}
-                >
-                    {this.props.t('Apply')}
-                </Button>
-            </Toolbar>
-        </Paper>;
+                </form>
+                <Toolbar style={styles.toolbar}>
+                    <div style={styles.grow} />
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={() => this.props.onDone({ auth: this.state.auth, secure: this.state.secure })}
+                        startIcon={<IconCheck />}
+                    >
+                        {this.props.t('Apply')}
+                    </Button>
+                </Toolbar>
+            </Paper>
+        );
     }
 }
 

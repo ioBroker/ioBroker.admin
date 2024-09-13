@@ -320,7 +320,6 @@ class Web {
             } else {
                 template = template.replace(
                     `@@${pattern}@@`,
-                    // @ts-expect-error check later
                     this.adapter.config[pattern] !== undefined ? this.adapter.config[pattern] : ''
                 );
             }
@@ -1036,7 +1035,6 @@ class Web {
                         res.status(404).send(get404Page(`File ${escapeHtml(url)} not found`));
                     } else {
                         if (mimeType) {
-                            // @ts-expect-error check later but it should be string
                             res.contentType(mimeType['content-type'] || mimeType);
                         } else {
                             try {
@@ -1101,14 +1099,13 @@ class Web {
                         const { mimeType, file } = await this.adapter.readFileAsync(adapterName, url);
 
                         if (mimeType) {
-                            // @ts-expect-error should be string
                             res.contentType(mimeType['content-type'] || mimeType);
                         } else {
                             res.contentType('text/javascript');
                         }
 
                         if (adapterName === this.adapter.namespace && url.startsWith('zip/')) {
-                            // special files, that can be read only one time
+                            // special files, that can be read-only one time
                             this.adapter.unlink(adapterName, url, () => {});
                         }
 

@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 
-import {
-    Box, LinearProgress, Typography,
-} from '@mui/material';
+import { Box, LinearProgress, Typography } from '@mui/material';
 
 import {
     type AdminConnection,
-    I18n, type IobTheme,
-    type ThemeName, type ThemeType,
+    I18n,
+    type IobTheme,
+    type ThemeName,
+    type ThemeType,
     Utils,
 } from '@iobroker/adapter-react-v5';
 import {
     type BackEndCommandGeneric,
-    type BackEndCommandOpenLink, type ConfigItemPanel,
+    type BackEndCommandOpenLink,
+    type ConfigItemPanel,
     JsonConfigComponent,
 } from '@iobroker/json-config';
 
@@ -161,11 +162,8 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                 delete actionData.offlineMessage;
             }
             // request GUI for this notification
-            this.props.socket.sendTo(
-                this.props.instanceId.replace('system.adapter.', ''),
-                'getNotificationSchema',
-                actionData,
-            )
+            this.props.socket
+                .sendTo(this.props.instanceId.replace('system.adapter.', ''), 'getNotificationSchema', actionData)
                 .then((result: { data: Record<string, any> | null; schema: ConfigItemPanel | null }) => {
                     if (result) {
                         this.setState({
@@ -179,7 +177,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
     }
 
     onAliveChanged = (id: string, state: ioBroker.State) => {
-        if (id === `${this.props.instanceId}.alive` && state && this.state.alive !== (!!state.val)) {
+        if (id === `${this.props.instanceId}.alive` && state && this.state.alive !== !!state.val) {
             if (state.val) {
                 if (this.lastAlive && Date.now() - this.lastAlive < 500) {
                     // ignore too fast changes
@@ -196,14 +194,13 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
             if (this.props.message.actionData) {
                 if (!this.state.alive) {
                     if (this.props.message.actionData.offlineMessage) {
-                        const text = typeof this.props.message.actionData.offlineMessage === 'string' ?
-                            this.props.message.actionData.offlineMessage :
-                            this.props.message.actionData.offlineMessage[this.props.socket.systemLang] ||
-                            this.props.message.actionData.offlineMessage.en;
+                        const text =
+                            typeof this.props.message.actionData.offlineMessage === 'string'
+                                ? this.props.message.actionData.offlineMessage
+                                : this.props.message.actionData.offlineMessage[this.props.socket.systemLang] ||
+                                  this.props.message.actionData.offlineMessage.en;
 
-                        return <Box sx={styles.offline}>
-                            {Utils.renderTextWithA(text)}
-                        </Box>;
+                        return <Box sx={styles.offline}>{Utils.renderTextWithA(text)}</Box>;
                     }
                     return <Typography>{I18n.t('Instance is not alive')}</Typography>;
                 }
@@ -215,59 +212,59 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
 
         const [, , adapterName, instance] = this.props.instanceId.split('.');
 
-        return <>
-            {this.state.error && <div style={{ color: 'red' }}>{this.state.error}</div>}
-            <JsonConfigComponent
-                style={{ width: '100%' }}
-                updateData={this.state.updateData}
-                socket={this.props.socket}
-                adapterName={adapterName}
-                instance={parseInt(instance, 10)}
-                schema={this.state.schema}
-                data={this.state.data}
-                onError={(error?: boolean) => this.setState({ error })}
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                onChange={(_data: Record<string, any>) => {
-                    // ignore for now
-                }}
-                onBackEndCommand={(command?: BackEndCommandGeneric) => {
-                    if (command.schema) {
-                        this.setState({ schema: command.schema, data: command.data || this.state.data });
-                    }
+        return (
+            <>
+                {this.state.error && <div style={{ color: 'red' }}>{this.state.error}</div>}
+                <JsonConfigComponent
+                    style={{ width: '100%' }}
+                    updateData={this.state.updateData}
+                    socket={this.props.socket}
+                    adapterName={adapterName}
+                    instance={parseInt(instance, 10)}
+                    schema={this.state.schema}
+                    data={this.state.data}
+                    onError={(error?: boolean) => this.setState({ error })}
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    onChange={(_data: Record<string, any>) => {
+                        // ignore for now
+                    }}
+                    onBackEndCommand={(command?: BackEndCommandGeneric) => {
+                        if (command.schema) {
+                            this.setState({ schema: command.schema, data: command.data || this.state.data });
+                        }
 
-                    if (command.command === 'refresh' || command.refresh) {
-                        this.getGui();
-                    }
-                    if (command.command === 'link') {
-                        this.props.onLink(command as BackEndCommandOpenLink);
-                    }
-                }}
-                embedded
-                themeName={this.props.themeName}
-                themeType={this.props.themeType}
-                theme={this.props.theme}
-                isFloatComma={this.props.isFloatComma}
-                dateFormat={this.props.dateFormat}
-            />
-        </>;
+                        if (command.command === 'refresh' || command.refresh) {
+                            this.getGui();
+                        }
+                        if (command.command === 'link') {
+                            this.props.onLink(command as BackEndCommandOpenLink);
+                        }
+                    }}
+                    embedded
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                    theme={this.props.theme}
+                    isFloatComma={this.props.isFloatComma}
+                    dateFormat={this.props.dateFormat}
+                />
+            </>
+        );
     }
 
     renderSimpleMessage() {
-        return this.props.message.message ? <Box
-            sx={styles.simpleMessage}
-        >
-            {Utils.renderTextWithA(this.props.message.message)}
-        </Box> : null;
+        return this.props.message.message ? (
+            <Box sx={styles.simpleMessage}>{Utils.renderTextWithA(this.props.message.message)}</Box>
+        ) : null;
     }
 
     render() {
-        return <Typography component="div" sx={styles.message}>
-            <Box sx={styles.timestamp}>
-                {new Date(this.props.message.ts).toLocaleString()}
-            </Box>
-            {this.renderSimpleMessage()}
-            {this.renderCustomGui()}
-        </Typography>;
+        return (
+            <Typography component="div" sx={styles.message}>
+                <Box sx={styles.timestamp}>{new Date(this.props.message.ts).toLocaleString()}</Box>
+                {this.renderSimpleMessage()}
+                {this.renderCustomGui()}
+            </Typography>
+        );
     }
 }
 

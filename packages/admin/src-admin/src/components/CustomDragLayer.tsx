@@ -26,7 +26,7 @@ function snapToGrid(x: number, y: number) {
 function getItemStyles(
     initialOffset: { x: number; y: number },
     currentOffset: { x: number; y: number },
-    isSnapToGrid?: boolean,
+    isSnapToGrid?: boolean
 ): React.CSSProperties {
     if (!initialOffset || !currentOffset) {
         return {
@@ -54,7 +54,7 @@ const styles: Record<string, any> = {
     }),
 };
 
-function CustomDragLayer(props: { theme: IobTheme })  {
+function CustomDragLayer(props: { theme: IobTheme }) {
     const {
         itemType,
         isDragging,
@@ -73,20 +73,22 @@ function CustomDragLayer(props: { theme: IobTheme })  {
 
     function renderItem() {
         if (itemType === 'box') {
-            return <Box component="div" sx={styles.root} style={{ width: 179 }}>
-                <DrawerItem
-                    key={item.name}
-                    visible={item.visible}
-                    editListFunc={() => undefined}
-                    compact={item.compact}
-                    icon={item.iconJSX}
-                    text={item.title}
-                    selected={item.selected}
-                    badgeContent={item.badgeContent}
-                    badgeColor={item.badgeColor}
-                    theme={props.theme}
-                />
-            </Box>;
+            return (
+                <Box component="div" sx={styles.root} style={{ width: 179 }}>
+                    <DrawerItem
+                        key={item.name}
+                        visible={item.visible}
+                        editListFunc={() => undefined}
+                        compact={item.compact}
+                        icon={item.iconJSX}
+                        text={item.title}
+                        selected={item.selected}
+                        badgeContent={item.badgeContent}
+                        badgeColor={item.badgeColor}
+                        theme={props.theme}
+                    />
+                </Box>
+            );
         }
         return null;
     }
@@ -95,11 +97,11 @@ function CustomDragLayer(props: { theme: IobTheme })  {
         return null;
     }
 
-    return <div style={layerStyles}>
-        <div style={getItemStyles(initialOffset, currentOffset)}>
-            {renderItem()}
+    return (
+        <div style={layerStyles}>
+            <div style={getItemStyles(initialOffset, currentOffset)}>{renderItem()}</div>
         </div>
-    </div>;
+    );
 }
 
 export default CustomDragLayer;

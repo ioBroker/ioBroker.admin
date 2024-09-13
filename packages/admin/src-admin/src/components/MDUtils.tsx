@@ -54,7 +54,11 @@ class MDUtils {
             text = text.replace(m[0], m[0].replace(/\s/, '&nbsp;'));
         }
 
-        return text.replace(/[^a-zA-Zа-яА-Я0-9]/g, '').trim().replace(/\s/g, '').toLowerCase();
+        return text
+            .replace(/[^a-zA-Zа-яА-Я0-9]/g, '')
+            .trim()
+            .replace(/\s/g, '')
+            .toLowerCase();
     }
 
     static getTitle(text: string): string {
@@ -119,7 +123,7 @@ class MDUtils {
     static removeDocsify(text: string): string {
         const m = text.match(/{docsify-[^}]*}/g);
         if (m) {
-            m.forEach(doc => text = text.replace(doc, ''));
+            m.forEach(doc => (text = text.replace(doc, '')));
         }
         return text;
     }
@@ -137,7 +141,10 @@ class MDUtils {
         const content: Record<string, MarkdownContent> = {};
         const current: MarkdownContent[] = [null, null, null, null];
 
-        const parts: { type: 'chapter' | 'table' | '@@@' | 'code' | 'warn' | 'alarm' | 'notice' | 'p'; lines: string[] }[] = [];
+        const parts: {
+            type: 'chapter' | 'table' | '@@@' | 'code' | 'warn' | 'alarm' | 'notice' | 'p';
+            lines: string[];
+        }[] = [];
         // delete empty starting and ending lines
         while (lines.length && !lines[0].trim()) {
             lines.shift();
@@ -217,9 +224,11 @@ class MDUtils {
             } else if (line.trim()) {
                 parts.push({ lines: [line], type: 'p' });
                 last++;
-                while (i + 1 < lines.length && // lines[i + 1].trim() &&
-                //! lines[i + 1].trim().match(/^>\s|^\?>\s|^!>\s|^@@@|^#+|^====|^\|/)) {
-                !lines[i + 1].trim().match(/^```|^>\s|^\?>\s|^!>\s|^@@@|^#+|^====|^\|/)) {
+                while (
+                    i + 1 < lines.length && // lines[i + 1].trim() &&
+                    //! lines[i + 1].trim().match(/^>\s|^\?>\s|^!>\s|^@@@|^#+|^====|^\|/)) {
+                    !lines[i + 1].trim().match(/^```|^>\s|^\?>\s|^!>\s|^@@@|^#+|^====|^\|/)
+                ) {
                     parts[last].lines.push(lines[i + 1].trimRight());
                     i++;
                 }
@@ -235,10 +244,7 @@ class MDUtils {
         };
     }
 
-    static extractLicenseAndChangelog(
-        text: string,
-        ignoreHeaders?: boolean,
-    ) {
+    static extractLicenseAndChangelog(text: string, ignoreHeaders?: boolean) {
         const lines = (text || '').trim().split('\n');
         const changelog: string[] = [];
         let changelogA = false;
@@ -291,12 +297,10 @@ class MDUtils {
         throw new Error('not implemented');
     }
 
-    static findTitle(
-        line: string,
-        level: number,
-        path: string,
-    ): MarkdownContent {
-        let name = line.substring(level + 3).trim()
+    static findTitle(line: string, level: number, path: string): MarkdownContent {
+        let name = line
+            .substring(level + 3)
+            .trim()
             // remove bold and italic modifier
             .replace(/^\*|\*$/g, '')
             .replace(/^\*|\*$/g, '')

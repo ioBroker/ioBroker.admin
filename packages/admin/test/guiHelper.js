@@ -15,7 +15,7 @@ async function startBrowser(headless) {
     const timeout = 5000;
     pages[0].setDefaultTimeout(timeout);
 
-    await pages[0].setViewport( {
+    await pages[0].setViewport({
         width: 1920,
         height: 1080,
         deviceScaleFactor: 1,
@@ -44,7 +44,7 @@ async function startBrowser(headless) {
 
     // Create directory
     !fs.existsSync(`${rootDir}tmp/screenshots`) && fs.mkdirSync(`${rootDir}tmp/screenshots`);
-    await gPage.screenshot({path: `${rootDir}tmp/screenshots/00_starting.png`});
+    await gPage.screenshot({ path: `${rootDir}tmp/screenshots/00_starting.png` });
 
     return { browser, page: pages[0] };
 }
@@ -63,4 +63,4 @@ module.exports = {
     startBrowser,
     stopBrowser,
     screenshot,
-}
+};

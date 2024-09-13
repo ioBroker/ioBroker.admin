@@ -15,21 +15,22 @@ import {
     FormControlLabel,
     Fab,
     IconButton,
-    FormControl, InputLabel,
-    MenuItem, Select, Tooltip, Autocomplete, Box,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Tooltip,
+    Autocomplete,
+    Box,
 } from '@mui/material';
 
-import {
-    Close as IconClose,
-    Check as IconCheck,
-    Add as IconAdd,
-    FileCopy as IconCopy,
-} from '@mui/icons-material';
+import { Close as IconClose, Check as IconCheck, Add as IconAdd, FileCopy as IconCopy } from '@mui/icons-material';
 
 import { FaClipboard as IconCopyClipboard } from 'react-icons/fa';
 
 import {
-    Utils, I18n,
+    Utils,
+    I18n,
     SelectID as DialogSelectID,
     IconFx,
     UploadImage,
@@ -478,8 +479,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
         const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
         let tab =
-            ((window as any)._localStorage || window.localStorage).getItem(`${this.props.dialogName || 'App'}.editTab`) ||
-            'object';
+            ((window as any)._localStorage || window.localStorage).getItem(
+                `${this.props.dialogName || 'App'}.editTab`
+            ) || 'object';
 
         // select another tab if alias not present
         if (tab === 'alias' && !withAlias) {
@@ -491,8 +493,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
         const obj = this.props.obj;
 
-        const aliasRead = obj.common && 'type' in obj.common && 'alias' in obj.common ? obj.common.alias.read : undefined;
-        const aliasWrite = obj.common && 'type' in obj.common && 'alias' in obj.common ? obj.common.alias.write : undefined;
+        const aliasRead =
+            obj.common && 'type' in obj.common && 'alias' in obj.common ? obj.common.alias.read : undefined;
+        const aliasWrite =
+            obj.common && 'type' in obj.common && 'alias' in obj.common ? obj.common.alias.write : undefined;
 
         this.state = {
             text: JSON.stringify(this.props.obj, null, 2),
@@ -556,8 +560,12 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
         //  if source and target types exist
         if (json?.common?.type && (this.props.objects[json.common.alias?.id]?.common as ioBroker.StateCommon)?.type) {
-            const initialType: ioBroker.CommonType = isWrite ? json.common.type : (this.props.objects[json.common.alias.id] as ioBroker.StateObject).common.type;
-            const finalType: ioBroker.CommonType = isWrite ? (this.props.objects[json.common.alias.id] as ioBroker.StateObject).common.type : json.common.type;
+            const initialType: ioBroker.CommonType = isWrite
+                ? json.common.type
+                : (this.props.objects[json.common.alias.id] as ioBroker.StateObject).common.type;
+            const finalType: ioBroker.CommonType = isWrite
+                ? (this.props.objects[json.common.alias.id] as ioBroker.StateObject).common.type
+                : json.common.type;
             if (initialType && finalType) {
                 let arg = null;
                 if (initialType === 'boolean') {
@@ -704,47 +712,50 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     }
 
     renderTabs() {
-        return <Tabs
-            style={styles.tabsPadding}
-            value={this.state.tab}
-            onChange={(e, tab) => {
-                ((window as any)._localStorage || window.localStorage).setItem(
-                    `${this.props.dialogName || 'App'}.editTab`,
-                    tab,
-                );
+        return (
+            <Tabs
+                style={styles.tabsPadding}
+                value={this.state.tab}
+                onChange={(e, tab) => {
+                    ((window as any)._localStorage || window.localStorage).setItem(
+                        `${this.props.dialogName || 'App'}.editTab`,
+                        tab
+                    );
 
-                if (tab === 'object') {
-                    try {
-                        const obj = JSON.parse(this.state.text);
-                        let changed = false;
-                        if (obj.common?.min !== undefined && typeof obj.common.min !== 'number') {
-                            obj.common.min = parseFloat(obj.common.min);
-                            changed = true;
+                    if (tab === 'object') {
+                        try {
+                            const obj = JSON.parse(this.state.text);
+                            let changed = false;
+                            if (obj.common?.min !== undefined && typeof obj.common.min !== 'number') {
+                                obj.common.min = parseFloat(obj.common.min);
+                                changed = true;
+                            }
+                            if (obj.common?.max !== undefined && typeof obj.common.max !== 'number') {
+                                obj.common.max = parseFloat(obj.common.max);
+                                changed = true;
+                            }
+                            if (obj.common?.step !== undefined && typeof obj.common.step !== 'number') {
+                                obj.common.step = parseFloat(obj.common.step);
+                                changed = true;
+                            }
+                            if (changed) {
+                                this.setState({ text: JSON.stringify(obj, null, 2) });
+                            }
+                        } catch {
+                            // ignore
                         }
-                        if (obj.common?.max !== undefined && typeof obj.common.max !== 'number') {
-                            obj.common.max = parseFloat(obj.common.max);
-                            changed = true;
-                        }
-                        if (obj.common?.step !== undefined && typeof obj.common.step !== 'number') {
-                            obj.common.step = parseFloat(obj.common.step);
-                            changed = true;
-                        }
-                        if (changed) {
-                            this.setState({ text: JSON.stringify(obj, null, 2) });
-                        }
-                    } catch {
-                        // ignore
                     }
-                }
 
-                this.setState({ tab });
-            }}
-        >
-            <Tab value="common" label={this.props.t('Common')} />
-            <Tab value="object" label={this.props.t('Object data')} />
-            {this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' &&
-                <Tab value="alias" label={this.props.t('Alias')} />}
-        </Tabs>;
+                    this.setState({ tab });
+                }}
+            >
+                <Tab value="common" label={this.props.t('Common')} />
+                <Tab value="object" label={this.props.t('Object data')} />
+                {this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' && (
+                    <Tab value="alias" label={this.props.t('Alias')} />
+                )}
+            </Tabs>
+        );
     }
 
     renderSelectDialog(): React.JSX.Element {
@@ -757,11 +768,13 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         try {
             json = JSON.parse(this.state.text);
 
-            const aliasRead = json.common && 'type' in json.common && 'alias' in json.common ? json.common.alias?.read : '';
-            const aliasWrite = json.common && 'type' in json.common && 'alias' in json.common ? json.common.alias?.write : '';
+            const aliasRead =
+                json.common && 'type' in json.common && 'alias' in json.common ? json.common.alias?.read : '';
+            const aliasWrite =
+                json.common && 'type' in json.common && 'alias' in json.common ? json.common.alias?.write : '';
 
             if (this.state.selectId) {
-                id = json.common?.alias?.id as string || '';
+                id = (json.common?.alias?.id as string) || '';
             } else if (this.state.selectRead) {
                 id = aliasRead ?? '';
             } else if (this.state.selectWrite) {
@@ -771,38 +784,40 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             console.error(`Cannot parse ${this.state.text}`);
         }
 
-        return <DialogSelectID
-            key="selectDialog"
-            imagePrefix="."
-            dateFormat={this.props.dateFormat}
-            theme={this.props.theme}
-            isFloatComma={this.props.isFloatComma}
-            socket={this.props.socket}
-            dialogName="aliasesEdit"
-            title={`${this.props.t('Select for')} ${this.props.obj._id}`}
-            selected={id}
-            onOk={idx => {
-                const selectRead = this.state.selectRead;
-                const selectWrite = this.state.selectWrite;
-                const selectId = this.state.selectId;
-                const stateId = idx as string;
-                this.setState({ selectId: false, selectRead: false, selectWrite: false }, () => {
-                    if (selectRead) {
-                        this.setAliasItem(json, 'id.read', stateId);
-                    } else if (selectWrite) {
-                        this.setAliasItem(json, 'id.write', stateId);
-                    } else if (selectId) {
-                        this.setAliasItem(json, 'id', stateId);
-                    }
-                });
-            }}
-            onClose={() => this.setState({ selectId: false, selectRead: false, selectWrite: false })}
-        />;
+        return (
+            <DialogSelectID
+                key="selectDialog"
+                imagePrefix="."
+                dateFormat={this.props.dateFormat}
+                theme={this.props.theme}
+                isFloatComma={this.props.isFloatComma}
+                socket={this.props.socket}
+                dialogName="aliasesEdit"
+                title={`${this.props.t('Select for')} ${this.props.obj._id}`}
+                selected={id}
+                onOk={idx => {
+                    const selectRead = this.state.selectRead;
+                    const selectWrite = this.state.selectWrite;
+                    const selectId = this.state.selectId;
+                    const stateId = idx as string;
+                    this.setState({ selectId: false, selectRead: false, selectWrite: false }, () => {
+                        if (selectRead) {
+                            this.setAliasItem(json, 'id.read', stateId);
+                        } else if (selectWrite) {
+                            this.setAliasItem(json, 'id.write', stateId);
+                        } else if (selectId) {
+                            this.setAliasItem(json, 'id', stateId);
+                        }
+                    });
+                }}
+                onClose={() => this.setState({ selectId: false, selectRead: false, selectWrite: false })}
+            />
+        );
     }
 
     setAliasItem(json: ioBroker.StateObject, name: string, value: string, cb?: () => void) {
-        json.common = json.common || {} as any;
-        const commonAlias = json.common.alias || {} as Record<string, any>;
+        json.common = json.common || ({} as any);
+        const commonAlias = json.common.alias || ({} as Record<string, any>);
 
         if (name === 'id.read') {
             if (commonAlias.id && typeof commonAlias.id === 'object') {
@@ -836,24 +851,28 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     }
 
     buttonAddKey(nameKey: string, cb: () => void): React.JSX.Element {
-        return <div style={styles.marginBlock}>
-            <Button
-                style={styles.buttonAdd}
-                variant="contained"
-                color="secondary"
-                startIcon={<IconAdd />}
-                onClick={cb}
-            >
-                {nameKey}
-            </Button>
-        </div>;
+        return (
+            <div style={styles.marginBlock}>
+                <Button
+                    style={styles.buttonAdd}
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<IconAdd />}
+                    onClick={cb}
+                >
+                    {nameKey}
+                </Button>
+            </div>
+        );
     }
 
     buttonRemoveKey(nameKey: string, cb: () => void): React.JSX.Element {
         const { t } = this.props;
-        return <Tooltip title={t('Remove attribute %s', nameKey)} slotProps={{ popper: { sx: styles.tooltip } }}>
-            <Box component="div" sx={styles.close} onClick={cb} />
-        </Tooltip>;
+        return (
+            <Tooltip title={t('Remove attribute %s', nameKey)} slotProps={{ popper: { sx: styles.tooltip } }}>
+                <Box component="div" sx={styles.close} onClick={cb} />
+            </Tooltip>
+        );
     }
 
     renderCommonEdit(): React.JSX.Element {
@@ -861,9 +880,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             const json = JSON.parse(this.state.text);
             const stateTypeArray: ioBroker.CommonType[] = ['number', 'string', 'boolean', 'array', 'object', 'mixed'];
             const disabled = false;
-            const {
-                t, roleArray, obj,
-            } = this.props;
+            const { t, roleArray, obj } = this.props;
             const checkState = obj.type === 'state';
             const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
 
@@ -888,202 +905,252 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     }
                 }
             }
-            return <Box
-                style={styles.commonTabWrapper}
-                onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        this.onUpdate();
-                    }
-                }}
-            >
+            return (
                 <Box
-                    style={{
-                        ...styles.commonWrapper,
-                        width: this.props.width === 'xs' ? '100%' : undefined,
-                        minWidth: this.props.width === 'xs' ? '100%' : undefined,
-                        gap: this.props.width === 'xs' ? '10px' : undefined,
-                        display: this.props.width === 'xs' ? 'flex' : undefined,
-                        flexDirection: this.props.width === 'xs' ? 'column' : undefined,
+                    style={styles.commonTabWrapper}
+                    onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            this.onUpdate();
+                        }
                     }}
                 >
-                    {typeof json.common.name !== 'undefined' ? <TextField
-                        variant="standard"
-                        disabled={disabled}
-                        label={t('Name')}
-                        style={{ ...styles.marginBlock, ...styles.textField }}
-                        fullWidth
-                        value={Utils.getObjectNameFromObj(json, I18n.getLanguage(), {}, false, true)}
-                        onChange={el => this.setCommonItem(json, 'name', el.target.value)}
-                    /> : this.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))}
-                    {checkState ? (
-                        typeof json.common.type !== 'undefined' ? <Box component="div" sx={styles.flex}>
-                            <FormControl style={styles.marginBlock} fullWidth>
-                                <InputLabel style={{ transform: 'scale(0.75)' }}>{t('State type')}</InputLabel>
-                                <Select
-                                    variant="standard"
-                                    disabled={disabled}
-                                    value={json.common.type}
-                                    onChange={el => this.setCommonItem(json, 'type', el.target.value)}
-                                >
-                                    {stateTypeArray.map(el => <MenuItem key={el} value={el}>
-                                        {t(el)}
-                                        <span style={styles.typeNameEng}>
-                                            (
-                                            {el}
-                                            )
-                                        </span>
-                                    </MenuItem>)}
-                                </Select>
-                            </FormControl>
-                            {this.buttonRemoveKey('type', () => this.removeCommonItem(json, 'type'))}
-                        </Box> : this.buttonAddKey('type', () => this.setCommonItem(json, 'type', 'string'))
-                    ) : null}
-                    <Box component="div" sx={{ ...styles.flex, flexWrap: this.props.width === 'xs' ? 'wrap' : undefined }}>
-                        {checkState ? (
-                            typeof json.common.read !== 'undefined' ? <Box component="div" sx={styles.flex}>
-                                <FormControlLabel
-                                    style={styles.marginBlock}
-                                    control={
-                                        <Checkbox
-                                            disabled={disabled}
-                                            checked={json.common.read}
-                                            // @ts-expect-error check later
-                                            onClick={el => this.setCommonItem(json, 'read', el.target.checked)}
-                                        />
-                                    }
-                                    label={t('Readable')}
-                                />
-                                {this.buttonRemoveKey('read', () => this.removeCommonItem(json, 'read'))}
-                            </Box> : this.buttonAddKey('read', () => this.setCommonItem(json, 'read', true))
-                        ) : null}
-                        {checkState ? (
-                            typeof json.common.write !== 'undefined' ? <Box component="div" sx={styles.flex}>
-                                <FormControlLabel
-                                    style={styles.marginBlock}
-                                    control={
-                                        <Checkbox
-                                            disabled={disabled}
-                                            checked={json.common.write}
-                                            // @ts-expect-error check later
-                                            onClick={el => this.setCommonItem(json, 'write', el.target.checked)}
-                                        />
-                                    }
-                                    label={t('Writeable')}
-                                />
-                                {this.buttonRemoveKey('write', () => this.removeCommonItem(json, 'write'))}
-                            </Box> : this.buttonAddKey('write', () => this.setCommonItem(json, 'write', true))
-                        ) : null}
-                    </Box>
-                    {checkRole ? (
-                        typeof json.common.role !== 'undefined' ? <Box component="div" sx={styles.flex}>
-                            <Autocomplete
-                                style={styles.marginBlock}
-                                fullWidth
+                    <Box
+                        style={{
+                            ...styles.commonWrapper,
+                            width: this.props.width === 'xs' ? '100%' : undefined,
+                            minWidth: this.props.width === 'xs' ? '100%' : undefined,
+                            gap: this.props.width === 'xs' ? '10px' : undefined,
+                            display: this.props.width === 'xs' ? 'flex' : undefined,
+                            flexDirection: this.props.width === 'xs' ? 'column' : undefined,
+                        }}
+                    >
+                        {typeof json.common.name !== 'undefined' ? (
+                            <TextField
+                                variant="standard"
                                 disabled={disabled}
-                                value={json.common.role}
-                                onChange={(_, e) => this.setCommonItem(json, 'role', e)}
-                                options={roleArray}
-                                renderInput={params =>
-                                    <TextField variant="standard" {...params} label={t('Role')} />}
+                                label={t('Name')}
+                                style={{ ...styles.marginBlock, ...styles.textField }}
+                                fullWidth
+                                value={Utils.getObjectNameFromObj(json, I18n.getLanguage(), {}, false, true)}
+                                onChange={el => this.setCommonItem(json, 'name', el.target.value)}
                             />
-                            {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
-                        </Box> : this.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
-                    ) : null}
-                    {typeof json.common.color !== 'undefined' ? <Box component="div" sx={styles.flex}>
-                        <TextField
-                            variant="standard"
-                            disabled={disabled}
-                            style={{ ...styles.marginBlock, ...styles.color }}
-                            label={t('Color')}
-                            type="color"
-                            value={json.common.color}
-                            onChange={el => this.setCommonItem(json, 'color', el.target.value)}
-                        />
-                        {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
-                    </Box> : this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))}
-                    <Box component="div" sx={{ ...styles.flex, flexWrap: this.props.width === 'xs' ? 'wrap' : undefined, gap: this.props.width === 'xs' ? '10px' : undefined }}>
-                        {json.common.type === 'number' ? (
-                            typeof json.common.min !== 'undefined' ? <Box component="div" sx={styles.flex}>
+                        ) : (
+                            this.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))
+                        )}
+                        {checkState ? (
+                            typeof json.common.type !== 'undefined' ? (
+                                <Box component="div" sx={styles.flex}>
+                                    <FormControl style={styles.marginBlock} fullWidth>
+                                        <InputLabel style={{ transform: 'scale(0.75)' }}>{t('State type')}</InputLabel>
+                                        <Select
+                                            variant="standard"
+                                            disabled={disabled}
+                                            value={json.common.type}
+                                            onChange={el => this.setCommonItem(json, 'type', el.target.value)}
+                                        >
+                                            {stateTypeArray.map(el => (
+                                                <MenuItem key={el} value={el}>
+                                                    {t(el)}
+                                                    <span style={styles.typeNameEng}>({el})</span>
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                    {this.buttonRemoveKey('type', () => this.removeCommonItem(json, 'type'))}
+                                </Box>
+                            ) : (
+                                this.buttonAddKey('type', () => this.setCommonItem(json, 'type', 'string'))
+                            )
+                        ) : null}
+                        <Box
+                            component="div"
+                            sx={{ ...styles.flex, flexWrap: this.props.width === 'xs' ? 'wrap' : undefined }}
+                        >
+                            {checkState ? (
+                                typeof json.common.read !== 'undefined' ? (
+                                    <Box component="div" sx={styles.flex}>
+                                        <FormControlLabel
+                                            style={styles.marginBlock}
+                                            control={
+                                                <Checkbox
+                                                    disabled={disabled}
+                                                    checked={json.common.read}
+                                                    // @ts-expect-error check later
+                                                    onClick={el => this.setCommonItem(json, 'read', el.target.checked)}
+                                                />
+                                            }
+                                            label={t('Readable')}
+                                        />
+                                        {this.buttonRemoveKey('read', () => this.removeCommonItem(json, 'read'))}
+                                    </Box>
+                                ) : (
+                                    this.buttonAddKey('read', () => this.setCommonItem(json, 'read', true))
+                                )
+                            ) : null}
+                            {checkState ? (
+                                typeof json.common.write !== 'undefined' ? (
+                                    <Box component="div" sx={styles.flex}>
+                                        <FormControlLabel
+                                            style={styles.marginBlock}
+                                            control={
+                                                <Checkbox
+                                                    disabled={disabled}
+                                                    checked={json.common.write}
+                                                    // @ts-expect-error check later
+                                                    onClick={el => this.setCommonItem(json, 'write', el.target.checked)}
+                                                />
+                                            }
+                                            label={t('Writeable')}
+                                        />
+                                        {this.buttonRemoveKey('write', () => this.removeCommonItem(json, 'write'))}
+                                    </Box>
+                                ) : (
+                                    this.buttonAddKey('write', () => this.setCommonItem(json, 'write', true))
+                                )
+                            ) : null}
+                        </Box>
+                        {checkRole ? (
+                            typeof json.common.role !== 'undefined' ? (
+                                <Box component="div" sx={styles.flex}>
+                                    <Autocomplete
+                                        style={styles.marginBlock}
+                                        fullWidth
+                                        disabled={disabled}
+                                        value={json.common.role}
+                                        onChange={(_, e) => this.setCommonItem(json, 'role', e)}
+                                        options={roleArray}
+                                        renderInput={params => (
+                                            <TextField variant="standard" {...params} label={t('Role')} />
+                                        )}
+                                    />
+                                    {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
+                                </Box>
+                            ) : (
+                                this.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
+                            )
+                        ) : null}
+                        {typeof json.common.color !== 'undefined' ? (
+                            <Box component="div" sx={styles.flex}>
                                 <TextField
                                     variant="standard"
                                     disabled={disabled}
-                                    className={{ ...styles.marginBlock, ...styles.color }}
-                                    label={t('Min')}
-                                    value={json.common.min}
-                                    onChange={el => this.setCommonItem(json, 'min', el.target.value)}
+                                    style={{ ...styles.marginBlock, ...styles.color }}
+                                    label={t('Color')}
+                                    type="color"
+                                    value={json.common.color}
+                                    onChange={el => this.setCommonItem(json, 'color', el.target.value)}
                                 />
-                                {this.buttonRemoveKey('min', () => this.removeCommonItem(json, 'min'))}
+                                {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
                             </Box>
-                                :
-                                <Box component="div" sx={styles.flex}>
-                                    {this.buttonAddKey('min', () => this.setCommonItem(json, 'min', 0))}
-                                </Box>) : null}
+                        ) : (
+                            this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
+                        )}
+                        <Box
+                            component="div"
+                            sx={{
+                                ...styles.flex,
+                                flexWrap: this.props.width === 'xs' ? 'wrap' : undefined,
+                                gap: this.props.width === 'xs' ? '10px' : undefined,
+                            }}
+                        >
+                            {json.common.type === 'number' ? (
+                                typeof json.common.min !== 'undefined' ? (
+                                    <Box component="div" sx={styles.flex}>
+                                        <TextField
+                                            variant="standard"
+                                            disabled={disabled}
+                                            className={{ ...styles.marginBlock, ...styles.color }}
+                                            label={t('Min')}
+                                            value={json.common.min}
+                                            onChange={el => this.setCommonItem(json, 'min', el.target.value)}
+                                        />
+                                        {this.buttonRemoveKey('min', () => this.removeCommonItem(json, 'min'))}
+                                    </Box>
+                                ) : (
+                                    <Box component="div" sx={styles.flex}>
+                                        {this.buttonAddKey('min', () => this.setCommonItem(json, 'min', 0))}
+                                    </Box>
+                                )
+                            ) : null}
+                            {json.common.type === 'number' ? (
+                                typeof json.common.max !== 'undefined' ? (
+                                    <Box component="div" sx={styles.flex}>
+                                        <TextField
+                                            variant="standard"
+                                            disabled={disabled}
+                                            className={{ ...styles.marginBlock, ...styles.color }}
+                                            label={t('Max')}
+                                            value={json.common.max}
+                                            onChange={el => this.setCommonItem(json, 'max', el.target.value)}
+                                        />
+                                        {this.buttonRemoveKey('max', () => this.removeCommonItem(json, 'max'))}
+                                    </Box>
+                                ) : (
+                                    <Box component="div" sx={styles.flex}>
+                                        {this.buttonAddKey('max', () => this.setCommonItem(json, 'max', 100))}
+                                    </Box>
+                                )
+                            ) : null}
+                            {json.common.type === 'number' ? (
+                                typeof json.common.step !== 'undefined' ? (
+                                    <Box component="div" sx={styles.flex}>
+                                        <TextField
+                                            variant="standard"
+                                            disabled={disabled}
+                                            className={{ ...styles.marginBlock, ...styles.color }}
+                                            label={t('Step')}
+                                            value={json.common.step}
+                                            onChange={el => this.setCommonItem(json, 'step', el.target.value)}
+                                        />
+                                        {this.buttonRemoveKey('step', () => this.removeCommonItem(json, 'step'))}
+                                    </Box>
+                                ) : (
+                                    <Box component="div" sx={styles.flex}>
+                                        {this.buttonAddKey('step', () => this.setCommonItem(json, 'step', 1))}
+                                    </Box>
+                                )
+                            ) : null}
+                        </Box>
                         {json.common.type === 'number' ? (
-                            typeof json.common.max !== 'undefined' ? (
+                            typeof json.common.unit !== 'undefined' ? (
                                 <Box component="div" sx={styles.flex}>
                                     <TextField
                                         variant="standard"
                                         disabled={disabled}
                                         className={{ ...styles.marginBlock, ...styles.color }}
-                                        label={t('Max')}
-                                        value={json.common.max}
-                                        onChange={el => this.setCommonItem(json, 'max', el.target.value)}
+                                        label={t('Unit')}
+                                        value={json.common.unit}
+                                        onChange={el => this.setCommonItem(json, 'unit', el.target.value)}
                                     />
-                                    {this.buttonRemoveKey('max', () => this.removeCommonItem(json, 'max'))}
+                                    {this.buttonRemoveKey('unit', () => this.removeCommonItem(json, 'unit'))}
                                 </Box>
-                            ) : <Box component="div" sx={styles.flex}>
-                                {this.buttonAddKey('max', () => this.setCommonItem(json, 'max', 100))}
-                            </Box>
-                        ) : null}
-                        {json.common.type === 'number' ? (
-                            typeof json.common.step !== 'undefined' ? <Box component="div" sx={styles.flex}>
-                                <TextField
-                                    variant="standard"
-                                    disabled={disabled}
-                                    className={{ ...styles.marginBlock, ...styles.color }}
-                                    label={t('Step')}
-                                    value={json.common.step}
-                                    onChange={el => this.setCommonItem(json, 'step', el.target.value)}
-                                />
-                                {this.buttonRemoveKey('step', () => this.removeCommonItem(json, 'step'))}
-                            </Box> : <Box component="div" sx={styles.flex}>
-                                {this.buttonAddKey('step', () => this.setCommonItem(json, 'step', 1))}
-                            </Box>
+                            ) : (
+                                <div style={styles.flexDrop}>
+                                    {this.buttonAddKey('unit', () => this.setCommonItem(json, 'unit', ''))}
+                                </div>
+                            )
                         ) : null}
                     </Box>
-                    {json.common.type === 'number' ? (
-                        typeof json.common.unit !== 'undefined' ? <Box component="div" sx={styles.flex}>
-                            <TextField
-                                variant="standard"
+                    {typeof json.common.icon !== 'undefined' ? (
+                        <Box component="div" sx={styles.flex} style={{ flexGrow: 1, minWidth: 158 }}>
+                            <UploadImage
                                 disabled={disabled}
-                                className={{ ...styles.marginBlock, ...styles.color }}
-                                label={t('Unit')}
-                                value={json.common.unit}
-                                onChange={el => this.setCommonItem(json, 'unit', el.target.value)}
+                                maxSize={10 * 1024}
+                                icon={iconPath}
+                                removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
+                                onChange={base64 => this.setCommonItem(json, 'icon', base64)}
                             />
-                            {this.buttonRemoveKey('unit', () => this.removeCommonItem(json, 'unit'))}
-                        </Box> :
-                            <div style={styles.flexDrop}>
-                                {this.buttonAddKey('unit', () => this.setCommonItem(json, 'unit', ''))}
-                            </div>
-                    ) : null}
+                            {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
+                        </Box>
+                    ) : (
+                        <Box component="div" sx={styles.flex}>
+                            {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
+                        </Box>
+                    )}
                 </Box>
-                {typeof json.common.icon !== 'undefined' ? <Box component="div" sx={styles.flex} style={{ flexGrow: 1, minWidth: 158 }}>
-                    <UploadImage
-                        disabled={disabled}
-                        maxSize={10 * 1024}
-                        icon={iconPath}
-                        removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
-                        onChange={base64 => this.setCommonItem(json, 'icon', base64)}
-                    />
-                    {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
-                </Box> :
-                    <Box component="div" sx={styles.flex}>
-                        {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
-                    </Box>}
-            </Box>;
+            );
         } catch {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
@@ -1094,184 +1161,210 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             const json = JSON.parse(this.state.text);
             const funcVisible = json.common?.alias?.read !== undefined || json.common?.alias?.write !== undefined;
 
-            return <Grid container direction="column" style={styles.marginTop}>
-                <Grid item>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={typeof json.common?.alias?.id === 'object'}
-                                onChange={() => {
-                                    if (typeof json.common?.alias?.id === 'object') {
-                                        this.setAliasItem(json, 'id', json.common?.alias?.id?.read || '');
-                                    } else {
-                                        this.setAliasItem(json, 'id.read', json.common?.alias?.id || '');
-                                    }
+            return (
+                <Grid container direction="column" style={styles.marginTop}>
+                    <Grid item>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={typeof json.common?.alias?.id === 'object'}
+                                    onChange={() => {
+                                        if (typeof json.common?.alias?.id === 'object') {
+                                            this.setAliasItem(json, 'id', json.common?.alias?.id?.read || '');
+                                        } else {
+                                            this.setAliasItem(json, 'id.read', json.common?.alias?.id || '');
+                                        }
+                                    }}
+                                />
+                            }
+                            label={this.props.t('Different IDs for read and write')}
+                        />
+                    </Grid>
+                    {typeof json.common?.alias?.id !== 'object' ? (
+                        <Grid item>
+                            <TextField
+                                variant="standard"
+                                label={this.props.t('Alias state')}
+                                value={json.common?.alias?.id || ''}
+                                style={styles.aliasIdEdit}
+                                InputProps={{
+                                    endAdornment: json.common?.alias?.id ? (
+                                        <InputAdornment position="end">
+                                            <IconButton size="large" onClick={() => this.setAliasItem(json, 'id', '')}>
+                                                <IconClose />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ) : null,
                                 }}
+                                onChange={e => this.setAliasItem(json, 'id', e.target.value)}
+                                margin="normal"
                             />
-                        }
-                        label={this.props.t('Different IDs for read and write')}
-                    />
-                </Grid>
-                {typeof json.common?.alias?.id !== 'object' ? <Grid item>
-                    <TextField
-                        variant="standard"
-                        label={this.props.t('Alias state')}
-                        value={json.common?.alias?.id || ''}
-                        style={styles.aliasIdEdit}
-                        InputProps={{
-                            endAdornment: json.common?.alias?.id ? <InputAdornment position="end">
-                                <IconButton size="large" onClick={() => this.setAliasItem(json, 'id', '')}>
-                                    <IconClose />
-                                </IconButton>
-                            </InputAdornment> : null,
-                        }}
-                        onChange={e => this.setAliasItem(json, 'id', e.target.value)}
-                        margin="normal"
-                    />
-                    <Fab
-                        style={styles.button}
-                        size="small"
-                        onClick={() => this.setState({ selectId: true, selectRead: false, selectWrite: false })}
-                    >
-                        ...
-                    </Fab>
-                </Grid> : null}
+                            <Fab
+                                style={styles.button}
+                                size="small"
+                                onClick={() => this.setState({ selectId: true, selectRead: false, selectWrite: false })}
+                            >
+                                ...
+                            </Fab>
+                        </Grid>
+                    ) : null}
 
-                {typeof json.common?.alias?.id === 'object' ? <Grid item>
-                    <TextField
-                        variant="standard"
-                        label={this.props.t('Alias read state')}
-                        value={json.common?.alias?.id?.read || ''}
-                        style={styles.aliasIdEdit}
-                        InputProps={{
-                            endAdornment: json.common?.alias?.id?.read ? <InputAdornment position="end">
-                                <IconButton
-                                    size="large"
-                                    onClick={() => this.setAliasItem(json, 'id.read', '')}
-                                >
-                                    <IconClose />
-                                </IconButton>
-                            </InputAdornment> : null,
-                        }}
-                        onChange={e => this.setAliasItem(json, 'id.read', e.target.value)}
-                        margin="normal"
-                    />
-                    <Fab
-                        style={styles.button}
-                        size="small"
-                        onClick={() => this.setState({ selectId: false, selectRead: true, selectWrite: false })}
-                    >
-                        ...
-                    </Fab>
-                </Grid> : null}
+                    {typeof json.common?.alias?.id === 'object' ? (
+                        <Grid item>
+                            <TextField
+                                variant="standard"
+                                label={this.props.t('Alias read state')}
+                                value={json.common?.alias?.id?.read || ''}
+                                style={styles.aliasIdEdit}
+                                InputProps={{
+                                    endAdornment: json.common?.alias?.id?.read ? (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="large"
+                                                onClick={() => this.setAliasItem(json, 'id.read', '')}
+                                            >
+                                                <IconClose />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ) : null,
+                                }}
+                                onChange={e => this.setAliasItem(json, 'id.read', e.target.value)}
+                                margin="normal"
+                            />
+                            <Fab
+                                style={styles.button}
+                                size="small"
+                                onClick={() => this.setState({ selectId: false, selectRead: true, selectWrite: false })}
+                            >
+                                ...
+                            </Fab>
+                        </Grid>
+                    ) : null}
 
-                {typeof json.common?.alias?.id === 'object' ? <Grid item>
-                    <TextField
-                        variant="standard"
-                        label={this.props.t('Alias write state')}
-                        value={json.common?.alias?.id?.write || ''}
-                        style={styles.aliasIdEdit}
-                        InputProps={{
-                            endAdornment: json.common?.alias?.id?.write ? <InputAdornment position="end">
-                                <IconButton
-                                    size="large"
-                                    onClick={() => this.setAliasItem(json, 'id.write', '')}
-                                >
-                                    <IconClose />
-                                </IconButton>
-                            </InputAdornment> : null,
-                        }}
-                        onChange={e => this.setAliasItem(json, 'id.write', e.target.value)}
-                        margin="normal"
-                    />
-                    <Fab
-                        style={styles.button}
-                        size="small"
-                        onClick={() => this.setState({ selectId: false, selectRead: false, selectWrite: true })}
-                    >
-                        ...
-                    </Fab>
-                </Grid> : null}
-                <Grid item style={styles.marginTop}>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={
-                                    json.common?.alias?.read !== undefined ||
-                                    json.common?.alias?.write !== undefined
+                    {typeof json.common?.alias?.id === 'object' ? (
+                        <Grid item>
+                            <TextField
+                                variant="standard"
+                                label={this.props.t('Alias write state')}
+                                value={json.common?.alias?.id?.write || ''}
+                                style={styles.aliasIdEdit}
+                                InputProps={{
+                                    endAdornment: json.common?.alias?.id?.write ? (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="large"
+                                                onClick={() => this.setAliasItem(json, 'id.write', '')}
+                                            >
+                                                <IconClose />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ) : null,
+                                }}
+                                onChange={e => this.setAliasItem(json, 'id.write', e.target.value)}
+                                margin="normal"
+                            />
+                            <Fab
+                                style={styles.button}
+                                size="small"
+                                onClick={() => this.setState({ selectId: false, selectRead: false, selectWrite: true })}
+                            >
+                                ...
+                            </Fab>
+                        </Grid>
+                    ) : null}
+                    <Grid item style={styles.marginTop}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={
+                                        json.common?.alias?.read !== undefined ||
+                                        json.common?.alias?.write !== undefined
+                                    }
+                                    onChange={() => {
+                                        if (funcVisible) {
+                                            delete json.common.alias.read;
+                                            delete json.common.alias.write;
+                                        } else {
+                                            json.common = json.common || {};
+                                            json.common.alias = json.common.alias || {};
+                                            json.common.alias.read = 'val';
+                                            json.common.alias.write = 'val';
+                                        }
+                                        this.onChange(JSON.stringify(json, null, 2));
+                                    }}
+                                />
+                            }
+                            label={this.props.t('Use convert functions')}
+                        />
+                    </Grid>
+                    {funcVisible ? (
+                        <Grid item>
+                            <TextField
+                                variant="standard"
+                                label={this.props.t('Read converter')}
+                                value={json.common?.alias?.read || 'val'}
+                                style={styles.funcEdit}
+                                error={!!this.state.readError}
+                                InputProps={{
+                                    endAdornment: json.common?.alias?.read ? (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="large"
+                                                onClick={() => this.setAliasItem(json, 'read', '')}
+                                            >
+                                                <IconClose />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ) : null,
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <IconFx style={styles.funcIcon} />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                onChange={e => this.setAliasItem(json, 'read', e.target.value)}
+                                helperText={
+                                    this.state.readError || `${this.props.t('JS function like')} "val / 5 + 21"`
                                 }
-                                onChange={() => {
-                                    if (funcVisible) {
-                                        delete json.common.alias.read;
-                                        delete json.common.alias.write;
-                                    } else {
-                                        json.common = json.common || {};
-                                        json.common.alias = json.common.alias || {};
-                                        json.common.alias.read = 'val';
-                                        json.common.alias.write = 'val';
-                                    }
-                                    this.onChange(JSON.stringify(json, null, 2));
-                                }}
+                                margin="normal"
                             />
-                        }
-                        label={this.props.t('Use convert functions')}
-                    />
+                        </Grid>
+                    ) : null}
+                    {funcVisible ? (
+                        <Grid item>
+                            <TextField
+                                variant="standard"
+                                label={this.props.t('Write converter')}
+                                error={!!this.state.writeError}
+                                value={json.common?.alias?.write || 'val'}
+                                helperText={
+                                    this.state.writeError || `${this.props.t('JS function like')} "(val - 21) * 5"`
+                                }
+                                style={styles.funcEdit}
+                                InputProps={{
+                                    endAdornment: json.common?.alias?.write ? (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="large"
+                                                onClick={() => this.setAliasItem(json, 'write', '')}
+                                            >
+                                                <IconClose />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ) : null,
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <IconFx style={styles.funcIcon} />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                onChange={e => this.setAliasItem(json, 'write', e.target.value)}
+                                margin="normal"
+                            />
+                        </Grid>
+                    ) : null}
                 </Grid>
-                {funcVisible ? <Grid item>
-                    <TextField
-                        variant="standard"
-                        label={this.props.t('Read converter')}
-                        value={json.common?.alias?.read || 'val'}
-                        style={styles.funcEdit}
-                        error={!!this.state.readError}
-                        InputProps={{
-                            endAdornment: json.common?.alias?.read ? <InputAdornment position="end">
-                                <IconButton
-                                    size="large"
-                                    onClick={() => this.setAliasItem(json, 'read', '')}
-                                >
-                                    <IconClose />
-                                </IconButton>
-                            </InputAdornment> : null,
-                            startAdornment: <InputAdornment position="start">
-                                <IconFx style={styles.funcIcon} />
-                            </InputAdornment>,
-                        }}
-                        onChange={e => this.setAliasItem(json, 'read', e.target.value)}
-                        helperText={
-                            this.state.readError || `${this.props.t('JS function like')} "val / 5 + 21"`
-                        }
-                        margin="normal"
-                    />
-                </Grid> : null}
-                {funcVisible ? <Grid item>
-                    <TextField
-                        variant="standard"
-                        label={this.props.t('Write converter')}
-                        error={!!this.state.writeError}
-                        value={json.common?.alias?.write || 'val'}
-                        helperText={
-                            this.state.writeError || `${this.props.t('JS function like')} "(val - 21) * 5"`
-                        }
-                        style={styles.funcEdit}
-                        InputProps={{
-                            endAdornment: json.common?.alias?.write ? <InputAdornment position="end">
-                                <IconButton
-                                    size="large"
-                                    onClick={() => this.setAliasItem(json, 'write', '')}
-                                >
-                                    <IconClose />
-                                </IconButton>
-                            </InputAdornment> : null,
-                            startAdornment: <InputAdornment position="start">
-                                <IconFx style={styles.funcIcon} />
-                            </InputAdornment>,
-                        }}
-                        onChange={e => this.setAliasItem(json, 'write', e.target.value)}
-                        margin="normal"
-                    />
-                </Grid> : null}
-            </Grid>;
+            );
         } catch {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
@@ -1296,45 +1389,47 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         if (!this.state.showCopyDialog) {
             return null;
         }
-        return <Dialog open={!0} maxWidth="md" fullWidth onClose={() => this.setState({ showCopyDialog: '' })}>
-            <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
-            <DialogContent>
-                <TextField
-                    variant="standard"
-                    autoFocus
-                    fullWidth
-                    label={this.props.t('New object ID')}
-                    value={this.state.newId}
-                    onKeyDown={e => {
-                        if (e.key === 'Enter' && !this.props.objects[this.state.newId]) {
+        return (
+            <Dialog open={!0} maxWidth="md" fullWidth onClose={() => this.setState({ showCopyDialog: '' })}>
+                <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        variant="standard"
+                        autoFocus
+                        fullWidth
+                        label={this.props.t('New object ID')}
+                        value={this.state.newId}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter' && !this.props.objects[this.state.newId]) {
+                                this.setState({ showCopyDialog: '' });
+                                this.onClone(this.state.showCopyDialog, this.state.newId);
+                            }
+                        }}
+                        onChange={e => this.setState({ newId: e.target.value })}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        disabled={!!this.props.objects[this.state.newId]}
+                        onClick={() => {
                             this.setState({ showCopyDialog: '' });
                             this.onClone(this.state.showCopyDialog, this.state.newId);
-                        }
-                    }}
-                    onChange={e => this.setState({ newId: e.target.value })}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    disabled={!!this.props.objects[this.state.newId]}
-                    onClick={() => {
-                        this.setState({ showCopyDialog: '' });
-                        this.onClone(this.state.showCopyDialog, this.state.newId);
-                    }}
-                    color="primary"
-                    startIcon={<IconCopy />}
-                >
-                    {this.props.t('Clone')}
-                </Button>
-                <Button
-                    color="grey"
-                    onClick={() => this.setState({ showCopyDialog: '' })}
-                    startIcon={<IconClose />}
-                >
-                    {this.props.t('Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                        }}
+                        color="primary"
+                        startIcon={<IconCopy />}
+                    >
+                        {this.props.t('Clone')}
+                    </Button>
+                    <Button
+                        color="grey"
+                        onClick={() => this.setState({ showCopyDialog: '' })}
+                        startIcon={<IconClose />}
+                    >
+                        {this.props.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
     render() {
@@ -1343,104 +1438,118 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         const withAlias = obj._id.startsWith('alias.0') && obj.type === 'state';
         const fullWidth = obj.type !== 'state' || (obj.common.type !== 'number' && obj.common.type !== 'boolean');
 
-        return <Dialog
-            sx={{ '& .MuiPaper-root': styles.dialog }}
-            open={!0}
-            maxWidth="lg"
-            fullWidth={fullWidth}
-            fullScreen={false}
-            onClose={() => this.props.onClose()}
-            aria-labelledby="edit-value-dialog-title"
-            aria-describedby="edit-value-dialog-description"
-        >
-            <DialogTitle
-                id="edit-value-dialog-title"
-                style={{
-                    width: 'calc(100% - 32px)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                }}
+        return (
+            <Dialog
+                sx={{ '& .MuiPaper-root': styles.dialog }}
+                open={!0}
+                maxWidth="lg"
+                fullWidth={fullWidth}
+                fullScreen={false}
+                onClose={() => this.props.onClose()}
+                aria-labelledby="edit-value-dialog-title"
+                aria-describedby="edit-value-dialog-description"
             >
-                {this.props.t('Edit object:')}
-                {' '}
-                <Box component="span" style={styles.id} sx={{ fontSize: { xs: 10 } }}>{this.props.obj._id}</Box>
-            </DialogTitle>
-
-            {this.renderTabs()}
-            {this.renderCopyDialog()}
-
-            <DialogContent
-                sx={{
-                    p: this.props.width === 'xs' && this.state.tab === 'object' ? '6px' : undefined,
-                }}
-            >
-                {this.state.tab === 'object' ? <div
+                <DialogTitle
+                    id="edit-value-dialog-title"
                     style={{
-                        ...styles.divWithoutTitle,
-                        ...(withAlias ? styles.divWithoutTitleAndTab : undefined),
-                        ...(this.state.error ? styles.error : undefined),
-                    }}
-                    onKeyDown={e => {
-                        if (e.ctrlKey && e.key === 'Enter') {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            this.onUpdate();
-                        }
+                        width: 'calc(100% - 32px)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
                     }}
                 >
-                    <Editor
-                        value={this.state.text}
-                        onChange={newValue => this.onChange(newValue)}
-                        name="UNIQUE_ID_OF_DIV"
-                        themeType={this.props.themeType}
-                    />
-                    {this.state.showCommonDeleteMessage ?
-                        <div style={styles.commonDeleteTip}>{I18n.t('common_delete_tip')}</div> : null}
-                </div> : null}
-                {this.state.tab === 'alias' &&
+                    {this.props.t('Edit object:')}{' '}
+                    <Box component="span" style={styles.id} sx={{ fontSize: { xs: 10 } }}>
+                        {this.props.obj._id}
+                    </Box>
+                </DialogTitle>
+
+                {this.renderTabs()}
+                {this.renderCopyDialog()}
+
+                <DialogContent
+                    sx={{
+                        p: this.props.width === 'xs' && this.state.tab === 'object' ? '6px' : undefined,
+                    }}
+                >
+                    {this.state.tab === 'object' ? (
+                        <div
+                            style={{
+                                ...styles.divWithoutTitle,
+                                ...(withAlias ? styles.divWithoutTitleAndTab : undefined),
+                                ...(this.state.error ? styles.error : undefined),
+                            }}
+                            onKeyDown={e => {
+                                if (e.ctrlKey && e.key === 'Enter') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    this.onUpdate();
+                                }
+                            }}
+                        >
+                            <Editor
+                                value={this.state.text}
+                                onChange={newValue => this.onChange(newValue)}
+                                name="UNIQUE_ID_OF_DIV"
+                                themeType={this.props.themeType}
+                            />
+                            {this.state.showCommonDeleteMessage ? (
+                                <div style={styles.commonDeleteTip}>{I18n.t('common_delete_tip')}</div>
+                            ) : null}
+                        </div>
+                    ) : null}
+                    {this.state.tab === 'alias' &&
                     this.props.obj._id.startsWith('alias.0') &&
-                    this.props.obj.type === 'state' ? this.renderAliasEdit() : null}
-                {this.state.tab === 'common' ? this.renderCommonEdit() : null}
-                {this.renderSelectDialog()}
-            </DialogContent>
-            <DialogActions sx={styles.wrapperButton}>
-                <Button
-                    color="grey"
-                    onClick={() => this.setState({ showCopyDialog: this.props.obj._id, newId: this.props.obj._id })}
-                    disabled={this.state.error || this.state.changed}
-                    title={this.props.t('Create a copy of this object')}
-                >
-                    <IconCopy fontSize={this.props.width === 'xs' ? 'large' : undefined} />
-                </Button>
-                <div style={{ flexGrow: 1 }} />
-                {this.state.tab === 'object' && <Button
-                    color="grey"
-                    onClick={e => this.onCopy(e)}
-                    disabled={this.state.error}
-                    title={this.props.width === 'xs' ? this.props.t('Copy into clipboard') : ''}
-                    startIcon={this.props.width === 'xs' ? undefined : <IconCopyClipboard />}
-                >
-                    {this.props.width === 'xs' ? <IconCopyClipboard fontSize={32} /> : this.props.t('Copy into clipboard')}
-                </Button>}
-                <Button
-                    variant="contained"
-                    disabled={this.state.error || !this.state.changed}
-                    onClick={() => this.onUpdate()}
-                    startIcon={this.props.width === 'xs' ? undefined : <IconCheck />}
-                    color="primary"
-                >
-                    {this.props.width === 'xs' ? <IconCheck fontSize="large" /> : this.props.t('Write')}
-                </Button>
-                <Button
-                    color="grey"
-                    variant="contained"
-                    onClick={() => this.props.onClose()}
-                    startIcon={this.props.width === 'xs' ? undefined : <IconClose />}
-                >
-                    {this.props.width === 'xs' ? <IconClose fontSize="large" /> : this.props.t('Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                    this.props.obj.type === 'state'
+                        ? this.renderAliasEdit()
+                        : null}
+                    {this.state.tab === 'common' ? this.renderCommonEdit() : null}
+                    {this.renderSelectDialog()}
+                </DialogContent>
+                <DialogActions sx={styles.wrapperButton}>
+                    <Button
+                        color="grey"
+                        onClick={() => this.setState({ showCopyDialog: this.props.obj._id, newId: this.props.obj._id })}
+                        disabled={this.state.error || this.state.changed}
+                        title={this.props.t('Create a copy of this object')}
+                    >
+                        <IconCopy fontSize={this.props.width === 'xs' ? 'large' : undefined} />
+                    </Button>
+                    <div style={{ flexGrow: 1 }} />
+                    {this.state.tab === 'object' && (
+                        <Button
+                            color="grey"
+                            onClick={e => this.onCopy(e)}
+                            disabled={this.state.error}
+                            title={this.props.width === 'xs' ? this.props.t('Copy into clipboard') : ''}
+                            startIcon={this.props.width === 'xs' ? undefined : <IconCopyClipboard />}
+                        >
+                            {this.props.width === 'xs' ? (
+                                <IconCopyClipboard fontSize={32} />
+                            ) : (
+                                this.props.t('Copy into clipboard')
+                            )}
+                        </Button>
+                    )}
+                    <Button
+                        variant="contained"
+                        disabled={this.state.error || !this.state.changed}
+                        onClick={() => this.onUpdate()}
+                        startIcon={this.props.width === 'xs' ? undefined : <IconCheck />}
+                        color="primary"
+                    >
+                        {this.props.width === 'xs' ? <IconCheck fontSize="large" /> : this.props.t('Write')}
+                    </Button>
+                    <Button
+                        color="grey"
+                        variant="contained"
+                        onClick={() => this.props.onClose()}
+                        startIcon={this.props.width === 'xs' ? undefined : <IconClose />}
+                    >
+                        {this.props.width === 'xs' ? <IconClose fontSize="large" /> : this.props.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

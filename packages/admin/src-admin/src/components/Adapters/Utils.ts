@@ -14,7 +14,8 @@ export function extractUrlLink(adapterRepo: RepoAdapterObject): string {
     if (!adapterRepo) {
         return '';
     }
-    let url = adapterRepo.licenseInformation?.link ||
+    let url =
+        adapterRepo.licenseInformation?.link ||
         // @ts-expect-error licenseUrl is deprecated
         adapterRepo.licenseUrl;
 

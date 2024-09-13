@@ -5,9 +5,16 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    Accordion, AccordionDetails, AccordionSummary,
-    AppBar, Box, CardMedia,
-    Tab, Tabs, Typography, Tooltip,
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    AppBar,
+    Box,
+    CardMedia,
+    Tab,
+    Tabs,
+    Typography,
+    Tooltip,
 } from '@mui/material';
 
 import {
@@ -19,18 +26,11 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import {
-    I18n,
-    type ThemeType,
-    type IobTheme, type AdminConnection,
-    type ThemeName,
-} from '@iobroker/adapter-react-v5';
+import { I18n, type ThemeType, type IobTheme, type AdminConnection, type ThemeName } from '@iobroker/adapter-react-v5';
 
 import type { BackEndCommandOpenLink } from '@iobroker/json-config/src';
 
-import NotificationMessage, {
-    type Message, type Severity,
-} from '../components/NotificationMessage';
+import NotificationMessage, { type Message, type Severity } from '../components/NotificationMessage';
 
 const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({
@@ -159,18 +159,18 @@ interface TabPanelOptions {
     children: React.JSX.Element[];
 }
 
-const TabPanel = ({
-    children, index, sxBox, style,
-}: TabPanelOptions) => <div
-    role="tabpanel"
-    id={`scrollable-force-tabpanel-${index}`}
-    aria-labelledby={`scrollable-force-tab-${index}`}
-    style={style}
->
-    <Box sx={sxBox}>
-        <Typography component="div">{children}</Typography>
-    </Box>
-</div>;
+const TabPanel = ({ children, index, sxBox, style }: TabPanelOptions) => (
+    <div
+        role="tabpanel"
+        id={`scrollable-force-tabpanel-${index}`}
+        aria-labelledby={`scrollable-force-tab-${index}`}
+        style={style}
+    >
+        <Box sx={sxBox}>
+            <Typography component="div">{children}</Typography>
+        </Box>
+    </div>
+);
 
 interface NotificationDialogOptions {
     notifications: {
@@ -183,7 +183,8 @@ interface NotificationDialogOptions {
                     description: ioBroker.Translated;
                     name: ioBroker.Translated;
                 };
-            };};
+            };
+        };
     };
     onClose: () => void;
     ackCallback: (host: string, name: string) => void;
@@ -200,11 +201,7 @@ interface MessagesPerScope {
     [scope: string]: Record<string, Message & { host: string }>;
 }
 
-function onLink(
-    linkCommand: BackEndCommandOpenLink,
-    instanceId: string,
-    onClose: () => void,
-) {
+function onLink(linkCommand: BackEndCommandOpenLink, instanceId: string, onClose: () => void) {
     let target;
     let url = '';
     if (!linkCommand.url) {
@@ -236,7 +233,7 @@ function onLink(
                 }
             },
             100,
-            url,
+            url
         );
 
         if (linkCommand.close && typeof onClose === 'function') {
@@ -254,11 +251,20 @@ function onLink(
 }
 
 const NotificationsDialog = ({
-    notifications, onClose, ackCallback, dateFormat,
-    themeType, instances, themeName, theme, isFloatComma, socket,
+    notifications,
+    onClose,
+    ackCallback,
+    dateFormat,
+    themeType,
+    instances,
+    themeName,
+    theme,
+    isFloatComma,
+    socket,
 }: NotificationDialogOptions) => {
-    const notificationManagerInstalled = !!Object.values(instances)
-        .find(instance => instance.common.name === 'notification-manager');
+    const notificationManagerInstalled = !!Object.values(instances).find(
+        instance => instance.common.name === 'notification-manager'
+    );
 
     const messages: MessagesPerScope = {};
 
@@ -293,184 +299,220 @@ const NotificationsDialog = ({
 
     let firstKey = '';
     Object.keys(messages).map(scope =>
-        Object.keys(messages[scope]).map(name => firstKey = firstKey || `${scope}-${name}`));
+        Object.keys(messages[scope]).map(name => (firstKey = firstKey || `${scope}-${name}`))
+    );
 
-    return <Dialog
-        onClose={() => onClose()}
-        open={!0}
-        sx={{ '& .MuiDialog-paper': styles.paper }}
-    >
-        <h2 style={styles.headingTop}>
-            <BellIcon
-                sx={{ color: 'primary.main' }}
-                style={{
-                    fontSize: 36,
-                    marginLeft: 25,
-                    marginRight: 10,
-                }}
-            />
-            {I18n.t('Notifications')}
+    return (
+        <Dialog onClose={() => onClose()} open={!0} sx={{ '& .MuiDialog-paper': styles.paper }}>
+            <h2 style={styles.headingTop}>
+                <BellIcon
+                    sx={{ color: 'primary.main' }}
+                    style={{
+                        fontSize: 36,
+                        marginLeft: 25,
+                        marginRight: 10,
+                    }}
+                />
+                {I18n.t('Notifications')}
 
-            {!notificationManagerInstalled ? <Tooltip
-                sx={{ position: 'absolute', right: 24, color: 'text.primary' }}
-                title={I18n.t('Tip: Use the "notification-manager" adapter to receive notifications automatically via messaging adapters.')}
-                slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
-            >
-                <InfoIcon />
-            </Tooltip> : null}
-        </h2>
-        <DialogContent style={{ ...styles.flex, ...styles.overflowHidden }} dividers>
-            <Box component="div" sx={styles.root}>
-                <AppBar position="static" color="default">
-                    <Tabs
-                        value={panel || firstKey}
-                        onChange={handleChange}
-                        variant="scrollable"
-                        scrollButtons
-                        indicatorColor={black ? 'primary' : 'secondary'}
-                        textColor={black ? 'primary' : 'secondary'}
+                {!notificationManagerInstalled ? (
+                    <Tooltip
+                        sx={{ position: 'absolute', right: 24, color: 'text.primary' }}
+                        title={I18n.t(
+                            'Tip: Use the "notification-manager" adapter to receive notifications automatically via messaging adapters.'
+                        )}
+                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                     >
-                        {Object.keys(messages).map(scope =>
-                            Object.keys(messages[scope]).map((name, idx) => {
+                        <InfoIcon />
+                    </Tooltip>
+                ) : null}
+            </h2>
+            <DialogContent style={{ ...styles.flex, ...styles.overflowHidden }} dividers>
+                <Box component="div" sx={styles.root}>
+                    <AppBar position="static" color="default">
+                        <Tabs
+                            value={panel || firstKey}
+                            onChange={handleChange}
+                            variant="scrollable"
+                            scrollButtons
+                            indicatorColor={black ? 'primary' : 'secondary'}
+                            textColor={black ? 'primary' : 'secondary'}
+                        >
+                            {Object.keys(messages).map(scope =>
+                                Object.keys(messages[scope]).map((name, idx) => {
+                                    const entry = messages[scope][name];
+                                    const key = `${scope}-${name}`;
+
+                                    return (
+                                        <Tab
+                                            disabled={disabled.includes(key)}
+                                            key={key}
+                                            value={key}
+                                            label={`${entry.name[I18n.getLanguage()]}`}
+                                            icon={<Status severity={entry.severity} isDark={black} />}
+                                            {...a11yProps(idx)}
+                                        />
+                                    );
+                                })
+                            )}
+                        </Tabs>
+                    </AppBar>
+                    {Object.keys(messages).map(scope =>
+                        Object.keys(messages[scope]).map(name => {
+                            const key = `${scope}-${name}`;
+                            if (panel === key || (!panel && key === firstKey)) {
                                 const entry = messages[scope][name];
-                                const key = `${scope}-${name}`;
+                                console.log(`Active panel: ${panel}`, `Key: ${key}`);
+                                return (
+                                    <TabPanel
+                                        sxBox={styles.classNameBox}
+                                        key={`tabPanel-${name}`}
+                                        style={{ ...styles.overflowAuto, color: black ? 'black' : undefined }}
+                                        index={key}
+                                    >
+                                        <Box component="div" sx={styles.headerText} style={{ fontWeight: 'bold' }}>
+                                            {entry.name[I18n.getLanguage()]}
+                                        </Box>
+                                        <Box component="div" sx={styles.descriptionHeaderText}>
+                                            {entry.description[I18n.getLanguage()]}
+                                        </Box>
+                                        <div>
+                                            {entry.instances
+                                                ? Object.keys(entry.instances).map(nameInst => {
+                                                      const accKey = `${key}-${nameInst}`;
+                                                      if (autoCollapse) {
+                                                          handleChangeAccordion(accKey)('', true);
+                                                          setAutoCollapse(false);
+                                                      }
 
-                                return <Tab
-                                    disabled={disabled.includes(key)}
-                                    key={key}
-                                    value={key}
-                                    label={`${entry.name[I18n.getLanguage()]}`}
-                                    icon={<Status severity={entry.severity} isDark={black} />}
-                                    {...a11yProps(idx)}
-                                />;
-                            }))}
-                    </Tabs>
-                </AppBar>
-                {Object.keys(messages).map(scope =>
-                    Object.keys(messages[scope]).map(name => {
-                        const key = `${scope}-${name}`;
-                        if (panel === key || (!panel && key === firstKey)) {
-                            const entry = messages[scope][name];
-                            console.log(`Active panel: ${panel}`, `Key: ${key}`);
-                            return <TabPanel
-                                sxBox={styles.classNameBox}
-                                key={`tabPanel-${name}`}
-                                style={{ ...styles.overflowAuto, color: black ? 'black' : undefined }}
-                                index={key}
-                            >
-                                <Box component="div" sx={styles.headerText} style={{ fontWeight: 'bold' }}>
-                                    {entry.name[I18n.getLanguage()]}
-                                </Box>
-                                <Box component="div" sx={styles.descriptionHeaderText}>
-                                    {entry.description[I18n.getLanguage()]}
-                                </Box>
-                                <div>
-                                    {entry.instances ? Object.keys(entry.instances)
-                                        .map(nameInst => {
-                                            const accKey = `${key}-${nameInst}`;
-                                            if (autoCollapse) {
-                                                handleChangeAccordion(accKey)('', true);
-                                                setAutoCollapse(false);
-                                            }
+                                                      const currentInstance = instances && instances[nameInst];
+                                                      let icon = 'img/no-image.png';
+                                                      if (
+                                                          currentInstance?.common?.icon &&
+                                                          currentInstance?.common?.name
+                                                      ) {
+                                                          icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
+                                                      }
 
-                                            const currentInstance = instances && instances[nameInst];
-                                            let icon = 'img/no-image.png';
-                                            if (currentInstance?.common?.icon && currentInstance?.common?.name) {
-                                                icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
-                                            }
-
-                                            return <Accordion
-                                                style={black ? undefined : { backgroundColor: '#c0c0c052' }}
-                                                key={accKey}
-                                                expanded={expanded === accKey}
-                                                onChange={handleChangeAccordion(accKey)}
+                                                      return (
+                                                          <Accordion
+                                                              style={
+                                                                  black ? undefined : { backgroundColor: '#c0c0c052' }
+                                                              }
+                                                              key={accKey}
+                                                              expanded={expanded === accKey}
+                                                              onChange={handleChangeAccordion(accKey)}
+                                                          >
+                                                              <AccordionSummary
+                                                                  expandIcon={<ExpandMoreIcon />}
+                                                                  sx={{
+                                                                      '& .MuiAccordionSummary-content': styles.content,
+                                                                  }}
+                                                                  aria-controls="panel1bh-content"
+                                                                  id="panel1bh-header"
+                                                              >
+                                                                  <Typography style={styles.heading}>
+                                                                      <CardMedia
+                                                                          sx={styles.img2}
+                                                                          component="img"
+                                                                          image={icon}
+                                                                      />
+                                                                      <Box component="div" sx={styles.textStyle}>
+                                                                          {nameInst.replace(/^system\.adapter\./, '')}
+                                                                      </Box>
+                                                                  </Typography>
+                                                              </AccordionSummary>
+                                                              <AccordionDetails style={styles.column}>
+                                                                  {entry.instances[nameInst].messages.map((msg, i) => (
+                                                                      <NotificationMessage
+                                                                          key={i}
+                                                                          message={msg}
+                                                                          dateFormat={dateFormat}
+                                                                          entry={entry}
+                                                                          instanceId={nameInst}
+                                                                          socket={socket}
+                                                                          themeType={themeType}
+                                                                          themeName={themeName}
+                                                                          theme={theme}
+                                                                          isFloatComma={isFloatComma}
+                                                                          onClose={onClose}
+                                                                          onLink={(
+                                                                              linkCommand: BackEndCommandOpenLink
+                                                                          ) => onLink(linkCommand, nameInst, onClose)}
+                                                                      />
+                                                                  ))}
+                                                              </AccordionDetails>
+                                                          </Accordion>
+                                                      );
+                                                  })
+                                                : null}
+                                        </div>
+                                        <div style={styles.button}>
+                                            <Button
+                                                variant="contained"
+                                                autoFocus={Object.keys(messages[scope]).length !== 1}
+                                                disabled={disabled.includes(name)}
+                                                style={
+                                                    disabled.includes(name) ? { backgroundColor: 'silver' } : undefined
+                                                }
+                                                sx={styles.buttonStyle}
+                                                onClick={() => {
+                                                    ackCallback(entry.host, name);
+                                                    setDisabled([...disabled, name]);
+                                                }}
+                                                color={Object.keys(messages[scope]).length !== 1 ? 'primary' : 'grey'}
+                                                startIcon={<CheckIcon />}
                                             >
-                                                <AccordionSummary
-                                                    expandIcon={<ExpandMoreIcon />}
-                                                    sx={{ '& .MuiAccordionSummary-content': styles.content }}
-                                                    aria-controls="panel1bh-content"
-                                                    id="panel1bh-header"
+                                                {I18n.t('Acknowledge')}
+                                            </Button>
+                                            {Object.keys(messages[scope]).length === 1 && (
+                                                <Button
+                                                    variant="contained"
+                                                    disabled={disabled.includes(name)}
+                                                    sx={styles.buttonStyle}
+                                                    style={
+                                                        disabled.includes(name)
+                                                            ? { backgroundColor: 'silver' }
+                                                            : undefined
+                                                    }
+                                                    onClick={() => {
+                                                        setDisabled([...disabled, name]);
+                                                        ackCallback(entry.host, name);
+                                                        onClose();
+                                                    }}
+                                                    startIcon={
+                                                        <>
+                                                            <CheckIcon />
+                                                            <CloseIcon />
+                                                        </>
+                                                    }
+                                                    color="primary"
                                                 >
-                                                    <Typography style={styles.heading}>
-                                                        <CardMedia sx={styles.img2} component="img" image={icon} />
-                                                        <Box component="div" sx={styles.textStyle}>
-                                                            {nameInst.replace(/^system\.adapter\./, '')}
-                                                        </Box>
-                                                    </Typography>
-                                                </AccordionSummary>
-                                                <AccordionDetails style={styles.column}>
-                                                    {entry.instances[nameInst].messages.map((msg, i) =>
-                                                        <NotificationMessage
-                                                            key={i}
-                                                            message={msg}
-                                                            dateFormat={dateFormat}
-                                                            entry={entry}
-                                                            instanceId={nameInst}
-                                                            socket={socket}
-                                                            themeType={themeType}
-                                                            themeName={themeName}
-                                                            theme={theme}
-                                                            isFloatComma={isFloatComma}
-                                                            onClose={onClose}
-                                                            onLink={(linkCommand: BackEndCommandOpenLink) => onLink(linkCommand, nameInst, onClose)}
-                                                        />)}
-                                                </AccordionDetails>
-                                            </Accordion>;
-                                        }) : null}
-                                </div>
-                                <div style={styles.button}>
-                                    <Button
-                                        variant="contained"
-                                        autoFocus={Object.keys(messages[scope]).length !== 1}
-                                        disabled={disabled.includes(name)}
-                                        style={disabled.includes(name) ? { backgroundColor: 'silver' } : undefined}
-                                        sx={styles.buttonStyle}
-                                        onClick={() => {
-                                            ackCallback(entry.host, name);
-                                            setDisabled([...disabled, name]);
-                                        }}
-                                        color={Object.keys(messages[scope]).length !== 1 ? 'primary' : 'grey'}
-                                        startIcon={<CheckIcon />}
-                                    >
-                                        {I18n.t('Acknowledge')}
-                                    </Button>
-                                    {Object.keys(messages[scope]).length === 1 && <Button
-                                        variant="contained"
-                                        disabled={disabled.includes(name)}
-                                        sx={styles.buttonStyle}
-                                        style={disabled.includes(name) ? { backgroundColor: 'silver' } : undefined}
-                                        onClick={() => {
-                                            setDisabled([...disabled, name]);
-                                            ackCallback(entry.host, name);
-                                            onClose();
-                                        }}
-                                        startIcon={<>
-                                            <CheckIcon />
-                                            <CloseIcon />
-                                        </>}
-                                        color="primary"
-                                    >
-                                        {I18n.t('Acknowledge & close')}
-                                    </Button>}
-                                </div>
-                            </TabPanel>;
-                        }
-                        return null;
-                    }))}
-            </Box>
-        </DialogContent>
-        <DialogActions>
-            <Button
-                id="notifications-dialog-close"
-                variant="contained"
-                onClick={() => onClose()}
-                startIcon={<CloseIcon />}
-                color="grey"
-            >
-                {I18n.t('Ok')}
-            </Button>
-        </DialogActions>
-    </Dialog>;
+                                                    {I18n.t('Acknowledge & close')}
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </TabPanel>
+                                );
+                            }
+                            return null;
+                        })
+                    )}
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    id="notifications-dialog-close"
+                    variant="contained"
+                    onClick={() => onClose()}
+                    startIcon={<CloseIcon />}
+                    color="grey"
+                >
+                    {I18n.t('Ok')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 };
 
 export default NotificationsDialog;

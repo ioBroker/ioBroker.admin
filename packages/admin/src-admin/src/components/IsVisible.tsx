@@ -26,9 +26,7 @@ interface IsVisibleProps {
 }
 
 function IsVisible(props: IsVisibleProps) {
-    const {
-        config, children, name, value,
-    } = props;
+    const { config, children, name, value } = props;
 
     if (value !== undefined) {
         return value === false ? null : children;

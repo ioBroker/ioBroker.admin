@@ -1,18 +1,8 @@
 import React, { createRef, Component } from 'react';
 
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-    Typography,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
 
-import {
-    Close as CloseIcon,
-} from '@mui/icons-material';
+import { Close as CloseIcon } from '@mui/icons-material';
 
 import type { IobTheme, Translate, AdminConnection } from '@iobroker/adapter-react-v5';
 
@@ -64,7 +54,10 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
 
     componentDidMount() {
         if (this.props.camera && this.props.camera !== 'text') {
-            this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval, 10), 500));
+            this.cameraUpdateTimer = setInterval(
+                () => this.updateCamera(),
+                Math.max(parseInt(this.props.interval, 10), 500)
+            );
             this.updateCamera();
         }
     }
@@ -92,7 +85,11 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
                 const parts = this.props.camera.split('.');
                 const adapter = parts.shift();
                 const instance = parts.shift();
-                this.props.socket.sendTo(`${adapter}.${instance}`, 'image', { name: parts.pop(), width: this.cameraRef.current.width })
+                this.props.socket
+                    .sendTo(`${adapter}.${instance}`, 'image', {
+                        name: parts.pop(),
+                        width: this.cameraRef.current.width,
+                    })
                     .then(result => {
                         if (result && result.data && this.cameraRef.current) {
                             this.cameraRef.current.src = `data:image/jpeg;base64,${result.data}`;
@@ -103,40 +100,42 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
     }
 
     render() {
-        return <Dialog
-            onClose={() => this.props.onClose()}
-            open={!0}
-            maxWidth="xl"
-            fullWidth
-            fullScreen
-            sx={{ '& .MuiDialog-paper': styles.paper }}
-        >
-            <DialogTitle>
-                <Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>
-                    {this.props.name}
-                    <IconButton size="large" sx={styles.closeButton} onClick={() => this.props.onClose()}>
-                        <CloseIcon />
-                    </IconButton>
-                </Typography>
-            </DialogTitle>
-            <DialogContent dividers>
-                <img style={styles.img} src="" alt="camera" ref={this.cameraRef} />
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    autoFocus
-                    onClick={e => {
-                        e.stopPropagation();
-                        this.props.onClose();
-                    }}
-                    color="primary"
-                    startIcon={<CloseIcon />}
-                >
-                    {this.props.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+        return (
+            <Dialog
+                onClose={() => this.props.onClose()}
+                open={!0}
+                maxWidth="xl"
+                fullWidth
+                fullScreen
+                sx={{ '& .MuiDialog-paper': styles.paper }}
+            >
+                <DialogTitle>
+                    <Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>
+                        {this.props.name}
+                        <IconButton size="large" sx={styles.closeButton} onClick={() => this.props.onClose()}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Typography>
+                </DialogTitle>
+                <DialogContent dividers>
+                    <img style={styles.img} src="" alt="camera" ref={this.cameraRef} />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        autoFocus
+                        onClick={e => {
+                            e.stopPropagation();
+                            this.props.onClose();
+                        }}
+                        color="primary"
+                        startIcon={<CloseIcon />}
+                    >
+                        {this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

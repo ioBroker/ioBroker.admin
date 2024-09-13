@@ -10,7 +10,8 @@ import {
     Checkbox,
     FormControlLabel,
     Tabs,
-    Tab, Box,
+    Tab,
+    Box,
 } from '@mui/material';
 
 import {
@@ -24,10 +25,7 @@ import {
     Check as IconCheck,
 } from '@mui/icons-material';
 
-import {
-    Utils, IconPicker,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { Utils, IconPicker, type Translate } from '@iobroker/adapter-react-v5';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 
 import Group1 from '../../assets/groups/group1.svg';
@@ -52,10 +50,8 @@ interface PermissionsTabProps {
 }
 
 function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
-    const mapObject = <T, Result>(
-        object: Record<string, T>,
-        mapFunction: (item: T, key: string) => Result,
-    ): Result[] => Object.values(object).map((value, index) => {
+    const mapObject = <T, Result>(object: Record<string, T>, mapFunction: (item: T, key: string) => Result): Result[] =>
+        Object.values(object).map((value, index) => {
             const key = Object.keys(object)[index];
             return mapFunction(value, key);
         });
@@ -73,7 +69,11 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
         create: undefined,
     };
     acl.object = {
-        read: true, list: true, write: true, delete: false, ...acl.object,
+        read: true,
+        list: true,
+        write: true,
+        delete: false,
+        ...acl.object,
     };
 
     acl.state = acl.state || {
@@ -84,7 +84,11 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
         create: undefined,
     };
     acl.state = {
-        read: true, list: true, write: true, delete: false, ...acl.state,
+        read: true,
+        list: true,
+        write: true,
+        delete: false,
+        ...acl.state,
     };
 
     acl.users = acl.users || {
@@ -95,7 +99,10 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
         read: undefined,
     };
     acl.users = {
-        write: false, delete: false, create: false, ...acl.users,
+        write: false,
+        delete: false,
+        create: false,
+        ...acl.users,
     };
 
     acl.other = acl.other || {
@@ -104,7 +111,10 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
         sendto: true,
     };
     acl.other = {
-        http: false, execute: false, sendto: true, ...acl.other,
+        http: false,
+        execute: false,
+        sendto: true,
+        ...acl.other,
     };
 
     acl.file = acl.file || {
@@ -116,30 +126,47 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
     };
 
     acl.file = {
-        read: true, list: true, write: false, delete: false, create: false, ...acl.file,
+        read: true,
+        list: true,
+        write: false,
+        delete: false,
+        create: false,
+        ...acl.file,
     };
 
-    return <Grid2 container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog} key="PermissionsTab">
-        {mapObject(props.group.common.acl || {}, (block, blockKey) =>
-            <Grid2 size={{ xs: 12, md: 12 }} key={blockKey}>
-                <Box component="h2" sx={props.styles.permHeaders}>{props.t(`group_acl_${blockKey}`)}</Box>
-                {mapObject(block as Record<string, boolean>, (perm, permKey) =>
-                    <FormControlLabel
-                        key={permKey}
-                        control={<Checkbox
-                            disabled={props.group._id === 'system.group.administrator'}
-                            checked={perm}
-                            onChange={e => {
-                                const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
-                                (newData.common.acl as any as Record<string, Record<string, boolean>>)[blockKey][permKey] = e.target.checked;
-                                props.onChange(newData);
-                            }}
-                        />}
-                        label={props.t(`group_acl_${permKey}`)}
-                        labelPlacement="top"
-                    />)}
-            </Grid2>)}
-    </Grid2>;
+    return (
+        <Grid2 container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog} key="PermissionsTab">
+            {mapObject(props.group.common.acl || {}, (block, blockKey) => (
+                <Grid2 size={{ xs: 12, md: 12 }} key={blockKey}>
+                    <Box component="h2" sx={props.styles.permHeaders}>
+                        {props.t(`group_acl_${blockKey}`)}
+                    </Box>
+                    {mapObject(block as Record<string, boolean>, (perm, permKey) => (
+                        <FormControlLabel
+                            key={permKey}
+                            control={
+                                <Checkbox
+                                    disabled={props.group._id === 'system.group.administrator'}
+                                    checked={perm}
+                                    onChange={e => {
+                                        const newData: ioBroker.GroupObject = Utils.clone(
+                                            props.group
+                                        ) as ioBroker.GroupObject;
+                                        (newData.common.acl as any as Record<string, Record<string, boolean>>)[
+                                            blockKey
+                                        ][permKey] = e.target.checked;
+                                        props.onChange(newData);
+                                    }}
+                                />
+                            }
+                            label={props.t(`group_acl_${permKey}`)}
+                            labelPlacement="top"
+                        />
+                    ))}
+                </Grid2>
+            ))}
+        </Grid2>
+    );
 }
 
 const styles: Record<string, React.CSSProperties> = {
@@ -170,12 +197,11 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
             const icon = GROUPS_ICONS[Math.round(Math.random() * (GROUPS_ICONS.length - 1))];
 
             if (icon) {
-                Utils.getSvg(icon)
-                    .then((fileBlob: string) => {
-                        const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
-                        newData.common.icon = fileBlob;
-                        props.onChange(newData);
-                    });
+                Utils.getSvg(icon).then((fileBlob: string) => {
+                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
+                    newData.common.icon = fileBlob;
+                    props.onChange(newData);
+                });
             }
         }
     }, []);
@@ -183,11 +209,11 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
     const idExists = props.groups.find(group => group._id === props.group._id);
     const idChanged = props.group._id !== originalId;
 
-    let canSave = props.group._id !== 'system.group.' &&
+    let canSave =
+        props.group._id !== 'system.group.' &&
         (props.group.common as any).password === (props.group.common as any).passwordRepeat;
 
-    const getShortId = (_id: string) =>
-        _id.split('.').pop();
+    const getShortId = (_id: string) => _id.split('.').pop();
 
     const name2Id = (name: string) =>
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
@@ -209,147 +235,149 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
     const description = props.getText(props.group.common.desc);
     const name = props.getText(props.group.common.name);
 
-    const mainTab = <Grid2 container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog}>
-        <Grid2 size={{ xs: 12, md: 6 }}>
-            <IOTextField
-                label="Name"
-                t={props.t}
-                value={name}
-                onChange={value => {
-                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
-                    if (!props.group.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
+    const mainTab = (
+        <Grid2 container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog}>
+            <Grid2 size={{ xs: 12, md: 6 }}>
+                <IOTextField
+                    label="Name"
+                    t={props.t}
+                    value={name}
+                    onChange={value => {
+                        const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
+                        if (
+                            !props.group.common.dontDelete &&
+                            name2Id(newData.common.name) === getShortId(newData._id)
+                        ) {
+                            newData._id = changeShortId(newData._id, name2Id(value)) as ioBroker.ObjectIDs.Group;
+                        }
+                        newData.common.name = value;
+                        props.onChange(newData);
+                    }}
+                    autoComplete="off"
+                    icon={TextFieldsIcon}
+                    styles={props.styles}
+                />
+            </Grid2>
+            <Grid2 size={{ xs: 12, md: 6 }}>
+                <IOTextField
+                    label="ID edit"
+                    t={props.t}
+                    disabled={props.group.common.dontDelete}
+                    value={props.group._id.split('.')[props.group._id.split('.').length - 1]}
+                    onChange={value => {
+                        const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
                         newData._id = changeShortId(newData._id, name2Id(value)) as ioBroker.ObjectIDs.Group;
-                    }
-                    newData.common.name = value;
-                    props.onChange(newData);
-                }}
-                autoComplete="off"
-                icon={TextFieldsIcon}
-                styles={props.styles}
-            />
+                        props.onChange(newData);
+                    }}
+                    icon={LocalOfferIcon}
+                    styles={props.styles}
+                />
+            </Grid2>
+            <Grid2 size={{ xs: 12, md: 6 }}>
+                <IOTextField
+                    label="ID preview"
+                    t={props.t}
+                    disabled
+                    value={props.group._id}
+                    icon={PageviewIcon}
+                    styles={props.styles}
+                />
+            </Grid2>
+            <Grid2 size={{ xs: 12, md: 6 }}>
+                <IOTextField
+                    label="Description"
+                    t={props.t}
+                    value={description}
+                    onChange={value => {
+                        const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
+                        newData.common.desc = value;
+                        props.onChange(newData);
+                    }}
+                    icon={DescriptionIcon}
+                    styles={props.styles}
+                />
+            </Grid2>
+            <Grid2 size={{ xs: 12, md: 6 }}>
+                <IconPicker
+                    label="Icon"
+                    icons={GROUPS_ICONS}
+                    // t={props.t}
+                    // lang={props.lang}
+                    value={props.group.common.icon}
+                    onChange={fileBlob => {
+                        const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
+                        newData.common.icon = fileBlob;
+                        props.onChange(newData);
+                    }}
+                    previewStyle={props.styles.iconPreview}
+                    icon={ImageIcon}
+                    // classes={props.classes}
+                />
+            </Grid2>
+            <Grid2 size={{ xs: 12, md: 6 }}>
+                <IOColorPicker
+                    label="Color"
+                    t={props.t}
+                    value={props.group.common.color}
+                    previewStyle={props.styles.iconPreview}
+                    onChange={color => {
+                        const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
+                        newData.common.color = color;
+                        props.onChange(newData);
+                    }}
+                    icon={ColorLensIcon}
+                    style={props.styles.colorPicker}
+                    styles={props.styles}
+                />
+            </Grid2>
         </Grid2>
-        <Grid2 size={{ xs: 12, md: 6 }}>
-            <IOTextField
-                label="ID edit"
-                t={props.t}
-                disabled={props.group.common.dontDelete}
-                value={props.group._id.split('.')[props.group._id.split('.').length - 1]}
-                onChange={value => {
-                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
-                    newData._id = changeShortId(newData._id, name2Id(value)) as ioBroker.ObjectIDs.Group;
-                    props.onChange(newData);
-                }}
-                icon={LocalOfferIcon}
-                styles={props.styles}
-            />
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 6 }}>
-            <IOTextField
-                label="ID preview"
-                t={props.t}
-                disabled
-                value={props.group._id}
-                icon={PageviewIcon}
-                styles={props.styles}
-            />
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 6 }}>
-            <IOTextField
-                label="Description"
-                t={props.t}
-                value={description}
-                onChange={value => {
-                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
-                    newData.common.desc = value;
-                    props.onChange(newData);
-                }}
-                icon={DescriptionIcon}
-                styles={props.styles}
-            />
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 6 }}>
-            <IconPicker
-                label="Icon"
-                icons={GROUPS_ICONS}
-                // t={props.t}
-                // lang={props.lang}
-                value={props.group.common.icon}
-                onChange={fileBlob => {
-                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
-                    newData.common.icon = fileBlob;
-                    props.onChange(newData);
-                }}
-                previewStyle={props.styles.iconPreview}
-                icon={ImageIcon}
-                // classes={props.classes}
-            />
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 6 }}>
-            <IOColorPicker
-                label="Color"
-                t={props.t}
-                value={props.group.common.color}
-                previewStyle={props.styles.iconPreview}
-                onChange={color => {
-                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
-                    newData.common.color = color;
-                    props.onChange(newData);
-                }}
-                icon={ColorLensIcon}
-                style={props.styles.colorPicker}
-                styles={props.styles}
-            />
-        </Grid2>
-    </Grid2>;
+    );
 
     const selectedTab = [mainTab, PermissionsTab(props)][tab];
 
-    return <Dialog
-        open={!0}
-        onClose={(event, reason) => {
-            if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
-                props.onClose();
-            }
-        }}
-        fullWidth={props.innerWidth < 500}
-    >
-        <DialogTitle style={props.styles.dialogTitle}>
-            <Tabs variant="fullWidth" value={tab} onChange={(e, newTab) => setTab(newTab)}>
-                <Tab label={props.t('Main')} value={0} />
-                <Tab label={props.t('Permissions')} value={1} />
-            </Tabs>
-        </DialogTitle>
-        <DialogContent
-            sx={{
-                '&.MuiDialogContent-root': {
-                    ...(props.innerWidth < 500 ? props.styles.narrowContent : undefined),
-                    ...styles.contentRoot,
-                },
+    return (
+        <Dialog
+            open={!0}
+            onClose={(event, reason) => {
+                if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                    props.onClose();
+                }
             }}
+            fullWidth={props.innerWidth < 500}
         >
-            {selectedTab}
-        </DialogContent>
-        <DialogActions style={props.styles.dialogActions}>
-            <Button
-                variant="contained"
-                color="primary"
-                autoFocus
-                onClick={() => props.saveData(props.isNew ? null : originalId)}
-                disabled={!canSave}
-                startIcon={<IconCheck />}
+            <DialogTitle style={props.styles.dialogTitle}>
+                <Tabs variant="fullWidth" value={tab} onChange={(e, newTab) => setTab(newTab)}>
+                    <Tab label={props.t('Main')} value={0} />
+                    <Tab label={props.t('Permissions')} value={1} />
+                </Tabs>
+            </DialogTitle>
+            <DialogContent
+                sx={{
+                    '&.MuiDialogContent-root': {
+                        ...(props.innerWidth < 500 ? props.styles.narrowContent : undefined),
+                        ...styles.contentRoot,
+                    },
+                }}
             >
-                {props.t('Save')}
-            </Button>
-            <Button
-                variant="contained"
-                color="grey"
-                onClick={props.onClose}
-                startIcon={<IconCancel />}
-            >
-                {props.t('Cancel')}
-            </Button>
-        </DialogActions>
-    </Dialog>;
+                {selectedTab}
+            </DialogContent>
+            <DialogActions style={props.styles.dialogActions}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    autoFocus
+                    onClick={() => props.saveData(props.isNew ? null : originalId)}
+                    disabled={!canSave}
+                    startIcon={<IconCheck />}
+                >
+                    {props.t('Save')}
+                </Button>
+                <Button variant="contained" color="grey" onClick={props.onClose} startIcon={<IconCancel />}>
+                    {props.t('Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 };
 
 export default GroupEditDialog;

@@ -5,7 +5,8 @@
     "scripts": {
         "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && craco start",
         "old-start": "react-scripts start",
-        "lint": "eslint --fix --ext .js,.jsx,.tsx src",
+        "old-build": "react-scripts build",
+        "lint": "eslint -c eslint.config.mjs src --fix --ext .js,.jsx,.tsx src",
         "build": "craco build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
@@ -25,7 +26,7 @@
         "@iobroker/dm-gui-components": "file:../../dm-gui-components"
     },
     "devDependencies": {
-        "http-proxy-middleware": "^3.0.0"
+        "http-proxy-middleware": "^3.0.2"
     },
     "proxya": "http://127.0.0.1:8081",
     "plugins": [

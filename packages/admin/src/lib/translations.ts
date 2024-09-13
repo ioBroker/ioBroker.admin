@@ -25,6 +25,7 @@ const updateText: Record<ioBroker.Languages, string> = {
 
 /**
  * Get text for a message about adapter update in given language
+ *
  * @param options
  */
 export function getAdapterUpdateText(options: AdapterUpdateOptions): string {

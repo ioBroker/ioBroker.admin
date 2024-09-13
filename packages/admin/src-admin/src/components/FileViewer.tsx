@@ -2,14 +2,7 @@
 import { Buffer } from 'buffer';
 import React, { Component } from 'react';
 
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
 
 // Icons
 import { FaCopy as CopyIcon } from 'react-icons/fa';
@@ -21,14 +14,7 @@ import type { Connection } from '@iobroker/socket-client';
 import * as ace from 'ace-builds';
 import 'ace-builds/src-noconflict/ext-modelist';
 
-import {
-    Utils,
-    withWidth,
-    IconNoIcon,
-    Icon,
-    type ThemeType,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { Utils, withWidth, IconNoIcon, Icon, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
 
 import Editor from './Editor';
 
@@ -158,7 +144,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                             }
                         } else {
                             const ext = Utils.detectMimeType(
-                                bufferToBase64((data as { data: Buffer; type: string }).data),
+                                bufferToBase64((data as { data: Buffer; type: string }).data)
                             );
                             if (ext) {
                                 newState.ext = ext;
@@ -239,7 +225,8 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
         parts.splice(0, 2);
         const adapter = parts[0];
         const name = parts.splice(1).join('/');
-        this.props.socket.writeFile64(adapter, name, Buffer.from(data).toString('base64'))
+        this.props.socket
+            .writeFile64(adapter, name, Buffer.from(data).toString('base64'))
             .then(() => this.props.onClose())
             .catch(e => window.alert(`Cannot write file: ${e}`));
     };
@@ -290,11 +277,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                         alignItems: 'center',
                     }}
                 >
-                    <audio
-                        style={{ width: '100%' }}
-                        src={this.props.href}
-                        controls
-                    ></audio>
+                    <audio style={{ width: '100%' }} src={this.props.href} controls></audio>
                 </div>
             );
         }
@@ -309,26 +292,26 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                         alignItems: 'center',
                     }}
                 >
-                    <video
-                        style={{ width: '100%', height: '100%' }}
-                        controls
-                    >
-                        <source
-                            src={this.props.href}
-                            type={`video/${this.state.ext}}`}
-                        />
+                    <video style={{ width: '100%', height: '100%' }} controls>
+                        <source src={this.props.href} type={`video/${this.state.ext}}`} />
                     </video>
                 </div>
             );
         }
         if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             // File viewer in adapter-react does not support write
-            return <Editor
-                mode={FileViewer.getEditFile(this.props.formatEditFile)}
-                themeType={this.props.themeType}
-                value={this.state.editingValue || this.state.code || this.state.text}
-                onChange={this.state.editing ? newValue => this.setState({ editingValue: newValue, changed: true }) : undefined}
-            />;
+            return (
+                <Editor
+                    mode={FileViewer.getEditFile(this.props.formatEditFile)}
+                    themeType={this.props.themeType}
+                    value={this.state.editingValue || this.state.code || this.state.text}
+                    onChange={
+                        this.state.editing
+                            ? newValue => this.setState({ editingValue: newValue, changed: true })
+                            : undefined
+                    }
+                />
+            );
         }
         return null;
     }
@@ -351,11 +334,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                     <DialogTitle id="ar_dialog_file_view_title">{`${this.props.t(this.state.editing ? 'Edit' : 'View')}: ${this.props.href}`}</DialogTitle>
                     {this.state.ext && EXTENSIONS.images.includes(this.state.ext) && (
                         <div>
-                            <IconButton
-                                size="large"
-                                color="inherit"
-                                onClick={this.props.setStateBackgroundImage}
-                            >
+                            <IconButton size="large" color="inherit" onClick={this.props.setStateBackgroundImage}>
                                 <Brightness5Icon />
                             </IconButton>
                         </div>

@@ -13,21 +13,11 @@ import {
 } from '@mui/material';
 
 // Icons
-import {
-    ExpandMore as ExpandMoreIcon,
-} from '@mui/icons-material';
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import {
-    withWidth,
-    Error as DialogError,
-    Confirm as ConfirmDialog, type IobTheme,
-} from '@iobroker/adapter-react-v5';
+import { withWidth, Error as DialogError, Confirm as ConfirmDialog, type IobTheme } from '@iobroker/adapter-react-v5';
 
-import {
-    ConfigGeneric,
-    JsonConfigComponent,
-    type ConfigItemPanel,
-} from '@iobroker/json-config';
+import { ConfigGeneric, JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
 import AdminUtils from '@/AdminUtils';
 import type { BasicComponentProps } from '@/types';
 
@@ -151,7 +141,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
     private commonConfig: Record<string, any> = {};
 
-    private cb?: (() => void);
+    private cb?: () => void;
 
     private cachedNewValues?: Record<string, any>;
 
@@ -160,7 +150,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
         let expanded: string[];
         try {
-            expanded = JSON.parse(((window as any)._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]');
+            expanded = JSON.parse(
+                ((window as any)._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]'
+            );
         } catch {
             expanded = [];
         }
@@ -179,19 +171,21 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
         this.scrollDivRef = createRef();
 
-        this.jsonConfigs  = {};
+        this.jsonConfigs = {};
 
-        this.refTemplate  = {};
-        this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
+        this.refTemplate = {};
+        this.props.customsInstances.map(id => (this.refTemplate[id] = createRef()));
 
-        this.customObj = this.props.objectIDs.length > 1 ? { common: { custom: {} }, native: {} } as ioBroker.AnyObject : AdminUtils.deepClone(this.props.objects[this.props.objectIDs[0]] || null);
+        this.customObj =
+            this.props.objectIDs.length > 1
+                ? ({ common: { custom: {} }, native: {} } as ioBroker.AnyObject)
+                : AdminUtils.deepClone(this.props.objects[this.props.objectIDs[0]] || null);
 
         if (this.customObj) {
-            this.loadAllCustoms()
-                .then(() => {
-                    this.commonConfig = this.getCommonConfig();
-                    this.setState({ loaded: true, newValues: {} });
-                });
+            this.loadAllCustoms().then(() => {
+                this.commonConfig = this.getCommonConfig();
+                this.setState({ loaded: true, newValues: {} });
+            });
         }
     }
 
@@ -244,7 +238,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
     }
 
     async getCustomTemplate(adapter: string): Promise<void> {
-        const ad = this.props.objects[`system.adapter.${adapter}`] ? AdminUtils.deepClone(this.props.objects[`system.adapter.${adapter}`]) : null;
+        const ad = this.props.objects[`system.adapter.${adapter}`]
+            ? AdminUtils.deepClone(this.props.objects[`system.adapter.${adapter}`])
+            : null;
 
         if (!ad) {
             console.error(`Cannot find adapter "${adapter}"`);
@@ -299,7 +295,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         instanceObj: ioBroker.InstanceObject,
         items: Record<string, any>,
         attr: string,
-        processed: string[],
+        processed: string[]
     ) {
         if (processed.includes(attr)) {
             return undefined;
@@ -323,9 +319,19 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             if (!items[_attr]) {
                 console.error(`[JsonConfigComponent] attribute "${_attr}" does not exist!`);
             } else if (!items[_attr].defaultFunc) {
-                console.error(`[JsonConfigComponent] attribute "${_attr}" is not required to be includes in "alsoDependsOn" while has static value!`);
+                console.error(
+                    `[JsonConfigComponent] attribute "${_attr}" is not required to be includes in "alsoDependsOn" while has static value!`
+                );
             } else {
-                const result = this._executeCustom(items[_attr].defaultFunc, data, customObj, instanceObj, items, _attr, processed);
+                const result = this._executeCustom(
+                    items[_attr].defaultFunc,
+                    data,
+                    customObj,
+                    instanceObj,
+                    items,
+                    _attr,
+                    processed
+                );
                 if (result !== undefined) {
                     data[_attr] = result;
                 }
@@ -337,8 +343,23 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         } else {
             try {
                 // eslint-disable-next-line no-new-func
-                const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', strFunc.includes('return') ? strFunc : `return ${strFunc}`);
-                data[attr] = f(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
+                const f = new Function(
+                    'data',
+                    'originalData',
+                    '_system',
+                    'instanceObj',
+                    'customObj',
+                    '_socket',
+                    strFunc.includes('return') ? strFunc : `return ${strFunc}`
+                );
+                data[attr] = f(
+                    data || this.props.data,
+                    this.props.originalData,
+                    this.props.systemConfig,
+                    instanceObj,
+                    customObj,
+                    this.props.socket
+                );
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);
                 data[attr] = !items[attr] || items[attr].default === undefined ? null : items[attr].default;
@@ -382,7 +403,15 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 // now init default that must be calculated
                 attrs.forEach(async attr => {
                     if (items[attr].defaultFunc) {
-                        this._executeCustom(items[attr].defaultFunc, defaultValues, obj, this.jsonConfigs[adapter].instanceObjs[instance], items, attr, processed);
+                        this._executeCustom(
+                            items[attr].defaultFunc,
+                            defaultValues,
+                            obj,
+                            this.jsonConfigs[adapter].instanceObjs[instance],
+                            items,
+                            attr,
+                            processed
+                        );
                     }
                 });
             }
@@ -392,7 +421,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
     }
 
     getCommonConfig(): Record<string, any> {
-        const ids     = this.props.objectIDs || [];
+        const ids = this.props.objectIDs || [];
         const objects = this.props.objects;
 
         const commons: Record<string, any> = {};
@@ -466,13 +495,15 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
     isChanged(newValues: Record<string, any>): string | undefined {
         newValues = newValues || this.state.newValues;
-        return Object.keys(newValues)
-            .find(instance => newValues[instance] === null || (newValues[instance] && Object.keys(newValues[instance])
-                .find(attr => !attr.startsWith('_'))));
+        return Object.keys(newValues).find(
+            instance =>
+                newValues[instance] === null ||
+                (newValues[instance] && Object.keys(newValues[instance]).find(attr => !attr.startsWith('_')))
+        );
     }
 
     combineNewAndOld(instance: string, ignoreUnderscore = false) {
-        const data = { ...this.commonConfig[instance] || {}, ...this.state.newValues[instance] || {} };
+        const data = { ...(this.commonConfig[instance] || {}), ...(this.state.newValues[instance] || {}) };
 
         if (ignoreUnderscore) {
             Object.keys(data).forEach(attr => {
@@ -493,8 +524,16 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
         const icon = `${URL_PREFIX}/adapter/${adapter}/${this.props.objects[`system.adapter.${adapter}`].common.icon}`;
         // could be: true, false, [true, false]
-        const enabled = this.state.newValues[instance] !== undefined && (!this.state.newValues[instance] || this.state.newValues[instance].enabled !== undefined) ? !!(this.state.newValues[instance] && this.state.newValues[instance].enabled) : (this.state.newValues[instance] === null ? false : this.commonConfig[instance].enabled);
-        const isIndeterminate = Array.isArray(enabled) && (!this.state.newValues[instance] || this.state.newValues[instance].enabled === undefined);
+        const enabled =
+            this.state.newValues[instance] !== undefined &&
+            (!this.state.newValues[instance] || this.state.newValues[instance].enabled !== undefined)
+                ? !!(this.state.newValues[instance] && this.state.newValues[instance].enabled)
+                : this.state.newValues[instance] === null
+                  ? false
+                  : this.commonConfig[instance].enabled;
+        const isIndeterminate =
+            Array.isArray(enabled) &&
+            (!this.state.newValues[instance] || this.state.newValues[instance].enabled === undefined);
 
         const disabled = this.jsonConfigs[adapter]?.json?.disabled;
 
@@ -506,7 +545,17 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
         if (typeof this.jsonConfigs[adapter].json.hidden === 'string') {
             // evaluate function
-            if (this._executeCustom(this.jsonConfigs[adapter].json.hidden as string, data, customObj, instanceObj, this.jsonConfigs[adapter].json.items, 'enabled', [])) {
+            if (
+                this._executeCustom(
+                    this.jsonConfigs[adapter].json.hidden as string,
+                    data,
+                    customObj,
+                    instanceObj,
+                    this.jsonConfigs[adapter].json.items,
+                    'enabled',
+                    []
+                )
+            ) {
                 return null;
             }
         }
@@ -514,279 +563,307 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         let help = null;
         if (disabled && this.jsonConfigs[adapter].json.help) {
             if (typeof this.jsonConfigs[adapter].json.help === 'object') {
-                help = (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>)[this.props.lang] ||
+                help =
+                    (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>)[this.props.lang] ||
                     (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>).en;
             } else {
                 help = this.props.t(this.jsonConfigs[adapter].json.help as string);
             }
         }
 
-        return <Accordion
-            key={instance}
-            id={`Accordion_${instance}`}
-            style={i % 2 ? styles.accordionOdd : styles.accordionEven}
-            expanded={this.state.expanded.includes(instance)}
-            ref={this.refTemplate[instance]}
-            onChange={() => {
-                const expanded = [...this.state.expanded];
-                const pos = expanded.indexOf(instance);
-                if (pos === -1) {
-                    expanded.push(instance);
-                } else {
-                    expanded.splice(pos, 1);
-                }
-                ((window as any)._localStorage || window.localStorage).setItem('App.customsExpanded', JSON.stringify(expanded));
-                if (pos === -1) {
-                    ((window as any)._localStorage || window.localStorage).setItem('App.customsLastExpanded', instance);
-                }
-                this.setState({ expanded });
-            }}
-        >
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                data-id={instance}
-                style={i % 2 ?
-                    (enabled ? styles.accordionHeaderEnabledOdd : styles.accordionHeaderOdd)
-                    :
-                    (enabled ? styles.accordionHeaderEnabledEven : styles.accordionHeaderEven)}
+        return (
+            <Accordion
+                key={instance}
+                id={`Accordion_${instance}`}
+                style={i % 2 ? styles.accordionOdd : styles.accordionEven}
+                expanded={this.state.expanded.includes(instance)}
+                ref={this.refTemplate[instance]}
+                onChange={() => {
+                    const expanded = [...this.state.expanded];
+                    const pos = expanded.indexOf(instance);
+                    if (pos === -1) {
+                        expanded.push(instance);
+                    } else {
+                        expanded.splice(pos, 1);
+                    }
+                    ((window as any)._localStorage || window.localStorage).setItem(
+                        'App.customsExpanded',
+                        JSON.stringify(expanded)
+                    );
+                    if (pos === -1) {
+                        ((window as any)._localStorage || window.localStorage).setItem(
+                            'App.customsLastExpanded',
+                            instance
+                        );
+                    }
+                    this.setState({ expanded });
+                }}
             >
-                <img src={icon} style={styles.headingIcon} alt="" />
-                <Typography style={styles.heading}>{ this.props.t('Settings %s', instance)}</Typography>
-                <div
-                    className="titleEnabled"
-                    style={{
-                        ...styles.titleEnabled,
-                        ...(enabled ? styles.enabledVisible : styles.enabledInvisible),
-                    }}
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    data-id={instance}
+                    style={
+                        i % 2
+                            ? enabled
+                                ? styles.accordionHeaderEnabledOdd
+                                : styles.accordionHeaderOdd
+                            : enabled
+                              ? styles.accordionHeaderEnabledEven
+                              : styles.accordionHeaderEven
+                    }
                 >
-                    {this.props.t('Enabled')}
-                </div>
-            </AccordionSummary>
-            <AccordionDetails>
-                <div style={styles.enabledControl}>
-                    <FormControlLabel
-                        style={styles.formControl}
-                        control={<Checkbox
-                            indeterminate={isIndeterminate}
-                            checked={!!enabled}
-                            disabled={!!disabled}
-                            onChange={e => {
-                                this.cachedNewValues = this.cachedNewValues || this.state.newValues;
-                                const newValues = AdminUtils.deepClone(this.cachedNewValues);
+                    <img src={icon} style={styles.headingIcon} alt="" />
+                    <Typography style={styles.heading}>{this.props.t('Settings %s', instance)}</Typography>
+                    <div
+                        className="titleEnabled"
+                        style={{
+                            ...styles.titleEnabled,
+                            ...(enabled ? styles.enabledVisible : styles.enabledInvisible),
+                        }}
+                    >
+                        {this.props.t('Enabled')}
+                    </div>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <div style={styles.enabledControl}>
+                        <FormControlLabel
+                            style={styles.formControl}
+                            control={
+                                <Checkbox
+                                    indeterminate={isIndeterminate}
+                                    checked={!!enabled}
+                                    disabled={!!disabled}
+                                    onChange={e => {
+                                        this.cachedNewValues = this.cachedNewValues || this.state.newValues;
+                                        const newValues = AdminUtils.deepClone(this.cachedNewValues);
 
-                                newValues[instance] = newValues[instance] || {};
-                                if (isIndeterminate || e.target.checked) {
-                                    newValues[instance].enabled = true;
-                                } else if (enabled) {
-                                    if (this.commonConfig[instance].enabled) {
-                                        newValues[instance] = null;
+                                        newValues[instance] = newValues[instance] || {};
+                                        if (isIndeterminate || e.target.checked) {
+                                            newValues[instance].enabled = true;
+                                        } else if (enabled) {
+                                            if (this.commonConfig[instance].enabled) {
+                                                newValues[instance] = null;
+                                            } else {
+                                                delete newValues[instance];
+                                            }
+                                        } else {
+                                            delete newValues[instance];
+                                        }
+                                        this.cachedNewValues = newValues;
+                                        this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
+                                            this.cachedNewValues = undefined;
+                                            if (this.props.onChange) {
+                                                this.props.onChange(!!this.state.hasChanges);
+                                            }
+                                        });
+                                    }}
+                                />
+                            }
+                            label={this.props.t('Enabled')}
+                        />
+                    </div>
+                    <div style={styles.customControls}>
+                        {!disabled && (enabled || isIndeterminate) && this.state.systemConfig ? (
+                            <JsonConfigComponent
+                                instanceObj={instanceObj}
+                                customObj={customObj as ioBroker.Object}
+                                custom
+                                adapterName={adapter}
+                                instance={parseInt(instance?.split('.').pop() ?? '0', 10) || 0}
+                                socket={this.props.socket}
+                                themeName={this.props.themeName}
+                                themeType={this.props.themeType}
+                                theme={this.props.theme}
+                                multiEdit={this.props.objectIDs.length > 1}
+                                schema={this.jsonConfigs[adapter].json}
+                                data={data}
+                                isFloatComma={this.props.systemConfig.common.isFloatComma}
+                                dateFormat={this.props.systemConfig.common.dateFormat}
+                                onError={(error: boolean) =>
+                                    this.setState({ error }, () => this.props.onError && this.props.onError(error))
+                                }
+                                onValueChange={(attr: string, value: any) => {
+                                    this.cachedNewValues = this.cachedNewValues || this.state.newValues;
+                                    console.log(`${attr} => ${value}`);
+                                    const newValues = AdminUtils.deepClone(this.cachedNewValues);
+                                    newValues[instance] = newValues[instance] || {};
+                                    if (
+                                        JSON.stringify(ConfigGeneric.getValue(this.commonConfig?.[instance], attr)) ===
+                                        JSON.stringify(value)
+                                    ) {
+                                        ConfigGeneric.setValue(newValues[instance], attr, null);
+                                        if (!Object.keys(newValues[instance]).length) {
+                                            delete newValues[instance];
+                                        }
                                     } else {
-                                        delete newValues[instance];
+                                        ConfigGeneric.setValue(newValues[instance], attr, value);
                                     }
-                                } else {
-                                    delete newValues[instance];
-                                }
-                                this.cachedNewValues = newValues;
-                                this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
-                                    this.cachedNewValues = undefined;
-                                    if (this.props.onChange) {
-                                        this.props.onChange(!!this.state.hasChanges);
-                                    }
-                                });
-                            }}
-                        />}
-                        label={this.props.t('Enabled')}
-                    />
-                </div>
-                <div style={styles.customControls}>
-                    {!disabled && (enabled || isIndeterminate) && this.state.systemConfig ?
-                        <JsonConfigComponent
-                            instanceObj={instanceObj}
-                            customObj={customObj as ioBroker.Object}
-                            custom
-                            adapterName={adapter}
-                            instance={parseInt(instance?.split('.').pop() ?? '0', 10) || 0}
-                            socket={this.props.socket}
-                            themeName={this.props.themeName}
-                            themeType={this.props.themeType}
-                            theme={this.props.theme}
-                            multiEdit={this.props.objectIDs.length > 1}
-                            schema={this.jsonConfigs[adapter].json}
-                            data={data}
-                            isFloatComma={this.props.systemConfig.common.isFloatComma}
-                            dateFormat={this.props.systemConfig.common.dateFormat}
-                            onError={(error: boolean) =>
-                                this.setState({ error }, () => this.props.onError && this.props.onError(error))}
-                            onValueChange={(attr: string, value: any) => {
-                                this.cachedNewValues = this.cachedNewValues || this.state.newValues;
-                                console.log(`${attr} => ${value}`);
-                                const newValues = AdminUtils.deepClone(this.cachedNewValues);
-                                newValues[instance] = newValues[instance] || {};
-                                if (JSON.stringify(ConfigGeneric.getValue(this.commonConfig?.[instance], attr)) === JSON.stringify(value)) {
-                                    ConfigGeneric.setValue(newValues[instance], attr, null);
-                                    if (!Object.keys(newValues[instance]).length) {
-                                        delete newValues[instance];
-                                    }
-                                } else {
-                                    ConfigGeneric.setValue(newValues[instance], attr, value);
-                                }
-                                this.cachedNewValues = newValues;
-                                this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
-                                    this.cachedNewValues = undefined;
-                                    if (this.props.onChange) {
-                                        this.props.onChange(!!this.state.hasChanges);
-                                    }
-                                });
-                            }}
-                        /> : null}
+                                    this.cachedNewValues = newValues;
+                                    this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
+                                        this.cachedNewValues = undefined;
+                                        if (this.props.onChange) {
+                                            this.props.onChange(!!this.state.hasChanges);
+                                        }
+                                    });
+                                }}
+                            />
+                        ) : null}
 
-                    {help}
-                </div>
-            </AccordionDetails>
-        </Accordion>;
+                        {help}
+                    </div>
+                </AccordionDetails>
+            </Accordion>
+        );
     }
 
     renderErrorMessage() {
-        return !!this.state.error && <DialogError
-            title={this.props.t('Error')}
-            text={this.state.error ? 'Error' : ''}
-            onClose={() => this.setState({ error: false })}
-        />;
+        return (
+            !!this.state.error && (
+                <DialogError
+                    title={this.props.t('Error')}
+                    text={this.state.error ? 'Error' : ''}
+                    onClose={() => this.setState({ error: false })}
+                />
+            )
+        );
     }
 
-    getObject(objects: Record<string, ioBroker.AnyObject>, oldObjects: Record<string, ioBroker.AnyObject>, id: string): Record<string, any> {
+    getObject(
+        objects: Record<string, ioBroker.AnyObject>,
+        oldObjects: Record<string, ioBroker.AnyObject>,
+        id: string
+    ): Record<string, any> {
         if (objects[id]) {
             return Promise.resolve(objects[id]);
         }
-        return this.props.socket.getObject(id)
-            .then((obj: ioBroker.AnyObject) => {
-                oldObjects[id] = AdminUtils.deepClone(obj);
-                objects[id] = obj;
-                return obj;
-            });
+        return this.props.socket.getObject(id).then((obj: ioBroker.AnyObject) => {
+            oldObjects[id] = AdminUtils.deepClone(obj);
+            objects[id] = obj;
+            return obj;
+        });
     }
 
     saveOneState(ids: string[], cb: () => void, _objects?: any, _oldObjects?: any) {
-        _objects    = _objects    || {};
+        _objects = _objects || {};
         _oldObjects = _oldObjects || {};
 
         if (!ids?.length) {
             // save all objects
             const keys = Object.keys(_objects);
             if (!keys.length) {
-                this.setState({ maxOids: 0 }, () =>
-                    this.props.onProgress(false));
+                this.setState({ maxOids: 0 }, () => this.props.onProgress(false));
                 if (cb) {
                     cb();
                 }
             } else {
-                this.setState({ progress: Math.round(((this.state.maxOids - keys.length) / this.state.maxOids) * 50) + 50 });
+                this.setState({
+                    progress: Math.round(((this.state.maxOids - keys.length) / this.state.maxOids) * 50) + 50,
+                });
                 const id = keys.shift() as string;
                 if (JSON.stringify(_objects[id].common) !== JSON.stringify(_oldObjects[id].common)) {
                     if (!this.changedIds.includes(id)) {
                         this.changedIds.push(id);
                     }
 
-                    this.props.socket.setObject(id, _objects[id])
-                        .then(async () => {
-                            delete _objects[id];
-                            delete _oldObjects[id];
-                            this.props.objects[id] = await this.props.socket.getObject(id);
-                            setTimeout(() => this.saveOneState(ids, cb, _objects, _oldObjects), 0);
-                        });
+                    this.props.socket.setObject(id, _objects[id]).then(async () => {
+                        delete _objects[id];
+                        delete _oldObjects[id];
+                        this.props.objects[id] = await this.props.socket.getObject(id);
+                        setTimeout(() => this.saveOneState(ids, cb, _objects, _oldObjects), 0);
+                    });
                     return;
                 }
                 delete _objects[id];
                 delete _oldObjects[id];
-                setTimeout(() =>
-                    this.saveOneState(ids, cb, _objects, _oldObjects), 0);
+                setTimeout(() => this.saveOneState(ids, cb, _objects, _oldObjects), 0);
             }
         } else {
             const maxOids = this.state.maxOids || ids.length;
 
             if (this.state.maxOids === null) {
-                this.setState({ maxOids: ids.length }, () =>
-                    this.props.onProgress(true));
+                this.setState({ maxOids: ids.length }, () => this.props.onProgress(true));
             }
 
             // 0 - 50
             this.setState({ progress: Math.round(((maxOids - ids.length) / maxOids) * 50) });
 
             const id = ids.shift() as string;
-            this.getObject(_objects, _oldObjects, id)
-                .then((obj: Record<string, any>) => {
-                    if (!obj) {
-                        window.alert(`Invalid object ${id}`);
-                        return;
-                    }
+            this.getObject(_objects, _oldObjects, id).then((obj: Record<string, any>) => {
+                if (!obj) {
+                    window.alert(`Invalid object ${id}`);
+                    return;
+                }
 
-                    // remove all disabled commons
-                    if (obj.common?.custom) {
-                        Object.keys(obj.common.custom).forEach(ins => {
-                            if (!obj.common.custom[ins] || !obj.common.custom[ins].enabled) {
-                                obj.common.custom[ins] = null;
-                            }
-                        });
-                    }
+                // remove all disabled commons
+                if (obj.common?.custom) {
+                    Object.keys(obj.common.custom).forEach(ins => {
+                        if (!obj.common.custom[ins] || !obj.common.custom[ins].enabled) {
+                            obj.common.custom[ins] = null;
+                        }
+                    });
+                }
 
-                    const instances = Object.keys(this.state.newValues);
+                const instances = Object.keys(this.state.newValues);
 
-                    for (let i = 0; i < instances.length; i++) {
-                        const instance = instances[i];
-                        // const adapter = instance.split('.')[0];
-                        const newValues = this.combineNewAndOld(instance, true);
+                for (let i = 0; i < instances.length; i++) {
+                    const instance = instances[i];
+                    // const adapter = instance.split('.')[0];
+                    const newValues = this.combineNewAndOld(instance, true);
 
-                        if (newValues.enabled === false) {
-                            if (obj.common?.custom?.[instance]) {
-                                obj.common.custom[instance] = null; // here must be null and not deleted, so controller can remove it
-                            }
-                        } else if (newValues.enabled) {
-                            obj.common = obj.common || {};
-                            if (Array.isArray(newValues.enabled)) {
-                                if (!obj.common.custom || !obj.common.custom[instance] || !obj.common.custom[instance].enabled) {
-                                    // leave this object disabled
-                                    if (obj.common.custom && obj.common.custom[instance]) {
-                                        obj.common.custom[instance] = null;
-                                    }
-                                    continue; // instance disabled
+                    if (newValues.enabled === false) {
+                        if (obj.common?.custom?.[instance]) {
+                            obj.common.custom[instance] = null; // here must be null and not deleted, so controller can remove it
+                        }
+                    } else if (newValues.enabled) {
+                        obj.common = obj.common || {};
+                        if (Array.isArray(newValues.enabled)) {
+                            if (
+                                !obj.common.custom ||
+                                !obj.common.custom[instance] ||
+                                !obj.common.custom[instance].enabled
+                            ) {
+                                // leave this object disabled
+                                if (obj.common.custom && obj.common.custom[instance]) {
+                                    obj.common.custom[instance] = null;
                                 }
+                                continue; // instance disabled
                             }
+                        }
 
-                            obj.common.custom = obj.common.custom || {};
+                        obj.common.custom = obj.common.custom || {};
 
-                            if (!obj.common.custom[instance] || !obj.common.custom[instance].enabled) {
-                                // provide defaults
-                                const _default = this.getDefaultValues(instance, obj);
-                                obj.common.custom[instance] = JSON.parse(JSON.stringify(_default || {}));
-                                // remove all temporary values
-                                Object.keys(obj.common.custom[instance]).forEach(attr => {
-                                    if (attr.startsWith('_')) {
-                                        delete obj.common.custom[instance][attr];
-                                    }
-                                });
-                            }
-
-                            const isMultiEdit = this.props.objectIDs.length > 1;
-
-                            obj.common.custom[instance].enabled = true;
-
-                            Object.keys(newValues).forEach(attr => {
-                                // if not different
-                                if (!attr.startsWith('_')) {
-                                    // if we have an array, it is still the data of multiple different fields (multiEdit) do not override issue#2359
-                                    if (Array.isArray(newValues[attr]) && isMultiEdit) {
-                                        return;
-                                    }
-
-                                    obj.common.custom[instance][attr] = newValues[attr];
+                        if (!obj.common.custom[instance] || !obj.common.custom[instance].enabled) {
+                            // provide defaults
+                            const _default = this.getDefaultValues(instance, obj);
+                            obj.common.custom[instance] = JSON.parse(JSON.stringify(_default || {}));
+                            // remove all temporary values
+                            Object.keys(obj.common.custom[instance]).forEach(attr => {
+                                if (attr.startsWith('_')) {
+                                    delete obj.common.custom[instance][attr];
                                 }
                             });
                         }
-                    }
 
-                    setTimeout(() =>
-                        this.saveOneState(ids, cb, _objects, _oldObjects), 0);
-                });
+                        const isMultiEdit = this.props.objectIDs.length > 1;
+
+                        obj.common.custom[instance].enabled = true;
+
+                        Object.keys(newValues).forEach(attr => {
+                            // if not different
+                            if (!attr.startsWith('_')) {
+                                // if we have an array, it is still the data of multiple different fields (multiEdit) do not override issue#2359
+                                if (Array.isArray(newValues[attr]) && isMultiEdit) {
+                                    return;
+                                }
+
+                                obj.common.custom[instance][attr] = newValues[attr];
+                            }
+                        });
+                    }
+                }
+
+                setTimeout(() => this.saveOneState(ids, cb, _objects, _oldObjects), 0);
+            });
         }
     }
 
@@ -794,22 +871,27 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         if (!this.state.showConfirmation) {
             return false;
         }
-        return <ConfirmDialog
-            text={this.props.t('The changes will be applied to %s states. Are you sure?', this.props.objectIDs.length.toString())}
-            ok={this.props.t('Yes')}
-            onClose={result => {
-                if (result) {
-                    this.setState({ showConfirmation: false, confirmed: true }, () => {
-                        const cb = this.cb;
+        return (
+            <ConfirmDialog
+                text={this.props.t(
+                    'The changes will be applied to %s states. Are you sure?',
+                    this.props.objectIDs.length.toString()
+                )}
+                ok={this.props.t('Yes')}
+                onClose={result => {
+                    if (result) {
+                        this.setState({ showConfirmation: false, confirmed: true }, () => {
+                            const cb = this.cb;
+                            this.cb = undefined;
+                            this.onSave(cb);
+                        });
+                    } else {
                         this.cb = undefined;
-                        this.onSave(cb);
-                    });
-                } else {
-                    this.cb = undefined;
-                    this.setState({ showConfirmation: false });
-                }
-            }}
-        />;
+                        this.setState({ showConfirmation: false });
+                    }
+                }}
+            />
+        );
     }
 
     onSave = (cb?: () => void): void => {
@@ -833,30 +915,38 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
     render() {
         if (this.customObj === null) {
-            return <div style={{ color: '#F55', fontSize: 32 }}>
-                {this.props.t('Object does not exist!')}
-            </div>;
+            return <div style={{ color: '#F55', fontSize: 32 }}>{this.props.t('Object does not exist!')}</div>;
         }
         if (!this.state.loaded) {
             return <LinearProgress />;
         }
         let index = 0;
 
-        return <Paper style={styles.paper}>
-            {this.state.maxOids > 1 && <LinearProgress color="secondary" variant="determinate" value={this.state.progress} />}
-            <div style={styles.scrollDiv} ref={this.scrollDivRef}>
-                {this.state.maxOids === 0 && Object.values(this.jsonConfigs).map(jsonConfig => {
-                    if (jsonConfig) {
-                        return Object.keys(jsonConfig.instanceObjs)
-                            .map(instance =>
-                                this.renderOneCustom(instance, jsonConfig.instanceObjs[instance], this.customObj, index++));
-                    }
-                    return null;
-                })}
-            </div>
-            {this.renderErrorMessage()}
-            {this.renderConfirmationDialog()}
-        </Paper>;
+        return (
+            <Paper style={styles.paper}>
+                {this.state.maxOids > 1 && (
+                    <LinearProgress color="secondary" variant="determinate" value={this.state.progress} />
+                )}
+                <div style={styles.scrollDiv} ref={this.scrollDivRef}>
+                    {this.state.maxOids === 0 &&
+                        Object.values(this.jsonConfigs).map(jsonConfig => {
+                            if (jsonConfig) {
+                                return Object.keys(jsonConfig.instanceObjs).map(instance =>
+                                    this.renderOneCustom(
+                                        instance,
+                                        jsonConfig.instanceObjs[instance],
+                                        this.customObj,
+                                        index++
+                                    )
+                                );
+                            }
+                            return null;
+                        })}
+                </div>
+                {this.renderErrorMessage()}
+                {this.renderConfirmationDialog()}
+            </Paper>
+        );
     }
 }
 

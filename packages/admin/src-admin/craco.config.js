@@ -4,9 +4,7 @@ const cracoModuleFederation = require('@iobroker/adapter-react-v5/craco-module-f
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
-    plugins: [
-        { plugin: cracoModuleFederation },
-    ],
+    plugins: [{ plugin: cracoModuleFederation }],
     devServer: {
         proxy: {
             '/files': 'http://127.0.0.1:8081',
@@ -43,8 +41,7 @@ module.exports = {
 
             // Let Babel compile outside of src/.
             const oneOfRule = webpackConfig.module.rules.find(rule => rule.oneOf);
-            const tsRule = oneOfRule.oneOf.find(rule =>
-                rule.test.toString().includes('ts|tsx'));
+            const tsRule = oneOfRule.oneOf.find(rule => rule.test.toString().includes('ts|tsx'));
 
             tsRule.include = undefined;
             tsRule.exclude = /node_modules/;

@@ -7,9 +7,9 @@
 import React from 'react';
 import { Utils as _Utils, I18n } from '@iobroker/adapter-react-v5';
 
-const NAMESPACE    = 'material';
-const days         = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-const months       = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const NAMESPACE = 'material';
+const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const QUALITY_BITS = {
     0x00: '0x00 - good',
 
@@ -58,7 +58,8 @@ class Utils {
      * @returns {string}
      */
     static CapitalWords(name) {
-        return (name || '').split(/[\s_]/)
+        return (name || '')
+            .split(/[\s_]/)
             .filter(item => item)
             .map(word => (word ? word[0].toUpperCase() + word.substring(1).toLowerCase() : ''))
             .join(' ');
@@ -111,7 +112,12 @@ class Utils {
 
         options = options || {};
         if (!options.language) {
-            options.language = (objects['system.config'] && objects['system.config'].common && objects['system.config'].common.language) || window.sysLang || 'en';
+            options.language =
+                (objects['system.config'] &&
+                    objects['system.config'].common &&
+                    objects['system.config'].common.language) ||
+                window.sysLang ||
+                'en';
         }
         if (settings && settings.name) {
             text = settings.name;
@@ -262,7 +268,10 @@ class Utils {
         }
         if (obj?.custom) {
             settings = obj.custom;
-            settings = settings[NAMESPACE] && settings[NAMESPACE][options.user || 'admin'] ? JSON.parse(JSON.stringify(settings[NAMESPACE][options.user || 'admin'])) : { enabled: true };
+            settings =
+                settings[NAMESPACE] && settings[NAMESPACE][options.user || 'admin']
+                    ? JSON.parse(JSON.stringify(settings[NAMESPACE][options.user || 'admin']))
+                    : { enabled: true };
         } else {
             settings = { enabled: defaultEnabling === undefined ? true : defaultEnabling, useCustom: false };
         }
@@ -277,15 +286,15 @@ class Utils {
         //     if (obj.name)  settings.name  = obj.name;
         // } else {
         if (options) {
-            if (!settings.name  && options.name)  settings.name  = options.name;
-            if (!settings.icon  && options.icon)  settings.icon  = options.icon;
+            if (!settings.name && options.name) settings.name = options.name;
+            if (!settings.icon && options.icon) settings.icon = options.icon;
             if (!settings.color && options.color) settings.color = options.color;
         }
 
         if (obj) {
             if (!settings.color && obj.color) settings.color = obj.color;
-            if (!settings.icon  && obj.icon)  settings.icon  = obj.icon;
-            if (!settings.name  && obj.name)  settings.name  = obj.name;
+            if (!settings.icon && obj.icon) settings.icon = obj.icon;
+            if (!settings.name && obj.name) settings.name = obj.name;
         }
         // }
 
@@ -494,7 +503,7 @@ class Utils {
         }
 
         // http://stackoverflow.com/a/3943023/112731
-        return (r * 0.299 + g * 0.587 + b * 0.114) <= 186;
+        return r * 0.299 + g * 0.587 + b * 0.114 <= 186;
     }
 
     /**
@@ -691,15 +700,17 @@ class Utils {
                     const title = m[0].match(/>([^<]*)</);
 
                     // eslint-disable-next-line
-                    result.push(<a
-                        key={`a${key++}`}
-                        href={href ? href[1] : ''}
-                        target={target ? target[1] : '_blank'}
-                        rel={rel ? rel[1] : ''}
-                        style={{ color: 'inherit' }}
-                    >
-                        {title ? title[1] : ''}
-                    </a>);
+                    result.push(
+                        <a
+                            key={`a${key++}`}
+                            href={href ? href[1] : ''}
+                            target={target ? target[1] : '_blank'}
+                            rel={rel ? rel[1] : ''}
+                            style={{ color: 'inherit' }}
+                        >
+                            {title ? title[1] : ''}
+                        </a>
+                    );
                 }
 
                 m = text && text.match(/<a [^<]+<\/a>|<br\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/);
@@ -735,17 +746,17 @@ class Utils {
             if (states && !states.common) {
                 return states.smartName;
             }
-            return states?.common?.custom && states.common.custom[instanceId] ?
-                states.common.custom[instanceId].smartName : undefined;
+            return states?.common?.custom && states.common.custom[instanceId]
+                ? states.common.custom[instanceId].smartName
+                : undefined;
         }
         if (!noCommon) {
             return states[id].common.smartName;
         }
 
-        return (states[id] &&
-            states[id].common?.custom &&
-            states[id].common.custom[instanceId]) ?
-            states[id].common.custom[instanceId].smartName || null : null;
+        return states[id] && states[id].common?.custom && states[id].common.custom[instanceId]
+            ? states[id].common.custom[instanceId].smartName || null
+            : null;
     }
 
     /**
@@ -768,8 +779,9 @@ class Utils {
             return obj.smartName;
         }
 
-        return obj?.common?.custom && obj.common.custom[instanceId] ?
-            obj.common.custom[instanceId].smartName : undefined;
+        return obj?.common?.custom && obj.common.custom[instanceId]
+            ? obj.common.custom[instanceId].smartName
+            : undefined;
     }
 
     /**
@@ -880,9 +892,12 @@ class Utils {
             smartName[language] = newSmartName;
 
             // If smart name deleted
-            if (smartName && (!smartName[language] ||
-                (smartName[language] === obj.common.name &&
-                    (!obj.common.role || obj.common.role.includes('button'))))) {
+            if (
+                smartName &&
+                (!smartName[language] ||
+                    (smartName[language] === obj.common.name &&
+                        (!obj.common.role || obj.common.role.includes('button'))))
+            ) {
                 delete smartName[language];
                 let empty = true;
                 // Check if the structure has any definitions
@@ -1031,14 +1046,16 @@ class Utils {
         if (hex.startsWith('rgba')) {
             const m = hex.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),\s*([.\d]+)\)/);
             if (m) {
-                hex = parseInt(m[1], 10).toString(16).padStart(2, '0') +
+                hex =
+                    parseInt(m[1], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0');
             }
         } else if (hex.startsWith('rgb')) {
             const m = hex.match(/rgb?\((\d+),\s*(\d+),\s*(\d+)\)/);
             if (m) {
-                hex = parseInt(m[1], 10).toString(16).padStart(2, '0') +
+                hex =
+                    parseInt(m[1], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0');
             }
@@ -1063,9 +1080,7 @@ class Utils {
 
         if (bw) {
             // http://stackoverflow.com/a/3943023/112731
-            return (r * 0.299 + g * 0.587 + b * 0.114) > 186
-                ? `#000000${alfa || ''}`
-                : `#FFFFFF${alfa || ''}`;
+            return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? `#000000${alfa || ''}` : `#FFFFFF${alfa || ''}`;
         }
         // invert color components
         r = (255 - r).toString(16);
@@ -1087,14 +1102,16 @@ class Utils {
         if (hex.startsWith('rgba')) {
             const m = hex.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),\s*([.\d]+)\)/);
             if (m) {
-                hex = parseInt(m[1], 10).toString(16).padStart(2, '0') +
+                hex =
+                    parseInt(m[1], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0');
             }
         } else if (hex.startsWith('rgb')) {
             const m = hex.match(/rgb?\((\d+),\s*(\d+),\s*(\d+)\)/);
             if (m) {
-                hex = parseInt(m[1], 10).toString(16).padStart(2, '0') +
+                hex =
+                    parseInt(m[1], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0');
             }
@@ -1110,11 +1127,7 @@ class Utils {
             return false;
         }
 
-        return [
-            parseInt(hex.slice(0, 2), 16),
-            parseInt(hex.slice(2, 4), 16),
-            parseInt(hex.slice(4, 6), 16),
-        ];
+        return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
     }
 
     // Big thanks to: https://github.com/antimatter15/rgb-lab
@@ -1128,19 +1141,19 @@ class Utils {
         let g = rgb[1] / 255;
         let b = rgb[2] / 255;
 
-        r = (r > 0.04045) ? ((r + 0.055) / 1.055) ** 2.4 : r / 12.92;
-        g = (g > 0.04045) ? ((g + 0.055) / 1.055) ** 2.4 : g / 12.92;
-        b = (b > 0.04045) ? ((b + 0.055) / 1.055) ** 2.4 : b / 12.92;
+        r = r > 0.04045 ? ((r + 0.055) / 1.055) ** 2.4 : r / 12.92;
+        g = g > 0.04045 ? ((g + 0.055) / 1.055) ** 2.4 : g / 12.92;
+        b = b > 0.04045 ? ((b + 0.055) / 1.055) ** 2.4 : b / 12.92;
 
         let x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
-        let y = (r * 0.2126 + g * 0.7152 + b * 0.0722); /*  / 1.00000; */
+        let y = r * 0.2126 + g * 0.7152 + b * 0.0722; /*  / 1.00000; */
         let z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
 
-        x = (x > 0.008856) ? x ** 0.33333333 : (7.787 * x) + 0.137931; // 16 / 116;
-        y = (y > 0.008856) ? y ** 0.33333333 : (7.787 * y) + 0.137931; // 16 / 116;
-        z = (z > 0.008856) ? z ** 0.33333333 : (7.787 * z) + 0.137931; // 16 / 116;
+        x = x > 0.008856 ? x ** 0.33333333 : 7.787 * x + 0.137931; // 16 / 116;
+        y = y > 0.008856 ? y ** 0.33333333 : 7.787 * y + 0.137931; // 16 / 116;
+        z = z > 0.008856 ? z ** 0.33333333 : 7.787 * z + 0.137931; // 16 / 116;
 
-        return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)];
+        return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
     }
 
     /**
@@ -1241,8 +1254,14 @@ class Utils {
             return window.vendorPrefix;
         }
 
-        return themeName || ((window._localStorage || window.localStorage).getItem('App.themeName') ?
-            (window._localStorage || window.localStorage).getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored');
+        return (
+            themeName ||
+            ((window._localStorage || window.localStorage).getItem('App.themeName')
+                ? (window._localStorage || window.localStorage).getItem('App.themeName')
+                : window.matchMedia('(prefers-color-scheme: dark)').matches
+                  ? 'dark'
+                  : 'colored')
+        );
     }
 
     /**
@@ -1268,7 +1287,10 @@ class Utils {
             return; // ignore
         }
         (window._localStorage || window.localStorage).setItem('App.themeName', themeName);
-        (window._localStorage || window.localStorage).setItem('App.theme', themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light');
+        (window._localStorage || window.localStorage).setItem(
+            'App.theme',
+            themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light'
+        );
     }
 
     /**
@@ -1439,7 +1461,11 @@ class Utils {
             text = text.replace(m[0], m[0].replace(/\s/, '&nbsp;'));
         }
 
-        return text.replace(/[^a-zA-Zа-яА-Я0-9]/g, '').trim().replace(/\s/g, '').toLowerCase();
+        return text
+            .replace(/[^a-zA-Zа-яА-Я0-9]/g, '')
+            .trim()
+            .replace(/\s/g, '')
+            .toLowerCase();
     }
 
     static openLink(url, target) {
@@ -1509,7 +1535,7 @@ class Utils {
     static MDremoveDocsify(text) {
         const m = text.match(/{docsify-[^}]*}/g);
         if (m) {
-            m.forEach(doc => text = text.replace(doc, ''));
+            m.forEach(doc => (text = text.replace(doc, '')));
         }
         return text;
     }
@@ -1522,7 +1548,10 @@ class Utils {
      */
     static generateFile(filename, json) {
         const el = document.createElement('a');
-        el.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(json, null, 2))}`);
+        el.setAttribute(
+            'href',
+            `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(json, null, 2))}`
+        );
         el.setAttribute('download', filename);
 
         el.style.display = 'none';
@@ -1540,7 +1569,7 @@ class Utils {
      */
     static quality2text(quality) {
         // eslint-disable-next-line no-bitwise
-        const custom = quality & 0xFFFF0000;
+        const custom = quality & 0xffff0000;
         const text = QUALITY_BITS[quality];
         let result;
         if (text) {
@@ -1548,11 +1577,11 @@ class Utils {
             // eslint-disable-next-line no-bitwise
         } else if (quality & 0x01) {
             // eslint-disable-next-line no-bitwise
-            result = [QUALITY_BITS[0x01], `0x${(quality & (0xFFFF & ~1)).toString(16)}`];
+            result = [QUALITY_BITS[0x01], `0x${(quality & (0xffff & ~1)).toString(16)}`];
             // eslint-disable-next-line no-bitwise
         } else if (quality & 0x02) {
             // eslint-disable-next-line no-bitwise
-            result = [QUALITY_BITS[0x02], `0x${(quality & (0xFFFF & ~2)).toString(16)}`];
+            result = [QUALITY_BITS[0x02], `0x${(quality & (0xffff & ~2)).toString(16)}`];
         } else {
             result = [`0x${quality.toString(16)}`];
         }
@@ -1598,9 +1627,9 @@ class Utils {
             } else if (Array.isArray(states)) {
                 const result = {};
                 if (obj.common.type === 'number') {
-                    states.forEach((value, key) => result[key] = value);
+                    states.forEach((value, key) => (result[key] = value));
                 } else if (obj.common.type === 'string') {
-                    states.forEach(value => result[value] = value);
+                    states.forEach(value => (result[value] = value));
                 } else if (obj.common.type === 'boolean') {
                     result.false = states[0];
                     result.true = states[1];
@@ -1621,14 +1650,18 @@ class Utils {
     static getSvg(url) {
         return fetch(url)
             .then(response => response.blob())
-            .then(blob => new Promise(resolve => {
-                const reader = new FileReader();
-                // eslint-disable-next-line func-names
-                reader.onload = function () { // do not optimize this function. "this" is important.
-                    resolve(this.result);
-                };
-                reader.readAsDataURL(blob);
-            }));
+            .then(
+                blob =>
+                    new Promise(resolve => {
+                        const reader = new FileReader();
+                        // eslint-disable-next-line func-names
+                        reader.onload = function () {
+                            // do not optimize this function. "this" is important.
+                            resolve(this.result);
+                        };
+                        reader.readAsDataURL(blob);
+                    })
+            );
     }
 
     /**
@@ -1648,16 +1681,10 @@ class Utils {
      * @return {boolean}
      */
     static isStableRepository(activeRepo) {
-        return !!((
-            typeof activeRepo === 'string' &&
-                activeRepo.toLowerCase().startsWith('stable')
-        )
-            ||
-            (
-                activeRepo &&
-                typeof activeRepo !== 'string' &&
-                activeRepo.find(r => r.toLowerCase().startsWith('stable'))
-            ));
+        return !!(
+            (typeof activeRepo === 'string' && activeRepo.toLowerCase().startsWith('stable')) ||
+            (activeRepo && typeof activeRepo !== 'string' && activeRepo.find(r => r.toLowerCase().startsWith('stable')))
+        );
     }
 
     /**

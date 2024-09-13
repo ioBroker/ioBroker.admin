@@ -582,12 +582,12 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
     private browseList:
         | {
-        processing?: boolean;
-        resolve: null | ((files: ioBroker.ReadDirResult[]) => void);
-        reject: null | ((e: any) => void);
-        adapter: string | null;
-        relPath: string | null;
-    }[]
+              processing?: boolean;
+              resolve: null | ((files: ioBroker.ReadDirResult[]) => void);
+              reject: null | ((e: any) => void);
+              adapter: string | null;
+              relPath: string | null;
+          }[]
         | null;
 
     private browseListRunning: boolean;
@@ -637,7 +637,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     id =>
                         id.startsWith(`${this.limitToPath}/`) ||
                         id === this.limitToPath ||
-                        this.limitToPath?.startsWith(`${id}/`),
+                        this.limitToPath?.startsWith(`${id}/`)
                 );
             }
         } catch {
@@ -722,7 +722,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
     static getDerivedStateFromProps(
         props: FileBrowserProps,
-        state: FileBrowserState,
+        state: FileBrowserState
     ): Partial<FileBrowserState> | null {
         if (props.expertMode !== undefined && props.expertMode !== state.expertMode) {
             return { expertMode: props.expertMode, loadAllFolders: true };
@@ -923,7 +923,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         folderId: string,
         _newFolders?: Folders | null,
         _checkEmpty?: boolean,
-        force?: boolean,
+        force?: boolean
     ): Promise<Folders> {
         let newFoldersNotNull: Folders;
         if (!_newFolders) {
@@ -941,7 +941,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     Promise.all(
                         newFoldersNotNull[folderId]
                             .filter(item => item.folder)
-                            .map(item => this.browseFolder(item.id, newFoldersNotNull, true).catch(() => undefined)),
+                            .map(item => this.browseFolder(item.id, newFoldersNotNull, true).catch(() => undefined))
                     )
                         .then(() => resolve(newFoldersNotNull))
                         .catch(error => reject(new Error(error)));
@@ -1011,7 +1011,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     return Promise.all(
                         _folders
                             .filter(item => item.folder)
-                            .map(item => this.browseFolder(item.id, newFoldersNotNull, true).catch(() => undefined)),
+                            .map(item => this.browseFolder(item.id, newFoldersNotNull, true).catch(() => undefined))
                     ).then(() => newFoldersNotNull);
                 }
             } catch (e: unknown) {
@@ -1080,7 +1080,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 return Promise.all(
                     _folders
                         .filter(item => item.folder)
-                        .map(item => this.browseFolder(item.id, newFoldersNotNull, true)),
+                        .map(item => this.browseFolder(item.id, newFoldersNotNull, true))
                 ).then(() => newFoldersNotNull);
             }
         } catch (e: unknown) {
@@ -1111,8 +1111,8 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                         window.alert(
                             err === NOT_FOUND
                                 ? this.props.t('ra_Cannot find "%s"', item.id)
-                                : this.props.t('ra_Cannot read "%s"', item.id),
-                        ),
+                                : this.props.t('ra_Cannot read "%s"', item.id)
+                        )
                     );
             } else {
                 this.setState({ expanded });
@@ -1175,8 +1175,8 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                             selected: _folder,
                             pathFocus: false,
                         },
-                        () => this.props.onSelect && this.props.onSelect(''),
-                    ),
+                        () => this.props.onSelect && this.props.onSelect('')
+                    )
                 )
                 .catch(_e => console.error(`Cannot read folder: ${_e.message}`));
             return;
@@ -1189,7 +1189,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 path: _folder,
                 pathFocus: false,
             },
-            () => this.props.onSelect && this.props.onSelect(''),
+            () => this.props.onSelect && this.props.onSelect('')
         );
     }
 
@@ -1260,14 +1260,14 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     styles[`item${this.state.viewType}`],
                     styles[`itemFolder${this.state.viewType}`],
                     this.state.selected === item.id ? styles.itemSelected : {},
-                    item.temp ? styles.itemFolderTemp : {},
+                    item.temp ? styles.itemFolderTemp : {}
                 )}
             >
                 <IconEl
                     style={Utils.getStyle(
                         this.props.theme,
                         styles[`itemFolderIcon${this.state.viewType}`],
-                        isSpecialData && styles.specialFolder,
+                        isSpecialData && styles.specialFolder
                     )}
                     onClick={
                         this.state.viewType === TABLE
@@ -1281,7 +1281,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     sx={Utils.getStyle(
                         this.props.theme,
                         styles[`itemName${this.state.viewType}`],
-                        styles[`itemNameFolder${this.state.viewType}`],
+                        styles[`itemNameFolder${this.state.viewType}`]
                     )}
                 >
                     {isUserData ? this.props.t('ra_User files') : item.name}
@@ -1297,10 +1297,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                         : ''}
                 </Box>
 
-                <Box
-                    component="div"
-                    sx={{ display: { md: 'inline-block', sm: 'none' } }}
-                >
+                <Box component="div" sx={{ display: { md: 'inline-block', sm: 'none' } }}>
                     {this.state.viewType === TABLE && this.props.expertMode ? this.formatAcl(item.acl) : null}
                 </Box>
 
@@ -1335,10 +1332,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                         <DeleteIcon fontSize="small" />
                     </IconButton>
                 ) : this.state.viewType === TABLE && this.props.allowDelete ? (
-                    <Box
-                        component="div"
-                        sx={styles[`itemDeleteButton${this.state.viewType}`]}
-                    />
+                    <Box component="div" sx={styles[`itemDeleteButton${this.state.viewType}`]} />
                 ) : null}
             </Box>
         );
@@ -1356,7 +1350,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 sx={Utils.getStyle(
                     this.props.theme,
                     styles[`item${this.state.viewType}`],
-                    styles[`itemFolder${this.state.viewType}`],
+                    styles[`itemFolder${this.state.viewType}`]
                 )}
             >
                 <IconClosed style={styles[`itemFolderIcon${this.state.viewType}`]} />
@@ -1367,7 +1361,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     sx={Utils.getStyle(
                         this.props.theme,
                         styles[`itemName${this.state.viewType}`],
-                        styles[`itemNameFolder${this.state.viewType}`],
+                        styles[`itemNameFolder${this.state.viewType}`]
                     )}
                 >
                     ..
@@ -1516,7 +1510,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     this.props.theme,
                     styles[`item${this.state.viewType}`],
                     styles[`itemFile${this.state.viewType}`],
-                    this.state.selected === item.id ? styles.itemSelected : undefined,
+                    this.state.selected === item.id ? styles.itemSelected : undefined
                 )}
             >
                 {ext && EXTENSIONS.images.includes(ext) ? (
@@ -1546,28 +1540,16 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 ) : (
                     this.getFileIcon(ext)
                 )}
-                <Box
-                    component="div"
-                    sx={styles[`itemName${this.state.viewType}`]}
-                >
+                <Box component="div" sx={styles[`itemName${this.state.viewType}`]}>
                     {item.name}
                 </Box>
-                <Box
-                    component="div"
-                    sx={{ display: { md: 'inline-block', sm: 'none' } }}
-                >
+                <Box component="div" sx={{ display: { md: 'inline-block', sm: 'none' } }}>
                     {this.formatSize(item.size)}
                 </Box>
-                <Box
-                    component="div"
-                    sx={{ display: { md: 'inline-block', sm: 'none' } }}
-                >
+                <Box component="div" sx={{ display: { md: 'inline-block', sm: 'none' } }}>
                     {this.state.viewType === TABLE && this.props.expertMode ? this.formatAcl(item.acl) : null}
                 </Box>
-                <Box
-                    component="div"
-                    sx={{ display: { md: 'inline-block', sm: 'none' } }}
-                >
+                <Box component="div" sx={{ display: { md: 'inline-block', sm: 'none' } }}>
                     {this.state.viewType === TABLE && this.props.expertMode && FileBrowserClass.getEditFile(ext) ? (
                         <IconButton
                             aria-label="edit"
@@ -1581,7 +1563,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                                     (!this.state.filterByType ||
                                         (item.ext &&
                                             (EXTENSIONS as Record<string, string[]>)[this.state.filterByType].includes(
-                                                item.ext,
+                                                item.ext
                                             )))
                                 ) {
                                     this.props.onSelect(item.id, true, !!this.state.folders[item.id]);
@@ -1593,10 +1575,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                             <EditIcon fontSize="small" />
                         </IconButton>
                     ) : (
-                        <Box
-                            component="div"
-                            sx={styles[`itemDeleteButton${this.state.viewType}`]}
-                        />
+                        <Box component="div" sx={styles[`itemDeleteButton${this.state.viewType}`]} />
                     )}
                 </Box>
                 {this.state.viewType === TABLE && this.props.allowDownload ? (
@@ -1634,10 +1613,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                         <DeleteIcon fontSize="small" />
                     </IconButton>
                 ) : this.state.viewType === TABLE && this.props.allowDelete ? (
-                    <Box
-                        component="div"
-                        sx={styles[`itemDeleteButton${this.state.viewType}`]}
-                    />
+                    <Box component="div" sx={styles[`itemDeleteButton${this.state.viewType}`]} />
                 ) : null}
             </Box>
         );
@@ -1700,11 +1676,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
         return (
             <div style={{ position: 'relative' }}>
-                <CircularProgress
-                    key={folderId}
-                    color="secondary"
-                    size={24}
-                />
+                <CircularProgress key={folderId} color="secondary" size={24} />
                 <div
                     style={{
                         position: 'absolute',
@@ -1728,10 +1700,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         const isInFolder = this.findFirstFolder(this.state.selected);
 
         return (
-            <Toolbar
-                key="toolbar"
-                variant="dense"
-            >
+            <Toolbar key="toolbar" variant="dense">
                 {this.props.allowNonRestricted && this.props.restrictToFolder ? (
                     <IconButton
                         edge="start"
@@ -1862,10 +1831,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     </IconButton>
                 ) : null}
                 {this.props.showTypeSelector && IconType ? (
-                    <Tooltip
-                        title={this.props.t('ra_Filter files')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
-                    >
+                    <Tooltip title={this.props.t('ra_Filter files')} slotProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="small"
                             onClick={e => this.setState({ showTypesMenu: e.target as HTMLButtonElement })}
@@ -1905,10 +1871,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                         })}
                     </Menu>
                 ) : null}
-                <Tooltip
-                    title={this.props.t('ra_Background image')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
+                <Tooltip title={this.props.t('ra_Background image')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         color="inherit"
                         edge="start"
@@ -1920,10 +1883,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     </IconButton>
                 </Tooltip>
                 {this.state.viewType !== TABLE && this.props.allowDelete ? (
-                    <Tooltip
-                        title={this.props.t('ra_Delete')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
-                    >
+                    <Tooltip title={this.props.t('ra_Delete')} slotProps={{ popper: { sx: styles.tooltip } }}>
                         <span>
                             <IconButton
                                 aria-label="delete"
@@ -1985,7 +1945,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     cancelText={this.props.t('ra_Cancel')}
                     titleText={this.props.t('ra_Create new folder in %s', this.state.selected)}
                     promptText={this.props.t(
-                        'ra_If no file will be created in the folder, it will disappear after the browser closed',
+                        'ra_If no file will be created in the folder, it will disappear after the browser closed'
                     )}
                     labelText={this.props.t('ra_Folder name')}
                     verify={(text: string) =>
@@ -1997,7 +1957,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                         if (name) {
                             const folders: Folders = {};
                             Object.keys(this.state.folders).forEach(
-                                folder => (folders[folder] = this.state.folders[folder]),
+                                folder => (folders[folder] = this.state.folders[folder])
                             );
                             const parent = this.findItem(parentFolder);
                             const id = `${parentFolder}/${name}`;
@@ -2121,7 +2081,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                                                         expanded.sort();
                                                         this.localStorage.setItem(
                                                             'files.expanded',
-                                                            JSON.stringify(expanded),
+                                                            JSON.stringify(expanded)
                                                         );
                                                     }
                                                     this.setState({ expanded }, () => this.select(id));
@@ -2137,15 +2097,15 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                                                                         expanded.sort();
                                                                         this.localStorage.setItem(
                                                                             'files.expanded',
-                                                                            JSON.stringify(expanded),
+                                                                            JSON.stringify(expanded)
                                                                         );
                                                                     }
                                                                     this.setState({ folders, expanded }, () =>
-                                                                        this.select(id),
+                                                                        this.select(id)
                                                                     );
-                                                                },
+                                                                }
                                                             ),
-                                                        500,
+                                                        500
                                                     );
                                                 }
                                             });
@@ -2167,18 +2127,15 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                             {...getRootProps()}
                         >
                             <input {...getInputProps()} />
-                            <Box
-                                component="div"
-                                sx={styles.uploadCenterDiv}
-                            >
+                            <Box component="div" sx={styles.uploadCenterDiv}>
                                 <div style={styles.uploadCenterTextAndIcon}>
                                     <UploadIcon style={styles.uploadCenterIcon} />
                                     <div style={styles.uploadCenterText}>
                                         {this.state.uploadFile === 'dragging'
                                             ? this.props.t('ra_Drop file here')
                                             : this.props.t(
-                                                'ra_Place your files here or click here to open the browse dialog',
-                                            )}
+                                                  'ra_Place your files here or click here to open the browse dialog'
+                                              )}
                                     </div>
                                 </div>
                             </Box>
@@ -2269,12 +2226,12 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                             this.browseFolders([...this.state.expanded], folders)
                                 .then(_folders => this.setState({ folders: _folders }))
                                 .catch(e => console.error(e));
-                        }, 200),
+                        }, 200)
                     );
                 } else {
                     this.setState(newState as FileBrowserState);
                 }
-            }),
+            })
         );
     }
 
@@ -2304,19 +2261,10 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                         >
                             {this.props.t('ra_Delete (no confirm for 5 mins)')}
                         </Button>
-                        <Button
-                            variant="contained"
-                            onClick={() => this.deleteItem('')}
-                            color="primary"
-                            autoFocus
-                        >
+                        <Button variant="contained" onClick={() => this.deleteItem('')} color="primary" autoFocus>
                             {this.props.t('ra_Delete')}
                         </Button>
-                        <Button
-                            variant="contained"
-                            onClick={() => this.setState({ deleteItem: '' })}
-                            color="grey"
-                        >
+                        <Button variant="contained" onClick={() => this.setState({ deleteItem: '' })} color="grey">
                             {this.props.t('ra_Cancel')}
                         </Button>
                     </DialogActions>
@@ -2401,7 +2349,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                                         err === NOT_FOUND
                                             ? this.props.t('ra_Cannot find "%s"', folder)
                                             : this.props.t('ra_Cannot read "%s"', folder),
-                                }),
+                                })
                             );
                     } else {
                         resolve(true);
@@ -2409,8 +2357,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 })
                     .then(
                         result =>
-                            result &&
-                            this.setState({ selected: this.state.path, currentDir: folder, pathFocus: false }),
+                            result && this.setState({ selected: this.state.path, currentDir: folder, pathFocus: false })
                     )
                     .catch(e => console.error(e));
             } else if (!this.lastSelect || Date.now() - this.lastSelect > 100) {
@@ -2460,11 +2407,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
     renderPath(): React.JSX.Element {
         return (
-            <Box
-                component="div"
-                key="path"
-                sx={styles.pathDiv}
-            >
+            <Box component="div" key="path" sx={styles.pathDiv}>
                 {this.state.pathFocus ? (
                     <Input
                         value={this.state.path}
@@ -2476,10 +2419,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                             }
                         }}
                         endAdornment={
-                            <IconButton
-                                size="small"
-                                onClick={() => this.changeToPath()}
-                            >
+                            <IconButton size="small" onClick={() => this.changeToPath()}>
                                 <EnterIcon />
                             </IconButton>
                         }
@@ -2510,10 +2450,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         }
 
         return (
-            <div
-                style={{ ...styles.root, ...this.props.style }}
-                className={this.props.className}
-            >
+            <div style={{ ...styles.root, ...this.props.style }} className={this.props.className}>
                 {this.props.showToolbar ? this.renderToolbar() : null}
                 {this.state.viewType === TILE ? this.renderPath() : null}
                 <div

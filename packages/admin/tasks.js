@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const less = require('less');
 const path = require('node:path');
-const { deleteFoldersRecursive, buildCraco, patchHtmlFile, npmInstall, copyFiles } = require('@iobroker/build-tools');
+const { deleteFoldersRecursive, buildReact, patchHtmlFile, npmInstall, copyFiles } = require('@iobroker/build-tools');
 
 const srcRx = 'src-admin/';
 const src = `${__dirname}/${srcRx}`;
@@ -25,7 +25,7 @@ function build() {
         fs.readFileSync(`${ace}ext-searchbox.js`)
     );
 
-    return buildCraco(src, { rootDir: __dirname, ramSize: 7000 });
+    return buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true });
 }
 
 function copyAllFiles() {

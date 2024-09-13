@@ -1,16 +1,8 @@
 import React, { Component } from 'react';
 
-import {
-    Box,
-    Button,
-    Menu,
-    MenuItem,
-    Tooltip,
-} from '@mui/material';
+import { Box, Button, Menu, MenuItem, Tooltip } from '@mui/material';
 
-import {
-    type AdminConnection, I18n, Icon, Utils,
-} from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, Icon, Utils } from '@iobroker/adapter-react-v5';
 import type { CompactHost } from '@/types';
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type HostEvent, type HostAliveEvent } from '@/Workers/HostsWorker';
@@ -139,7 +131,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                                 if (obj) {
                                     this.props.setCurrentHost(
                                         obj.common?.name || aliveHost.replace('system.host.', ''),
-                                        aliveHost,
+                                        aliveHost
                                     );
                                 } else {
                                     this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
@@ -188,7 +180,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                         if (obj) {
                             this.props.setCurrentHost(
                                 obj.common?.name || aliveHost.replace('system.host.', ''),
-                                aliveHost,
+                                aliveHost
                             );
                         } else {
                             this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
@@ -251,28 +243,27 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                     const state = await this.props.socket.getState(`${event.id}.alive`);
                     alive[event.id] = !!state?.val;
                 }
-            }),
-        )
-            .then(() => {
-                if (changed) {
-                    this.setState({ hosts, alive }, () => {
-                        if (!alive[this.props.currentHost]) {
-                            const aliveHost = Object.keys(alive).find(id => alive[id]);
-                            if (aliveHost) {
-                                const obj = this.state.hosts.find(ob => ob._id === aliveHost);
-                                if (obj) {
-                                    this.props.setCurrentHost(
-                                        obj.common?.name || aliveHost.replace('system.host.', ''),
-                                        aliveHost,
-                                    );
-                                } else {
-                                    this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
-                                }
+            })
+        ).then(() => {
+            if (changed) {
+                this.setState({ hosts, alive }, () => {
+                    if (!alive[this.props.currentHost]) {
+                        const aliveHost = Object.keys(alive).find(id => alive[id]);
+                        if (aliveHost) {
+                            const obj = this.state.hosts.find(ob => ob._id === aliveHost);
+                            if (obj) {
+                                this.props.setCurrentHost(
+                                    obj.common?.name || aliveHost.replace('system.host.', ''),
+                                    aliveHost
+                                );
+                            } else {
+                                this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
                             }
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
+        });
     };
 
     render() {
@@ -282,94 +273,95 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
         let selectedHostObj;
         if (this.state.hosts.length) {
             selectedHostObj = this.state.hosts.find(
-                host => host._id === this.props.currentHost || host._id === `system.host.${this.props.currentHost}`,
+                host => host._id === this.props.currentHost || host._id === `system.host.${this.props.currentHost}`
             );
         }
 
-        return <Box>
-            <Tooltip
-                title={this.props.tooltip || I18n.t('Change current host')}
-                slotProps={{ popper: { sx: styles.tooltip } }}
-            >
-                <span>
-                    <Button
-                        color={this.props.themeType === 'dark' ? 'primary' : 'secondary'}
-                        style={{
-                            ...styles.button,
-                            background: selectedHostObj?.common?.color || 'none',
-                            borderColor: selectedHostObj?.common?.color
-                                ? Utils.invertColor(selectedHostObj.common.color, false)
-                                : 'none',
-                        }}
-                        variant={this.props.disabled || this.state.hosts.length < 2 ? 'text' : 'outlined'}
-                        disabled={!!this.props.disabled || this.state.hosts.length < 2}
-                        aria-haspopup="true"
-                        onClick={e => this.setState({ anchorEl: e.currentTarget })}
-                    >
-                        <Box
-                            component="div"
-                            sx={{
-                                ...styles.width,
-                                ...(!this.state.alive[this.props.currentHost] ? styles.notAlive : undefined),
-                                ...styles.imgDiv,
-                            }}
+        return (
+            <Box>
+                <Tooltip
+                    title={this.props.tooltip || I18n.t('Change current host')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <span>
+                        <Button
+                            color={this.props.themeType === 'dark' ? 'primary' : 'secondary'}
                             style={{
-                                display: 'flex',
-                                color: selectedHostObj?.common?.color
-                                    ? Utils.invertColor(selectedHostObj.common.color, true)
+                                ...styles.button,
+                                background: selectedHostObj?.common?.color || 'none',
+                                borderColor: selectedHostObj?.common?.color
+                                    ? Utils.invertColor(selectedHostObj.common.color, false)
                                     : 'none',
-                                alignItems: 'center',
+                            }}
+                            variant={this.props.disabled || this.state.hosts.length < 2 ? 'text' : 'outlined'}
+                            disabled={!!this.props.disabled || this.state.hosts.length < 2}
+                            aria-haspopup="true"
+                            onClick={e => this.setState({ anchorEl: e.currentTarget })}
+                        >
+                            <Box
+                                component="div"
+                                sx={{
+                                    ...styles.width,
+                                    ...(!this.state.alive[this.props.currentHost] ? styles.notAlive : undefined),
+                                    ...styles.imgDiv,
+                                }}
+                                style={{
+                                    display: 'flex',
+                                    color: selectedHostObj?.common?.color
+                                        ? Utils.invertColor(selectedHostObj.common.color, true)
+                                        : 'none',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Icon style={styles.img} src={selectedHostObj?.common?.icon || 'img/no-image.png'} />
+                                <Box component="div" sx={styles.name}>
+                                    {selectedHostObj?.common?.name}
+                                </Box>
+                            </Box>
+                        </Button>
+                    </span>
+                </Tooltip>
+                <Menu
+                    anchorEl={this.state.anchorEl}
+                    keepMounted
+                    open={!!this.state.anchorEl}
+                    onClose={() => this.setState({ anchorEl: null })}
+                >
+                    {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) => (
+                        <MenuItem
+                            key={_id}
+                            // button
+                            disabled={!this.state.alive[_id]}
+                            selected={_id === this.props.currentHost}
+                            style={{ background: color || 'inherit' }}
+                            onClick={() => {
+                                if (this.props.currentHost !== this.state.hosts[idx]._id) {
+                                    this.props.setCurrentHost(
+                                        this.state.hosts[idx].common.name,
+                                        this.state.hosts[idx]._id
+                                    );
+                                }
+                                this.setState({ anchorEl: null });
                             }}
                         >
-                            <Icon
-                                style={styles.img}
-                                src={selectedHostObj?.common?.icon || 'img/no-image.png'}
-                            />
-                            <Box component="div" sx={styles.name}>{selectedHostObj?.common?.name}</Box>
-                        </Box>
-                    </Button>
-                </span>
-            </Tooltip>
-            <Menu
-                anchorEl={this.state.anchorEl}
-                keepMounted
-                open={!!this.state.anchorEl}
-                onClose={() => this.setState({ anchorEl: null })}
-            >
-                {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) => <MenuItem
-                    key={_id}
-                    // button
-                    disabled={!this.state.alive[_id]}
-                    selected={_id === this.props.currentHost}
-                    style={{ background: color || 'inherit' }}
-                    onClick={() => {
-                        if (this.props.currentHost !== this.state.hosts[idx]._id) {
-                            this.props.setCurrentHost(
-                                this.state.hosts[idx].common.name,
-                                this.state.hosts[idx]._id,
-                            );
-                        }
-                        this.setState({ anchorEl: null });
-                    }}
-                >
-                    <Box
-                        component="div"
-                        sx={styles.imgDiv}
-                        style={{
-                            display: 'flex',
-                            color: (color && Utils.invertColor(color, true)) || 'inherit',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <div style={styles.selector}>
-                            {_id === this.props.currentHost ? 'ᐅ' : ''}
-                        </div>
-                        <Icon style={styles.img} src={icon || 'img/no-image.png'} />
-                        {name}
-                    </Box>
-                </MenuItem>)}
-            </Menu>
-        </Box>;
+                            <Box
+                                component="div"
+                                sx={styles.imgDiv}
+                                style={{
+                                    display: 'flex',
+                                    color: (color && Utils.invertColor(color, true)) || 'inherit',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <div style={styles.selector}>{_id === this.props.currentHost ? 'ᐅ' : ''}</div>
+                                <Icon style={styles.img} src={icon || 'img/no-image.png'} />
+                                {name}
+                            </Box>
+                        </MenuItem>
+                    ))}
+                </Menu>
+            </Box>
+        );
     }
 }
 

@@ -51,25 +51,25 @@ class MobileDialog<TProps, TState extends MobileDialogState = MobileDialogState>
     getButtonTitle(
         icon: React.JSX.Element,
         text: string,
-        moreMobileIcon?: React.JSX.Element,
+        moreMobileIcon?: React.JSX.Element
     ): string | React.JSX.Element | null {
         if (icon && text) {
             if (this.state.mobile) {
                 if (moreMobileIcon) {
-                    return <>
-                        {icon}
-                        {' '}
-&
-                        {' '}
-                        {moreMobileIcon}
-                    </>;
+                    return (
+                        <>
+                            {icon} & {moreMobileIcon}
+                        </>
+                    );
                 }
                 return icon;
             }
-            return <>
-                {icon}
-                <span style={{ marginLeft: 4 }}>{text}</span>
-            </>;
+            return (
+                <>
+                    {icon}
+                    <span style={{ marginLeft: 4 }}>{text}</span>
+                </>
+            );
         }
         if (icon) {
             return icon;

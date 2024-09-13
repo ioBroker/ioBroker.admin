@@ -11,11 +11,7 @@ import {
     IconButton,
 } from '@mui/material';
 
-import {
-    Clear as ClearIcon,
-    Brush as CustomGroup,
-    Close as CloseIcon,
-} from '@mui/icons-material';
+import { Clear as ClearIcon, Brush as CustomGroup, Close as CloseIcon } from '@mui/icons-material';
 
 import { Icon, type Translate, Utils } from '@iobroker/adapter-react-v5';
 
@@ -35,9 +31,7 @@ const styles: Record<string, React.CSSProperties> = {
         width: 32,
         height: 32,
     },
-    customGroupButton: {
-
-    },
+    customGroupButton: {},
     enumTemplateButton: {
         // width: '100%',
         justifyContent: 'end',
@@ -118,102 +112,107 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                 }
             });
 
-            Promise.all(promises)
-                .then(() =>
-                    this.setState({ icons, loading: false }));
+            Promise.all(promises).then(() => this.setState({ icons, loading: false }));
         });
     }
 
     render() {
         const templates = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
 
-        return <Dialog
-            maxWidth="md"
-            fullWidth
-            sx={{ '& .MuiPaper-root': styles.fullHeight }}
-            open={!0}
-            onClose={this.props.onClose}
-        >
-            <DialogTitle>
-                {this.props.t(this.props.prefix.startsWith('enum.functions') ? 'Create new function' : 'Create new room')}
-                <TextField
-                    variant="standard"
-                    style={styles.filter}
-                    value={this.state.filter}
-                    onChange={e => this.setState({ filter: e.target.value.toLowerCase() })}
-                    placeholder={this.props.t('Filter')}
-                    margin="dense"
-                    slotProps={{
-                        input: {
-                            endAdornment: this.state.filter ? <IconButton
-                                size="small"
-                                onClick={() => this.setState({ filter: '' })}
-                            >
-                                <ClearIcon />
-                            </IconButton> : null,
-                        },
-                    }}
-                />
-            </DialogTitle>
-            <DialogContent style={{ textAlign: 'center' }}>
-                {this.state.loading && <LinearProgress />}
-                <div style={styles.content}>
-                    {templates.map((template, i) => {
-                        const name = AdminUtils.getText(template.name, this.props.lang) || template._id;
+        return (
+            <Dialog
+                maxWidth="md"
+                fullWidth
+                sx={{ '& .MuiPaper-root': styles.fullHeight }}
+                open={!0}
+                onClose={this.props.onClose}
+            >
+                <DialogTitle>
+                    {this.props.t(
+                        this.props.prefix.startsWith('enum.functions') ? 'Create new function' : 'Create new room'
+                    )}
+                    <TextField
+                        variant="standard"
+                        style={styles.filter}
+                        value={this.state.filter}
+                        onChange={e => this.setState({ filter: e.target.value.toLowerCase() })}
+                        placeholder={this.props.t('Filter')}
+                        margin="dense"
+                        slotProps={{
+                            input: {
+                                endAdornment: this.state.filter ? (
+                                    <IconButton size="small" onClick={() => this.setState({ filter: '' })}>
+                                        <ClearIcon />
+                                    </IconButton>
+                                ) : null,
+                            },
+                        }}
+                    />
+                </DialogTitle>
+                <DialogContent style={{ textAlign: 'center' }}>
+                    {this.state.loading && <LinearProgress />}
+                    <div style={styles.content}>
+                        {templates.map((template, i) => {
+                            const name = AdminUtils.getText(template.name, this.props.lang) || template._id;
 
-                        if (this.props.enums[`${this.props.prefix}.${template._id}`]) {
+                            if (this.props.enums[`${this.props.prefix}.${template._id}`]) {
+                                return null;
+                            }
+                            if (!this.state.filter || name.toLowerCase().includes(this.state.filter)) {
+                                return (
+                                    <Button
+                                        color="grey"
+                                        key={i}
+                                        variant="outlined"
+                                        onClick={() => {
+                                            this.props.onClose();
+                                            this.props.createEnumTemplate(this.props.prefix, {
+                                                _id: `${this.props.prefix}.${template._id}`,
+                                                type: 'enum',
+                                                common: {
+                                                    name: template.name,
+                                                    icon: this.state.icons[i],
+                                                },
+                                                native: {},
+                                            });
+                                        }}
+                                        // startIcon={<Icon src={this.state.icons[i]} style={styles.icon}/>}
+                                        style={styles.enumTemplateButton}
+                                        startIcon={<Icon src={this.state.icons[i]} style={styles.icon} />}
+                                    >
+                                        <span style={styles.enumTemplateLabel}>
+                                            {AdminUtils.getText(template.name, this.props.lang) || template._id}
+                                        </span>
+                                    </Button>
+                                );
+                            }
                             return null;
-                        } if (!this.state.filter || name.toLowerCase().includes(this.state.filter)) {
-                            return <Button
-                                color="grey"
-                                key={i}
-                                variant="outlined"
-                                onClick={() => {
-                                    this.props.onClose();
-                                    this.props.createEnumTemplate(this.props.prefix, {
-                                        _id: `${this.props.prefix}.${template._id}`,
-                                        type: 'enum',
-                                        common: {
-                                            name: template.name,
-                                            icon: this.state.icons[i],
-                                        },
-                                        native: {},
-                                    });
-                                }}
-                                // startIcon={<Icon src={this.state.icons[i]} style={styles.icon}/>}
-                                style={styles.enumTemplateButton}
-                                startIcon={<Icon src={this.state.icons[i]} style={styles.icon} />}
-                            >
-                                <span style={styles.enumTemplateLabel}>{AdminUtils.getText(template.name, this.props.lang) || template._id}</span>
-                            </Button>;
-                        }
-                        return null;
-                    })}
-                </div>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    style={styles.customGroupButton}
-                    onClick={() => {
-                        this.props.onClose();
-                        this.props.showEnumEditDialog(this.props.getEnumTemplate(this.props.prefix), true);
-                    }}
-                    startIcon={<CustomGroup />}
-                >
-                    {this.props.prefix === 'enum.rooms' ? this.props.t('Custom room') : (this.props.prefix === 'enum.functions' ? this.props.t('Custom function') : this.props.t('Custom enumeration'))}
-                </Button>
-                <Button
-                    color="grey"
-                    variant="contained"
-                    onClick={this.props.onClose}
-                    startIcon={<CloseIcon />}
-                >
-                    {this.props.t('Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                        })}
+                    </div>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        style={styles.customGroupButton}
+                        onClick={() => {
+                            this.props.onClose();
+                            this.props.showEnumEditDialog(this.props.getEnumTemplate(this.props.prefix), true);
+                        }}
+                        startIcon={<CustomGroup />}
+                    >
+                        {this.props.prefix === 'enum.rooms'
+                            ? this.props.t('Custom room')
+                            : this.props.prefix === 'enum.functions'
+                              ? this.props.t('Custom function')
+                              : this.props.t('Custom enumeration')}
+                    </Button>
+                    <Button color="grey" variant="contained" onClick={this.props.onClose} startIcon={<CloseIcon />}>
+                        {this.props.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

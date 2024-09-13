@@ -1,9 +1,6 @@
 import { useState } from 'react';
 
-export default function useStateLocal(
-    defaultValue: any,
-    key: string,
-): [any, (newValue: any) => void, boolean] {
+export default function useStateLocal(defaultValue: any, key: string): [any, (newValue: any) => void, boolean] {
     const data = (window._localStorage || window.localStorage).getItem(key);
     if (data) {
         try {

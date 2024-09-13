@@ -1,3 +1,3 @@
-const fs = require('node:fs');
+const { copyFileSync } = require('node:fs');
 
-fs.copyFileSync('./src/types.d.ts', './build/types.d.ts');
+copyFileSync('./src/types.d.ts', './build/types.d.ts');

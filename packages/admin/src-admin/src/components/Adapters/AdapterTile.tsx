@@ -1,14 +1,8 @@
 import React from 'react';
 
-import {
-    Box,
-    Card, CardContent, CardMedia, Fab,
-    Tooltip, Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Fab, Tooltip, Typography } from '@mui/material';
 
-import {
-    MoreVert as MoreVertIcon,
-} from '@mui/icons-material';
+import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { amber } from '@mui/material/colors';
 
 import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
@@ -214,126 +208,152 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
     }
 
     renderInfoCard() {
-        return <div style={this.styles.collapse}>
-            <CardContent style={this.styles.cardContent}>
-                <div style={this.styles.cardContentDiv}>
-                    <Box
-                        component="div"
-                        sx={this.styles.close}
-                        onClick={() => this.setState({ openCollapse: !this.state.openCollapse })}
-                    />
-                </div>
-                <Typography gutterBottom component="span" variant="body2" sx={this.styles.description}>
-                    {this.props.cached.desc}
-                </Typography>
-            </CardContent>
-            <Box component="div" sx={this.styles.footerBlock}>
-                {this.renderAddInstanceButton()}
-                <div style={this.styles.cardContentFlex}>
-                    {this.renderAutoUpgradeButton()}
-                    {this.renderReadmeButton()}
-                    {this.renderUploadButton()}
-                    {this.renderDeleteButton()}
-                    {this.renderInstallSpecificVersionButton()}
-                </div>
-            </Box>
-        </div>;
+        return (
+            <div style={this.styles.collapse}>
+                <CardContent style={this.styles.cardContent}>
+                    <div style={this.styles.cardContentDiv}>
+                        <Box
+                            component="div"
+                            sx={this.styles.close}
+                            onClick={() => this.setState({ openCollapse: !this.state.openCollapse })}
+                        />
+                    </div>
+                    <Typography gutterBottom component="span" variant="body2" sx={this.styles.description}>
+                        {this.props.cached.desc}
+                    </Typography>
+                </CardContent>
+                <Box component="div" sx={this.styles.footerBlock}>
+                    {this.renderAddInstanceButton()}
+                    <div style={this.styles.cardContentFlex}>
+                        {this.renderAutoUpgradeButton()}
+                        {this.renderReadmeButton()}
+                        {this.renderUploadButton()}
+                        {this.renderDeleteButton()}
+                        {this.renderInstallSpecificVersionButton()}
+                    </div>
+                </Box>
+            </div>
+        );
     }
 
     renderCardMedia() {
         const available = this.props.context.repository[this.props.adapterName];
         const availableVersion = available?.version;
 
-        return <Box
-            component="div"
-            sx={Utils.getStyle(
-                this.props.context.theme,
-                this.styles.imageBlock,
-                this.installedVersion && this.styles.installed,
-                this.installedVersion && availableVersion && this.installedVersion !== availableVersion && this.props.cached.updateAvailable && this.styles.update,
-            )}
-        >
-            <CardMedia
-                sx={this.styles.img}
-                component={(props: ImageProps) => this.renderImage(props)}
-                src={this.props.cached.image || 'img/no-image.png'}
-                image={this.props.cached.image || 'img/no-image.png'}
-            />
+        return (
             <Box
                 component="div"
                 sx={Utils.getStyle(
                     this.props.context.theme,
-                    this.styles.adapter,
-                    (available.stat || this.props.context.sortRecentlyUpdated) && this.styles.adapterWithAgo,
+                    this.styles.imageBlock,
+                    this.installedVersion && this.styles.installed,
+                    this.installedVersion &&
+                        availableVersion &&
+                        this.installedVersion !== availableVersion &&
+                        this.props.cached.updateAvailable &&
+                        this.styles.update
                 )}
             >
-                {this.props.adapterName}
-            </Box>
-            {this.props.context.sortPopularFirst ? <div style={this.styles.versionDate}>{available.stat}</div> : null}
-            {this.props.context.sortRecentlyUpdated ? <div style={this.styles.versionDate}>{this.props.cached.daysAgoText}</div> : null}
-            {!this.props.context.sortPopularFirst && !this.props.context.sortRecentlyUpdated ? this.renderRating() : null}
-            {!this.state.openCollapse ? <Tooltip title={this.props.context.t('Info')} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-                <Fab
-                    onClick={() => this.setState({ openCollapse: !this.state.openCollapse })}
-                    style={this.styles.fab}
-                    color="primary"
-                    aria-label="add"
+                <CardMedia
+                    sx={this.styles.img}
+                    component={(props: ImageProps) => this.renderImage(props)}
+                    src={this.props.cached.image || 'img/no-image.png'}
+                    image={this.props.cached.image || 'img/no-image.png'}
+                />
+                <Box
+                    component="div"
+                    sx={Utils.getStyle(
+                        this.props.context.theme,
+                        this.styles.adapter,
+                        (available.stat || this.props.context.sortRecentlyUpdated) && this.styles.adapterWithAgo
+                    )}
                 >
-                    <MoreVertIcon />
-                </Fab>
-            </Tooltip> : null}
-        </Box>;
+                    {this.props.adapterName}
+                </Box>
+                {this.props.context.sortPopularFirst ? (
+                    <div style={this.styles.versionDate}>{available.stat}</div>
+                ) : null}
+                {this.props.context.sortRecentlyUpdated ? (
+                    <div style={this.styles.versionDate}>{this.props.cached.daysAgoText}</div>
+                ) : null}
+                {!this.props.context.sortPopularFirst && !this.props.context.sortRecentlyUpdated
+                    ? this.renderRating()
+                    : null}
+                {!this.state.openCollapse ? (
+                    <Tooltip
+                        title={this.props.context.t('Info')}
+                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    >
+                        <Fab
+                            onClick={() => this.setState({ openCollapse: !this.state.openCollapse })}
+                            style={this.styles.fab}
+                            color="primary"
+                            aria-label="add"
+                        >
+                            <MoreVertIcon />
+                        </Fab>
+                    </Tooltip>
+                ) : null}
+            </Box>
+        );
     }
 
     renderCardContent() {
-        const allowAdapterUpdate = this.props.context.repository[this.props.adapterName] ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate : true;
+        const allowAdapterUpdate = this.props.context.repository[this.props.adapterName]
+            ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate
+            : true;
         const installed = this.props.context.installed[this.props.adapterName];
 
-        return <CardContent style={this.styles.cardContent2}>
-            <Typography gutterBottom variant="h5" component="h5">{this.props.cached.title}</Typography>
-            <div style={this.styles.cardContentFlex}>
-                {this.renderConnectionType()}
-                {this.renderDataSource()}
-                <div>{this.renderLicenseInfo()}</div>
-                {this.renderSentryInfo()}
-            </div>
-            <div style={this.styles.cardMargin10}>
-                {installed?.count ? <Typography component="span" style={this.styles.cardContentFlexBetween}>
-                    <div>
-                        {this.props.context.t('Installed instances')}
-                        :
-                    </div>
-                    <div>{installed.count}</div>
-                </Typography> : null}
-                <IsVisible value={allowAdapterUpdate}>
-                    <Typography component="span" style={this.styles.availableVersion}>
-                        <div>{this.props.context.t('Available version:')}</div>
-                        <Box
-                            component="div"
-                            sx={Utils.getStyle(
-                                this.props.context.theme,
-                                this.props.cached.updateAvailable && this.styles.greenText,
-                                this.styles.curdContentFlexCenter,
-                            )}
-                        >
-                            {this.renderVersion()}
-                        </Box>
-                    </Typography>
-                </IsVisible>
-                {this.renderInstalledVersion()}
-            </div>
-        </CardContent>;
+        return (
+            <CardContent style={this.styles.cardContent2}>
+                <Typography gutterBottom variant="h5" component="h5">
+                    {this.props.cached.title}
+                </Typography>
+                <div style={this.styles.cardContentFlex}>
+                    {this.renderConnectionType()}
+                    {this.renderDataSource()}
+                    <div>{this.renderLicenseInfo()}</div>
+                    {this.renderSentryInfo()}
+                </div>
+                <div style={this.styles.cardMargin10}>
+                    {installed?.count ? (
+                        <Typography component="span" style={this.styles.cardContentFlexBetween}>
+                            <div>{this.props.context.t('Installed instances')}:</div>
+                            <div>{installed.count}</div>
+                        </Typography>
+                    ) : null}
+                    <IsVisible value={allowAdapterUpdate}>
+                        <Typography component="span" style={this.styles.availableVersion}>
+                            <div>{this.props.context.t('Available version:')}</div>
+                            <Box
+                                component="div"
+                                sx={Utils.getStyle(
+                                    this.props.context.theme,
+                                    this.props.cached.updateAvailable && this.styles.greenText,
+                                    this.styles.curdContentFlexCenter
+                                )}
+                            >
+                                {this.renderVersion()}
+                            </Box>
+                        </Typography>
+                    </IsVisible>
+                    {this.renderInstalledVersion()}
+                </div>
+            </CardContent>
+        );
     }
 
     render(): React.JSX.Element {
         this.installedVersion = this.props.context.installed[this.props.adapterName]?.version;
 
-        return <Card sx={this.styles.root}>
-            {this.state.openCollapse ? this.renderInfoCard() : null}
-            {this.renderCardMedia()}
-            {this.renderCardContent()}
-            {this.renderDialogs()}
-        </Card>;
+        return (
+            <Card sx={this.styles.root}>
+                {this.state.openCollapse ? this.renderInfoCard() : null}
+                {this.renderCardMedia()}
+                {this.renderCardContent()}
+                {this.renderDialogs()}
+            </Card>
+        );
     }
 }
 

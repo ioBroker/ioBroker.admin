@@ -7,17 +7,13 @@ import {
     DialogActions,
     Button,
     TextField,
-    Tooltip, InputAdornment,
+    Tooltip,
+    InputAdornment,
     IconButton,
     Box,
 } from '@mui/material';
 
-import {
-    Close as IconClose,
-    Check as IconCheck,
-    Add as IconAdd,
-    Close as CloseIcon,
-} from '@mui/icons-material';
+import { Close as IconClose, Check as IconCheck, Add as IconAdd, Close as CloseIcon } from '@mui/icons-material';
 
 import { UploadImage, type Translate } from '@iobroker/adapter-react-v5';
 
@@ -191,26 +187,28 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
 
     buttonAddKey(nameKey: string, cb: () => void) {
         const { t } = this.props;
-        return <div
-            style={styles.marginBlock}
-        >
-            <Button
-                style={styles.buttonAdd}
-                variant="contained"
-                color="secondary"
-                onClick={cb}
-                startIcon={<IconAdd />}
-            >
-                {t(`Add ${nameKey}`)}
-            </Button>
-        </div>;
+        return (
+            <div style={styles.marginBlock}>
+                <Button
+                    style={styles.buttonAdd}
+                    variant="contained"
+                    color="secondary"
+                    onClick={cb}
+                    startIcon={<IconAdd />}
+                >
+                    {t(`Add ${nameKey}`)}
+                </Button>
+            </div>
+        );
     }
 
     buttonRemoveKey(nameKey: string, cb: () => void) {
         const { t } = this.props;
-        return <Tooltip title={t(`Remove ${nameKey}`)} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-            <Box component="div" sx={styles.close} onClick={cb} />
-        </Tooltip>;
+        return (
+            <Tooltip title={t(`Remove ${nameKey}`)} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                <Box component="div" sx={styles.close} onClick={cb} />
+            </Tooltip>
+        );
     }
 
     renderCommonEdit() {
@@ -218,74 +216,86 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
             const json = JSON.parse(this.state.text);
             const disabled = false;
             const { t } = this.props;
-            return <div style={styles.commonTabWrapper}>
-                <div style={styles.commonWrapper}>
-                    {typeof json.common.title !== 'undefined' ?
-                        <TextField
-                            variant="standard"
-                            disabled={disabled}
-                            label={t('title')}
-                            style={{ ...styles.marginBlock, ...styles.textField }}
-                            fullWidth
-                            value={json.common.title}
-                            onChange={el => this.setCommonItem(json, 'title', el.target.value)}
-                            slotProps={{
-                                input: {
-                                    endAdornment: json.common.title ? <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => this.setCommonItem(json, 'title', '')}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment> : null,
-                                },
-                            }}
-                        /> :
-                        this.buttonAddKey('title', () => this.setCommonItem(json, 'title', ''))}
-                    {typeof json.common.color !== 'undefined' ?
-                        <div style={styles.flex}>
+            return (
+                <div style={styles.commonTabWrapper}>
+                    <div style={styles.commonWrapper}>
+                        {typeof json.common.title !== 'undefined' ? (
                             <TextField
                                 variant="standard"
                                 disabled={disabled}
-                                style={{ ...styles.marginBlock, ...styles.color }}
-                                label={t('Color')}
-                                type="color"
-                                value={json.common.color}
-                                onChange={el => this.setCommonItem(json, 'color', el.target.value)}
+                                label={t('title')}
+                                style={{ ...styles.marginBlock, ...styles.textField }}
+                                fullWidth
+                                value={json.common.title}
+                                onChange={el => this.setCommonItem(json, 'title', el.target.value)}
                                 slotProps={{
                                     input: {
-                                        endAdornment: json.common.color ? <InputAdornment position="end">
-                                            <IconButton
-                                                size="small"
-                                                onClick={() => this.setCommonItem(json, 'color', '')}
-                                            >
-                                                <CloseIcon />
-                                            </IconButton>
-                                        </InputAdornment> : null,
+                                        endAdornment: json.common.title ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => this.setCommonItem(json, 'title', '')}
+                                                >
+                                                    <CloseIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
                                     },
                                 }}
                             />
-                            {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
-                        </div> :
-                        this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))}
+                        ) : (
+                            this.buttonAddKey('title', () => this.setCommonItem(json, 'title', ''))
+                        )}
+                        {typeof json.common.color !== 'undefined' ? (
+                            <div style={styles.flex}>
+                                <TextField
+                                    variant="standard"
+                                    disabled={disabled}
+                                    style={{ ...styles.marginBlock, ...styles.color }}
+                                    label={t('Color')}
+                                    type="color"
+                                    value={json.common.color}
+                                    onChange={el => this.setCommonItem(json, 'color', el.target.value)}
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: json.common.color ? (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => this.setCommonItem(json, 'color', '')}
+                                                    >
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ) : null,
+                                        },
+                                    }}
+                                />
+                                {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
+                            </div>
+                        ) : (
+                            this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
+                        )}
+                    </div>
+                    {typeof json.common.icon !== 'undefined' ? (
+                        <div style={styles.flexDrop}>
+                            <UploadImage
+                                disabled={disabled}
+                                crop
+                                maxSize={256 * 1024}
+                                icon={json.common.icon}
+                                removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
+                                onChange={base64 => this.setCommonItem(json, 'icon', base64)}
+                            />
+                            {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
+                        </div>
+                    ) : (
+                        <div style={styles.flexDrop}>
+                            {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
+                        </div>
+                    )}
                 </div>
-                {typeof json.common.icon !== 'undefined' ?
-                    <div style={styles.flexDrop}>
-                        <UploadImage
-                            disabled={disabled}
-                            crop
-                            maxSize={256 * 1024}
-                            icon={json.common.icon}
-                            removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
-                            onChange={base64 => this.setCommonItem(json, 'icon', base64)}
-                        />
-                        {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
-                    </div> :
-                    <div style={styles.flexDrop}>
-                        {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
-                    </div>}
-            </div>;
+            );
         } catch {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
@@ -294,44 +304,42 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
     render() {
         // const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
 
-        return <Dialog
-            sx={{ '& .MuiDialog-paper': styles.dialog }}
-            open={!0}
-            maxWidth="lg"
-            fullWidth
-            fullScreen={false}
-            onClose={() => this.props.onClose()}
-            aria-labelledby="edit-value-dialog-title"
-            aria-describedby="edit-value-dialog-description"
-        >
-            <DialogTitle id="edit-value-dialog-title">
-                {this.props.t('Edit host settings')}
-:
-                <span style={styles.id}>{this.props.obj._id}</span>
-            </DialogTitle>
-            <DialogContent>
-                {this.renderCommonEdit()}
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    disabled={this.state.error || !this.state.changed}
-                    onClick={() => this.onUpdate()}
-                    color="primary"
-                    startIcon={<IconCheck />}
-                >
-                    {this.props.t('Write')}
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={() => this.props.onClose()}
-                    color="grey"
-                    startIcon={<IconClose />}
-                >
-                    {this.props.t('Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+        return (
+            <Dialog
+                sx={{ '& .MuiDialog-paper': styles.dialog }}
+                open={!0}
+                maxWidth="lg"
+                fullWidth
+                fullScreen={false}
+                onClose={() => this.props.onClose()}
+                aria-labelledby="edit-value-dialog-title"
+                aria-describedby="edit-value-dialog-description"
+            >
+                <DialogTitle id="edit-value-dialog-title">
+                    {this.props.t('Edit host settings')}:<span style={styles.id}>{this.props.obj._id}</span>
+                </DialogTitle>
+                <DialogContent>{this.renderCommonEdit()}</DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        disabled={this.state.error || !this.state.changed}
+                        onClick={() => this.onUpdate()}
+                        color="primary"
+                        startIcon={<IconCheck />}
+                    >
+                        {this.props.t('Write')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.props.onClose()}
+                        color="grey"
+                        startIcon={<IconClose />}
+                    >
+                        {this.props.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

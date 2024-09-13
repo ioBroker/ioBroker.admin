@@ -49,22 +49,26 @@ export default class LogsWorker {
     private logSize: number;
 
     constructor(socket: AdminConnection, maxLogs?: number) {
-        this.socket               = socket;
-        this.handlers             = [];
-        this.promise              = null;
+        this.socket = socket;
+        this.handlers = [];
+        this.promise = null;
 
-        this.errorCountHandlers   = [];
+        this.errorCountHandlers = [];
         this.warningCountHandlers = [];
-        this.countErrors          = true;
-        this.countWarnings        = true;
-        this.errors               = 0;
-        this.warnings             = 0;
-        this.currentHost          = '';
-        this.connected            = this.socket.isConnected();
-        this.maxLogs              = maxLogs || 1000;
-        this.logs                 = null;
-        this.isSafari             = navigator.vendor && navigator.vendor.includes('Apple') &&
-                                    navigator.userAgent && !navigator.userAgent.includes('CriOS') && !navigator.userAgent.includes('FxiOS');
+        this.countErrors = true;
+        this.countWarnings = true;
+        this.errors = 0;
+        this.warnings = 0;
+        this.currentHost = '';
+        this.connected = this.socket.isConnected();
+        this.maxLogs = maxLogs || 1000;
+        this.logs = null;
+        this.isSafari =
+            navigator.vendor &&
+            navigator.vendor.includes('Apple') &&
+            navigator.userAgent &&
+            !navigator.userAgent.includes('CriOS') &&
+            !navigator.userAgent.includes('FxiOS');
 
         socket.registerLogHandler(this.logHandler);
         socket.registerConnectionHandler(this.connectionHandler);
@@ -130,8 +134,7 @@ export default class LogsWorker {
                     const newLogs = this.newLogs;
                     this.newLogs = null;
 
-                    this.handlers.forEach(handler =>
-                        handler && handler(newLogs, JSON.stringify(line).length - 65));
+                    this.handlers.forEach(handler => handler && handler(newLogs, JSON.stringify(line).length - 65));
                 }, 200);
             }
 
@@ -236,7 +239,15 @@ export default class LogsWorker {
                 if (this.isSafari) {
                     // parse every number
                     const tt = line.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3})/);
-                    ts = new Date(parseInt(tt[1], 10), parseInt(tt[2], 10) - 1, parseInt(tt[3], 10), parseInt(tt[4], 10), parseInt(tt[5], 10), parseInt(tt[6], 10), parseInt(tt[7], 10)).getTime();
+                    ts = new Date(
+                        parseInt(tt[1], 10),
+                        parseInt(tt[2], 10) - 1,
+                        parseInt(tt[3], 10),
+                        parseInt(tt[4], 10),
+                        parseInt(tt[5], 10),
+                        parseInt(tt[6], 10),
+                        parseInt(tt[7], 10)
+                    ).getTime();
                 } else {
                     const tt = time[0].split(' ');
                     ts = new Date(`${tt[0]}T${tt[1]}`).getTime();
@@ -252,7 +263,7 @@ export default class LogsWorker {
 
                 objLine = {
                     key,
-                    from:  from ? from[0].replace(/[ :(]/g, '') : '',
+                    from: from ? from[0].replace(/[ :(]/g, '') : '',
                     message: line.split(/\[\d+m: /)[1],
                     severity: line.match(/\d+m(silly|debug|info|warn|error)/)[0].replace(/[\dm]/g, ''),
                     ts,
@@ -322,7 +333,8 @@ export default class LogsWorker {
         this.errors = 0;
         this.warnings = 0;
 
-        this.promise = this.socket.getLogs(this.currentHost, 200)
+        this.promise = this.socket
+            .getLogs(this.currentHost, 200)
             .then(lines => {
                 // @ts-expect-error it can return error string or error object { error: 'permissionError' }
                 if ((lines as string) === 'permissionError' || lines?.error !== undefined) {
@@ -358,7 +370,7 @@ export default class LogsWorker {
                 });
 
                 if (this.logs?.length && this.logs[0].ts) {
-                    this.logs.sort((a, b) => (a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0)));
+                    this.logs.sort((a, b) => (a.ts > b.ts ? 1 : a.ts < b.ts ? -1 : 0));
                 }
 
                 this.logSize = logSize;
@@ -384,7 +396,7 @@ export default class LogsWorker {
     }
 
     clearLines() {
-        this.logs    = [];
+        this.logs = [];
         this.logSize = 0;
 
         if (this.errors) {

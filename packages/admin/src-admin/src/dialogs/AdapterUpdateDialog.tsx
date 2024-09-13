@@ -164,7 +164,7 @@ export function checkCondition(
     objMessages: ioBroker.MessageRule[] | false | null | undefined,
     oldVersion: string | null,
     newVersion: string,
-    instances: Record<string, CompactInstanceInfo>,
+    instances?: Record<string, CompactInstanceInfo>,
 ): Message[] | null {
     let messages: Message[] | null = null;
 

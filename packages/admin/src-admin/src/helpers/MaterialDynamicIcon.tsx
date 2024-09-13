@@ -47,35 +47,32 @@ interface MaterialDynamicIconProps {
 }
 
 const MaterialDynamicIcon = ({
-    iconName, className, adapter, socket, onClick, objIconBool, style,
+    iconName,
+    className,
+    adapter,
+    socket,
+    onClick,
+    objIconBool,
+    style,
 }: MaterialDynamicIconProps) => {
     const [url, setUrl] = useState('');
 
     useEffect(() => {
         if (adapter && socket) {
             ICON_CACHE[adapter] = ICON_CACHE[adapter] || socket.getObject(`system.adapter.${adapter}`);
-            ICON_CACHE[adapter].then(obj =>
-                obj?.common?.icon && setUrl(`../../adapter/${adapter}/${obj.common.icon}`));
+            ICON_CACHE[adapter].then(obj => obj?.common?.icon && setUrl(`../../adapter/${adapter}/${obj.common.icon}`));
         }
     }, [adapter, socket]);
 
     if (adapter) {
         // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-        return <img
-            onClick={e => onClick && onClick(e)}
-            src={url || ''}
-            className={className}
-            style={style}
-            alt=""
-        />;
+        return <img onClick={e => onClick && onClick(e)} src={url || ''} className={className} style={style} alt="" />;
     }
-    const Element = (Icons as Record<string, SvgIconComponent>)[objIconBool ? objIcon[iconName] || 'Help' : (iconName || 'Help')];
+    const Element = (Icons as Record<string, SvgIconComponent>)[
+        objIconBool ? objIcon[iconName] || 'Help' : iconName || 'Help'
+    ];
 
-    return <Element
-        className={className}
-        style={style}
-        onClick={(e: React.MouseEvent) => onClick && onClick(e)}
-    />;
+    return <Element className={className} style={style} onClick={(e: React.MouseEvent) => onClick && onClick(e)} />;
 };
 
 export default MaterialDynamicIcon;

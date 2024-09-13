@@ -1,7 +1,4 @@
-import type {
-    I18n, AdminConnection,
-    ThemeType, ThemeName,
-} from '@iobroker/adapter-react-v5';
+import type { I18n, AdminConnection, ThemeType, ThemeName } from '@iobroker/adapter-react-v5';
 
 declare module '*.png';
 declare module '*.svg';
@@ -10,7 +7,7 @@ declare module '*.jpg';
 
 export interface BasicComponentProps {
     t: typeof I18n.t;
-    lang:  ioBroker.Languages;
+    lang: ioBroker.Languages;
     socket: AdminConnection;
     themeName: ThemeName;
     theme: Record<string, any>;
@@ -26,12 +23,12 @@ interface RepositoryEntry {
 }
 
 /** The ioBroker repository */
-export type Repository = Record<string, RepositoryEntry>
+export type Repository = Record<string, RepositoryEntry>;
 
 /**
  * Specific value or a string in general
  */
-export type ValueOrString<T> = T | string & object;
+export type ValueOrString<T> = T | (string & object);
 
 export type ioBrokerObject<Native extends object = object, Common extends object = object> = ioBroker.AnyObject & {
     common: Record<string, any> & Common;

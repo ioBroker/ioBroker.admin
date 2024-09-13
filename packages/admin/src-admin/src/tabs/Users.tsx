@@ -1,9 +1,12 @@
 import React from 'react';
 
 import {
-    type AdminConnection, type IobTheme,
-    type ThemeType, type Translate,
-    TabContainer, TabContent,
+    type AdminConnection,
+    type IobTheme,
+    type ThemeType,
+    type Translate,
+    TabContainer,
+    TabContent,
 } from '@iobroker/adapter-react-v5';
 
 import UsersList from '../components/Users/UsersList';
@@ -19,23 +22,25 @@ interface UsersProps {
 }
 
 export default function Users(props: UsersProps) {
-    return <TabContainer>
-        <TabContent
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'auto',
-            }}
-        >
-            <UsersList
-                t={props.t}
-                lang={props.lang}
-                socket={props.socket}
-                ready={props.ready}
-                expertMode={props.expertMode}
-                themeType={props.themeType}
-                theme={props.theme}
-            />
-        </TabContent>
-    </TabContainer>;
+    return (
+        <TabContainer>
+            <TabContent
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'auto',
+                }}
+            >
+                <UsersList
+                    t={props.t}
+                    lang={props.lang}
+                    socket={props.socket}
+                    ready={props.ready}
+                    expertMode={props.expertMode}
+                    themeType={props.themeType}
+                    theme={props.theme}
+                />
+            </TabContent>
+        </TabContainer>
+    );
 }

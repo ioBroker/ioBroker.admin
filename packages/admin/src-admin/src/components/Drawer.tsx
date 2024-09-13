@@ -1,13 +1,6 @@
 import React, { Component, type RefObject } from 'react';
 
-import {
-    Avatar,
-    Drawer as MaterialDrawer,
-    IconButton,
-    List,
-    Typography,
-    SwipeableDrawer, Box,
-} from '@mui/material';
+import { Avatar, Drawer as MaterialDrawer, IconButton, List, Typography, SwipeableDrawer, Box } from '@mui/material';
 
 import {
     ChevronLeft as ChevronLeftIcon,
@@ -27,9 +20,15 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Utils, I18n, Icon, withWidth,
-    IconLogout as LogoutIcon, type AdminConnection,
-    type IobTheme, type ThemeType, type Translate,
+    Utils,
+    I18n,
+    Icon,
+    withWidth,
+    IconLogout as LogoutIcon,
+    type AdminConnection,
+    type IobTheme,
+    type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { getHref } from '@/tabs/CustomTab';
@@ -144,33 +143,33 @@ export const STATES = {
 };
 
 const tabsInfo: Record<string, { order: number; icon?: React.JSX.Element; host?: boolean; instance?: number }> = {
-    'tab-intro':            { order: 1,    icon: <AppsIcon /> },
-    'tab-info':             { order: 5,    icon: <InfoIcon />,               host: true },
-    'tab-adapters':         { order: 10,   icon: <StoreIcon />,              host: true },
-    'tab-instances':        { order: 15,   icon: <SubtitlesIcon />,          host: true },
-    'tab-objects':          { order: 20,   icon: <ViewListIcon /> },
-    'tab-enums':            { order: 25,   icon: <ArtTrackIcon /> },
-    'tab-devices':          { order: 27,   icon: <DvrIcon />,                host: true },
-    'tab-logs':             { order: 30,   icon: <ViewHeadlineIcon />,       host: true },
-    'tab-scenes':           { order: 35,   icon: <SubscriptionsIcon /> },
-    'tab-events':           { order: 40,   icon: <FlashOnIcon /> },
-    'tab-users':            { order: 45,   icon: <PersonOutlineIcon /> },
-    'tab-javascript':       { order: 50 },
-    'tab-text2command-0':   { order: 55, instance: 0 },
-    'tab-text2command-1':   { order: 56, instance: 1 },
-    'tab-text2command-2':   { order: 57, instance: 2 },
-    'tab-node-red-0':       { order: 60, instance: 0 },
-    'tab-node-red-1':       { order: 61, instance: 1 },
-    'tab-node-red-2':       { order: 62, instance: 2 },
-    'tab-fullcalendar-0':   { order: 65, instance: 0 },
-    'tab-fullcalendar-1':   { order: 66, instance: 1 },
-    'tab-fullcalendar-2':   { order: 67, instance: 2 },
-    'tab-echarts':          { order: 70, instance: 2 },
-    'tab-eventlist-0':      { order: 80, instance: 0 },
-    'tab-eventlist-1':      { order: 81, instance: 1 },
-    'tab-eventlist-2':      { order: 82, instance: 2 },
-    'tab-hosts':            { order: 100,  icon: <StorageIcon /> },
-    'tab-files':            { order: 110,  icon: <FilesIcon /> },
+    'tab-intro': { order: 1, icon: <AppsIcon /> },
+    'tab-info': { order: 5, icon: <InfoIcon />, host: true },
+    'tab-adapters': { order: 10, icon: <StoreIcon />, host: true },
+    'tab-instances': { order: 15, icon: <SubtitlesIcon />, host: true },
+    'tab-objects': { order: 20, icon: <ViewListIcon /> },
+    'tab-enums': { order: 25, icon: <ArtTrackIcon /> },
+    'tab-devices': { order: 27, icon: <DvrIcon />, host: true },
+    'tab-logs': { order: 30, icon: <ViewHeadlineIcon />, host: true },
+    'tab-scenes': { order: 35, icon: <SubscriptionsIcon /> },
+    'tab-events': { order: 40, icon: <FlashOnIcon /> },
+    'tab-users': { order: 45, icon: <PersonOutlineIcon /> },
+    'tab-javascript': { order: 50 },
+    'tab-text2command-0': { order: 55, instance: 0 },
+    'tab-text2command-1': { order: 56, instance: 1 },
+    'tab-text2command-2': { order: 57, instance: 2 },
+    'tab-node-red-0': { order: 60, instance: 0 },
+    'tab-node-red-1': { order: 61, instance: 1 },
+    'tab-node-red-2': { order: 62, instance: 2 },
+    'tab-fullcalendar-0': { order: 65, instance: 0 },
+    'tab-fullcalendar-1': { order: 66, instance: 1 },
+    'tab-fullcalendar-2': { order: 67, instance: 2 },
+    'tab-echarts': { order: 70, instance: 2 },
+    'tab-eventlist-0': { order: 80, instance: 0 },
+    'tab-eventlist-1': { order: 81, instance: 1 },
+    'tab-eventlist-2': { order: 82, instance: 2 },
+    'tab-hosts': { order: 100, icon: <StorageIcon /> },
+    'tab-files': { order: 110, icon: <FilesIcon /> },
 };
 
 interface AdminTab {
@@ -239,8 +238,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
         this.refEditButton = React.createRef();
 
-        this.getTabs()
-            .catch(e => window.alert(`Cannot get tabs: ${e}`));
+        this.getTabs().catch(e => window.alert(`Cannot get tabs: ${e}`));
     }
 
     static getDerivedStateFromProps(props: DrawerProps, state: DrawerState) {
@@ -254,7 +252,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
     static calculateHostUpdates(
         hosts: ioBroker.HostObject[],
-        repository: Record<string, { icon: string; version: string }>,
+        repository: Record<string, { icon: string; version: string }>
     ) {
         if (hosts && repository) {
             const jsControllerVersion = repository['js-controller']?.version || '';
@@ -271,7 +269,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
     static calculateAdapterUpdates(
         installed: Record<string, { version: string; ignoreVersion?: string }>,
-        repository: Record<string, { icon: string; version: string }>,
+        repository: Record<string, { icon: string; version: string }>
     ) {
         if (installed) {
             let count = 0;
@@ -281,7 +279,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 .forEach(element => {
                     const _installed = installed[element];
                     const adapter = repository && repository[element];
-                    if (element !== 'js-controller' &&
+                    if (
+                        element !== 'js-controller' &&
                         element !== 'hosts' &&
                         _installed?.version &&
                         adapter?.version &&
@@ -302,21 +301,22 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     componentDidMount() {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
 
-        this.onNotificationsHandler()
-            .then(() => {
-                this.props.hostsWorker.registerNotificationHandler(this.onNotificationsHandler);
+        this.onNotificationsHandler().then(() => {
+            this.props.hostsWorker.registerNotificationHandler(this.onNotificationsHandler);
 
-                if (!this.logsHandlerRegistered) {
-                    this.logsHandlerRegistered = true;
-                    this.props.logsWorker.registerErrorCountHandler(this.onErrorsUpdates);
-                    this.props.logsWorker.registerWarningCountHandler(this.onWarningsUpdates);
-                }
-            });
+            if (!this.logsHandlerRegistered) {
+                this.logsHandlerRegistered = true;
+                this.props.logsWorker.registerErrorCountHandler(this.onErrorsUpdates);
+                this.props.logsWorker.registerWarningCountHandler(this.onWarningsUpdates);
+            }
+        });
     }
 
-    onNotificationsHandler = () => this.props.hostsWorker.getNotifications()
-        .then(notifications => this.calculateWarning(notifications))
-        .catch(error => window.alert(`Cannot get notifications: ${error}`));
+    onNotificationsHandler = () =>
+        this.props.hostsWorker
+            .getNotifications()
+            .then(notifications => this.calculateWarning(notifications))
+            .catch(error => window.alert(`Cannot get notifications: ${error}`));
 
     onErrorsUpdates = (logErrors: number): void => {
         this.setState({ logErrors });
@@ -326,7 +326,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         this.setState({ logWarnings });
     };
 
-    calculateWarning = (notifications: Record<string, NotificationAnswer | null >) => {
+    calculateWarning = (notifications: Record<string, NotificationAnswer | null>) => {
         if (!notifications) {
             return;
         }
@@ -341,8 +341,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             if (Object.keys(notifications[host].result.system.categories).length) {
                 const obj = notifications[host].result.system.categories;
 
-                Object.keys(obj).forEach(nameTab =>
-                    Object.keys(obj[nameTab].instances).forEach(() => count++));
+                Object.keys(obj).forEach(nameTab => Object.keys(obj[nameTab].instances).forEach(() => count++));
             }
         });
 
@@ -426,7 +425,11 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
                     if (!obj.icon) {
                         obj.icon = `adapter/${instance.name}/${instance.icon}`;
-                    } else if (typeof obj.icon !== 'object' && !obj.icon.startsWith('data:image') && !obj.icon.includes('/')) {
+                    } else if (
+                        typeof obj.icon !== 'object' &&
+                        !obj.icon.startsWith('data:image') &&
+                        !obj.icon.includes('/')
+                    ) {
                         obj.icon = `adapter/${instance.name}/${obj.icon}`;
                     }
 
@@ -442,13 +445,30 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 });
             }
 
-            const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects', 'tab-hosts', 'tab-users', 'tab-enums'];
+            const READY_TO_USE = [
+                'tab-intro',
+                'tab-adapters',
+                'tab-instances',
+                'tab-logs',
+                'tab-files',
+                'tab-objects',
+                'tab-hosts',
+                'tab-users',
+                'tab-enums',
+            ];
             // DEV ONLY
             const tabNames = Object.keys(tabsInfo).filter(name => READY_TO_USE.includes(name));
 
             let tabs: AdminTab[] = tabNames.map(name => {
                 const obj: AdminTab = { name, ...tabsInfo[name] };
-                obj.title = I18n.t(ucFirst(name.replace('tab-', '').replace('-0', '').replace(/-(\d+)$/, ' $1')));
+                obj.title = I18n.t(
+                    ucFirst(
+                        name
+                            .replace('tab-', '')
+                            .replace('-0', '')
+                            .replace(/-(\d+)$/, ' $1')
+                    )
+                );
                 obj.visible = true;
                 return obj;
             });
@@ -457,7 +477,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             tabs = tabs.concat(dynamicTabs);
 
             tabs = tabs.filter(obj => obj);
-            tabs.forEach(obj => obj.visible = true);
+            tabs.forEach(obj => (obj.visible = true));
 
             tabs.sort((a, b) => {
                 if (a.order && b.order) {
@@ -469,54 +489,54 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 if (b.order) {
                     return 1;
                 }
-                return a.name > b.name ? -1 : (a.name > b.name ? 1 : 0);
+                return a.name > b.name ? -1 : a.name > b.name ? 1 : 0;
             });
 
             // Convert
-            this.props.socket.getCompactSystemConfig()
-                .then(systemConfig => {
-                    const tabsVisible: { name: string; visible: boolean; color?: string }[] = systemConfig.common.tabsVisible || [];
+            this.props.socket.getCompactSystemConfig().then(systemConfig => {
+                const tabsVisible: { name: string; visible: boolean; color?: string }[] =
+                    systemConfig.common.tabsVisible || [];
 
-                    tabs.forEach(tab => {
-                        const it = tabsVisible.find(el => el.name === tab.name);
-                        if (it) {
-                            tab.visible = it.visible;
-                            tab.color = it.color;
-                        }
-                    });
-
-                    const map: Record<string, number> = {};
-                    tabsVisible.forEach((item, i) => map[item.name] = i);
-
-                    tabs.sort((a, b) => {
-                        const aa = map[a.name];
-                        const bb = map[b.name];
-                        if (aa !== undefined && bb !== undefined) {
-                            return aa - bb;
-                        }
-                        if (aa) {
-                            return -1;
-                        }
-                        if (bb) {
-                            return 1;
-                        }
-                        return 0;
-                    });
-
-                    this.setState({ tabs }, () => {
-                        const newTabsVisible = tabs.map(({ name, visible, color }) => ({ name, visible, color }));
-
-                        if (JSON.stringify(newTabsVisible) !== JSON.stringify(tabsVisible)) {
-                            this.props.socket.getSystemConfig(true)
-                                .then(_systemConfig => {
-                                    _systemConfig.common.tabsVisible = tabsVisible;
-
-                                    return this.props.socket.setSystemConfig(_systemConfig)
-                                        .catch(e => window.alert(`Cannot set system config: ${e}`));
-                                });
-                        }
-                    });
+                tabs.forEach(tab => {
+                    const it = tabsVisible.find(el => el.name === tab.name);
+                    if (it) {
+                        tab.visible = it.visible;
+                        tab.color = it.color;
+                    }
                 });
+
+                const map: Record<string, number> = {};
+                tabsVisible.forEach((item, i) => (map[item.name] = i));
+
+                tabs.sort((a, b) => {
+                    const aa = map[a.name];
+                    const bb = map[b.name];
+                    if (aa !== undefined && bb !== undefined) {
+                        return aa - bb;
+                    }
+                    if (aa) {
+                        return -1;
+                    }
+                    if (bb) {
+                        return 1;
+                    }
+                    return 0;
+                });
+
+                this.setState({ tabs }, () => {
+                    const newTabsVisible = tabs.map(({ name, visible, color }) => ({ name, visible, color }));
+
+                    if (JSON.stringify(newTabsVisible) !== JSON.stringify(tabsVisible)) {
+                        this.props.socket.getSystemConfig(true).then(_systemConfig => {
+                            _systemConfig.common.tabsVisible = tabsVisible;
+
+                            return this.props.socket
+                                .setSystemConfig(_systemConfig)
+                                .catch(e => window.alert(`Cannot set system config: ${e}`));
+                        });
+                    }
+                });
+            });
         } catch (error) {
             window.alert(`Cannot get instances: ${error}`);
         }
@@ -525,53 +545,63 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     getHeader() {
         const { state, handleNavigation } = this.props;
 
-        return <Box
-            component="div"
-            sx={Utils.getStyle(
-                this.props.theme,
-                styles.header,
-                this.props.state === STATES.opened && this.props.isSecure && styles.headerLogout,
-                !this.isSwipeable() && this.props.state !== STATES.opened && styles.headerCompact,
-            )}
-        >
-            <div
-                style={{
-                    ...styles.avatarBlock,
-                    ...styles.avatarNotVisible,
-                    ...(state === 0 ? styles.avatarVisible : { display: 'none' }),
-                }}
+        return (
+            <Box
+                component="div"
+                sx={Utils.getStyle(
+                    this.props.theme,
+                    styles.header,
+                    this.props.state === STATES.opened && this.props.isSecure && styles.headerLogout,
+                    !this.isSwipeable() && this.props.state !== STATES.opened && styles.headerCompact
+                )}
             >
-                <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
-                    {this.props.adminGuiConfig.icon ?
-                        <div style={{ height: 50, width: 102, lineHeight: '50px' }}>
-                            <img src={this.props.adminGuiConfig.icon} alt="logo" style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }} />
-                        </div>
-                        :
-                        <Avatar
-                            onClick={() => handleNavigation('easy')}
-                            style={styles.logoSize}
-                            alt="ioBroker"
-                            src="img/no-image.png"
-                        />}
-                </a>
-                {!this.props.adminGuiConfig.icon && this.props.versionAdmin && <Typography sx={styles.styleVersion}>
-v
-                    {this.props.versionAdmin}
-                </Typography>}
-            </div>
-            <IconButton
-                size="large"
-                onClick={() => {
-                    if (this.isSwipeable() || this.props.state === STATES.compact) {
-                        this.props.onStateChange(STATES.closed as 1);
-                    } else {
-                        this.props.onStateChange(STATES.compact as 2);
-                    }
-                }}
-            >
-                <ChevronLeftIcon />
-            </IconButton>
-        </Box>;
+                <div
+                    style={{
+                        ...styles.avatarBlock,
+                        ...styles.avatarNotVisible,
+                        ...(state === 0 ? styles.avatarVisible : { display: 'none' }),
+                    }}
+                >
+                    <a
+                        href="/#easy"
+                        onClick={event => event.preventDefault()}
+                        style={{ color: 'inherit', textDecoration: 'none' }}
+                    >
+                        {this.props.adminGuiConfig.icon ? (
+                            <div style={{ height: 50, width: 102, lineHeight: '50px' }}>
+                                <img
+                                    src={this.props.adminGuiConfig.icon}
+                                    alt="logo"
+                                    style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }}
+                                />
+                            </div>
+                        ) : (
+                            <Avatar
+                                onClick={() => handleNavigation('easy')}
+                                style={styles.logoSize}
+                                alt="ioBroker"
+                                src="img/no-image.png"
+                            />
+                        )}
+                    </a>
+                    {!this.props.adminGuiConfig.icon && this.props.versionAdmin && (
+                        <Typography sx={styles.styleVersion}>v{this.props.versionAdmin}</Typography>
+                    )}
+                </div>
+                <IconButton
+                    size="large"
+                    onClick={() => {
+                        if (this.isSwipeable() || this.props.state === STATES.compact) {
+                            this.props.onStateChange(STATES.closed as 1);
+                        } else {
+                            this.props.onStateChange(STATES.compact as 2);
+                        }
+                    }}
+                >
+                    <ChevronLeftIcon />
+                </IconButton>
+            </Box>
+        );
     }
 
     isSwipeable() {
@@ -597,8 +627,8 @@ v
 
         if (isVisibility || newColor !== undefined) {
             this.setState({ tabs: newTabs }, () =>
-                socket.setSystemConfig(newObjCopy)
-                    .catch(e => window.alert(`Cannot set system config: ${e}`)));
+                socket.setSystemConfig(newObjCopy).catch(e => window.alert(`Cannot set system config: ${e}`))
+            );
         } else {
             try {
                 await socket.setSystemConfig(newObjCopy);
@@ -609,15 +639,11 @@ v
     };
 
     getNavigationItems() {
-        const {
-            tabs, logErrors, logWarnings,
-        } = this.state;
-        const {
-            currentTab, state, handleNavigation,
-        } = this.props;
+        const { tabs, logErrors, logWarnings } = this.state;
+        const { currentTab, state, handleNavigation } = this.props;
 
         const hosts: Record<string, ioBroker.HostObject> = {};
-        this.props.hosts.forEach(host => hosts[host._id] = host);
+        this.props.hosts.forEach(host => (hosts[host._id] = host));
 
         return tabs.map((tab, idx) => {
             if (!this.props.editMenuList && !tab.visible) {
@@ -628,65 +654,81 @@ v
                 return null;
             }
 
-            return <DragWrapper
-                key={tab.name}
-                canDrag={this.props.editMenuList}
-                name={tab.name}
-                iconJSX={tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <Icon style={styles.icon} src={tab.icon} />}
-                _id={tab.name}
-                selected={currentTab === tab.name}
-                tab={tab}
-                compact={!this.isSwipeable() && state !== STATES.opened}
-                badgeContent={logErrors || logWarnings || 0}
-                badgeColor={logErrors ? 'error' : (logWarnings ? 'warn' : '')}
-                tabs={tabs}
-                setEndDrag={() => this.tabsEditSystemConfig()}
-                setTabs={(newObj: AdminTab[]) => this.setState({ tabs: newObj })}
-            >
-                <DrawerItem
+            return (
+                <DragWrapper
                     key={tab.name}
-                    editMenuList={this.props.editMenuList}
-                    visible={tab.visible}
-                    color={tab.color}
-                    editListFunc={(isVisibility, color) => this.tabsEditSystemConfig(idx, isVisibility, color)}
+                    canDrag={this.props.editMenuList}
+                    name={tab.name}
+                    iconJSX={
+                        tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <Icon style={styles.icon} src={tab.icon} />
+                    }
+                    _id={tab.name}
+                    selected={currentTab === tab.name}
+                    tab={tab}
                     compact={!this.isSwipeable() && state !== STATES.opened}
-                    onClick={e => {
-                        if (e.ctrlKey || e.shiftKey) {
-                            getHref(
-                                this.props.instancesWorker,
-                                tab.name,
-                                this.props.hostname,
-                                hosts,
-                                this.props.adminInstance,
-                                this.props.themeType,
-                            )
-                                .then(href => {
+                    badgeContent={logErrors || logWarnings || 0}
+                    badgeColor={logErrors ? 'error' : logWarnings ? 'warn' : ''}
+                    tabs={tabs}
+                    setEndDrag={() => this.tabsEditSystemConfig()}
+                    setTabs={(newObj: AdminTab[]) => this.setState({ tabs: newObj })}
+                >
+                    <DrawerItem
+                        key={tab.name}
+                        editMenuList={this.props.editMenuList}
+                        visible={tab.visible}
+                        color={tab.color}
+                        editListFunc={(isVisibility, color) => this.tabsEditSystemConfig(idx, isVisibility, color)}
+                        compact={!this.isSwipeable() && state !== STATES.opened}
+                        onClick={e => {
+                            if (e.ctrlKey || e.shiftKey) {
+                                getHref(
+                                    this.props.instancesWorker,
+                                    tab.name,
+                                    this.props.hostname,
+                                    hosts,
+                                    this.props.adminInstance,
+                                    this.props.themeType
+                                ).then(href => {
                                     if (href) {
                                         console.log(href);
                                         // Open in new tab
-                                        window.open(`${window.location.protocol}//${window.location.host}/${href}`, tab.name).focus();
+                                        window
+                                            .open(
+                                                `${window.location.protocol}//${window.location.host}/${href}`,
+                                                tab.name
+                                            )
+                                            .focus();
                                     } else {
                                         handleNavigation(tab.name);
                                     }
                                 });
-                        } else {
-                            handleNavigation(tab.name);
+                            } else {
+                                handleNavigation(tab.name);
+                            }
+                        }}
+                        icon={
+                            tabsInfo[tab.name]?.icon ? (
+                                tabsInfo[tab.name].icon
+                            ) : (
+                                <Icon src={tab.icon} style={styles.icon} />
+                            )
                         }
-                    }}
-                    icon={tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <Icon src={tab.icon} style={styles.icon} />}
-                    text={tab.title}
-                    selected={currentTab === tab.name}
-                    badgeContent={this.badge(tab).content}
-                    badgeColor={this.badge(tab).color}
-                    badgeAdditionalContent={this.badge(tab)?.additionalContent}
-                    badgeAdditionalColor={this.badge(tab)?.additionalColor}
-                    theme={this.props.theme}
-                />
-            </DragWrapper>;
+                        text={tab.title}
+                        selected={currentTab === tab.name}
+                        badgeContent={this.badge(tab).content}
+                        badgeColor={this.badge(tab).color}
+                        badgeAdditionalContent={this.badge(tab)?.additionalContent}
+                        badgeAdditionalColor={this.badge(tab)?.additionalColor}
+                        theme={this.props.theme}
+                    />
+                </DragWrapper>
+            );
         });
     }
 
-    badge = (tab: AdminTab): {
+    badge = (
+        tab: AdminTab
+    ): {
         content: number;
         color: 'error' | 'warn' | 'primary' | '';
         additionalContent?: number;
@@ -695,7 +737,7 @@ v
         switch (tab.name) {
             case 'tab-logs': {
                 const { logErrors, logWarnings } = this.state;
-                return { content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' };
+                return { content: logErrors || logWarnings || 0, color: logErrors ? 'error' : 'warn' };
             }
 
             case 'tab-adapters':
@@ -703,89 +745,102 @@ v
 
             case 'tab-hosts':
                 return {
-                    content: this.state.hostsUpdate || 0, color: 'primary', additionalContent: this.state.hostError, additionalColor: 'error',
+                    content: this.state.hostsUpdate || 0,
+                    color: 'primary',
+                    additionalContent: this.state.hostError,
+                    additionalColor: 'error',
                 };
 
             default:
                 return {
-                    content: 0, color: '', additionalContent: 0, additionalColor: '',
+                    content: 0,
+                    color: '',
+                    additionalContent: 0,
+                    additionalColor: '',
                 };
         }
     };
 
     render() {
         if (this.isSwipeable()) {
-            return <SwipeableDrawer
-                sx={Utils.getStyle(this.props.theme, styles.root, { '&.MuiSwipeableDrawer-paper': styles.paper })}
+            return (
+                <SwipeableDrawer
+                    sx={Utils.getStyle(this.props.theme, styles.root, { '&.MuiSwipeableDrawer-paper': styles.paper })}
+                    anchor="left"
+                    open={this.props.state !== STATES.closed}
+                    onClose={() => this.props.onStateChange(STATES.closed as 1)}
+                    onOpen={() => this.props.onStateChange(STATES.opened as 0)}
+                >
+                    <CustomDragLayer theme={this.props.theme} />
+
+                    {this.getHeader()}
+
+                    <List>{this.getNavigationItems()}</List>
+                    {this.props.isSecure && (
+                        <DrawerItem
+                            theme={this.props.theme}
+                            compact={!this.isSwipeable() && this.props.state !== STATES.opened}
+                            onClick={this.props.onLogout}
+                            text={this.props.t('Logout')}
+                            icon={<LogoutIcon />}
+                        />
+                    )}
+                    {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && (
+                        <div style={styles.editButton}>
+                            <CustomPopper
+                                editMenuList={this.props.editMenuList}
+                                onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
+                            />
+                        </div>
+                    )}
+                </SwipeableDrawer>
+            );
+        }
+
+        return (
+            <MaterialDrawer
+                sx={Utils.getStyle(
+                    this.props.theme,
+                    styles.root,
+                    this.props.state !== STATES.opened
+                        ? styles.rootCompactWidth
+                        : this.props.editMenuList
+                          ? styles.rootEditWidth
+                          : styles.rootFullWidth,
+                    {
+                        '& .MuiDrawer-paper': styles.paper,
+                    }
+                )}
+                variant="persistent"
                 anchor="left"
                 open={this.props.state !== STATES.closed}
-                onClose={() => this.props.onStateChange(STATES.closed as 1)}
-                onOpen={() => this.props.onStateChange(STATES.opened as 0)}
+                onMouseEnter={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = '1')}
+                onMouseLeave={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = '0')}
             >
                 <CustomDragLayer theme={this.props.theme} />
-
                 {this.getHeader()}
-
-                <List>
-                    {this.getNavigationItems()}
-                </List>
-                {this.props.isSecure &&
+                <List style={styles.list}>{this.getNavigationItems()}</List>
+                {this.props.isSecure && (
                     <DrawerItem
                         theme={this.props.theme}
+                        style={{ flexShrink: 0 }}
                         compact={!this.isSwipeable() && this.props.state !== STATES.opened}
                         onClick={this.props.onLogout}
                         text={this.props.t('Logout')}
                         icon={<LogoutIcon />}
-                    />}
-                {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div style={styles.editButton}>
-                    <CustomPopper
-                        editMenuList={this.props.editMenuList}
-                        onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
                     />
-                </div>}
-            </SwipeableDrawer>;
-        }
-
-        return <MaterialDrawer
-            sx={Utils.getStyle(
-                this.props.theme,
-                styles.root,
-                this.props.state !== STATES.opened ? styles.rootCompactWidth : (this.props.editMenuList ? styles.rootEditWidth : styles.rootFullWidth),
-                {
-                    '& .MuiDrawer-paper': styles.paper,
-                },
-            )}
-            variant="persistent"
-            anchor="left"
-            open={this.props.state !== STATES.closed}
-            onMouseEnter={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = '1')}
-            onMouseLeave={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = '0')}
-        >
-            <CustomDragLayer theme={this.props.theme} />
-            {this.getHeader()}
-            <List style={styles.list}>
-                {this.getNavigationItems()}
-            </List>
-            {this.props.isSecure &&
-                <DrawerItem
-                    theme={this.props.theme}
-                    style={{ flexShrink: 0 }}
-                    compact={!this.isSwipeable() && this.props.state !== STATES.opened}
-                    onClick={this.props.onLogout}
-                    text={this.props.t('Logout')}
-                    icon={<LogoutIcon />}
-                />}
-            {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div
-                style={{ ...styles.editButton, opacity: 0 }}
-                ref={this.refEditButton}
-            >
-                <CustomPopper
-                    size="small"
-                    editMenuList={this.props.editMenuList}
-                    onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
-                />
-            </div>}
-        </MaterialDrawer>;
+                )}
+                {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && (
+                    <div style={{ ...styles.editButton, opacity: 0 }} ref={this.refEditButton}>
+                        <CustomPopper
+                            size="small"
+                            editMenuList={this.props.editMenuList}
+                            onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
+                        />
+                    </div>
+                )}
+            </MaterialDrawer>
+        );
     }
 }
 

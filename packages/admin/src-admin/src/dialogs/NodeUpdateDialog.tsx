@@ -1,9 +1,13 @@
 import React from 'react';
 import {
     Box,
-    Button, CircularProgress,
-    Dialog, DialogActions, DialogContent,
-    DialogTitle, Typography,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Typography,
 } from '@mui/material';
 import { Close as CloseIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 
@@ -111,7 +115,7 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
                 },
             ],
             // restart the controller after the Node.js update
-            true,
+            true
         );
 
         this.setState({

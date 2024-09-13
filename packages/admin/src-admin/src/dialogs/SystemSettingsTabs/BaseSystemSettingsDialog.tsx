@@ -1,10 +1,6 @@
 import React from 'react';
 
-import {
-    type AdminConnection, type Translate,
-    type ThemeType,
-    type ThemeName,
-} from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type Translate, type ThemeType, type ThemeName } from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig } from '@/types';
 
@@ -28,7 +24,9 @@ export interface BaseSystemSettingsDialogProps {
     saving: boolean;
 }
 
-abstract class BaseSystemSettingsDialog<P = undefined, S extends object = object> extends React.Component<P extends undefined ? BaseSystemSettingsDialogProps : P, S> {
-}
+abstract class BaseSystemSettingsDialog<P = undefined, S extends object = object> extends React.Component<
+    P extends undefined ? BaseSystemSettingsDialogProps : P,
+    S
+> {}
 
 export default BaseSystemSettingsDialog;

@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
 import semver from 'semver';
 
-import {
-    type Translate, type AdminConnection,
-    type ThemeType, type IobTheme,
-} from '@iobroker/adapter-react-v5';
+import { type Translate, type AdminConnection, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
 
-import {
-    checkCondition,
-    type CompactInstanceInfo,
-} from '@/dialogs/AdapterUpdateDialog';
+import { checkCondition, type CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
 
 import AddInstanceDialog, { type AdapterDependencies } from '@/dialogs/AddInstanceDialog';
 import LicenseDialog from '@/dialogs/LicenseDialog';
@@ -20,14 +14,20 @@ import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 import { extractUrlLink, type RepoAdapterObject } from './Utils';
 
 export type AdapterRating = {
-    rating?:           { r: number; c: number };
+    rating?: { r: number; c: number };
     [version: string]: { r: number; c: number };
 };
 export type AdapterRatingInfo = AdapterRating & { title: string };
 
-export type AdapterInformationEx = AdapterInformation & { installedFrom?: string; enabled: number; count: number; ignoreVersion?: string };
-export type InstalledInfo = { [adapterName: string]: AdapterInformationEx } &
-    { hosts?: { [hostName: string]: (ioBroker.HostCommon & { host: string; runningVersion: string }) } };
+export type AdapterInformationEx = AdapterInformation & {
+    installedFrom?: string;
+    enabled: number;
+    count: number;
+    ignoreVersion?: string;
+};
+export type InstalledInfo = { [adapterName: string]: AdapterInformationEx } & {
+    hosts?: { [hostName: string]: ioBroker.HostCommon & { host: string; runningVersion: string } };
+};
 
 export type AdaptersContext = {
     expertMode: boolean;
@@ -91,7 +91,10 @@ export interface AdapterInstallDialogState {
     showDialog: boolean;
 }
 
-export default abstract class AdapterInstallDialog<TProps, TState extends AdapterInstallDialogState> extends Component<TProps, TState> {
+export default abstract class AdapterInstallDialog<TProps, TState extends AdapterInstallDialogState> extends Component<
+    TProps,
+    TState
+> {
     protected constructor(props: TProps) {
         super(props);
 
@@ -109,23 +112,26 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
             return null;
         }
 
-        return <LicenseDialog
-            licenseType={this.state.showLicenseDialog.licenseType}
-            url={this.state.showLicenseDialog.url}
-            onClose={result => {
-                const showLicenseDialog = result ? this.state.showLicenseDialog : null;
-                this.setState({ showLicenseDialog: null, showDialog: false }, () => {
-                    if (showLicenseDialog) {
-                        if (showLicenseDialog.upload) {
-                            this.upload(showLicenseDialog.adapterName, context);
-                        } else {
-                            this.addInstance({ adapterName: showLicenseDialog.adapterName, context })
-                                .catch(e => window.alert(`Cannot add instance: ${e}`));
+        return (
+            <LicenseDialog
+                licenseType={this.state.showLicenseDialog.licenseType}
+                url={this.state.showLicenseDialog.url}
+                onClose={result => {
+                    const showLicenseDialog = result ? this.state.showLicenseDialog : null;
+                    this.setState({ showLicenseDialog: null, showDialog: false }, () => {
+                        if (showLicenseDialog) {
+                            if (showLicenseDialog.upload) {
+                                this.upload(showLicenseDialog.adapterName, context);
+                            } else {
+                                this.addInstance({ adapterName: showLicenseDialog.adapterName, context }).catch(e =>
+                                    window.alert(`Cannot add instance: ${e}`)
+                                );
+                            }
                         }
-                    }
-                });
-            }}
-        />;
+                    });
+                }}
+            />
+        );
     }
 
     async addInstance(options: {
@@ -142,7 +148,7 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
                 adapterObject.messages,
                 null,
                 adapterObject.version,
-                options.context.compactInstances,
+                options.context.compactInstances
             );
 
             if (!options.instance && (options.context.expertMode || messages)) {
@@ -159,7 +165,9 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
                 const instances = await options.context.instancesWorker.getInstances();
                 // if the instance already exists
                 if (instances && instances[`system.adapter.${options.adapterName}.${options.instance}`]) {
-                    window.alert(options.context.t('Instance %s already exists', `${options.adapterName}.${options.instance}`));
+                    window.alert(
+                        options.context.t('Instance %s already exists', `${options.adapterName}.${options.instance}`)
+                    );
                     return;
                 }
             }
@@ -173,7 +181,8 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
                     options.debug || options.context.expertMode ? '--debug' : ''
                 }`,
                 host,
-                exitCode => (!exitCode ? resolve() : reject(new Error(`The process returned an exit code of ${exitCode}`))),
+                exitCode =>
+                    !exitCode ? resolve() : reject(new Error(`The process returned an exit code of ${exitCode}`))
             );
         });
     }
@@ -290,41 +299,48 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
             return null;
         }
 
-        return <AddInstanceDialog
-            adapter={this.state.addInstanceDialog}
-            socket={context.socket}
-            hostsWorker={context.hostsWorker}
-            instancesWorker={context.instancesWorker}
-            dependencies={this.getDependencies(this.state.addInstanceDialog, context)}
-            currentHost={`system.host.${this.state.addInstanceHostName}`}
-            currentInstance={this.state.addInstanceId}
-            t={context.t}
-            onClose={(result: boolean) => {
-                const addInstanceDialog = result ? this.state.addInstanceDialog : '';
-                const addInstanceId = result ? this.state.addInstanceId : '';
-                this.setState({
-                    addInstanceDialog: '',
-                    addInstanceId: 'auto',
-                    showDialog: false,
-                }, () => {
-                    if (addInstanceDialog) {
-                        this.addInstance({
-                            adapterName: addInstanceDialog,
-                            instance: addInstanceId,
-                            context,
-                        });
-                    }
-                });
-            }}
-            onHostChange={hostName => this.setState({ addInstanceHostName: hostName.replace(/^system\.host\./, '') })}
-            onInstanceChange={event => this.setState({ addInstanceId: event.target.value })}
-            adapterObject={context.repository[this.state.addInstanceDialog]}
-            instances={context.compactInstances}
-            toggleTranslation={context.toggleTranslation}
-            noTranslation={context.noTranslation}
-            expertMode={context.expertMode}
-            theme={context.theme}
-        />;
+        return (
+            <AddInstanceDialog
+                adapter={this.state.addInstanceDialog}
+                socket={context.socket}
+                hostsWorker={context.hostsWorker}
+                instancesWorker={context.instancesWorker}
+                dependencies={this.getDependencies(this.state.addInstanceDialog, context)}
+                currentHost={`system.host.${this.state.addInstanceHostName}`}
+                currentInstance={this.state.addInstanceId}
+                t={context.t}
+                onClose={(result: boolean) => {
+                    const addInstanceDialog = result ? this.state.addInstanceDialog : '';
+                    const addInstanceId = result ? this.state.addInstanceId : '';
+                    this.setState(
+                        {
+                            addInstanceDialog: '',
+                            addInstanceId: 'auto',
+                            showDialog: false,
+                        },
+                        async () => {
+                            if (addInstanceDialog) {
+                                await this.addInstance({
+                                    adapterName: addInstanceDialog,
+                                    instance: addInstanceId,
+                                    context,
+                                });
+                            }
+                        }
+                    );
+                }}
+                onHostChange={hostName =>
+                    this.setState({ addInstanceHostName: hostName.replace(/^system\.host\./, '') })
+                }
+                onInstanceChange={event => this.setState({ addInstanceId: event.target.value })}
+                adapterObject={context.repository[this.state.addInstanceDialog]}
+                instances={context.compactInstances}
+                toggleTranslation={context.toggleTranslation}
+                noTranslation={context.noTranslation}
+                expertMode={context.expertMode}
+                theme={context.theme}
+            />
+        );
     }
 
     upload(adapterName: string, context: AdaptersContext) {
@@ -338,8 +354,7 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
         const licenseType = adapter.licenseInformation?.license || adapter.license;
 
         if (licenseType === 'MIT') {
-            this.addInstance({ adapterName, context })
-                .catch(e => window.alert(`Cannot add instance: ${e}`));
+            this.addInstance({ adapterName, context }).catch(e => window.alert(`Cannot add instance: ${e}`));
         } else {
             this.setState({ showLicenseDialog: { url, adapterName, licenseType }, showDialog: true });
         }
@@ -351,9 +366,11 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
             return null;
         }
 
-        return <>
-            {this.renderAddInstanceDialog(context)}
-            {this.renderLicenseDialog(context)}
-        </>;
+        return (
+            <>
+                {this.renderAddInstanceDialog(context)}
+                {this.renderLicenseDialog(context)}
+            </>
+        );
     }
 }

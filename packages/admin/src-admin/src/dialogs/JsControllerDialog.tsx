@@ -2,24 +2,22 @@ import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import {
-    Accordion, AccordionDetails, AccordionSummary,
-    Card, DialogTitle, IconButton,
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Card,
+    DialogTitle,
+    IconButton,
     Button,
     Dialog,
     DialogActions,
-    DialogContent, Box,
+    DialogContent,
+    Box,
 } from '@mui/material';
 
-import {
-    ExpandMore as ExpandMoreIcon,
-    Description as DescriptionIcon,
-    Close as CloseIcon,
-} from '@mui/icons-material';
+import { ExpandMore as ExpandMoreIcon, Description as DescriptionIcon, Close as CloseIcon } from '@mui/icons-material';
 
-import {
-    I18n, Utils, IconCopy,
-    type IobTheme,
-} from '@iobroker/adapter-react-v5';
+import { I18n, Utils, IconCopy, type IobTheme } from '@iobroker/adapter-react-v5';
 import { CONTROLLER_CHANGELOG_URL } from '@/helpers/utils';
 
 const styles: Record<string, any> = {
@@ -104,7 +102,7 @@ const styles: Record<string, any> = {
             m: 0,
         },
     },
-    accordionDetails:{
+    accordionDetails: {
         display: 'flex',
         flexDirection: 'column',
     },
@@ -148,9 +146,7 @@ interface JsControllerDialogProps {
     onClose: () => void;
 }
 
-const JsControllerDialog = ({
-    socket, hostId, version, onClose,
-}: JsControllerDialogProps) => {
+const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDialogProps) => {
     const [readme, setReadme] = useState<(string | React.JSX.Element)[] | null>(null);
     const [location, setLocation] = useState('');
     const [os, setOS] = useState('');
@@ -166,7 +162,8 @@ const JsControllerDialog = ({
         }
 
         if ((!location || !os) && hostId && typeof hostId === 'string') {
-            socket.getHostInfoShort(hostId)
+            socket
+                .getHostInfoShort(hostId)
                 .then((data: HostInfoShort) => {
                     if (data.location && data.location !== location) {
                         setLocation(data.location);
@@ -176,7 +173,9 @@ const JsControllerDialog = ({
                         setOS(data.os);
                     }
 
-                    fetch(`https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/${I18n.getLanguage()}/controller-upgrade.md`)
+                    fetch(
+                        `https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/${I18n.getLanguage()}/controller-upgrade.md`
+                    )
                         .then(response => response.text())
                         .then(_readme => {
                             const _os = data.os || os;
@@ -204,21 +203,25 @@ const JsControllerDialog = ({
                                     }
                                     button = button.replace(/^\n\r/, '').replace(/^\n/, '');
                                     if (small) {
-                                        parts.push(<IconButton
-                                            key={`b${parts.length}`}
-                                            onClick={() => copyTextToClipboard(button)}
-                                        >
-                                            <IconCopy />
-                                        </IconButton>);
+                                        parts.push(
+                                            <IconButton
+                                                key={`b${parts.length}`}
+                                                onClick={() => copyTextToClipboard(button)}
+                                            >
+                                                <IconCopy />
+                                            </IconButton>
+                                        );
                                     } else {
-                                        parts.push(<Button
-                                            key={`b${parts.length}`}
-                                            variant="contained"
-                                            onClick={() => copyTextToClipboard(button)}
-                                            startIcon={<IconCopy />}
-                                        >
-                                            {I18n.t('Copy to clipboard')}
-                                        </Button>);
+                                        parts.push(
+                                            <Button
+                                                key={`b${parts.length}`}
+                                                variant="contained"
+                                                onClick={() => copyTextToClipboard(button)}
+                                                startIcon={<IconCopy />}
+                                            >
+                                                {I18n.t('Copy to clipboard')}
+                                            </Button>
+                                        );
                                     }
                                     parts.push(text);
                                 } else {
@@ -229,275 +232,366 @@ const JsControllerDialog = ({
                             setReadme(parts);
                         });
                 })
-                .catch((e: string) =>
-                    window.alert(`Cannot get information about host "${hostId}": ${e}`));
+                .catch((e: string) => window.alert(`Cannot get information about host "${hostId}": ${e}`));
         }
     }, [location, os, socket, version, hostId]);
 
-    const renderReadme = () => <>
-        {readme.map((text, i) => (typeof text === 'object' ? text : <ReactMarkdown
-            key={`t_${i}`}
-            components={{
-                // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
-                em: ({ ...props }) => <IconButton
-                    style={styles.copyButtonSmall}
-                    onClick={() => copyTextToClipboard((props.children as string[])[0].toString())}
+    const renderReadme = () => (
+        <>
+            {readme.map((text, i) =>
+                typeof text === 'object' ? (
+                    text
+                ) : (
+                    <ReactMarkdown
+                        key={`t_${i}`}
+                        components={{
+                            // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
+                            em: ({ ...props }) => (
+                                <IconButton
+                                    style={styles.copyButtonSmall}
+                                    onClick={() => copyTextToClipboard((props.children as string[])[0].toString())}
+                                >
+                                    <IconCopy />
+                                </IconButton>
+                            ),
+                            // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
+                            a: ({ children, ...props }) => (
+                                <a style={{ color: 'inherit' }} {...props}>
+                                    {children}
+                                </a>
+                            ),
+                            // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
+                            code: ({ children, ref, ...props }) => (
+                                <Box
+                                    component="code"
+                                    sx={styles.code}
+                                    ref={ref as React.RefObject<HTMLElement>}
+                                    {...props}
+                                >
+                                    {children}
+                                </Box>
+                            ),
+                        }}
+                    >
+                        {text}
+                    </ReactMarkdown>
+                )
+            )}
+        </>
+    );
+
+    const renderText = () => (
+        <Card style={styles.root}>
+            <Box component="div" sx={styles.standardText}>
+                {I18n.t(
+                    'Due to the different hardware and platforms under which ioBroker runs, the js-controller has to be updated manually. Further details can be found in the appropriate section.'
+                )}
+            </Box>
+
+            <Box component="h2" sx={styles.h2}>
+                {I18n.t('General information for all platforms')}
+            </Box>
+            <Box component="div" sx={styles.standardText}>
+                {I18n.t('For an update from js-controller 1.x to 2.x please always read the information at')}{' '}
+                <a
+                    href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable"
+                    target="_blank"
+                    rel="noreferrer"
                 >
-                    <IconCopy />
-                </IconButton>,
-                // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
-                a: ({ children, ...props }) =>
-                    <a style={{ color: 'inherit' }} {...props}>{children}</a>,
-                // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
-                code: ({
-                    children, ref, ...props
-                }) => <Box
-                    component="code"
-                    sx={styles.code}
-                    ref={ref as React.RefObject<HTMLElement>}
-                    {...props}
-                >
-                    {children}
-                </Box>,
-            }}
-        >
-            {text}
-        </ReactMarkdown>))}
-    </>;
+                    forum
+                </a>
+                .
+            </Box>
+            <Box component="div" sx={styles.standardText}>
+                {I18n.t(
+                    'Otherwise please update the slaves first with an update of master-slave systems and the master last!'
+                )}
+            </Box>
+            {os !== 'win32' && (
+                <>
+                    <Box component="h2" sx={styles.h2}>
+                        {I18n.t('Linux/macOS (new installer)')}
+                    </Box>
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t('This is the recommended option')}
+                    </Box>
 
-    const renderText = () => <Card style={styles.root}>
-        <Box component="div" sx={styles.standardText}>{I18n.t('Due to the different hardware and platforms under which ioBroker runs, the js-controller has to be updated manually. Further details can be found in the appropriate section.')}</Box>
-
-        <Box component="h2" sx={styles.h2}>{I18n.t('General information for all platforms')}</Box>
-        <Box component="div" sx={styles.standardText}>
-            {I18n.t('For an update from js-controller 1.x to 2.x please always read the information at')}
-            {' '}
-            <a
-                href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable"
-                target="_blank"
-                rel="noreferrer"
-            >
-                forum
-            </a>
-.
-        </Box>
-        <Box component="div" sx={styles.standardText}>{I18n.t('Otherwise please update the slaves first with an update of master-slave systems and the master last!')}</Box>
-        {os !== 'win32' && <>
-            <Box component="h2" sx={styles.h2}>{I18n.t('Linux/macOS (new installer)')}</Box>
-            <Box component="div" sx={styles.standardText}>{I18n.t('This is the recommended option')}</Box>
-
-            <Box component="div" sx={styles.standardText}>{I18n.t('Please execute the following commands in an SSH shell (console):')}</Box>
-            <pre style={styles.pre}>
-                <IconButton
-                    size="small"
-                    onClick={() => {
-                        window.alert(I18n.t('Copied'));
-                        copyTextToClipboard(
-                            `iob backup
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t('Please execute the following commands in an SSH shell (console):')}
+                    </Box>
+                    <pre style={styles.pre}>
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                window.alert(I18n.t('Copied'));
+                                copyTextToClipboard(
+                                    `iob backup
 iob stop
 iob update
 iob upgrade self
-iob start`,
-                        );
-                    }}
-                    style={styles.copyButton}
-                >
-                    <IconCopy />
-                </IconButton>
-                <div style={styles.standardTextSmall}>iob backup</div>
-                <div style={styles.standardTextSmall}>iob stop</div>
-                <div style={styles.standardTextSmall}>iob update</div>
-                <div style={styles.standardTextSmall}>iob fix</div>
-                <div style={styles.standardTextSmall}>iob upgrade self</div>
-                <div style={styles.standardTextSmall}>iob start</div>
-            </pre>
-            <div style={styles.standardTextSmall2}>{I18n.t('or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
-            <div style={styles.standardTextSmall2}>{I18n.t('If the upgrade command displays Access Rights / Permission errors, then please use the install fixer')}</div>
-            <pre style={styles.pre}>
-                <IconButton
-                    size="small"
-                    onClick={() => {
-                        window.alert(I18n.t('Copied'));
-                        copyTextToClipboard('curl -sL https://iobroker.net/fix.sh | bash -');
-                    }}
-                    style={styles.copyButton}
-                >
-                    <IconCopy />
-                </IconButton>
-                <div style={styles.standardTextSmall}>curl -sL https://iobroker.net/fix.sh | bash -</div>
-            </pre>
-            <div style={styles.standardTextSmall2}>{I18n.t('to fix these issues and upgrade command run again.')}</div>
+iob start`
+                                );
+                            }}
+                            style={styles.copyButton}
+                        >
+                            <IconCopy />
+                        </IconButton>
+                        <div style={styles.standardTextSmall}>iob backup</div>
+                        <div style={styles.standardTextSmall}>iob stop</div>
+                        <div style={styles.standardTextSmall}>iob update</div>
+                        <div style={styles.standardTextSmall}>iob fix</div>
+                        <div style={styles.standardTextSmall}>iob upgrade self</div>
+                        <div style={styles.standardTextSmall}>iob start</div>
+                    </pre>
+                    <div style={styles.standardTextSmall2}>
+                        {I18n.t(
+                            'or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.'
+                        )}
+                    </div>
+                    <div style={styles.standardTextSmall2}>
+                        {I18n.t(
+                            'If the upgrade command displays Access Rights / Permission errors, then please use the install fixer'
+                        )}
+                    </div>
+                    <pre style={styles.pre}>
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                window.alert(I18n.t('Copied'));
+                                copyTextToClipboard('curl -sL https://iobroker.net/fix.sh | bash -');
+                            }}
+                            style={styles.copyButton}
+                        >
+                            <IconCopy />
+                        </IconButton>
+                        <div style={styles.standardTextSmall}>curl -sL https://iobroker.net/fix.sh | bash -</div>
+                    </pre>
+                    <div style={styles.standardTextSmall2}>
+                        {I18n.t('to fix these issues and upgrade command run again.')}
+                    </div>
 
-            <Box component="h2" sx={styles.h2}>{I18n.t('Linux/macOS (manually installed)')}</Box>
-            <Box component="div" sx={styles.standardText}>{I18n.t('A manual installation usually takes place under root as user and therefore a "sudo" is necessary before the commands.')}</Box>
+                    <Box component="h2" sx={styles.h2}>
+                        {I18n.t('Linux/macOS (manually installed)')}
+                    </Box>
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t(
+                            'A manual installation usually takes place under root as user and therefore a "sudo" is necessary before the commands.'
+                        )}
+                    </Box>
 
-            <Box component="div" sx={styles.standardText}>{I18n.t('Please execute the following commands in an SSH shell (console):')}</Box>
-            <pre style={styles.pre}>
-                <IconButton
-                    size="small"
-                    onClick={() => {
-                        window.alert(I18n.t('Copied'));
-                        copyTextToClipboard(
-                            `cd ${location || '/opt/iobroker'}
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t('Please execute the following commands in an SSH shell (console):')}
+                    </Box>
+                    <pre style={styles.pre}>
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                window.alert(I18n.t('Copied'));
+                                copyTextToClipboard(
+                                    `cd ${location || '/opt/iobroker'}
 iob backup
 iob stop
 iob update
 iob fix
 iob upgrade self
 iob start
-`,
-                        );
-                    }}
-                    style={styles.copyButton}
-                >
-                    <IconCopy />
-                </IconButton>
-                <div style={styles.standardTextSmall}>
-cd
-                    {location || '/opt/iobroker'}
-                </div>
-                <div style={styles.standardTextSmall}>iob backup</div>
-                <div style={styles.standardTextSmall}>iob stop</div>
-                <div style={styles.standardTextSmall}>iob fix</div>
-                <div style={styles.standardTextSmall}>iob update</div>
-                <div style={styles.standardTextSmall}>iob upgrade self</div>
-                <div style={styles.standardTextSmall}>iob start</div>
-            </pre>
+`
+                                );
+                            }}
+                            style={styles.copyButton}
+                        >
+                            <IconCopy />
+                        </IconButton>
+                        <div style={styles.standardTextSmall}>
+                            cd
+                            {location || '/opt/iobroker'}
+                        </div>
+                        <div style={styles.standardTextSmall}>iob backup</div>
+                        <div style={styles.standardTextSmall}>iob stop</div>
+                        <div style={styles.standardTextSmall}>iob fix</div>
+                        <div style={styles.standardTextSmall}>iob update</div>
+                        <div style={styles.standardTextSmall}>iob upgrade self</div>
+                        <div style={styles.standardTextSmall}>iob start</div>
+                    </pre>
 
-            <div style={styles.standardTextSmall2}>{I18n.t('or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
-            <div style={styles.standardTextSmall2}>{I18n.t('If the upgrade command displays permissions / permissions errors, fix them. Sometimes "sudo" is not enough and you have to run the installation as a real root (previously simply sudo su -).')}</div>
-        </>}
-        {os === 'win32' && <>
-            <Box component="h2" sx={styles.h2}>{I18n.t('Windows')}</Box>
-            <Box component="div" sx={styles.standardText}>
-                {I18n.t('For updating ioBroker on Windows, download the appropriate installer with the desired js-controller version from the download page ')}
-                <a
-                    rel="noreferrer"
-                    href="https://www.iobroker.net/#en/download"
-                    target="_blank"
-                >
-                    https://www.iobroker.net/#en/download
-                </a>
-                {I18n.t(' and make the update with it. With the Windows Installer, previously manually installed servers or installations from other operating systems can be migrated to Windows and updated.')}
-            </Box>
+                    <div style={styles.standardTextSmall2}>
+                        {I18n.t(
+                            'or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.'
+                        )}
+                    </div>
+                    <div style={styles.standardTextSmall2}>
+                        {I18n.t(
+                            'If the upgrade command displays permissions / permissions errors, fix them. Sometimes "sudo" is not enough and you have to run the installation as a real root (previously simply sudo su -).'
+                        )}
+                    </div>
+                </>
+            )}
+            {os === 'win32' && (
+                <>
+                    <Box component="h2" sx={styles.h2}>
+                        {I18n.t('Windows')}
+                    </Box>
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t(
+                            'For updating ioBroker on Windows, download the appropriate installer with the desired js-controller version from the download page '
+                        )}
+                        <a rel="noreferrer" href="https://www.iobroker.net/#en/download" target="_blank">
+                            https://www.iobroker.net/#en/download
+                        </a>
+                        {I18n.t(
+                            ' and make the update with it. With the Windows Installer, previously manually installed servers or installations from other operating systems can be migrated to Windows and updated.'
+                        )}
+                    </Box>
 
-            <Box component="h2" sx={styles.h2}>{I18n.t('Windows (manually installed)')}</Box>
-            <Box component="div" sx={styles.standardText}>{I18n.t('A manual installation is done with administrator rights. Please start a cmd.exe command line window as an administrator (right-click on cmd.exe and execute as administrator) and execute the following commands:')}</Box>
-            <pre style={styles.pre}>
-                <IconButton
-                    size="small"
-                    onClick={() => {
-                        window.alert(I18n.t('Copied'));
-                        copyTextToClipboard(
-                            `cd ${(location || 'C:\\iobroker').replace(/\//g, '\\')}
+                    <Box component="h2" sx={styles.h2}>
+                        {I18n.t('Windows (manually installed)')}
+                    </Box>
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t(
+                            'A manual installation is done with administrator rights. Please start a cmd.exe command line window as an administrator (right-click on cmd.exe and execute as administrator) and execute the following commands:'
+                        )}
+                    </Box>
+                    <pre style={styles.pre}>
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                window.alert(I18n.t('Copied'));
+                                copyTextToClipboard(
+                                    `cd ${(location || 'C:\\iobroker').replace(/\//g, '\\')}
 iob backup
 iob stop
 iob status
 iob update
 iob upgrade self
-`,
-                        );
-                    }}
-                    style={styles.copyButton}
-                >
-                    <IconCopy />
-                </IconButton>
-                <div style={styles.standardTextSmall}>
-cd
-                    {(location || 'C:\\iobroker').replace(/\//g, '\\')}
-                    {' '}
-                    {!location ? I18n.t('(or where ioBroker was installed)') : null}
-                </div>
-                <div style={styles.standardTextSmall}>iob backup</div>
-                <div style={styles.standardTextSmall}>
-iob stop
-                    {I18n.t('to stop the ioBroker service')}
-                </div>
-                <div style={styles.standardTextSmall}>
-iob status
-                    {I18n.t('to check if ioBroker has finished')}
-                </div>
-                <div style={styles.standardTextSmall}>iob update</div>
-                <div style={styles.standardTextSmall}>iob upgrade self</div>
-            </pre>
-            <div style={styles.standardTextSmall2}>{I18n.t('Start ioBroker service or reboot computer, then ioBroker should restart and you can be sure that all the old processes were finished.')}</div>
-        </>}
-        <Accordion style={{ paddingTop: 14 }}>
-            <AccordionSummary
-                sx={styles.accordionSummary}
-                expandIcon={<ExpandMoreIcon />}
-            >
-                <Box component="h2" sx={styles.h22}>{I18n.t('Emergency Linux / macOS / Windows')}</Box>
-            </AccordionSummary>
-            <AccordionDetails
-                style={styles.accordionDetails}
-            >
-                <Box component="div" sx={styles.standardText}>{I18n.t('(manual reinstallation, if somehow nothing works after the update)')}</Box>
-                <Box component="div" sx={styles.standardText}>{I18n.t('On Windows first please call in the start menu under "ioBroker" the command line of the relevant ioBroker instance. The correct directory is then set automatically. On Linux or macOS please go to the ioBroker directory.')}</Box>
-
-                <Box component="div" sx={styles.standardText}>{I18n.t('Run npm install iobroker.js-controller there. A specific version can be installed using npm install iobroker.js-controller@x.y.z (replace x.y.z with the desired version).')}</Box>
-
-                <Box component="div" sx={styles.standardText}>{I18n.t('If there are problems with access rights when running on Linux the command has to be changed slightly:')}</Box>
-
-                <div style={styles.standardTextSmall2}>{I18n.t('For systems created with the new Linux installer:')}</div>
-                <pre style={styles.pre}>
-                    <IconButton
-                        size="small"
-                        onClick={() => {
-                            window.alert(I18n.t('Copied'));
-                            copyTextToClipboard(
-                                `cd ${os === 'win32' ? (location || 'C:\\iobroker').replace(/\//g, '\\') : (location || '/opt/iobroker')}
-sudo -u iobroker -H npm install iobroker.js-controller`,
-                            );
-                        }}
-                        style={styles.copyButton}
-                    >
-                        <IconCopy />
-                    </IconButton>
-                    <div style={styles.standardTextSmall}>
-cd
-                        {os === 'win32' ? (location || 'C:\\iobroker').replace(/\//g, '\\') : (location || '/opt/iobroker')}
+`
+                                );
+                            }}
+                            style={styles.copyButton}
+                        >
+                            <IconCopy />
+                        </IconButton>
+                        <div style={styles.standardTextSmall}>
+                            cd
+                            {(location || 'C:\\iobroker').replace(/\//g, '\\')}{' '}
+                            {!location ? I18n.t('(or where ioBroker was installed)') : null}
+                        </div>
+                        <div style={styles.standardTextSmall}>iob backup</div>
+                        <div style={styles.standardTextSmall}>
+                            iob stop
+                            {I18n.t('to stop the ioBroker service')}
+                        </div>
+                        <div style={styles.standardTextSmall}>
+                            iob status
+                            {I18n.t('to check if ioBroker has finished')}
+                        </div>
+                        <div style={styles.standardTextSmall}>iob update</div>
+                        <div style={styles.standardTextSmall}>iob upgrade self</div>
+                    </pre>
+                    <div style={styles.standardTextSmall2}>
+                        {I18n.t(
+                            'Start ioBroker service or reboot computer, then ioBroker should restart and you can be sure that all the old processes were finished.'
+                        )}
                     </div>
-                    <div style={styles.standardTextSmall}>sudo -u iobroker -H npm install iobroker.js-controller</div>
-                </pre>
-                <div style={styles.standardTextSmall2}>{I18n.t('For systems installed manually under Linux, prefix sudo or run as root.')}</div>
-                <Box component="div" sx={styles.standardText}>{I18n.t('This way is only necessary in very few cases and please consult the forum beforehand!')}</Box>
-            </AccordionDetails>
-        </Accordion>
-    </Card>;
+                </>
+            )}
+            <Accordion style={{ paddingTop: 14 }}>
+                <AccordionSummary sx={styles.accordionSummary} expandIcon={<ExpandMoreIcon />}>
+                    <Box component="h2" sx={styles.h22}>
+                        {I18n.t('Emergency Linux / macOS / Windows')}
+                    </Box>
+                </AccordionSummary>
+                <AccordionDetails style={styles.accordionDetails}>
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t('(manual reinstallation, if somehow nothing works after the update)')}
+                    </Box>
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t(
+                            'On Windows first please call in the start menu under "ioBroker" the command line of the relevant ioBroker instance. The correct directory is then set automatically. On Linux or macOS please go to the ioBroker directory.'
+                        )}
+                    </Box>
 
-    return <Dialog
-        onClose={() => onClose()}
-        open={!0}
-        sx={{ '& .MuiDialog-paper': styles.paper }}
-    >
-        <DialogTitle>{I18n.t('js-controller upgrade instructions')}</DialogTitle>
-        <DialogContent style={readme ? null : styles.overflowHidden} dividers>
-            {readme ? renderReadme() : renderText()}
-        </DialogContent>
-        <DialogActions>
-            <Button
-                id="js-controller-dialog-changelog"
-                variant="contained"
-                onClick={() => {
-                    window.open(CONTROLLER_CHANGELOG_URL, '_blank');
-                }}
-                color="grey"
-                startIcon={<DescriptionIcon />}
-            >
-                {I18n.t('Show whole changelog')}
-            </Button>
-            <Button
-                id="js-controller-dialog-ok"
-                variant="contained"
-                onClick={() => onClose()}
-                color="primary"
-                startIcon={<CloseIcon />}
-            >
-                {I18n.t('Ok')}
-            </Button>
-        </DialogActions>
-    </Dialog>;
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t(
+                            'Run npm install iobroker.js-controller there. A specific version can be installed using npm install iobroker.js-controller@x.y.z (replace x.y.z with the desired version).'
+                        )}
+                    </Box>
+
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t(
+                            'If there are problems with access rights when running on Linux the command has to be changed slightly:'
+                        )}
+                    </Box>
+
+                    <div style={styles.standardTextSmall2}>
+                        {I18n.t('For systems created with the new Linux installer:')}
+                    </div>
+                    <pre style={styles.pre}>
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                window.alert(I18n.t('Copied'));
+                                copyTextToClipboard(
+                                    `cd ${os === 'win32' ? (location || 'C:\\iobroker').replace(/\//g, '\\') : location || '/opt/iobroker'}
+sudo -u iobroker -H npm install iobroker.js-controller`
+                                );
+                            }}
+                            style={styles.copyButton}
+                        >
+                            <IconCopy />
+                        </IconButton>
+                        <div style={styles.standardTextSmall}>
+                            cd
+                            {os === 'win32'
+                                ? (location || 'C:\\iobroker').replace(/\//g, '\\')
+                                : location || '/opt/iobroker'}
+                        </div>
+                        <div style={styles.standardTextSmall}>
+                            sudo -u iobroker -H npm install iobroker.js-controller
+                        </div>
+                    </pre>
+                    <div style={styles.standardTextSmall2}>
+                        {I18n.t('For systems installed manually under Linux, prefix sudo or run as root.')}
+                    </div>
+                    <Box component="div" sx={styles.standardText}>
+                        {I18n.t(
+                            'This way is only necessary in very few cases and please consult the forum beforehand!'
+                        )}
+                    </Box>
+                </AccordionDetails>
+            </Accordion>
+        </Card>
+    );
+
+    return (
+        <Dialog onClose={() => onClose()} open={!0} sx={{ '& .MuiDialog-paper': styles.paper }}>
+            <DialogTitle>{I18n.t('js-controller upgrade instructions')}</DialogTitle>
+            <DialogContent style={readme ? null : styles.overflowHidden} dividers>
+                {readme ? renderReadme() : renderText()}
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    id="js-controller-dialog-changelog"
+                    variant="contained"
+                    onClick={() => {
+                        window.open(CONTROLLER_CHANGELOG_URL, '_blank');
+                    }}
+                    color="grey"
+                    startIcon={<DescriptionIcon />}
+                >
+                    {I18n.t('Show whole changelog')}
+                </Button>
+                <Button
+                    id="js-controller-dialog-ok"
+                    variant="contained"
+                    onClick={() => onClose()}
+                    color="primary"
+                    startIcon={<CloseIcon />}
+                >
+                    {I18n.t('Ok')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 };
 
 export default JsControllerDialog;

@@ -1,13 +1,6 @@
 import React, { Component, createRef } from 'react';
 
-import {
-    IconButton,
-    LinearProgress,
-    Tooltip,
-    Paper,
-    InputAdornment,
-    TextField, Box,
-} from '@mui/material';
+import { IconButton, LinearProgress, Tooltip, Paper, InputAdornment, TextField, Box } from '@mui/material';
 
 import {
     PlayArrow as PlayArrowIcon,
@@ -36,7 +29,8 @@ import {
     type IobTheme,
     type ThemeName,
     type ThemeType,
-    TabHeader, type Translate,
+    TabHeader,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '@/AdminUtils';
@@ -64,7 +58,8 @@ const styles: Record<string, any> = {
         // backgroundColor: '#FFF',
         color: '#000',
         borderRadius: 4,
-        boxShadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
+        boxShadow:
+            '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
         border: '0px solid #888',
     },
     cards: {
@@ -178,7 +173,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
     constructor(props: InstancesProps) {
         super(props);
 
-        this.localStorage = (window as any)._localStorage as Storage || window.localStorage;
+        this.localStorage = ((window as any)._localStorage as Storage) || window.localStorage;
 
         let expandedFolder = [];
         if (this.localStorage.getItem('Instances.expandedFolder')) {
@@ -216,14 +211,16 @@ class Instances extends Component<InstancesProps, InstancesState> {
             expandedFolder,
 
             // filter
-            filterMode: this.localStorage.getItem('Instances.filterMode') ?
-                this.localStorage.getItem('Instances.filterMode') === 'null' ?
-                    null :
-                    this.localStorage.getItem('Instances.filterMode') : null,
-            filterStatus: this.localStorage.getItem('Instances.filterStatus') ?
-                this.localStorage.getItem('Instances.filterStatus') === 'null' ?
-                    null :
-                    this.localStorage.getItem('Instances.filterStatus') : null,
+            filterMode: this.localStorage.getItem('Instances.filterMode')
+                ? this.localStorage.getItem('Instances.filterMode') === 'null'
+                    ? null
+                    : this.localStorage.getItem('Instances.filterMode')
+                : null,
+            filterStatus: this.localStorage.getItem('Instances.filterStatus')
+                ? this.localStorage.getItem('Instances.filterStatus') === 'null'
+                    ? null
+                    : this.localStorage.getItem('Instances.filterStatus')
+                : null,
         };
 
         // this.columns = {
@@ -323,7 +320,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         let processes = 1;
         let mem: number = host ? parseFloat(host.val as string) || 0 : 0;
         const hosts: Record<string, ioBroker.HostObject> = {};
-        this.props.hosts.forEach(_host => hosts[_host._id] = _host);
+        this.props.hosts.forEach(_host => (hosts[_host._id] = _host));
 
         for (let i = 0; i < instances.length; i++) {
             const inst = instances[i];
@@ -350,9 +347,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const nameB = pB[pB.length - 2];
 
             if (nameA === nameB) {
-                return numA > numB ? 1 : (numA < numB ? -1 : 0);
+                return numA > numB ? 1 : numA < numB ? -1 : 0;
             }
-            return nameA > nameB ? 1 : (nameA < nameB ? -1 : 0);
+            return nameA > nameB ? 1 : nameA < nameB ? -1 : 0;
         });
 
         let maxCompactGroupNumber = 1;
@@ -364,7 +361,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const common = obj.common || null;
             const instanceId = parseInt(obj._id.split('.').pop(), 10);
 
-            if (common.compactGroup && typeof common.compactGroup === 'number' && maxCompactGroupNumber < common.compactGroup) {
+            if (
+                common.compactGroup &&
+                typeof common.compactGroup === 'number' &&
+                maxCompactGroupNumber < common.compactGroup
+            ) {
                 maxCompactGroupNumber = common.compactGroup;
             }
 
@@ -386,11 +387,17 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 loglevel: common.loglevel || null,
                 adapter: common.name || null,
                 version: common.version || null,
-                stoppedWhenWebExtension: obj.common.mode === 'daemon' ? (obj.common.webExtension !== undefined ? !!obj.common.webExtension : undefined) : undefined,
+                stoppedWhenWebExtension:
+                    obj.common.mode === 'daemon'
+                        ? obj.common.webExtension !== undefined
+                            ? !!obj.common.webExtension
+                            : undefined
+                        : undefined,
                 links: [],
             };
 
-            const rawLinks: Record<string, string | ioBroker.LocalLink> | string = common.localLinks || common.localLink || '';
+            const rawLinks: Record<string, string | ioBroker.LocalLink> | string =
+                common.localLinks || common.localLink || '';
             let links: Record<string, string | InstanceLink> | null = null;
             if (rawLinks && typeof rawLinks === 'string') {
                 links = { _default: rawLinks as string };
@@ -409,17 +416,13 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     link = links[linkName] as InstanceLink;
                 }
 
-                const urls = AdminUtils.replaceLink(
-                    link.link,
-                    common.name,
-                    instanceId,
-                    {
+                const urls =
+                    AdminUtils.replaceLink(link.link, common.name, instanceId, {
                         instances: instancesFromWorker,
                         hostname: this.props.hostname,
                         hosts,
                         adminInstance: this.props.adminInstance,
-                    },
-                ) || [];
+                    }) || [];
 
                 let name: ioBroker.StringOrTranslated = link.name || linkName;
                 if (name === '_default') {
@@ -450,7 +453,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
             });
 
             if (instance.stoppedWhenWebExtension) {
-                const eId = this.states[`${instance.id}.info.extension`] || (await this.props.socket.getState(`${instance.id}.info.extension`));
+                const eId =
+                    this.states[`${instance.id}.info.extension`] ||
+                    (await this.props.socket.getState(`${instance.id}.info.extension`));
                 instance.stoppedWhenWebExtension = eId ? !!eId.val : undefined;
             }
 
@@ -462,7 +467,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
         for (let c = 1; c <= maxCompactGroupNumber; c++) {
             const compactGroupMemRssId = `${this.state.currentHost}.compactgroup${c}.memRss`;
-            this.states[compactGroupMemRssId] = this.states[compactGroupMemRssId] || (await this.props.socket.getState(compactGroupMemRssId));
+            this.states[compactGroupMemRssId] =
+                this.states[compactGroupMemRssId] || (await this.props.socket.getState(compactGroupMemRssId));
             const m = this.states[compactGroupMemRssId];
             if (m) {
                 mem += m ? parseFloat(m.val as string) || 0 : 0;
@@ -495,11 +501,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
         let playArrow: 0 | 1 | 2 = 0;
         let filterCompactGroup: string | number = 'All';
         try {
-            playArrow = JSON.parse(this.localStorage.getItem('Instances.playArrow')) as (0 | 1 | 2);
+            playArrow = JSON.parse(this.localStorage.getItem('Instances.playArrow')) as 0 | 1 | 2;
             // back compatibility
             if (playArrow.toString() === 'true') {
                 playArrow = 1;
-            } else  if (playArrow.toString() === 'false') {
+            } else if (playArrow.toString() === 'false') {
                 playArrow = 0;
             }
             filterCompactGroup = JSON.parse(this.localStorage.getItem('Instances.filterCompactGroup'));
@@ -509,7 +515,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
         const onlyCurrentHost = this.localStorage.getItem('Instances.onlyCurrentHost') === 'true';
         const viewMode = this.localStorage.getItem('Instances.viewMode') === 'true';
-        const viewCategory = this.localStorage.getItem('Instances.viewCategory')  === 'true';
+        const viewCategory = this.localStorage.getItem('Instances.viewCategory') === 'true';
 
         if (!filterCompactGroup && filterCompactGroup !== 0) {
             filterCompactGroup = 'All';
@@ -531,12 +537,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const adapters = this.props.socket.getAdapters(update);
             const statesProm = this.getStates();
 
-            const [states, _adapters] = await Promise.all(
-                [
-                    statesProm,
-                    adapters,
-                ],
-            );
+            const [states, _adapters] = await Promise.all([statesProm, adapters]);
             this.adapters = _adapters || [];
             this.states = states || {};
         } catch (error) {
@@ -607,9 +608,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
         if (common?.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
             const alive = this.states[`${obj._id}.alive`];
             const connected = this.states[`${obj._id}.connected`];
-            const connection = this.states[`${(obj._id).replace('system.adapter.', '')}.info.connection`];
+            const connection = this.states[`${obj._id.replace('system.adapter.', '')}.info.connection`];
             if (common.webExtension && obj.native.webInstance) {
-                const extension = this.states[`${(obj._id).replace('system.adapter.', '')}.info.extension`];
+                const extension = this.states[`${obj._id.replace('system.adapter.', '')}.info.extension`];
                 if (extension) {
                     return extension.val ? 'green' : 'red';
                 }
@@ -648,8 +649,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
         const stateInput = this.states[`${id}.inputCount`];
         const stateOutput = this.states[`${id}.outputCount`];
         return {
-            stateInput: stateInput?.val ? stateInput.val as number : 0,
-            stateOutput: stateOutput?.val ? stateOutput.val as number : 0,
+            stateInput: stateInput?.val ? (stateInput.val as number) : 0,
+            stateOutput: stateOutput?.val ? (stateOutput.val as number) : 0,
         };
     }
 
@@ -665,7 +666,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     isConnected(id: string): boolean | string | null {
         const instance = this.state.instances[id];
-        return this.states[`${instance.id}.info.connection`] ? this.states[`${instance.id}.info.connection`].val as string | boolean : null;
+        return this.states[`${instance.id}.info.connection`]
+            ? (this.states[`${instance.id}.info.connection`].val as string | boolean)
+            : null;
     }
 
     static getStatusFilter(value: string): InstanceStatusType {
@@ -706,7 +709,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     onDeleteInstance = (instance: InstanceEntry, deleteCustom: boolean, deleteAdapter: boolean) => {
         this.setState({ deleting: instance.id }, () =>
-            this.props.executeCommand(`del ${deleteAdapter ? instance.id.split('.')[0] : instance.id}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`));
+            this.props.executeCommand(
+                `del ${deleteAdapter ? instance.id.split('.')[0] : instance.id}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`
+            )
+        );
     };
 
     isSentry(instanceId: string): boolean {
@@ -727,7 +733,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const connectedToHost = this.isConnectedToHost(id);
             const connected = this.isConnected(id);
             const name = this.getName(instance.obj);
-            const logLevel = this.states[`${id}.logLevel`]?.val as ioBroker.LogLevel || instance.loglevel;
+            const logLevel = (this.states[`${id}.logLevel`]?.val as ioBroker.LogLevel) || instance.loglevel;
             const logLevelObject = instance.loglevel;
             const tier = instance?.obj?.common?.tier || 3;
             const loglevelIcon = Instances.getLogLevelIcon(logLevel);
@@ -764,16 +770,24 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 checkSentry,
                 memoryLimitMB,
                 stoppedWhenWebExtension: instance.stoppedWhenWebExtension,
-                allowInstanceSettings: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceSettings : true,
-                allowInstanceDelete: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceDelete : true,
-                allowInstanceLink: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceLink : true,
+                allowInstanceSettings: this.props.repository[instance.adapter]
+                    ? this.props.repository[instance.adapter].allowInstanceSettings
+                    : true,
+                allowInstanceDelete: this.props.repository[instance.adapter]
+                    ? this.props.repository[instance.adapter].allowInstanceDelete
+                    : true,
+                allowInstanceLink: this.props.repository[instance.adapter]
+                    ? this.props.repository[instance.adapter].allowInstanceLink
+                    : true,
             };
 
             return item;
         });
 
         if (this.state.playArrow) {
-            this._cacheList = this._cacheList.filter(({ running }) => (this.state.playArrow === 1 ? running : !running));
+            this._cacheList = this._cacheList.filter(({ running }) =>
+                this.state.playArrow === 1 ? running : !running
+            );
         }
 
         if (this.state.onlyCurrentHost) {
@@ -782,14 +796,24 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
         if (this.state.filterText) {
             const filterText = this.state.filterText.toLowerCase();
-            this._cacheList = this._cacheList.filter(({ name, nameId }) => name.toLowerCase().includes(filterText) || nameId.toLowerCase().includes(filterText));
+            this._cacheList = this._cacheList.filter(
+                ({ name, nameId }) =>
+                    name.toLowerCase().includes(filterText) || nameId.toLowerCase().includes(filterText)
+            );
         }
 
-        if (this.props.expertMode && (this.state.filterCompactGroup || this.state.filterCompactGroup === 0) && this.state.compact) {
-            this._cacheList = this._cacheList.filter(({ compactGroup }) => compactGroup === this.state.filterCompactGroup ||
-                this.state.filterCompactGroup === 'All' ||
-                (this.state.filterCompactGroup === 'default' && (compactGroup === null || compactGroup === 1)) ||
-                (this.state.filterCompactGroup === 'controller' && compactGroup === '0'));
+        if (
+            this.props.expertMode &&
+            (this.state.filterCompactGroup || this.state.filterCompactGroup === 0) &&
+            this.state.compact
+        ) {
+            this._cacheList = this._cacheList.filter(
+                ({ compactGroup }) =>
+                    compactGroup === this.state.filterCompactGroup ||
+                    this.state.filterCompactGroup === 'All' ||
+                    (this.state.filterCompactGroup === 'default' && (compactGroup === null || compactGroup === 1)) ||
+                    (this.state.filterCompactGroup === 'controller' && compactGroup === '0')
+            );
         }
         if (this.state.filterMode) {
             this._cacheList = this._cacheList.filter(item => item.mode === this.state.filterMode);
@@ -830,7 +854,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     onMaxCompactGroupNumber = (maxCompactGroupNumber: number): void => this.setState({ maxCompactGroupNumber });
 
-    onRegisterClose = (panel: string, closeCommand: (() => void) | null) => this.closeCommands[panel] = closeCommand;
+    onRegisterClose = (panel: string, closeCommand: (() => void) | null) => (this.closeCommands[panel] = closeCommand);
 
     getPanels() {
         if (!this._cacheList) {
@@ -863,7 +887,23 @@ class Instances extends Component<InstancesProps, InstancesState> {
             if (this.state.viewMode) {
                 return {
                     category: item.category,
-                    render: <InstanceCard
+                    render: (
+                        <InstanceCard
+                            deleting={this.state.deleting === instance.id}
+                            id={id}
+                            idx={idx}
+                            instance={instance}
+                            key={instance.id}
+                            item={item}
+                            context={context}
+                        />
+                    ),
+                };
+            }
+            return {
+                category: item.category,
+                render: (
+                    <InstanceRow
                         deleting={this.state.deleting === instance.id}
                         id={id}
                         idx={idx}
@@ -871,36 +911,26 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         key={instance.id}
                         item={item}
                         context={context}
-                    />,
-                };
-            }
-            return {
-                category: item.category,
-                render: <InstanceRow
-                    deleting={this.state.deleting === instance.id}
-                    id={id}
-                    idx={idx}
-                    instance={instance}
-                    key={instance.id}
-                    item={item}
-                    context={context}
-                />,
+                    />
+                ),
             };
         });
 
         if (!list.length) {
-            return <div
-                title={this.t('Click to clear all filters')}
-                onClick={() => this.clearAllFilters()}
-                style={{
-                    margin: 20,
-                    fontSize: 26,
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                }}
-            >
-                {this.t('all items are filtered out')}
-            </div>;
+            return (
+                <div
+                    title={this.t('Click to clear all filters')}
+                    onClick={() => this.clearAllFilters()}
+                    style={{
+                        margin: 20,
+                        fontSize: 26,
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {this.t('all items are filtered out')}
+                </div>
+            );
         }
 
         if (!this.state.viewMode && this.state.viewCategory) {
@@ -911,37 +941,42 @@ class Instances extends Component<InstancesProps, InstancesState> {
             categoryArray.sort((a, b) => {
                 if (a === 'general' && b !== 'general') {
                     return -1;
-                } if (a !== 'general' && b === 'general') {
+                }
+                if (a !== 'general' && b === 'general') {
                     return 1;
-                } if (a > b) {
+                }
+                if (a > b) {
                     return 1;
-                } if (a < b) {
+                }
+                if (a < b) {
                     return -1;
                 }
                 return 0;
             });
 
-            return categoryArray.map(name => <InstanceCategory
-                key={name}
-                name={name}
-                expanded={this.state.expandedFolder.includes(name)}
-                onExpand={expanded => {
-                    const expandedFolder = [...this.state.expandedFolder];
-                    const pos = expandedFolder.indexOf(name);
-                    if (expanded) {
-                        if (pos === -1) {
-                            expandedFolder.push(name);
-                            expandedFolder.sort();
+            return categoryArray.map(name => (
+                <InstanceCategory
+                    key={name}
+                    name={name}
+                    expanded={this.state.expandedFolder.includes(name)}
+                    onExpand={expanded => {
+                        const expandedFolder = [...this.state.expandedFolder];
+                        const pos = expandedFolder.indexOf(name);
+                        if (expanded) {
+                            if (pos === -1) {
+                                expandedFolder.push(name);
+                                expandedFolder.sort();
+                            }
+                        } else if (pos !== -1) {
+                            expandedFolder.splice(pos, 1);
                         }
-                    } else if (pos !== -1) {
-                        expandedFolder.splice(pos, 1);
-                    }
-                    this.localStorage.setItem('Instances.expandedFolder', JSON.stringify(expandedFolder));
-                    this.setState({ expandedFolder });
-                }}
-            >
-                {list.filter(({ category }) => category === name).map(({ render }) => render)}
-            </InstanceCategory>);
+                        this.localStorage.setItem('Instances.expandedFolder', JSON.stringify(expandedFolder));
+                        this.setState({ expandedFolder });
+                    }}
+                >
+                    {list.filter(({ category }) => category === name).map(({ render }) => render)}
+                </InstanceCategory>
+            ));
         }
 
         return list.map(({ render }) => render);
@@ -955,7 +990,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
     };
 
     async getHostsData() {
-        this.props.socket.getHostInfo(this.state.currentHost, false, 10000)
+        this.props.socket
+            .getHostInfo(this.state.currentHost, false, 10000)
             .catch(error => {
                 if (!error.toString().includes('May not read')) {
                     window.alert(`Cannot read host information: ${error}`);
@@ -980,7 +1016,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
         if (memState) {
             const totalmem = (object?.native.hardware.totalmem || 0) / (1024 * 1024);
-            const percent = Math.round((memState.val as number / totalmem) * 100);
+            const percent = Math.round(((memState.val as number) / totalmem) * 100);
             this._cacheList = null;
             this.setState({
                 percent,
@@ -1009,12 +1045,16 @@ class Instances extends Component<InstancesProps, InstancesState> {
             clearTimeout(this.typingTimer);
         }
 
-        this.typingTimer = setTimeout(value => {
-            this.typingTimer = null;
-            this._cacheList = null;
-            this.setState({ filterText: value });
-            this.localStorage.setItem('instances.filter', value);
-        }, 300, event.target.value);
+        this.typingTimer = setTimeout(
+            value => {
+                this.typingTimer = null;
+                this._cacheList = null;
+                this.setState({ filterText: value });
+                this.localStorage.setItem('instances.filter', value);
+            },
+            300,
+            event.target.value
+        );
     }
 
     renderFilterDialog() {
@@ -1022,19 +1062,21 @@ class Instances extends Component<InstancesProps, InstancesState> {
             return null;
         }
 
-        return <InstanceFilterDialog
-            filterMode={this.state.filterMode}
-            filterStatus={this.state.filterStatus}
-            onClose={newState => {
-                if (newState) {
-                    this._cacheList = null;
-                    this.localStorage.setItem('Instances.filterMode', newState.filterMode);
-                    this.localStorage.setItem('Instances.filterStatus', newState.filterStatus);
-                    this.setState(newState);
-                }
-                this.setState({ showFilterDialog: false });
-            }}
-        />;
+        return (
+            <InstanceFilterDialog
+                filterMode={this.state.filterMode}
+                filterStatus={this.state.filterStatus}
+                onClose={newState => {
+                    if (newState) {
+                        this._cacheList = null;
+                        this.localStorage.setItem('Instances.filterMode', newState.filterMode);
+                        this.localStorage.setItem('Instances.filterStatus', newState.filterStatus);
+                        this.setState(newState);
+                    }
+                    this.setState({ showFilterDialog: false });
+                }}
+            />
+        );
     }
 
     render() {
@@ -1044,42 +1086,49 @@ class Instances extends Component<InstancesProps, InstancesState> {
         console.log(`Width: ${this.props.width}`);
 
         if (this.props.currentHost !== this.state.currentHost) {
-            this.hostsTimer = this.hostsTimer || setTimeout(() => {
-                this.hostsTimer = null;
-                this.setState({
-                    currentHost: this.props.currentHost,
-                }, () => this.updateData());
-            }, 200);
+            this.hostsTimer =
+                this.hostsTimer ||
+                setTimeout(() => {
+                    this.hostsTimer = null;
+                    this.setState(
+                        {
+                            currentHost: this.props.currentHost,
+                        },
+                        () => this.updateData()
+                    );
+                }, 200);
         }
 
         if (this.state.dialog === 'config' && this.state.dialogProp) {
             const instance = this.state.instances[this.state.dialogProp] || null;
             if (instance) {
-                return <Paper style={styles.paper}>
-                    {this.renderFilterDialog()}
-                    <Config
-                        adapter={instance.id.split('.')[0]}
-                        adminInstance={this.props.adminInstance}
-                        style={styles.iframe}
-                        configStored={this.props.configStored}
-                        dateFormat={this.props.dateFormat}
-                        icon={instance.image}
-                        instance={parseInt(instance.id.split('.')[1])}
-                        isFloatComma={this.props.isFloatComma}
-                        jsonConfig={instance.jsonConfig}
-                        lang={this.props.lang}
-                        materialize={instance.materialize}
-                        socket={this.props.socket}
-                        t={this.t}
-                        theme={this.props.theme}
-                        themeName={this.props.themeName}
-                        themeType={this.props.themeType}
-                        width={this.props.width}
-                        version={instance.version}
-                        onRegisterIframeRef={(ref: HTMLIFrameElement) => this.props.onRegisterIframeRef(ref)}
-                        onUnregisterIframeRef={(ref: HTMLIFrameElement) => this.props.onUnregisterIframeRef(ref)}
-                    />
-                </Paper>;
+                return (
+                    <Paper style={styles.paper}>
+                        {this.renderFilterDialog()}
+                        <Config
+                            adapter={instance.id.split('.')[0]}
+                            adminInstance={this.props.adminInstance}
+                            style={styles.iframe}
+                            configStored={this.props.configStored}
+                            dateFormat={this.props.dateFormat}
+                            icon={instance.image}
+                            instance={parseInt(instance.id.split('.')[1])}
+                            isFloatComma={this.props.isFloatComma}
+                            jsonConfig={instance.jsonConfig}
+                            lang={this.props.lang}
+                            materialize={instance.materialize}
+                            socket={this.props.socket}
+                            t={this.t}
+                            theme={this.props.theme}
+                            themeName={this.props.themeName}
+                            themeType={this.props.themeType}
+                            width={this.props.width}
+                            version={instance.version}
+                            onRegisterIframeRef={(ref: HTMLIFrameElement) => this.props.onRegisterIframeRef(ref)}
+                            onUnregisterIframeRef={(ref: HTMLIFrameElement) => this.props.onUnregisterIframeRef(ref)}
+                        />
+                    </Paper>
+                );
             }
         }
 
@@ -1095,108 +1144,136 @@ class Instances extends Component<InstancesProps, InstancesState> {
             }
         }
 
-        const hostData = this.state.hostData ?
-            `${this.state.hostData['Disk free'] ? `${this.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, ` : ''
-            }${this.t('Total RAM usage')}: ${this.state.mem} Mb / ` +
-            `${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb ` +
-            `[${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.state.processes === 1 ? this.t('process') :  this.t('processes')}]` : null;
+        const hostData = this.state.hostData
+            ? `${
+                  this.state.hostData['Disk free']
+                      ? `${this.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, `
+                      : ''
+              }${this.t('Total RAM usage')}: ${this.state.mem} Mb / ` +
+              `${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb ` +
+              `[${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.state.processes === 1 ? this.t('process') : this.t('processes')}]`
+            : null;
 
-        return <TabContainer>
-            {this.renderFilterDialog()}
-            <TabHeader>
-                <Tooltip title={this.t('Show / hide List')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <IconButton
-                        size="large"
-                        onClick={() => {
-                            this.setState({ viewMode: !this.state.viewMode });
-                            this.localStorage.setItem('Instances.viewMode', this.state.viewMode ? 'false' : 'true');
-                        }}
-                    >
-                        {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
-                    </IconButton>
-                </Tooltip>
-
-                {!this.state.viewMode && <Tooltip title={this.t('Category')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <IconButton
-                        size="large"
-                        onClick={() => {
-                            this.setState({ viewCategory: !this.state.viewCategory });
-                            this.localStorage.setItem('Instances.viewCategory', this.state.viewCategory ? 'false' : 'true');
-                        }}
-                    >
-                        <ListIcon color={this.state.viewCategory ? 'primary' : 'inherit'} />
-                    </IconButton>
-                </Tooltip>}
-
-                {!this.state.viewMode && this.state.viewCategory && <>
-                    <Tooltip title={this.t('expand all')} slotProps={{ popper: { sx: styles.tooltip } }}>
+        return (
+            <TabContainer>
+                {this.renderFilterDialog()}
+                <TabHeader>
+                    <Tooltip title={this.t('Show / hide List')} slotProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => {
-                                // all folders
-                                const expandedFolder: string[] = [];
-                                this._cacheList.forEach(({ category }) => !expandedFolder.includes(category) && expandedFolder.push(category));
-                                expandedFolder.sort();
-                                this.localStorage.setItem('Instances.expandedFolder', JSON.stringify(expandedFolder));
-                                this.setState({ expandedFolder });
+                                this.setState({ viewMode: !this.state.viewMode });
+                                this.localStorage.setItem('Instances.viewMode', this.state.viewMode ? 'false' : 'true');
                             }}
                         >
-                            <FolderOpenIcon />
+                            {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={this.t('collapse all')} slotProps={{ popper: { sx: styles.tooltip } }}>
+
+                    {!this.state.viewMode && (
+                        <Tooltip title={this.t('Category')} slotProps={{ popper: { sx: styles.tooltip } }}>
+                            <IconButton
+                                size="large"
+                                onClick={() => {
+                                    this.setState({ viewCategory: !this.state.viewCategory });
+                                    this.localStorage.setItem(
+                                        'Instances.viewCategory',
+                                        this.state.viewCategory ? 'false' : 'true'
+                                    );
+                                }}
+                            >
+                                <ListIcon color={this.state.viewCategory ? 'primary' : 'inherit'} />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+
+                    {!this.state.viewMode && this.state.viewCategory && (
+                        <>
+                            <Tooltip title={this.t('expand all')} slotProps={{ popper: { sx: styles.tooltip } }}>
+                                <IconButton
+                                    size="large"
+                                    onClick={() => {
+                                        // all folders
+                                        const expandedFolder: string[] = [];
+                                        this._cacheList.forEach(
+                                            ({ category }) =>
+                                                !expandedFolder.includes(category) && expandedFolder.push(category)
+                                        );
+                                        expandedFolder.sort();
+                                        this.localStorage.setItem(
+                                            'Instances.expandedFolder',
+                                            JSON.stringify(expandedFolder)
+                                        );
+                                        this.setState({ expandedFolder });
+                                    }}
+                                >
+                                    <FolderOpenIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={this.t('collapse all')} slotProps={{ popper: { sx: styles.tooltip } }}>
+                                <IconButton
+                                    size="large"
+                                    onClick={() => {
+                                        this.localStorage.removeItem('Instances.expandedFolder');
+                                        this.setState({ expandedFolder: [] });
+                                    }}
+                                >
+                                    <FolderIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                    )}
+                    <Tooltip title={this.t('Reload')} slotProps={{ popper: { sx: styles.tooltip } }}>
+                        <IconButton size="large" onClick={() => this.getData(true)}>
+                            <RefreshIcon />
+                        </IconButton>
+                    </Tooltip>
+                    {this.props.hosts.length > 1 ? (
+                        <Tooltip
+                            title={this.t('Show instances only for current host')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton
+                                size="large"
+                                onClick={() => {
+                                    this.setState({ onlyCurrentHost: !this.state.onlyCurrentHost });
+                                    this.localStorage.setItem(
+                                        'Instances.onlyCurrentHost',
+                                        this.state.onlyCurrentHost ? 'false' : 'true'
+                                    );
+                                }}
+                            >
+                                <DevicesIcon color={this.state.onlyCurrentHost ? 'primary' : 'inherit'} />
+                            </IconButton>
+                        </Tooltip>
+                    ) : null}
+                    <Tooltip
+                        title={this.t(
+                            !this.state.playArrow
+                                ? 'Show running or stopped instances'
+                                : this.state.playArrow === 1
+                                  ? 'Showed only running instances'
+                                  : 'Showed only stopped instances'
+                        )}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton size="large" onClick={() => this.changeStartedStopped()}>
+                            <PlayArrowIcon
+                                style={this.state.playArrow === 2 ? { color: 'red' } : null}
+                                color={this.state.playArrow === 1 ? 'primary' : 'inherit'}
+                            />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={this.t('Filter instances')} slotProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
-                            onClick={() => {
-                                this.localStorage.removeItem('Instances.expandedFolder');
-                                this.setState({ expandedFolder: [] });
-                            }}
+                            onClick={() => this.setState({ showFilterDialog: true })}
+                            sx={this.state.filterMode || this.state.filterStatus ? styles.filterActive : undefined}
                         >
-                            <FolderIcon />
+                            <FilterListIcon style={{ width: 16, height: 16 }} />
                         </IconButton>
                     </Tooltip>
-                </>}
-                <Tooltip title={this.t('Reload')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <IconButton size="large" onClick={() => this.getData(true)}>
-                        <RefreshIcon />
-                    </IconButton>
-                </Tooltip>
-                {this.props.hosts.length > 1 ? <Tooltip title={this.t('Show instances only for current host')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <IconButton
-                        size="large"
-                        onClick={() => {
-                            this.setState({ onlyCurrentHost: !this.state.onlyCurrentHost });
-                            this.localStorage.setItem('Instances.onlyCurrentHost', this.state.onlyCurrentHost ? 'false' : 'true');
-                        }}
-                    >
-                        <DevicesIcon color={this.state.onlyCurrentHost ? 'primary' : 'inherit'} />
-                    </IconButton>
-                </Tooltip> : null}
-                <Tooltip
-                    title={this.t(!this.state.playArrow ?
-                        'Show running or stopped instances' :
-                        this.state.playArrow === 1 ?
-                            'Showed only running instances' :
-                            'Showed only stopped instances')}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton size="large" onClick={() => this.changeStartedStopped()}>
-                        <PlayArrowIcon
-                            style={this.state.playArrow === 2 ? { color: 'red' } : null}
-                            color={this.state.playArrow === 1 ? 'primary' : 'inherit'}
-                        />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={this.t('Filter instances')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <IconButton
-                        size="large"
-                        onClick={() => this.setState({ showFilterDialog: true })}
-                        sx={this.state.filterMode || this.state.filterStatus ? styles.filterActive : undefined}
-                    >
-                        <FilterListIcon style={{ width: 16, height: 16 }} />
-                    </IconButton>
-                </Tooltip>
-                {/* this.props.expertMode && <Tooltip title="sentry" slotProps={{ popper: { sx: styles.tooltip } }}>
+                    {/* this.props.expertMode && <Tooltip title="sentry" slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="small"
                         style={styles.button}
@@ -1212,58 +1289,61 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         />
                     </IconButton>
                 </Tooltip> */}
-                {this.props.expertMode && this.state.compact ?
-                    <CustomSelectButton
-                        title={this.t('Filter specific compact group')}
-                        t={this.t}
-                        arrayItem={[
-                            { name: 'All' },
-                            { name: 'controller' },
-                            { name: 'default' },
-                            ...Array(this.state.maxCompactGroupNumber - 1).fill(0).map((_, idx) => ({ name: idx + 2 })),
-                        ]}
-                        buttonIcon={<ViewCompactIcon style={{ marginRight: 4 }} color="primary" />}
-                        onClick={value => this.changeCompactGroup(value)}
-                        value={this.state.filterCompactGroup}
+                    {this.props.expertMode && this.state.compact ? (
+                        <CustomSelectButton
+                            title={this.t('Filter specific compact group')}
+                            t={this.t}
+                            arrayItem={[
+                                { name: 'All' },
+                                { name: 'controller' },
+                                { name: 'default' },
+                                ...Array(this.state.maxCompactGroupNumber - 1)
+                                    .fill(0)
+                                    .map((_, idx) => ({ name: idx + 2 })),
+                            ]}
+                            buttonIcon={<ViewCompactIcon style={{ marginRight: 4 }} color="primary" />}
+                            onClick={value => this.changeCompactGroup(value)}
+                            value={this.state.filterCompactGroup}
+                        />
+                    ) : null}
+                    <div style={styles.grow} />
+                    <TextField
+                        variant="standard"
+                        inputRef={this.inputRef}
+                        label={this.t('Filter')}
+                        sx={{ margin: { xs: '0 0 2px 16px', md: '5px 0 5px 0' } }}
+                        defaultValue={this.state.filterText}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.handleFilterChange(event)}
+                        slotProps={{
+                            input: {
+                                endAdornment: this.state.filterText ? (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => {
+                                                this.inputRef.current.value = '';
+                                                this._cacheList = null;
+                                                this.setState({ filterText: '' });
+                                                this.localStorage.setItem('instances.filter', '');
+                                            }}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ) : null,
+                            },
+                        }}
                     />
-                    : null}
-                <div style={styles.grow} />
-                <TextField
-                    variant="standard"
-                    inputRef={this.inputRef}
-                    label={this.t('Filter')}
-                    sx={{ margin: { xs: '0 0 2px 16px', md: '5px 0 5px 0' } }}
-                    defaultValue={this.state.filterText}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.handleFilterChange(event)}
-                    slotProps={{
-                        input: {
-                            endAdornment: this.state.filterText ? <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={() => {
-                                        this.inputRef.current.value = '';
-                                        this._cacheList = null;
-                                        this.setState({ filterText: '' });
-                                        this.localStorage.setItem('instances.filter', '');
-                                    }}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment> : null,
-                        },
-                    }}
-                />
-                <div style={styles.grow} />
-                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline-block' } }}>
-                    {hostData}
-                </Box>
-            </TabHeader>
-            <TabContent overflow="auto">
-                <div style={this.state.viewMode ? styles.cards : undefined}>
-                    {this.getPanels()}
-                </div>
-            </TabContent>
-        </TabContainer>;
+                    <div style={styles.grow} />
+                    <Box component="span" sx={{ display: { xs: 'none', sm: 'inline-block' } }}>
+                        {hostData}
+                    </Box>
+                </TabHeader>
+                <TabContent overflow="auto">
+                    <div style={this.state.viewMode ? styles.cards : undefined}>{this.getPanels()}</div>
+                </TabContent>
+            </TabContainer>
+        );
     }
 }
 

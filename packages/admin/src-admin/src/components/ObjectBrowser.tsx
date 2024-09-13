@@ -994,7 +994,7 @@ function walkThroughArray(object: any[], iteratee: (result: any[], value: any, k
  */
 function walkThroughObject(
     object: Record<string, any>,
-    iteratee: (result: Record<string, any>, value: any, key: string) => void,
+    iteratee: (result: Record<string, any>, value: any, key: string) => void
 ): Record<string, any> {
     const copiedObject: Record<string, any> = {};
     for (const key in object) {
@@ -1014,7 +1014,7 @@ function filterObject(
     /** The keys which should be excluded */
     filterKeys: string[],
     /** Whether translations should be reduced to only the english value */
-    excludeTranslations?: boolean,
+    excludeTranslations?: boolean
 ): Record<string, any> | any[] {
     if (Array.isArray(obj)) {
         return walkThroughArray(obj, (result: any[], value: any, key: number) => {
@@ -1068,7 +1068,7 @@ function generateFile(
         excludeSystemRepositories?: boolean;
         /** Whether translations should be reduced to only the english value */
         excludeTranslations?: boolean;
-    },
+    }
 ): void {
     const el = document.createElement('a');
     const filterKeys = [];
@@ -1128,7 +1128,7 @@ export function getSelectIdIconFromObjects(
     objects: Record<string, ioBroker.Object>,
     id: string,
     lang: ioBroker.Languages,
-    imagePrefix?: string,
+    imagePrefix?: string
 ): string | JSX.Element | null {
     // `admin` has prefix '.' and `web` has '../..'
     imagePrefix = imagePrefix || '.'; // http://localhost:8081';
@@ -1151,14 +1151,7 @@ export function getSelectIdIconFromObjects(
                 return null; // '<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
             }
         } else if (aIcon.startsWith('data:image/svg')) {
-            src = (
-                <SVG
-                    className="iconOwn"
-                    src={aIcon}
-                    width={28}
-                    height={28}
-                />
-            );
+            src = <SVG className="iconOwn" src={aIcon} width={28} height={28} />;
         } else {
             src = aIcon;
         }
@@ -1201,14 +1194,7 @@ export function getSelectIdIconFromObjects(
                     }
                 } else if (cIcon.startsWith('data:image/svg')) {
                     // if base 64 image
-                    src = (
-                        <SVG
-                            className="iconOwn"
-                            src={cIcon}
-                            width={28}
-                            height={28}
-                        />
-                    );
+                    src = <SVG className="iconOwn" src={cIcon} width={28} height={28} />;
                 } else {
                     src = cIcon;
                 }
@@ -1245,7 +1231,7 @@ function applyFilter(
     counter?: { count: number },
     customFilter?: ObjectBrowserCustomFilter,
     selectedTypes?: string[],
-    _depth?: number,
+    _depth?: number
 ): boolean {
     _depth = _depth || 0;
     let filteredOut = false;
@@ -1328,7 +1314,7 @@ function applyFilter(
                     // TODO: make it configurable
                     if (
                         !Object.keys(common.custom).find(
-                            id => id.startsWith('history.') || id.startsWith('sql.') || id.startsWith('influxdb.'),
+                            id => id.startsWith('history.') || id.startsWith('sql.') || id.startsWith('influxdb.')
                         )
                     ) {
                         filteredOut = true;
@@ -1422,7 +1408,7 @@ function applyFilter(
                 counter,
                 customFilter,
                 selectedTypes,
-                _depth + 1,
+                _depth + 1
             );
             if (visible) {
                 data.hasVisibleChildren = true;
@@ -1448,7 +1434,7 @@ function getVisibleItems(
     item: TreeItem,
     type: ioBroker.ObjectType,
     objects: Record<string, ioBroker.Object>,
-    _result?: string[],
+    _result?: string[]
 ): string[] {
     _result = _result || [];
     const data = item.data;
@@ -1468,39 +1454,19 @@ function getSystemIcon(
     level: number,
     themeType: ThemeType,
     lang: ioBroker.Languages,
-    imagePrefix?: string,
+    imagePrefix?: string
 ): string | JSX.Element | null {
     let icon;
 
     // system or design has special icons
     if (id === 'alias' || id === 'alias.0') {
-        icon = (
-            <IconLink
-                className="iconOwn"
-                style={{ color: COLOR_NAME_ALIAS(themeType) }}
-            />
-        );
+        icon = <IconLink className="iconOwn" style={{ color: COLOR_NAME_ALIAS(themeType) }} />;
     } else if (id === '0_userdata' || id === '0_userdata.0') {
-        icon = (
-            <IconData
-                className="iconOwn"
-                style={{ color: COLOR_NAME_USERDATA(themeType) }}
-            />
-        );
+        icon = <IconData className="iconOwn" style={{ color: COLOR_NAME_USERDATA(themeType) }} />;
     } else if (id.startsWith('_design/') || id === 'system') {
-        icon = (
-            <IconSystem
-                className="iconOwn"
-                style={{ color: COLOR_NAME_SYSTEM(themeType) }}
-            />
-        );
+        icon = <IconSystem className="iconOwn" style={{ color: COLOR_NAME_SYSTEM(themeType) }} />;
     } else if (id === 'system.adapter') {
-        icon = (
-            <IconSystem
-                className="iconOwn"
-                style={{ color: COLOR_NAME_SYSTEM_ADAPTER(themeType) }}
-            />
-        );
+        icon = <IconSystem className="iconOwn" style={{ color: COLOR_NAME_SYSTEM_ADAPTER(themeType) }} />;
     } else if (id === 'system.group') {
         icon = <IconGroup className="iconOwn" />;
     } else if (id === 'system.user') {
@@ -1535,13 +1501,7 @@ function getIdFieldTooltip(data: TreeItemData, lang: ioBroker.Languages): JSX.El
     const tooltip = getObjectTooltip(data, lang);
     if (tooltip?.startsWith('http')) {
         return (
-            <Box
-                component="a"
-                sx={styles.cellIdTooltipLink}
-                href={tooltip}
-                target="_blank"
-                rel="noreferrer"
-            >
+            <Box component="a" sx={styles.cellIdTooltipLink} href={tooltip} target="_blank" rel="noreferrer">
                 {tooltip}
             </Box>
         );
@@ -1556,7 +1516,7 @@ function buildTree(
         root?: string;
         lang: ioBroker.Languages;
         themeType: ThemeType;
-    },
+    }
 ): { root: TreeItem; info: TreeInfo } {
     const imagePrefix = options.imagePrefix || '.';
 
@@ -1696,7 +1656,7 @@ function buildTree(
                                         k,
                                         options.themeType,
                                         options.lang,
-                                        imagePrefix,
+                                        imagePrefix
                                     ),
                                     generated: true,
                                 },
@@ -1841,7 +1801,7 @@ function findRoomsForObject(
     info: TreeInfo,
     id: string,
     lang: ioBroker.Languages,
-    rooms?: string[],
+    rooms?: string[]
 ): { rooms: string[]; per: boolean } {
     if (!id) {
         return { rooms: [], per: false };
@@ -1879,7 +1839,7 @@ function findEnumsForObjectAsIds(
     info: TreeInfo,
     id: string,
     enumName: 'roomEnums' | 'funcEnums',
-    funcs?: string[],
+    funcs?: string[]
 ): string[] {
     if (!id) {
         return [];
@@ -1900,7 +1860,7 @@ function findFunctionsForObject(
     info: TreeInfo,
     id: string,
     lang: ioBroker.Languages,
-    funcs?: string[],
+    funcs?: string[]
 ): { funcs: string[]; pef: boolean } {
     if (!id) {
         return { funcs: [], pef: false };
@@ -1964,13 +1924,13 @@ function formatValue(options: FormatValueOptions): {
     };
     valFull:
         | {
-        /** label */
-        t: string;
-        /** value */
-        v: string;
-        /** no break */
-        nbr?: boolean;
-    }[]
+              /** label */
+              t: string;
+              /** value */
+              v: string;
+              /** no break */
+              nbr?: boolean;
+          }[]
         | undefined;
     fileViewer: 'image' | 'text' | 'json' | 'html' | 'pdf' | 'audio' | 'video' | undefined;
 } {
@@ -1984,10 +1944,10 @@ function formatValue(options: FormatValueOptions): {
         isCommon?.type === 'file'
             ? '[file]'
             : !state || state.val === null
-                ? '(null)'
-                : state.val === undefined
-                    ? '[undef]'
-                    : state.val;
+              ? '(null)'
+              : state.val === undefined
+                ? '[undef]'
+                : state.val;
 
     const type = typeof v;
 
@@ -2060,12 +2020,12 @@ function formatValue(options: FormatValueOptions): {
     }
     let valFull:
         | {
-        /** label */
-        t: string;
-        /** value */
-        v: string;
-        nbr?: boolean;
-    }[]
+              /** label */
+              t: string;
+              /** value */
+              v: string;
+              nbr?: boolean;
+          }[]
         | undefined;
     if (options.full) {
         valFull = [{ t: texts.value, v }];
@@ -2160,96 +2120,21 @@ function prepareSparkData(values: ioBroker.GetHistoryResult, from: number): numb
 }
 
 export const ITEM_IMAGES: Record<string, JSX.Element> = {
-    state: (
-        <IconState
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    channel: (
-        <IconChannel
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    device: (
-        <IconDevice
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    adapter: (
-        <IconAdapter
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    meta: (
-        <IconMeta
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    instance: (
-        <IconInstance
-            className="itemIcon"
-            style={{ color: '#7da7ff', verticalAlign: 'middle' }}
-        />
-    ),
-    enum: (
-        <IconEnum
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    chart: (
-        <IconChart
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    config: (
-        <IconConfig
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    group: (
-        <IconGroup
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    user: (
-        <IconUser
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    host: (
-        <IconHost
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    schedule: (
-        <IconSchedule
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    script: (
-        <IconScript
-            className="itemIcon"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
-    folder: (
-        <IconClosed
-            className="itemIcon itemIconFolder"
-            style={{ verticalAlign: 'middle' }}
-        />
-    ),
+    state: <IconState className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    channel: <IconChannel className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    device: <IconDevice className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    adapter: <IconAdapter className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    meta: <IconMeta className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    instance: <IconInstance className="itemIcon" style={{ color: '#7da7ff', verticalAlign: 'middle' }} />,
+    enum: <IconEnum className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    chart: <IconChart className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    config: <IconConfig className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    group: <IconGroup className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    user: <IconUser className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    host: <IconHost className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    schedule: <IconSchedule className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    script: <IconScript className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    folder: <IconClosed className="itemIcon itemIconFolder" style={{ verticalAlign: 'middle' }} />,
 };
 
 interface ScreenWidthOne {
@@ -2839,7 +2724,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             props.expertMode !== undefined
                 ? props.expertMode
                 : (((window as any)._sessionStorage as Storage) || window.sessionStorage).getItem('App.expertMode') ===
-                'true';
+                  'true';
         this.tableRef = createRef();
         this.filterRefs = {};
 
@@ -3191,18 +3076,18 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     undefined,
                     undefined,
                     props.customFilter,
-                    props.types,
+                    props.types
                 )
             ) {
                 // reset filter
                 this.setState({ filter: { ...DEFAULT_FILTER }, columnsForAdmin }, () => {
                     this.setState({ loaded: true, updating: false }, () =>
-                        this.expandAllSelected(() => this.onAfterSelect()),
+                        this.expandAllSelected(() => this.onAfterSelect())
                     );
                 });
             } else {
                 this.setState({ loaded: true, updating: false, columnsForAdmin }, () =>
-                    this.expandAllSelected(() => this.onAfterSelect()),
+                    this.expandAllSelected(() => this.onAfterSelect())
                 );
             }
         } catch (e1) {
@@ -3215,7 +3100,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
      */
     static isNonExpertId(
         /** id to test */
-        id: string,
+        id: string
     ): boolean {
         return !!ObjectBrowserClass.#NON_EXPERT_NAMESPACES.find(saveNamespace => id.startsWith(saveNamespace));
     }
@@ -3276,7 +3161,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private static getDerivedStateFromProps(
         props: ObjectBrowserProps,
-        state: ObjectBrowserState,
+        state: ObjectBrowserState
     ): Partial<ObjectBrowserState> | null {
         const newState: Partial<ObjectBrowserState> = {};
         let changed = false;
@@ -3505,7 +3390,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
         return cols
             .filter(
-                id => (isLast && (id === 'val' || id === 'buttons')) || (!isLast && id !== 'val' && id !== 'buttons'),
+                id => (isLast && (id === 'val' || id === 'buttons')) || (!isLast && id !== 'val' && id !== 'buttons')
             )
             .map(id => (
                 <ListItemButton
@@ -3521,7 +3406,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             }
                             this.localStorage.setItem(
                                 `${this.props.dialogName || 'App'}.columns`,
-                                JSON.stringify(columns),
+                                JSON.stringify(columns)
                             );
                             this.calculateColumnsVisibility(null, columns);
                             this.setState({ columns });
@@ -3583,7 +3468,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     '& .MuiPaper-root': Utils.getStyle(
                         this.props.theme,
                         styles.dialogColumns,
-                        styles[`transparent_${this.state.columnsDialogTransparent}`],
+                        styles[`transparent_${this.state.columnsDialogTransparent}`]
                     ),
                 }}
             >
@@ -3597,7 +3482,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 onChange={() => {
                                     this.localStorage.setItem(
                                         `${this.props.dialogName || 'App'}.foldersFirst`,
-                                        this.state.foldersFirst ? 'false' : 'true',
+                                        this.state.foldersFirst ? 'false' : 'true'
                                     );
                                     this.setState({ foldersFirst: !this.state.foldersFirst });
                                 }}
@@ -3613,7 +3498,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 onChange={() => {
                                     this.localStorage.setItem(
                                         `${this.props.dialogName || 'App'}.lines`,
-                                        this.state.linesEnabled ? 'false' : 'true',
+                                        this.state.linesEnabled ? 'false' : 'true'
                                     );
                                     this.setState({ linesEnabled: !this.state.linesEnabled });
                                 }}
@@ -3629,7 +3514,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 onChange={() => {
                                     this.localStorage.setItem(
                                         `${this.props.dialogName || 'App'}.columnsAuto`,
-                                        this.state.columnsAuto ? 'false' : 'true',
+                                        this.state.columnsAuto ? 'false' : 'true'
                                     );
                                     if (!this.state.columnsAuto) {
                                         this.calculateColumnsVisibility(true);
@@ -3677,7 +3562,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                                         this.calculateColumnsVisibility(null, columns);
                                                         this.localStorage.setItem(
                                                             `${this.props.dialogName || 'App'}.columns`,
-                                                            JSON.stringify(columns),
+                                                            JSON.stringify(columns)
                                                         );
                                                         this.setState({ columns });
                                                     }
@@ -3720,7 +3605,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 </ListItemSecondaryAction>
                                 */}
                                             </ListItemButton>
-                                        )),
+                                        ))
                                 )}
                         {this._renderDefinedList(true)}
                     </List>
@@ -3827,7 +3712,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private parseObjectForAdmins(
         columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null,
-        obj: ioBroker.AdapterObject,
+        obj: ioBroker.AdapterObject
     ): Record<string, CustomAdminColumnStored[]> | null {
         if (obj.common && obj.common.adminColumns && obj.common.name) {
             let columns: string | (string | ioBroker.CustomAdminColumn)[] = obj.common.adminColumns;
@@ -3880,7 +3765,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (cColumns && cColumns.length) {
                 columnsForAdmin = columnsForAdmin || {};
                 columnsForAdmin[obj.common.name] = cColumns.sort((a, b) =>
-                    a.path > b.path ? -1 : a.path < b.path ? 1 : 0,
+                    a.path > b.path ? -1 : a.path < b.path ? 1 : 0
                 );
             }
         } else if (obj.common && obj.common.name && columnsForAdmin && columnsForAdmin[obj.common.name]) {
@@ -3997,7 +3882,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
      */
     processOnObjectChangeElement(
         id: string,
-        obj?: ioBroker.Object | null,
+        obj?: ioBroker.Object | null
     ): {
         filtered: boolean;
         newInnerState: null | { columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null };
@@ -4022,7 +3907,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         let newInnerState = null;
         if (id.startsWith('system.adapter.') && obj?.type === 'adapter') {
             const columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null = JSON.parse(
-                JSON.stringify(this.state.columnsForAdmin),
+                JSON.stringify(this.state.columnsForAdmin)
             );
 
             this.parseObjectForAdmins(columnsForAdmin, obj as ioBroker.AdapterObject);
@@ -4104,7 +3989,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (name === 'expertMode') {
                 (((window as any)._sessionStorage as Storage) || window.sessionStorage).setItem(
                     'App.expertMode',
-                    value ? 'true' : 'false',
+                    value ? 'true' : 'false'
                 );
             }
         }
@@ -4136,14 +4021,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectFilter`, JSON.stringify(filter));
             this.setState(
                 { filter, filterKey: this.state.filterKey + 1 },
-                () => this.props.onFilterChanged && this.props.onFilterChanged(filter),
+                () => this.props.onFilterChanged && this.props.onFilterChanged(filter)
             );
         }
     }
 
     isFilterEmpty(): boolean {
         const someNotEmpty = Object.keys(this.state.filter).find(
-            attr => attr !== 'expertMode' && (this.state.filter as Record<string, string>)[attr],
+            attr => attr !== 'expertMode' && (this.state.filter as Record<string, string>)[attr]
         );
         return !someNotEmpty;
     }
@@ -4213,10 +4098,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     inputProps={{ name, id: name }}
                     displayEmpty
                 >
-                    <MenuItem
-                        key="empty"
-                        value=""
-                    >
+                    <MenuItem key="empty" value="">
                         <span style={styles.selectNone}>{this.texts[`filter_${name}`]}</span>
                     </MenuItem>
                     {values?.map(item => {
@@ -4232,11 +4114,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             _name = item;
                         }
                         return (
-                            <MenuItem
-                                sx={styles.headerCellSelectItem}
-                                key={id}
-                                value={id}
-                            >
+                            <MenuItem sx={styles.headerCellSelectItem} key={id} value={id}>
                                 {icon || (hasIcons ? <div className="itemIcon" /> : null)}
                                 {_name}
                             </MenuItem>
@@ -4244,10 +4122,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     })}
                 </Select>
                 {(this.filterRefs[name]?.current?.childNodes[1] as HTMLInputElement)?.value ? (
-                    <Box
-                        component="div"
-                        sx={styles.selectClearButton}
-                    >
+                    <Box component="div" sx={styles.selectClearButton}>
                         <IconButton
                             size="small"
                             onClick={() => {
@@ -4256,11 +4131,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 (this.filterRefs[name].current?.childNodes[1] as HTMLInputElement).value = '';
                                 this.localStorage.setItem(
                                     `${this.props.dialogName || 'App'}.objectFilter`,
-                                    JSON.stringify(newFilter),
+                                    JSON.stringify(newFilter)
                                 );
                                 this.setState(
                                     { filter: newFilter, filterKey: this.state.filterKey + 1 },
-                                    () => this.props.onFilterChanged && this.props.onFilterChanged(newFilter),
+                                    () => this.props.onFilterChanged && this.props.onFilterChanged(newFilter)
                                 );
                             }}
                         >
@@ -4282,13 +4157,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 ({
                     name: getName(this.objects[id]?.common?.name, this.props.lang) || id.split('.').pop(),
                     value: id,
-                    icon: (
-                        <Icon
-                            src={this.objects[id]?.common?.icon || ''}
-                            style={styles.selectIcon}
-                        />
-                    ),
-                }) as InputSelectItem,
+                    icon: <Icon src={this.objects[id]?.common?.icon || ''} style={styles.selectIcon} />,
+                }) as InputSelectItem
         );
 
         return this.getFilterSelect('room', rooms);
@@ -4300,13 +4170,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 ({
                     name: getName(this.objects[id]?.common?.name, this.props.lang) || id.split('.').pop(),
                     value: id,
-                    icon: (
-                        <Icon
-                            src={this.objects[id]?.common?.icon || ''}
-                            style={styles.selectIcon}
-                        />
-                    ),
-                }) as InputSelectItem,
+                    icon: <Icon src={this.objects[id]?.common?.icon || ''} style={styles.selectIcon} />,
+                }) as InputSelectItem
         );
 
         return this.getFilterSelect('func', func);
@@ -4528,7 +4393,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                         await this.props.socket.setState(
                                             obj._id,
                                             !obj.common || obj.common.def === undefined ? null : obj.common.def,
-                                            true,
+                                            true
                                         );
                                     } catch (e) {
                                         window.alert(`Cannot set state "${obj._id}": ${e}`);
@@ -4585,7 +4450,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             excludeTranslations?: boolean;
             /** Whether the values of the states should be not included */
             noStatesByExportImport?: boolean;
-        },
+        }
     ): Promise<void> {
         if (options.isAll) {
             generateFile('allObjects.json', this.objects, options);
@@ -4626,10 +4491,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             return null;
         }
         return (
-            <Dialog
-                open={!0}
-                maxWidth="lg"
-            >
+            <Dialog open={!0} maxWidth="lg">
                 <DialogTitle>{this.props.t('ra_Select type of export')}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -4697,7 +4559,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                         beautify: this.state.beautifyJsonExport,
                                         excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
                                         excludeTranslations: this.state.excludeTranslations,
-                                    }),
+                                    })
                                 )
                             }
                         >
@@ -4726,7 +4588,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                     beautify: this.state.beautifyJsonExport,
                                     excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
                                     excludeTranslations: this.state.excludeTranslations,
-                                }),
+                                })
                             )
                         }
                     >
@@ -4801,7 +4663,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                         await this.props.socket.setState(
                                             json._id,
                                             json.common.def === undefined ? null : json.common.def,
-                                            true,
+                                            true
                                         );
                                     }
                                 }
@@ -4836,14 +4698,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
             <div key={5}>{t('ra_Device → Channel → State')}</div>,
             <div key={6}>{t('ra_Channel → State')}</div>,
-            <div
-                key={7}
-                style={{ height: 10 }}
-            />,
+            <div key={7} style={{ height: 10 }} />,
             <div key={8}>{t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
             <div key={9}>
                 {t(
-                    'ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").',
+                    'ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").'
                 )}
             </div>,
         ];
@@ -4858,16 +4717,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         value = [
                             <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
                             <div key={5}>{t('ra_Device → Channel → State')}</div>,
-                            <div
-                                key={7}
-                                style={{ height: 10 }}
-                            />,
+                            <div key={7} style={{ height: 10 }} />,
                             <div key={8}>
                                 {t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}
                             </div>,
                             <div key={9}>
                                 {t(
-                                    'ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").',
+                                    'ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").'
                                 )}
                             </div>,
                         ];
@@ -4878,16 +4734,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             <div key={2}>{t('ra_Folder → State')}</div>,
                             <div key={3}>{t('ra_Folder → Channel → State')}</div>,
                             <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
-                            <div
-                                key={7}
-                                style={{ height: 10 }}
-                            />,
+                            <div key={7} style={{ height: 10 }} />,
                             <div key={8}>
                                 {t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}
                             </div>,
                             <div key={9}>
                                 {t(
-                                    'ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").',
+                                    'ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").'
                                 )}
                             </div>,
                         ];
@@ -4896,16 +4749,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         value = [
                             <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
                             <div key={1}>{t('ra_Channel → State')}</div>,
-                            <div
-                                key={7}
-                                style={{ height: 10 }}
-                            />,
+                            <div key={7} style={{ height: 10 }} />,
                             <div key={8}>
                                 {t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}
                             </div>,
                             <div key={9}>
                                 {t(
-                                    'ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").',
+                                    'ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").'
                                 )}
                             </div>,
                         ];
@@ -4921,16 +4771,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
                     <div key={5}>{t('ra_Device → Channel → State')}</div>,
                     <div key={6}>{t('ra_Channel → State')}</div>,
-                    <div
-                        key={7}
-                        style={{ height: 10 }}
-                    />,
+                    <div key={7} style={{ height: 10 }} />,
                     <div key={7}>
                         {t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}
                     </div>,
                     <div key={8}>
                         {t(
-                            'ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").',
+                            'ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").'
                         )}
                     </div>,
                 ];
@@ -4973,10 +4820,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         alignItems: 'center',
                     }}
                 >
-                    <Tooltip
-                        title={this.props.t('ra_Refresh tree')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
-                    >
+                    <Tooltip title={this.props.t('ra_Refresh tree')} slotProps={{ popper: { sx: styles.tooltip } }}>
                         <div>
                             <IconButton
                                 onClick={() => this.refreshComponent()}
@@ -4988,10 +4832,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         </div>
                     </Tooltip>
                     {this.props.showExpertButton && !this.props.expertMode && (
-                        <Tooltip
-                            title={this.props.t('ra_expertMode')}
-                            slotProps={{ popper: { sx: styles.tooltip } }}
-                        >
+                        <Tooltip title={this.props.t('ra_expertMode')} slotProps={{ popper: { sx: styles.tooltip } }}>
                             <IconButton
                                 key="expertMode"
                                 color={this.state.filter.expertMode ? 'secondary' : 'default'}
@@ -5003,10 +4844,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         </Tooltip>
                     )}
                     {!this.props.disableColumnSelector && this.props.width !== 'xs' && (
-                        <Tooltip
-                            title={this.props.t('ra_Configure')}
-                            slotProps={{ popper: { sx: styles.tooltip } }}
-                        >
+                        <Tooltip title={this.props.t('ra_Configure')} slotProps={{ popper: { sx: styles.tooltip } }}>
                             <IconButton
                                 key="columnSelector"
                                 color={this.state.columnsAuto ? 'primary' : 'default'}
@@ -5022,11 +4860,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             title={this.props.t('ra_Expand all nodes')}
                             slotProps={{ popper: { sx: styles.tooltip } }}
                         >
-                            <IconButton
-                                key="expandAll"
-                                onClick={() => this.onExpandAll()}
-                                size="large"
-                            >
+                            <IconButton key="expandAll" onClick={() => this.onExpandAll()} size="large">
                                 <IconOpen />
                             </IconButton>
                         </Tooltip>
@@ -5035,11 +4869,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         title={this.props.t('ra_Collapse all nodes')}
                         slotProps={{ popper: { sx: styles.tooltip } }}
                     >
-                        <IconButton
-                            key="collapseAll"
-                            onClick={() => this.onCollapseAll()}
-                            size="large"
-                        >
+                        <IconButton key="collapseAll" onClick={() => this.onCollapseAll()} size="large">
                             <IconClosed />
                         </IconButton>
                     </Tooltip>
@@ -5104,10 +4934,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             title={this.props.t('ra_Toggle the states view')}
                             slotProps={{ popper: { sx: styles.tooltip } }}
                         >
-                            <IconButton
-                                onClick={() => this.onStatesViewVisible()}
-                                size="large"
-                            >
+                            <IconButton onClick={() => this.onStatesViewVisible()} size="large">
                                 <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
                             </IconButton>
                         </Tooltip>
@@ -5121,7 +4948,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             onClick={() => {
                                 this.localStorage.setItem(
                                     `${this.props.dialogName || 'App'}.desc`,
-                                    this.state.showDescription ? 'false' : 'true',
+                                    this.state.showDescription ? 'false' : 'true'
                                 );
                                 this.setState({ showDescription: !this.state.showDescription });
                             }}
@@ -5132,10 +4959,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     </Tooltip>
 
                     {this.props.objectAddBoolean ? (
-                        <Tooltip
-                            title={this.toolTipObjectCreating()}
-                            slotProps={{ popper: { sx: styles.tooltip } }}
-                        >
+                        <Tooltip title={this.toolTipObjectCreating()} slotProps={{ popper: { sx: styles.tooltip } }}>
                             <div>
                                 <IconButton
                                     disabled={!allowObjectCreation}
@@ -5194,7 +5018,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 {!!this.props.objectBrowserEditObject && this.props.width !== 'xs' && (
                     <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
                         {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t(
-                            'ra_States',
+                            'ra_States'
                         )}: ${
                             Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length
                         }`}
@@ -5216,7 +5040,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                     if (ids.length === 1) {
                                         this.localStorage.setItem(
                                             `${this.props.dialogName || 'App'}.objectSelected`,
-                                            this.state.selected[0],
+                                            this.state.selected[0]
                                         );
                                         this.props.router?.doNavigate(null, 'custom', this.state.selected[0]);
                                     }
@@ -5315,7 +5139,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             <span style={value === 'object' ? styles.rightsObject : styles.rightsState}>
                                 {el.value}
                             </span>
-                        </span>,
+                        </span>
                     );
                 }
             });
@@ -5324,10 +5148,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         arrayTooltipText.push(
             <span key="group">
                 {`${this.texts.ownerGroup}: ${(acl.ownerGroup || '').replace('system.group.', '')}`}
-            </span>,
+            </span>
         );
         arrayTooltipText.push(
-            <span key="owner">{`${this.texts.ownerUser}: ${(acl.owner || '').replace('system.user.', '')}`}</span>,
+            <span key="owner">{`${this.texts.ownerUser}: ${(acl.owner || '').replace('system.user.', '')}`}</span>
         );
         funcRenderStateObject('object');
         if (acl.state) {
@@ -5411,11 +5235,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         return [
             this.state.filter.expertMode && this.props.objectEditOfAccessControl ? (
-                <Tooltip
-                    key="acl"
-                    title={item.data.aclTooltip}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
+                <Tooltip key="acl" title={item.data.aclTooltip} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         sx={{
                             ...styles.cellButtonsButton,
@@ -5433,10 +5253,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     </IconButton>
                 </Tooltip>
             ) : (
-                <div
-                    key="aclEmpty"
-                    style={styles.cellButtonMinWidth}
-                />
+                <div key="aclEmpty" style={styles.cellButtonMinWidth} />
             ),
 
             showEdit ? (
@@ -5457,11 +5274,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     <IconEdit style={styles.cellButtonsButtonIcon} />
                 </IconButton>
             ) : (
-                <Box
-                    component="div"
-                    key="editDisabled"
-                    sx={styles.cellButtonsButton}
-                />
+                <Box component="div" key="editDisabled" sx={styles.cellButtonsButton} />
             ),
 
             this.props.onObjectDelete && (item.children?.length || !item.data.obj.common?.dontDelete) ? (
@@ -5487,7 +5300,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 id,
                                 !!item.children?.length,
                                 !item.data.obj?.common?.dontDelete,
-                                count,
+                                count
                             );
                         }
                     }}
@@ -5570,7 +5383,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 })
                 .then(values => {
                     const sparks: HTMLDivElement[] = window.document.getElementsByClassName(
-                        'sparkline',
+                        'sparkline'
                     ) as any as HTMLDivElement[];
 
                     for (let s = 0; s < sparks.length; s++) {
@@ -5604,14 +5417,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         valFull?.forEach(_item => {
             if (_item.t === this.texts.quality && state.q) {
                 valFullRx.push(
-                    <div
-                        style={styles.cellValueTooltipBoth}
-                        key={_item.t}
-                    >
+                    <div style={styles.cellValueTooltipBoth} key={_item.t}>
                         {_item.t}
                         :&nbsp;
                         {_item.v}
-                    </div>,
+                    </div>
                 );
                 // <div style={styles.cellValueTooltipValue} key={item.t + '_v'}>{item.v}</div>,
                 if (!_item.nbr) {
@@ -5619,21 +5429,15 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 }
             } else {
                 valFullRx.push(
-                    <div
-                        style={styles.cellValueTooltipTitle}
-                        key={_item.t}
-                    >
+                    <div style={styles.cellValueTooltipTitle} key={_item.t}>
                         {_item.t}
                         :&nbsp;
-                    </div>,
+                    </div>
                 );
                 valFullRx.push(
-                    <div
-                        style={styles.cellValueTooltipValue}
-                        key={`${_item.t}_v`}
-                    >
+                    <div style={styles.cellValueTooltipValue} key={`${_item.t}_v`}>
                         {_item.v}
-                    </div>,
+                    </div>
                 );
                 if (!_item.nbr) {
                     valFullRx.push(<br key={`${_item.t}_br`} />);
@@ -5642,13 +5446,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         });
 
         if (fileViewer === 'image') {
-            valFullRx.push(
-                <img
-                    style={styles.cellValueTooltipImage}
-                    src={state.val as string}
-                    alt={id}
-                />,
-            );
+            valFullRx.push(<img style={styles.cellValueTooltipImage} src={state.val as string} alt={id} />);
         } else if (
             this.defaultHistory &&
             this.objects[id]?.common?.custom &&
@@ -5663,7 +5461,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     width="200"
                     height="30"
                     strokeWidth="3"
-                />,
+                />
             );
         }
 
@@ -5678,10 +5476,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         if (obj.common?.type === 'file') {
             return (
-                <Box
-                    component="div"
-                    sx={{ ...styles.cellValueText, ...styles.cellValueFile }}
-                >
+                <Box component="div" sx={{ ...styles.cellValueText, ...styles.cellValueFile }}>
                     [file]
                 </Box>
             );
@@ -5731,7 +5526,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     }}
                 >
                     {valText.v.toString()}
-                </span>,
+                </span>
             );
             if (valText.u) {
                 valTextRx.push(
@@ -5741,7 +5536,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         key={`${valText.v.toString()}unit`}
                     >
                         {valText.u}
-                    </span>,
+                    </span>
                 );
             }
             if (valText.s !== undefined) {
@@ -5752,7 +5547,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         key={`${valText.v.toString()}states`}
                     >
                         ({valText.s})
-                    </span>,
+                    </span>
                 );
             }
             if (!narrowStyleWithDetails) {
@@ -5762,7 +5557,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         style={this.styles.iconCopy}
                         onClick={e => this.onCopy(e, copyText)}
                         key="cc"
-                    />,
+                    />
                 );
             }
             // <IconEdit className="copyButton" style={{{ ...styles.cellButtonsValueButton, styles.cellButtonsValueButtonEdit)} key="ce" />
@@ -5775,12 +5570,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         let val: JSX.Element[] = info.valTextRx as JSX.Element[];
         if (!this.state.filter.expertMode) {
             if (item.data.button) {
-                val = [
-                    <ButtonIcon
-                        key="button"
-                        style={{ color: info.style.color, ...styles.cellValueButton }}
-                    />,
-                ];
+                val = [<ButtonIcon key="button" style={{ color: info.style.color, ...styles.cellValueButton }} />];
             } else if (item.data.switch) {
                 val = [
                     <Switch
@@ -5850,7 +5640,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         this.props.socket
                             .setObject(enumId, obj)
                             .then(() => (this.info.objects[enumId] = obj))
-                            .catch(e => this.showError(e)),
+                            .catch(e => this.showError(e))
                     );
                 }
             }
@@ -5866,7 +5656,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     this.props.socket
                         .setObject(enumId, obj)
                         .then(() => (this.info.objects[enumId] = obj))
-                        .catch(e => this.showError(e)),
+                        .catch(e => this.showError(e))
                 );
             }
         }
@@ -5908,11 +5698,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (_item.icon && typeof _item.icon === 'string') {
                 _item.icon = (
                     <Box style={styles.enumIconDiv}>
-                        <img
-                            src={_item.icon}
-                            style={styles.enumIcon}
-                            alt={_item.name}
-                        />
+                        <img src={_item.icon} style={styles.enumIcon} alt={_item.name} />
                     </Box>
                 );
             }
@@ -5936,7 +5722,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         size="small"
                         onClick={() =>
                             this.syncEnum(item.data.id, type, itemEnums).then(() =>
-                                this.setState({ enumDialog: null, enumDialogEnums: null }),
+                                this.setState({ enumDialog: null, enumDialogEnums: null })
                             )
                         }
                     >
@@ -6049,7 +5835,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         ObjectBrowserClass.setCustomValue(
                             obj,
                             this.state.columnsEditCustomDialog?.it as AdapterColumn,
-                            value,
+                            value
                         )
                     ) {
                         return this.props.socket.setObject(obj._id, obj);
@@ -6071,7 +5857,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (!this.customColumnDialog) {
             const value = ObjectBrowserClass.getCustomValue(
                 this.state.columnsEditCustomDialog.obj,
-                this.state.columnsEditCustomDialog.it,
+                this.state.columnsEditCustomDialog.it
             );
             this.customColumnDialog = {
                 type: (this.state.columnsEditCustomDialog.it.type || typeof value) as 'boolean' | 'string' | 'number',
@@ -6339,8 +6125,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         {typeof aliasObj === 'string' || (aliasObj.read === id && aliasObj.write === id)
                             ? '↔'
                             : aliasObj.read === id
-                                ? '→'
-                                : '←'}
+                              ? '→'
+                              : '←'}
                     </span>
                     {this.info.aliasesMap[id][_index]}
                 </Box>
@@ -6356,7 +6142,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     renderLeaf(
         item: TreeItem,
         isExpanded: boolean | undefined,
-        counter: { count: number },
+        counter: { count: number }
     ): { row: JSX.Element; details: JSX.Element | null } {
         const id = item.data.id;
         counter.count++;
@@ -6375,15 +6161,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             itemType === 'meta'
         ) {
             iconFolder = isExpanded ? (
-                <IconOpen
-                    style={this.styles.cellIdIconFolder}
-                    onClick={() => this.toggleExpanded(id)}
-                />
+                <IconOpen style={this.styles.cellIdIconFolder} onClick={() => this.toggleExpanded(id)} />
             ) : (
-                <IconClosed
-                    style={this.styles.cellIdIconFolder}
-                    onClick={() => this.toggleExpanded(id)}
-                />
+                <IconClosed style={this.styles.cellIdIconFolder} onClick={() => this.toggleExpanded(id)} />
             );
         } else if (obj && obj.common && obj.common.write === false && obj.type === 'state') {
             iconFolder = <IconDocumentReadOnly style={this.styles.cellIdIconDocument} />;
@@ -6396,22 +6176,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (typeof item.data.icon === 'string') {
                 if (item.data.icon.length < 3) {
                     iconItem = (
-                        <span
-                            className="iconOwn"
-                            style={styles.cellIdIconOwn}
-                        >
+                        <span className="iconOwn" style={styles.cellIdIconOwn}>
                             {item.data.icon}
                         </span>
                     ); // utf-8 char
                 } else {
-                    iconItem = (
-                        <Icon
-                            style={styles.cellIdIconOwn}
-                            className="iconOwn"
-                            src={item.data.icon}
-                            alt=""
-                        />
-                    );
+                    iconItem = <Icon style={styles.cellIdIconOwn} className="iconOwn" src={item.data.icon} alt="" />;
                 }
             } else {
                 iconItem = item.data.icon;
@@ -6439,10 +6209,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.props.multiSelect &&
             this.objects[id] &&
             (!this.props.types || this.props.types.includes(this.objects[id].type)) ? (
-                <Checkbox
-                    style={styles.checkBox}
-                    checked={this.state.selected.includes(id)}
-                />
+                <Checkbox style={styles.checkBox} checked={this.state.selected.includes(id)} />
             ) : null;
 
         let valueEditable =
@@ -6480,7 +6247,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (obj) {
             if (obj.from) {
                 newValueTitle.push(
-                    `${this.texts.objectChangedFrom} ${obj.from.replace(/^system\.adapter\.|^system\./, '')}`,
+                    `${this.texts.objectChangedFrom} ${obj.from.replace(/^system\.adapter\.|^system\./, '')}`
                 );
             }
             if (obj.user) {
@@ -6488,7 +6255,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
             if (obj.ts) {
                 newValueTitle.push(
-                    `${this.texts.objectChangedByUser} ${Utils.formatDate(new Date(obj.ts), this.props.dateFormat || this.systemConfig.common.dateFormat)}`,
+                    `${this.texts.objectChangedByUser} ${Utils.formatDate(new Date(obj.ts), this.props.dateFormat || this.systemConfig.common.dateFormat)}`
                 );
             }
         }
@@ -6509,7 +6276,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                     this.onSelect(common.alias.id.read);
                                     setTimeout(
                                         () => this.expandAllSelected(() => this.scrollToItem(common.alias.id.read)),
-                                        100,
+                                        100
                                     );
                                 }}
                                 sx={this.styles.aliasReadWrite}
@@ -6526,7 +6293,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                     this.onSelect(common.alias.id.write);
                                     setTimeout(
                                         () => this.expandAllSelected(() => this.scrollToItem(common.alias.id.write)),
-                                        100,
+                                        100
                                     );
                                 }}
                                 sx={this.styles.aliasReadWrite}
@@ -6640,7 +6407,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         key="error"
                         // title={this.texts.deviceError}
                         style={this.styles.iconDeviceError}
-                    />,
+                    />
                 );
             }
 
@@ -6654,7 +6421,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 key="conn"
                                 // title={this.texts.deviceError}
                                 style={this.styles.iconDeviceConnected}
-                            />,
+                            />
                         );
                     } else {
                         checkColor =
@@ -6666,7 +6433,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 key="disc"
                                 // title={this.texts.deviceError}
                                 style={this.styles.iconDeviceDisconnected}
-                            />,
+                            />
                         );
                     }
                 } else if (this.states[ids.onlineId].val) {
@@ -6675,7 +6442,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             key="conn"
                             // title={this.texts.deviceError}
                             style={this.styles.iconDeviceConnected}
-                        />,
+                        />
                     );
                 } else {
                     icons.push(
@@ -6683,7 +6450,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             key="disc"
                             // title={this.texts.deviceError}
                             style={this.styles.iconDeviceDisconnected}
-                        />,
+                        />
                     );
                 }
             } else if (ids.offlineId && this.states[ids.offlineId]) {
@@ -6698,7 +6465,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 key="disc"
                                 // title={this.texts.deviceError}
                                 style={this.styles.iconDeviceDisconnected}
-                            />,
+                            />
                         );
                     } else {
                         checkColor =
@@ -6708,7 +6475,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 key="conn"
                                 // title={this.texts.deviceError}
                                 style={this.styles.iconDeviceConnected}
-                            />,
+                            />
                         );
                     }
                 } else if (this.states[ids.offlineId].val) {
@@ -6717,7 +6484,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             key="disc"
                             // title={this.texts.deviceError}
                             style={this.styles.iconDeviceDisconnected}
-                        />,
+                        />
                     );
                 } else {
                     icons.push(
@@ -6725,7 +6492,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             key="conn"
                             // title={this.texts.deviceError}
                             style={this.styles.iconDeviceConnected}
-                        />,
+                        />
                     );
                 }
             }
@@ -6739,16 +6506,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             const oTooltip: string | null = getObjectTooltip(item.data, this.props.lang);
             if (oTooltip) {
                 name = [
-                    <div
-                        key="name"
-                        style={styles.cellNameDivDiv}
-                    >
+                    <div key="name" style={styles.cellNameDivDiv}>
                         {name}
                     </div>,
-                    <div
-                        key="desc"
-                        style={styles.cellDescription}
-                    >
+                    <div key="desc" style={styles.cellDescription}>
                         {oTooltip}
                     </div>,
                 ];
@@ -6766,10 +6527,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 sx={styles.cellId}
                 style={{ width: this.columnsVisibility.id, paddingLeft }}
             >
-                <Grid2
-                    container
-                    alignItems="center"
-                >
+                <Grid2 container alignItems="center">
                     {checkbox}
                     {iconFolder}
                 </Grid2>
@@ -6791,10 +6549,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     {icons}
                 </Grid2>
                 <div style={{ ...styles.grow, ...(invertBackground ? this.styles.invertedBackgroundFlex : {}) }} />
-                <Grid2
-                    container
-                    alignItems="center"
-                >
+                <Grid2 container alignItems="center">
                     {iconItem}
                 </Grid2>
                 {this.props.width !== 'xs' ? (
@@ -6835,177 +6590,177 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         let colMiddle:
             | ({
-            el: JSX.Element;
-            type:
-                | 'filter_type'
-                | 'filter_role'
-                | 'filter_func'
-                | 'filter_room'
-                | 'quality'
-                | 'from'
-                | 'lc'
-                | 'ts';
-            onClick?: (() => void) | null | undefined;
-        } | null)[]
+                  el: JSX.Element;
+                  type:
+                      | 'filter_type'
+                      | 'filter_role'
+                      | 'filter_func'
+                      | 'filter_room'
+                      | 'quality'
+                      | 'from'
+                      | 'lc'
+                      | 'ts';
+                  onClick?: (() => void) | null | undefined;
+              } | null)[]
             | null;
         if (!this.state.statesView) {
             colMiddle = [
                 (narrowStyleWithDetails && obj?.type) || this.columnsVisibility.type
                     ? {
-                        el: (
-                            <div
-                                key="type"
-                                style={{
-                                    ...styles.cellType,
-                                    width: this.props.width !== 'xs' ? this.columnsVisibility.type : undefined,
-                                }}
-                            >
-                                {typeImg}
-                                &nbsp;
-                                {obj?.type}
-                            </div>
-                        ),
-                        type: 'filter_type',
-                    }
+                          el: (
+                              <div
+                                  key="type"
+                                  style={{
+                                      ...styles.cellType,
+                                      width: this.props.width !== 'xs' ? this.columnsVisibility.type : undefined,
+                                  }}
+                              >
+                                  {typeImg}
+                                  &nbsp;
+                                  {obj?.type}
+                              </div>
+                          ),
+                          type: 'filter_type',
+                      }
                     : null,
                 (narrowStyleWithDetails && common) || this.columnsVisibility.role
                     ? {
-                        el: (
-                            <div
-                                key="role"
-                                style={{
-                                    ...styles.cellRole,
-                                    width: this.props.width !== 'xs' ? this.columnsVisibility.role : '100%',
-                                    cursor:
-                                        this.state.filter.expertMode &&
-                                        enumEditable &&
-                                        this.props.objectBrowserEditRole
-                                            ? 'text'
-                                            : 'default',
-                                }}
-                                onClick={
-                                    !narrowStyleWithDetails &&
-                                    this.state.filter.expertMode &&
-                                    enumEditable &&
-                                    this.props.objectBrowserEditRole
-                                        ? () => this.setState({ roleDialog: item.data.id })
-                                        : undefined
-                                }
-                            >
-                                {common?.role}
-                            </div>
-                        ),
-                        type: 'filter_role',
-                        onClick:
-                            narrowStyleWithDetails &&
-                            this.state.filter.expertMode &&
-                            enumEditable &&
-                            this.props.objectBrowserEditRole
-                                ? () => this.setState({ roleDialog: item.data.id })
-                                : undefined,
-                    }
+                          el: (
+                              <div
+                                  key="role"
+                                  style={{
+                                      ...styles.cellRole,
+                                      width: this.props.width !== 'xs' ? this.columnsVisibility.role : '100%',
+                                      cursor:
+                                          this.state.filter.expertMode &&
+                                          enumEditable &&
+                                          this.props.objectBrowserEditRole
+                                              ? 'text'
+                                              : 'default',
+                                  }}
+                                  onClick={
+                                      !narrowStyleWithDetails &&
+                                      this.state.filter.expertMode &&
+                                      enumEditable &&
+                                      this.props.objectBrowserEditRole
+                                          ? () => this.setState({ roleDialog: item.data.id })
+                                          : undefined
+                                  }
+                              >
+                                  {common?.role}
+                              </div>
+                          ),
+                          type: 'filter_role',
+                          onClick:
+                              narrowStyleWithDetails &&
+                              this.state.filter.expertMode &&
+                              enumEditable &&
+                              this.props.objectBrowserEditRole
+                                  ? () => this.setState({ roleDialog: item.data.id })
+                                  : undefined,
+                      }
                     : null,
                 (narrowStyleWithDetails && common) || this.columnsVisibility.room
                     ? {
-                        el: (
-                            <div
-                                key="room"
-                                style={{
-                                    ...styles.cellRoom,
-                                    ...(item.data.per ? styles.cellEnumParent : {}),
-                                    width: this.props.width !== 'xs' ? this.columnsVisibility.room : '100%',
-                                    cursor: enumEditable ? 'text' : 'default',
-                                }}
-                                onClick={
-                                    !narrowStyleWithDetails && enumEditable
-                                        ? () => {
-                                            const enums = findEnumsForObjectAsIds(
-                                                this.info,
-                                                item.data.id,
-                                                'roomEnums',
-                                            );
-                                            this.setState({
-                                                enumDialogEnums: enums,
-                                                enumDialog: {
-                                                    item,
-                                                    type: 'room',
-                                                    enumsOriginal: JSON.stringify(enums),
-                                                },
-                                            });
-                                        }
-                                        : undefined
-                                }
-                            >
-                                {item.data.rooms}
-                            </div>
-                        ),
-                        type: 'filter_room',
-                        onClick:
-                            narrowStyleWithDetails && enumEditable
-                                ? () => {
-                                    const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums');
-                                    this.setState({
-                                        enumDialogEnums: enums,
-                                        enumDialog: {
-                                            item,
-                                            type: 'room',
-                                            enumsOriginal: JSON.stringify(enums),
-                                        },
-                                    });
-                                }
-                                : undefined,
-                    }
+                          el: (
+                              <div
+                                  key="room"
+                                  style={{
+                                      ...styles.cellRoom,
+                                      ...(item.data.per ? styles.cellEnumParent : {}),
+                                      width: this.props.width !== 'xs' ? this.columnsVisibility.room : '100%',
+                                      cursor: enumEditable ? 'text' : 'default',
+                                  }}
+                                  onClick={
+                                      !narrowStyleWithDetails && enumEditable
+                                          ? () => {
+                                                const enums = findEnumsForObjectAsIds(
+                                                    this.info,
+                                                    item.data.id,
+                                                    'roomEnums'
+                                                );
+                                                this.setState({
+                                                    enumDialogEnums: enums,
+                                                    enumDialog: {
+                                                        item,
+                                                        type: 'room',
+                                                        enumsOriginal: JSON.stringify(enums),
+                                                    },
+                                                });
+                                            }
+                                          : undefined
+                                  }
+                              >
+                                  {item.data.rooms}
+                              </div>
+                          ),
+                          type: 'filter_room',
+                          onClick:
+                              narrowStyleWithDetails && enumEditable
+                                  ? () => {
+                                        const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums');
+                                        this.setState({
+                                            enumDialogEnums: enums,
+                                            enumDialog: {
+                                                item,
+                                                type: 'room',
+                                                enumsOriginal: JSON.stringify(enums),
+                                            },
+                                        });
+                                    }
+                                  : undefined,
+                      }
                     : null,
                 (narrowStyleWithDetails && common) || this.columnsVisibility.func
                     ? {
-                        el: (
-                            <div
-                                key="func"
-                                style={{
-                                    ...styles.cellFunc,
-                                    ...(item.data.pef ? styles.cellEnumParent : {}),
-                                    width: this.props.width !== 'xs' ? this.columnsVisibility.func : '100%',
-                                    cursor: enumEditable ? 'text' : 'default',
-                                }}
-                                onClick={
-                                    !narrowStyleWithDetails && enumEditable
-                                        ? () => {
-                                            const enums = findEnumsForObjectAsIds(
-                                                this.info,
-                                                item.data.id,
-                                                'funcEnums',
-                                            );
-                                            this.setState({
-                                                enumDialogEnums: enums,
-                                                enumDialog: {
-                                                    item,
-                                                    type: 'func',
-                                                    enumsOriginal: JSON.stringify(enums),
-                                                },
-                                            });
-                                        }
-                                        : undefined
-                                }
-                            >
-                                {item.data.funcs}
-                            </div>
-                        ),
-                        type: 'filter_func',
-                        onClick:
-                            narrowStyleWithDetails && enumEditable
-                                ? () => {
-                                    const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums');
-                                    this.setState({
-                                        enumDialogEnums: enums,
-                                        enumDialog: {
-                                            item,
-                                            type: 'func',
-                                            enumsOriginal: JSON.stringify(enums),
-                                        },
-                                    });
-                                }
-                                : undefined,
-                    }
+                          el: (
+                              <div
+                                  key="func"
+                                  style={{
+                                      ...styles.cellFunc,
+                                      ...(item.data.pef ? styles.cellEnumParent : {}),
+                                      width: this.props.width !== 'xs' ? this.columnsVisibility.func : '100%',
+                                      cursor: enumEditable ? 'text' : 'default',
+                                  }}
+                                  onClick={
+                                      !narrowStyleWithDetails && enumEditable
+                                          ? () => {
+                                                const enums = findEnumsForObjectAsIds(
+                                                    this.info,
+                                                    item.data.id,
+                                                    'funcEnums'
+                                                );
+                                                this.setState({
+                                                    enumDialogEnums: enums,
+                                                    enumDialog: {
+                                                        item,
+                                                        type: 'func',
+                                                        enumsOriginal: JSON.stringify(enums),
+                                                    },
+                                                });
+                                            }
+                                          : undefined
+                                  }
+                              >
+                                  {item.data.funcs}
+                              </div>
+                          ),
+                          type: 'filter_func',
+                          onClick:
+                              narrowStyleWithDetails && enumEditable
+                                  ? () => {
+                                        const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums');
+                                        this.setState({
+                                            enumDialogEnums: enums,
+                                            enumDialog: {
+                                                item,
+                                                type: 'func',
+                                                enumsOriginal: JSON.stringify(enums),
+                                            },
+                                        });
+                                    }
+                                  : undefined,
+                      }
                     : null,
             ];
         } else {
@@ -7013,81 +6768,81 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.from) ||
                 this.columnsVisibility.changedFrom
                     ? {
-                        el: (
-                            <div
-                                key="from"
-                                style={{
-                                    ...styles.cellRole,
-                                    width: this.props.width !== 'xs' ? this.columnsVisibility.changedFrom : undefined,
-                                }}
-                                title={newValueTitle.join('\n')}
-                            >
-                                {checkVisibleObjectType && this.states[id]?.from ? newValue : null}
-                            </div>
-                        ),
-                        type: 'from',
-                    }
+                          el: (
+                              <div
+                                  key="from"
+                                  style={{
+                                      ...styles.cellRole,
+                                      width: this.props.width !== 'xs' ? this.columnsVisibility.changedFrom : undefined,
+                                  }}
+                                  title={newValueTitle.join('\n')}
+                              >
+                                  {checkVisibleObjectType && this.states[id]?.from ? newValue : null}
+                              </div>
+                          ),
+                          type: 'from',
+                      }
                     : null,
                 (narrowStyleWithDetails && q) || this.columnsVisibility.qualityCode
                     ? {
-                        el: (
-                            <div
-                                key="q"
-                                style={{
-                                    ...styles.cellRole,
-                                    width: this.props.width !== 'xs' ? this.columnsVisibility.qualityCode : undefined,
-                                }}
-                                title={q || ''}
-                            >
-                                {q}
-                            </div>
-                        ),
-                        type: 'quality',
-                    }
+                          el: (
+                              <div
+                                  key="q"
+                                  style={{
+                                      ...styles.cellRole,
+                                      width: this.props.width !== 'xs' ? this.columnsVisibility.qualityCode : undefined,
+                                  }}
+                                  title={q || ''}
+                              >
+                                  {q}
+                              </div>
+                          ),
+                          type: 'quality',
+                      }
                     : null,
                 (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.ts) ||
                 this.columnsVisibility.timestamp
                     ? {
-                        el: (
-                            <div
-                                key="ts"
-                                style={{
-                                    ...styles.cellRole,
-                                    width: this.props.width !== 'xs' ? this.columnsVisibility.timestamp : undefined,
-                                }}
-                            >
-                                {checkVisibleObjectType && this.states[id]?.ts
-                                    ? Utils.formatDate(
-                                        new Date(this.states[id].ts),
-                                        this.props.dateFormat || this.systemConfig.common.dateFormat,
-                                    )
-                                    : null}
-                            </div>
-                        ),
-                        type: 'ts',
-                    }
+                          el: (
+                              <div
+                                  key="ts"
+                                  style={{
+                                      ...styles.cellRole,
+                                      width: this.props.width !== 'xs' ? this.columnsVisibility.timestamp : undefined,
+                                  }}
+                              >
+                                  {checkVisibleObjectType && this.states[id]?.ts
+                                      ? Utils.formatDate(
+                                            new Date(this.states[id].ts),
+                                            this.props.dateFormat || this.systemConfig.common.dateFormat
+                                        )
+                                      : null}
+                              </div>
+                          ),
+                          type: 'ts',
+                      }
                     : null,
                 (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.lc) ||
                 this.columnsVisibility.lastChange
                     ? {
-                        el: (
-                            <div
-                                key="lc"
-                                style={{
-                                    ...styles.cellRole,
-                                    width: this.props.width !== 'xs' ? this.columnsVisibility.lastChange : undefined,
-                                }}
-                            >
-                                {checkVisibleObjectType && this.states[id]?.lc
-                                    ? Utils.formatDate(
-                                        new Date(this.states[id].lc),
-                                        this.props.dateFormat || this.systemConfig.common.dateFormat,
-                                    )
-                                    : null}
-                            </div>
-                        ),
-                        type: 'lc',
-                    }
+                          el: (
+                              <div
+                                  key="lc"
+                                  style={{
+                                      ...styles.cellRole,
+                                      width: this.props.width !== 'xs' ? this.columnsVisibility.lastChange : undefined,
+                                  }}
+                              >
+                                  {checkVisibleObjectType && this.states[id]?.lc
+                                      ? Utils.formatDate(
+                                            new Date(this.states[id].lc),
+                                            this.props.dateFormat || this.systemConfig.common.dateFormat
+                                        )
+                                      : null}
+                              </div>
+                          ),
+                          type: 'lc',
+                      }
                     : null,
             ];
         }
@@ -7124,37 +6879,37 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             ? common?.type === 'file'
                                 ? 'zoom-in'
                                 : item.data.button
-                                    ? 'grab'
-                                    : 'text'
+                                  ? 'grab'
+                                  : 'text'
                             : 'default',
                     }}
                     onClick={
                         valueEditable
                             ? () => {
-                                if (!obj || !this.states) {
-                                    // return;
-                                } else if (common?.type === 'file') {
-                                    this.setState({ viewFileDialog: id });
-                                } else if (!this.state.filter.expertMode && item.data.button) {
-                                    // in non-expert mode control button directly
-                                    this.props.socket
-                                        .setState(id, true)
-                                        .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
-                                } else if (!this.state.filter.expertMode && item.data.switch) {
-                                    // in non-expert mode control switch directly
-                                    this.props.socket
-                                        .setState(id, !this.states[id].val)
-                                        .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
-                                } else {
-                                    this.edit = {
-                                        val: this.states[id] ? this.states[id].val : '',
-                                        q: this.states[id] ? this.states[id].q || 0 : 0,
-                                        ack: false,
-                                        id,
-                                    };
-                                    this.setState({ updateOpened: true });
-                                }
-                            }
+                                  if (!obj || !this.states) {
+                                      // return;
+                                  } else if (common?.type === 'file') {
+                                      this.setState({ viewFileDialog: id });
+                                  } else if (!this.state.filter.expertMode && item.data.button) {
+                                      // in non-expert mode control button directly
+                                      this.props.socket
+                                          .setState(id, true)
+                                          .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
+                                  } else if (!this.state.filter.expertMode && item.data.switch) {
+                                      // in non-expert mode control switch directly
+                                      this.props.socket
+                                          .setState(id, !this.states[id].val)
+                                          .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
+                                  } else {
+                                      this.edit = {
+                                          val: this.states[id] ? this.states[id].val : '',
+                                          q: this.states[id] ? this.states[id].q || 0 : 0,
+                                          ack: false,
+                                          id,
+                                      };
+                                      this.setState({ updateOpened: true });
+                                  }
+                              }
                             : undefined
                     }
                 >
@@ -7186,10 +6941,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         return null;
                     }
                     return (
-                        <div
-                            key={it.type}
-                            style={styles.cellDetailsLine}
-                        >
+                        <div key={it.type} style={styles.cellDetailsLine}>
                             <span style={styles.cellDetailsName}>{this.texts[it.type]}:</span>
                             {it.el}
                             <div style={{ flexGrow: 1 }} />
@@ -7222,10 +6974,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 >
                     <div style={styles.cellDetailsLine}>
                         <div style={{ flexGrow: 1 }} />
-                        <IconCopy
-                            style={styles.cellCopyButtonInDetails}
-                            onClick={e => this.onCopy(e, id)}
-                        />
+                        <IconCopy style={styles.cellCopyButtonInDetails} onClick={e => this.onCopy(e, id)} />
                     </div>
                     {colName && (
                         <div style={styles.cellDetailsLine}>
@@ -7296,11 +7045,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     this.state.focused === id && this.props.multiSelect && styles.tableRowFocused,
                     !item.data.visible && styles.filteredOut,
                     item.data.hasVisibleParent &&
-                    !item.data.visible &&
-                    !item.data.hasVisibleChildren &&
-                    styles.filteredParentOut,
+                        !item.data.visible &&
+                        !item.data.hasVisibleChildren &&
+                        styles.filteredParentOut,
                     this.state.selected.includes(id) && styles.itemSelected,
-                    this.state.selectedNonObject === id && styles.itemSelected,
+                    this.state.selectedNonObject === id && styles.itemSelected
                 )}
                 key={id}
                 id={id}
@@ -7354,21 +7103,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (this.props.dragEnabled && DragWrapper) {
             if (root.data.sumVisibility) {
                 leaf = (
-                    <DragWrapper
-                        key={root.data.id}
-                        item={root}
-                        style={styles.draggable}
-                    >
+                    <DragWrapper key={root.data.id} item={root} style={styles.draggable}>
                         {result.row}
                     </DragWrapper>
                 );
             } else {
                 // change cursor
                 leaf = (
-                    <div
-                        key={root.data.id}
-                        style={styles.nonDraggable}
-                    >
+                    <div key={root.data.id} style={styles.nonDraggable}>
                         {result.row}
                     </div>
                 );
@@ -7397,7 +7139,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 }
                             }
                             return null;
-                        }) as any as JSX.Element,
+                        }) as any as JSX.Element
                     );
                 }
             } else if (root.children) {
@@ -7414,7 +7156,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         }
 
                         return null;
-                    }) as any as JSX.Element,
+                    }) as any as JSX.Element
                 );
 
                 // then items
@@ -7429,7 +7171,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             }
                         }
                         return null;
-                    }) as any as JSX.Element,
+                    }) as any as JSX.Element
                 );
             }
         }
@@ -7441,7 +7183,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         aColumnsAuto?: boolean | null,
         aColumns?: string[] | null,
         aColumnsForAdmin?: Record<string, CustomAdminColumnStored[]> | null,
-        aColumnsWidths?: Record<string, number>,
+        aColumnsWidths?: Record<string, number>
     ): void {
         let columnsWidths: Record<string, number> = aColumnsWidths || this.state.columnsWidths;
         const columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null =
@@ -7575,7 +7317,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             } else {
                                 (this.columnsVisibility as Record<string, number>)[id] = 0;
                             }
-                        }),
+                        })
                     );
             }
             this.adapterColumns.sort((a, b) => (a.id > b.id ? -1 : a.id < b.id ? 1 : 0));
@@ -7683,7 +7425,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 this.resizeLeft = true;
                 this.resizerNextDiv = this.resizerActiveDiv.previousElementSibling as HTMLDivElement;
                 let handle: HTMLDivElement | null = this.resizerNextDiv.querySelector(
-                    '.iob-ob-resize-handler',
+                    '.iob-ob-resize-handler'
                 ) as HTMLDivElement;
                 while (this.resizerNextDiv && !handle && i < 10) {
                     this.resizerNextDiv = this.resizerNextDiv.previousElementSibling as HTMLDivElement;
@@ -7764,7 +7506,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         /** The current root */
         root: TreeItem,
         /** the object id to find */
-        id: string,
+        id: string
     ): TreeItem | null {
         const idArr = id.split('.');
         let currId = '';
@@ -8144,8 +7886,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         .setObject(obj._id, obj)
                         .then(() =>
                             this.setState({ editObjectDialog: obj._id, editObjectAlias: false }, () =>
-                                this.onSelect(obj._id),
-                            ),
+                                this.onSelect(obj._id)
+                            )
                         )
                         .catch(e => this.showError(`Cannot write object: ${e}`))
                 }
@@ -8222,11 +7964,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                                 showAliasEditor: '',
                                                 editObjectAlias: true,
                                             }),
-                                        300,
+                                        300
                                     );
-                                }),
+                                })
                             ),
-                        timeout || 0,
+                        timeout || 0
                     )
                 }
             />
@@ -8258,10 +8000,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 onClose={() => this.setState({ aliasMenu: '' })}
             >
                 {this.info.aliasesMap[this.state.aliasMenu].map((aliasId, i) => (
-                    <MenuItem
-                        key={aliasId}
-                        onClick={() => this.onSelect(aliasId)}
-                    >
+                    <MenuItem key={aliasId} onClick={() => this.onSelect(aliasId)}>
                         <ListItemText>
                             {this.renderAliasLink(this.state.aliasMenu, i, {
                                 '& .admin-browser-arrow': {
@@ -8341,12 +8080,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     obj &&
                     (this.state.filter.expertMode || ObjectBrowserClass.isNonExpertId(id))
                 ),
-                icon: (
-                    <IconEdit
-                        fontSize="small"
-                        style={this.styles.contextMenuEdit}
-                    />
-                ),
+                icon: <IconEdit fontSize="small" style={this.styles.contextMenuEdit} />,
                 label: this.texts.editObject,
                 onClick: () =>
                     this.setState({ editObjectDialog: item.data.id, showContextMenu: null, editObjectAlias: false }),
@@ -8362,12 +8096,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     obj.common?.type !== 'file' &&
                     (this.state.filter.expertMode || obj.common.write !== false)
                 ),
-                icon: (
-                    <IconValueEdit
-                        fontSize="small"
-                        style={this.styles.contextMenuEditValue}
-                    />
-                ),
+                icon: <IconValueEdit fontSize="small" style={this.styles.contextMenuEditValue} />,
                 label: this.props.t('ra_Edit value'),
                 onClick: () => {
                     this.edit = {
@@ -8385,12 +8114,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     obj?.type === 'state' &&
                     // @ts-expect-error deprecated from js-controller 6
                     obj.common?.type === 'file',
-                icon: (
-                    <FindInPage
-                        fontSize="small"
-                        style={this.styles.contextMenuView}
-                    />
-                ),
+                icon: <FindInPage fontSize="small" style={this.styles.contextMenuView} />,
                 label: this.props.t('ra_View file'),
                 onClick: () => this.setState({ viewFileDialog: obj?._id || '', showContextMenu: null }),
             },
@@ -8440,24 +8164,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             ROLE: {
                 key: '4',
                 visibility: !!(this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole),
-                icon: (
-                    <BorderColor
-                        fontSize="small"
-                        style={this.styles.contextMenuRole}
-                    />
-                ),
+                icon: <BorderColor fontSize="small" style={this.styles.contextMenuRole} />,
                 label: this.props.t('ra_Edit role'),
                 onClick: () => this.setState({ roleDialog: item.data.id, showContextMenu: null }),
             },
             FUNCTION: {
                 key: '5',
                 visibility: !!enumEditable,
-                icon: (
-                    <BedroomParent
-                        fontSize="small"
-                        style={this.styles.contextMenuRole}
-                    />
-                ),
+                icon: <BedroomParent fontSize="small" style={this.styles.contextMenuRole} />,
                 label: this.props.t('ra_Edit function'),
                 onClick: () => {
                     const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums');
@@ -8475,12 +8189,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             ROOM: {
                 key: '6',
                 visibility: !!enumEditable,
-                icon: (
-                    <Construction
-                        fontSize="small"
-                        style={this.styles.contextMenuRoom}
-                    />
-                ),
+                icon: <Construction fontSize="small" style={this.styles.contextMenuRoom} />,
                 label: this.props.t('ra_Edit room'),
                 onClick: () => {
                     const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums');
@@ -8531,12 +8240,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 visibility:
                     (item.data.id.startsWith('0_userdata.0') || item.data.id.startsWith('javascript.')) &&
                     (createStateVisible || createChannelVisible || createDeviceVisible || createFolderVisible),
-                icon: (
-                    <AddIcon
-                        fontSize="small"
-                        style={this.styles.cellButtonsButtonWithCustoms}
-                    />
-                ),
+                icon: <AddIcon fontSize="small" style={this.styles.cellButtonsButtonWithCustoms} />,
                 style: styles.contextMenuWithSubMenu,
                 label: this.texts.create,
                 subMenu: [
@@ -8590,12 +8294,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     this.props.onObjectDelete &&
                     (item.children?.length || (obj && !obj.common?.dontDelete))
                 ),
-                icon: (
-                    <IconDelete
-                        fontSize="small"
-                        style={this.styles.contextMenuDelete}
-                    />
-                ),
+                icon: <IconDelete fontSize="small" style={this.styles.contextMenuDelete} />,
                 style: this.styles.contextMenuDelete,
                 label: this.texts.deleteObject,
                 onClick: () =>
@@ -8604,7 +8303,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             id,
                             obj: obj || ({} as ioBroker.Object),
                             item,
-                        }),
+                        })
                     ),
             },
         };
@@ -8639,7 +8338,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             <ListItemSecondaryAction>
                                 <ArrowRightIcon />
                             </ListItemSecondaryAction>
-                        </MenuItem>,
+                        </MenuItem>
                     );
 
                     if (this.state.showContextMenu?.subItem === key) {
@@ -8662,11 +8361,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             >
                                 {ITEMS[key].subMenu?.map(subItem =>
                                     subItem.visibility ? (
-                                        <MenuItem
-                                            key={subItem.label}
-                                            onClick={subItem.onClick}
-                                            style={subItem.style}
-                                        >
+                                        <MenuItem key={subItem.label} onClick={subItem.onClick} style={subItem.style}>
                                             <ListItemIcon
                                                 style={{
                                                     ...subItem.iconStyle,
@@ -8677,18 +8372,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                             </ListItemIcon>
                                             <ListItemText>{subItem.label}</ListItemText>
                                         </MenuItem>
-                                    ) : null,
+                                    ) : null
                                 )}
-                            </Menu>,
+                            </Menu>
                         );
                     }
                 } else {
                     items.push(
-                        <MenuItem
-                            key={key}
-                            onClick={ITEMS[key].onClick}
-                            sx={ITEMS[key].style}
-                        >
+                        <MenuItem key={key} onClick={ITEMS[key].onClick} sx={ITEMS[key].style}>
                             <ListItemIcon style={{ ...ITEMS[key].iconStyle, ...ITEMS[key].listItemIconStyle }}>
                                 {ITEMS[key].icon}
                             </ListItemIcon>
@@ -8698,7 +8389,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                     {`Alt+${ITEMS[key].key === 'Delete' ? this.props.t('ra_Del') : ITEMS[key].key}`}
                                 </div>
                             ) : null}
-                        </MenuItem>,
+                        </MenuItem>
                     );
                 }
             }
@@ -8825,7 +8516,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 iconCopy: Utils.getStyle(
                     this.props.theme,
                     styles.cellButtonsValueButton,
-                    styles.cellButtonsValueButtonCopy,
+                    styles.cellButtonsValueButtonCopy
                 ),
                 aliasReadWrite: Utils.getStyle(this.props.theme, styles.cellIdAlias, styles.cellIdAliasReadWrite),
                 aliasAlone: Utils.getStyle(this.props.theme, styles.cellIdAlias, styles.cellIdAliasAlone),
@@ -8847,7 +8538,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 undefined,
                 counter,
                 this.props.customFilter,
-                this.props.types,
+                this.props.types
             );
 
             if (counter.count < 500 && !this.state.expandAllVisible) {
@@ -8906,11 +8597,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 <TabHeader>{this.getToolbar()}</TabHeader>
                 <TabContent>
                     {this.renderHeader()}
-                    <div
-                        style={styles.tableDiv}
-                        ref={this.tableRef}
-                        onKeyDown={event => this.navigateKeyPress(event)}
-                    >
+                    <div style={styles.tableDiv} ref={this.tableRef} onKeyDown={event => this.navigateKeyPress(event)}>
                         {items}
                     </div>
                 </TabContent>
