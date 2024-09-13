@@ -65,7 +65,7 @@ function copyAllFiles() {
             { find: 'src="/', text: 'src="' },
         ],
     });
-    copyFiles(`${srcRx}build/static/js/*.js`, `${dest}static/js/`, {
+    copyFiles(`${srcRx}build/static/js/*.js`, `${dest}static/js`, {
         replace: [{ find: 's.p+"static/media', text: '"./static/media' }],
     });
 }

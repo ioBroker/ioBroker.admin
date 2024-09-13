@@ -445,10 +445,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             const enabled = !this.state.deactivated?.includes(`${instance.id}_${instance.linkName}`);
             if (enabled || this.state.edit) {
                 let linkText = instance.link ? instance.link.replace(/^https?:\/\//, '') : '';
-                const pos = linkText.indexOf('/');
-                if (pos !== -1) {
-                    linkText = linkText.substring(0, pos);
-                }
+                linkText = linkText.split('/')[0];
 
                 // ignore own admin instance
                 if (instance.id === this.props.adminInstance) {
@@ -793,7 +790,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             instanceId,
             {
                 instances,
-                hostname:      this.props.hostname,
+                hostname: this.props.hostname,
                 adminInstance: this.props.adminInstance,
                 hosts,
             },
@@ -1390,9 +1387,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
             if (npmUpdate) {
                 npmUpdate = <Tooltip title={this.props.t('Some updates available')} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <span style={styles.nodeUpdate}>
-(
+                        (
                         {npmUpdate}
-)
+                        )
                     </span>
                 </Tooltip>;
             }
@@ -1540,7 +1537,17 @@ class Intro extends React.Component<IntroProps, IntroState> {
             {this.renderCopiedToast()}
             {this.state.nodeUpdateDialog ? <NodeUpdateDialog onClose={() => this.setState({ nodeUpdateDialog: null })} socket={this.props.socket} {...this.state.nodeUpdateDialog} /> : null}
             <TabContent style={styles.container}>
-                <Grid2 container spacing={2}>
+                <Grid2
+                    className="denis"
+                    container
+                    spacing={1}
+                    columns={{
+                        xs: 12,
+                        md: 12,
+                        lg: 12,
+                        sm: 12,
+                    }}
+                >
                     {this.getInstancesCards()}
                     {this.getLinkCards()}
                 </Grid2>

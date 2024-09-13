@@ -1,4 +1,4 @@
-![Logo](packages/admin/admin/admin.png)
+![Logo](packages/admin/admin/admin.svg)
 # ioBroker.admin
 
 ![Number of Installations](http://iobroker.live/badges/admin-installed.svg)
@@ -85,6 +85,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Showed the context menu under cursor position in the object browser
+* (bluefox) Added links to aliases in the object browser
+
 ### 7.1.0 (2024-09-02)
 * (bluefox) Added the possibility to show button in notifications
 * (bluefox) Removed gulp from the build process

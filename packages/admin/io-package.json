@@ -12,6 +12,7 @@
       "nl": "Admin",
       "it": "Admin",
       "es": "Admin",
+      "uk": "Admin",
       "zh-cn": "Admin"
     },
     "title": "Admin",
@@ -118,6 +119,9 @@
       "fr": "La configuration de ioBroker via Web-Interface",
       "nl": "De configuratie van ioBroker via de webinterface",
       "it": "La configurazione di ioBroker tramite interfaccia Web",
+      "es": "La configuración de ioBroker a través de la interfaz web",
+      "pl": "Konfiguracja ioBroker za pomocą interfejsu WWW",
+      "uk": "Конфігурація ioBroker через веб-інтерфейс",
       "zh-cn": "配置ioBroker的Web界面"
     },
     "docs": {
@@ -149,10 +153,10 @@
     "mode": "daemon",
     "platform": "Javascript/Node.js",
     "loglevel": "info",
-    "icon": "admin.png",
+    "icon": "admin.svg",
     "messagebox": true,
     "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.png",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.svg",
     "keywords": [
       "setup",
       "config",
@@ -182,14 +186,13 @@
     },
     "logTransporter": true,
     "stopBeforeUpdate": true,
-    "wwwDontUpload": true,
     "eraseOnUpload": true,
     "nogit": true,
     "welcomeScreenPro": [
       {
         "link": "admin/index.html",
         "name": "Admin",
-        "img": "admin/img/admin.png",
+        "img": "admin/img/admin.svg",
         "color": "pink",
         "order": 5,
         "localLinks": "_default",
@@ -204,7 +207,7 @@
           "ru": "Админ"
         },
         "pro": "admin/index.html",
-        "icon": "admin/img/admin.png",
+        "icon": "admin/img/admin.svg",
         "color": "pink",
         "order": 5,
         "intro": true
