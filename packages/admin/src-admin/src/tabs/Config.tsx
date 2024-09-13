@@ -297,7 +297,7 @@ class Config extends Component<ConfigProps, ConfigState> {
             this.props.onRegisterIframeRef(this.refIframe);
         }
 
-        (window.addEventListener || window.attachEvent)(window.addEventListener ? 'message' : 'onmessage', (event: MessageEvent & { message: string }) => this.closeConfig(event), false);
+        (window.addEventListener || window.attachEvent)(window.addEventListener ? 'message' : 'onmessage', this.closeConfig, false);
     }
 
     onObjectChange = (id: string, obj: ioBroker.InstanceObject | null) => {
@@ -359,7 +359,7 @@ class Config extends Component<ConfigProps, ConfigState> {
     componentWillUnmount() {
         this.props.socket.unsubscribeObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, this.onObjectChange);
 
-        (window.removeEventListener || window.detachEvent)(window.addEventListener ? 'message' : 'onmessage', (event: MessageEvent & { message: string }) => this.closeConfig(event), false);
+        (window.removeEventListener || window.detachEvent)(window.removeEventListener ? 'message' : 'onmessage', this.closeConfig, false);
 
         if (this.registered && this.refIframe) {
             this.props.onUnregisterIframeRef(this.refIframe);
@@ -367,7 +367,11 @@ class Config extends Component<ConfigProps, ConfigState> {
         this.refIframe = null;
     }
 
-    closeConfig(event: MessageEvent & { message: string }) {
+    closeConfig = (event: MessageEvent & { message: string }): void => {
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+
         if (event.data === 'close' || event.message === 'close') {
             if (this.props.easyMode) {
                 Router.doNavigate('easy');
@@ -378,8 +382,14 @@ class Config extends Component<ConfigProps, ConfigState> {
             this.props.configStored(false);
         } else if (event.data === 'nochange' || event.message === 'nochange') {
             this.props.configStored(true);
+        } else if ((typeof event.data === 'string' && event.data.startsWith('goto:')) ||
+            (typeof event.message === 'string' && event.message.startsWith('goto:'))
+        ) {
+            const [, url] = (event.data || event.message).split(':');
+            const [tab, subTab, parameter] = url.split('/');
+            Router.doNavigate(tab, subTab, parameter);
         }
-    }
+    };
 
     renderHelpButton() {
         if (this.props.jsonConfig) {

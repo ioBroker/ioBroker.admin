@@ -21,17 +21,6 @@ window.adapterName = 'admin';
 
 console.log(`iobroker.${window.adapterName}@${version.version}`);
 
-function build() {
-    const container = document.getElementById('root');
-    const root = createRoot(container);
-
-    return root.render(<LocalizationProvider dateAdapter={AdapterDateFns}>
-        <ContextWrapperProvider>
-            <App />
-        </ContextWrapperProvider>
-    </LocalizationProvider>);
-}
-
 const versionChanged = [
     'ChunkLoadError', // version was changed
     'removeChild',    // version was changed
@@ -102,4 +91,11 @@ if ((!window.disableDataReporting || window.disableDataReporting === '@@disableD
     };
 }
 
-build();
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(<LocalizationProvider dateAdapter={AdapterDateFns}>
+    <ContextWrapperProvider>
+        <App />
+    </ContextWrapperProvider>
+</LocalizationProvider>);

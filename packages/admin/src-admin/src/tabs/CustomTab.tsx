@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { LinearProgress } from '@mui/material';
 
-import { withWidth, type ThemeType } from '@iobroker/adapter-react-v5';
+import { withWidth, type ThemeType, Router } from '@iobroker/adapter-react-v5';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import AdminUtils from '../AdminUtils';
@@ -150,6 +150,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             this.props.onUnregisterIframeRef(this.refIframe);
             this.registered = false;
         }
+        (window.removeEventListener || window.detachEvent)(window.removeEventListener ? 'message' : 'onmessage', this.onMessage, false);
     }
 
     componentDidMount() {
@@ -157,6 +158,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
+        (window.addEventListener || window.attachEvent)(window.addEventListener ? 'message' : 'onmessage', this.onMessage, false);
     }
 
     componentDidUpdate(/* prevProps, prevState, snapshot */) {
@@ -165,6 +167,27 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             this.props.onRegisterIframeRef(this.refIframe);
         }
     }
+
+    onMessage = (event: MessageEvent & { message: string }): void => {
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+        if (event.data === 'close' || event.message === 'close') {
+            Router.doNavigate('tab-instances');
+        } else if (event.data === 'change' || event.message === 'change') {
+            // this.props.configStored(false);
+            console.warn('Application sends "change" message, but it is not processed yet');
+        } else if (event.data === 'nochange' || event.message === 'nochange') {
+            // this.props.configStored(true);
+            console.warn('Application sends "nochange" message, but it is not processed yet');
+        } else if ((typeof event.data === 'string' && event.data.startsWith('goto:')) ||
+            (typeof event.message === 'string' && event.message.startsWith('goto:'))
+        ) {
+            const [, url] = (event.data || event.message).split(':');
+            const [tab, subTab, parameter] = url.split('/');
+            Router.doNavigate(tab, subTab, parameter);
+        }
+    };
 
     render() {
         if (!this.state.href) {
