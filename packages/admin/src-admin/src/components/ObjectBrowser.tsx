@@ -192,6 +192,7 @@ export interface TreeItemData {
     /** translated common.name in lower case for filtering */
     fName?: string;
     /** Link to parent item */
+    // eslint-disable-next-line no-use-before-define
     parent?: TreeItem;
     level?: number;
     icon?: string | JSX.Element | null;
@@ -1974,7 +1975,10 @@ function formatValue(options: FormatValueOptions): {
         | undefined;
     fileViewer: 'image' | 'text' | 'json' | 'html' | 'pdf' | 'audio' | 'video' | undefined;
 } {
-    const { dateFormat, state, isFloatComma, texts, obj } = options;
+    const {
+        dateFormat, state, isFloatComma,
+        texts, obj,
+    } = options;
     const states = Utils.getStates(obj);
     const isCommon = obj.common;
     let fileViewer: 'image' | 'text' | 'json' | 'html' | 'pdf' | 'audio' | 'video' | undefined;
@@ -2525,8 +2529,10 @@ interface ObjectBrowserProps {
     objectImportExport?: boolean; // optional toolbar button
     objectEditOfAccessControl?: boolean; // Access Control
     /** modal add object */
+    // eslint-disable-next-line no-use-before-define
     modalNewObject?: (oBrowser: ObjectBrowserClass) => JSX.Element;
     /** modal Edit Of Access Control */
+    // eslint-disable-next-line no-use-before-define
     modalEditOfAccessControl: (oBrowser: ObjectBrowserClass, data: TreeItemData) => JSX.Element;
     onObjectDelete?: (id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) => void;
     /**
@@ -2696,11 +2702,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         ack: boolean;
         id: string;
     } = {
-        id: '',
-        val: '',
-        q: 0,
-        ack: false,
-    };
+            id: '', val: '', q: 0, ack: false,
+        };
 
     private readonly levelPadding: number;
 
@@ -3197,13 +3200,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 // reset filter
                 this.setState({ filter: { ...DEFAULT_FILTER }, columnsForAdmin }, () => {
                     this.setState({ loaded: true, updating: false }, () =>
-                        this.expandAllSelected(() => this.onAfterSelect()),
-                    );
+                        this.expandAllSelected(() => this.onAfterSelect()));
                 });
             } else {
                 this.setState({ loaded: true, updating: false, columnsForAdmin }, () =>
-                    this.expandAllSelected(() => this.onAfterSelect()),
-                );
+                    this.expandAllSelected(() => this.onAfterSelect()));
             }
         } catch (e1) {
             this.showError(e1);
@@ -3317,7 +3318,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (this.props.objectsWorker) {
             this.props.objectsWorker.unregisterHandler(this.onObjectChangeFromWorker, true);
         } else {
-            void this.props.socket
+            this.props.socket
                 .unsubscribeObject('*', this.onObjectChange)
                 .catch(e => console.error(`Cannot unsubscribe *: ${e}`));
         }
@@ -3880,8 +3881,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (cColumns && cColumns.length) {
                 columnsForAdmin = columnsForAdmin || {};
                 columnsForAdmin[obj.common.name] = cColumns.sort((a, b) =>
-                    a.path > b.path ? -1 : a.path < b.path ? 1 : 0,
-                );
+                    (a.path > b.path ? -1 : a.path < b.path ? 1 : 0));
             }
         } else if (obj.common && obj.common.name && columnsForAdmin && columnsForAdmin[obj.common.name]) {
             delete columnsForAdmin[obj.common.name];
@@ -4665,19 +4665,16 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                         <Checkbox
                                             checked={this.state.excludeSystemRepositoriesFromExport}
                                             onChange={e =>
-                                                this.setState({ excludeSystemRepositoriesFromExport: e.target.checked })
-                                            }
+                                                this.setState({ excludeSystemRepositoriesFromExport: e.target.checked })}
                                         />
                                     }
                                     label={this.props.t('Exclude system repositories from export JSON')}
                                 />
                                 <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={this.state.excludeTranslations}
-                                            onChange={e => this.setState({ excludeTranslations: e.target.checked })}
-                                        />
-                                    }
+                                    control={<Checkbox
+                                        checked={this.state.excludeTranslations}
+                                        onChange={e => this.setState({ excludeTranslations: e.target.checked })}
+                                    />}
                                     label={this.props.t('Exclude translations (except english) from export JSON')}
                                 />
                             </>
@@ -4697,12 +4694,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                         beautify: this.state.beautifyJsonExport,
                                         excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
                                         excludeTranslations: this.state.excludeTranslations,
-                                    }),
-                                )
-                            }
+                                    }))}
                         >
-                            <span style={{ marginRight: 8 }}>{this.props.t('ra_All objects')}</span>(
-                            {Object.keys(this.objects).length})
+                            <span style={{ marginRight: 8 }}>{this.props.t('ra_All objects')}</span>
+(
+                            {Object.keys(this.objects).length}
+)
                         </Button>
                     ) : (
                         <Button
@@ -4726,12 +4723,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                     beautify: this.state.beautifyJsonExport,
                                     excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
                                     excludeTranslations: this.state.excludeTranslations,
-                                }),
-                            )
-                        }
+                                }))}
                     >
-                        <span style={{ marginRight: 8 }}>{this.props.t('ra_Only selected')}</span>(
-                        {this.state.showExportDialog})
+                        <span style={{ marginRight: 8 }}>{this.props.t('ra_Only selected')}</span>
+(
+                        {this.state.showExportDialog}
+)
                     </Button>
                     <Button
                         color="grey"
@@ -5144,8 +5141,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                             modalNewObj: {
                                                 id: this.state.selected[0] || this.state.selectedNonObject,
                                             },
-                                        })
-                                    }
+                                        })}
                                     size="large"
                                 >
                                     <AddIcon />
@@ -5176,20 +5172,19 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     )}
                     {this.props.objectImportExport &&
                         (!!this.state.selected.length || this.state.selectedNonObject) && (
-                            <Tooltip
-                                title={this.props.t('ra_Save objects tree as JSON file')}
-                                slotProps={{ popper: { sx: styles.tooltip } }}
+                        <Tooltip
+                            title={this.props.t('ra_Save objects tree as JSON file')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton
+                                onClick={() =>
+                                    this.setState({ showExportDialog: this._getSelectedIdsForExport().length })}
+                                size="large"
                             >
-                                <IconButton
-                                    onClick={() =>
-                                        this.setState({ showExportDialog: this._getSelectedIdsForExport().length })
-                                    }
-                                    size="large"
-                                >
-                                    <PublishIcon style={{ transform: 'rotate(180deg)' }} />
-                                </IconButton>
-                            </Tooltip>
-                        )}
+                                <PublishIcon style={{ transform: 'rotate(180deg)' }} />
+                            </IconButton>
+                        </Tooltip>
+                    )}
                 </div>
                 {!!this.props.objectBrowserEditObject && this.props.width !== 'xs' && (
                     <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
@@ -5308,10 +5303,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         const funcRenderStateObject = (value: 'object' | 'state'): void => {
             const rights: number = acl[value];
             check.forEach((el, i) => {
+                // eslint-disable-next-line no-bitwise
                 if (rights & el.valueNum) {
                     arrayTooltipText.push(
                         <span key={value + i}>
-                            {this.texts[`acl${el.group}_${el.title}_${value}`]},
+                            {this.texts[`acl${el.group}_${el.title}_${value}`]}
+,
                             <span style={value === 'object' ? styles.rightsObject : styles.rightsState}>
                                 {el.value}
                             </span>
@@ -5351,8 +5348,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 ...styles.cellButtonMinWidth,
                             }}
                             onClick={() =>
-                                this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
-                            }
+                                this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
                             size="large"
                         >
                             <div style={{ height: 15 }}>---</div>
@@ -5502,28 +5498,28 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             item.data.obj.type === 'state' &&
             // @ts-expect-error deprecated from js-controller 6
             item.data.obj.common?.type !== 'file' ? (
-                <IconButton
-                    sx={{
-                        ...styles.cellButtonsButton,
-                        ...(item.data.hasCustoms
-                            ? this.styles.cellButtonsButtonWithCustoms
-                            : styles.cellButtonsButtonWithoutCustoms),
-                    }}
-                    key="custom"
-                    size="small"
-                    aria-label="config"
-                    title={this.texts.customConfig}
-                    onClick={() => {
-                        this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, id);
+                    <IconButton
+                        sx={{
+                            ...styles.cellButtonsButton,
+                            ...(item.data.hasCustoms
+                                ? this.styles.cellButtonsButtonWithCustoms
+                                : styles.cellButtonsButtonWithoutCustoms),
+                        }}
+                        key="custom"
+                        size="small"
+                        aria-label="config"
+                        title={this.texts.customConfig}
+                        onClick={() => {
+                            this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, id);
 
-                        this.pauseSubscribe(true);
-                        this.props.router?.doNavigate(null, 'customs', id);
-                        this.setState({ customDialog: [id], customDialogAll: false });
-                    }}
-                >
-                    <IconConfig style={styles.cellButtonsButtonIcon} />
-                </IconButton>
-            ) : null,
+                            this.pauseSubscribe(true);
+                            this.props.router?.doNavigate(null, 'customs', id);
+                            this.setState({ customDialog: [id], customDialogAll: false });
+                        }}
+                    >
+                        <IconConfig style={styles.cellButtonsButtonIcon} />
+                    </IconButton>
+                ) : null,
         ];
     }
 
@@ -5751,7 +5747,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         className={`newValueBrowser-${this.props.themeType || 'light'}`}
                         key={`${valText.v.toString()}states`}
                     >
-                        ({valText.s})
+                        (
+                        {valText.s}
+                        )
                     </span>,
                 );
             }
@@ -5871,7 +5869,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        void Promise.all(promises).then(() => {
+        Promise.all(promises).then(() => {
             setTimeout(() => this._syncEnum(id, enumIds, newArray, cb), 0);
         });
     }
@@ -5936,9 +5934,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         size="small"
                         onClick={() =>
                             this.syncEnum(item.data.id, type, itemEnums).then(() =>
-                                this.setState({ enumDialog: null, enumDialogEnums: null }),
-                            )
-                        }
+                                this.setState({ enumDialog: null, enumDialogEnums: null }))}
                     >
                         <IconCheck />
                     </Fab>
@@ -6292,8 +6288,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             this.setState({
                                 columnsEditCustomDialog: { item, it, obj },
                                 customColumnDialogValueChanged: false,
-                            })
-                        }
+                            })}
                     >
                         {text}
                     </Box>
@@ -6439,11 +6434,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.props.multiSelect &&
             this.objects[id] &&
             (!this.props.types || this.props.types.includes(this.objects[id].type)) ? (
-                <Checkbox
-                    style={styles.checkBox}
-                    checked={this.state.selected.includes(id)}
-                />
-            ) : null;
+                    <Checkbox
+                        style={styles.checkBox}
+                        checked={this.state.selected.includes(id)}
+                    />
+                ) : null;
 
         let valueEditable =
             !this.props.notEditable &&
@@ -6514,7 +6509,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 }}
                                 sx={this.styles.aliasReadWrite}
                             >
-                                ←{common.alias.id.read}
+                                ←
+                                {common.alias.id.read}
                             </Box>
                         ) : null}
                         {common.alias.id.write ? (
@@ -6531,7 +6527,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 }}
                                 sx={this.styles.aliasReadWrite}
                             >
-                                →{common.alias.id.write}
+                                →
+                                {common.alias.id.write}
                             </Box>
                         ) : null}
                     </div>
@@ -6548,7 +6545,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         }}
                         sx={this.styles.aliasAlone}
                     >
-                        →{common.alias.id}
+                        →
+                        {common.alias.id}
                     </Box>
                 );
             }
@@ -7190,7 +7188,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             key={it.type}
                             style={styles.cellDetailsLine}
                         >
-                            <span style={styles.cellDetailsName}>{this.texts[it.type]}:</span>
+                            <span style={styles.cellDetailsName}>
+                                {this.texts[it.type]}
+:
+                            </span>
                             {it.el}
                             <div style={{ flexGrow: 1 }} />
                             {it.onClick ? (
@@ -7229,7 +7230,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     </div>
                     {colName && (
                         <div style={styles.cellDetailsLine}>
-                            <span style={styles.cellDetailsName}>{this.texts.name}:</span>
+                            <span style={styles.cellDetailsName}>
+                                {this.texts.name}
+:
+                            </span>
                             {colName}
                             <div style={{ flexGrow: 1 }} />
                             {item.data?.title ? (
@@ -7245,7 +7249,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     {colCustom && <div style={styles.cellDetailsLine}>{colCustom}</div>}
                     {this.objects[id]?.type === 'state' && (
                         <div style={styles.cellDetailsLine}>
-                            <span style={styles.cellDetailsName}>{this.texts.value}:</span>
+                            <span style={styles.cellDetailsName}>
+                                {this.texts.value}
+:
+                            </span>
                             {colValue}
                             <div style={{ flexGrow: 1 }} />
                             <IconCopy
@@ -7575,8 +7582,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             } else {
                                 (this.columnsVisibility as Record<string, number>)[id] = 0;
                             }
-                        }),
-                    );
+                        }));
             }
             this.adapterColumns.sort((a, b) => (a.id > b.id ? -1 : a.id < b.id ? 1 : 0));
             this.columnsVisibility.val = columns.includes('val')
@@ -8144,11 +8150,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         .setObject(obj._id, obj)
                         .then(() =>
                             this.setState({ editObjectDialog: obj._id, editObjectAlias: false }, () =>
-                                this.onSelect(obj._id),
-                            ),
-                        )
-                        .catch(e => this.showError(`Cannot write object: ${e}`))
-                }
+                                this.onSelect(obj._id)))
+                        .catch(e => this.showError(`Cannot write object: ${e}`))}
                 onClose={(obj?: ioBroker.AnyObject) => {
                     if (obj) {
                         let updateAlias: string;
@@ -8224,11 +8227,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                             }),
                                         300,
                                     );
-                                }),
-                            ),
+                                })),
                         timeout || 0,
-                    )
-                }
+                    )}
             />
         );
     }
@@ -8604,8 +8605,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             id,
                             obj: obj || ({} as ioBroker.Object),
                             item,
-                        }),
-                    ),
+                        })),
             },
         };
 
@@ -8625,8 +8625,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                         subItem: key,
                                         subAnchor: e.target as HTMLLIElement,
                                     },
-                                })
-                            }
+                                })}
                             style={ITEMS[key].style}
                         >
                             <ListItemIcon style={{ ...ITEMS[key].iconStyle, ...ITEMS[key].listItemIconStyle }}>
@@ -8661,7 +8660,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 }}
                             >
                                 {ITEMS[key].subMenu?.map(subItem =>
-                                    subItem.visibility ? (
+                                    (subItem.visibility ? (
                                         <MenuItem
                                             key={subItem.label}
                                             onClick={subItem.onClick}
@@ -8677,8 +8676,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                             </ListItemIcon>
                                             <ListItemText>{subItem.label}</ListItemText>
                                         </MenuItem>
-                                    ) : null,
-                                )}
+                                    ) : null))}
                             </Menu>,
                         );
                     }

@@ -385,11 +385,11 @@ class Config extends Component<ConfigProps, ConfigState> {
         } else if ((typeof event.data === 'string' && event.data.startsWith('goto:')) ||
             (typeof event.message === 'string' && event.message.startsWith('goto:'))
         ) {
-            const [_, url] = (event.data || event.message).split(':');
+            const [, url] = (event.data || event.message).split(':');
             const [tab, subTab, parameter] = url.split('/');
             Router.doNavigate(tab, subTab, parameter);
         }
-    }
+    };
 
     renderHelpButton() {
         if (this.props.jsonConfig) {

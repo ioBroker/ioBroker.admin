@@ -290,6 +290,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                         alignItems: 'center',
                     }}
                 >
+                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                     <audio
                         style={{ width: '100%' }}
                         src={this.props.href}
@@ -309,6 +310,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                         alignItems: 'center',
                     }}
                 >
+                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                     <video
                         style={{ width: '100%', height: '100%' }}
                         controls
