@@ -174,7 +174,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         }
         if (event.data === 'close' || event.message === 'close') {
             Router.doNavigate('tab-instances');
-        }else if (event.data === 'change' || event.message === 'change') {
+        } else if (event.data === 'change' || event.message === 'change') {
             // this.props.configStored(false);
             console.warn('Application sends "change" message, but it is not processed yet');
         } else if (event.data === 'nochange' || event.message === 'nochange') {
@@ -183,7 +183,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         } else if ((typeof event.data === 'string' && event.data.startsWith('goto:')) ||
             (typeof event.message === 'string' && event.message.startsWith('goto:'))
         ) {
-            const [_, url] = (event.data || event.message).split(':');
+            const [, url] = (event.data || event.message).split(':');
             const [tab, subTab, parameter] = url.split('/');
             Router.doNavigate(tab, subTab, parameter);
         }

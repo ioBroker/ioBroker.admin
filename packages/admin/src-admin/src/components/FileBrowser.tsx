@@ -800,7 +800,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         } else {
             const folder = foldersList.shift();
             if (folder) {
-                void this.browseFolder(folder, newFoldersNotNull)
+                this.browseFolder(folder, newFoldersNotNull)
                     .catch((e: Error) => console.error(`Cannot read folder ${folder}: ${e.message}`))
                     .then(() => {
                         setTimeout(() => this.browseFoldersCb(foldersList, newFoldersNotNull, cb), 0);
@@ -1094,7 +1094,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         return newFoldersNotNull;
     }
 
-    toggleFolder(item: FolderOrFileItem, e: React.MouseEvent<Element>): void {
+    toggleFolder(item: FolderOrFileItem, e: React.MouseEvent): void {
         e?.stopPropagation();
         const expanded = [...this.state.expanded];
         const pos = expanded.indexOf(item.id);
@@ -1161,28 +1161,27 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         this.localStorage.setItem('files.currentDir', _folder);
 
         if (folder && e && (e.altKey || e.shiftKey || e.ctrlKey || e.metaKey)) {
-            return this.setState({ selected: _folder });
+            this.setState({ selected: _folder });
+            return;
         }
 
         if (_folder && !this.state.folders[_folder]) {
             this.browseFolder(_folder)
-                .then(folders =>
-                    this.setState(
-                        {
-                            folders,
-                            path: _folder,
-                            currentDir: _folder,
-                            selected: _folder,
-                            pathFocus: false,
-                        },
-                        () => this.props.onSelect && this.props.onSelect(''),
-                    ),
-                )
+                .then(folders => this.setState(
+                    {
+                        folders,
+                        path: _folder,
+                        currentDir: _folder,
+                        selected: _folder,
+                        pathFocus: false,
+                    },
+                    () => this.props.onSelect && this.props.onSelect(''),
+                ))
                 .catch(_e => console.error(`Cannot read folder: ${_e.message}`));
             return;
         }
 
-        return this.setState(
+        this.setState(
             {
                 currentDir: _folder,
                 selected: _folder,
@@ -1271,7 +1270,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     )}
                     onClick={
                         this.state.viewType === TABLE
-                            ? (e: React.MouseEvent<Element>) => this.toggleFolder(item, e)
+                            ? (e: React.MouseEvent) => this.toggleFolder(item, e)
                             : undefined
                     }
                 />
@@ -1316,9 +1315,9 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 ) : null}
 
                 {this.state.viewType === TABLE &&
-                this.props.allowDelete &&
-                this.state.folders[item.id] &&
-                this.state.folders[item.id].length ? (
+                    this.props.allowDelete &&
+                    this.state.folders[item.id] &&
+                    this.state.folders[item.id].length ?
                     <IconButton
                         aria-label="delete"
                         onClick={e => {
@@ -1333,13 +1332,10 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                         size="large"
                     >
                         <DeleteIcon fontSize="small" />
-                    </IconButton>
-                ) : this.state.viewType === TABLE && this.props.allowDelete ? (
-                    <Box
+                    </IconButton> : this.state.viewType === TABLE && this.props.allowDelete ? <Box
                         component="div"
                         sx={styles[`itemDeleteButton${this.state.viewType}`]}
-                    />
-                ) : null}
+                    /> : null}
             </Box>
         );
     }
@@ -1614,10 +1610,10 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 ) : null}
 
                 {this.state.viewType === TABLE &&
-                this.props.allowDelete &&
-                item.id !== 'vis.0/' &&
-                item.id !== 'vis-2.0/' &&
-                item.id !== USER_DATA ? (
+                    this.props.allowDelete &&
+                    item.id !== 'vis.0/' &&
+                    item.id !== 'vis-2.0/' &&
+                    item.id !== USER_DATA ?
                     <IconButton
                         aria-label="delete"
                         onClick={e => {
@@ -1632,13 +1628,10 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                         size="large"
                     >
                         <DeleteIcon fontSize="small" />
-                    </IconButton>
-                ) : this.state.viewType === TABLE && this.props.allowDelete ? (
-                    <Box
+                    </IconButton> : this.state.viewType === TABLE && this.props.allowDelete ? <Box
                         component="div"
                         sx={styles[`itemDeleteButton${this.state.viewType}`]}
-                    />
-                ) : null}
+                    /> : null}
             </Box>
         );
     }
@@ -1745,13 +1738,11 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                             ...(this.state.restrictToFolder ? styles.menuButtonRestrictActive : undefined),
                         }}
                         aria-label="restricted to folder"
-                        onClick={() =>
-                            this.setState({
-                                restrictToFolder:
-                                    (this.state.restrictToFolder ? '' : this.props.restrictToFolder) || '',
-                                loadAllFolders: true,
-                            })
-                        }
+                        onClick={() => this.setState({
+                            restrictToFolder:
+                                (this.state.restrictToFolder ? '' : this.props.restrictToFolder) || '',
+                            loadAllFolders: true,
+                        })}
                         size="small"
                     >
                         <RestrictedIcon fontSize="small" />
@@ -1988,11 +1979,8 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                         'ra_If no file will be created in the folder, it will disappear after the browser closed',
                     )}
                     labelText={this.props.t('ra_Folder name')}
-                    verify={(text: string) =>
-                        this.state.folders[parentFolder].find(item => item.name === text)
-                            ? ''
-                            : this.props.t('ra_Duplicate name')
-                    }
+                    verify={(text: string) => (this.state.folders[parentFolder].find(item => item.name === text)
+                        ? '' : this.props.t('ra_Duplicate name'))}
                     onClose={(name: string | null) => {
                         if (name) {
                             const folders: Folders = {};
@@ -2110,7 +2098,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                                 } else {
                                     const id = `${parentFolder}/${file.name}`;
 
-                                    void this.uploadFile(id, reader.result as string).then(() => {
+                                    this.uploadFile(id, reader.result as string).then(() => {
                                         if (!--count) {
                                             this.setState({ uploadFile: false }, () => {
                                                 if (this.supportSubscribes) {
@@ -2141,8 +2129,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                                                                         );
                                                                     }
                                                                     this.setState({ folders, expanded }, () =>
-                                                                        this.select(id),
-                                                                    );
+                                                                        this.select(id));
                                                                 },
                                                             ),
                                                         500,
@@ -2202,7 +2189,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 if (item.level >= 1) {
                     const parts = id.split('/');
                     const adapter = parts.shift();
-                    void this.props.socket.deleteFolder(adapter || '', parts.join('/')).then(() => {
+                    this.props.socket.deleteFolder(adapter || '', parts.join('/')).then(() => {
                         // remove this folder
                         const folders = JSON.parse(JSON.stringify(this.state.folders));
                         delete folders[item.id];
@@ -2264,18 +2251,15 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
                     newState.folders = folders;
 
-                    this.setState(newState as FileBrowserState, () =>
-                        setTimeout(() => {
-                            this.browseFolders([...this.state.expanded], folders)
-                                .then(_folders => this.setState({ folders: _folders }))
-                                .catch(e => console.error(e));
-                        }, 200),
-                    );
+                    this.setState(newState as FileBrowserState, () => setTimeout(() => {
+                        this.browseFolders([...this.state.expanded], folders)
+                            .then(_folders => this.setState({ folders: _folders }))
+                            .catch(e => console.error(e));
+                    }, 200));
                 } else {
                     this.setState(newState as FileBrowserState);
                 }
-            }),
-        );
+            }));
     }
 
     renderDeleteDialog(): React.JSX.Element | null {
@@ -2395,14 +2379,12 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     if (!this.state.folders[folder]) {
                         this.browseFolder(folder)
                             .then(folders => this.setState({ folders }, () => resolve(true)))
-                            .catch(err =>
-                                this.setState({
-                                    errorText:
-                                        err === NOT_FOUND
-                                            ? this.props.t('ra_Cannot find "%s"', folder)
-                                            : this.props.t('ra_Cannot read "%s"', folder),
-                                }),
-                            );
+                            .catch(err => this.setState({
+                                errorText:
+                                    err === NOT_FOUND
+                                        ? this.props.t('ra_Cannot find "%s"', folder)
+                                        : this.props.t('ra_Cannot read "%s"', folder),
+                            }));
                     } else {
                         resolve(true);
                     }
