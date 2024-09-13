@@ -25,7 +25,7 @@
         "@iobroker/dm-gui-components": "file:../../dm-gui-components"
     },
     "devDependencies": {
-        "http-proxy-middleware": "^3.0.0"
+        "http-proxy-middleware": "^3.0.2"
     },
     "proxya": "http://127.0.0.1:8081",
     "plugins": [

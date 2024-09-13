@@ -1537,22 +1537,19 @@ class Intro extends React.Component<IntroProps, IntroState> {
             {this.renderCopiedToast()}
             {this.state.nodeUpdateDialog ? <NodeUpdateDialog onClose={() => this.setState({ nodeUpdateDialog: null })} socket={this.props.socket} {...this.state.nodeUpdateDialog} /> : null}
             <TabContent style={styles.container}>
-                <Grid2
-                    className="denis"
-                    container
-                    spacing={1}
-                    columns={{
-                        xs: 12,
-                        md: 12,
-                        lg: 12,
-                        sm: 12,
-                    }}
-                >
-                    {this.getInstancesCards()}
-                    {this.getLinkCards()}
-                </Grid2>
-                {this.getButtons()}
-                {this.editLinkCard()}
+                {/* This fragment is required here
+                to split directives of Grid2 in TabContent and Grid2 directives in Intro */}
+                <>
+                    <Grid2
+                        container
+                        spacing={2}
+                    >
+                        {this.getInstancesCards()}
+                        {this.getLinkCards()}
+                    </Grid2>
+                    {this.getButtons()}
+                    {this.editLinkCard()}
+                </>
             </TabContent>
         </TabContainer>;
     }
