@@ -404,14 +404,14 @@ const NotificationsDialog = ({
                                                             key={i}
                                                             message={msg}
                                                             dateFormat={dateFormat}
-                                                            entry={entry}
+                                                            // entry={entry}
                                                             instanceId={nameInst}
                                                             socket={socket}
                                                             themeType={themeType}
                                                             themeName={themeName}
                                                             theme={theme}
                                                             isFloatComma={isFloatComma}
-                                                            onClose={onClose}
+                                                            // onClose={onClose}
                                                             onLink={(linkCommand: BackEndCommandOpenLink) => onLink(linkCommand, nameInst, onClose)}
                                                         />)}
                                                 </AccordionDetails>

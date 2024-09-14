@@ -1749,14 +1749,17 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         const repositories: Record<string, ioBroker.RepositoryInformation> = this.state.compactRepositories?.native?.repositories;
         if (repositories) {
             // new style with multiple active repositories
-            if (
-                this.props.systemConfig.common.activeRepo &&
-                typeof this.props.systemConfig.common.activeRepo !== 'string'
-            ) {
-                // if any active repo is not stable, show warning
-                stableRepo = !this.props.systemConfig.common.activeRepo.find(
-                    repo => !repo.toLowerCase().startsWith('stable') && !repositories[repo]?.json?._repoInfo?.stable,
-                );
+            if (this.props.systemConfig.common.activeRepo) {
+                if (Array.isArray(this.props.systemConfig.common.activeRepo)) {
+                    // if any active repo is not stable, show warning
+                    stableRepo = !this.props.systemConfig.common.activeRepo.find(
+                        repo => !repo.toLowerCase().startsWith('stable') && !repositories[repo]?.json?._repoInfo?.stable,
+                    );
+                } else if (typeof this.props.systemConfig.common.activeRepo === 'string') {
+                    // if active repo is not stable, show warning
+                    // @ts-expect-error deprecated, but could still come
+                    stableRepo = !this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable') && !repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo?.stable;
+                }
             }
         }
 
