@@ -108,10 +108,10 @@ interface NotificationAction {
 }
 
 interface NotificationMessageProps {
-    entry: Message;
+    // entry: Message;
     instanceId: string;
     message: { message: string; ts: number; contextData?: NotificationAction };
-    onClose: () => void;
+    // onClose: () => void;
     onLink: (linkCommand: BackEndCommandOpenLink) => void;
     dateFormat: string;
     socket: AdminConnection;
