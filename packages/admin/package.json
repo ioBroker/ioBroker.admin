@@ -25,7 +25,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.1.6",
     "@iobroker/socket-classes": "^1.5.6",
-    "@iobroker/webserver": "^1.0.3",
+    "@iobroker/webserver": "^1.0.6",
     "@iobroker/ws-server": "^2.1.2",
     "@types/leaflet": "^1.9.12",
     "ajv": "^8.17.1",
@@ -39,7 +39,7 @@
     "express-fileupload": "^1.5.1",
     "express-session": "^1.18.0",
     "json5": "^2.2.3",
-    "mime": "^3.0.0",
+    "mime": "^4.0.4",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "semver": "^7.6.3",

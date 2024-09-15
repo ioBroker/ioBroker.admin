@@ -1539,6 +1539,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             <TabContent style={styles.container}>
                 {/* This fragment is required here
                 to split directives of Grid2 in TabContent and Grid2 directives in Intro */}
+                {/* eslint-disable-next-line react/jsx-no-useless-fragment */}
                 <>
                     <Grid2
                         container
@@ -1547,9 +1548,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         {this.getInstancesCards()}
                         {this.getLinkCards()}
                     </Grid2>
-                    {this.getButtons()}
-                    {this.editLinkCard()}
                 </>
+                {this.getButtons()}
+                {this.editLinkCard()}
             </TabContent>
         </TabContainer>;
     }

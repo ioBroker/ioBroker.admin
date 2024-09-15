@@ -468,15 +468,15 @@ class Web {
             // replace socket.io
             this.server.app.use((req, res, next) => {
                 // return favicon always
-                if (req.url.endsWith('favicon.ico')) {
+                if (req.url === '/favicon.ico') {
                     res.set('Content-Type', 'image/x-icon');
                     if (this.systemConfig.native.vendor.ico) {
                         // convert base64 to ico
                         const text = this.systemConfig.native.vendor.ico.split(',')[1];
                         return res.send(Buffer.from(text, 'base64'));
-                    } else {
-                        return res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
                     }
+
+                    return res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
                 } else if (
                     socketIoFile !== false &&
                     (req.url.startsWith('socket.io.js') || req.url.match(/\/socket\.io\.js(\?.*)?$/))
@@ -484,18 +484,16 @@ class Web {
                     if (socketIoFile) {
                         res.contentType('text/javascript');
                         return res.status(200).send(socketIoFile);
-                    } else {
-                        socketIoFile = fs.readFileSync(path.join(this.wwwDir, 'lib', 'js', 'socket.io.js'), {
-                            encoding: 'utf-8',
-                        });
-                        if (socketIoFile) {
-                            res.contentType('text/javascript');
-                            return res.status(200).send(socketIoFile);
-                        } else {
-                            socketIoFile = false;
-                            return res.status(404).send(get404Page());
-                        }
                     }
+                    socketIoFile = fs.readFileSync(path.join(this.wwwDir, 'lib', 'js', 'socket.io.js'), {
+                        encoding: 'utf-8',
+                    });
+                    if (socketIoFile) {
+                        res.contentType('text/javascript');
+                        return res.status(200).send(socketIoFile);
+                    }
+                    socketIoFile = false;
+                    return res.status(404).send(get404Page());
                 }
                 next();
             });
@@ -675,16 +673,16 @@ class Web {
                 // route middleware to make sure a user is logged in
                 this.server.app.use((req, res, next) => {
                     // return favicon always
-                    if (req.originalUrl.endsWith('favicon.ico')) {
+                    if (req.url === '/favicon.ico') {
                         res.set('Content-Type', 'image/x-icon');
                         if (this.systemConfig.native.vendor.ico) {
                             // convert base64 to ico
                             const text = this.systemConfig.native.vendor.ico.split(',')[1];
                             return res.send(Buffer.from(text, 'base64'));
-                        } else {
-                            return res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
                         }
-                    } else if (/admin\.\d+\/login-bg\.png(\?.*)?$/.test(req.originalUrl)) {
+                        return res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
+                    }
+                    if (/admin\.\d+\/login-bg\.png(\?.*)?$/.test(req.originalUrl)) {
                         // Read the names of files for gong
                         return this.adapter.readFile(this.adapter.namespace, 'login-bg.png', null, (err, file) => {
                             if (!err && file) {
@@ -694,29 +692,29 @@ class Web {
                                 res.status(404).send(get404Page());
                             }
                         });
-                    } else if (!req.isAuthenticated()) {
+                    }
+                    if (!req.isAuthenticated()) {
                         if (/^\/login\//.test(req.originalUrl) || /\.ico(\?.*)?$/.test(req.originalUrl)) {
                             return next();
+                        }
+                        const pathName = req.url.split('?')[0];
+                        // protect all paths except
+                        this.unprotectedFiles =
+                            this.unprotectedFiles ||
+                            fs.readdirSync(this.wwwDir).map(file => {
+                                const stat = fs.lstatSync(path.join(this.wwwDir, file));
+                                return { name: file, isDir: stat.isDirectory() };
+                            });
+                        if (
+                            pathName &&
+                            pathName !== '/' &&
+                            !this.unprotectedFiles.find(file =>
+                                file.isDir ? pathName.startsWith(`/${file.name}/`) : `/${file.name}` === pathName
+                            )
+                        ) {
+                            res.redirect(`${this.LOGIN_PAGE}&href=${encodeURIComponent(req.originalUrl)}`);
                         } else {
-                            const pathName = req.url.split('?')[0];
-                            // protect all paths except
-                            this.unprotectedFiles =
-                                this.unprotectedFiles ||
-                                fs.readdirSync(this.wwwDir).map(file => {
-                                    const stat = fs.lstatSync(path.join(this.wwwDir, file));
-                                    return { name: file, isDir: stat.isDirectory() };
-                                });
-                            if (
-                                pathName &&
-                                pathName !== '/' &&
-                                !this.unprotectedFiles.find(file =>
-                                    file.isDir ? pathName.startsWith(`/${file.name}/`) : `/${file.name}` === pathName
-                                )
-                            ) {
-                                res.redirect(`${this.LOGIN_PAGE}&href=${encodeURIComponent(req.originalUrl)}`);
-                            } else {
-                                return next();
-                            }
+                            return next();
                         }
                     } else {
                         return next();
