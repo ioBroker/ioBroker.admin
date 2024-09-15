@@ -245,7 +245,7 @@ class Admin extends utils.Adapter {
                         { value: 1, label: 'first' },
                         { value: 2, label: 'second' },
                     ],
-                    obj.callback
+                    obj.callback,
                 )
             );
         } else if (obj.command === 'selectSendTo') {
@@ -261,7 +261,7 @@ class Admin extends utils.Adapter {
                         { label: 'Åland Islands', value: 'AX' },
                         { label: 'Albania', value: 'AL' },
                     ],
-                    obj.callback
+                    obj.callback,
                 )
             );
         } else if (obj.command === 'url') {
@@ -494,7 +494,7 @@ class Admin extends utils.Adapter {
      */
     writeUpdateInfo(
         /** current sources, if given */
-        sources?: Record<string, ioBroker.RepositoryJsonAdapterContent>
+        sources?: Record<string, ioBroker.RepositoryJsonAdapterContent>,
     ): void {
         if (!objects['system.config'] || !objects['system.config'].common) {
             return this.log.warn('Repository cannot be read. Invalid "system.config" object.');
@@ -552,7 +552,7 @@ class Admin extends utils.Adapter {
                             systemRepos?.native?.repositories
                                 ? Object.keys(systemRepos.native.repositories).join(', ')
                                 : 'none'
-                        }. Active repo(s): "${activeRepo.join('", "')}"`
+                        }. Active repo(s): "${activeRepo.join('", "')}"`,
                     );
                 }
             } else if (systemRepos?.native?.repositories?.[activeRepo]) {
@@ -563,7 +563,7 @@ class Admin extends utils.Adapter {
                         systemRepos?.native?.repositories
                             ? Object.keys(systemRepos.native.repositories).join(', ')
                             : 'none'
-                    }. Active repo: "${activeRepo}"`
+                    }. Active repo: "${activeRepo}"`,
                 );
             }
             return;
@@ -677,7 +677,7 @@ class Admin extends utils.Adapter {
                     setImmediate(() => {
                         this._running = false;
                         this.processTasks();
-                    })
+                    }),
                 );
             } else {
                 setImmediate(() => {
@@ -727,9 +727,9 @@ class Admin extends utils.Adapter {
                         } else {
                             resolve(false);
                         }
-                    })
-                )
-            )
+                    }),
+                ),
+            ),
         );
 
         this.config.accessAllowedTabs.forEach(id => {
@@ -968,7 +968,7 @@ class Admin extends utils.Adapter {
                 await this.registerNotification(
                     'admin',
                     `${message.class}News`,
-                    `${message.title.en}\n${message.content.en}`
+                    `${message.title.en}\n${message.content.en}`,
                 );
             }
         }
@@ -982,7 +982,7 @@ class Admin extends utils.Adapter {
      */
     checkActive(
         adapterName: string,
-        instances: Awaited<ioBroker.GetObjectViewPromise<ioBroker.InstanceObject>>
+        instances: Awaited<ioBroker.GetObjectViewPromise<ioBroker.InstanceObject>>,
     ): boolean {
         return !!Object.keys(instances)
             .filter(id => id.startsWith(`adapter.system.${adapterName}.`))
@@ -1342,7 +1342,7 @@ class Admin extends utils.Adapter {
                     // read a current version
                     if (Array.isArray(repository[_adapter].blockedVersions)) {
                         const instance = instances.rows.find(
-                            item => item.value?.common.name === _adapter && item.value.common.enabled
+                            item => item.value?.common.name === _adapter && item.value.common.enabled,
                         );
                         if (instance?.value?.common?.version) {
                             for (let i = 0; i < repository[_adapter].blockedVersions.length; i++) {
@@ -1350,7 +1350,7 @@ class Admin extends utils.Adapter {
                                     if (
                                         semver.satisfies(
                                             instance.value.common.version,
-                                            repository[_adapter].blockedVersions[i]
+                                            repository[_adapter].blockedVersions[i],
                                         )
                                     ) {
                                         // stop all instances
@@ -1362,8 +1362,8 @@ class Admin extends utils.Adapter {
                                                 this.log.warn(
                                                     `Instance ${obj._id.replace(
                                                         'system.adapter.',
-                                                        ''
-                                                    )} was disabled because blocked. Please update ${_adapter} to newer or available version`
+                                                        '',
+                                                    )} was disabled because blocked. Please update ${_adapter} to newer or available version`,
                                                 );
                                                 this.sendToHost(obj.common.host, 'addNotification', {
                                                     scope: 'system',
@@ -1376,7 +1376,7 @@ class Admin extends utils.Adapter {
                                     }
                                 } catch {
                                     this.log.error(
-                                        `Cannot check revoked versions: ${repository[_adapter].blockedVersions[i]}`
+                                        `Cannot check revoked versions: ${repository[_adapter].blockedVersions[i]}`,
                                     );
                                     // ignore
                                 }
@@ -1385,8 +1385,8 @@ class Admin extends utils.Adapter {
                     } else {
                         this.log.error(
                             `Invalid blockedVersions for ${_adapter}: ${JSON.stringify(
-                                repository[_adapter].blockedVersions
-                            )}. Expected array like ["<= 3.17.4"] or also ["~3.14.0", "~3.15.0", "~3.16.0"]`
+                                repository[_adapter].blockedVersions,
+                            )}. Expected array like ["<= 3.17.4"] or also ["~3.14.0", "~3.15.0", "~3.16.0"]`,
                         );
                     }
                 }
@@ -1402,7 +1402,7 @@ class Admin extends utils.Adapter {
             const ioPackage = JSON.parse(
                 fs.readFileSync(path.join(utils.controllerDir, 'io-package.json'), {
                     encoding: 'utf-8',
-                })
+                }),
             );
 
             ioPackage.objects.forEach(async (obj: ioBroker.AnyObject) => {
@@ -1427,15 +1427,15 @@ class Admin extends utils.Adapter {
             }
             this.log.debug(
                 `Next repo update on ${new Date(
-                    Date.now() + this.config.autoUpdate * ONE_HOUR_MS + 1
-                ).toLocaleString()}`
+                    Date.now() + this.config.autoUpdate * ONE_HOUR_MS + 1,
+                ).toLocaleString()}`,
             );
             this.timerRepo = setTimeout(
                 () => {
                     this.timerRepo = null;
                     this.updateRegister();
                 },
-                this.config.autoUpdate * ONE_HOUR_MS + 1
+                this.config.autoUpdate * ONE_HOUR_MS + 1,
             );
         }
     }
@@ -1463,7 +1463,7 @@ class Admin extends utils.Adapter {
                         npm: CURRENT_MAX_MAJOR_NPM,
                     });
                 }
-            })
+            }),
         );
     }
 
@@ -1541,13 +1541,13 @@ class Admin extends utils.Adapter {
 
                                     socket?.repoUpdated();
                                     this.checkRevokedVersions(
-                                        _repository as unknown as Record<string, ioBroker.RepositoryJsonAdapterContent>
+                                        _repository as unknown as Record<string, ioBroker.RepositoryJsonAdapterContent>,
                                     ).catch(e => this.log.error(`Cannot check revoked versions: ${e}`));
                                 }
 
                                 // start the next cycle
                                 this.restartRepoUpdate();
-                            }
+                            },
                         );
                     } else if (this.config.autoUpdate) {
                         let interval = repos.ts + this.config.autoUpdate * ONE_HOUR_MS - Date.now() + 1;
@@ -1655,7 +1655,7 @@ class Admin extends utils.Adapter {
         this.checkCommonObjects().catch((e: unknown) => this.log.warn(`Cannot check common objects: ${e}`));
 
         this.getData(
-            adapter => (webServer = new Web(adapter.config, adapter, this.initSocket.bind(this), { systemLanguage }))
+            adapter => (webServer = new Web(adapter.config, adapter, this.initSocket.bind(this), { systemLanguage })),
         );
 
         if (
@@ -1714,7 +1714,7 @@ class Admin extends utils.Adapter {
                         const userData = io.objects.find((obj: ioBroker.AnyObject) => obj._id === '0_userdata.0');
                         if (userData) {
                             this.setForeignObject(userData._id, userData, () =>
-                                this.log.info('Object 0_userdata.0 was re-created')
+                                this.log.info('Object 0_userdata.0 was re-created'),
                             );
                         }
                     }

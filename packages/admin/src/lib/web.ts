@@ -20,7 +20,7 @@ import type { Store } from 'express-session';
 import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
-import { RequestHandler } from 'express';
+import { type RequestHandler } from 'express';
 
 interface IConnectFlashOptions {
     unsafe?: boolean | undefined;
@@ -137,7 +137,7 @@ function get404Page(customText?: string): string {
 async function readFolderRecursive(
     adapter: AdminAdapter,
     adapterName: string,
-    url: string
+    url: string,
 ): Promise<{ name: string; file: Buffer }[]> {
     const filesOfDir = [];
     const fileMetas = await adapter.readDirAsync(adapterName, url);
@@ -189,6 +189,7 @@ interface AdminAdapter extends ioBroker.Adapter {
  * Webserver class
  */
 class Web {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     server: { app: null | ReturnType<typeof express>; server: null | import('http').Server } = {
         app: null,
         server: null,
@@ -222,16 +223,16 @@ class Web {
     /**
      * Create a new instance of Web
      *
-     * @param settings
-     * @param adapter
-     * @param onReady
-     * @param options
+     * @param settings settings of the adapter
+     * @param adapter instance of the adapter
+     * @param onReady callback when the server is ready
+     * @param options options for the webserver
      */
     constructor(
         settings: AdminAdapterConfig,
         adapter: AdminAdapter,
         onReady: (server: unknown, store: unknown, adapter: AdminAdapter) => void,
-        options: WebOptions
+        options: WebOptions,
     ) {
         this.settings = settings;
         this.adapter = adapter;
@@ -240,7 +241,7 @@ class Web {
 
         this.systemLanguage = this.options?.systemLanguage || 'en';
 
-        this.#init();
+        void this.#init();
     }
 
     decorateLogFile(filename: string, text?: string): string {
@@ -258,7 +259,7 @@ class Web {
             this.checkTimeout = null;
         }
 
-        this.adapter.setState('info.connection', false, true);
+        void this.adapter.setState('info.connection', false, true);
         this.server.server?.close();
     }
 
@@ -271,13 +272,13 @@ class Web {
                 template = template.replace(
                     /['"]@@disableDataReporting@@["']/g,
                     // @ts-expect-error this is not used on instance objects use system.adapter.xy.plugins.sentry.enabled
-                    this.adapter.common?.disableDataReporting ? 'true' : 'false'
+                    this.adapter.common?.disableDataReporting ? 'true' : 'false',
                 );
             } else if (pattern === 'loginBackgroundImage') {
                 if (this.adapter.config.loginBackgroundImage) {
                     template = template.replace(
                         '@@loginBackgroundImage@@',
-                        `files/${this.adapter.namespace}/login-bg.png`
+                        `files/${this.adapter.namespace}/login-bg.png`,
                     );
                 } else {
                     template = template.replace('@@loginBackgroundImage@@', '');
@@ -285,13 +286,13 @@ class Web {
             } else if (pattern === 'loginBackgroundColor') {
                 template = template.replace(
                     '@@loginBackgroundColor@@',
-                    this.adapter.config.loginBackgroundColor || 'inherit'
+                    this.adapter.config.loginBackgroundColor || 'inherit',
                 );
             } else if (pattern === 'loadingBackgroundImage') {
                 if (this.adapter.config.loadingBackgroundImage) {
                     template = template.replace(
                         '@@loadingBackgroundImage@@',
-                        `files/${this.adapter.namespace}/loading-bg.png`
+                        `files/${this.adapter.namespace}/loading-bg.png`,
                     );
                 } else {
                     template = template.replace('@@loadingBackgroundImage@@', '');
@@ -299,17 +300,17 @@ class Web {
             } else if (pattern === 'loadingBackgroundColor') {
                 template = template.replace(
                     '@@loadingBackgroundColor@@',
-                    this.adapter.config.loadingBackgroundColor || ''
+                    this.adapter.config.loadingBackgroundColor || '',
                 );
             } else if (pattern === 'vendorPrefix') {
                 template = template.replace(
                     `@@vendorPrefix@@`,
-                    this.systemConfig.native.vendor.uuidPrefix || (uuid.length > 36 ? uuid.substring(0, 2) : '')
+                    this.systemConfig.native.vendor.uuidPrefix || (uuid.length > 36 ? uuid.substring(0, 2) : ''),
                 );
             } else if (pattern === 'loginMotto') {
                 template = template.replace(
                     `@@loginMotto@@`,
-                    this.systemConfig.native.vendor.admin.login.motto || this.adapter.config.loginMotto || ''
+                    this.systemConfig.native.vendor.admin.login.motto || this.adapter.config.loginMotto || '',
                 );
             } else if (pattern === 'loginLogo') {
                 template = template.replace(`@@loginLogo@@`, this.systemConfig.native.vendor.icon || '');
@@ -321,7 +322,7 @@ class Web {
                 template = template.replace(
                     `@@${pattern}@@`,
                     // @ts-expect-error check later
-                    this.adapter.config[pattern] !== undefined ? this.adapter.config[pattern] : ''
+                    this.adapter.config[pattern] !== undefined ? this.adapter.config[pattern] : '',
                 );
             }
         });
@@ -407,7 +408,7 @@ class Web {
 
                 if (!valid) {
                     this.adapter.log.warn(
-                        `${adapterName} has an invalid jsonConfig: ${JSON.stringify(validate.errors)}`
+                        `${adapterName} has an invalid jsonConfig: ${JSON.stringify(validate.errors)}`,
                     );
                 }
             } catch (e) {
@@ -541,12 +542,12 @@ class Web {
                             if (minutes) {
                                 return done(
                                     `Too many errors. Try again in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}.`,
-                                    false
+                                    false,
                                 );
                             }
                         }
 
-                        this.adapter.checkPassword(username, password, (res, user) => {
+                        const mayBePromise = this.adapter.checkPassword(username, password, (res, user) => {
                             if (!res) {
                                 this.bruteForce[username] = this.bruteForce[username] || { errors: 0 };
                                 this.bruteForce[username].time = new Date().getTime();
@@ -557,11 +558,17 @@ class Web {
 
                             if (res) {
                                 return done(null, (user || username).replace(/^system\.user\./, ''));
-                            } else {
-                                return done(null, false);
                             }
+                            return done(null, false);
                         });
-                    })
+
+                        if (mayBePromise instanceof Promise) {
+                            mayBePromise.catch(e => {
+                                this.adapter.log.error(`Cannot check password: ${e}`);
+                                done(null, false);
+                            });
+                        }
+                    }),
                 );
 
                 passport.serializeUser((user, done) => done(null, user));
@@ -579,7 +586,7 @@ class Web {
                         cookie: { maxAge: this.settings.ttl * 1000 },
                         // rolling: true, // The expiration is reset to the original maxAge, resetting the expiration countdown.
                         store: this.store as Store,
-                    })
+                    }),
                 );
                 this.server.app.use(passport.initialize());
                 this.server.app.use(passport.session());
@@ -613,7 +620,7 @@ class Web {
 
                     passport.authenticate('local', (err: Error | null, user: string) => {
                         if (err) {
-                            this.adapter.log.warn(`Cannot login user: ${err}`);
+                            this.adapter.log.warn(`Cannot login user: ${err.message}`);
                             return res.redirect(this.getErrorRedirect(origin));
                         }
                         if (!user) {
@@ -648,7 +655,7 @@ class Web {
                 });
 
                 this.server.app.get('/session', (req, res) =>
-                    res.json({ expireInSec: Math.round(req.session.cookie.maxAge / 1_000) })
+                    res.json({ expireInSec: Math.round(req.session.cookie.maxAge / 1_000) }),
                 );
 
                 this.server.app.get('/logout', (req, res) => {
@@ -709,7 +716,7 @@ class Web {
                             pathName &&
                             pathName !== '/' &&
                             !this.unprotectedFiles.find(file =>
-                                file.isDir ? pathName.startsWith(`/${file.name}/`) : `/${file.name}` === pathName
+                                file.isDir ? pathName.startsWith(`/${file.name}/`) : `/${file.name}` === pathName,
                             )
                         ) {
                             res.redirect(`${this.LOGIN_PAGE}&href=${encodeURIComponent(req.originalUrl)}`);
@@ -864,7 +871,7 @@ class Web {
                                             this.unzipFile(
                                                 filename,
                                                 fs.readFileSync(filename, { encoding: 'utf-8' }),
-                                                res
+                                                res,
                                             );
                                         } catch (e) {
                                             res.header('Content-Type', 'application/gzip');
@@ -900,7 +907,7 @@ class Web {
                     fileUpload({
                         useTempFiles: true,
                         tempFileDir: this.settings.tmpPath,
-                    })
+                    }),
                 );
                 this.server.app.post('/upload', (req, res) => {
                     if (!req.files) {
@@ -938,8 +945,8 @@ class Web {
             if (!fs.existsSync(this.wwwDir)) {
                 this.server.app.use('/', (req, res) =>
                     res.send(
-                        'This adapter cannot be installed directly from GitHub.<br>You must install it from npm.<br>Write for that <i>"npm install iobroker.admin"</i> in according directory.'
-                    )
+                        'This adapter cannot be installed directly from GitHub.<br>You must install it from npm.<br>Write for that <i>"npm install iobroker.admin"</i> in according directory.',
+                    ),
                 );
             } else {
                 this.server.app.get('/empty.html', (req, res) => res.send(''));
@@ -1161,8 +1168,7 @@ class Web {
                     query.timeout = 30_000;
                 }
 
-                /** @type {NodeJS.Timeout | null} */
-                let timeout = setTimeout(
+                let timeout: NodeJS.Timeout = setTimeout(
                     () => {
                         if (timeout) {
                             timeout = null;
@@ -1173,7 +1179,7 @@ class Web {
                             res.status(408).send(text);
                         }
                     },
-                    (query.timeout as number) || 5_000
+                    (query.timeout as number) || 5_000,
                 );
 
                 this.adapter.sendTo(instance, 'oauth2Callback', query, result => {
@@ -1202,7 +1208,7 @@ class Web {
 
             // 404 handler
             this.server.app.use((req, res) =>
-                res.status(404).send(get404Page(`File ${escapeHtml(req.url)} not found`))
+                res.status(404).send(get404Page(`File ${escapeHtml(req.url)} not found`)),
             );
 
             try {
@@ -1242,7 +1248,7 @@ class Web {
             }
         }
 
-        this.adapter
+        void this.adapter
             .getForeignObjectAsync('system.config')
             .then(obj => {
                 this.systemConfig = obj || {};
@@ -1266,11 +1272,11 @@ class Web {
                             this.adapter.log.error(
                                 `node.js process has no rights to start server on the port ${serverPort}.\n` +
                                     `Do you know that on linux you need special permissions for ports under 1024?\n` +
-                                    `You can call in shell following scrip to allow it for node.js: "iobroker fix"`
+                                    `You can call in shell following scrip to allow it for node.js: "iobroker fix"`,
                             );
                         } else {
                             this.adapter.log.error(
-                                `Cannot start server on ${this.settings.bind || '0.0.0.0'}:${serverPort}: ${e}`
+                                `Cannot start server on ${this.settings.bind || '0.0.0.0'}:${serverPort}: ${e.toString()}`,
                             );
                         }
 
@@ -1301,15 +1307,16 @@ class Web {
                                     ? undefined
                                     : this.settings.bind || undefined,
                                 () => {
-                                    this.adapter.setState('info.connection', true, true);
+                                    void this.adapter.setState('info.connection', true, true);
+
                                     serverListening = true;
                                     this.adapter.log.info(
-                                        `http${this.settings.secure ? 's' : ''} server listening on port ${port}`
+                                        `http${this.settings.secure ? 's' : ''} server listening on port ${port}`,
                                     );
                                     this.adapter.log.info(
                                         `Use link "http${
                                             this.settings.secure ? 's' : ''
-                                        }://127.0.0.1:${port}" to configure.`
+                                        }://127.0.0.1:${port}" to configure.`,
                                     );
 
                                     if (!this.adapter.config.doNotCheckPublicIP && !this.adapter.config.auth) {
@@ -1319,7 +1326,7 @@ class Web {
                                                 await IoBWebServer.checkPublicIP(
                                                     this.settings.port,
                                                     'ioBroker',
-                                                    '/iobroker_check.html'
+                                                    '/iobroker_check.html',
                                                 );
                                             } catch (e) {
                                                 // this supported first from js-controller 5.0.
@@ -1336,20 +1343,20 @@ class Web {
                                                     },
                                                     (/* result */) => {
                                                         /* ignore */
-                                                    }
+                                                    },
                                                 );
 
                                                 this.adapter.log.error(e.toString());
                                             }
                                         }, 1000);
                                     }
-                                }
+                                },
                             );
 
                             if (typeof this.onReady === 'function') {
                                 this.onReady(this.server.server, this.store, this.adapter);
                             }
-                        }
+                        },
                     );
                 }
             });

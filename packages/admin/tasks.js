@@ -11,18 +11,18 @@ const dest = 'adminWww/';
 function build() {
     fs.writeFileSync(
         `${src}public/lib/js/sparkline.js`,
-        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js`)
+        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js`),
     );
     fs.writeFileSync(
         `${src}public/lib/js/sparkline.js.map`,
-        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js.map`)
+        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js.map`),
     );
 
     const ace = `${rootFolder}/node_modules/ace-builds/src-min-noconflict/`;
     fs.writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, fs.readFileSync(`${ace}worker-json.js`));
     fs.writeFileSync(
         `${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`,
-        fs.readFileSync(`${ace}ext-searchbox.js`)
+        fs.readFileSync(`${ace}ext-searchbox.js`),
     );
 
     return buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true });
@@ -57,7 +57,7 @@ function copyAllFiles() {
             `!${rootFolder}/node_modules/crypto-js/CONTRIBUTING.md`,
             `!${rootFolder}/node_modules/crypto-js/README.md`,
         ],
-        `${dest}lib/js/crypto-js`
+        `${dest}lib/js/crypto-js`,
     );
     copyFiles(`${srcRx}build/index.html`, dest, {
         replace: [
@@ -87,7 +87,7 @@ async function configCSS() {
             filename: 'materializeCorrect.less',
             compress: true,
             paths: [`./${srcRx}less`],
-        }
+        },
     );
 
     fs.writeFileSync(`./${srcRx}public/css/adapter.css`, selectID.css + adapterLess.css + materializeCorrect.css);
@@ -110,7 +110,7 @@ async function treeTableCSS() {
             filename: 'selectID.less',
             compress: true,
             paths: [`./${srcRx}less`],
-        }
+        },
     );
     fs.writeFileSync(`./${srcRx}public/lib/css/jquery.treetable.theme.css`, treeTable.css);
 }
