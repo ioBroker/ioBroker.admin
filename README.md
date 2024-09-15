@@ -85,7 +85,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.1.1 (2024-09-15)
 * (bluefox) Showed the context menu under cursor position in the object browser
 * (bluefox) Added links to aliases in the object browser
 * (bluefox) Added confirmation for CRON dialog if set to triggering every minute
@@ -108,11 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) clarified auto upgrade options selection
 * (bluefox) Corrected the link in instances, e.g., for vis-2
 * (bluefox) Corrected the connection information in the instance tab
-
-### 7.0.22 (2024-07-29)
-* (bluefox) Corrected installation of adapter with the license unequal to MIT
-* (bluefox) Corrected width of a side menu
-* (bluefox) Allowed the pasting into object JSON editor
 
 ## License
 The MIT License (MIT)

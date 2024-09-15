@@ -1,4 +1,9 @@
 # Older changes
+## 7.0.22 (2024-07-29)
+* (bluefox) Corrected installation of adapter with the license unequal to MIT
+* (bluefox) Corrected width of a side menu
+* (bluefox) Allowed the pasting into object JSON editor
+
 ## 7.0.18 (2024-07-22)
 * (bluefox) Corrected export from JSON table
 * (foxriver76) added `qrCode` component to JSON config
