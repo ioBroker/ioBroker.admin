@@ -5,17 +5,7 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 
-import {
-    Tooltip,
-    LinearProgress,
-    Tabs,
-    Tab,
-    TextField,
-    Popover,
-    MenuItem,
-    MenuList,
-    IconButton,
-} from '@mui/material';
+import { Tooltip, LinearProgress, Tabs, Tab, TextField, Popover, MenuItem, MenuList, IconButton } from '@mui/material';
 
 import {
     Add as AddIcon,
@@ -25,11 +15,7 @@ import {
 } from '@mui/icons-material';
 import { FaRegFolder as IconCollapsed, FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
 
-import {
-    type AdminConnection,
-    type IobTheme, type ThemeType,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type IobTheme, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
 
 import EnumBlock, { isTouchDevice } from './EnumBlock';
 import CategoryLabel from './CategoryLabel';
@@ -42,7 +28,7 @@ import AdminUtils from '../../AdminUtils';
 const styles: Record<string, any> = {
     mainGridCont: {
         height: '100%',
-        overflowY:'auto',
+        overflowY: 'auto',
     },
     childGridCont: {
         display: 'flex',
@@ -118,7 +104,7 @@ const DndPreview = () => {
     const display = preview.display;
 
     // TODO: How to fix this?
-    const { item, style } = (preview as unknown as { item: { preview: React.JSX.Element }; style: React.CSSProperties });
+    const { item, style } = preview as unknown as { item: { preview: React.JSX.Element }; style: React.CSSProperties };
     if (!display) {
         return null;
     }
@@ -244,7 +230,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
     constructor(props: EnumsListProps) {
         super(props);
 
-        const localStorage: Storage = ((window as any)._localStorage as Storage || window.localStorage);
+        const localStorage: Storage = ((window as any)._localStorage as Storage) || window.localStorage;
 
         let enumsClosed = {};
         try {
@@ -254,7 +240,9 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         }
         let enumsCollapsed = [];
         try {
-            enumsCollapsed = localStorage.getItem('enumsCollapsed') ? JSON.parse(localStorage.getItem('enumsCollapsed')) : [];
+            enumsCollapsed = localStorage.getItem('enumsCollapsed')
+                ? JSON.parse(localStorage.getItem('enumsCollapsed'))
+                : [];
         } catch {
             // ignore
         }
@@ -298,7 +286,11 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
 
     getEnumTemplate = (prefix: string): ioBroker.EnumObject => {
         const enumTemplate: ioBroker.EnumObject = JSON.parse(JSON.stringify(ENUM_TEMPLATE));
-        const { _id, name } = EnumsList.findNewUniqueName(prefix, Object.values(this.state.enums), this.props.t('Enum'));
+        const { _id, name } = EnumsList.findNewUniqueName(
+            prefix,
+            Object.values(this.state.enums),
+            this.props.t('Enum'),
+        );
         enumTemplate._id = _id;
         enumTemplate.common.name = name;
         return enumTemplate;
@@ -383,7 +375,10 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                     this.changeEnums[id] = obj;
                     changed = true;
                 }
-            } else if ((this.changeEnums && this.changeEnums[id]) || (!this.changeEnums && this.state.enums && this.state.enums[id])) {
+            } else if (
+                (this.changeEnums && this.changeEnums[id]) ||
+                (!this.changeEnums && this.state.enums && this.state.enums[id])
+            ) {
                 this.changeEnums = this.changeEnums || JSON.parse(JSON.stringify(this.state.enums));
                 delete this.changeEnums[id];
                 changed = true;
@@ -396,19 +391,22 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
             }
 
             // collect events
-            this.updateTimeout = setTimeout(() => {
-                this.updateTimeout = null;
-                const changeEnums = this.changeEnums;
-                this.changeEnums = null;
-                this.updateData(changeEnums)
-                    .then(() => {
-                        if (this.scrollToItem) {
-                            this.scrollToEnum(this.scrollToItem);
-                            this.scrollToItem = null;
-                        }
-                    })
-                    .catch(() => undefined);
-            }, this.fastUpdate ? 0 : 200);
+            this.updateTimeout = setTimeout(
+                () => {
+                    this.updateTimeout = null;
+                    const changeEnums = this.changeEnums;
+                    this.changeEnums = null;
+                    this.updateData(changeEnums)
+                        .then(() => {
+                            if (this.scrollToItem) {
+                                this.scrollToEnum(this.scrollToItem);
+                                this.scrollToItem = null;
+                            }
+                        })
+                        .catch(() => undefined);
+                },
+                this.fastUpdate ? 0 : 200,
+            );
 
             this.fastUpdate = false;
         }
@@ -437,8 +435,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
             }
         }
 
-        this.setState({ enums, members, updating: [] }, () =>
-            this.buildTree(enums));
+        this.setState({ enums, members, updating: [] }, () => this.buildTree(enums));
     };
 
     buildTree(enums: Record<string, ioBroker.EnumObject>) {
@@ -448,8 +445,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
             id: '',
         };
 
-        const ids = Object.keys(enums)
-            .sort(sort(enums, this.getName));
+        const ids = Object.keys(enums).sort(sort(enums, this.getName));
 
         for (let i = 0; i < ids.length; i++) {
             const id = ids[i];
@@ -474,10 +470,9 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         }
 
         this.setCurrentCategory(
-            this.state.currentCategory &&
-            enumsTree.children.enum.children[this.state.currentCategory] ?
-                this.state.currentCategory :
-                Object.keys(enumsTree.children.enum.children)[0],
+            this.state.currentCategory && enumsTree.children.enum.children[this.state.currentCategory]
+                ? this.state.currentCategory
+                : Object.keys(enumsTree.children.enum.children)[0],
             () => this.setState({ enumsTree }),
         );
     }
@@ -506,8 +501,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
             members.push(itemId);
 
             this.fastUpdate = true;
-            this.props.socket.setObject(enumItem._id, enumItem)
-                .catch(e => window.alert(`Cannot set enum: ${e}`));
+            this.props.socket.setObject(enumItem._id, enumItem).catch(e => window.alert(`Cannot set enum: ${e}`));
         }
     };
 
@@ -519,7 +513,8 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
             members.splice(pos, 1);
 
             this.fastUpdate = true;
-            this.props.socket.setObject(enumItem._id, enumItem)
+            this.props.socket
+                .setObject(enumItem._id, enumItem)
                 .catch((e: string) => window.alert(`Cannot update enum: ${e}`));
         }
     };
@@ -586,64 +581,90 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                 return null;
             }
             if (pos !== -1) {
-                nameRx = name ? [
-                    <span key="0">{name.substring(0, pos)}</span>,
-                    <span key="1" style={styles.searchText}>{name.substring(pos, pos + this.state.search.length)}</span>,
-                    <span key="2">{name.substring(pos + this.state.search.length)}</span>,
-                ] : null;
+                nameRx = name
+                    ? [
+                          <span key="0">{name.substring(0, pos)}</span>,
+                          <span
+                              key="1"
+                              style={styles.searchText}
+                          >
+                              {name.substring(pos, pos + this.state.search.length)}
+                          </span>,
+                          <span key="2">{name.substring(pos + this.state.search.length)}</span>,
+                      ]
+                    : null;
             }
             if (posId !== -1) {
-                idRx = name ? [
-                    <span key="0">{idText.substring(0, posId)}</span>,
-                    <span key="1" style={styles.searchText}>{idText.substring(posId, posId + this.state.search.length)}</span>,
-                    <span key="2">{idText.substring(posId + this.state.search.length)}</span>,
-                ] : null;
+                idRx = name
+                    ? [
+                          <span key="0">{idText.substring(0, posId)}</span>,
+                          <span
+                              key="1"
+                              style={styles.searchText}
+                          >
+                              {idText.substring(posId, posId + this.state.search.length)}
+                          </span>,
+                          <span key="2">{idText.substring(posId + this.state.search.length)}</span>,
+                      ]
+                    : null;
             }
         }
 
-        return <div style={{ paddingLeft: level ? 32 : 0 }} key={container.id || key}>
-            <EnumBlock
-                cachedIcons={this.cachedIcons}
-                stylesParent={styles}
-                closed={this.state.enumsClosed[container.id]}
-                collapsed={this.state.enumsCollapsed.includes(container.id)}
-                copyEnum={this.copyEnum}
-                currentCategory={this.state.currentCategory}
-                enum={container.data}
-                getEnumTemplate={this.getEnumTemplate}
-                getName={this.getName}
-                id={container.id}
-                idText={idRx}
-                members={this.state.members}
-                moveEnum={this.moveEnum}
-                name={nameRx}
-                onCollapse={() => {
-                    const enumsCollapsed = [...this.state.enumsCollapsed];
-                    const pos = enumsCollapsed.indexOf(container.id);
-                    if (pos === -1) {
-                        enumsCollapsed.push(container.id);
-                    } else {
-                        enumsCollapsed.splice(pos, 1);
-                    }
-                    this.setState({ enumsCollapsed });
-                    ((window as any)._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
-                }}
-                removeMemberFromEnum={this.removeMemberFromEnum}
-                showEnumDeleteDialog={this.showEnumDeleteDialog}
-                showEnumEditDialog={this.showEnumEditDialog}
-                showEnumTemplateDialog={this.showEnumTemplateDialog}
-                socket={this.props.socket}
-                t={this.props.t}
-                themeType={this.props.themeType}
-                theme={this.props.theme}
-                toggleEnum={this.toggleEnum}
-                updating={this.state.updating.includes(container.id)}
-                childrenCount={container.children ? Object.keys(container.children).length : 0}
-            />
-            {ids ?
-                ids.map((id, index) => <React.Fragment key={index}>{this.renderTree(container.children[id], index, level + 1)}</React.Fragment>)
-                : null}
-        </div>;
+        return (
+            <div
+                style={{ paddingLeft: level ? 32 : 0 }}
+                key={container.id || key}
+            >
+                <EnumBlock
+                    cachedIcons={this.cachedIcons}
+                    stylesParent={styles}
+                    closed={this.state.enumsClosed[container.id]}
+                    collapsed={this.state.enumsCollapsed.includes(container.id)}
+                    copyEnum={this.copyEnum}
+                    currentCategory={this.state.currentCategory}
+                    enum={container.data}
+                    getEnumTemplate={this.getEnumTemplate}
+                    getName={this.getName}
+                    id={container.id}
+                    idText={idRx}
+                    members={this.state.members}
+                    moveEnum={this.moveEnum}
+                    name={nameRx}
+                    onCollapse={() => {
+                        const enumsCollapsed = [...this.state.enumsCollapsed];
+                        const pos = enumsCollapsed.indexOf(container.id);
+                        if (pos === -1) {
+                            enumsCollapsed.push(container.id);
+                        } else {
+                            enumsCollapsed.splice(pos, 1);
+                        }
+                        this.setState({ enumsCollapsed });
+                        ((window as any)._localStorage || window.localStorage).setItem(
+                            'enumsCollapsed',
+                            JSON.stringify(enumsCollapsed),
+                        );
+                    }}
+                    removeMemberFromEnum={this.removeMemberFromEnum}
+                    showEnumDeleteDialog={this.showEnumDeleteDialog}
+                    showEnumEditDialog={this.showEnumEditDialog}
+                    showEnumTemplateDialog={this.showEnumTemplateDialog}
+                    socket={this.props.socket}
+                    t={this.props.t}
+                    themeType={this.props.themeType}
+                    theme={this.props.theme}
+                    toggleEnum={this.toggleEnum}
+                    updating={this.state.updating.includes(container.id)}
+                    childrenCount={container.children ? Object.keys(container.children).length : 0}
+                />
+                {ids
+                    ? ids.map((id, index) => (
+                          <React.Fragment key={index}>
+                              {this.renderTree(container.children[id], index, level + 1)}
+                          </React.Fragment>
+                      ))
+                    : null}
+            </div>
+        );
     }
 
     showEnumEditDialog = (enumItem: ioBroker.EnumObject, isNew: boolean) => {
@@ -654,11 +675,9 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         this.setState({ enumEditDialog });
     };
 
-    showEnumTemplateDialog = (prefix: string) =>
-        this.setState({ enumTemplateDialog: prefix });
+    showEnumTemplateDialog = (prefix: string) => this.setState({ enumTemplateDialog: prefix });
 
-    showEnumDeleteDialog = (enumItem: ioBroker.EnumObject) =>
-        this.setState({ enumDeleteDialog: enumItem });
+    showEnumDeleteDialog = (enumItem: ioBroker.EnumObject) => this.setState({ enumDeleteDialog: enumItem });
 
     saveEnum = async () => {
         const newItem = this.state.enumEditDialog.newItem;
@@ -742,8 +761,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
 
         enumItem._id = newId;
 
-        this.props.socket.setObject(newId, enumItem)
-            .catch(e => window.alert(`Cannot delete enum: ${e}`));
+        this.props.socket.setObject(newId, enumItem).catch(e => window.alert(`Cannot delete enum: ${e}`));
     };
 
     toggleEnum = (enumId: string) => {
@@ -757,20 +775,20 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         const enumEditDialog = JSON.parse(JSON.stringify(this.state.enumEditDialog));
         enumEditDialog.newItem = JSON.parse(JSON.stringify(newItem));
         enumEditDialog.changed =
-            JSON.stringify(enumEditDialog.newItem) !== JSON.stringify(this.state.enums[enumEditDialog.originalItem] || {});
+            JSON.stringify(enumEditDialog.newItem) !==
+            JSON.stringify(this.state.enums[enumEditDialog.originalItem] || {});
         this.setState({ enumEditDialog });
     };
 
     getName = (name: ioBroker.StringOrTranslated): string => AdminUtils.getText(name, this.props.lang);
 
     static _isUniqueName(prefix: string, list: ioBroker.EnumObject[], word: string, i: number) {
-        return !list.find(item =>
-            item._id === (`${prefix}.${word.toLowerCase()}_${i}`));
+        return !list.find(item => item._id === `${prefix}.${word.toLowerCase()}_${i}`);
     }
 
     static findNewUniqueName(prefix: string, list: ioBroker.EnumObject[], word: string) {
         let i = 1;
-        while (!EnumsList._isUniqueName(prefix, list,  word, i)) {
+        while (!EnumsList._isUniqueName(prefix, list, word, i)) {
             i++;
         }
         return { _id: `${prefix}.${word.toLowerCase()}_${i}`, name: `${word} ${i}` };
@@ -791,257 +809,344 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         if (this.searchTimer) {
             clearTimeout(this.searchTimer);
         }
-        this.searchTimer = setTimeout(_text => {
-            this.searchTimer = null;
-            this.setState({ search: _text.toLowerCase() });
-        }, isClear ? 0 : 300, filter);
+        this.searchTimer = setTimeout(
+            _text => {
+                this.searchTimer = null;
+                this.setState({ search: _text.toLowerCase() });
+            },
+            isClear ? 0 : 300,
+            filter,
+        );
     }
 
     renderEditDialog() {
-        return this.state.enumEditDialog ? <EnumEditDialog
-            onClose={() => this.setState({ enumEditDialog: null })}
-            enums={Object.values(this.state.enums)}
-            enum={this.state.enumEditDialog.newItem}
-            getName={this.getName}
-            isNew={this.state.enumEditDialog.isNew}
-            t={this.props.t}
-            lang={this.props.lang}
-            changed={this.state.enumEditDialog.changed}
-            onChange={this.changeEnumFormData}
-            saveData={this.saveEnum}
-            innerWidth={this.state.innerWidth}
-        /> : null;
+        return this.state.enumEditDialog ? (
+            <EnumEditDialog
+                onClose={() => this.setState({ enumEditDialog: null })}
+                enums={Object.values(this.state.enums)}
+                enum={this.state.enumEditDialog.newItem}
+                getName={this.getName}
+                isNew={this.state.enumEditDialog.isNew}
+                t={this.props.t}
+                lang={this.props.lang}
+                changed={this.state.enumEditDialog.changed}
+                onChange={this.changeEnumFormData}
+                saveData={this.saveEnum}
+                innerWidth={this.state.innerWidth}
+            />
+        ) : null;
     }
 
     renderDeleteDialog() {
-        return this.state.enumDeleteDialog ? <EnumDeleteDialog
-            onClose={() => this.setState({ enumDeleteDialog: null })}
-            enum={this.state.enumDeleteDialog}
-            getName={this.getName}
-            t={this.props.t}
-            deleteEnum={this.deleteEnum}
-        /> : null;
+        return this.state.enumDeleteDialog ? (
+            <EnumDeleteDialog
+                onClose={() => this.setState({ enumDeleteDialog: null })}
+                enum={this.state.enumDeleteDialog}
+                getName={this.getName}
+                t={this.props.t}
+                deleteEnum={this.deleteEnum}
+            />
+        ) : null;
     }
 
     renderTemplateDialog() {
         // eslint-disable-next-line no-extra-boolean-cast
-        return !!this.state.enumTemplateDialog ? <EnumTemplateDialog
-            prefix={this.state.enumTemplateDialog}
-            onClose={() => this.setState({ enumTemplateDialog: null })}
-            t={this.props.t}
-            lang={this.props.lang}
-            createEnumTemplate={this.createEnumTemplate}
-            showEnumEditDialog={this.showEnumEditDialog}
-            enums={this.state.enums}
-            getEnumTemplate={this.getEnumTemplate}
-        /> : null;
+        return !!this.state.enumTemplateDialog ? (
+            <EnumTemplateDialog
+                prefix={this.state.enumTemplateDialog}
+                onClose={() => this.setState({ enumTemplateDialog: null })}
+                t={this.props.t}
+                lang={this.props.lang}
+                createEnumTemplate={this.createEnumTemplate}
+                showEnumEditDialog={this.showEnumEditDialog}
+                enums={this.state.enums}
+                getEnumTemplate={this.getEnumTemplate}
+            />
+        ) : null;
     }
 
     render() {
         if (!this.state.enumsTree) {
             return <LinearProgress />;
         }
-        const enumItems = Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children);
+        const enumItems = Object.values(
+            this.state.enumsTree.children.enum.children[this.state.currentCategory].children,
+        );
         const showFolderIcons = !!enumItems.find(item => item.children && Object.keys(item.children).length);
 
-        return <>
-            <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
-                <DndPreview />
-                <ReactSplit
-                    direction={SplitDirection.Horizontal}
-                    initialSizes={this.state.splitSizes}
-                    minWidths={[450, 450]}
-                    onResizeFinished={(gutterIdx: number, splitSizes: [number, number]) => {
-                        this.setState({ splitSizes: splitSizes as [number, number] });
-                        ((window as any)._localStorage || window.localStorage).setItem('enumsSplitSizes', JSON.stringify(splitSizes));
-                    }}
-                    // theme={this.props.themeType === 'dark' ? GutterTheme.Dark : GutterTheme.Light}
-                    gutterClassName={this.props.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
-                >
-                    <div style={{ ...styles.childGridCont, ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined) }}>
-                        <div style={styles.topPanel}>
-                            <Tooltip title={this.props.t('Add enum')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-                                <IconButton
-                                    id="categoryPopoverButton"
-                                    size="small"
-                                    style={styles.toolbarButton}
-                                    onClick={() =>
-                                        (this.state.enumsTree.children.enum.children.favorites ?
-                                            this.showEnumEditDialog(this.getEnumTemplate('enum'), true)
-                                            :
-                                            this.setState({ categoryPopoverOpen: true }))}
+        return (
+            <>
+                <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
+                    <DndPreview />
+                    <ReactSplit
+                        direction={SplitDirection.Horizontal}
+                        initialSizes={this.state.splitSizes}
+                        minWidths={[450, 450]}
+                        onResizeFinished={(gutterIdx: number, splitSizes: [number, number]) => {
+                            this.setState({ splitSizes: splitSizes as [number, number] });
+                            ((window as any)._localStorage || window.localStorage).setItem(
+                                'enumsSplitSizes',
+                                JSON.stringify(splitSizes),
+                            );
+                        }}
+                        // theme={this.props.themeType === 'dark' ? GutterTheme.Dark : GutterTheme.Light}
+                        gutterClassName={this.props.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                    >
+                        <div
+                            style={{
+                                ...styles.childGridCont,
+                                ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined),
+                            }}
+                        >
+                            <div style={styles.topPanel}>
+                                <Tooltip
+                                    title={this.props.t('Add enum')}
+                                    placement="top"
+                                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                                 >
-                                    <AddIcon />
-                                </IconButton>
-                            </Tooltip>
-                            <Popover
-                                open={this.state.categoryPopoverOpen}
-                                onClose={() => this.setState({ categoryPopoverOpen: false })}
-                                anchorEl={() => document.getElementById('categoryPopoverButton')}
-                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                            >
-                                <MenuList>
-                                    {this.state.enumsTree.children.enum.children.favorites ? null :
-                                        <MenuItem onClick={() => this.createEnumTemplate('enum', enumTemplates.favorites)}>
-                                            {this.props.t('Favorites')}
-                                        </MenuItem>}
-                                    <MenuItem onClick={() => this.showEnumEditDialog(this.getEnumTemplate('enum'), true)}>
-                                        {this.props.t('Custom enum')}
-                                    </MenuItem>
-                                </MenuList>
-                            </Popover>
-                            <Tabs
-                                value={this.state.currentCategory}
-                                variant="scrollable"
-                                scrollButtons="auto"
-                                onChange={(e, newTab) => this.setCurrentCategory(newTab)}
-                            >
-                                {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) => {
-                                    let categoryData = this.state.enumsTree.children.enum.children[category].data;
-                                    categoryData = categoryData || {
-                                        _id: this.state.enumsTree.children.enum.children[category].id,
-                                        common: {
-                                            name: this.state.enumsTree.children.enum.children[category].id.split('.').pop(),
-                                        },
-                                        type: 'enum',
-                                        native: {},
-                                    };
-                                    return <Tab
-                                        key={index}
-                                        component="span"
-                                        style={{ backgroundColor: categoryData.common?.color || undefined, borderRadius: 4 }}
-                                        label={<CategoryLabel
-                                            themeType={this.props.themeType}
-                                            categoryData={categoryData}
-                                            showEnumEditDialog={this.showEnumEditDialog}
-                                            showEnumDeleteDialog={this.showEnumDeleteDialog}
-                                            styles={styles}
-                                            {...this.props}
-                                        />}
-                                        value={category}
-                                    />;
-                                })}
-                            </Tabs>
-                        </div>
-                        <div style={styles.topPanel2}>
-                            <TextField
-                                variant="standard"
-                                inputRef={this.refFilter}
-                                placeholder={this.props.t('Filter')}
-                                style={styles.filter}
-                                slotProps={{
-                                    inputLabel: {
-                                        shrink: true,
-                                    },
-                                    input: {
-                                        endAdornment: <IconButton
-                                            ref={this.refClearButton}
-                                            style={{ display: 'none' }}
-                                            size="small"
-                                            onClick={() => this.onFilterChanged('', true)}
-                                        >
-                                            <ClearIcon />
-                                        </IconButton>,
-                                    },
-                                }}
-                                onChange={e => this.onFilterChanged(e.target.value)}
-
-                            />
-                            <Tooltip title={this.props.t('Narrow all')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-                                <IconButton
-                                    size="large"
-                                    // size="small"
-                                    style={styles.toolbarButton}
-                                    onClick={() => {
-                                        const enumsCollapsed = Object.keys(this.state.enums);
-                                        this.setState({ enumsCollapsed });
-                                        ((window as any)._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
-                                    }}
-                                >
-                                    <UpIcon />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title={this.props.t('Wide all')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-                                <IconButton
-                                    size="large"
-                                    // size="small"
-                                    style={styles.toolbarButton}
-                                    onClick={() => {
-                                        this.setState({ enumsCollapsed: [] });
-                                        ((window as any)._localStorage || window.localStorage).setItem('enumsCollapsed', '[]');
-                                    }}
-                                >
-                                    <DownIcon />
-                                </IconButton>
-                            </Tooltip>
-                            {showFolderIcons && <Tooltip title={this.props.t('Collapse all')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-                                <IconButton
-                                    size="large"
-                                    // size="small"
-                                    style={styles.toolbarButton}
-                                    onClick={() => {
-                                        const enumsClosed: Record<string, boolean> = {};
-                                        Object.keys(this.state.enums).forEach(id => enumsClosed[id] = true);
-                                        this.setState({ enumsClosed });
-                                        ((window as any)._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
-                                    }}
-                                >
-                                    <IconCollapsed />
-                                </IconButton>
-                            </Tooltip>}
-                            {showFolderIcons && <Tooltip title={this.props.t('Expand all')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-                                <IconButton
-                                    size="large"
-                                    // size="small"
-                                    style={styles.toolbarButton}
-                                    onClick={() => {
-                                        const enumsClosed = {};
-                                        this.setState({ enumsClosed });
-                                        ((window as any)._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
-                                    }}
-                                >
-                                    <IconExpanded />
-                                </IconButton>
-                            </Tooltip>}
-                            <Tooltip title={this.props.t('Add group')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-                                <IconButton
-                                    size="large"
-                                    // size="small"
-                                    onClick={() => {
-                                        if (['functions', 'rooms'].includes(this.state.currentCategory)) {
-                                            this.setState({ enumTemplateDialog: `enum.${this.state.currentCategory}` });
-                                        } else {
-                                            this.showEnumEditDialog(this.getEnumTemplate(`enum.${this.state.currentCategory}`), true);
+                                    <IconButton
+                                        id="categoryPopoverButton"
+                                        size="small"
+                                        style={styles.toolbarButton}
+                                        onClick={() =>
+                                            this.state.enumsTree.children.enum.children.favorites
+                                                ? this.showEnumEditDialog(this.getEnumTemplate('enum'), true)
+                                                : this.setState({ categoryPopoverOpen: true })
                                         }
-                                    }}
+                                    >
+                                        <AddIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Popover
+                                    open={this.state.categoryPopoverOpen}
+                                    onClose={() => this.setState({ categoryPopoverOpen: false })}
+                                    anchorEl={() => document.getElementById('categoryPopoverButton')}
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                 >
-                                    <AddIcon />
-                                </IconButton>
-                            </Tooltip>
+                                    <MenuList>
+                                        {this.state.enumsTree.children.enum.children.favorites ? null : (
+                                            <MenuItem
+                                                onClick={() => this.createEnumTemplate('enum', enumTemplates.favorites)}
+                                            >
+                                                {this.props.t('Favorites')}
+                                            </MenuItem>
+                                        )}
+                                        <MenuItem
+                                            onClick={() => this.showEnumEditDialog(this.getEnumTemplate('enum'), true)}
+                                        >
+                                            {this.props.t('Custom enum')}
+                                        </MenuItem>
+                                    </MenuList>
+                                </Popover>
+                                <Tabs
+                                    value={this.state.currentCategory}
+                                    variant="scrollable"
+                                    scrollButtons="auto"
+                                    onChange={(e, newTab) => this.setCurrentCategory(newTab)}
+                                >
+                                    {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) => {
+                                        let categoryData = this.state.enumsTree.children.enum.children[category].data;
+                                        categoryData = categoryData || {
+                                            _id: this.state.enumsTree.children.enum.children[category].id,
+                                            common: {
+                                                name: this.state.enumsTree.children.enum.children[category].id
+                                                    .split('.')
+                                                    .pop(),
+                                            },
+                                            type: 'enum',
+                                            native: {},
+                                        };
+                                        return (
+                                            <Tab
+                                                key={index}
+                                                component="span"
+                                                style={{
+                                                    backgroundColor: categoryData.common?.color || undefined,
+                                                    borderRadius: 4,
+                                                }}
+                                                label={
+                                                    <CategoryLabel
+                                                        themeType={this.props.themeType}
+                                                        categoryData={categoryData}
+                                                        showEnumEditDialog={this.showEnumEditDialog}
+                                                        showEnumDeleteDialog={this.showEnumDeleteDialog}
+                                                        styles={styles}
+                                                        {...this.props}
+                                                    />
+                                                }
+                                                value={category}
+                                            />
+                                        );
+                                    })}
+                                </Tabs>
+                            </div>
+                            <div style={styles.topPanel2}>
+                                <TextField
+                                    variant="standard"
+                                    inputRef={this.refFilter}
+                                    placeholder={this.props.t('Filter')}
+                                    style={styles.filter}
+                                    slotProps={{
+                                        inputLabel: {
+                                            shrink: true,
+                                        },
+                                        input: {
+                                            endAdornment: (
+                                                <IconButton
+                                                    ref={this.refClearButton}
+                                                    style={{ display: 'none' }}
+                                                    size="small"
+                                                    onClick={() => this.onFilterChanged('', true)}
+                                                >
+                                                    <ClearIcon />
+                                                </IconButton>
+                                            ),
+                                        },
+                                    }}
+                                    onChange={e => this.onFilterChanged(e.target.value)}
+                                />
+                                <Tooltip
+                                    title={this.props.t('Narrow all')}
+                                    placement="top"
+                                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                                >
+                                    <IconButton
+                                        size="large"
+                                        // size="small"
+                                        style={styles.toolbarButton}
+                                        onClick={() => {
+                                            const enumsCollapsed = Object.keys(this.state.enums);
+                                            this.setState({ enumsCollapsed });
+                                            ((window as any)._localStorage || window.localStorage).setItem(
+                                                'enumsCollapsed',
+                                                JSON.stringify(enumsCollapsed),
+                                            );
+                                        }}
+                                    >
+                                        <UpIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip
+                                    title={this.props.t('Wide all')}
+                                    placement="top"
+                                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                                >
+                                    <IconButton
+                                        size="large"
+                                        // size="small"
+                                        style={styles.toolbarButton}
+                                        onClick={() => {
+                                            this.setState({ enumsCollapsed: [] });
+                                            ((window as any)._localStorage || window.localStorage).setItem(
+                                                'enumsCollapsed',
+                                                '[]',
+                                            );
+                                        }}
+                                    >
+                                        <DownIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                {showFolderIcons && (
+                                    <Tooltip
+                                        title={this.props.t('Collapse all')}
+                                        placement="top"
+                                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                                    >
+                                        <IconButton
+                                            size="large"
+                                            // size="small"
+                                            style={styles.toolbarButton}
+                                            onClick={() => {
+                                                const enumsClosed: Record<string, boolean> = {};
+                                                Object.keys(this.state.enums).forEach(id => (enumsClosed[id] = true));
+                                                this.setState({ enumsClosed });
+                                                ((window as any)._localStorage || window.localStorage).setItem(
+                                                    'enumsClosed',
+                                                    JSON.stringify(enumsClosed),
+                                                );
+                                            }}
+                                        >
+                                            <IconCollapsed />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
+                                {showFolderIcons && (
+                                    <Tooltip
+                                        title={this.props.t('Expand all')}
+                                        placement="top"
+                                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                                    >
+                                        <IconButton
+                                            size="large"
+                                            // size="small"
+                                            style={styles.toolbarButton}
+                                            onClick={() => {
+                                                const enumsClosed = {};
+                                                this.setState({ enumsClosed });
+                                                ((window as any)._localStorage || window.localStorage).setItem(
+                                                    'enumsClosed',
+                                                    JSON.stringify(enumsClosed),
+                                                );
+                                            }}
+                                        >
+                                            <IconExpanded />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
+                                <Tooltip
+                                    title={this.props.t('Add group')}
+                                    placement="top"
+                                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                                >
+                                    <IconButton
+                                        size="large"
+                                        // size="small"
+                                        onClick={() => {
+                                            if (['functions', 'rooms'].includes(this.state.currentCategory)) {
+                                                this.setState({
+                                                    enumTemplateDialog: `enum.${this.state.currentCategory}`,
+                                                });
+                                            } else {
+                                                this.showEnumEditDialog(
+                                                    this.getEnumTemplate(`enum.${this.state.currentCategory}`),
+                                                    true,
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        <AddIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
+                            <div style={styles.blocksContainer}>
+                                {enumItems.map((enumItem, index) => this.renderTree(enumItem, index, 0))}
+                            </div>
                         </div>
-                        <div style={styles.blocksContainer}>
-                            {enumItems.map((enumItem, index) => this.renderTree(enumItem, index, 0))}
+                        <div
+                            style={{
+                                ...styles.childGridCont,
+                                ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined),
+                            }}
+                        >
+                            <div style={styles.blocksContainer}>
+                                <DragObjectBrowser
+                                    addItemToEnum={this.addItemToEnum}
+                                    getName={this.getName}
+                                    stylesParent={styles}
+                                    t={this.props.t}
+                                    socket={this.props.socket}
+                                    lang={this.props.lang}
+                                    theme={this.props.theme}
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div style={{ ...styles.childGridCont, ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined) }}>
-                        <div style={styles.blocksContainer}>
-                            <DragObjectBrowser
-                                addItemToEnum={this.addItemToEnum}
-                                getName={this.getName}
-                                stylesParent={styles}
-                                t={this.props.t}
-                                socket={this.props.socket}
-                                lang={this.props.lang}
-                                theme={this.props.theme}
-                            />
-                        </div>
-                    </div>
-                </ReactSplit>
-            </DndProvider>
-            {this.renderEditDialog()}
-            {this.renderDeleteDialog()}
-            {this.renderTemplateDialog()}
-        </>;
+                    </ReactSplit>
+                </DndProvider>
+                {this.renderEditDialog()}
+                {this.renderDeleteDialog()}
+                {this.renderTemplateDialog()}
+            </>
+        );
     }
 }
 

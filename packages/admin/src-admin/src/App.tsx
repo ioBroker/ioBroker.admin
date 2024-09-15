@@ -1,4 +1,4 @@
-import React, { type RefObject, Suspense } from 'react';
+import React, { type RefObject, Suspense, type JSX } from 'react';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -219,15 +219,15 @@ const styles: Record<string, any> = {
         '@media (min-width:0px) and (orientation: landscape)': {
             // @ts-expect-error must be defined
             mt: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)']?.minHeight
-              // @ts-expect-error must be defined
-                ? `${theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)'].minHeight}px`
+                ? // @ts-expect-error must be defined
+                  `${theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)'].minHeight}px`
                 : undefined,
         },
         '@media (min-width:600px)': {
             // @ts-expect-error must be defined
             mt: theme.mixins.toolbar['@media (min-width:600px)']?.minHeight
-              // @ts-expect-error must be defined
-                ? `${theme.mixins.toolbar['@media (min-width:600px)'].minHeight}px`
+                ? // @ts-expect-error must be defined
+                  `${theme.mixins.toolbar['@media (min-width:600px)'].minHeight}px`
                 : undefined,
         },
     }),
@@ -737,23 +737,25 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    static getDerivedStateFromError(error: null | { message: string; stack: any }) {
+    static getDerivedStateFromError(error: null | { message: string; stack: any }): {
+        hasGlobalError: null | { message: string; stack: any };
+    } {
         // Update state so the next render will show the fallback UI.
         return { hasGlobalError: error };
     }
 
-    componentDidCatch(error: Error) {
+    componentDidCatch(error: Error): void {
         this.setState({ hasGlobalError: error });
     }
 
-    setUnsavedData(hasUnsavedData: boolean) {
+    setUnsavedData(hasUnsavedData: boolean): void {
         if (hasUnsavedData !== this.state.unsavedDataInDialog) {
             this.setState({ unsavedDataInDialog: hasUnsavedData });
         }
     }
 
     // If the background color must be inverted. Depends on the current theme.
-    mustInvertBackground(color: string) {
+    mustInvertBackground(color: string): boolean {
         if (!color) {
             return false;
         }
@@ -767,7 +769,7 @@ class App extends Router<AppProps, AppState> {
 
     localStorageGetItem = (name: string): any => this.guiSettings.native.localStorage[name];
 
-    localStorageSetItem = (name: string, value: any) => {
+    localStorageSetItem = (name: string, value: any): void => {
         if (value === null) {
             value = 'null';
         } else if (value === undefined) {
@@ -779,7 +781,7 @@ class App extends Router<AppProps, AppState> {
         this.localStorageSave();
     };
 
-    localStorageRemoveItem = (name: string) => {
+    localStorageRemoveItem = (name: string): void => {
         if (Object.prototype.hasOwnProperty.call(this.guiSettings.native.localStorage, name)) {
             delete this.guiSettings.native.localStorage[name];
             this.localStorageSave();
@@ -788,7 +790,7 @@ class App extends Router<AppProps, AppState> {
 
     sessionStorageGetItem = (name: string): any => this.guiSettings.native.sessionStorage[name];
 
-    sessionStorageSetItem = (name: string, value: any) => {
+    sessionStorageSetItem = (name: string, value: any): void => {
         if (value === null) {
             value = 'null';
         } else if (value === undefined) {
@@ -799,14 +801,14 @@ class App extends Router<AppProps, AppState> {
         this.localStorageSave();
     };
 
-    sessionStorageRemoveItem = (name: string) => {
+    sessionStorageRemoveItem = (name: string): void => {
         if (Object.prototype.hasOwnProperty.call(this.guiSettings.native.sessionStorage, name)) {
             delete this.guiSettings.native.sessionStorage[name];
             this.localStorageSave();
         }
     };
 
-    localStorageSave() {
+    localStorageSave(): void {
         if (this.localStorageTimer) {
             clearTimeout(this.localStorageTimer);
         }
@@ -816,7 +818,7 @@ class App extends Router<AppProps, AppState> {
         }, 200);
     }
 
-    toggleTranslation = () => {
+    toggleTranslation = (): void => {
         (window._localStorage || window.localStorage).setItem(
             'App.noTranslation',
             this.state.noTranslation ? 'false' : 'true',
@@ -824,7 +826,7 @@ class App extends Router<AppProps, AppState> {
         this.setState({ noTranslation: !this.state.noTranslation });
     };
 
-    async getGUISettings() {
+    async getGUISettings(): Promise<void> {
         let obj;
 
         if (!this.adminInstance) {
@@ -896,7 +898,7 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    enableGuiSettings(enabled: boolean, ownSettings?: boolean) {
+    enableGuiSettings(enabled: boolean, ownSettings?: boolean): void {
         if (enabled && !this.guiSettings) {
             this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`).then(async obj => {
                 this.guiSettings = obj || JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
@@ -985,7 +987,7 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (!this.state.login) {
             window.addEventListener('hashchange', this.onHashChanged, false);
 
@@ -1283,7 +1285,7 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         window.removeEventListener('hashchange', this.onHashChanged, false);
         this.socket?.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
 
@@ -1306,34 +1308,34 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    updateHosts = (events: HostEvent[]) => {
+    updateHosts = (events: HostEvent[]): void => {
         const hosts: CompactHost[] = JSON.parse(JSON.stringify(this.state.hosts));
 
-        Promise.all(
-            events.map(async event => {
-                const elementFind = hosts.find(host => host._id === event.id);
-                if (elementFind) {
-                    const index = hosts.indexOf(elementFind);
-                    if (event.obj) {
-                        // updated
-                        hosts[index] = event.obj as CompactHost;
-                    } else {
-                        // deleted
-                        hosts.splice(index, 1);
-                    }
+        events.map((event: HostEvent): void => {
+            const elementFind = hosts.find(host => host._id === event.id);
+            if (elementFind) {
+                const index = hosts.indexOf(elementFind);
+                if (event.obj) {
+                    // updated
+                    hosts[index] = event.obj as CompactHost;
                 } else {
-                    // new
-                    hosts.push(event.obj as CompactHost);
+                    // deleted
+                    hosts.splice(index, 1);
                 }
-            }),
-        ).then(() => this.setState({ hosts }));
+            } else {
+                // new
+                hosts.push(event.obj as CompactHost);
+            }
+        });
+
+        this.setState({ hosts });
     };
 
-    repoChangeHandler = () => {
+    repoChangeHandler = (): void => {
         this.readRepoAndInstalledInfo(this.state.currentHost, null, true).then(() => console.log('Repo updated!'));
     };
 
-    adaptersChangeHandler = (events: AdapterEvent[]) => {
+    adaptersChangeHandler = (events: AdapterEvent[]): void => {
         // update installed
         //
         const installed: CompactInstalledInfo = JSON.parse(JSON.stringify(this.state.installed));
@@ -1369,7 +1371,7 @@ class App extends Router<AppProps, AppState> {
         }
     };
 
-    async findCurrentHost(newState: Partial<AppState>) {
+    async findCurrentHost(newState: Partial<AppState>): Promise<void> {
         newState.hosts = await this.socket.getCompactHosts();
 
         if (!this.state.currentHost) {
@@ -1410,7 +1412,7 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    updateExpireIn() {
+    updateExpireIn(): void {
         const now = Date.now();
         this.expireInSec = this.expireInSec > 0 ? this.expireInSec - (now - this.lastExecution) / 1_000 : 0;
 
@@ -1441,7 +1443,7 @@ class App extends Router<AppProps, AppState> {
     /**
      * Start interval to handle logout after the session expires, this also refreshes the session
      */
-    async makePingAuth() {
+    async makePingAuth(): Promise<void> {
         if (this.pingAuth) {
             clearTimeout(this.pingAuth);
             this.pingAuth = null;
@@ -1465,13 +1467,13 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    onDiscoveryAlive = (_name: string, value?: ioBroker.State | null) => {
+    onDiscoveryAlive = (_name: string, value?: ioBroker.State | null): void => {
         if (!!value?.val !== this.state.discoveryAlive) {
             this.setState({ discoveryAlive: !!value?.val });
         }
     };
 
-    getDiscoveryModal = () => (
+    getDiscoveryModal = (): JSX.Element => (
         <DiscoveryDialog
             themeType={this.state.themeType}
             themeName={this.state.themeName}
@@ -1505,7 +1507,7 @@ class App extends Router<AppProps, AppState> {
     /**
      * Render the notification dialog
      */
-    renderNotificationsDialog() {
+    renderNotificationsDialog(): JSX.Element | null {
         if (!this.state.notificationsDialog) {
             return null;
         }
@@ -1526,7 +1528,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    renderHostWarningDialog() {
+    renderHostWarningDialog(): JSX.Element | null {
         if (!this.state.showHostWarning) {
             return null;
         }
@@ -1576,7 +1578,10 @@ class App extends Router<AppProps, AppState> {
         this.setState({ noNotifications, notifications: { notifications, instances } });
     };
 
-    showAdaptersWarning = async (notifications: Record<string, NotificationAnswer | null>, host: string) => {
+    showAdaptersWarning = async (
+        notifications: Record<string, NotificationAnswer | null>,
+        host: string,
+    ): Promise<void> => {
         if (!notifications || !notifications[host] || !notifications[host].result) {
             return;
         }
@@ -1584,17 +1589,15 @@ class App extends Router<AppProps, AppState> {
         const result = notifications[host].result;
 
         if (result?.system && Object.keys(result.system.categories).length) {
-            await this.instancesWorker
-                .getInstances()
-                .then(instances =>
-                    this.setState({
-                        showHostWarning: {
-                            host,
-                            instances: instances as Record<string, ioBroker.InstanceObject>,
-                            result,
-                        },
-                    }),
-                );
+            await this.instancesWorker.getInstances().then(instances =>
+                this.setState({
+                    showHostWarning: {
+                        host,
+                        instances: instances as Record<string, ioBroker.InstanceObject>,
+                        result,
+                    },
+                }),
+            );
         }
     };
 
@@ -1656,7 +1659,7 @@ class App extends Router<AppProps, AppState> {
         }
     };
 
-    renderNewsDialog() {
+    renderNewsDialog(): JSX.Element | null {
         if (!this.state.showNews) {
             return null;
         }
@@ -1677,7 +1680,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    renderSlowConnectionWarning() {
+    renderSlowConnectionWarning(): JSX.Element | null {
         if (!this.state.showSlowConnectionWarning) {
             return null;
         }
@@ -1699,7 +1702,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    async readRepoAndInstalledInfo(currentHost: string, hosts?: CompactHost[] | null, update?: boolean) {
+    async readRepoAndInstalledInfo(currentHost: string, hosts?: CompactHost[] | null, update?: boolean): Promise<void> {
         hosts = hosts || this.state.hosts;
 
         const repository: CompactRepository = await this.socket
@@ -1743,14 +1746,14 @@ class App extends Router<AppProps, AppState> {
         });
     }
 
-    logsWorkerChanged = (currentHost: string) => {
+    logsWorkerChanged = (currentHost: string): void => {
         this.logsWorker?.setCurrentHost(currentHost);
     };
 
     /**
      * Updates the current currentTab in the states
      */
-    onHashChanged = () => {
+    onHashChanged = (): void => {
         this.setState({ currentTab: Router.getLocation() }, () => this.setCurrentTabTitle());
     };
 
@@ -1828,15 +1831,15 @@ class App extends Router<AppProps, AppState> {
         );
     };
 
-    setCurrentTabTitle() {
+    setCurrentTabTitle(): void {
         this.setTitle(this.state.currentTab.tab.replace('tab-', ''));
     }
 
-    setTitle(title: string) {
+    setTitle(title: string): void {
         document.title = `${title} - ${this.state.currentHostName || 'ioBroker'}`;
     }
 
-    getCurrentTab() {
+    getCurrentTab(): JSX.Element | null {
         if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 const small = this.props.width === 'xs' || this.props.width === 'sm';
@@ -2091,12 +2094,12 @@ class App extends Router<AppProps, AppState> {
         return null;
     }
 
-    clearLogErrors() {
+    clearLogErrors(): void {
         this.logsWorker.resetErrors();
         this.logsWorker.resetWarnings();
     }
 
-    getCurrentDialog() {
+    getCurrentDialog(): JSX.Element | null {
         if (this.state && this.state.currentTab && this.state.currentTab.dialog) {
             if (this.state.currentTab.dialog === 'system') {
                 return this.getSystemSettingsDialog();
@@ -2109,7 +2112,7 @@ class App extends Router<AppProps, AppState> {
         return null;
     }
 
-    getSystemSettingsDialog() {
+    getSystemSettingsDialog(): JSX.Element {
         return (
             <SystemSettingsDialog
                 adminGuiConfig={this.adminGuiConfig}
@@ -2144,7 +2147,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    handleAlertClose(event?: string, reason?: string) {
+    handleAlertClose(event?: string, reason?: string): void {
         if (reason === 'clickaway') {
             return;
         }
@@ -2152,7 +2155,7 @@ class App extends Router<AppProps, AppState> {
         this.setState({ alert: false });
     }
 
-    showAlert(alertMessage: string, alertType?: 'error' | 'warning' | 'info' | 'success') {
+    showAlert(alertMessage: string, alertType?: 'error' | 'warning' | 'info' | 'success'): void {
         if (alertType !== 'error' && alertType !== 'warning' && alertType !== 'info' && alertType !== 'success') {
             alertType = 'info';
         }
@@ -2164,14 +2167,14 @@ class App extends Router<AppProps, AppState> {
         });
     }
 
-    handleDrawerState(state: 0 | 1 | 2) {
+    handleDrawerState(state: 0 | 1 | 2): void {
         (window._localStorage || window.localStorage).setItem('App.drawerState', state.toString());
         this.setState({
             drawerState: state,
         });
     }
 
-    static logout() {
+    static logout(): void {
         if (window.location.port === '3000') {
             window.location.href = `${window.location.protocol}//${window.location.hostname}:8081/logout?dev`;
         } else {
@@ -2179,7 +2182,7 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    handleNavigation(tab: string) {
+    handleNavigation(tab: string): void {
         if (tab) {
             if (this.state.allStored) {
                 Router.doNavigate(tab);
@@ -2202,17 +2205,17 @@ class App extends Router<AppProps, AppState> {
         this.setTitle(tab.replace('tab-', ''));
     }
 
-    allStored(value: boolean) {
+    allStored(value: boolean): void {
         this.setState({
             allStored: value,
         });
     }
 
-    closeDataNotStoredDialog() {
+    closeDataNotStoredDialog(): void {
         this.setState({ dataNotStoredDialog: false });
     }
 
-    confirmDataNotStored() {
+    confirmDataNotStored(): void {
         this.setState(
             {
                 dataNotStoredDialog: false,
@@ -2257,7 +2260,7 @@ class App extends Router<AppProps, AppState> {
         });
     }
 
-    closeCmdDialog(cb?: () => void) {
+    closeCmdDialog(cb?: () => void): void {
         this.setState(
             {
                 cmd: null,
@@ -2271,7 +2274,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    renderWizardDialog() {
+    renderWizardDialog(): JSX.Element | null {
         if (this.state.wizard) {
             return (
                 <WizardDialog
@@ -2303,7 +2306,7 @@ class App extends Router<AppProps, AppState> {
         return null;
     }
 
-    showRedirectDialog() {
+    showRedirectDialog(): JSX.Element | null {
         if (this.state.showRedirect) {
             return (
                 <Dialog
@@ -2360,7 +2363,7 @@ class App extends Router<AppProps, AppState> {
         return null;
     }
 
-    renderCommandDialog() {
+    renderCommandDialog(): JSX.Element | null {
         return this.state.cmd ? (
             <CommandDialog
                 onSetCommandRunning={(commandRunning: boolean) => this.setState({ commandRunning })}
@@ -2381,7 +2384,7 @@ class App extends Router<AppProps, AppState> {
         ) : null;
     }
 
-    renderLoggedUser() {
+    renderLoggedUser(): JSX.Element | null {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
             return (
                 <div>
@@ -2440,7 +2443,7 @@ class App extends Router<AppProps, AppState> {
         return null;
     }
 
-    renderAlertSnackbar() {
+    renderAlertSnackbar(): JSX.Element {
         return (
             <Snackbar
                 style={styles[`alert_${this.state.alertType}`]}
@@ -2452,7 +2455,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         /* return <ConfirmDialog
             onClose={() => this.closeDataNotStoredDialog()}
             open={this.state.dataNotStoredDialog}
@@ -2462,20 +2465,18 @@ class App extends Router<AppProps, AppState> {
         >
             {I18n.t('Some data are not stored. Discard?')}
         </ConfirmDialog>; */
-        return (
-            this.state.dataNotStoredDialog && (
-                <ConfirmDialog
-                    title={I18n.t('Please confirm')}
-                    text={I18n.t('Some data are not stored. Discard?')}
-                    ok={I18n.t('Ok')}
-                    cancel={I18n.t('Cancel')}
-                    onClose={isYes => (isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog())}
-                />
-            )
-        );
+        return this.state.dataNotStoredDialog ? (
+            <ConfirmDialog
+                title={I18n.t('Please confirm')}
+                text={I18n.t('Some data are not stored. Discard?')}
+                ok={I18n.t('Ok')}
+                cancel={I18n.t('Cancel')}
+                onClose={isYes => (isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog())}
+            />
+        ) : null;
     }
 
-    renderExpertDialog() {
+    renderExpertDialog(): JSX.Element | null {
         if (!this.state.expertModeDialog) {
             return null;
         }
@@ -2500,7 +2501,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    renderShowGuiSettings() {
+    renderShowGuiSettings(): JSX.Element | null {
         return this.state.showGuiSettings ? (
             <Menu
                 anchorEl={this.state.showGuiSettings}
@@ -2533,7 +2534,7 @@ class App extends Router<AppProps, AppState> {
         ) : null;
     }
 
-    renderToolbar(small: boolean) {
+    renderToolbar(small: boolean): JSX.Element {
         const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem('App.expertMode');
         const expertModePermanent =
             !storedExpertMode || (storedExpertMode === 'true') === !!this.state.systemConfig.common.expertMode;
@@ -2835,7 +2836,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    renderSampleError() {
+    renderSampleError(): JSX.Element {
         const message = this.state.hasGlobalError.message;
         const stack = this.state.hasGlobalError.stack;
 
@@ -2906,7 +2907,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    renderEasyMode() {
+    renderEasyMode(): JSX.Element {
         return (
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.state.theme}>
@@ -2944,7 +2945,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    render() {
+    render(): JSX.Element {
         const small = this.props.width === 'xs' || this.props.width === 'sm';
 
         if (this.state.cloudNotConnected) {

@@ -30,8 +30,10 @@ import {
 import { SVGRenderer } from 'echarts/renderers';
 
 import {
-    type AdminConnection, Utils,
-    withWidth, type IobTheme,
+    type AdminConnection,
+    Utils,
+    withWidth,
+    type IobTheme,
     type ThemeType,
     type Translate,
 } from '@iobroker/adapter-react-v5';
@@ -41,7 +43,15 @@ import { FaChartLine as SplitLineIcon } from 'react-icons/fa';
 import EchartsIcon from '../../assets/echarts.png';
 import { localeMap } from './utils';
 
-echarts.use([TimelineComponent, ToolboxComponent, TitleComponent, TooltipComponent, GridComponent, LineChart, SVGRenderer]);
+echarts.use([
+    TimelineComponent,
+    ToolboxComponent,
+    TitleComponent,
+    TooltipComponent,
+    GridComponent,
+    LineChart,
+    SVGRenderer,
+]);
 
 const styles: Record<string, any> = {
     paper: {
@@ -384,11 +394,16 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
 
     async prepareData(): Promise<void> {
         if (this.props.noToolbar) {
-            const isAlive = this.props.defaultHistory && await this.props.socket.getState(`system.adapter.${this.props.defaultHistory}.alive`);
+            const isAlive =
+                this.props.defaultHistory &&
+                (await this.props.socket.getState(`system.adapter.${this.props.defaultHistory}.alive`));
 
             if (!this.subscribes.length) {
                 this.subscribes = [`system.adapter.${this.props.defaultHistory}.alive`];
-                await this.props.socket.subscribeState(`system.adapter.${this.props.defaultHistory}.alive`, this.onChange);
+                await this.props.socket.subscribeState(
+                    `system.adapter.${this.props.defaultHistory}.alive`,
+                    this.onChange,
+                );
             }
 
             await new Promise(resolve => {
@@ -680,10 +695,10 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                 this.state.stepType === 'stepStart'
                     ? 'start'
                     : this.state.stepType === 'stepMiddle'
-                        ? 'middle'
-                        : this.state.stepType === 'stepEnd'
-                            ? 'end'
-                            : undefined,
+                      ? 'middle'
+                      : this.state.stepType === 'stepEnd'
+                        ? 'end'
+                        : undefined,
             showSymbol: false,
             hoverAnimation: true,
             animation: false,
@@ -828,12 +843,14 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             yAxis,
             toolbox: {
                 left: 'right',
-                feature: this.props.noToolbar ? undefined : {
-                    saveAsImage: {
-                        title: this.props.t('Save as image'),
-                        show: true,
-                    },
-                },
+                feature: this.props.noToolbar
+                    ? undefined
+                    : {
+                          saveAsImage: {
+                              title: this.props.t('Save as image'),
+                              show: true,
+                          },
+                      },
             },
             // @ts-expect-error fix later
             series: [serie],
@@ -1097,7 +1114,8 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         }
 
         this.setState({ min: this.chart.min, max: this.chart.max }, () =>
-            this.updateChart(this.chart.min, this.chart.max, true, cb));
+            this.updateChart(this.chart.min, this.chart.max, true, cb),
+        );
     }
 
     installEventHandlers() {
@@ -1219,23 +1237,33 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
 
     private renderChart() {
         if (!this.state.historyInstance) {
-            return <div style={{ marginTop: 20, fontSize: 24, marginLeft: 24 }}>{this.props.t('History instance not selected')}</div>;
+            return (
+                <div style={{ marginTop: 20, fontSize: 24, marginLeft: 24 }}>
+                    {this.props.t('History instance not selected')}
+                </div>
+            );
         }
         if (!this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)) {
-            return <div style={{ marginTop: 20, fontSize: 24, marginLeft: 24 }}>{this.props.t('History instance not alive')}</div>;
+            return (
+                <div style={{ marginTop: 20, fontSize: 24, marginLeft: 24 }}>
+                    {this.props.t('History instance not alive')}
+                </div>
+            );
         }
         if (this.chartValues) {
-            return <ReactEchartsCore
-                ref={e => (this.echartsReact = e)}
-                echarts={echarts}
-                option={this.getOption()}
-                notMerge
-                lazyUpdate
-                theme={this.props.themeType === 'dark' ? 'dark' : ''}
-                style={{ height: `${this.state.chartHeight}px`, width: '100%' }}
-                opts={{ renderer: 'svg' }}
-                onEvents={{ rendered: () => this.installEventHandlers() }}
-            />;
+            return (
+                <ReactEchartsCore
+                    ref={e => (this.echartsReact = e)}
+                    echarts={echarts}
+                    option={this.getOption()}
+                    notMerge
+                    lazyUpdate
+                    theme={this.props.themeType === 'dark' ? 'dark' : ''}
+                    style={{ height: `${this.state.chartHeight}px`, width: '100%' }}
+                    opts={{ renderer: 'svg' }}
+                    onEvents={{ rendered: () => this.installEventHandlers() }}
+                />
+            );
         }
 
         return <LinearProgress />;
@@ -1271,7 +1299,8 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         this.chart.min = minNumber;
 
         this.setState({ min: minNumber, relativeRange: 'absolute' }, () =>
-            this.updateChart(this.chart.min, this.chart.max, true));
+            this.updateChart(this.chart.min, this.chart.max, true),
+        );
     }
 
     setEndDate(max: Date) {
@@ -1285,7 +1314,8 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         }
         this.chart.max = maxNumber;
         this.setState({ max: maxNumber, relativeRange: 'absolute' }, () =>
-            this.updateChart(this.chart.min, this.chart.max, true));
+            this.updateChart(this.chart.min, this.chart.max, true),
+        );
     }
 
     openEcharts() {
@@ -1330,7 +1360,10 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         return (
             <Toolbar>
                 {!this.props.historyInstance && (
-                    <FormControl variant="standard" style={styles.selectHistoryControl}>
+                    <FormControl
+                        variant="standard"
+                        style={styles.selectHistoryControl}
+                    >
                         <InputLabel>{this.props.t('History instance')}</InputLabel>
                         <Select
                             variant="standard"
@@ -1352,7 +1385,10 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                         </Select>
                     </FormControl>
                 )}
-                <FormControl variant="standard" style={styles.selectRelativeTime}>
+                <FormControl
+                    variant="standard"
+                    style={styles.selectRelativeTime}
+                >
                     <InputLabel>{this.props.t('Relative')}</InputLabel>
                     <Select
                         variant="standard"
@@ -1360,54 +1396,103 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                         value={this.state.relativeRange}
                         onChange={e => this.setRelativeInterval(e.target.value)}
                     >
-                        <MenuItem key="custom" value="absolute" sx={styles.customRange}>
+                        <MenuItem
+                            key="custom"
+                            value="absolute"
+                            sx={styles.customRange}
+                        >
                             {this.props.t('custom range')}
                         </MenuItem>
-                        <MenuItem key="1" value={10}>
+                        <MenuItem
+                            key="1"
+                            value={10}
+                        >
                             {this.props.t('last 10 minutes')}
                         </MenuItem>
-                        <MenuItem key="2" value={30}>
+                        <MenuItem
+                            key="2"
+                            value={30}
+                        >
                             {this.props.t('last 30 minutes')}
                         </MenuItem>
-                        <MenuItem key="3" value={60}>
+                        <MenuItem
+                            key="3"
+                            value={60}
+                        >
                             {this.props.t('last hour')}
                         </MenuItem>
-                        <MenuItem key="4" value="day">
+                        <MenuItem
+                            key="4"
+                            value="day"
+                        >
                             {this.props.t('this day')}
                         </MenuItem>
-                        <MenuItem key="5" value={24 * 60}>
+                        <MenuItem
+                            key="5"
+                            value={24 * 60}
+                        >
                             {this.props.t('last 24 hours')}
                         </MenuItem>
-                        <MenuItem key="6" value="week">
+                        <MenuItem
+                            key="6"
+                            value="week"
+                        >
                             {this.props.t('this week')}
                         </MenuItem>
-                        <MenuItem key="7" value={24 * 60 * 7}>
+                        <MenuItem
+                            key="7"
+                            value={24 * 60 * 7}
+                        >
                             {this.props.t('last week')}
                         </MenuItem>
-                        <MenuItem key="8" value="2weeks">
+                        <MenuItem
+                            key="8"
+                            value="2weeks"
+                        >
                             {this.props.t('this 2 weeks')}
                         </MenuItem>
-                        <MenuItem key="9" value={24 * 60 * 14}>
+                        <MenuItem
+                            key="9"
+                            value={24 * 60 * 14}
+                        >
                             {this.props.t('last 2 weeks')}
                         </MenuItem>
-                        <MenuItem key="10" value="month">
+                        <MenuItem
+                            key="10"
+                            value="month"
+                        >
                             {this.props.t('this month')}
                         </MenuItem>
-                        <MenuItem key="11" value={30 * 24 * 60}>
+                        <MenuItem
+                            key="11"
+                            value={30 * 24 * 60}
+                        >
                             {this.props.t('last 30 days')}
                         </MenuItem>
-                        <MenuItem key="12" value="year">
+                        <MenuItem
+                            key="12"
+                            value="year"
+                        >
                             {this.props.t('this year')}
                         </MenuItem>
-                        <MenuItem key="13" value="12months">
+                        <MenuItem
+                            key="13"
+                            value="12months"
+                        >
                             {this.props.t('last 12 months')}
                         </MenuItem>
                     </Select>
                 </FormControl>
-                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
+                <LocalizationProvider
+                    dateAdapter={AdapterDateFns}
+                    adapterLocale={localeMap[this.props.lang]}
+                >
                     <div style={styles.toolbarTimeGrid}>
                         <div
-                            style={{ ...styles.toolbarTimeLabel, opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined }}
+                            style={{
+                                ...styles.toolbarTimeLabel,
+                                opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined,
+                            }}
                         >
                             {this.props.t('Start time')}
                         </div>
@@ -1427,7 +1512,10 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                     </div>
                     <div style={styles.toolbarTimeGrid}>
                         <div
-                            style={{ ...styles.toolbarTimeLabel, opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined }}
+                            style={{
+                                ...styles.toolbarTimeLabel,
+                                opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined,
+                            }}
                         >
                             {this.props.t('End time')}
                         </div>
@@ -1454,29 +1542,40 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                 >
                     {this.state.stepType ? this.props.t(this.state.stepType) : this.props.t('Step type')}
                 </Button>
-                {this.state.showStepMenu ? <Menu
-                    open={!0}
-                    anchorEl={this.state.showStepMenu}
-                    onClose={() => this.setState({ showStepMenu: null })}
-                >
-                    <MenuItem selected={this.state.stepType === ''} onClick={() => this.onStepChanged('')}>
-                        {this.props.t('None')}
-                    </MenuItem>
-                    <MenuItem
-                        selected={this.state.stepType === 'stepStart'}
-                        onClick={() => this.onStepChanged('stepStart')}
+                {this.state.showStepMenu ? (
+                    <Menu
+                        open={!0}
+                        anchorEl={this.state.showStepMenu}
+                        onClose={() => this.setState({ showStepMenu: null })}
                     >
-                        {this.props.t('stepStart')}
-                    </MenuItem>
-                </Menu> : null}
-                {this.props.showJumpToEchart && this.state.echartsJump && <Fab
-                    style={styles.echartsButton}
-                    size="small"
-                    onClick={() => this.openEcharts()}
-                    title={this.props.t('Open charts in new window')}
-                >
-                    <img src={EchartsIcon} alt="echarts" style={styles.buttonIcon} />
-                </Fab>}
+                        <MenuItem
+                            selected={this.state.stepType === ''}
+                            onClick={() => this.onStepChanged('')}
+                        >
+                            {this.props.t('None')}
+                        </MenuItem>
+                        <MenuItem
+                            selected={this.state.stepType === 'stepStart'}
+                            onClick={() => this.onStepChanged('stepStart')}
+                        >
+                            {this.props.t('stepStart')}
+                        </MenuItem>
+                    </Menu>
+                ) : null}
+                {this.props.showJumpToEchart && this.state.echartsJump && (
+                    <Fab
+                        style={styles.echartsButton}
+                        size="small"
+                        onClick={() => this.openEcharts()}
+                        title={this.props.t('Open charts in new window')}
+                    >
+                        <img
+                            src={EchartsIcon}
+                            alt="echarts"
+                            style={styles.buttonIcon}
+                        />
+                    </Fab>
+                )}
                 <Fab
                     variant="extended"
                     size="small"
@@ -1499,19 +1598,21 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             return <LinearProgress />;
         }
 
-        return <Paper style={styles.paper}>
-            {this.renderToolbar()}
-            <div
-                ref={this.divRef}
-                style={Utils.getStyle(
-                    this.props.theme,
-                    styles.chart,
-                    this.props.noToolbar ? styles.chartWithoutToolbar : styles.chartWithToolbar,
-                )}
-            >
-                {this.renderChart()}
-            </div>
-        </Paper>;
+        return (
+            <Paper style={styles.paper}>
+                {this.renderToolbar()}
+                <div
+                    ref={this.divRef}
+                    style={Utils.getStyle(
+                        this.props.theme,
+                        styles.chart,
+                        this.props.noToolbar ? styles.chartWithoutToolbar : styles.chartWithToolbar,
+                    )}
+                >
+                    {this.renderChart()}
+                </div>
+            </Paper>
+        );
     }
 }
 
