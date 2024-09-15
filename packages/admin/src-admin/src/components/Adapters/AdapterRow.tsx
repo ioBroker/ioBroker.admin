@@ -38,7 +38,7 @@ const styles: Record<string, any> = {
 class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState> {
     protected styles: Record<string, any> = styles;
 
-    render(): jSX.Element {
+    render(): JSX.Element {
         const adapter = this.props.context.repository[this.props.adapterName];
 
         const allowAdapterRating = adapter ? adapter.allowAdapterRating : true;

@@ -942,7 +942,7 @@ export default abstract class AdapterGeneric<
                 showDialog: true,
             });
         } else {
-            this.upload(this.props.adapterName, this.props.context);
+            AdapterInstallDialog.upload(this.props.adapterName, this.props.context);
         }
     }
 

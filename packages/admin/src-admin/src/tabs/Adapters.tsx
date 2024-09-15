@@ -1912,8 +1912,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     );
                 } else if (typeof this.props.systemConfig.common.activeRepo === 'string') {
                     // if active repo is not stable, show warning
-                    // @ts-expect-error deprecated, but could still come
                     stableRepo =
+                        // @ts-expect-error deprecated, but could still come
                         !this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable') &&
                         !repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo?.stable;
                 }
