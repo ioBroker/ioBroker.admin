@@ -64,7 +64,6 @@ const InstanceCategory = ({
     >
         <div style={styles.wrapperName}>
             <MaterialDynamicIcon
-                objIconBool
                 iconName={name}
                 style={styles.iconStyle}
             />

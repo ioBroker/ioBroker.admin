@@ -1,4 +1,5 @@
-![Logo](packages/admin/admin/admin.svg)
+<img src="packages/admin/admin/admin.svg" width="100" height="100" />
+
 # ioBroker.admin
 
 ![Number of Installations](http://iobroker.live/badges/admin-installed.svg)
@@ -88,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### **WORK IN PROGRESS**
 * (bluefox) Showed the context menu under cursor position in the object browser
 * (bluefox) Added links to aliases in the object browser
+* (bluefox) Added confirmation for CRON dialog if set to triggering every minute
 
 ### 7.1.0 (2024-09-02)
 * (bluefox) Added the possibility to show button in notifications

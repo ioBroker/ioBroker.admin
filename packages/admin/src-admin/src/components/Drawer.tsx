@@ -695,7 +695,7 @@ v
         switch (tab.name) {
             case 'tab-logs': {
                 const { logErrors, logWarnings } = this.state;
-                return { content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' };
+                return { content: logErrors || logWarnings || 0, color: logErrors ? 'error' : 'warn' };
             }
 
             case 'tab-adapters':

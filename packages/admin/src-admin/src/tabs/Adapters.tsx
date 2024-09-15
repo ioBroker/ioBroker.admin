@@ -951,7 +951,11 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 });
 
                 if (this.props.adminGuiConfig.admin.adapters?.allowAdapterRating !== false) {
-                    ratings = await this.props.socket.getRatings(update).catch(e => window.alert(`Cannot read ratings: ${e}`));
+                    try {
+                        ratings = (await this.props.socket.getRatings(update)) as unknown as Ratings;
+                    } catch (e) {
+                        window.alert(`Cannot read ratings: ${e}`);
+                    }
                     this.uuid = ratings?.uuid || null;
                 } else {
                     ratings = null;
