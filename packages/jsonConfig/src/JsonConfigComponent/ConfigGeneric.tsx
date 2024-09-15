@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { Grid2, Button } from '@mui/material';
 
@@ -20,20 +20,23 @@ import {
     Refresh as IconRefresh,
     Add as IconAdd,
     LinkOff as IconLinkOff,
-    Link as LinkIcon, Save, OpenInNew,
+    Link as LinkIcon,
+    Save,
+    OpenInNew,
 } from '@mui/icons-material';
 
 import {
-    Confirm as ConfirmDialog, Icon,
-    Utils, type AdminConnection, I18n,
+    Confirm as ConfirmDialog,
+    Icon,
+    Utils,
+    type AdminConnection,
+    I18n,
     type Connection,
-    type ThemeType, type ThemeName,
+    type ThemeType,
+    type ThemeName,
     type IobTheme,
 } from '@iobroker/adapter-react-v5';
-import type {
-    BackEndCommand, ConfigIconType,
-    ConfigItemAny, ConfigItemConfirmData,
-} from '#JC/types';
+import type { BackEndCommand, ConfigIconType, ConfigItemAny, ConfigItemConfirmData } from '#JC/types';
 
 // because this class is used in adapter-react-v5, do not include here any foreign files like from '../../helpers/utils.ts'
 export function isObject(it: any): it is Record<string, any> {
@@ -83,7 +86,6 @@ export interface ConfigGenericProps {
     common: Record<string, any>;
     custom?: boolean;
     customObj?: Record<string, any>;
-    // eslint-disable-next-line no-use-before-define
     customs?: Record<string, typeof ConfigGeneric>;
     data: Record<string, any>;
     dateFormat: string;
@@ -131,7 +133,10 @@ export interface ConfigGenericState {
     confirmCallback: null | ((result: boolean) => void);
 }
 
-export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGenericProps, State extends ConfigGenericState = ConfigGenericState> extends Component<Props, State> {
+export default class ConfigGeneric<
+    Props extends ConfigGenericProps = ConfigGenericProps,
+    State extends ConfigGenericState = ConfigGenericState,
+> extends Component<Props, State> {
     static DIFFERENT_VALUE = '__different__';
 
     static DIFFERENT_LABEL = 'ra___different__';
@@ -170,23 +175,23 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             if (props.custom) {
                 this.defaultValue = props.schema.defaultFunc
                     ? this.executeCustom(
-                        props.schema.defaultFunc,
-                        props.data,
-                        props.customObj,
-                        props.instanceObj,
-                        props.arrayIndex,
-                        props.globalData,
-                    )
+                          props.schema.defaultFunc,
+                          props.data,
+                          props.customObj,
+                          props.instanceObj,
+                          props.arrayIndex,
+                          props.globalData,
+                      )
                     : props.schema.default;
             } else if (props.schema.type !== 'state') {
                 this.defaultValue = props.schema.defaultFunc
                     ? this.execute(
-                        props.schema.defaultFunc,
-                        props.schema.default,
-                        props.data,
-                        props.arrayIndex,
-                        props.globalData,
-                    )
+                          props.schema.defaultFunc,
+                          props.schema.default,
+                          props.data,
+                          props.arrayIndex,
+                          props.globalData,
+                      )
                     : props.schema.default;
             }
         }
@@ -194,7 +199,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         this.lang = I18n.getLanguage();
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (this.props.registerOnForceUpdate) {
             this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
         }
@@ -209,11 +214,13 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 setTimeout(() => {
                     if (this.props.custom) {
                         this.props.onChange(this.props.attr, this.defaultValue, () =>
-                            setTimeout(() => this.props.forceUpdate([this.props.attr], this.props.data), 100));
+                            setTimeout(() => this.props.forceUpdate([this.props.attr], this.props.data), 100),
+                        );
                     } else {
                         ConfigGeneric.setValue(this.props.data, this.props.attr, this.defaultValue);
                         this.props.onChange(this.props.data, undefined, () =>
-                            this.props.forceUpdate([this.props.attr], this.props.data));
+                            this.props.forceUpdate([this.props.attr], this.props.data),
+                        );
                     }
                 }, 100);
             }
@@ -222,7 +229,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         }
     }
 
-    sendTo() {
+    sendTo(): void {
         if (this.props.alive) {
             this.defaultSendToDone = true;
             let data: any = this.props.schema.data;
@@ -244,17 +251,19 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 data = null;
             }
 
-            this.props.socket
+            void this.props.socket
                 .sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.defaultSendTo, data)
                 .then((value: any) => {
                     if (value !== null && value !== undefined) {
                         if (this.props.custom) {
                             this.props.onChange(this.props.attr, value, () =>
-                                this.props.forceUpdate([this.props.attr], this.props.data));
+                                this.props.forceUpdate([this.props.attr], this.props.data),
+                            );
                         } else {
                             ConfigGeneric.setValue(this.props.data, this.props.attr, value);
                             this.props.onChange(this.props.data, undefined, () =>
-                                this.props.forceUpdate([this.props.attr], this.props.data));
+                                this.props.forceUpdate([this.props.attr], this.props.data),
+                            );
                         }
                     }
                 });
@@ -267,7 +276,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.props.registerOnForceUpdate) {
             this.props.registerOnForceUpdate(this.props.attr);
         }
@@ -277,7 +286,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         }
     }
 
-    onUpdate = (data: Record<string, any>) => {
+    onUpdate = (data: Record<string, any>): void => {
         const value = ConfigGeneric.getValue(data || this.props.data, this.props.attr) || '';
         if (this.state.value !== value) {
             this.setState({ value });
@@ -304,7 +313,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         return null;
     }
 
-    static setValue(data: Record<string, any>, attr: string | string[], value: any) {
+    static setValue(data: Record<string, any>, attr: string | string[], value: any): void {
         if (typeof attr === 'string') {
             ConfigGeneric.setValue(data, attr.split('.'), value);
             return;
@@ -358,12 +367,12 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         return (text as any).toString();
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }
         const confirm = this.state.confirmData || this.props.schema.confirm;
-        let icon: null | React.JSX.Element = null;
+        let icon: null | JSX.Element = null;
         if (confirm.type === 'warning') {
             icon = <IconWarning />;
         } else if (confirm.type === 'error') {
@@ -372,60 +381,66 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             icon = <IconInfo />;
         }
 
-        return <ConfirmDialog
-            title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
-            text={this.getText(confirm.text)}
-            ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
-            cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
-            icon={icon || undefined}
-            onClose={isOk =>
-                this.setState({ confirmDialog: false }, () => {
-                    if (isOk) {
-                        if (this.state.confirmCallback) {
-                            const callback = this.state.confirmCallback;
-                            this.setState({ confirmCallback: null }, () => callback(true));
-                            return;
-                        }
-
-                        const data = JSON.parse(JSON.stringify(this.props.data));
-                        if (this.state.confirmDepAttr) {
-                            ConfigGeneric.setValue(data, this.state.confirmDepAttr, this.state.confirmDepNewValue);
-                        }
-
-                        ConfigGeneric.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
-                        this.setState(
-                            {
-                                confirmDialog: false,
-                                confirmDepAttr: null,
-                                confirmDepNewValue: null,
-                                confirmNewValue: null,
-                                confirmAttr: null,
-                                confirmData: null,
-                            },
-                            () => this.props.onChange(data),
-                        );
-                    } else {
-                        const callback = this.state.confirmCallback;
-                        this.setState({
-                            confirmDialog: false,
-                            confirmDepAttr: null,
-                            confirmDepNewValue: null,
-                            confirmNewValue: null,
-                            confirmAttr: null,
-                            confirmData: null,
-                            confirmCallback: null,
-                        }, () => {
-                            if (callback) {
-                                callback(false);
+        return (
+            <ConfirmDialog
+                title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
+                text={this.getText(confirm.text)}
+                ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
+                cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
+                icon={icon || undefined}
+                onClose={isOk =>
+                    this.setState({ confirmDialog: false }, () => {
+                        if (isOk) {
+                            if (this.state.confirmCallback) {
+                                const callback = this.state.confirmCallback;
+                                this.setState({ confirmCallback: null }, () => callback(true));
+                                return;
                             }
-                        });
-                    }
-                })}
-        />;
+
+                            const data = JSON.parse(JSON.stringify(this.props.data));
+                            if (this.state.confirmDepAttr) {
+                                ConfigGeneric.setValue(data, this.state.confirmDepAttr, this.state.confirmDepNewValue);
+                            }
+
+                            ConfigGeneric.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
+                            this.setState(
+                                {
+                                    confirmDialog: false,
+                                    confirmDepAttr: null,
+                                    confirmDepNewValue: null,
+                                    confirmNewValue: null,
+                                    confirmAttr: null,
+                                    confirmData: null,
+                                },
+                                () => this.props.onChange(data),
+                            );
+                        } else {
+                            const callback = this.state.confirmCallback;
+                            this.setState(
+                                {
+                                    confirmDialog: false,
+                                    confirmDepAttr: null,
+                                    confirmDepNewValue: null,
+                                    confirmNewValue: null,
+                                    confirmAttr: null,
+                                    confirmData: null,
+                                    confirmCallback: null,
+                                },
+                                () => {
+                                    if (callback) {
+                                        callback(false);
+                                    }
+                                },
+                            );
+                        }
+                    })
+                }
+            />
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    getIcon(iconSettings?: ConfigIconType | null): React.JSX.Element | null {
+    getIcon(iconSettings?: ConfigIconType | null): JSX.Element | null {
         iconSettings = iconSettings || this.props.schema.icon;
         let icon = null;
         if (iconSettings === 'auth') {
@@ -442,7 +457,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             icon = <IconInfo />;
         } else if (iconSettings === 'search') {
             icon = <IconSearch />;
-        }  else if (iconSettings === 'book') {
+        } else if (iconSettings === 'book') {
             icon = <IconMenuBook />;
         } else if (iconSettings === 'help') {
             icon = <IconHelp />;
@@ -476,7 +491,12 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 }
             }
 
-            icon = <Icon src={iconSettings} style={{ width: 22, height: 22 }} />;
+            icon = (
+                <Icon
+                    src={iconSettings}
+                    style={{ width: 22, height: 22 }}
+                />
+            );
         }
 
         return icon;
@@ -491,7 +511,10 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
     // eslint-disable-next-line react/no-unused-class-component-methods
     onChangeAsync(attr: string, newValue: unknown): Promise<void> {
         return new Promise(resolve => {
-            this.onChange(attr, newValue, resolve);
+            const mayBePromise = this.onChange(attr, newValue, resolve);
+            if (mayBePromise instanceof Promise) {
+                mayBePromise.catch(e => console.error(`Cannot set value: ${e}`));
+            }
         });
     }
 
@@ -502,7 +525,6 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
      * @param newValue new value of the attribute
      * @param cb optional callback function, else returns a Promise
      */
-    // eslint-disable-next-line react/no-unused-class-component-methods
     onChange(attr: string, newValue: unknown, cb?: () => void): Promise<void> {
         // Do not use here deep copy, as it is not JsonConfig
         const data = JSON.parse(JSON.stringify(this.props.data));
@@ -538,13 +560,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                     const val = ConfigGeneric.getValue(data, dep.attr);
 
                     if (
-                        this.execute(
-                            dep.confirm.condition,
-                            false,
-                            data,
-                            this.props.arrayIndex,
-                            this.props.globalData,
-                        )
+                        this.execute(dep.confirm.condition, false, data, this.props.arrayIndex, this.props.globalData)
                     ) {
                         return new Promise<void>(resolve => {
                             this.setState(
@@ -637,20 +653,20 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
 
             const newValue_ = this.props.custom
                 ? this.executeCustom(
-                    this.props.schema.onChange.calculateFunc,
-                    data,
-                    this.props.customObj,
-                    this.props.instanceObj,
-                    this.props.arrayIndex,
-                    this.props.globalData,
-                )
+                      this.props.schema.onChange.calculateFunc,
+                      data,
+                      this.props.customObj,
+                      this.props.instanceObj,
+                      this.props.arrayIndex,
+                      this.props.globalData,
+                  )
                 : this.execute(
-                    this.props.schema.onChange.calculateFunc,
-                    val,
-                    data,
-                    this.props.arrayIndex,
-                    this.props.globalData,
-                );
+                      this.props.schema.onChange.calculateFunc,
+                      val,
+                      data,
+                      this.props.arrayIndex,
+                      this.props.globalData,
+                  );
             if (newValue_ !== val) {
                 ConfigGeneric.setValue(data, this.props.attr, newValue_);
             }
@@ -661,7 +677,8 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
 
             if (changed?.length) {
                 changed.forEach((_attr, i) =>
-                    setTimeout(() => this.props.onChange(_attr, ConfigGeneric.getValue(data, _attr)), i * 50));
+                    setTimeout(() => this.props.onChange(_attr, ConfigGeneric.getValue(data, _attr)), i * 50),
+                );
             }
         } else {
             this.props.onChange(data, undefined, () => {
@@ -691,14 +708,13 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         } else if (typeof func === 'string') {
             fun = func;
         } else {
-            return func as boolean;
+            return func;
         }
 
         if (!fun) {
             return defaultValue;
         }
         try {
-            // eslint-disable-next-line no-new-func
             const f = new Function(
                 'data',
                 'originalData',
@@ -725,7 +741,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 this.props.changed,
             );
         } catch (e) {
-            console.error(`Cannot execute ${func}: ${e}`);
+            console.error(`Cannot execute ${JSON.stringify(func)}: ${e}`);
             return defaultValue;
         }
     }
@@ -745,14 +761,13 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         } else if (typeof func === 'string') {
             fun = func;
         } else {
-            return func as boolean;
+            return func;
         }
 
         if (!fun) {
             return null;
         }
         try {
-            // eslint-disable-next-line no-new-func
             const f = new Function(
                 'data',
                 'originalData',
@@ -796,87 +811,102 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         if (this.props.custom) {
             error = schema.validator
                 ? !this.executeCustom(
-                    schema.validator,
-                    this.props.data,
-                    this.props.customObj,
-                    this.props.instanceObj,
-                    this.props.arrayIndex,
-                    this.props.globalData,
-                ) as boolean
+                      schema.validator,
+                      this.props.data,
+                      this.props.customObj,
+                      this.props.instanceObj,
+                      this.props.arrayIndex,
+                      this.props.globalData,
+                  )
                 : false;
             if (schema.disabled === true) {
                 disabled = true;
             } else {
                 disabled = schema.disabled
-                    ? this.executeCustom(
-                        schema.disabled,
-                        this.props.data,
-                        this.props.customObj,
-                        this.props.instanceObj,
-                        this.props.arrayIndex,
-                        this.props.globalData,
-                    ) as boolean
+                    ? (this.executeCustom(
+                          schema.disabled,
+                          this.props.data,
+                          this.props.customObj,
+                          this.props.instanceObj,
+                          this.props.arrayIndex,
+                          this.props.globalData,
+                      ) as boolean)
                     : false;
             }
             if (schema.hidden === true) {
                 hidden = true;
             } else {
                 hidden = schema.hidden
-                    ? this.executeCustom(
-                        schema.hidden,
-                        this.props.data,
-                        this.props.customObj,
-                        this.props.instanceObj,
-                        this.props.arrayIndex,
-                        this.props.globalData,
-                    ) as boolean
+                    ? (this.executeCustom(
+                          schema.hidden,
+                          this.props.data,
+                          this.props.customObj,
+                          this.props.instanceObj,
+                          this.props.arrayIndex,
+                          this.props.globalData,
+                      ) as boolean)
                     : false;
             }
             defaultValue = schema.defaultFunc
                 ? this.executeCustom(
-                    schema.defaultFunc,
-                    this.props.data,
-                    this.props.customObj,
-                    this.props.instanceObj,
-                    this.props.arrayIndex,
-                    this.props.globalData,
-                )
+                      schema.defaultFunc,
+                      this.props.data,
+                      this.props.customObj,
+                      this.props.instanceObj,
+                      this.props.arrayIndex,
+                      this.props.globalData,
+                  )
                 : schema.default;
         } else {
             error = schema.validator
-                ? !this.execute(schema.validator, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
+                ? !this.execute(schema.validator, false, this.props.data, this.props.arrayIndex, this.props.globalData)
                 : false;
             if (schema.disabled === true) {
                 disabled = true;
             } else {
                 disabled = schema.disabled
-                    ? this.execute(schema.disabled, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
+                    ? (this.execute(
+                          schema.disabled,
+                          false,
+                          this.props.data,
+                          this.props.arrayIndex,
+                          this.props.globalData,
+                      ) as boolean)
                     : false;
             }
             if (schema.hidden === true) {
                 hidden = true;
             } else {
                 hidden = schema.hidden
-                    ? this.execute(schema.hidden, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
+                    ? (this.execute(
+                          schema.hidden,
+                          false,
+                          this.props.data,
+                          this.props.arrayIndex,
+                          this.props.globalData,
+                      ) as boolean)
                     : false;
             }
             defaultValue = schema.defaultFunc
                 ? this.execute(
-                    schema.defaultFunc,
-                    schema.default,
-                    this.props.data,
-                    this.props.arrayIndex,
-                    this.props.globalData,
-                )
+                      schema.defaultFunc,
+                      schema.default,
+                      this.props.data,
+                      this.props.arrayIndex,
+                      this.props.globalData,
+                  )
                 : schema.default;
         }
 
         return {
-            error, disabled, hidden, defaultValue,
+            error,
+            disabled,
+            hidden,
+            defaultValue,
         };
     }
 
-    onError(attr: string, error?: string) {
+    onError(attr: string, error?: string): void {
         if (!error) {
             delete this.isError[attr];
         } else {
@@ -888,13 +918,16 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    renderItem(_error: unknown, _disabled: boolean, _defaultValue?: unknown): React.JSX.Element | string | null {
+    renderItem(_error: unknown, _disabled: boolean, _defaultValue?: unknown): JSX.Element | string | null {
         return this.getText(this.props.schema.label) || this.getText(this.props.schema.text);
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderHelp(text: ioBroker.StringOrTranslated, link: string, noTranslation: boolean) {
+    renderHelp(
+        text: ioBroker.StringOrTranslated,
+        link: string,
+        noTranslation: boolean,
+    ): JSX.Element | JSX.Element[] | string {
         if (!link) {
             text = this.getText(text, noTranslation) || '';
             if (
@@ -905,17 +938,19 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             }
             return text;
         }
-        return <a
-            href={link}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-                color: this.props.themeType === 'dark' ? '#a147ff' : '#5b238f',
-                textDecoration: 'underline',
-            }}
-        >
-            {this.getText(text, noTranslation)}
-        </a>;
+        return (
+            <a
+                href={link}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                    color: this.props.themeType === 'dark' ? '#a147ff' : '#5b238f',
+                    textDecoration: 'underline',
+                }}
+            >
+                {this.getText(text, noTranslation)}
+            </a>
+        );
     }
 
     // we have a problem that a string '{"password": "${password}"}' cannot contain a double quota inside the string
@@ -926,7 +961,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         }
         str = str.replace(/`/g, '\\`');
         // extract all tokes with ${data.token}
-        str = str.replace(/\${([^}]+)}/g, (_match: string, p1: string | any) => {
+        str = str.replace(/\${([^}]+)}/g, (_match: string, p1: any) => {
             if (p1 && typeof p1 === 'string' && p1.startsWith('data.')) {
                 const value = ConfigGeneric.getValue(data, p1.replace(/^data\./, ''));
 
@@ -940,7 +975,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         return str;
     }
 
-    getPattern(pattern: string | { func: string }, data?: Record<string, any>) {
+    getPattern(pattern: string | { func: string }, data?: Record<string, any>): string {
         data = data || this.props.data;
         if (!pattern) {
             return '';
@@ -954,12 +989,11 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 patternStr = JSON.stringify(pattern);
             }
         } else {
-            patternStr = pattern as string;
+            patternStr = pattern;
         }
 
         try {
             if (this.props.custom) {
-                // eslint-disable-next-line no-new-func
                 const f = new Function(
                     'data',
                     'originalData',
@@ -985,7 +1019,6 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 );
             }
 
-            // eslint-disable-next-line no-new-func
             const f = new Function(
                 'data',
                 'originalData',
@@ -1015,7 +1048,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         }
     }
 
-    render(): string | React.JSX.Element | null {
+    render(): string | JSX.Element | null {
         const schema = this.props.schema;
 
         if (!schema) {
@@ -1029,9 +1062,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             }, 200);
         }
 
-        const {
-            error, disabled, hidden, defaultValue,
-        } = this.calculate(schema);
+        const { error, disabled, hidden, defaultValue } = this.calculate(schema);
 
         if (hidden) {
             // Remove all errors if element is hidden
@@ -1045,27 +1076,31 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             }
 
             if (schema.hideOnlyControl) {
-                const item = <Grid2
-                    size={{
-                        xs: schema.xs || undefined,
-                        sm: schema.sm || undefined,
-                        md: schema.md || undefined,
-                        lg: schema.lg || undefined,
-                        xl: schema.xl || undefined,
-                    }}
-                    style={({
-                        marginBottom: 0, /* marginRight: 8, */
-                        textAlign: 'left',
-                        ...schema.style,
-                        ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
-                    })}
-                />;
+                const item = (
+                    <Grid2
+                        size={{
+                            xs: schema.xs || undefined,
+                            sm: schema.sm || undefined,
+                            md: schema.md || undefined,
+                            lg: schema.lg || undefined,
+                            xl: schema.xl || undefined,
+                        }}
+                        style={{
+                            marginBottom: 0 /* marginRight: 8, */,
+                            textAlign: 'left',
+                            ...schema.style,
+                            ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
+                        }}
+                    />
+                );
 
                 if (schema.newLine) {
-                    return <>
-                        <div style={{ flexBasis: '100%', height: 0 }} />
-                        {item}
-                    </>;
+                    return (
+                        <>
+                            <div style={{ flexBasis: '100%', height: 0 }} />
+                            {item}
+                        </>
+                    );
                 }
                 return item;
             }
@@ -1102,62 +1137,70 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             return renderedItem;
         }
 
-        const item = <Grid2
-            title={this.getText(schema.tooltip)}
-            size={{
-                xs: schema.xs || undefined,
-                sm: schema.sm || undefined,
-                md: schema.md || undefined,
-                lg: schema.lg || undefined,
-                xl: schema.xl || undefined,
-            }}
-            style={({
-                marginBottom: 0,
-                // marginRight: 8,
-                textAlign: 'left',
-                width: schema.type === 'divider' || schema.type === 'header'
-                    ? schema.width || '100%'
-                    : undefined,
-                ...schema.style,
-                ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
-            })}
-        >
-            {this.props.schema.defaultSendTo && this.props.schema.button ?
-                <Grid2 container style={{ width: '100%' }}>
-                    <Grid2 flex={1}>
-                        {renderedItem}
+        const item = (
+            <Grid2
+                title={this.getText(schema.tooltip)}
+                size={{
+                    xs: schema.xs || undefined,
+                    sm: schema.sm || undefined,
+                    md: schema.md || undefined,
+                    lg: schema.lg || undefined,
+                    xl: schema.xl || undefined,
+                }}
+                style={{
+                    marginBottom: 0,
+                    // marginRight: 8,
+                    textAlign: 'left',
+                    width: schema.type === 'divider' || schema.type === 'header' ? schema.width || '100%' : undefined,
+                    ...schema.style,
+                    ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
+                }}
+            >
+                {this.props.schema.defaultSendTo && this.props.schema.button ? (
+                    <Grid2
+                        container
+                        style={{ width: '100%' }}
+                    >
+                        <Grid2 flex={1}>{renderedItem}</Grid2>
+                        <Grid2>
+                            <Button
+                                variant="outlined"
+                                onClick={() => this.sendTo()}
+                                title={
+                                    this.props.schema.buttonTooltip
+                                        ? this.getText(
+                                              this.props.schema.buttonTooltip,
+                                              this.props.schema.buttonTooltipNoTranslation,
+                                          )
+                                        : I18n.t('ra_Request data by instance')
+                                }
+                            >
+                                {this.getText(this.props.schema.button as ioBroker.StringOrTranslated)}
+                            </Button>
+                        </Grid2>
                     </Grid2>
-                    <Grid2>
-                        <Button
-                            variant="outlined"
-                            onClick={() => this.sendTo()}
-                            title={
-                                this.props.schema.buttonTooltip
-                                    ? this.getText(
-                                        this.props.schema.buttonTooltip,
-                                        this.props.schema.buttonTooltipNoTranslation,
-                                    )
-                                    : I18n.t('ra_Request data by instance')
-                            }
-                        >
-                            {this.getText(this.props.schema.button as ioBroker.StringOrTranslated)}
-                        </Button>
-                    </Grid2>
-                </Grid2> : renderedItem}
-        </Grid2>;
+                ) : (
+                    renderedItem
+                )}
+            </Grid2>
+        );
 
         if (schema.newLine) {
-            return <>
-                <div style={{ flexBasis: '100%', height: 0 }} />
-                {this.renderConfirmDialog()}
-                {item}
-            </>;
+            return (
+                <>
+                    <div style={{ flexBasis: '100%', height: 0 }} />
+                    {this.renderConfirmDialog()}
+                    {item}
+                </>
+            );
         }
         if (this.state.confirmDialog) {
-            return <>
-                {this.renderConfirmDialog()}
-                {item}
-            </>;
+            return (
+                <>
+                    {this.renderConfirmDialog()}
+                    {item}
+                </>
+            );
         }
         return item;
     }

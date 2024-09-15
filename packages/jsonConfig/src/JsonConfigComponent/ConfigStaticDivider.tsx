@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Box } from '@mui/material';
 
@@ -31,22 +31,27 @@ interface ConfigInstanceSelectProps extends ConfigGenericProps {
 }
 
 class ConfigStaticDivider extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGenericState> {
-    renderItem() {
-        return <Box
-            component="hr"
-            sx={Utils.getStyle(
-                this.props.theme,
-                styles.fullWidth,
-                this.props.schema.color === 'primary' ?
-                    styles.primary :
-                    (this.props.schema.color === 'secondary' ? styles.secondary :
-                        { backgroundColor: this.props.schema.color || (this.props.themeType === 'dark' ? '#333' : '#ddd') }),
-                {
-                    height: this.props.schema.color ?
-                        this.props.schema.height || 2 : this.props.schema.height || 1,
-                },
-            )}
-        />;
+    renderItem(): JSX.Element {
+        return (
+            <Box
+                component="hr"
+                sx={Utils.getStyle(
+                    this.props.theme,
+                    styles.fullWidth,
+                    this.props.schema.color === 'primary'
+                        ? styles.primary
+                        : this.props.schema.color === 'secondary'
+                          ? styles.secondary
+                          : {
+                                backgroundColor:
+                                    this.props.schema.color || (this.props.themeType === 'dark' ? '#333' : '#ddd'),
+                            },
+                    {
+                        height: this.props.schema.color ? this.props.schema.height || 2 : this.props.schema.height || 1,
+                    },
+                )}
+            />
+        );
     }
 }
 

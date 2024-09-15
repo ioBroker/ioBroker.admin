@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import Dropzone, { type DropzoneRef } from 'react-dropzone';
 
 import {
@@ -47,9 +47,7 @@ const styles: Record<string, React.CSSProperties> = {
         height: '100%',
         position: 'absolute',
     },
-    dropZoneEmpty: {
-
-    },
+    dropZoneEmpty: {},
     image: {
         objectFit: 'contain',
         margin: 'auto',
@@ -101,9 +99,7 @@ const styles: Record<string, React.CSSProperties> = {
     error: {
         border: '2px solid red',
     },
-    deleteButton: {
-
-    },
+    deleteButton: {},
     selectedImage: {
         height: 40,
         width: 40,
@@ -144,10 +140,13 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
         this.imagePrefix = this.props.imagePrefix === undefined ? './files' : this.props.imagePrefix;
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         super.componentDidMount();
 
-        this.objectID = (this.props.schema.objectID || '0_userdata.0').replace('%INSTANCE%', (this.props.instance || 0).toString());
+        this.objectID = (this.props.schema.objectID || '0_userdata.0').replace(
+            '%INSTANCE%',
+            (this.props.instance || 0).toString(),
+        );
         this.path = this.props.schema.upload;
         if (this.path) {
             if (this.path === '/') {
@@ -158,19 +157,21 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
         }
 
         // read files
-        this.updateFiles()
-            .then(() => {
-                const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-                this.setState({ value });
-            });
+        void this.updateFiles().then(() => {
+            const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
+            this.setState({ value });
+        });
     }
 
-    updateFiles() {
-        return this.readFiles(this.props.schema.pattern)
-            .then(files => this.setState({ files }));
+    updateFiles(): Promise<void> {
+        return this.readFiles(this.props.schema.pattern).then(files => this.setState({ files }));
     }
 
-    async readFolder(folderName: string, files: { name: string; size: string }[], filter: string) {
+    async readFolder(
+        folderName: string,
+        files: { name: string; size: string }[],
+        filter: string,
+    ): Promise<{ name: string; size: string }[]> {
         try {
             const dirFiles = await this.props.socket.readDir(this.objectID, folderName.replace(/^\//, '') || null);
             for (let f = 0; f < dirFiles.length; f++) {
@@ -192,7 +193,10 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
                     }
 
                     if (ok) {
-                        files.push({ name: folderName + file.file, size: file.stats ? Utils.formatBytes(file.stats.size) : '--' });
+                        files.push({
+                            name: folderName + file.file,
+                            size: file.stats ? Utils.formatBytes(file.stats.size) : '--',
+                        });
                     }
                 }
             }
@@ -203,7 +207,7 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
         return files;
     }
 
-    async readFiles(pattern: string) {
+    async readFiles(pattern: string): Promise<{ name: string; size: string }[]> {
         const files: { name: string; size: string }[] = [];
         pattern = pattern || this.props.schema.pattern;
         if (!pattern) {
@@ -233,10 +237,10 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
         return files;
     }
 
-    onDrop(acceptedFiles: File[]) {
+    onDrop(acceptedFiles: File[]): void {
         const file = acceptedFiles[0];
         const reader = new FileReader();
-        const maxSize = this.props.schema.maxSize || (2 * 1024 * 1024);
+        const maxSize = this.props.schema.maxSize || 2 * 1024 * 1024;
 
         reader.onabort = () => console.log('file reading was aborted');
         reader.onerror = () => console.log('file reading has failed');
@@ -252,40 +256,46 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
                 return;
             }
             const base64 = `data:${ext};base64,${btoa(
-                new Uint8Array(reader.result as ArrayBufferLike)
-                    .reduce((data, byte) => data + String.fromCharCode(byte), ''),
+                new Uint8Array(reader.result as ArrayBufferLike).reduce(
+                    (data, byte) => data + String.fromCharCode(byte),
+                    '',
+                ),
             )}`;
 
-            this.props.socket.writeFile64(this.objectID, this.path + file.name, base64)
+            this.props.socket
+                .writeFile64(this.objectID, this.path + file.name, base64)
                 .then(() => this.updateFiles())
                 .catch(e => window.alert(`Cannot upload file: ${e}`));
         };
         reader.readAsArrayBuffer(file);
     }
 
-    renderDeleteDialog() {
+    renderDeleteDialog(): JSX.Element | null {
         if (!this.state.deleteFile) {
             return null;
         }
-        return <ConfirmDialog
-            title={I18n.t('ra_Are you sure?')}
-            text={I18n.t('ra_File will be deleted')}
-            ok={I18n.t('ra_Delete')}
-            cancel={I18n.t('ra_Cancel')}
-            onClose={isOk => {
-                const deleteFile = this.state.deleteFile;
-                this.setState({ deleteFile: '' }, () => {
-                    if (isOk) {
-                        this.props.socket.deleteFile(this.objectID, deleteFile)
-                            .then(() => this.updateFiles())
-                            .catch(e => window.alert(`Cannot delete file: ${e}`));
-                    }
-                });
-            }}
-        />;
+        return (
+            <ConfirmDialog
+                title={I18n.t('ra_Are you sure?')}
+                text={I18n.t('ra_File will be deleted')}
+                ok={I18n.t('ra_Delete')}
+                cancel={I18n.t('ra_Cancel')}
+                onClose={isOk => {
+                    const deleteFile = this.state.deleteFile;
+                    this.setState({ deleteFile: '' }, () => {
+                        if (isOk) {
+                            this.props.socket
+                                .deleteFile(this.objectID, deleteFile)
+                                .then(() => this.updateFiles())
+                                .catch(e => window.alert(`Cannot delete file: ${e}`));
+                        }
+                    });
+                }}
+            />
+        );
     }
 
-    static base64ToArrayBuffer(base64: string) {
+    static base64ToArrayBuffer(base64: string): ArrayBufferLike {
         const binaryString = window.atob(base64);
         const len = binaryString.length;
         const bytes = new Uint8Array(len);
@@ -295,39 +305,44 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
         return bytes.buffer;
     }
 
-    loadFile() {
+    loadFile(): Promise<{ file: string; mimeType: string }> {
         return this.props.socket.readFile(this.objectID, this.state.value, true);
     }
 
-    play() {
-        this.loadFile()
-            .then(data => {
-                if (typeof AudioContext !== 'undefined') {
-                    const context = new AudioContext();
-                    const buf = ConfigFileSelector.base64ToArrayBuffer(data.file);
-                    context.decodeAudioData(buf, buffer => {
+    play(): void {
+        void this.loadFile().then(data => {
+            if (typeof AudioContext !== 'undefined') {
+                const context = new AudioContext();
+                const buf = ConfigFileSelector.base64ToArrayBuffer(data.file);
+                void context.decodeAudioData(
+                    buf,
+                    (buffer: AudioBuffer): void => {
                         const source = context.createBufferSource(); // creates a sound source
-                        source.buffer = buffer;                      // tell the source which sound to play
-                        source.connect(context.destination);         // connect the source to the context's destination (the speakers)
+                        source.buffer = buffer; // tell the source which sound to play
+                        source.connect(context.destination); // connect the source to the context's destination (the speakers)
                         source.start(0);
-                    }, err => window.alert(`Cannot play: ${err}`));
-                }
-            });
+                    },
+                    (err: DOMException): void => window.alert(`Cannot play: ${err.message}`),
+                );
+            }
+        });
     }
 
-    getFileIcon(item: { value: string; label: string; extension?: string }) : React.JSX.Element | null {
+    getFileIcon(item: { value: string; label: string; extension?: string }): JSX.Element | null {
         if (!item?.extension) {
             return null;
         }
         if (IMAGE_EXT.includes(item.extension)) {
-            return <div
-                style={{
-                    ...styles.selectedImage,
-                    backgroundImage: `url(${this.imagePrefix}/${this.objectID}/${item.value})`,
-                    backgroundSize: 'contain',
-                    backgroundRepeat: 'no-repeat',
-                }}
-            />;
+            return (
+                <div
+                    style={{
+                        ...styles.selectedImage,
+                        backgroundImage: `url(${this.imagePrefix}/${this.objectID}/${item.value})`,
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                    }}
+                />
+            );
         }
         if (AUDIO_EXT.includes(item.extension)) {
             return <IconAudio />;
@@ -344,7 +359,7 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
         return null;
     }
 
-    renderItem(error: string, disabled: boolean /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */): JSX.Element | null {
         if (!this.state.files) {
             return null;
         }
@@ -365,18 +380,22 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
             });
         }
 
-        const selectOptions: { value: string; label: string; extension?: string }[] = this.state.files
-            .map(file => ({
-                value: file.name,
-                label: !this.props.schema.withFolder && folders.length === 1 ? `${file.name.substring(folders[0].length)}` : `${file.name}${this.props.schema.noSize ? '' : `(${file.size})`}`,
-                extension: file.name.toLowerCase().split('.').pop(),
-            }));
+        const selectOptions: { value: string; label: string; extension?: string }[] = this.state.files.map(file => ({
+            value: file.name,
+            label:
+                !this.props.schema.withFolder && folders.length === 1
+                    ? `${file.name.substring(folders[0].length)}`
+                    : `${file.name}${this.props.schema.noSize ? '' : `(${file.size})`}`,
+            extension: file.name.toLowerCase().split('.').pop(),
+        }));
 
         if (!this.props.schema.noNone) {
             selectOptions.unshift({ label: I18n.t('ra_none'), value: '' });
         }
 
-        const item: { value: string; label: string; extension?: string } = selectOptions.find(_item => _item.value === this.state.value);
+        const item: { value: string; label: string; extension?: string } = selectOptions.find(
+            _item => _item.value === this.state.value,
+        );
 
         let buttons = 0;
 
@@ -386,54 +405,97 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
         if (this.props.schema.refresh) {
             buttons++;
         }
-        const play = this.state.value && (this.state.value.endsWith('.mp3') || this.state.value.endsWith('.ogg') || this.state.value.endsWith('.wav'));
+        const play =
+            this.state.value &&
+            (this.state.value.endsWith('.mp3') ||
+                this.state.value.endsWith('.ogg') ||
+                this.state.value.endsWith('.wav'));
         // show play button
         if (play) {
             buttons++;
         }
 
-        const element = <div style={styles.fullWidth}>
-            <FormControl variant="standard" style={{ width: `calc(100% - ${buttons * 42}px)` }}>
-                {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
-                <Select
+        const element = (
+            <div style={styles.fullWidth}>
+                <FormControl
                     variant="standard"
-                    error={!!error}
-                    disabled={!!disabled}
-                    value={this.state.value || '_'}
-                    renderValue={() => <>
-                        {this.getFileIcon(item)}
-                        <span>{item?.label || ''}</span>
-                    </>}
-                    onChange={e => {
-                        this.setState({ value: e.target.value === '_' ? '' : e.target.value }, () =>
-                            this.onChange(this.props.attr, this.state.value));
-                    }}
+                    style={{ width: `calc(100% - ${buttons * 42}px)` }}
                 >
-                    {selectOptions.map(it => <MenuItem key={it.value} value={it.value}>
-                        <ListItemIcon>{this.getFileIcon(it)}</ListItemIcon>
-                        <ListItemText>{it.label}</ListItemText>
-                        {this.props.schema.delete && item.value ?
-                            <IconButton
-                                style={styles.deleteButton}
-                                size="small"
-                                onClick={() => this.setState({ deleteFile: item.value })}
+                    {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
+                    <Select
+                        variant="standard"
+                        error={!!error}
+                        disabled={!!disabled}
+                        value={this.state.value || '_'}
+                        renderValue={() => (
+                            <>
+                                {this.getFileIcon(item)}
+                                <span>{item?.label || ''}</span>
+                            </>
+                        )}
+                        onChange={e => {
+                            this.setState({ value: e.target.value === '_' ? '' : e.target.value }, () =>
+                                this.onChange(this.props.attr, this.state.value),
+                            );
+                        }}
+                    >
+                        {selectOptions.map(it => (
+                            <MenuItem
+                                key={it.value}
+                                value={it.value}
                             >
-                                <IconDelete />
-                            </IconButton> : null}
-                    </MenuItem>)}
-                </Select>
-                {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
-            </FormControl>
-            {this.props.schema.refresh && <IconButton onClick={() => this.updateFiles()}><IconRefresh /></IconButton>}
-            {this.props.schema.upload && <IconButton onClick={() => this.dropzoneRef.current?.open()}><IconUpload /></IconButton>}
-            {play && <IconButton style={{ color: '#00FF00' }} onClick={() => this.play()}><IconPlay /></IconButton>}
-        </div>;
+                                <ListItemIcon>{this.getFileIcon(it)}</ListItemIcon>
+                                <ListItemText>{it.label}</ListItemText>
+                                {this.props.schema.delete && item.value ? (
+                                    <IconButton
+                                        style={styles.deleteButton}
+                                        size="small"
+                                        onClick={() => this.setState({ deleteFile: item.value })}
+                                    >
+                                        <IconDelete />
+                                    </IconButton>
+                                ) : null}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    {this.props.schema.help ? (
+                        <FormHelperText>
+                            {this.renderHelp(
+                                this.props.schema.help,
+                                this.props.schema.helpLink,
+                                this.props.schema.noTranslation,
+                            )}
+                        </FormHelperText>
+                    ) : null}
+                </FormControl>
+                {this.props.schema.refresh && (
+                    <IconButton onClick={() => this.updateFiles()}>
+                        <IconRefresh />
+                    </IconButton>
+                )}
+                {this.props.schema.upload && (
+                    <IconButton onClick={() => this.dropzoneRef.current?.open()}>
+                        <IconUpload />
+                    </IconButton>
+                )}
+                {play && (
+                    <IconButton
+                        style={{ color: '#00FF00' }}
+                        onClick={() => this.play()}
+                    >
+                        <IconPlay />
+                    </IconButton>
+                )}
+            </div>
+        );
 
         if (!this.props.schema.upload) {
-            return <>
-                {element}
-                {this.renderDeleteDialog()}
-            </>;
+            return (
+                <>
+                    {element}
+                    {this.renderDeleteDialog()}
+                </>
+            );
         }
         let accept: Record<string, string[]> = { '*/*': [] };
         if (this.props.schema.fileTypes === 'image') {
@@ -451,7 +513,15 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
         }
         if (this.props.schema.pattern) {
             const last = this.props.schema.pattern.split('/').pop().toLowerCase().replace(/.*\./, '');
-            if (last === 'png' || last === 'jpg' || last === 'svg' || last === 'gif' || last === 'apng' || last === 'avif' || last === 'webp') {
+            if (
+                last === 'png' ||
+                last === 'jpg' ||
+                last === 'svg' ||
+                last === 'gif' ||
+                last === 'apng' ||
+                last === 'avif' ||
+                last === 'webp'
+            ) {
                 accept = {
                     'image/*': ['.png', '.jpg', '.svg', '.gif', '.apng', '.avif', '.webp'],
                 };
@@ -478,50 +548,69 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
             }
         }
 
-        return <Dropzone
-            ref={this.dropzoneRef}
-            multiple={false}
-            accept={accept}
-            noKeyboard
-            noClick
-            maxSize={this.props.schema.maxSize || 2 * 1024 * 1024}
-            onDragEnter={() => {
-                this.setState({ uploadFile: 'dragging' });
-            }}
-            onDragLeave={() => this.setState({ uploadFile: true })}
-            onDrop={(acceptedFiles, errors) => {
-                this.setState({ uploadFile: false });
-                if (!acceptedFiles.length) {
-                    window.alert((errors && errors[0] && errors[0].errors && errors[0].errors[0] && errors[0].errors[0].message) || I18n.t('Cannot upload'));
-                } else {
-                    this.onDrop(acceptedFiles);
-                }
-            }}
-        >
-            {({ getRootProps, getInputProps }) => <div
-                style={{
-                    ...styles.uploadDiv,
-                    ...(this.state.uploadFile === 'dragging' ? styles.uploadDivDragging : undefined),
-                    ...(disabled ? styles.disabledOpacity : undefined),
+        return (
+            <Dropzone
+                ref={this.dropzoneRef}
+                multiple={false}
+                accept={accept}
+                noKeyboard
+                noClick
+                maxSize={this.props.schema.maxSize || 2 * 1024 * 1024}
+                onDragEnter={() => {
+                    this.setState({ uploadFile: 'dragging' });
                 }}
-                {...getRootProps()}
+                onDragLeave={() => this.setState({ uploadFile: true })}
+                onDrop={(acceptedFiles, errors) => {
+                    this.setState({ uploadFile: false });
+                    if (!acceptedFiles.length) {
+                        window.alert(
+                            (errors &&
+                                errors[0] &&
+                                errors[0].errors &&
+                                errors[0].errors[0] &&
+                                errors[0].errors[0].message) ||
+                                I18n.t('Cannot upload'),
+                        );
+                    } else {
+                        this.onDrop(acceptedFiles);
+                    }
+                }}
             >
-                <input {...getInputProps()} />
-                {this.state.uploadFile === 'dragging' ? <div
-                    style={{ ...styles.uploadCenterDiv, ...(this.state.uploadError ? styles.error : undefined) }}
-                >
-                    <div style={styles.uploadCenterTextAndIcon}>
-                        <UploadIcon style={styles.uploadCenterIcon} />
-                        <div style={styles.uploadCenterText}>
-                            {this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
-                                I18n.t('ra_Place your files here or click here to open the browse dialog')}
-                        </div>
+                {({ getRootProps, getInputProps }) => (
+                    <div
+                        style={{
+                            ...styles.uploadDiv,
+                            ...(this.state.uploadFile === 'dragging' ? styles.uploadDivDragging : undefined),
+                            ...(disabled ? styles.disabledOpacity : undefined),
+                        }}
+                        {...getRootProps()}
+                    >
+                        <input {...getInputProps()} />
+                        {this.state.uploadFile === 'dragging' ? (
+                            <div
+                                style={{
+                                    ...styles.uploadCenterDiv,
+                                    ...(this.state.uploadError ? styles.error : undefined),
+                                }}
+                            >
+                                <div style={styles.uploadCenterTextAndIcon}>
+                                    <UploadIcon style={styles.uploadCenterIcon} />
+                                    <div style={styles.uploadCenterText}>
+                                        {this.state.uploadFile === 'dragging'
+                                            ? I18n.t('ra_Drop file here')
+                                            : I18n.t(
+                                                  'ra_Place your files here or click here to open the browse dialog',
+                                              )}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : null}
+                        {element}
+                        {this.renderDeleteDialog()}
                     </div>
-                </div> : null}
-                {element}
-                {this.renderDeleteDialog()}
-            </div>}
-        </Dropzone>;
+                )}
+            </Dropzone>
+        );
     }
 }
 

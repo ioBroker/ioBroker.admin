@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Box } from '@mui/material';
 
@@ -24,33 +24,58 @@ interface ConfigInstanceSelectProps extends ConfigGenericProps {
 }
 
 class ConfigStaticHeader extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGenericState> {
-    renderItem(/* error: string, disabled: boolean, defaultValue */) {
+    renderItem(/* error: string, disabled: boolean, defaultValue */): JSX.Element {
         switch ((this.props.schema.size || 5).toString()) {
             case '1':
-                return <Box component="h1" sx={styles.header}>
-                    {this.getText(this.props.schema.text, this.props.schema.noTranslation)}
-                </Box>;
+                return (
+                    <Box
+                        component="h1"
+                        sx={styles.header}
+                    >
+                        {this.getText(this.props.schema.text, this.props.schema.noTranslation)}
+                    </Box>
+                );
 
             case '2':
-                return <Box component="h2" sx={styles.header}>
-                    {this.getText(this.props.schema.text, this.props.schema.noTranslation)}
-                </Box>;
+                return (
+                    <Box
+                        component="h2"
+                        sx={styles.header}
+                    >
+                        {this.getText(this.props.schema.text, this.props.schema.noTranslation)}
+                    </Box>
+                );
 
             case '3':
-                return <Box component="h3" sx={styles.header}>
-                    {this.getText(this.props.schema.text, this.props.schema.noTranslation)}
-                </Box>;
+                return (
+                    <Box
+                        component="h3"
+                        sx={styles.header}
+                    >
+                        {this.getText(this.props.schema.text, this.props.schema.noTranslation)}
+                    </Box>
+                );
 
             case '4':
-                return <Box component="h4" sx={styles.header}>
-                    {this.getText(this.props.schema.text, this.props.schema.noTranslation)}
-                </Box>;
+                return (
+                    <Box
+                        component="h4"
+                        sx={styles.header}
+                    >
+                        {this.getText(this.props.schema.text, this.props.schema.noTranslation)}
+                    </Box>
+                );
 
             case '5':
             default:
-                return <Box component="h5" sx={styles.header}>
-                    {this.getText(this.props.schema.text, this.props.schema.noTranslation)}
-                </Box>;
+                return (
+                    <Box
+                        component="h5"
+                        sx={styles.header}
+                    >
+                        {this.getText(this.props.schema.text, this.props.schema.noTranslation)}
+                    </Box>
+                );
         }
     }
 }

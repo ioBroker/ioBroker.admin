@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import {
     InputLabel,
@@ -11,12 +11,12 @@ import {
     ListItemText,
     Checkbox,
     Chip,
-    Box, InputAdornment, IconButton,
+    Box,
+    InputAdornment,
+    IconButton,
 } from '@mui/material';
 
-import {
-    Close as CloseIcon,
-} from '@mui/icons-material';
+import { Close as CloseIcon } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -80,7 +80,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
 
     private _context: string | undefined;
 
-    askInstance() {
+    askInstance(): void {
         if (this.props.alive) {
             let data: Record<string, any> | undefined = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
@@ -96,9 +96,16 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                 data = null;
             }
             this.setState({ running: true }, () => {
-                this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
-                    .then(list =>
-                        this.setState({ list, running: false }));
+                void this.props.socket
+                    .sendTo(
+                        `${this.props.adapterName}.${this.props.instance}`,
+                        this.props.schema.command || 'send',
+                        data,
+                    )
+                    .then(list => this.setState({ list, running: false }))
+                    .catch(e => {
+                        console.error(`Cannot send command: ${e}`);
+                    });
             });
         } else {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -111,15 +118,19 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
         const context: Record<string, any> = {};
 
         if (Array.isArray(this.props.schema.alsoDependsOn)) {
-            this.props.schema.alsoDependsOn.forEach(attr =>
-                context[attr] = ConfigGeneric.getValue(this.props.data, attr));
+            this.props.schema.alsoDependsOn.forEach(
+                attr => (context[attr] = ConfigGeneric.getValue(this.props.data, attr)),
+            );
         }
 
         return JSON.stringify(context);
     }
 
-    _getValue() {
-        let value = this.state.value === null || this.state.value === undefined ? ConfigGeneric.getValue(this.props.data, this.props.attr) : this.state.value;
+    _getValue(): string | string[] {
+        let value =
+            this.state.value === null || this.state.value === undefined
+                ? ConfigGeneric.getValue(this.props.data, this.props.attr)
+                : this.state.value;
 
         if (this.props.schema.multiple) {
             if (typeof value === 'string') {
@@ -132,7 +143,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
         return value;
     }
 
-    renderItem(error: unknown, disabled: boolean /* , defaultValue */) {
+    renderItem(error: unknown, disabled: boolean /* , defaultValue */): JSX.Element | string {
         if (this.props.alive) {
             const context = this.getContext();
             if (context !== this._context || !this.initialized) {
@@ -148,34 +159,43 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
             if (this.props.schema.multiple || this.props.schema.manual === false) {
                 return I18n.t('ra_Cannot retrieve options, as instance is offline');
             }
-            return <TextField
-                variant="standard"
-                fullWidth
-                value={value}
-                error={!!error}
-                disabled={!!disabled}
-                onChange={e => {
-                    const value_ = e.target.value;
-                    this.setState({ value: value_ }, () =>
-                        this.onChange(this.props.attr, (value_ || '').trim()));
-                }}
-                placeholder={this.getText(this.props.schema.placeholder)}
-                label={this.getText(this.props.schema.label)}
-                helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-                slotProps={{
-                    input: {
-                        endAdornment: this.state.value && !this.props.schema.noClearButton ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ value: '' }, () =>
-                                    this.onChange(this.props.attr, ''))}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null,
-                    },
-                }}
-            />;
+            return (
+                <TextField
+                    variant="standard"
+                    fullWidth
+                    value={value}
+                    error={!!error}
+                    disabled={!!disabled}
+                    onChange={e => {
+                        const value_ = e.target.value;
+                        this.setState({ value: value_ }, () => this.onChange(this.props.attr, (value_ || '').trim()));
+                    }}
+                    placeholder={this.getText(this.props.schema.placeholder)}
+                    label={this.getText(this.props.schema.label)}
+                    helperText={this.renderHelp(
+                        this.props.schema.help,
+                        this.props.schema.helpLink,
+                        this.props.schema.noTranslation,
+                    )}
+                    slotProps={{
+                        input: {
+                            endAdornment:
+                                this.state.value && !this.props.schema.noClearButton ? (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() =>
+                                                this.setState({ value: '' }, () => this.onChange(this.props.attr, ''))
+                                            }
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ) : null,
+                        },
+                    }}
+                />
+            );
         }
 
         if (this.state.running) {
@@ -187,67 +207,106 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                 return true;
             }
             if (this.props.custom) {
-                return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
+                return !this.executeCustom(
+                    item.hidden,
+                    this.props.data,
+                    this.props.customObj,
+                    this.props.instanceObj,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                );
             }
-            return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
+            return !this.execute(
+                item.hidden,
+                this.props.schema.default,
+                this.props.data,
+                this.props.arrayIndex,
+                this.props.globalData,
+            );
         });
 
         const item = selectOptions.find(it => it.value === value);
 
-        return <FormControl variant="standard" fullWidth>
-            {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
-            <Select
+        return (
+            <FormControl
                 variant="standard"
-                error={!!error}
-                multiple={this.props.schema.multiple}
-                disabled={!!disabled}
-                // MenuProps={this.props.schema.multiple ? { classes: { paper: this.props.classes.menuPaper } } : undefined}
-                sx={{
-                    '&.MuiSelect-paper': this.props.schema.multiple ? styles.menuPaper : undefined,
-                }}
-                value={value}
-                renderValue={val =>
-                    (this.props.schema.multiple ?
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                            {val.map((v: string) => {
-                                const it = selectOptions.find(_item => _item.value === v);
-                                if (it || this.props.schema.showAllValues !== false) {
-                                    const label = it?.label || v;
-                                    return <Chip
-                                        key={v}
-                                        label={label}
-                                    />;
-                                }
-                                return null;
-                            })}
-                        </Box>
-                        :
-                        (item?.label || val))}
-                onChange={e => {
-                    this.onChange(this.props.attr, e.target.value);
-                }}
+                fullWidth
             >
-                {selectOptions.map((it, i) =>
-                    <MenuItem key={i} value={it.value}>
-                        { this.props.schema.multiple ? <Checkbox
-                            checked={value.includes(it.value)}
-                            onClick={() => {
-                                const _value = JSON.parse(JSON.stringify(this._getValue()));
-                                const pos = value.indexOf(it.value);
-                                if (pos !== -1) {
-                                    _value.splice(pos, 1);
-                                } else {
-                                    _value.push(it.value);
-                                    _value.sort();
-                                }
-                                this.setState({ value: _value }, () => this.onChange(this.props.attr, _value));
-                            }}
-                        /> : null }
-                        <ListItemText primary={it.label} />
-                    </MenuItem>)}
-            </Select>
-            {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
-        </FormControl>;
+                {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
+                <Select
+                    variant="standard"
+                    error={!!error}
+                    multiple={this.props.schema.multiple}
+                    disabled={!!disabled}
+                    // MenuProps={this.props.schema.multiple ? { classes: { paper: this.props.classes.menuPaper } } : undefined}
+                    sx={{
+                        '&.MuiSelect-paper': this.props.schema.multiple ? styles.menuPaper : undefined,
+                    }}
+                    value={value}
+                    renderValue={(val: string | string[]) =>
+                        this.props.schema.multiple ? (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {(val as string[]).map((v: string) => {
+                                    const it = selectOptions.find(_item => _item.value === v);
+                                    if (it || this.props.schema.showAllValues !== false) {
+                                        const label = it?.label || v;
+                                        return (
+                                            <Chip
+                                                key={v}
+                                                label={label}
+                                            />
+                                        );
+                                    }
+                                    return null;
+                                })}
+                            </Box>
+                        ) : (
+                            item?.label || val
+                        )
+                    }
+                    onChange={e => {
+                        const mayBePromise = this.onChange(this.props.attr, e.target.value);
+                        if (mayBePromise instanceof Promise) {
+                            mayBePromise.catch(e => console.error(`Cannot set value: ${e}`));
+                        }
+                    }}
+                >
+                    {selectOptions.map((it, i) => (
+                        <MenuItem
+                            key={i}
+                            value={it.value}
+                        >
+                            {this.props.schema.multiple ? (
+                                <Checkbox
+                                    checked={value.includes(it.value)}
+                                    onClick={() => {
+                                        const _value = JSON.parse(JSON.stringify(this._getValue()));
+                                        const pos = value.indexOf(it.value);
+                                        if (pos !== -1) {
+                                            _value.splice(pos, 1);
+                                        } else {
+                                            _value.push(it.value);
+                                            _value.sort();
+                                        }
+                                        this.setState({ value: _value }, () => this.onChange(this.props.attr, _value));
+                                    }}
+                                />
+                            ) : null}
+                            <ListItemText primary={it.label} />
+                        </MenuItem>
+                    ))}
+                </Select>
+                {this.props.schema.help ? (
+                    <FormHelperText>
+                        {this.renderHelp(
+                            this.props.schema.help,
+                            this.props.schema.helpLink,
+                            this.props.schema.noTranslation,
+                        )}
+                    </FormHelperText>
+                ) : null}
+            </FormControl>
+        );
     }
 }
 

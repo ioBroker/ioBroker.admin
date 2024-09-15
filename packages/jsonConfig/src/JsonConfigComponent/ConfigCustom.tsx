@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { Grid2, LinearProgress } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
@@ -9,27 +9,25 @@ const getOrLoadRemote = (
     remote: string,
     shareScope: string,
     remoteFallbackUrl?: string,
-): Promise<{get: (module: string) => () => Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }>}> =>
+): Promise<{ get: (module: string) => () => Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }> }> =>
     new Promise((resolve, reject) => {
-    // check if remote exists on the global `window`object
+        // check if remote exists on the global `window`object
         if (!(window as any)[remote]) {
             // search dom to see if remote tag exists, but might still be loading (async)
             const existingRemote: HTMLScriptElement = document.querySelector(`script[data-webpack="${remote}"]`);
             // when remote is loaded.
-            const onload = async () => {
+            const onload = async (): Promise<void> => {
                 // check if it was initialized
                 if ((window as any)[remote]) {
                     if (!(window as any)[remote].__initialized) {
                         // if share scope doesn't exist (like in webpack 4) then expect shareScope to be a manual object
                         // @ts-expect-error it is a trick and must be so
-                        // eslint-disable-next-line camelcase
                         if (typeof __webpack_share_scopes__ === 'undefined') {
                             // use a default share scope object passed in manually
                             await (window as any)[remote].init(shareScope);
                         } else {
                             // otherwise, init share scope as usual
                             // @ts-expect-error it is a trick and must be so
-                            // eslint-disable-next-line no-undef,camelcase
                             await (window as any)[remote].init((__webpack_share_scopes__ as any)[shareScope]);
                         }
                         // mark remote as initialized
@@ -80,6 +78,7 @@ function loadComponent(
 ): () => Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }> {
     return async (): Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }> => {
         const container = await getOrLoadRemote(remote, sharedScope, url);
+        // eslint-disable-next-line @typescript-eslint/await-thenable
         const factory = await container.get(module);
         return factory();
     };
@@ -110,7 +109,7 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
     }
 
     // load component dynamically
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         if (!this.props.schema.url) {
             console.error('URL is empty. Cannot load custom component!');
             this.setState({ error: 'URL is empty. Cannot load custom component!' });
@@ -131,17 +130,22 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
         const [uniqueName, fileToLoad, ...componentNameParts] = this.props.schema.name.split('/');
         const componentName = componentNameParts.join('/');
         if (!url) {
-            console.error('Cannot find URL for custom component! Please define "url" as "custom/customComponents.js" in the schema');
+            console.error(
+                'Cannot find URL for custom component! Please define "url" as "custom/customComponents.js" in the schema',
+            );
             return;
         }
         if (!uniqueName || !fileToLoad || !componentName) {
-            console.error('Invalid format of "name"! Please define "name" as "ConfigCustomBackItUpSet/Components/AdapterExist" in the schema');
+            console.error(
+                'Invalid format of "name"! Please define "name" as "ConfigCustomBackItUpSet/Components/AdapterExist" in the schema',
+            );
             return;
         }
-        let setPromise = ConfigCustom.runningLoads[`${url}!${fileToLoad}`];
+        let setPromise: Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }> | undefined =
+            ConfigCustom.runningLoads[`${url}!${fileToLoad}`];
 
-        if (!setPromise) {
-            let i18nPromise;
+        if (!(setPromise instanceof Promise)) {
+            let i18nPromise: Promise<void> | undefined;
             if (this.props.schema.i18n === true) {
                 // load i18n from files
                 const pos = url.lastIndexOf('/');
@@ -178,9 +182,8 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
             try {
                 console.log(uniqueName, fileToLoad, componentName);
                 setPromise = loadComponent(uniqueName, 'default', `./${fileToLoad}`, url)();
-                if (i18nPromise) {
-                    setPromise = Promise.all([setPromise, i18nPromise])
-                        .then(result => result[0]);
+                if (i18nPromise instanceof Promise) {
+                    setPromise = Promise.all([setPromise, i18nPromise]).then(result => result[0]);
                 }
                 // remember promise
                 ConfigCustom.runningLoads[`${url}!${fileToLoad}`] = setPromise;
@@ -195,7 +198,9 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
             if (!component?.[componentName]) {
                 const keys = Object.keys(component || {});
                 console.error('URL is empty. Cannot load custom component!');
-                this.setState({ error: `Component ${this.props.schema.name} not found in ${this.props.schema.url}. Found: ${keys.join(', ')}` });
+                this.setState({
+                    error: `Component ${this.props.schema.name} not found in ${this.props.schema.url}. Found: ${keys.join(', ')}`,
+                });
             } else {
                 this.setState({ Component: component[componentName] });
             }
@@ -204,37 +209,41 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
         }
     }
 
-    render() {
+    render(): JSX.Element {
         const CustomComponent: React.FC<ConfigGenericProps> = this.state.Component;
 
         // render temporary placeholder
         if (!CustomComponent) {
-            const schema = this.props.schema || {} as ConfigItemCustom;
+            const schema = this.props.schema || ({} as ConfigItemCustom);
 
-            const item = <Grid2
-                size={{
-                    xs: schema.xs || undefined,
-                    sm: schema.sm || undefined,
-                    md: schema.md || undefined,
-                    lg: schema.lg || undefined,
-                    xl: schema.xl || undefined,
-                }}
-                style={({
-                    marginBottom: 0,
-                    // marginRight: 8,
-                    textAlign: 'left',
-                    ...schema.style,
-                    ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
-                })}
-            >
-                {this.state.error ? <div>{this.state.error}</div> : <LinearProgress />}
-            </Grid2>;
+            const item = (
+                <Grid2
+                    size={{
+                        xs: schema.xs || undefined,
+                        sm: schema.sm || undefined,
+                        md: schema.md || undefined,
+                        lg: schema.lg || undefined,
+                        xl: schema.xl || undefined,
+                    }}
+                    style={{
+                        marginBottom: 0,
+                        // marginRight: 8,
+                        textAlign: 'left',
+                        ...schema.style,
+                        ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
+                    }}
+                >
+                    {this.state.error ? <div>{this.state.error}</div> : <LinearProgress />}
+                </Grid2>
+            );
 
             if (schema.newLine) {
-                return <>
-                    <div style={{ flexBasis: '100%', height: 0 }} />
-                    {item}
-                </>;
+                return (
+                    <>
+                        <div style={{ flexBasis: '100%', height: 0 }} />
+                        {item}
+                    </>
+                );
             }
             return item;
         }

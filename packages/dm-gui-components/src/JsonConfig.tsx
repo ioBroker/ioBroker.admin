@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
-import type {
-    Connection,
-    AdminConnection,
-    ThemeName,
-    ThemeType,
-    IobTheme,
-} from '@iobroker/adapter-react-v5';
-import {
-    JsonConfigComponent,
-    type ConfigItemPanel,
-} from '@iobroker/json-config';
+import type { Connection, AdminConnection, ThemeName, ThemeType, IobTheme } from '@iobroker/adapter-react-v5';
+import { JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
 
 interface JsonConfigDmProps {
     instanceId: string;
@@ -25,9 +16,7 @@ interface JsonConfigDmProps {
 }
 
 export default function JsonConfig(props: JsonConfigDmProps): React.JSX.Element | null {
-    const {
-        instanceId, socket, schema, data, onChange,
-    } = props;
+    const { instanceId, socket, schema, data, onChange } = props;
     const [error, setError] = useState(false);
 
     if (schema === undefined) {
@@ -36,24 +25,34 @@ export default function JsonConfig(props: JsonConfigDmProps): React.JSX.Element 
 
     const [adapterName, instance] = instanceId.split('.', 2);
 
-    return <>
-        {error && <div>{error}</div>}
-        <JsonConfigComponent
-            socket={socket as any as AdminConnection}
-            adapterName={adapterName}
-            instance={parseInt(instance, 10)}
-            schema={schema}
-            data={data}
-            onError={setError}
-            onChange={(_data: Record<string, any>) => onChange(_data)}
-            embedded
-            themeName={props.themeName}
-            themeType={props.themeType}
-            theme={props.theme}
-            isFloatComma={props.isFloatComma === undefined ? !!props.socket.systemConfig?.common.isFloatComma : props.isFloatComma}
-            dateFormat={props.dateFormat === undefined ? props.socket.systemConfig?.common.dateFormat as string : props.dateFormat}
-        />
-    </>;
+    return (
+        <>
+            {error && <div>{error}</div>}
+            <JsonConfigComponent
+                socket={socket as any as AdminConnection}
+                adapterName={adapterName}
+                instance={parseInt(instance, 10)}
+                schema={schema}
+                data={data}
+                onError={setError}
+                onChange={(_data: Record<string, any>) => onChange(_data)}
+                embedded
+                themeName={props.themeName}
+                themeType={props.themeType}
+                theme={props.theme}
+                isFloatComma={
+                    props.isFloatComma === undefined
+                        ? !!props.socket.systemConfig?.common.isFloatComma
+                        : props.isFloatComma
+                }
+                dateFormat={
+                    props.dateFormat === undefined
+                        ? (props.socket.systemConfig?.common.dateFormat as string)
+                        : props.dateFormat
+                }
+            />
+        </>
+    );
 
     /*
     JSON adapter config:
