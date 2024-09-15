@@ -37,7 +37,6 @@ class ConfigIP extends ConfigGeneric<ConfigIPProps, ConfigIPState> {
                     ips = ips.filter(item => item.family === 'ipv6');
                 }
                 if (this.props.schema.noInternal) {
-                    // @ts-expect-error extended in socket-classes
                     ips = ips.filter(item => !item.internal);
                 }
                 ips.forEach(item => {

@@ -34,7 +34,7 @@ const InstanceInfo = (props: InstanceInfoProps) => <Grid2
     spacing={1}
     style={styles.nowrap}
 >
-    {props.icon && <Grid2>
+    {props.icon && <Grid2 style={{ minWidth: 24 }}>
         <Tooltip title={props.tooltip || ''} slotProps={{ popper: { sx: styles.tooltip } }}>
             {props.icon}
         </Tooltip>

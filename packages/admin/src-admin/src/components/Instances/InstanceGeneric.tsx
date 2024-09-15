@@ -78,6 +78,12 @@ export const arrayTier = [
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
+function isTouchDevice() {
+    return (('ontouchstart' in window) ||
+      (window.navigator.maxTouchPoints > 0) ||
+      (window.navigator.msMaxTouchPoints > 0));
+}
+
 export const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({
         position: 'relative',
@@ -299,6 +305,18 @@ export const styles: Record<string, any> = {
         borderRadius: 2,
         margin: 1,
         backgroundColor: '#66bb6a',
+    },
+    editButton: {
+        minHeight: 32,
+        '& .admin-edit-button': isTouchDevice() ? undefined : {
+            display: 'none',
+            maxHeight: 32,
+        },
+        '&:hover': isTouchDevice() ? undefined : {
+            '& .admin-edit-button': {
+                display: 'block',
+            },
+        },
     },
 };
 
@@ -1194,6 +1212,7 @@ export default abstract class InstanceGeneric<
         return <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
+                className="admin-edit-button"
                 style={{
                     ...this.styles.button,
                     ...(!this.state.visibleEdit ? this.styles.hiddenOpacity : undefined),
@@ -1251,6 +1270,7 @@ export default abstract class InstanceGeneric<
             <IconButton
                 size="small"
                 style={this.styles.button}
+                className="admin-edit-button"
                 onClick={event => {
                     event.stopPropagation();
                     event.preventDefault();
@@ -1367,6 +1387,7 @@ export default abstract class InstanceGeneric<
             <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
+                    className="admin-edit-button"
                     style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
@@ -1389,6 +1410,7 @@ export default abstract class InstanceGeneric<
             <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
+                    className="admin-edit-button"
                     style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
@@ -1414,6 +1436,7 @@ export default abstract class InstanceGeneric<
             <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
+                    className="admin-edit-button"
                     style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
@@ -1439,6 +1462,7 @@ export default abstract class InstanceGeneric<
             <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
+                    className="admin-edit-button"
                     style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
@@ -1471,6 +1495,7 @@ export default abstract class InstanceGeneric<
             <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
+                    className="admin-edit-button"
                     style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
@@ -1503,6 +1528,7 @@ export default abstract class InstanceGeneric<
             >
                 <IconButton
                     size="small"
+                    className="admin-edit-button"
                     style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();

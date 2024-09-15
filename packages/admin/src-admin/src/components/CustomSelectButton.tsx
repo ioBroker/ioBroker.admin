@@ -44,7 +44,7 @@ const CustomSelectButton = ({
                 color="primary"
                 onClick={e => setAnchorEl(e.currentTarget)}
             >
-                {buttonIcon || (icons && <MaterialDynamicIcon objIconBool iconName={value as string} style={styles.icon} />)}
+                {buttonIcon || (icons && <MaterialDynamicIcon iconName={value as string} style={styles.icon} />)}
                 {typeof value === 'number' ? value : (noTranslation ? value : t(value + translateSuffix))}
             </Button>
         </Tooltip>
@@ -67,7 +67,6 @@ const CustomSelectButton = ({
                 }}
             >
                 {icons && <MaterialDynamicIcon
-                    objIconBool
                     iconName={name as string}
                     style={styles.icon}
                 />}

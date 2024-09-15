@@ -111,7 +111,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             return;
         }
 
-        hostIp = ipaddr.parse(hostIp);
+        hostIp = ipaddr.parse(hostIp).toString();
 
         if (!host?.native?.hardware?.networkInterfaces) {
             return;
@@ -129,7 +129,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                 //     "cidr": "192.168.178.45/24"
                 // }
                 try {
-                    const iIP = ipaddr.parseCIDR(addr.cidr);
+                    const iIP = ipaddr.parseCIDR(addr.cidr).toString();
                     if (addr.internal === false && hostIp.match(iIP)) {
                         this.link = `${window.location.protocol}//${
                             addr.family === 'IPv6' ? `[${addr.address}]` : addr.address
