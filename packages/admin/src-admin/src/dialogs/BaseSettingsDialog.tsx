@@ -72,6 +72,8 @@ interface BaseSettingsDialogState {
     states: SettingsStates;
     log: SettingsLog;
     plugins: PluginsSettings;
+    dnsResolution: 'verbatim' | 'ipv4first';
+    dataDir: string;
     saving: boolean;
 }
 
@@ -94,6 +96,8 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
             states: null,
             log: null,
             plugins: null,
+            dnsResolution: 'ipv4first',
+            dataDir: '',
             saving: false,
         };
     }
@@ -143,12 +147,20 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
 
     getSettings(host: string) {
         this.props.socket.readBaseSettings(host || this.state.currentHost)
-            .then((settings: any) => {
-                if (settings && settings.config) {
-                    delete settings.config.dataDirComment;
-                    this.originalSettings = JSON.parse(JSON.stringify(settings.config));
-                    settings.config.loading = false;
-                    this.setState(settings.config);
+            .then(settings => {
+                const answer = settings as { config?: ioBroker.IoBrokerJson; isActive?: boolean };
+                if (answer?.config) {
+                    this.originalSettings = JSON.parse(JSON.stringify(answer.config));
+                    this.setState({
+                        system: answer.config.system,
+                        multihostService: answer.config.multihostService,
+                        objects:  answer.config.objects,
+                        states:  answer.config.states,
+                        log:  answer.config.log,
+                        plugins: answer.config.plugins,
+                        dnsResolution: answer.config.dnsResolution || 'ipv4first',
+                        dataDir: answer.config.dataDir,
+                    });
                 }
             });
     }

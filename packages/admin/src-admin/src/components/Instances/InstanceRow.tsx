@@ -217,7 +217,7 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                         {this.renderVersion()}
                     </Grid2>
                     <Grid2 container direction="column" size={{ xs: 12, sm: 6, md: 4 }} style={styles.paddingRight200}>
-                        {this.props.context.expertMode && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
+                        {this.props.context.expertMode && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}>
                             {this.renderLogLevel()}
                         </Box>}
                         {item.running && this.props.context.expertMode &&
@@ -227,31 +227,31 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                         <Grid2 sx={styles.visible1050}>
                             {this.renderMemoryUsage()}
                         </Grid2>
-                        {item.modeSchedule && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
+                        {item.modeSchedule && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}>
                             {this.renderSchedule()}
                         </Box>}
                         {this.props.context.expertMode && (instance.mode === 'daemon') &&
-                            <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
+                            <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}>
                                 {this.renderRestartSchedule()}
                             </Box>}
                         {this.props.context.expertMode &&
-                            <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
+                            <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}>
                                 {this.renderRamLimit()}
                             </Box>}
                         {this.props.context.expertMode && item.checkCompact && item.compact && item.supportCompact &&
-                            <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
+                            <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}>
                                 {this.renderCompactGroup()}
                             </Box>}
-                        {this.props.context.expertMode && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
+                        {this.props.context.expertMode && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}>
                             {this.renderTier()}
                         </Box>}
-                        <Box component="div" sx={{ ...styles.maxWidth300, ...styles.visible800 }}>
+                        <Box component="div" sx={{ ...styles.maxWidth300, ...styles.visible800, ...styles.editButton }}>
                             <InstanceInfo>
                                 {AdminUtils.getText(item.name, this.props.context.lang)}
                             </InstanceInfo>
                             {this.renderEditNameButton()}
                         </Box>
-                        {this.props.context.hosts.length > 1 || (this.props.context.hosts.length && this.props.context.hosts[0].common?.name !== instance.host) ? <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
+                        {this.props.context.hosts.length > 1 || (this.props.context.hosts.length && this.props.context.hosts[0].common?.name !== instance.host) ? <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}>
                             {this.renderHostWithButton()}
                         </Box> : null}
                     </Grid2>

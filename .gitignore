@@ -20,6 +20,7 @@ admin/words.js
 **/build
 packages/admin/src-admin/package-lock.json
 packages/admin/package-lock.json
+packages/admin/src/package-lock.json
 **/src/public_aes
 **/src/public/js/adapter-settings-aes.js
 testSentry.bat

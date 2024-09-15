@@ -89,7 +89,7 @@ function AdapterCategoryRow(props: AdapterCategoryRowProps) {
         </TableCell>
         <TableCell onClick={props.onToggle}>
             <div style={{ ...styles.nameDiv, ...styles.categoryName }}>
-                <MaterialDynamicIcon objIconBool iconName={categoryName} style={styles.marginRight5} />
+                <MaterialDynamicIcon iconName={categoryName} style={styles.marginRight5} />
                 {name}
             </div>
         </TableCell>

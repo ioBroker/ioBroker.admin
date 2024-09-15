@@ -574,7 +574,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                         {selectors}
                     </Grid2>
                 </Grid2>
-                <Grid2 size={{ lg: 6, md: 12 }} style={{ width: '100%' }}>
+                <Grid2 size={{ lg: 6, md: 12 }}>
                     <MapContainer
                         style={styles.map}
                         center={center}
