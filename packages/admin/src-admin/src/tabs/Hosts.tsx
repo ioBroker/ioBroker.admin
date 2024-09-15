@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
 
-import {
-    IconButton,
-    Tooltip,
-    InputAdornment,
-    LinearProgress,
-    TextField, Box,
-} from '@mui/material';
+import { IconButton, Tooltip, InputAdornment, LinearProgress, TextField, Box } from '@mui/material';
 
 import {
     Refresh as RefreshIcon,
@@ -23,7 +17,8 @@ import {
     TabContainer,
     type AdminConnection,
     type IobTheme,
-    type ThemeType, type Translate,
+    type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
@@ -124,7 +119,7 @@ function preprocessHostData(hostData: Record<string, any>): void {
         let dockerString = hostData.dockerInformation.isOfficial ? 'official image' : 'unofficial image';
 
         if (hostData.dockerInformation.isOfficial) {
-            dockerString +=  ` - ${hostData.dockerInformation.officialVersion}`;
+            dockerString += ` - ${hostData.dockerInformation.officialVersion}`;
         }
 
         hostData.Platform = `${hostData.Platform} (${dockerString})`;
@@ -168,12 +163,15 @@ class Hosts extends Component<HostsProps, HostsState> {
         super(props);
 
         this.state = {
-            viewMode: ((window as any)._localStorage as Storage || window.localStorage).getItem('Hosts.viewMode') === 'true',
+            viewMode:
+                (((window as any)._localStorage as Storage) || window.localStorage).getItem('Hosts.viewMode') ===
+                'true',
             alive: {},
             hosts: [],
             repository: {},
             hostsData: {},
-            filterText: ((window as any)._localStorage as Storage || window.localStorage).getItem('Hosts.filterText') || '',
+            filterText:
+                (((window as any)._localStorage as Storage) || window.localStorage).getItem('Hosts.filterText') || '',
             showSlowConnectionWarning: false,
             readTimeoutMs: SlowConnectionWarningDialogClass.getReadTimeoutMs(),
         };
@@ -189,15 +187,18 @@ class Hosts extends Component<HostsProps, HostsState> {
             wordCache[word] = this.props.t(word);
         }
 
-        return arg1 !== undefined && arg2 !== undefined ? wordCache[`${word} ${arg1} ${arg2}`] : (arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word]);
+        return arg1 !== undefined && arg2 !== undefined
+            ? wordCache[`${word} ${arg1} ${arg2}`]
+            : arg1 !== undefined
+              ? wordCache[`${word} ${arg1}`]
+              : wordCache[word];
     };
 
     async componentDidMount() {
-        this.readInfo()
-            .then(() => {
-                this.props.hostsWorker.registerHandler(this.updateHosts);
-                this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
-            });
+        this.readInfo().then(() => {
+            this.props.hostsWorker.registerHandler(this.updateHosts);
+            this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
+        });
     }
 
     componentWillUnmount() {
@@ -205,12 +206,16 @@ class Hosts extends Component<HostsProps, HostsState> {
         this.props.hostsWorker.unregisterAliveHandler(this.updateHostsAlive);
     }
 
-    getHostsData(hosts: ioBroker.HostObject[], _alive: Record<string, boolean>): Promise<Record<string, Record<string, any> | string>> {
-        const promises: Promise<{ id: `system.host.${string}`; data: Record<string, any> | string}>[] = [];
+    getHostsData(
+        hosts: ioBroker.HostObject[],
+        _alive: Record<string, boolean>,
+    ): Promise<Record<string, Record<string, any> | string>> {
+        const promises: Promise<{ id: `system.host.${string}`; data: Record<string, any> | string }>[] = [];
 
         for (let h = 0; h < hosts.length; h++) {
             if (_alive[hosts[h]._id]) {
-                const promise = this.props.socket.getHostInfo(hosts[h]._id, null, this.state.readTimeoutMs)
+                const promise = this.props.socket
+                    .getHostInfo(hosts[h]._id, null, this.state.readTimeoutMs)
                     .catch((error: string) => {
                         console.error(`Cannot get getHostInfo: ${error}`);
                         if (error.toString().includes('timeout')) {
@@ -228,17 +233,17 @@ class Hosts extends Component<HostsProps, HostsState> {
             }
         }
 
-        return Promise.all(promises)
-            .then(results => {
-                const _hostsData: Record<string, Record<string, any> | string> = {};
-                results.forEach(res => _hostsData[res.id] = res.data);
-                return _hostsData;
-            });
+        return Promise.all(promises).then(results => {
+            const _hostsData: Record<string, Record<string, any> | string> = {};
+            results.forEach(res => (_hostsData[res.id] = res.data));
+            return _hostsData;
+        });
     }
 
     readInfo() {
-        return this.props.socket.getHosts(true)
-            .then(hosts => this.props.socket.getRepository(this.props.currentHost, { update: false }, false, this.state.readTimeoutMs)
+        return this.props.socket.getHosts(true).then(hosts =>
+            this.props.socket
+                .getRepository(this.props.currentHost, { update: false }, false, this.state.readTimeoutMs)
                 .then(async repository => {
                     const alive = JSON.parse(JSON.stringify(this.state.alive));
 
@@ -264,40 +269,42 @@ class Hosts extends Component<HostsProps, HostsState> {
                     if (e.toString().includes('timeout')) {
                         this.setState({ showSlowConnectionWarning: true });
                     }
-                }));
+                }),
+        );
     }
 
     updateHosts = (events: HostEvent[]) => {
         const hosts: ioBroker.HostObject[] = JSON.parse(JSON.stringify(this.state.hosts));
         const alive: Record<`system.host.${string}`, boolean> = JSON.parse(JSON.stringify(this.state.alive));
 
-        Promise.all(events.map(async event => {
-            const elementFind = hosts.find(host => host._id === event.id);
-            if (elementFind) {
-                const index = hosts.indexOf(elementFind);
-                if (event.obj) {
-                    // updated
-                    hosts[index] = event.obj;
+        Promise.all(
+            events.map(async event => {
+                const elementFind = hosts.find(host => host._id === event.id);
+                if (elementFind) {
+                    const index = hosts.indexOf(elementFind);
+                    if (event.obj) {
+                        // updated
+                        hosts[index] = event.obj;
+                    } else {
+                        // deleted
+                        hosts.splice(index, 1);
+                    }
                 } else {
-                    // deleted
-                    hosts.splice(index, 1);
+                    const state = await this.props.socket.getState(`${event.id}.alive`);
+                    alive[event.id as `system.host.${string}`] = !!state?.val;
+                    // new
+                    hosts.push(event.obj);
                 }
-            } else {
-                const state = await this.props.socket.getState(`${event.id}.alive`);
-                alive[event.id as `system.host.${string}`] = !!state?.val;
-                // new
-                hosts.push(event.obj);
+            }),
+        ).then(() => {
+            const newState: Partial<HostsState> = { hosts, alive };
+
+            if (this.state.filterText && hosts.length <= 2) {
+                newState.filterText = '';
             }
-        }))
-            .then(() => {
-                const newState: Partial<HostsState> = { hosts, alive };
 
-                if (this.state.filterText && hosts.length <= 2) {
-                    newState.filterText = '';
-                }
-
-                this.setState(newState as HostsState);
-            });
+            this.setState(newState as HostsState);
+        });
     };
 
     updateHostsAlive = (events: HostAliveEvent[]) => {
@@ -310,7 +317,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                     delete alive[event.id];
                     changed = true;
                 }
-            } else if ((!!alive[event.id]) !== (!!event.alive)) {
+            } else if (!!alive[event.id] !== !!event.alive) {
                 alive[event.id] = event.alive;
                 changed = true;
             }
@@ -322,8 +329,7 @@ class Hosts extends Component<HostsProps, HostsState> {
     };
 
     getPanelsOrRows() {
-        const items = this.renderHosts()
-            .filter(host => host);
+        const items = this.renderHosts().filter(host => host);
 
         return items.length ? items : this.t('All items are filtered out');
     }
@@ -332,103 +338,113 @@ class Hosts extends Component<HostsProps, HostsState> {
         if (!this.state.showSlowConnectionWarning) {
             return null;
         }
-        return <SlowConnectionWarningDialog
-            readTimeoutMs={this.state.readTimeoutMs}
-            t={this.t}
-            onClose={async readTimeoutMs => {
-                this.setState({ showSlowConnectionWarning: false });
-                if (readTimeoutMs) {
-                    this.setState({ readTimeoutMs });
-                    await this.readInfo();
-                }
-            }}
-        />;
+        return (
+            <SlowConnectionWarningDialog
+                readTimeoutMs={this.state.readTimeoutMs}
+                t={this.t}
+                onClose={async readTimeoutMs => {
+                    this.setState({ showSlowConnectionWarning: false });
+                    if (readTimeoutMs) {
+                        this.setState({ readTimeoutMs });
+                        await this.readInfo();
+                    }
+                }}
+            />
+        );
     }
 
     renderHosts() {
         return this.state.hosts.map(host => {
-            if (this.state.filterText && !host.common.name.toLowerCase().includes(this.state.filterText.toLowerCase())) {
+            if (
+                this.state.filterText &&
+                !host.common.name.toLowerCase().includes(this.state.filterText.toLowerCase())
+            ) {
                 return null;
             }
             const HostElement = this.state.viewMode ? HostCard : HostRow;
 
-            return <HostElement
-                key={host._id}
-                adminInstance={this.props.adminInstance}
-                alive={this.state.alive[host._id]}
-                available={this.state.repository['js-controller']?.version || '-'}
-                executeCommandRemove={() => this.props.executeCommand(`host remove ${host.common.name}`)}
-                expertMode={this.props.expertMode}
-                host={host}
-                hostData={this.state.hostsData[host._id]}
-                hostId={host._id as `system.host.${string}`}
-                hostsWorker={this.props.hostsWorker}
-                isCurrentHost={this.props.currentHost === host._id}
-                jsControllerInfo={this.state.repository['js-controller']}
-                lang={this.props.lang}
-                noTranslation={this.props.noTranslation}
-                onUpdating={this.props.onUpdating}
-                showAdaptersWarning={this.props.showAdaptersWarning}
-                socket={this.props.socket}
-                systemConfig={this.props.systemConfig}
-                t={this.t}
-                theme={this.props.theme}
-                themeType={this.props.themeType}
-                toggleTranslation={this.props.toggleTranslation}
-            />;
+            return (
+                <HostElement
+                    key={host._id}
+                    adminInstance={this.props.adminInstance}
+                    alive={this.state.alive[host._id]}
+                    available={this.state.repository['js-controller']?.version || '-'}
+                    executeCommandRemove={() => this.props.executeCommand(`host remove ${host.common.name}`)}
+                    expertMode={this.props.expertMode}
+                    host={host}
+                    hostData={this.state.hostsData[host._id]}
+                    hostId={host._id as `system.host.${string}`}
+                    hostsWorker={this.props.hostsWorker}
+                    isCurrentHost={this.props.currentHost === host._id}
+                    jsControllerInfo={this.state.repository['js-controller']}
+                    lang={this.props.lang}
+                    noTranslation={this.props.noTranslation}
+                    onUpdating={this.props.onUpdating}
+                    showAdaptersWarning={this.props.showAdaptersWarning}
+                    socket={this.props.socket}
+                    systemConfig={this.props.systemConfig}
+                    t={this.t}
+                    theme={this.props.theme}
+                    themeType={this.props.themeType}
+                    toggleTranslation={this.props.toggleTranslation}
+                />
+            );
         });
     }
 
     renderTableHeader() {
-        return <div style={styles.tabHeaderWrapper}>
-            <div style={styles.tabHeaderFirstItem}>
-                {this.t('Name:')}
+        return (
+            <div style={styles.tabHeaderWrapper}>
+                <div style={styles.tabHeaderFirstItem}>{this.t('Name:')}</div>
+                <div style={styles.tabFlex}>
+                    {/* <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div> */}
+                    <Box
+                        component="div"
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                    >
+                        CPU
+                    </Box>
+                    <Box
+                        component="div"
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                    >
+                        RAM
+                    </Box>
+                    <Box
+                        component="div"
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                    >
+                        {this.t('Uptime')}
+                    </Box>
+                    <Box
+                        component="div"
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}
+                    >
+                        {this.t('Installed')}
+                        <div style={styles.jsController}>js-controller</div>
+                    </Box>
+                    <Box
+                        component="div"
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}
+                    >
+                        {this.t('Available')}
+                        <div style={styles.jsController}>js-controller</div>
+                    </Box>
+                    <Box
+                        component="div"
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600)}
+                    >
+                        {this.t('Events')}
+                    </Box>
+                    <div
+                        style={{
+                            ...styles.tabHeaderItemButton,
+                            width: this.props.expertMode ? 292 : 244,
+                        }}
+                    />
+                </div>
             </div>
-            <div style={styles.tabFlex}>
-                {/* <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div> */}
-                <Box
-                    component="div"
-                    sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
-                >
-                    CPU
-                </Box>
-                <Box
-                    component="div"
-                    sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
-                >
-                    RAM
-                </Box>
-                <Box
-                    component="div"
-                    sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
-                >
-                    {this.t('Uptime')}
-                </Box>
-                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}>
-                    {this.t('Installed')}
-                    <div style={styles.jsController}>js-controller</div>
-                </Box>
-                <Box
-                    component="div"
-                    sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}
-                >
-                    {this.t('Available')}
-                    <div style={styles.jsController}>js-controller</div>
-                </Box>
-                <Box
-                    component="div"
-                    sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600)}
-                >
-                    {this.t('Events')}
-                </Box>
-                <div
-                    style={{
-                        ...styles.tabHeaderItemButton,
-                        width: this.props.expertMode ? 292 : 244,
-                    }}
-                />
-            </div>
-        </div>;
+        );
     }
 
     render() {
@@ -436,63 +452,93 @@ class Hosts extends Component<HostsProps, HostsState> {
             return <LinearProgress />;
         }
 
-        return <TabContainer>
-            <style>{blinkClasses}</style>
-            {this.renderSlowConnectionWarning()}
-            <TabHeader>
-                <Tooltip title={this.t('Show / hide List')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <IconButton
-                        size="large"
-                        onClick={() => {
-                            ((window as any)._localStorage as Storage || window.localStorage).setItem('Hosts.viewMode', this.state.viewMode ? 'false' : 'true');
-                            this.setState({ viewMode: !this.state.viewMode });
-                        }}
+        return (
+            <TabContainer>
+                <style>{blinkClasses}</style>
+                {this.renderSlowConnectionWarning()}
+                <TabHeader>
+                    <Tooltip
+                        title={this.t('Show / hide List')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
                     >
-                        {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={this.t('Reload')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <IconButton size="large" onClick={() => this.forceUpdate()}>
-                        <RefreshIcon />
-                    </IconButton>
-                </Tooltip>
-                <div style={styles.grow} />
-                {this.state.hosts.length > 2 ? <TextField
-                    variant="standard"
-                    label={this.t('Filter')}
-                    style={{ margin: '5px 0' }}
-                    value={this.state.filterText}
-                    onChange={event => {
-                        ((window as any)._localStorage as Storage || window.localStorage).setItem('Hosts.viewMode', event.target.value);
-                        this.setState({ filterText: event.target.value });
-                    }}
-                    slotProps={{
-                        input: {
-                            endAdornment: this.state.filterText ? <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={() => {
-                                        ((window as any)._localStorage as Storage || window.localStorage).setItem('Hosts.viewMode', '');
-                                        this.setState({ filterText: '' });
-                                    }}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment> : null,
-                        },
-                    }}
-                /> : null}
-                <div style={styles.grow} />
-            </TabHeader>
-            <TabContent overflow="auto">
-                {!Utils.isStableRepository(this.props.systemConfig.common.activeRepo) ?
-                    <Box component="div" sx={styles.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</Box> : null}
-                <div style={this.state.viewMode ? styles.cards : undefined}>
-                    {!this.state.viewMode && this.renderTableHeader()}
-                    {this.getPanelsOrRows()}
-                </div>
-            </TabContent>
-        </TabContainer>;
+                        <IconButton
+                            size="large"
+                            onClick={() => {
+                                (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+                                    'Hosts.viewMode',
+                                    this.state.viewMode ? 'false' : 'true',
+                                );
+                                this.setState({ viewMode: !this.state.viewMode });
+                            }}
+                        >
+                            {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip
+                        title={this.t('Reload')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            size="large"
+                            onClick={() => this.forceUpdate()}
+                        >
+                            <RefreshIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <div style={styles.grow} />
+                    {this.state.hosts.length > 2 ? (
+                        <TextField
+                            variant="standard"
+                            label={this.t('Filter')}
+                            style={{ margin: '5px 0' }}
+                            value={this.state.filterText}
+                            onChange={event => {
+                                (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+                                    'Hosts.viewMode',
+                                    event.target.value,
+                                );
+                                this.setState({ filterText: event.target.value });
+                            }}
+                            slotProps={{
+                                input: {
+                                    endAdornment: this.state.filterText ? (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => {
+                                                    (
+                                                        ((window as any)._localStorage as Storage) ||
+                                                        window.localStorage
+                                                    ).setItem('Hosts.viewMode', '');
+                                                    this.setState({ filterText: '' });
+                                                }}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ) : null,
+                                },
+                            }}
+                        />
+                    ) : null}
+                    <div style={styles.grow} />
+                </TabHeader>
+                <TabContent overflow="auto">
+                    {!Utils.isStableRepository(this.props.systemConfig.common.activeRepo) ? (
+                        <Box
+                            component="div"
+                            sx={styles.notStableRepo}
+                        >
+                            {this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}
+                        </Box>
+                    ) : null}
+                    <div style={this.state.viewMode ? styles.cards : undefined}>
+                        {!this.state.viewMode && this.renderTableHeader()}
+                        {this.getPanelsOrRows()}
+                    </div>
+                </TabContent>
+            </TabContainer>
+        );
     }
 }
 

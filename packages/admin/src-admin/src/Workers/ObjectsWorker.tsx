@@ -28,9 +28,9 @@ export default class ObjectsWorker {
     private objects: Record<string, ioBroker.Object> | null;
 
     constructor(socket: AdminConnection) {
-        this.socket   = socket;
+        this.socket = socket;
         this.handlers = [];
-        this.promise  = null;
+        this.promise = null;
 
         socket.registerConnectionHandler(this.connectionHandler);
 
@@ -72,9 +72,16 @@ export default class ObjectsWorker {
             type = 'deleted';
         }
 
-        this.handlers.forEach(cb => cb([{
-            id, obj, type, oldObj,
-        }]));
+        this.handlers.forEach(cb =>
+            cb([
+                {
+                    id,
+                    obj,
+                    type,
+                    oldObj,
+                },
+            ]),
+        );
     };
 
     // be careful with this object. Do not change them.
@@ -83,7 +90,8 @@ export default class ObjectsWorker {
             return this.promise;
         }
 
-        this.promise = this.socket.getObjects(update, true)
+        this.promise = this.socket
+            .getObjects(update, true)
             .then(objects => {
                 this.objects = objects;
                 return this.objects;
@@ -98,12 +106,13 @@ export default class ObjectsWorker {
             this.connected = true;
 
             if (this.handlers.length) {
-                this.socket.subscribeObject('*', this.objectChangeHandler)
+                this.socket
+                    .subscribeObject('*', this.objectChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on objects: ${e}`));
 
-                this.getObjects(true)
-                    .then(objects => objects && Object.keys(objects)
-                        .forEach(id => this.objectChangeHandler(id, objects[id])));
+                this.getObjects(true).then(
+                    objects => objects && Object.keys(objects).forEach(id => this.objectChangeHandler(id, objects[id])),
+                );
             }
         } else if (!isConnected && this.connected) {
             this.connected = false;
@@ -115,7 +124,8 @@ export default class ObjectsWorker {
             this.handlers.push(cb);
 
             if (this.handlers.length === 1 && this.connected) {
-                this.socket.subscribeObject('*', this.objectChangeHandler)
+                this.socket
+                    .subscribeObject('*', this.objectChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
             }
         }
@@ -128,7 +138,8 @@ export default class ObjectsWorker {
         }
 
         if (!this.handlers.length && this.connected && !doNotUnsubscribe) {
-            this.socket.unsubscribeObject('*', this.objectChangeHandler)
+            this.socket
+                .unsubscribeObject('*', this.objectChangeHandler)
                 .catch(e => window.alert(`Cannot unsubscribe on object: ${e}`));
         }
     }

@@ -1,16 +1,10 @@
 import React, { createRef } from 'react';
 
-import {
-    Grid2, Skeleton,
-} from '@mui/material';
+import { Grid2, Skeleton } from '@mui/material';
 
-import {
-    Error as ErrorIcon,
-} from '@mui/icons-material';
+import { Error as ErrorIcon } from '@mui/icons-material';
 
-import {
-    type AdminConnection,
-} from '@iobroker/adapter-react-v5';
+import { type AdminConnection } from '@iobroker/adapter-react-v5';
 
 import IntroCard, { type IntroCardProps, type IntroCardState } from '@/components/Intro/IntroCard';
 import CameraIntroDialog from './CameraIntroDialog';
@@ -86,7 +80,11 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
                 const parts = this.props.camera.split('.');
                 const adapter = parts.shift();
                 const instance = parts.shift();
-                this.props.socket.sendTo(`${adapter}.${instance}`, 'image', { name: parts.pop(), width: this.cameraRef.current.width })
+                this.props.socket
+                    .sendTo(`${adapter}.${instance}`, 'image', {
+                        name: parts.pop(),
+                        width: this.cameraRef.current.width,
+                    })
                     .then((result: { data?: string }) => {
                         if (result?.data && this.cameraRef.current) {
                             this.cameraRef.current.src = `data:image/jpeg;base64,${result.data}`;
@@ -99,7 +97,10 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
 
     componentDidMount() {
         if (this.props.camera && this.props.camera !== 'text') {
-            this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval as any as string, 10), 500));
+            this.cameraUpdateTimer = setInterval(
+                () => this.updateCamera(),
+                Math.max(parseInt(this.props.interval as any as string, 10), 500),
+            );
             this.updateCamera();
         }
     }
@@ -115,24 +116,29 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         if (!this.state.dialog) {
             return null;
         }
-        return <CameraIntroDialog
-            socket={this.props.socket}
-            camera={this.props.camera}
-            name={this.props.title}
-            t={this.props.t}
-            onClose={() => {
-                if (this.props.camera && this.props.camera !== 'text') {
-                    if (this.cameraUpdateTimer) {
-                        clearInterval(this.cameraUpdateTimer);
+        return (
+            <CameraIntroDialog
+                socket={this.props.socket}
+                camera={this.props.camera}
+                name={this.props.title}
+                t={this.props.t}
+                onClose={() => {
+                    if (this.props.camera && this.props.camera !== 'text') {
+                        if (this.cameraUpdateTimer) {
+                            clearInterval(this.cameraUpdateTimer);
+                        }
+                        this.cameraUpdateTimer = setInterval(
+                            () => this.updateCamera(),
+                            Math.max(parseInt(this.props.interval as any as string, 10), 500),
+                        );
+                        this.updateCamera();
                     }
-                    this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval as any as string, 10), 500));
-                    this.updateCamera();
-                }
 
-                this.setState({ dialog: false });
-            }}
-            cameraUrl={this.props.cameraUrl}
-        />;
+                    this.setState({ dialog: false });
+                }}
+                cameraUrl={this.props.cameraUrl}
+            />
+        );
     }
 
     handleImageLoad() {
@@ -165,34 +171,43 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
                 }
             }
 
-            return <Grid2
-                container
-                style={styles.imgContainer}
-                justifyContent="center"
-                alignItems="center"
-            >
-                <img
-                    ref={this.cameraRef}
-                    src={url}
-                    alt="Camera"
-                    style={this.state.loaded && !this.state.error ? styles.cameraImg : styles.hidden}
-                    onLoad={() => this.handleImageLoad()}
-                    onError={() => this.handleImageError()}
-                />
-                {!this.state.loaded && !this.state.error &&
-                    <Skeleton
-                        height="100%"
-                        width="100%"
-                        animation="wave"
-                        style={styles.imgSkeleton}
-                    />}
-                {this.state.error &&
-                    <ErrorIcon fontSize="large" />}
-            </Grid2>;
+            return (
+                <Grid2
+                    container
+                    style={styles.imgContainer}
+                    justifyContent="center"
+                    alignItems="center"
+                >
+                    <img
+                        ref={this.cameraRef}
+                        src={url}
+                        alt="Camera"
+                        style={this.state.loaded && !this.state.error ? styles.cameraImg : styles.hidden}
+                        onLoad={() => this.handleImageLoad()}
+                        onError={() => this.handleImageError()}
+                    />
+                    {!this.state.loaded && !this.state.error && (
+                        <Skeleton
+                            height="100%"
+                            width="100%"
+                            animation="wave"
+                            style={styles.imgSkeleton}
+                        />
+                    )}
+                    {this.state.error && <ErrorIcon fontSize="large" />}
+                </Grid2>
+            );
         }
 
         if (this.props.camera.startsWith('cameras.')) {
-            return <img ref={this.cameraRef} src="" alt="camera" style={styles.cameraImg} />;
+            return (
+                <img
+                    ref={this.cameraRef}
+                    src=""
+                    alt="camera"
+                    style={styles.cameraImg}
+                />
+            );
         }
 
         return null;
@@ -205,7 +220,10 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
                 if (this.cameraUpdateTimer) {
                     clearInterval(this.cameraUpdateTimer);
                 }
-                this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval as any as string, 10), 500));
+                this.cameraUpdateTimer = setInterval(
+                    () => this.updateCamera(),
+                    Math.max(parseInt(this.props.interval as any as string, 10), 500),
+                );
             }
         } else if (this.cameraUpdateTimer) {
             clearInterval(this.cameraUpdateTimer);

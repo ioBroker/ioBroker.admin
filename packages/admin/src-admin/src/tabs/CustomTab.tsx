@@ -77,18 +77,13 @@ export async function getHref(
         }
 
         // replace
-        const hrefs = AdminUtils.replaceLink(
-            href,
-            adapter,
-            _instNum,
-            {
-                hostname,
-                // it cannot be void
-                instances: instances as Record<string, ioBroker.InstanceObject>,
-                hosts,
-                adminInstance,
-            },
-        );
+        const hrefs = AdminUtils.replaceLink(href, adapter, _instNum, {
+            hostname,
+            // it cannot be void
+            instances: instances as Record<string, ioBroker.InstanceObject>,
+            hosts,
+            adminInstance,
+        });
 
         href = hrefs ? hrefs[0]?.url : '';
     }
@@ -135,14 +130,13 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             hosts,
             this.props.adminInstance,
             this.props.themeName,
-        )
-            .then(href => {
-                this.setState({ href });
-                // check if href exists
-                // fetch(href)
-                //     .then(() => this.setState({ href }))
-                //     .catch(() => this.setState({ href: href.includes('tab_m.html') ? href.replace('tab_m.html', 'tab.html') : href.replace('tab.html', 'tab_m.html') }));
-            });
+        ).then(href => {
+            this.setState({ href });
+            // check if href exists
+            // fetch(href)
+            //     .then(() => this.setState({ href }))
+            //     .catch(() => this.setState({ href: href.includes('tab_m.html') ? href.replace('tab_m.html', 'tab.html') : href.replace('tab.html', 'tab_m.html') }));
+        });
     }
 
     componentWillUnmount() {
@@ -150,7 +144,11 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             this.props.onUnregisterIframeRef(this.refIframe);
             this.registered = false;
         }
-        (window.removeEventListener || window.detachEvent)(window.removeEventListener ? 'message' : 'onmessage', this.onMessage, false);
+        (window.removeEventListener || window.detachEvent)(
+            window.removeEventListener ? 'message' : 'onmessage',
+            this.onMessage,
+            false,
+        );
     }
 
     componentDidMount() {
@@ -158,7 +156,11 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
-        (window.addEventListener || window.attachEvent)(window.addEventListener ? 'message' : 'onmessage', this.onMessage, false);
+        (window.addEventListener || window.attachEvent)(
+            window.addEventListener ? 'message' : 'onmessage',
+            this.onMessage,
+            false,
+        );
     }
 
     componentDidUpdate(/* prevProps, prevState, snapshot */) {
@@ -180,7 +182,8 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         } else if (event.data === 'nochange' || event.message === 'nochange') {
             // this.props.configStored(true);
             console.warn('Application sends "nochange" message, but it is not processed yet');
-        } else if ((typeof event.data === 'string' && event.data.startsWith('goto:')) ||
+        } else if (
+            (typeof event.data === 'string' && event.data.startsWith('goto:')) ||
             (typeof event.message === 'string' && event.message.startsWith('goto:'))
         ) {
             const [, url] = (event.data || event.message).split(':');
@@ -194,16 +197,18 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             return <LinearProgress />;
         }
 
-        return <iframe
-            ref={el => this.refIframe = el}
-            title={this.props.tab}
-            style={styles.root}
-            src={this.state.href}
-            onError={e => {
-                (e.target as HTMLIFrameElement).onerror = null;
-                this.setState({ href: this.state.href.replace('tab_m.html', 'tab.html') });
-            }}
-        />;
+        return (
+            <iframe
+                ref={el => (this.refIframe = el)}
+                title={this.props.tab}
+                style={styles.root}
+                src={this.state.href}
+                onError={e => {
+                    (e.target as HTMLIFrameElement).onerror = null;
+                    this.setState({ href: this.state.href.replace('tab_m.html', 'tab.html') });
+                }}
+            />
+        );
     }
 }
 

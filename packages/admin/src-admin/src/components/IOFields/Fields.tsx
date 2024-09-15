@@ -1,11 +1,6 @@
 import React from 'react';
 
-import {
-    TextField,
-    FormControl,
-    InputAdornment,
-    IconButton,
-} from '@mui/material';
+import { TextField, FormControl, InputAdornment, IconButton } from '@mui/material';
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
@@ -27,38 +22,45 @@ interface IOTextFieldProps {
 export function IOTextField(props: IOTextFieldProps) {
     const IconCustom = props.icon;
 
-    return <div style={props.styles.formContainer}>
-        {IconCustom ? <IconCustom style={props.styles.formIcon} /> : null}
-        <FormControl style={props.styles.formControl} variant="standard">
-            <TextField
+    return (
+        <div style={props.styles.formContainer}>
+            {IconCustom ? <IconCustom style={props.styles.formIcon} /> : null}
+            <FormControl
+                style={props.styles.formControl}
                 variant="standard"
-                label={props.t(props.label)}
-                autoComplete={props.autoComplete}
-                error={!!props.error}
-                helperText={props.error || ''}
-                value={props.value}
-                onChange={e => props.onChange(e.target.value)}
-                disabled={props.disabled}
-                type={props.type}
-                slotProps={{
-                    inputLabel: {
-                        shrink: true,
-                    },
-                    input: {
-                        readOnly: false,
-                        endAdornment: props.value ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => props.onChange('')}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null,
-                    },
-                }}
-            />
-        </FormControl>
-    </div>;
+            >
+                <TextField
+                    variant="standard"
+                    label={props.t(props.label)}
+                    autoComplete={props.autoComplete}
+                    error={!!props.error}
+                    helperText={props.error || ''}
+                    value={props.value}
+                    onChange={e => props.onChange(e.target.value)}
+                    disabled={props.disabled}
+                    type={props.type}
+                    slotProps={{
+                        inputLabel: {
+                            shrink: true,
+                        },
+                        input: {
+                            readOnly: false,
+                            endAdornment: props.value ? (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => props.onChange('')}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ) : null,
+                        },
+                    }}
+                />
+            </FormControl>
+        </div>
+    );
 }
 
 interface IOColorPickerProps {
@@ -75,20 +77,22 @@ interface IOColorPickerProps {
 function IOColorPicker(props: IOColorPickerProps): React.JSX.Element {
     const IconCustom = props.icon;
 
-    return <div style={{ width: '100%' }}>
-        {IconCustom ? <IconCustom style={props.previewStyle || props.styles.formIcon} /> : null}
-        <ColorPicker
-            style={{
-                ...(props.style || undefined),
-                width: IconCustom ? 'calc(100% - 45px)' : '100%',
-                display: 'inline-block',
-                verticalAlign: 'top',
-            }}
-            label={props.t(props.label)}
-            onChange={props.onChange}
-            value={props.value || ''}
-        />
-    </div>;
+    return (
+        <div style={{ width: '100%' }}>
+            {IconCustom ? <IconCustom style={props.previewStyle || props.styles.formIcon} /> : null}
+            <ColorPicker
+                style={{
+                    ...(props.style || undefined),
+                    width: IconCustom ? 'calc(100% - 45px)' : '100%',
+                    display: 'inline-block',
+                    verticalAlign: 'top',
+                }}
+                label={props.t(props.label)}
+                onChange={props.onChange}
+                value={props.value || ''}
+            />
+        </div>
+    );
 }
 
 export { IOColorPicker };

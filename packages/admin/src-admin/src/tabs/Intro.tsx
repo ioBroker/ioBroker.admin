@@ -2,10 +2,7 @@ import React from 'react';
 
 import semver from 'semver';
 
-import {
-    Fab, Snackbar, Tooltip, Grid2, LinearProgress,
-    Skeleton,
-} from '@mui/material';
+import { Fab, Snackbar, Tooltip, Grid2, LinearProgress, Skeleton } from '@mui/material';
 
 import {
     Add as AddIcon,
@@ -16,8 +13,10 @@ import {
 } from '@mui/icons-material';
 
 import {
-    type AdminConnection, Utils as UtilsCommon,
-    type IobTheme, type Translate,
+    type AdminConnection,
+    Utils as UtilsCommon,
+    type IobTheme,
+    type Translate,
     TabContainer,
     TabContent,
 } from '@iobroker/adapter-react-v5';
@@ -209,7 +208,7 @@ type ItemCamera = {
     color: string;
     /** base64 image */
     image: string;
-}
+};
 
 type ItemLink = {
     camera: 'text';
@@ -223,7 +222,7 @@ type ItemLink = {
     color: string;
     /** base64 image */
     image: string;
-}
+};
 
 type ItemElement = ItemCamera | ItemLink;
 
@@ -348,7 +347,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
         // update alive status
         events.forEach(event => {
-            if ((!!alive[event.id]) !== (!!event.alive)) {
+            if (!!alive[event.id] !== !!event.alive) {
                 alive[event.id] = event.alive;
                 hostsId.push(event.id);
             }
@@ -358,7 +357,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             const hostsData: Record<string, HostData> = JSON.parse(JSON.stringify(this.state.hostsData));
 
             const results = await Promise.all(hostsId.map(id => this.getHostData(id, alive[id])));
-            results.forEach(res => hostsData[res.id] = this.preprocessHostData(res.data));
+            results.forEach(res => (hostsData[res.id] = this.preprocessHostData(res.data)));
             this.setState({ alive, hostsData }, () => this.checkBackendTime());
         }
     };
@@ -376,21 +375,24 @@ class Intro extends React.Component<IntroProps, IntroState> {
         if (hostsId.length) {
             const hostsData: Record<string, HostData> = JSON.parse(JSON.stringify(this.state.hostsData));
 
-            Promise.all(hostsId.map(id => this.getHostData(id)))
-                .then(results => {
-                    results.forEach(res => hostsData[res.id] = this.preprocessHostData(res.data));
-                    this.setState({ hostsData });
-                });
+            Promise.all(hostsId.map(id => this.getHostData(id))).then(results => {
+                results.forEach(res => (hostsData[res.id] = this.preprocessHostData(res.data)));
+                this.setState({ hostsData });
+            });
         }
     };
 
     async activateEditMode() {
         const systemConfig: ioBroker.SystemConfigObject = await this.props.socket.getSystemConfig(true);
-        const data: { instances: IntroInstanceItem[]; deactivated: string[] } = await this.getInstances(true, null, systemConfig);
-        const introLinks = systemConfig?.native?.introLinks ? systemConfig.native.introLinks as ItemElement[] : [];
+        const data: { instances: IntroInstanceItem[]; deactivated: string[] } = await this.getInstances(
+            true,
+            null,
+            systemConfig,
+        );
+        const introLinks = systemConfig?.native?.introLinks ? (systemConfig.native.introLinks as ItemElement[]) : [];
 
         this.introLinksOriginal = JSON.stringify(introLinks);
-        this.deactivatedOriginal  = JSON.parse(JSON.stringify(data.deactivated));
+        this.deactivatedOriginal = JSON.parse(JSON.stringify(data.deactivated));
 
         this.setState({
             instances: data.instances,
@@ -407,15 +409,18 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
 
         // restore old state
-        this.setState({
-            deactivated: this.deactivatedOriginal,
-            introLinks: JSON.parse(this.introLinksOriginal),
-            hasUnsavedChanges: false,
-            edit: false,
-        }, () => {
-            this.deactivatedOriginal = null;
-            this.introLinksOriginal = null;
-        });
+        this.setState(
+            {
+                deactivated: this.deactivatedOriginal,
+                introLinks: JSON.parse(this.introLinksOriginal),
+                hasUnsavedChanges: false,
+                edit: false,
+            },
+            () => {
+                this.deactivatedOriginal = null;
+                this.introLinksOriginal = null;
+            },
+        );
     }
 
     toggleCard(id: string, linkName: string) {
@@ -434,7 +439,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             deactivated.sort();
         }
 
-        const hasUnsavedChanges = JSON.stringify(deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
+        const hasUnsavedChanges =
+            JSON.stringify(deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
             JSON.stringify(this.state.introLinks) !== this.introLinksOriginal;
 
         this.setState({ deactivated, hasUnsavedChanges });
@@ -453,46 +459,62 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 }
 
                 // eslint-disable-next-line no-restricted-properties
-                let isShowInstance = window.isFinite(
-                    instance.id.split('.').pop() as any,
-                );
+                let isShowInstance = window.isFinite(instance.id.split('.').pop() as any);
                 if (isShowInstance) {
                     // try to find second instance of a same type
-                    isShowInstance = !!this.state.instances?.find(inst =>
-                        inst.id !== instance.id && instance.name === inst.name && instance.id.split('.')[0] === inst.id.split('.')[0]);
+                    isShowInstance = !!this.state.instances?.find(
+                        inst =>
+                            inst.id !== instance.id &&
+                            instance.name === inst.name &&
+                            instance.id.split('.')[0] === inst.id.split('.')[0],
+                    );
                 }
 
                 const hostData = this.state.hostsData ? this.state.hostsData[instance.id] : null;
                 const timeDiff = this.state.hostTimeDiffMap.get(instance.id) ?? 0;
-                return <IntroCard
-                    key={`${instance.id}_${instance.link}`}
-                    image={instance.image}
-                    title={<>
-                        <span style={instance.name && instance.name.length > 12 ? { fontSize: '1rem' } : undefined}>
-                            {instance.name}
-                        </span>
-                        {isShowInstance ? <span style={styles.instanceNumber}>
-                            .
-                            {instance.id.split('.').pop()}
-                        </span> : null}
-                    </>}
-                    action={{ link: instance.link, text: linkText }}
-                    t={this.props.t}
-                    lang={this.props.lang}
-                    color={instance.color}
-                    showInfo={!!instance.info}
-                    edit={this.state.edit}
-                    offline={hostData && hostData.alive === false}
-                    warning={timeDiff > this.#THRESHOLD_TIME_DIFF_MS ? this.t('Backend time differs by %s minutes', Math.round(timeDiff / this.#ONE_MINUTE_MS).toString()) : null}
-                    enabled={enabled}
-                    disabled={!hostData || typeof hostData !== 'object'}
-                    getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
-                    toggleActivation={() => this.toggleCard(instance.id, instance.linkName)}
-                    openSnackBarFunc={() => this.setState({ openSnackBar: true })}
-                    theme={this.props.theme}
-                >
-                    {instance.description || this.getHostDescription(instance.id)}
-                </IntroCard>;
+                return (
+                    <IntroCard
+                        key={`${instance.id}_${instance.link}`}
+                        image={instance.image}
+                        title={
+                            <>
+                                <span
+                                    style={
+                                        instance.name && instance.name.length > 12 ? { fontSize: '1rem' } : undefined
+                                    }
+                                >
+                                    {instance.name}
+                                </span>
+                                {isShowInstance ? (
+                                    <span style={styles.instanceNumber}>.{instance.id.split('.').pop()}</span>
+                                ) : null}
+                            </>
+                        }
+                        action={{ link: instance.link, text: linkText }}
+                        t={this.props.t}
+                        lang={this.props.lang}
+                        color={instance.color}
+                        showInfo={!!instance.info}
+                        edit={this.state.edit}
+                        offline={hostData && hostData.alive === false}
+                        warning={
+                            timeDiff > this.#THRESHOLD_TIME_DIFF_MS
+                                ? this.t(
+                                      'Backend time differs by %s minutes',
+                                      Math.round(timeDiff / this.#ONE_MINUTE_MS).toString(),
+                                  )
+                                : null
+                        }
+                        enabled={enabled}
+                        disabled={!hostData || typeof hostData !== 'object'}
+                        getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
+                        toggleActivation={() => this.toggleCard(instance.id, instance.linkName)}
+                        openSnackBarFunc={() => this.setState({ openSnackBar: true })}
+                        theme={this.props.theme}
+                    >
+                        {instance.description || this.getHostDescription(instance.id)}
+                    </IntroCard>
+                );
             }
             return null;
         });
@@ -503,7 +525,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
         introLinks[i].enabled = !introLinks[i].enabled;
 
-        const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
+        const hasUnsavedChanges =
+            JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
             JSON.stringify(introLinks) !== this.introLinksOriginal;
 
         this.setState({ introLinks, hasUnsavedChanges });
@@ -516,98 +539,114 @@ class Intro extends React.Component<IntroProps, IntroState> {
             }
 
             if (item.camera === 'custom') {
-                return <IntroCardCamera
+                return (
+                    <IntroCardCamera
+                        key={`link${i}`}
+                        image={item.image}
+                        title={item.name}
+                        action={{ link: item.link, text: item.linkName }}
+                        t={this.props.t}
+                        socket={this.props.socket}
+                        color={item.color}
+                        edit={this.state.edit}
+                        interval={item.interval}
+                        camera={item.camera}
+                        addTs={item.addTs}
+                        onEdit={() =>
+                            this.setState({
+                                editLink: true,
+                                editLinkIndex: i,
+                                link: JSON.parse(JSON.stringify(this.state.introLinks?.[i])),
+                            })
+                        }
+                        onRemove={() => {
+                            const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
+                            introLinks.splice(i, 1);
+                            const hasUnsavedChanges =
+                                JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
+                                JSON.stringify(introLinks) !== this.introLinksOriginal;
+                            this.setState({ introLinks, hasUnsavedChanges });
+                        }}
+                        enabled={item.enabled}
+                        lang={this.props.lang}
+                        toggleActivation={() => this.toggleLinkCard(i)}
+                        cameraUrl={item.desc}
+                        theme={this.props.theme}
+                    />
+                );
+            }
+
+            return (
+                <IntroCard
                     key={`link${i}`}
                     image={item.image}
                     title={item.name}
                     action={{ link: item.link, text: item.linkName }}
                     t={this.props.t}
-                    socket={this.props.socket}
                     color={item.color}
                     edit={this.state.edit}
-                    interval={item.interval}
-                    camera={item.camera}
-                    addTs={item.addTs}
-                    onEdit={() => this.setState({
-                        editLink: true,
-                        editLinkIndex: i,
-                        link: JSON.parse(JSON.stringify(this.state.introLinks?.[i])),
-                    })}
+                    onEdit={() =>
+                        this.setState({
+                            editLink: true,
+                            editLinkIndex: i,
+                            link: JSON.parse(JSON.stringify(this.state.introLinks?.[i])),
+                        })
+                    }
                     onRemove={() => {
                         const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
                         introLinks.splice(i, 1);
-                        const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
+                        const hasUnsavedChanges =
+                            JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
                             JSON.stringify(introLinks) !== this.introLinksOriginal;
                         this.setState({ introLinks, hasUnsavedChanges });
                     }}
                     enabled={item.enabled}
                     lang={this.props.lang}
                     toggleActivation={() => this.toggleLinkCard(i)}
-                    cameraUrl={item.desc}
                     theme={this.props.theme}
-                />;
-            }
-
-            return <IntroCard
-                key={`link${i}`}
-                image={item.image}
-                title={item.name}
-                action={{ link: item.link, text: item.linkName }}
-                t={this.props.t}
-                color={item.color}
-                edit={this.state.edit}
-                onEdit={() => this.setState({
-                    editLink: true,
-                    editLinkIndex: i,
-                    link: JSON.parse(JSON.stringify(this.state.introLinks?.[i])),
-                })}
-                onRemove={() => {
-                    const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
-                    introLinks.splice(i, 1);
-                    const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
-                            JSON.stringify(introLinks) !== this.introLinksOriginal;
-                    this.setState({ introLinks, hasUnsavedChanges });
-                }}
-                enabled={item.enabled}
-                lang={this.props.lang}
-                toggleActivation={() => this.toggleLinkCard(i)}
-                theme={this.props.theme}
-            >
-                {item.desc || ''}
-            </IntroCard>;
+                >
+                    {item.desc || ''}
+                </IntroCard>
+            );
         });
     }
 
     editLinkCard(): React.JSX.Element | null {
         if (this.state.editLink) {
-            return <EditIntroLinkDialog
-                link={this.state.link}
-                socket={this.props.socket}
-                isNew={this.state.editLinkIndex === -1}
-                t={this.props.t}
-                lang={this.props.lang}
-                theme={this.props.theme}
-                onClose={link => {
-                    if (link) {
-                        const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
-                        if (this.state.editLinkIndex === -1) {
-                            link.enabled = true;
-                            introLinks.push(link);
-                        } else {
-                            link.enabled = introLinks[this.state.editLinkIndex].enabled;
-                            introLinks[this.state.editLinkIndex] = link;
-                        }
-                        const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
-                            JSON.stringify(introLinks) !== this.introLinksOriginal;
+            return (
+                <EditIntroLinkDialog
+                    link={this.state.link}
+                    socket={this.props.socket}
+                    isNew={this.state.editLinkIndex === -1}
+                    t={this.props.t}
+                    lang={this.props.lang}
+                    theme={this.props.theme}
+                    onClose={link => {
+                        if (link) {
+                            const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
+                            if (this.state.editLinkIndex === -1) {
+                                link.enabled = true;
+                                introLinks.push(link);
+                            } else {
+                                link.enabled = introLinks[this.state.editLinkIndex].enabled;
+                                introLinks[this.state.editLinkIndex] = link;
+                            }
+                            const hasUnsavedChanges =
+                                JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
+                                JSON.stringify(introLinks) !== this.introLinksOriginal;
 
-                        this.setState({
-                            introLinks, editLink: false, hasUnsavedChanges, link: null,
-                        });
-                    } else {
-                        this.setState({ editLink: false });
-                    }
-                }}
-            />;
+                            this.setState({
+                                introLinks,
+                                editLink: false,
+                                hasUnsavedChanges,
+                                link: null,
+                            });
+                        } else {
+                            this.setState({ editLink: false });
+                        }
+                    }}
+                />
+            );
         }
 
         return null;
@@ -617,51 +656,60 @@ class Intro extends React.Component<IntroProps, IntroState> {
         const buttons = [];
 
         if (this.state.edit) {
-            buttons.push(<Fab
-                key="add"
-                color="primary"
-                size="small"
-                sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.addButton)}
-                onClick={() =>
-                    this.setState({
-                        editLink: true,
-                        editLinkIndex: -1,
-                        link: {} as ItemCamera | ItemLink,
-                    })}
-            >
-                <AddIcon />
-            </Fab>);
+            buttons.push(
+                <Fab
+                    key="add"
+                    color="primary"
+                    size="small"
+                    sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.addButton)}
+                    onClick={() =>
+                        this.setState({
+                            editLink: true,
+                            editLinkIndex: -1,
+                            link: {} as ItemCamera | ItemLink,
+                        })
+                    }
+                >
+                    <AddIcon />
+                </Fab>,
+            );
 
-            buttons.push(<Fab
-                key="save"
-                size="small"
-                color="primary"
-                disabled={!this.state.hasUnsavedChanges}
-                sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.saveButton)}
-                onClick={() => this.saveCards()}
-            >
-                <CheckIcon />
-            </Fab>);
+            buttons.push(
+                <Fab
+                    key="save"
+                    size="small"
+                    color="primary"
+                    disabled={!this.state.hasUnsavedChanges}
+                    sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.saveButton)}
+                    onClick={() => this.saveCards()}
+                >
+                    <CheckIcon />
+                </Fab>,
+            );
 
-            buttons.push(<Fab
-                key="close"
-                size="small"
-                color="primary"
-                sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.closeButton)}
-                onClick={() => this.deactivateEditMode()}
-            >
-                <CloseIcon />
-            </Fab>);
+            buttons.push(
+                <Fab
+                    key="close"
+                    size="small"
+                    color="primary"
+                    sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.closeButton)}
+                    onClick={() => this.deactivateEditMode()}
+                >
+                    <CloseIcon />
+                </Fab>,
+            );
         } else {
-            buttons.push(<Fab
-                color="primary"
-                size="small"
-                key="edit"
-                style={styles.button}
-                onClick={() => this.activateEditMode()}
-            >
-                <CreateIcon />
-            </Fab>);
+            buttons.push(
+                <Fab
+                    color="primary"
+                    size="small"
+                    key="edit"
+                    style={styles.button}
+                    onClick={() => this.activateEditMode()}
+                >
+                    <CreateIcon />
+                </Fab>,
+            );
         }
 
         return buttons;
@@ -679,7 +727,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             systemConfig.native.introLinks = this.state.introLinks;
         }
         if (changed) {
-            this.props.socket.setSystemConfig(systemConfig)
+            this.props.socket
+                .setSystemConfig(systemConfig)
                 .then(() => this.props.showAlert('Updated', 'success'))
                 .catch((error: any) => {
                     console.log(error);
@@ -721,8 +770,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
         const states = await this.props.socket.getForeignStates(`${hostId}.versions.*`);
 
-        Object.keys(states).forEach(id =>
-            data[`_${id.split('.').pop()}`] = states[id].val);
+        Object.keys(states).forEach(id => (data[`_${id.split('.').pop()}`] = states[id].val));
 
         return { id: hostId, data };
     }
@@ -751,7 +799,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             } else if (item.instance.startsWith('web.')) {
                 // if this is a web instance, check if it is the same as the current instance
                 const _obj = instances[`system.adapter.${item.instance}`];
-                if (_obj?.native?.port && (instance.link).includes(`:${_obj.native.port}`)) {
+                if (_obj?.native?.port && instance.link.includes(`:${_obj.native.port}`)) {
                     // replace
                     const regExp = new RegExp(`^.*:${_obj.native.port}/`);
                     if (instance.link) {
@@ -784,17 +832,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
             url: string;
             port: number;
             instance?: string;
-        }[] = AdminUtils.replaceLink(
-            linkItem.link,
-            common.name,
-            instanceId,
-            {
-                instances,
-                hostname: this.props.hostname,
-                adminInstance: this.props.adminInstance,
-                hosts,
-            },
-        );
+        }[] = AdminUtils.replaceLink(linkItem.link, common.name, instanceId, {
+            instances,
+            hostname: this.props.hostname,
+            adminInstance: this.props.adminInstance,
+            hosts,
+        });
 
         let webReverseProxyPath: ReverseProxyItem | null = null;
         if (this.state.reverseProxy?.length) {
@@ -843,7 +886,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
         language: ioBroker.Languages,
         filterDuplicates?: boolean,
     ): LinkItem[] | null {
-        if (!instance.common.localLinks &&
+        if (
+            !instance.common.localLinks &&
             !instance.common.localLink &&
             !instance.common.welcomeScreen &&
             !instance.common.welcomeScreenPro
@@ -867,8 +911,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     link: instance.common.localLink,
                 });
             } else {
-                const compatibilityStructure: Record<string, any> =
-                    instance.common.localLink as unknown as Record<string, any>;
+                const compatibilityStructure: Record<string, any> = instance.common.localLink as unknown as Record<
+                    string,
+                    any
+                >;
                 if (compatibilityStructure.link) {
                     const item: LinkItem = {
                         ...defaultLink,
@@ -877,7 +923,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     if (compatibilityStructure.color) {
                         item.color = compatibilityStructure.color;
                     }
-                    if (compatibilityStructure.order !== undefined && typeof compatibilityStructure.order === 'number') {
+                    if (
+                        compatibilityStructure.order !== undefined &&
+                        typeof compatibilityStructure.order === 'number'
+                    ) {
                         item.order = compatibilityStructure.order;
                     }
                     if (compatibilityStructure.icon && compatibilityStructure.img) {
@@ -900,13 +949,14 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         link: linkItem,
                     });
                 } else {
-                    const compatibilityStructure: Record<string, any> =
-                        linkItem as Record<string, any>;
+                    const compatibilityStructure: Record<string, any> = linkItem as Record<string, any>;
 
                     if (compatibilityStructure.link) {
                         const item: LinkItem = {
                             ...defaultLink,
-                            id: instance._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ` ${linkName}`),
+                            id:
+                                instance._id.replace('system.adapter.', '') +
+                                (linkName === '_default' ? '' : ` ${linkName}`),
                             link: compatibilityStructure.link,
                             name: defaultLink.name + (linkName === '_default' ? '' : ` ${linkName}`),
                         };
@@ -920,7 +970,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
                             item.icon = (compatibilityStructure.icon || compatibilityStructure.img) as string;
                         }
                         if (compatibilityStructure.description) {
-                            item.description = Intro.getText(compatibilityStructure.description as ioBroker.StringOrTranslated, language);
+                            item.description = Intro.getText(
+                                compatibilityStructure.description as ioBroker.StringOrTranslated,
+                                language,
+                            );
                         }
                         if (compatibilityStructure.pro !== undefined) {
                             if (typeof compatibilityStructure.pro === 'string') {
@@ -937,7 +990,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         }
 
                         if (compatibilityStructure.name) {
-                            item.name = Intro.getText(compatibilityStructure.name as ioBroker.StringOrTranslated, language);
+                            item.name = Intro.getText(
+                                compatibilityStructure.name as ioBroker.StringOrTranslated,
+                                language,
+                            );
                         }
                         if (linkName === '_default') {
                             item.default = true;
@@ -952,8 +1008,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
 
         if (instance.common.welcomeScreen && typeof instance.common.welcomeScreen === 'object') {
-            const compatibilityStructureArr: Record<string, any>[] =
-                Array.isArray(instance.common.welcomeScreen) ? instance.common.welcomeScreen as Record<string, any>[] : [instance.common.welcomeScreen as Record<string, any>];
+            const compatibilityStructureArr: Record<string, any>[] = Array.isArray(instance.common.welcomeScreen)
+                ? (instance.common.welcomeScreen as Record<string, any>[])
+                : [instance.common.welcomeScreen as Record<string, any>];
             compatibilityStructureArr.forEach(compatibilityStructure => {
                 if (compatibilityStructure.link) {
                     const item: LinkItem = {
@@ -965,7 +1022,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     if (compatibilityStructure.color) {
                         item.color = compatibilityStructure.color;
                     }
-                    if (compatibilityStructure.order !== undefined && typeof compatibilityStructure.order === 'number') {
+                    if (
+                        compatibilityStructure.order !== undefined &&
+                        typeof compatibilityStructure.order === 'number'
+                    ) {
                         item.order = compatibilityStructure.order;
                     }
                     if (compatibilityStructure.icon && compatibilityStructure.img) {
@@ -990,8 +1050,11 @@ class Intro extends React.Component<IntroProps, IntroState> {
             });
 
             if (instance.common.welcomeScreenPro && typeof instance.common.welcomeScreenPro === 'object') {
-                const _compatibilityStructureArr: Record<string, any>[] =
-                    Array.isArray(instance.common.welcomeScreenPro) ? instance.common.welcomeScreenPro as Record<string, any>[] : [instance.common.welcomeScreenPro as Record<string, any>];
+                const _compatibilityStructureArr: Record<string, any>[] = Array.isArray(
+                    instance.common.welcomeScreenPro,
+                )
+                    ? (instance.common.welcomeScreenPro as Record<string, any>[])
+                    : [instance.common.welcomeScreenPro as Record<string, any>];
 
                 _compatibilityStructureArr.forEach(compatibilityStructure => {
                     if (compatibilityStructure.link) {
@@ -1004,7 +1067,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         if (compatibilityStructure.color) {
                             item.color = compatibilityStructure.color;
                         }
-                        if (compatibilityStructure.order !== undefined && typeof compatibilityStructure.order === 'number') {
+                        if (
+                            compatibilityStructure.order !== undefined &&
+                            typeof compatibilityStructure.order === 'number'
+                        ) {
                             item.order = compatibilityStructure.order;
                         }
                         if (compatibilityStructure.icon && compatibilityStructure.img) {
@@ -1021,7 +1087,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         }
 
                         if (compatibilityStructure.name) {
-                            item.name = Intro.getText(compatibilityStructure.name as ioBroker.StringOrTranslated, language);
+                            item.name = Intro.getText(
+                                compatibilityStructure.name as ioBroker.StringOrTranslated,
+                                language,
+                            );
                         }
 
                         result.push(item);
@@ -1031,7 +1100,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
 
         result.forEach(item => {
-            if (!item.icon.startsWith('adapter/') &&
+            if (
+                !item.icon.startsWith('adapter/') &&
                 !item.icon.startsWith('data:image/') &&
                 !item.icon.startsWith('http://') &&
                 !item.icon.startsWith('https://') &&
@@ -1123,7 +1193,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         hosts = hosts || this.state.hosts;
 
         const oHosts: Record<string, ioBroker.HostObject> = {};
-        hosts.forEach(obj => oHosts[obj._id] = obj as ioBroker.HostObject);
+        hosts.forEach(obj => (oHosts[obj._id] = obj as ioBroker.HostObject));
 
         try {
             const objects = await this.props.socket.getAdapterInstances('', update);
@@ -1134,7 +1204,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             }
             const introInstances: IntroInstanceItem[] = [];
             const instances: Record<string, ioBroker.InstanceObject> = {};
-            objects.forEach(obj => instances[obj._id] = obj);
+            objects.forEach(obj => (instances[obj._id] = obj));
 
             objects.sort((_a, _b) => {
                 const a: Partial<ioBroker.InstanceCommon> = _a?.common ?? {};
@@ -1148,13 +1218,13 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         const commonNameA: ioBroker.Translated = a.name;
                         aName = commonNameA[this.props.lang] || commonNameA.en;
                     } else {
-                        aName = a.name as string || '';
+                        aName = (a.name as string) || '';
                     }
                     if (typeof b.name === 'object') {
                         const commonNameB: ioBroker.Translated = b.name;
                         bName = commonNameB[this.props.lang] || commonNameB.en;
                     } else {
-                        bName = b.name as string || '';
+                        bName = (b.name as string) || '';
                     }
                     if (aName.toLowerCase() > bName.toLowerCase()) {
                         return 1;
@@ -1185,7 +1255,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     const commonNameA: ioBroker.Translated = a.name;
                     aName = commonNameA[this.props.lang] || commonNameA.en;
                 } else {
-                    aName = a.name as string || '';
+                    aName = (a.name as string) || '';
                 }
 
                 let bName;
@@ -1193,7 +1263,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     const commonNameB: ioBroker.Translated = b.name;
                     bName = commonNameB[this.props.lang] || commonNameB.en;
                 } else {
-                    bName = b.name as string || '';
+                    bName = (b.name as string) || '';
                 }
                 if (aName.toLowerCase() > bName.toLowerCase()) {
                     return 1;
@@ -1216,7 +1286,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     const commonName: ioBroker.Translated = common?.name;
                     name = commonName[this.props.lang] || commonName.en;
                 } else {
-                    name = common?.name as string || '';
+                    name = (common?.name as string) || '';
                 }
 
                 if (name === 'admin' && common.localLink === (this.props.hostname || '')) {
@@ -1236,14 +1306,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     const links = Intro.normalizeLinks(obj, this.props.lang, true);
 
                     if (links) {
-                        links.forEach(link => this.addLinks(
-                            link,
-                            common,
-                            instanceId,
-                            instances,
-                            oHosts,
-                            introInstances,
-                        ));
+                        links.forEach(link =>
+                            this.addLinks(link, common, instanceId, instances, oHosts, introInstances),
+                        );
                     }
                 }
             });
@@ -1330,14 +1395,19 @@ class Intro extends React.Component<IntroProps, IntroState> {
         let npmUpdate: string | React.JSX.Element = '';
         if (hostData) {
             try {
-                if (hostData._nodeNewest && hostData['Node.js'] && semver.gt(hostData._nodeNewest, hostData['Node.js'].replace(/^v/, ''))) {
+                if (
+                    hostData._nodeNewest &&
+                    hostData['Node.js'] &&
+                    semver.gt(hostData._nodeNewest, hostData['Node.js'].replace(/^v/, ''))
+                ) {
                     nodeUpdate = hostData._nodeNewest;
                 }
             } catch {
                 // ignore
             }
             try {
-                if (hostData._nodeNewest !== hostData._nodeNewestNext &&
+                if (
+                    hostData._nodeNewest !== hostData._nodeNewestNext &&
                     hostData._nodeNewestNext &&
                     hostData['Node.js'] &&
                     hostData._nodeNewest &&
@@ -1353,15 +1423,26 @@ class Intro extends React.Component<IntroProps, IntroState> {
             if (nodeUpdate) {
                 const updateSupported = this.state.nodeUpdateSupported && hostData.Platform === 'linux';
 
-                nodeUpdate =
-                    <Tooltip title={this.props.t('Some updates available')} slotProps={{ popper: { sx: styles.tooltip } }}>
+                nodeUpdate = (
+                    <Tooltip
+                        title={this.props.t('Some updates available')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
                         <span style={{ ...styles.nodeUpdate, display: 'inline-flex' }}>
-(
-                            {nodeUpdate}
-)
-                            {updateSupported ? <RefreshIcon style={styles.updateIcon} onClick={() => this.setState({ nodeUpdateDialog: { hostId: id, version: hostData._nodeNewestNext } })} /> : null}
+                            ({nodeUpdate})
+                            {updateSupported ? (
+                                <RefreshIcon
+                                    style={styles.updateIcon}
+                                    onClick={() =>
+                                        this.setState({
+                                            nodeUpdateDialog: { hostId: id, version: hostData._nodeNewestNext },
+                                        })
+                                    }
+                                />
+                            ) : null}
                         </span>
-                    </Tooltip>;
+                    </Tooltip>
+                );
             }
 
             try {
@@ -1372,7 +1453,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 // ignore
             }
             try {
-                if (hostData._npmNewest !== hostData._npmNewestNext &&
+                if (
+                    hostData._npmNewest !== hostData._npmNewestNext &&
                     hostData._npmNewestNext &&
                     hostData.NPM &&
                     hostData._npmNewest &&
@@ -1385,94 +1467,98 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 // ignore
             }
             if (npmUpdate) {
-                npmUpdate = <Tooltip title={this.props.t('Some updates available')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <span style={styles.nodeUpdate}>
-                        (
-                        {npmUpdate}
-                        )
-                    </span>
-                </Tooltip>;
+                npmUpdate = (
+                    <Tooltip
+                        title={this.props.t('Some updates available')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <span style={styles.nodeUpdate}>({npmUpdate})</span>
+                    </Tooltip>
+                );
             }
         }
 
-        return hostData && typeof hostData === 'object' ?
+        return hostData && typeof hostData === 'object' ? (
             <ul style={{ textTransform: 'none' }}>
                 <li>
                     <span>
-                        <span style={styles.bold}>
-                            {this.t('Platform')}
-:
-                            {' '}
-                        </span>
+                        <span style={styles.bold}>{this.t('Platform')}: </span>
                         {hostData.Platform || '--'}
                     </span>
                 </li>
                 <li>
                     <span>
-                        <span style={styles.bold}>
-                            {this.t('RAM')}
-:
-                            {' '}
-                        </span>
+                        <span style={styles.bold}>{this.t('RAM')}: </span>
                         {formatInfo.RAM(hostData.RAM)}
                     </span>
                 </li>
                 <li>
                     <span>
-                        <span style={styles.bold}>
-                            {this.t('Node.js')}
-:
-                            {' '}
+                        <span style={styles.bold}>{this.t('Node.js')}: </span>
+                        <span style={nodeUpdate ? styles.updateExists : styles.updateNo}>
+                            {hostData['Node.js'] || '--'}
                         </span>
-                        <span style={nodeUpdate ? styles.updateExists : styles.updateNo}>{hostData['Node.js'] || '--'}</span>
                         {nodeUpdate}
                     </span>
                 </li>
                 <li>
                     <span>
-                        <span style={styles.bold}>
-                            {this.t('NPM')}
-:
-                            {' '}
+                        <span style={styles.bold}>{this.t('NPM')}: </span>
+                        <span className={npmUpdate ? styles.updateExists : styles.updateNo}>
+                            {hostData.NPM || '--'}
                         </span>
-                        <span className={npmUpdate ? styles.updateExists : styles.updateNo}>{hostData.NPM || '--'}</span>
                         {npmUpdate}
                     </span>
                 </li>
             </ul>
-            :
+        ) : (
             <ul>
                 <Skeleton />
                 <Skeleton />
                 <Skeleton />
                 <Skeleton />
-            </ul>;
+            </ul>
+        );
     }
 
     getHostDescriptionAll(id: string): { el: React.JSX.Element; text: string } {
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
         return {
-            el: <ul style={{ textTransform: 'none' }}>
-                {hostData && typeof hostData === 'object' && Object.keys(hostData)
-                    .filter(_id => !_id.startsWith('_') && hostData[_id] !== null && hostData[_id] !== undefined)
-                    .map(value => <li key={value}>
-                        {hostData && typeof hostData === 'object' ?
-                            <span>
-                                <span style={styles.bold}>
-                                    {this.t(value)}
-                                    :
-                                    {' '}
-                                </span>
-                                {(formatInfo[value] ? formatInfo[value](hostData[value] as number, this.t) : (typeof hostData[value] === 'object' ? JSON.stringify(hostData[value]) : hostData[value].toString()) || '--')}
-                            </span>
-                            :
-                            <Skeleton />}
-                    </li>)}
-            </ul>,
+            el: (
+                <ul style={{ textTransform: 'none' }}>
+                    {hostData &&
+                        typeof hostData === 'object' &&
+                        Object.keys(hostData)
+                            .filter(
+                                _id => !_id.startsWith('_') && hostData[_id] !== null && hostData[_id] !== undefined,
+                            )
+                            .map(value => (
+                                <li key={value}>
+                                    {hostData && typeof hostData === 'object' ? (
+                                        <span>
+                                            <span style={styles.bold}>{this.t(value)}: </span>
+                                            {formatInfo[value]
+                                                ? formatInfo[value](hostData[value] as number, this.t)
+                                                : (typeof hostData[value] === 'object'
+                                                      ? JSON.stringify(hostData[value])
+                                                      : hostData[value].toString()) || '--'}
+                                        </span>
+                                    ) : (
+                                        <Skeleton />
+                                    )}
+                                </li>
+                            ))}
+                </ul>
+            ),
 
-            text: hostData && typeof hostData === 'object' ? Object.keys(hostData)
-                .reduce((acom, item) => `${acom}${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item] as number, this.t) : hostData[item] || '--')}\n`) : '',
+            text:
+                hostData && typeof hostData === 'object'
+                    ? Object.keys(hostData).reduce(
+                          (acom, item) =>
+                              `${acom}${this.t(item)}:${formatInfo[item] ? formatInfo[item](hostData[item] as number, this.t) : hostData[item] || '--'}\n`,
+                      )
+                    : '',
         };
     }
 
@@ -1491,18 +1577,24 @@ class Intro extends React.Component<IntroProps, IntroState> {
         try {
             const systemConfig: ioBroker.SystemConfigObject = await this.props.socket.getSystemConfig(update);
             const hosts: CompactHost[] = await this.props.socket.getCompactHosts(update);
-            const data: { instances: IntroInstanceItem[]; deactivated: string[] } = await this.getInstances(update, hosts, systemConfig);
+            const data: { instances: IntroInstanceItem[]; deactivated: string[] } = await this.getInstances(
+                update,
+                hosts,
+                systemConfig,
+            );
             this.setState({
                 instances: data.instances,
                 hosts,
                 deactivated: data.deactivated,
-                introLinks: systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : [],
+                introLinks:
+                    systemConfig && systemConfig.native && systemConfig.native.introLinks
+                        ? systemConfig.native.introLinks
+                        : [],
             });
             // hosts data could last a long time, so show some results to user now and then get the info about hosts
             const newState: Partial<IntroState> = await this.getHostsData(hosts);
             await new Promise<void>(resolve => {
-                this.setState(newState as IntroState, () =>
-                    resolve());
+                this.setState(newState as IntroState, () => resolve());
             });
         } catch (error: any) {
             window.alert(`Cannot get data: ${error}`);
@@ -1513,16 +1605,18 @@ class Intro extends React.Component<IntroProps, IntroState> {
      * Render toast if content has been copied
      */
     renderCopiedToast(): React.JSX.Element {
-        return <Snackbar
-            anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-            }}
-            open={this.state.openSnackBar}
-            autoHideDuration={3_000}
-            onClose={() => this.setState({ openSnackBar: false })}
-            message={this.t('copied')}
-        />;
+        return (
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={this.state.openSnackBar}
+                autoHideDuration={3_000}
+                onClose={() => this.setState({ openSnackBar: false })}
+                message={this.t('copied')}
+            />
+        );
     }
 
     render(): React.JSX.Element {
@@ -1530,29 +1624,37 @@ class Intro extends React.Component<IntroProps, IntroState> {
             return <LinearProgress />;
         }
 
-        return <TabContainer
-            elevation={0}
-            overflow="visible"
-        >
-            {this.renderCopiedToast()}
-            {this.state.nodeUpdateDialog ? <NodeUpdateDialog onClose={() => this.setState({ nodeUpdateDialog: null })} socket={this.props.socket} {...this.state.nodeUpdateDialog} /> : null}
-            <TabContent style={styles.container}>
-                {/* This fragment is required here
+        return (
+            <TabContainer
+                elevation={0}
+                overflow="visible"
+            >
+                {this.renderCopiedToast()}
+                {this.state.nodeUpdateDialog ? (
+                    <NodeUpdateDialog
+                        onClose={() => this.setState({ nodeUpdateDialog: null })}
+                        socket={this.props.socket}
+                        {...this.state.nodeUpdateDialog}
+                    />
+                ) : null}
+                <TabContent style={styles.container}>
+                    {/* This fragment is required here
                 to split directives of Grid2 in TabContent and Grid2 directives in Intro */}
-                {/* eslint-disable-next-line react/jsx-no-useless-fragment */}
-                <>
-                    <Grid2
-                        container
-                        spacing={2}
-                    >
-                        {this.getInstancesCards()}
-                        {this.getLinkCards()}
-                    </Grid2>
-                </>
-                {this.getButtons()}
-                {this.editLinkCard()}
-            </TabContent>
-        </TabContainer>;
+                    {/* eslint-disable-next-line react/jsx-no-useless-fragment */}
+                    <>
+                        <Grid2
+                            container
+                            spacing={2}
+                        >
+                            {this.getInstancesCards()}
+                            {this.getLinkCards()}
+                        </Grid2>
+                    </>
+                    {this.getButtons()}
+                    {this.editLinkCard()}
+                </TabContent>
+            </TabContainer>
+        );
     }
 
     /**
@@ -1565,7 +1667,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             let dockerString = hostData.dockerInformation.isOfficial ? 'official image' : 'unofficial image';
 
             if (hostData.dockerInformation.isOfficial) {
-                dockerString +=  ` - ${hostData.dockerInformation.officialVersion}`;
+                dockerString += ` - ${hostData.dockerInformation.officialVersion}`;
             }
 
             hostData.Platform = `${hostData.Platform} (${dockerString})` as string;

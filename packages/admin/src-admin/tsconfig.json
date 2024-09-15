@@ -1,32 +1,25 @@
 // Specialized tsconfig for the admin directory,
 // includes DOM typings and configures the admin build
 {
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": "./",
-    "allowSyntheticDefaultImports": true,
-    "checkJs": false,
-    "noEmit": false,
-    "outDir": "./build",
-    "sourceMap": true,
-    "sourceRoot": "./src",
-    "noImplicitAny": true,
-    "skipLibCheck": true,
-    "verbatimModuleSyntax": true,
-    "lib": [
-      "es2018",
-      "DOM"
-    ],
-    "jsx": "react",
-    "types": [
-      "@iobroker/types"
-    ],
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "#JC/*": ["../../jsonConfig/src/*"]
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "./",
+        "allowSyntheticDefaultImports": true,
+        "checkJs": false,
+        "noEmit": false,
+        "outDir": "./build",
+        "sourceMap": true,
+        "sourceRoot": "./src",
+        "noImplicitAny": true,
+        "skipLibCheck": true,
+        "verbatimModuleSyntax": true,
+        "lib": ["es2018", "DOM"],
+        "jsx": "react",
+        "types": ["@iobroker/types"],
+        "paths": {
+            "@/*": ["./src/*"],
+            "#JC/*": ["../../jsonConfig/src/*"]
+        }
     },
-  },
-  "include": ["./src/**/*", "./src/types.d.ts"]
+    "include": ["./src/**/*", "./src/types.d.ts"]
 }

@@ -278,7 +278,8 @@ class AdminUtils {
                     ip.family === 'IPv4' &&
                     localIp.includes('.') &&
                     // eslint-disable-next-line no-bitwise
-                    (AdminUtils.ip2int(localIp) & AdminUtils.ip2int(ip.netmask)) === (AdminUtils.ip2int(ip.address) & AdminUtils.ip2int(ip.netmask))
+                    (AdminUtils.ip2int(localIp) & AdminUtils.ip2int(ip.netmask)) ===
+                        (AdminUtils.ip2int(ip.address) & AdminUtils.ip2int(ip.netmask))
                 ) {
                     hostIp = ip.address;
                 } else {
@@ -490,7 +491,11 @@ class AdminUtils {
                                     ids = [`${adapter}.${instance}`];
                                 } else {
                                     ids = Object.keys(context.instances)
-                                        .filter(id => id.startsWith(`system.adapter.${adapterInstance}.`) && context.instances[id].common.enabled)
+                                        .filter(
+                                            id =>
+                                                id.startsWith(`system.adapter.${adapterInstance}.`) &&
+                                                context.instances[id].common.enabled,
+                                        )
                                         .map(id => id.substring(15));
 
                                     // try to get disabled instances
@@ -527,7 +532,8 @@ class AdminUtils {
                                                 context.hostname,
                                                 context.adminInstance,
                                             );
-                                            const _port: number = context.instances[`system.adapter.${id}`]?.native?.port as number;
+                                            const _port: number = context.instances[`system.adapter.${id}`]?.native
+                                                ?.port as number;
                                             _urls.push({ url: _link, port: _port, instance: id });
                                         }
                                     } else {
@@ -541,7 +547,8 @@ class AdminUtils {
                                             context.hostname,
                                             context.adminInstance,
                                         );
-                                        const _port: number = context.instances[`system.adapter.${id}`]?.native?.port as number;
+                                        const _port: number = context.instances[`system.adapter.${id}`]?.native
+                                            ?.port as number;
                                         _urls.push({ url: _link, port: _port, instance: id });
                                     }
                                 });

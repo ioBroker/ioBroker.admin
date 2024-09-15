@@ -50,7 +50,6 @@ const styles: Record<string, any> = {
     wrapperHeader: {
         display: 'flex',
         alignItems: 'center',
-
     },
     headerName: {
         fontSize: 24,
