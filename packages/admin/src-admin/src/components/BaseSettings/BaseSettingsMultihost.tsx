@@ -1,4 +1,4 @@
-import React, { createRef, Component } from 'react';
+import React, { createRef, Component, type JSX } from 'react';
 
 import { Grid2, FormControlLabel, Checkbox, TextField, Paper } from '@mui/material';
 
@@ -66,11 +66,11 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
         this.focusRef = createRef();
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.focusRef.current?.focus();
     }
 
-    onChange() {
+    onChange(): void {
         const newState: BaseSettingsMultihostState = {
             enabled: this.state.enabled,
             secure: this.state.secure,
@@ -86,7 +86,7 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
         }
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
                 <form

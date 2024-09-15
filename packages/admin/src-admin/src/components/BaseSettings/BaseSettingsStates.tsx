@@ -1,4 +1,4 @@
-import React, { createRef, Component } from 'react';
+import React, { createRef, Component, type JSX } from 'react';
 
 import {
     Grid2,
@@ -204,7 +204,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         this.focusRef = createRef();
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.socket.getIpAddresses(this.props.currentHost).then(_IPs => {
             const IPs = [..._IPs];
             if (!IPs.includes('0.0.0.0')) {
@@ -224,7 +224,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         });
     }
 
-    onChange() {
+    onChange(): void {
         const settings = {
             type: this.state.type,
             host: this.state.host,
@@ -281,7 +281,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         this.props.onChange(settings);
     }
 
-    renderWarning() {
+    renderWarning(): JSX.Element | null {
         if (this.state.showWarningDialog) {
             return (
                 <DialogConfirm
@@ -310,7 +310,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         return null;
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
                 {this.state.loading ? <LinearProgress /> : null}

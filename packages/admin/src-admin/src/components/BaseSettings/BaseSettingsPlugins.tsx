@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { Paper } from '@mui/material';
 
@@ -53,7 +53,7 @@ class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettin
         };
     }
 
-    onChange(value: string) {
+    onChange(value: string): void {
         const newState: BaseSettingsPluginsState = { settings: value };
         try {
             const settings = JSON.parse(value);
@@ -69,7 +69,7 @@ class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettin
         }
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
                 <div style={styles.title}>{this.props.t('For future use')}</div>

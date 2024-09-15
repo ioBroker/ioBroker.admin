@@ -1,4 +1,4 @@
-import React, { createRef, Component } from 'react';
+import React, { createRef, Component, type JSX } from 'react';
 
 import {
     Grid2,
@@ -127,9 +127,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             if (settings.transport[id].type === 'file') {
                 const multiplier =
                     typeof settings.transport[id].maxSize === 'string'
-                        ? (settings.transport[id].maxSize as string).includes('k')
+                        ? settings.transport[id].maxSize.includes('k')
                             ? 0.1
-                            : (settings.transport[id].maxSize as string).includes('g')
+                            : settings.transport[id].maxSize.includes('g')
                               ? 10
                               : 1
                         : 1;
@@ -177,11 +177,11 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         this.focusRef = createRef();
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.focusRef.current?.focus();
     }
 
-    onChange() {
+    onChange(): void {
         const settings: SettingsLog = {
             level: this.state.level,
             maxDays: parseInt(this.state.maxDays as string, 10),
@@ -232,13 +232,13 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         this.props.onChange(settings);
     }
 
-    onDelete(id: string) {
+    onDelete(id: string): void {
         const transport = JSON.parse(JSON.stringify(this.state.transport));
         delete transport[id];
         this.setState({ transport }, () => this.onChange());
     }
 
-    renderEnabled(name: string) {
+    renderEnabled(name: string): JSX.Element {
         return (
             <Grid2>
                 <FormControlLabel
@@ -259,7 +259,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         );
     }
 
-    renderLogLevel(name: string) {
+    renderLogLevel(name: string): JSX.Element | null {
         return this.state.transport[name].enabled ? (
             <Grid2>
                 <FormControl
@@ -294,7 +294,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         ) : null;
     }
 
-    renderSyslog(name: string) {
+    renderSyslog(name: string): JSX.Element {
         return (
             <Accordion
                 key={name}
@@ -609,7 +609,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         );
     }
 
-    renderHttp(name: string) {
+    renderHttp(name: string): JSX.Element {
         return (
             <Accordion
                 key={name}
@@ -738,7 +738,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         );
     }
 
-    renderStream(name: string) {
+    renderStream(name: string): JSX.Element {
         return (
             <Accordion
                 key={name}
@@ -833,7 +833,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         );
     }
 
-    renderSEQ(name: string) {
+    renderSEQ(name: string): JSX.Element {
         return (
             <Accordion
                 key={name}
@@ -915,11 +915,10 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         );
     }
 
-    add(type: string) {
+    add(type: string): void {
         if (type === 'file') {
             let i = 1;
 
-            // eslint-disable-next-line
             while (Object.keys(this.state.transport).find(id => id === type + i)) {
                 i++;
             }
@@ -936,7 +935,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             this.setState({ transport }, () => this.onChange());
         } else if (type === 'syslog') {
             let i = 1;
-            // eslint-disable-next-line
             while (Object.keys(this.state.transport).find(id => id === type + i)) {
                 i++;
             }
@@ -959,7 +957,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             this.setState({ transport }, () => this.onChange());
         } else if (type === 'http') {
             let i = 1;
-            // eslint-disable-next-line
             while (Object.keys(this.state.transport).find(id => id === type + i)) {
                 i++;
             }
@@ -978,7 +975,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             this.setState({ transport }, () => this.onChange());
         } else if (type === 'stream') {
             let i = 1;
-            // eslint-disable-next-line
             while (Object.keys(this.state.transport).find(id => id === type + i)) {
                 i++;
             }
@@ -996,7 +992,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             this.setState({ transport }, () => this.onChange());
         } else if (type === 'seq') {
             let i = 1;
-            // eslint-disable-next-line
             while (Object.keys(this.state.transport).find(id => id === type + i)) {
                 i++;
             }
@@ -1014,7 +1009,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         }
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
                 <Grid2 sx={styles.gridSettings}>

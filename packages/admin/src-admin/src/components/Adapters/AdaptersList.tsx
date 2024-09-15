@@ -184,7 +184,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         };
     }
 
-    getRow(adapterName: string, context: AdaptersContext) {
+    getRow(adapterName: string, context: AdaptersContext): JSX.Element | null {
         const cached = this.props.cachedAdapters[adapterName];
         if (cached) {
             return (
@@ -200,7 +200,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return null;
     }
 
-    getRows(context: AdaptersContext) {
+    getRows(context: AdaptersContext): JSX.Element | JSX.Element[] | null {
         if (!this.props.listOfVisibleAdapter) {
             return (
                 <TableRow>
@@ -281,50 +281,45 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         }
 
         if (!count) {
-            return (
-                !this.props.update && (
-                    <tr>
-                        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-                        <td
-                            colSpan={4}
-                            style={{
-                                padding: 16,
-                                fontSize: 18,
-                                cursor: 'pointer',
-                            }}
-                            title={this.props.context.t('Click to clear all filters')}
-                            onClick={() => this.props.clearAllFilters()}
-                        >
-                            {this.props.context.t('all items are filtered out')}
-                        </td>
-                    </tr>
-                )
-            );
-        }
-
-        return rows;
-    }
-
-    getTiles(context: AdaptersContext) {
-        if (!this.props.listOfVisibleAdapter) {
-            return <LinearProgress />;
-        }
-
-        if (!this.props.listOfVisibleAdapter.length) {
-            return (
-                !this.props.update && (
-                    <div
+            return !this.props.update ? (
+                <tr>
+                    <td
+                        colSpan={4}
                         style={{
-                            margin: 20,
-                            fontSize: 26,
+                            padding: 16,
+                            fontSize: 18,
+                            cursor: 'pointer',
                         }}
                         title={this.props.context.t('Click to clear all filters')}
                         onClick={() => this.props.clearAllFilters()}
                     >
                         {this.props.context.t('all items are filtered out')}
-                    </div>
-                )
-            );
+                    </td>
+                </tr>
+            ) : null;
+        }
+
+        return rows;
+    }
+
+    getTiles(context: AdaptersContext): JSX.Element | JSX.Element[] {
+        if (!this.props.listOfVisibleAdapter) {
+            return <LinearProgress />;
+        }
+
+        if (!this.props.listOfVisibleAdapter.length) {
+            return !this.props.update ? (
+                <div
+                    style={{
+                        margin: 20,
+                        fontSize: 26,
+                    }}
+                    title={this.props.context.t('Click to clear all filters')}
+                    onClick={() => this.props.clearAllFilters()}
+                >
+                    {this.props.context.t('all items are filtered out')}
+                </div>
+            ) : null;
         }
         const items: React.JSX.Element[] = [];
 
@@ -371,7 +366,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return items;
     }
 
-    renderTileView(stableRepo: boolean, repoName: string, context: AdaptersContext) {
+    renderTileView(stableRepo: boolean, repoName: string, context: AdaptersContext): JSX.Element {
         return (
             <>
                 {!stableRepo ? (
@@ -387,7 +382,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         );
     }
 
-    renderTableView(stableRepo: boolean, repoName: string, context: AdaptersContext) {
+    renderTableView(stableRepo: boolean, repoName: string, context: AdaptersContext): JSX.Element {
         return (
             <TabContent>
                 {!stableRepo ? (
@@ -447,7 +442,10 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         );
     }
 
-    static getDerivedStateFromProps(props: AdaptersListProps, state: AdaptersListState) {
+    static getDerivedStateFromProps(
+        props: AdaptersListProps,
+        state: AdaptersListState,
+    ): Partial<AdaptersListState> | null {
         let changed = false;
         // rewrite only if view mode changed, count of adapters in the list
         if (props.descWidth !== state.descWidth) {
@@ -541,7 +539,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return false;
     }
 
-    render() {
+    render(): JSX.Element {
         if (!this.props.systemConfig?.common?.activeRepo) {
             return <LinearProgress />;
         }

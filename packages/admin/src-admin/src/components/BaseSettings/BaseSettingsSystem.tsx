@@ -1,4 +1,4 @@
-import React, { createRef, Component } from 'react';
+import React, { createRef, Component, type JSX } from 'react';
 
 import { Grid2, FormControlLabel, Checkbox, TextField, Paper } from '@mui/material';
 
@@ -81,11 +81,11 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
         this.focusRef = createRef();
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.focusRef.current?.focus();
     }
 
-    onChange() {
+    onChange(): void {
         this.props.onChange({
             memoryLimitMB: this.state.memoryLimitMB,
             hostname: this.state.hostname,
@@ -100,7 +100,7 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
         });
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
                 <Grid2 style={styles.gridSettings}>
