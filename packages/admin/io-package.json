@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.1.0",
+    "version": "7.1.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.1.1": {
+        "en": "Showed the context menu under cursor position in the object browser\nAdded links to aliases in the object browser\nAdded confirmation for CRON dialog if set to triggering every minute",
+        "de": "Das Kontextmenü unter Cursorposition im Objektbrowser angezeigt\nLinks zu Aliases im Objektbrowser hinzugefügt\nBestätigung für CRON-Dialog hinzugefügt, wenn Sie jede Minute auslösen",
+        "ru": "Показать контекстное меню в позиции курсора в браузере объекта\nДобавлены ссылки на псевдонимы в объектном браузере\nДобавлено подтверждение для диалога CRON, если он настроен на запуск каждую минуту",
+        "pt": "Mostrou o menu de contexto na posição do cursor no navegador objeto\nAdicionados links para aliases no navegador objeto\nAdicionado confirmação para CRON diálogo se definido para acionar cada minuto",
+        "nl": "Het contextmenu getoond onder cursorpositie in de objectbrowser\nLinks naar aliassen toegevoegd in de objectbrowser\nBevestiging voor CRON-dialoog toegevoegd indien ingesteld om elke minuut te activeren",
+        "fr": "Affiche le menu contextuel sous la position du curseur dans le navigateur objet\nAjout de liens vers des alias dans le navigateur objet\nAjout de la confirmation pour la boîte de dialogue CRON si elle est configurée pour déclencher chaque minute",
+        "it": "Mostrato il menu contestuale sotto posizione cursore nel browser oggetto\nAggiunto link a alias nel browser oggetto\nAggiunto la conferma per CRON finestra di dialogo se impostato per attivare ogni minuto",
+        "es": "Muestra el menú contextual bajo la posición del cursor en el navegador objeto\nAñadidos a alias en el navegador objeto\nConfirmación agregada para el diálogo CRON si se establece para activar cada minuto",
+        "pl": "Pokazane menu kontekstowe w pozycji kursora w przeglądarce obiektu\nDodano linki do pseudonimów w przeglądarce obiektu\nDodano potwierdzenie dla okna CRON, jeśli ustawiono na uruchamianie co minutę",
+        "uk": "Показати контекстне меню під назвою курсора в браузері об'єкта\nДодано посилання на псевдоніми в браузері об'єкта\nДодано підтвердження для діалогу CRON, якщо встановити, щоб викликати кожну хвилину",
+        "zh-cn": "在对象浏览器中光标位置下显示上下文菜单\n在对象浏览器中添加的链接\n如果设定为每分钟触发 CRON 对话框, 则添加确认"
+      },
       "7.1.0": {
         "en": "Added the possibility to show button in notifications\nRemoved gulp from the build process",
         "de": "Zusätzlich die Möglichkeit, Schaltfläche in Benachrichtigungen anzeigen\nAus dem Build-Prozess entfernt",
@@ -96,19 +109,6 @@
         "pl": "Skorygowany wywóz z tabeli JSON\ndodany komponent 'qrCode' do konfiguracji JSON\nPoprawione dodawanie adapterów z licencjami (innych niż MIT)\nUlepszone okno licencji",
         "uk": "Корисний експорт з таблиці JSON\nдодано компонент `qrCode` до JSON config\nВиправлено додавання адаптерів з ліцензіями (понад MIT)\nПокращено діалогове вікно ліцензії",
         "zh-cn": "从 JSON 表校正的导出\n在JSON配置中添加“qrCode”组件\n修正了增加持有许可证的适配器(除麻省理工学院外)\n改进许可证对话框"
-      },
-      "7.0.17": {
-        "en": "Corrected the CRON description\nCorrected the Device Manager Component",
-        "de": "Korrektur der CRON-Beschreibung\nDie Gerätemanager-Komponente wurde korrigiert",
-        "ru": "Исправлено описание Крон\nИсправлен компонент диспетчера устройств",
-        "pt": "Corrigido a descrição CRON\nCorrected the Device Manager Component",
-        "nl": "Gewijzigde CRON-beschrijving\nDe component Apparaatbeheer corrigeren",
-        "fr": "Correction de la description du CRON\nCorrection du composant Gestionnaire de périphériques",
-        "it": "Corretto la descrizione CRON\nCorretto il componente Gestione dispositivi",
-        "es": "Corregido la descripción CRON\nCorregido el componente del administrador de dispositivos",
-        "pl": "Poprawiono opis CRON\nNaprawiono element menedżera urządzeń",
-        "uk": "Виправлено опис CRON\nВиправлено компонент диспетчера пристроїв",
-        "zh-cn": "更正了CRON描述\n纠正了设备管理器组件"
       }
     },
     "desc": {
