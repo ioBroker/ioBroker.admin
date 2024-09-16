@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { List, ListItemButton, ListItemText, DialogTitle, Dialog, ListItemAvatar, Avatar } from '@mui/material';
 

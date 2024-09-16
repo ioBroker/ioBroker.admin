@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Accordion, AccordionDetails, AccordionSummary, Avatar, Grid2, Tooltip, Typography, Box } from '@mui/material';
 

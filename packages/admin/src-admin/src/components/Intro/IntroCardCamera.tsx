@@ -1,4 +1,4 @@
-import React, { createRef } from 'react';
+import React, { createRef, type JSX } from 'react';
 
 import { Grid2, Skeleton } from '@mui/material';
 
@@ -64,7 +64,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         this.interval = props.interval;
     }
 
-    updateCamera() {
+    updateCamera(): void {
         if (this.cameraRef.current) {
             if (this.props.camera === 'custom') {
                 let url = this.props.cameraUrl;
@@ -95,7 +95,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (this.props.camera && this.props.camera !== 'text') {
             this.cameraUpdateTimer = setInterval(
                 () => this.updateCamera(),
@@ -105,14 +105,14 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.cameraUpdateTimer) {
             clearInterval(this.cameraUpdateTimer);
             this.cameraUpdateTimer = null;
         }
     }
 
-    renderDialogs() {
+    renderDialogs(): JSX.Element | null {
         if (!this.state.dialog) {
             return null;
         }
@@ -141,7 +141,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         );
     }
 
-    handleImageLoad() {
+    handleImageLoad(): void {
         if (!this.state.loaded) {
             this.setState({
                 loaded: true,
@@ -150,7 +150,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         }
     }
 
-    handleImageError() {
+    handleImageError(): void {
         if (!this.state.error) {
             this.setState({
                 loaded: false,
@@ -159,7 +159,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         }
     }
 
-    renderContent() {
+    renderContent(): JSX.Element | null {
         if (this.props.camera === 'custom') {
             let url = this.props.cameraUrl;
 
@@ -213,7 +213,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         return null;
     }
 
-    render() {
+    render(): JSX.Element {
         if (this.props.camera && this.props.camera !== 'text') {
             if (this.interval !== this.props.interval) {
                 this.interval = this.props.interval;

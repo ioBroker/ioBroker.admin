@@ -1,4 +1,4 @@
-import React, { createRef, Component, type RefObject } from 'react';
+import React, { createRef, Component, type RefObject, type JSX } from 'react';
 import JSON5 from 'json5';
 
 import {

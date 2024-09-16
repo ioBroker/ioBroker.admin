@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { TextField, FormControl, InputAdornment, IconButton } from '@mui/material';
 
@@ -19,7 +19,7 @@ interface IOTextFieldProps {
     t: Translate;
 }
 
-export function IOTextField(props: IOTextFieldProps) {
+export function IOTextField(props: IOTextFieldProps): JSX.Element {
     const IconCustom = props.icon;
 
     return (
@@ -74,7 +74,7 @@ interface IOColorPickerProps {
     t: Translate;
 }
 
-function IOColorPicker(props: IOColorPickerProps): React.JSX.Element {
+function IOColorPicker(props: IOColorPickerProps): JSX.Element {
     const IconCustom = props.icon;
 
     return (

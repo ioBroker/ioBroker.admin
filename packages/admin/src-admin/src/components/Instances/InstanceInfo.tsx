@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { Grid2, Tooltip, Typography } from '@mui/material';
 
 const styles: Record<string, React.CSSProperties> = {

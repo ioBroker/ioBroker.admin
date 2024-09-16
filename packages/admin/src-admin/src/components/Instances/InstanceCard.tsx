@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Box, Card, CardContent, CardMedia, Fab, Typography } from '@mui/material';
 
@@ -172,7 +172,7 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
         this.state = Object.assign(this.getDefaultState(props), { mouseOver: false });
     }
 
-    renderSecondCardInfo() {
+    renderSecondCardInfo(): JSX.Element {
         if (this.props.deleting || !this.state.expanded) {
             return null;
         }
@@ -279,7 +279,7 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
         );
     }
 
-    render() {
+    render(): JSX.Element {
         const { item, instance } = this.props;
 
         return (

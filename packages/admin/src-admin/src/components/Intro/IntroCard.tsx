@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Button,
@@ -242,7 +242,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
         return null;
     }
 
-    handleExpandClick() {
+    handleExpandClick(): void {
         this.setState({ expanded: !this.state.expanded });
     }
 
@@ -254,17 +254,16 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
         // do nothing
     }
 
-    renderDialogs(): React.JSX.Element | null {
+    renderDialogs(): JSX.Element | null {
         return null;
     }
 
-    render() {
+    render(): JSX.Element {
         const editClass = this.props.edit ? styles.edit : undefined;
 
         let buttonTitle: ioBroker.StringOrTranslated = this.props.action.text || this.props.t('Link');
         if (typeof buttonTitle === 'object') {
-            buttonTitle =
-                (buttonTitle as ioBroker.Translated)[this.props.lang] || (buttonTitle as ioBroker.Translated).en;
+            buttonTitle = buttonTitle[this.props.lang] || buttonTitle.en;
         }
 
         return (
@@ -277,7 +276,6 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                 }}
                 sx={Utils.getStyle(this.props.theme, styles.root, this.props.style)}
             >
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <Link
                     href={
                         !this.props.edit && this.props.action && this.props.action.link ? this.props.action.link : null

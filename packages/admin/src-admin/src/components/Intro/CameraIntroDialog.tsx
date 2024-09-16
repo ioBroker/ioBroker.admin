@@ -1,4 +1,4 @@
-import React, { createRef, Component } from 'react';
+import React, { createRef, Component, type JSX } from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
 
@@ -52,7 +52,7 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
         this.cameraRef = createRef();
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (this.props.camera && this.props.camera !== 'text') {
             this.cameraUpdateTimer = setInterval(
                 () => this.updateCamera(),
@@ -62,14 +62,14 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.cameraUpdateTimer) {
             clearInterval(this.cameraUpdateTimer);
             this.cameraUpdateTimer = null;
         }
     }
 
-    updateCamera() {
+    updateCamera(): void {
         if (this.cameraRef.current) {
             if (this.props.camera === 'custom') {
                 let url = this.props.cameraUrl;
@@ -99,7 +99,7 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
         }
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 onClose={() => this.props.onClose()}

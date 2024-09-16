@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Button,
@@ -150,11 +150,11 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
         };
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.getCamerasInstances();
     }
 
-    getCamerasInstances() {
+    getCamerasInstances(): void {
         this.props.socket.getAdapterInstances('cameras', true).then(list => {
             const cameraList: { id: string; name: string }[] = [];
             const promises: Promise<{ id: string; name: string }>[] = [];
@@ -184,7 +184,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
         });
     }
 
-    static getLinkNameFromLink(link: string) {
+    static getLinkNameFromLink(link: string): string {
         const m = link.trim().match(/^https?:\/\/([^/:]+)(:\d+)?/);
         if (m) {
             return m[1] + (m[2] || '');
@@ -192,7 +192,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
         return '';
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 onClose={() => this.props.onClose()}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, type JSX } from 'react';
 
 import {
     Button,
@@ -249,7 +249,7 @@ interface InstanceFilterDialogProps {
     filterStatus: string;
 }
 
-const InstanceFilterDialog = ({ onClose, filterMode, filterStatus }: InstanceFilterDialogProps) => {
+const InstanceFilterDialog = ({ onClose, filterMode, filterStatus }: InstanceFilterDialogProps): JSX.Element => {
     const [modeCheck, setModeCheck] = useState(filterMode);
     const [statusCheck, setStatusCheck] = useState(filterStatus);
 
