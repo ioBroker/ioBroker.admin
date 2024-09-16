@@ -9,7 +9,7 @@ import {
     Tabs,
     Tab,
     TextField,
-    Grid,
+    Grid2,
     InputAdornment,
     Checkbox,
     FormControlLabel,
@@ -516,15 +516,15 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         this.originalObj = JSON.stringify(this.props.obj, null, 2);
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.socket.subscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.props.socket.unsubscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
-    onObjectUpdated = (id: string, obj: ioBroker.AnyObject) => {
+    onObjectUpdated = (id: string, obj: ioBroker.AnyObject): void => {
         if (this.originalObj !== JSON.stringify(obj, null, 2)) {
             this.originalObj = JSON.stringify(obj, null, 2);
             if (!this.state.changed) {
@@ -552,7 +552,6 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
         let jsFunc;
         try {
-            // eslint-disable-next-line no-new-func
             jsFunc = new Function('val', func.includes('return') ? func : `return ${func}`);
         } catch {
             return this.props.t('Cannot parse code!');
@@ -596,7 +595,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         return '';
     }
 
-    prepareObject(value: string) {
+    prepareObject(value: string): ioBroker.Object {
         value = value || this.state.text;
         try {
             const obj = JSON.parse(value);
@@ -640,7 +639,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
     }
 
-    onChange(value: string, cb?: () => void) {
+    onChange(value: string, cb?: () => void): void {
         const json = this.prepareObject(value);
         const newState: Partial<ObjectBrowserEditObjectState> = { text: value };
         if (json) {
@@ -711,7 +710,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
     }
 
-    renderTabs() {
+    renderTabs(): JSX.Element {
         return (
             <Tabs
                 style={styles.tabsPadding}
@@ -767,7 +766,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
-    renderSelectDialog(): React.JSX.Element {
+    renderSelectDialog(): JSX.Element {
         if (!this.state.selectId && !this.state.selectRead && !this.state.selectWrite) {
             return null;
         }
@@ -824,7 +823,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
-    setAliasItem(json: ioBroker.StateObject, name: string, value: string, cb?: () => void) {
+    setAliasItem(json: ioBroker.StateObject, name: string, value: string, cb?: () => void): void {
         json.common = json.common || ({} as any);
         const commonAlias = json.common.alias || ({} as Record<string, any>);
 
@@ -859,7 +858,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         this.onChange(JSON.stringify(json, null, 2));
     }
 
-    buttonAddKey(nameKey: string, cb: () => void): React.JSX.Element {
+    buttonAddKey(nameKey: string, cb: () => void): JSX.Element {
         return (
             <div style={styles.marginBlock}>
                 <Button
@@ -875,7 +874,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
-    buttonRemoveKey(nameKey: string, cb: () => void): React.JSX.Element {
+    buttonRemoveKey(nameKey: string, cb: () => void): JSX.Element {
         const { t } = this.props;
         return (
             <Tooltip
@@ -891,7 +890,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
-    renderCommonEdit(): React.JSX.Element {
+    renderCommonEdit(): JSX.Element {
         try {
             const json = JSON.parse(this.state.text);
             const stateTypeArray: ioBroker.CommonType[] = ['number', 'string', 'boolean', 'array', 'object', 'mixed'];
@@ -1225,18 +1224,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
     }
 
-    renderAliasEdit() {
+    renderAliasEdit(): JSX.Element {
         try {
             const json = JSON.parse(this.state.text);
             const funcVisible = json.common?.alias?.read !== undefined || json.common?.alias?.write !== undefined;
 
             return (
-                <Grid
+                <Grid2
                     container
                     direction="column"
                     style={styles.marginTop}
                 >
-                    <Grid item>
+                    <Grid2>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -1252,9 +1251,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             }
                             label={this.props.t('Different IDs for read and write')}
                         />
-                    </Grid>
+                    </Grid2>
                     {typeof json.common?.alias?.id !== 'object' ? (
-                        <Grid item>
+                        <Grid2>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Alias state')}
@@ -1282,11 +1281,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             >
                                 ...
                             </Fab>
-                        </Grid>
+                        </Grid2>
                     ) : null}
 
                     {typeof json.common?.alias?.id === 'object' ? (
-                        <Grid item>
+                        <Grid2>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Alias read state')}
@@ -1314,11 +1313,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             >
                                 ...
                             </Fab>
-                        </Grid>
+                        </Grid2>
                     ) : null}
 
                     {typeof json.common?.alias?.id === 'object' ? (
-                        <Grid item>
+                        <Grid2>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Alias write state')}
@@ -1346,12 +1345,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             >
                                 ...
                             </Fab>
-                        </Grid>
+                        </Grid2>
                     ) : null}
-                    <Grid
-                        item
-                        style={styles.marginTop}
-                    >
+                    <Grid2 style={styles.marginTop}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -1375,9 +1371,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             }
                             label={this.props.t('Use convert functions')}
                         />
-                    </Grid>
+                    </Grid2>
                     {funcVisible ? (
-                        <Grid item>
+                        <Grid2>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Read converter')}
@@ -1407,10 +1403,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 }
                                 margin="normal"
                             />
-                        </Grid>
+                        </Grid2>
                     ) : null}
                     {funcVisible ? (
-                        <Grid item>
+                        <Grid2>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Write converter')}
@@ -1440,21 +1436,21 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 onChange={e => this.setAliasItem(json, 'write', e.target.value)}
                                 margin="normal"
                             />
-                        </Grid>
+                        </Grid2>
                     ) : null}
-                </Grid>
+                </Grid2>
             );
         } catch {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
     }
 
-    onCopy(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    onCopy(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
         Utils.copyToClipboard(this.state.text, e as unknown as Event);
         window.alert(this.props.t('ra_Copied'));
     }
 
-    onClone(oldId: string, newId: string) {
+    onClone(oldId: string, newId: string): void {
         const newObj = JSON.parse(JSON.stringify(this.props.objects[oldId]));
         delete newObj.from;
         delete newObj.ts;
@@ -1464,7 +1460,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         this.props.onNewObject(newObj);
     }
 
-    renderCopyDialog() {
+    renderCopyDialog(): JSX.Element | null {
         if (!this.state.showCopyDialog) {
             return null;
         }
@@ -1516,7 +1512,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
-    render() {
+    render(): JSX.Element {
         const obj = this.props.obj;
 
         const withAlias = obj._id.startsWith('alias.0') && obj.type === 'state';
