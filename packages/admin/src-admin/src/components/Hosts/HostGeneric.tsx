@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import semver from 'semver';
 
 import {
@@ -240,7 +240,7 @@ export const genericStyles: Record<string, any> = {
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 
-function toggleClassName(el: HTMLElement, name: string) {
+function toggleClassName(el: HTMLElement, name: string): void {
     const classNames = el.className.split(' ');
     const pos = classNames.indexOf(name);
     if (pos !== -1) {
@@ -376,7 +376,7 @@ export default abstract class HostGeneric<
         this.diskSizeCache = (diskSizeState?.val as number) ?? this.diskSizeCache;
     }
 
-    notificationHandler = (notifications: Record<string, NotificationAnswer>) =>
+    notificationHandler = (notifications: Record<string, NotificationAnswer>): void =>
         notifications &&
         notifications[this.props.hostId] &&
         this.setState({
@@ -386,7 +386,7 @@ export default abstract class HostGeneric<
             },
         });
 
-    readChangeLog() {
+    readChangeLog(): void {
         if (!this.state.changeLog) {
             fetch(CONTROLLER_CHANGELOG_URL.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/'))
                 .then(response => response.text())
@@ -395,7 +395,7 @@ export default abstract class HostGeneric<
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.hostsWorker.registerNotificationHandler(this.notificationHandler);
 
         this.props.hostsWorker
@@ -418,7 +418,7 @@ export default abstract class HostGeneric<
         this.props.socket.subscribeState(`${this.props.hostId}.logLevel`, this.logLevelFunc);
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.props.hostsWorker.unregisterNotificationHandler(this.notificationHandler);
         this.props.socket.unsubscribeState(`${this.props.hostId}.inputCount`, this.eventsInputFunc);
         this.props.socket.unsubscribeState(`${this.props.hostId}.outputCount`, this.eventsOutputFunc);
@@ -434,7 +434,7 @@ export default abstract class HostGeneric<
         this.props.socket.unsubscribeState(`${this.props.hostId}.logLevel`, this.logLevelFunc);
     }
 
-    eventsInputFunc = (id: string, input: ioBroker.State) => {
+    eventsInputFunc = (_id: string, input: ioBroker.State): void => {
         this.inputCache = input && input.val !== null ? `⇥${input.val}` : '-';
         if (this.refEvents.current) {
             this.refEvents.current.innerHTML = `${this.inputCache} / ${this.outputCache}`;
@@ -442,7 +442,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    eventsOutputFunc = (id: string, output: ioBroker.State) => {
+    eventsOutputFunc = (_id: string, output: ioBroker.State): void => {
         this.outputCache = output && output.val !== null ? `↦${output.val}` : '-';
         if (this.refEvents.current) {
             this.refEvents.current.innerHTML = `${this.inputCache} / ${this.outputCache}`;
@@ -450,7 +450,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    warningFunc = (name_: string, state: ioBroker.State) => {
+    warningFunc = (name_: string, state: ioBroker.State): void => {
         if (name_.endsWith('diskFree')) {
             this.diskFreeCache = (state?.val as number) || 0;
         } else if (name_.endsWith('diskSize')) {
@@ -470,7 +470,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    cpuFunc = (id: string, state: ioBroker.State) => {
+    cpuFunc = (_id: string, state: ioBroker.State): void => {
         this.cpuCache = this.formatValue(state, '%');
         if (this.refCpu.current) {
             this.refCpu.current.innerHTML = this.cpuCache;
@@ -478,7 +478,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    memFunc = (id: string, state: ioBroker.State) => {
+    memFunc = (_id: string, state: ioBroker.State): void => {
         this.memCache = this.formatValue(state, '%');
         if (this.refMem.current) {
             this.refMem.current.innerHTML = this.memCache;
@@ -486,7 +486,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    uptimeFunc = (id: string, state: ioBroker.State) => {
+    uptimeFunc = (_id: string, state: ioBroker.State): void => {
         if (state?.val) {
             const d = Math.floor((state.val as number) / (3600 * 24));
             const h = Math.floor(((state.val as number) % (3600 * 24)) / 3600);
@@ -498,7 +498,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    calculateWarning(notifications: NotificationAnswer | null) {
+    calculateWarning(notifications: NotificationAnswer | null): number {
         if (!notifications) {
             return 0;
         }
@@ -514,7 +514,7 @@ export default abstract class HostGeneric<
         return count;
     }
 
-    formatValue(state: ioBroker.State, unit: string) {
+    formatValue(state: ioBroker.State, unit: string): string {
         if (!state || state.val === null || state.val === undefined) {
             return `-${unit ? ` ${unit}` : ''}`;
         }
@@ -524,13 +524,13 @@ export default abstract class HostGeneric<
         return state.val + (unit ? ` ${unit}` : '');
     }
 
-    logLevelFunc = (id: string, state: ioBroker.State) => {
+    logLevelFunc = (id: string, state: ioBroker.State): void => {
         if (state) {
             this.setState({ logLevel: state.val as ioBroker.LogLevel, logLevelSelect: state.val as ioBroker.LogLevel });
         }
     };
 
-    renderDialogLogLevel() {
+    renderDialogLogLevel(): JSX.Element | null {
         if (!this.state.openDialogLogLevel) {
             return null;
         }
@@ -583,7 +583,7 @@ export default abstract class HostGeneric<
         );
     }
 
-    onCopy() {
+    onCopy(): void {
         const text = [];
         if (this.refCpu.current) {
             text.push(`CPU: ${this.refCpu.current.innerHTML}`);
@@ -614,7 +614,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties) {
+    renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties): JSX.Element {
         return upgradeAvailable ? (
             <Tooltip
                 title={this.props.t('Update')}
@@ -643,7 +643,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderHostBaseEdit() {
+    renderHostBaseEdit(): JSX.Element | null {
         return this.props.expertMode ? (
             <Tooltip
                 title={this.props.t('Host Base Settings')}
@@ -673,7 +673,7 @@ export default abstract class HostGeneric<
     renderExtendButton(
         /** if host is expanded */
         open: boolean,
-    ) {
+    ): JSX.Element {
         return (
             <Tooltip
                 title={this.props.t(open ? 'collapse' : 'Expand')}
@@ -687,7 +687,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderRestartButton() {
+    renderRestartButton(): JSX.Element {
         return (
             <Tooltip
                 title={this.props.t('Restart host')}
@@ -712,7 +712,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderEditButton() {
+    renderEditButton(): JSX.Element {
         return (
             <IconButton
                 size="large"
@@ -727,7 +727,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderRemoveButton() {
+    renderRemoveButton(): JSX.Element {
         return !this.props.alive && !this.props.isCurrentHost ? (
             <Tooltip
                 title={
@@ -753,7 +753,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderCopyButton(style?: React.CSSProperties) {
+    renderCopyButton(style?: React.CSSProperties): JSX.Element {
         return (
             <Tooltip
                 title={this.props.t('Copy')}
@@ -771,7 +771,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderLogLevel() {
+    renderLogLevel(): JSX.Element {
         return (
             <Tooltip
                 title={`${this.props.t('loglevel')} ${this.state.logLevel}`}
@@ -822,7 +822,7 @@ export default abstract class HostGeneric<
         );
     }
 
-    async openHostUpdateDialog() {
+    async openHostUpdateDialog(): Promise<void> {
         const updateAvailable = await this.props.socket.checkFeatureSupported('CONTROLLER_UI_UPGRADE');
 
         this.setState({
@@ -833,7 +833,7 @@ export default abstract class HostGeneric<
         this.readChangeLog();
     }
 
-    renderHostUpdateDialog() {
+    renderHostUpdateDialog(): JSX.Element | null {
         if (!this.state.hostUpdateDialog) {
             return null;
         }
@@ -851,7 +851,7 @@ export default abstract class HostGeneric<
                 news={this.getNews()}
                 toggleTranslation={this.props.toggleTranslation}
                 noTranslation={this.props.noTranslation}
-                onUpdate={async () => {
+                onUpdate={(): void => {
                     if (this.state.updateAvailable) {
                         this.setState({ hostUpdateDialog: false, updateDialog: true });
                     } else {
@@ -868,7 +868,7 @@ export default abstract class HostGeneric<
         );
     }
 
-    renderUpdateDialog() {
+    renderUpdateDialog(): JSX.Element | null {
         if (this.state.updateAvailable && this.state.updateDialog) {
             return (
                 <JsControllerUpdater
@@ -928,7 +928,7 @@ export default abstract class HostGeneric<
                         let downloaded = false;
                         let newsText: string = this.props.noTranslation
                             ? adapter.news[version].en
-                            : ((adapter.news[version][this.props.lang] || adapter.news[version].en) as string);
+                            : adapter.news[version][this.props.lang] || adapter.news[version].en;
 
                         if (adapter.news[version].en === 'see CHANGELOG.md' && this.state.changeLog) {
                             // try to find news in CHANGELOG
@@ -955,7 +955,7 @@ export default abstract class HostGeneric<
         return news;
     }
 
-    baseSettingsSettingsDialog() {
+    baseSettingsSettingsDialog(): JSX.Element | null {
         if (!this.state.baseSettingsDialog) {
             return null;
         }
@@ -974,7 +974,7 @@ export default abstract class HostGeneric<
         );
     }
 
-    renderEditObjectDialog() {
+    renderEditObjectDialog(): JSX.Element | null {
         if (!this.state.editDialog) {
             return null;
         }
@@ -998,7 +998,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderDialogs() {
+    renderDialogs(): JSX.Element {
         return (
             <>
                 {this.renderDialogLogLevel()}

@@ -1,21 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Markdown from 'react-markdown';
 
-import {
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    LinearProgress,
-} from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, LinearProgress } from '@mui/material';
 
-import {
-    Close as IconClose,
-    Check as IconCheck,
-    ArrowDownward as IconArrowDownward,
-} from '@mui/icons-material';
+import { Close as IconClose, Check as IconCheck, ArrowDownward as IconArrowDownward } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -165,87 +153,103 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
     let content: React.JSX.Element;
     if (!loading && text) {
         if (text.startsWith('#')) {
-            content = <Markdown
-                className="markdown"
-                components={{
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    h1: h1Props => <Box
-                        component="h1"
-                        sx={styles.header1}
-                    >
-                        {h1Props.children}
-                    </Box>,
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    h2: h2Props => <Box
-                        component="h2"
-                        sx={styles.header2}
-                    >
-                        {h2Props.children}
-                    </Box>,
-                }}
-            >
-                {text}
-            </Markdown>;
+            content = (
+                <Markdown
+                    className="markdown"
+                    components={{
+                        // eslint-disable-next-line react/no-unstable-nested-components
+                        h1: h1Props => (
+                            <Box
+                                component="h1"
+                                sx={styles.header1}
+                            >
+                                {h1Props.children}
+                            </Box>
+                        ),
+                        // eslint-disable-next-line react/no-unstable-nested-components
+                        h2: h2Props => (
+                            <Box
+                                component="h2"
+                                sx={styles.header2}
+                            >
+                                {h2Props.children}
+                            </Box>
+                        ),
+                    }}
+                >
+                    {text}
+                </Markdown>
+            );
         } else {
-            content = <pre
-                style={styles.pre}
-                ref={preRef}
-                onScroll={() => {
-                    if (preRef.current) {
-                        // give 10 pixels tolerance for MS-edge
-                        const _scrolled =
-                            preRef.current.scrollTop + preRef.current.clientHeight >= preRef.current.scrollHeight - 10;
-                        if (!scrolled && _scrolled) {
-                            setScrolled(_scrolled);
+            content = (
+                <pre
+                    style={styles.pre}
+                    ref={preRef}
+                    onScroll={() => {
+                        if (preRef.current) {
+                            // give 10 pixels tolerance for MS-edge
+                            const _scrolled =
+                                preRef.current.scrollTop + preRef.current.clientHeight >=
+                                preRef.current.scrollHeight - 10;
+                            if (!scrolled && _scrolled) {
+                                setScrolled(_scrolled);
+                            }
                         }
-                    }
-                }}
-            >
-                {text}
-            </pre>;
+                    }}
+                >
+                    {text}
+                </pre>
+            );
         }
     }
 
-    return <Dialog
-        onClose={() => onClose()}
-        open={!0}
-        maxWidth="lg"
-        fullWidth
-        sx={{ '& .MuiDialog-paper': styles.paper }}
-    >
-        <DialogTitle>
-            {I18n.t('License agreement')}
-            :
-            <span style={{ marginLeft: 16, fontWeight: 'bold' }}>{licenseType}</span>
-        </DialogTitle>
-        <DialogContent style={styles.overflowHidden} dividers>
-            <Box component="div" sx={styles.root} ref={divRef}>
-                {loading ? <LinearProgress /> : content}
-            </Box>
-        </DialogContent>
-        <DialogActions>
-            <Button
-                id="license-dialog-accept"
-                variant="contained"
-                disabled={loading || !scrolled}
-                autoFocus
-                onClick={() => onClose(true)}
-                startIcon={scrolled ? <IconCheck /> : <IconArrowDownward />}
-                color="primary"
+    return (
+        <Dialog
+            onClose={() => onClose()}
+            open={!0}
+            maxWidth="lg"
+            fullWidth
+            sx={{ '& .MuiDialog-paper': styles.paper }}
+        >
+            <DialogTitle>
+                {I18n.t('License agreement')}:<span style={{ marginLeft: 16, fontWeight: 'bold' }}>{licenseType}</span>
+            </DialogTitle>
+            <DialogContent
+                style={styles.overflowHidden}
+                dividers
             >
-                {!scrolled ? I18n.t('Read to the end for accept') : I18n.t('Accept')}
-            </Button>
-            <Button
-                id="license-dialog-close"
-                variant="contained"
-                onClick={() => onClose()}
-                startIcon={<IconClose />}
-                color="grey"
-            >
-                {I18n.t('Close')}
-            </Button>
-        </DialogActions>
-    </Dialog>;
+                <Box
+                    component="div"
+                    sx={styles.root}
+                    ref={divRef}
+                >
+                    {loading ? <LinearProgress /> : content}
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    id="license-dialog-accept"
+                    variant="contained"
+                    disabled={loading || !scrolled}
+                    autoFocus
+                    onClick={() => onClose(true)}
+                    startIcon={scrolled ? <IconCheck /> : <IconArrowDownward />}
+                    color="primary"
+                >
+                    {!scrolled ? I18n.t('Read to the end for accept') : I18n.t('Accept')}
+                </Button>
+                <Button
+                    id="license-dialog-close"
+                    variant="contained"
+                    onClick={() => onClose()}
+                    startIcon={<IconClose />}
+                    color="grey"
+                >
+                    {I18n.t('Close')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 };
 
 export default LicenseDialog;

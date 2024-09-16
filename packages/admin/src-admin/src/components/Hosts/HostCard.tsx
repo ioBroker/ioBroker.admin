@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Box, Card, CardContent, CardMedia, Fab, Skeleton, Typography } from '@mui/material';
 
@@ -218,7 +218,7 @@ interface HostCardState extends HostGenericState {
 }
 
 class HostCard extends HostGeneric<HostCardProps, HostCardState> {
-    getHostDescriptionAll() {
+    getHostDescriptionAll(): JSX.Element | string {
         if (!this.props.hostData) {
             return <Skeleton />;
         }
@@ -262,7 +262,7 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
         );
     }
 
-    render() {
+    render(): JSX.Element {
         const upgradeAvailable =
             (this.props.isCurrentHost || this.props.alive) &&
             AdminUtils.updateAvailable(this.props.host.common.installedVersion, this.props.available);

@@ -1,17 +1,20 @@
 import React from 'react';
 
 import {
-    Grid2, Paper, Card, Typography, MenuItem,
-    FormControl, Select, InputLabel, type SelectChangeEvent,
+    Grid2,
+    Paper,
+    Card,
+    Typography,
+    MenuItem,
+    FormControl,
+    Select,
+    InputLabel,
+    type SelectChangeEvent,
 } from '@mui/material';
 
 import blueGrey from '@mui/material/colors/blueGrey';
 
-import {
-    withWidth,
-    type Translate,
-    type ThemeType,
-} from '@iobroker/adapter-react-v5';
+import { withWidth, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
 import AdminUtils from '@/AdminUtils';
 import Editor from '../../components/Editor';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
@@ -87,27 +90,41 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
     getTypesSelector() {
         const { common } = this.props.data;
 
-        const items = StatisticsDialog.getTypes().map((elem, index) =>
-            <MenuItem value={elem.title} key={index}>
+        const items = StatisticsDialog.getTypes().map((elem, index) => (
+            <MenuItem
+                value={elem.title}
+                key={index}
+            >
                 {this.props.t(elem.title)}
-            </MenuItem>);
+            </MenuItem>
+        ));
 
-        return <FormControl variant="standard" style={styles.formControl}>
-            <InputLabel shrink id="statistics-label">
-                {this.props.t('Statistics')}
-            </InputLabel>
-            <Select
-                disabled={this.props.saving}
+        return (
+            <FormControl
                 variant="standard"
                 style={styles.formControl}
-                id="statistics"
-                value={common.diag}
-                displayEmpty
-                onChange={(e: SelectChangeEvent<'none' | 'normal' | 'no-city' | 'extended'>) => this.handleChangeType(e.target.value as 'none' | 'normal' | 'no-city' | 'extended')}
             >
-                {items}
-            </Select>
-        </FormControl>;
+                <InputLabel
+                    shrink
+                    id="statistics-label"
+                >
+                    {this.props.t('Statistics')}
+                </InputLabel>
+                <Select
+                    disabled={this.props.saving}
+                    variant="standard"
+                    style={styles.formControl}
+                    id="statistics"
+                    value={common.diag}
+                    displayEmpty
+                    onChange={(e: SelectChangeEvent<'none' | 'normal' | 'no-city' | 'extended'>) =>
+                        this.handleChangeType(e.target.value as 'none' | 'normal' | 'no-city' | 'extended')
+                    }
+                >
+                    {items}
+                </Select>
+            </FormControl>
+        );
     }
 
     doChange(name: string, value: string) {
@@ -124,47 +141,69 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
     };
 
     render() {
-        return <div style={{ ...styles.tabPanel, height: '100%' }}>
-            <Grid2 container spacing={3} className="sendData-grid" style={{ height: '100%' }}>
-                <Grid2 size={{ lg: 4, md: 4, xs: 12 }} style={{ display: 'flex', flexDirection: 'column' }}>
-                    <Card style={styles.note}>
-                        <Typography gutterBottom variant="h6" component="div">
-                            {this.props.t('Note:')}
-                        </Typography>
-                        <Typography
-                            variant="body2"
-                            component="div"
-                            dangerouslySetInnerHTML={{ __html: this.props.t('diag-note') }}
-                        />
-                    </Card>
-                    {this.getTypesSelector()}
-                    {this.props.dataAux ? <Paper
-                        variant="outlined"
-                        style={styles.descriptionPanel}
-                    >
-                        <ul>
-                            {Object.keys(this.props.dataAux).map(key => <li key={key}>{key}</li>)}
-                        </ul>
-                    </Paper> : null}
-                </Grid2>
+        return (
+            <div style={{ ...styles.tabPanel, height: '100%' }}>
                 <Grid2
-                    size={{ lg: 8, md: 4, xs: 12 }}
+                    container
+                    spacing={3}
                     className="sendData-grid"
-                    style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                    style={{ height: '100%' }}
                 >
-                    <Paper style={styles.sentData}>
-                        <Typography gutterBottom variant="h6" component="div">
-                            {this.props.t('Sent data:')}
-                        </Typography>
-                    </Paper>
-                    <Editor
-                        editValueMode
-                        themeType={this.props.themeType}
-                        value={JSON.stringify(this.props.dataAux, null, 2)}
-                    />
+                    <Grid2
+                        size={{ lg: 4, md: 4, xs: 12 }}
+                        style={{ display: 'flex', flexDirection: 'column' }}
+                    >
+                        <Card style={styles.note}>
+                            <Typography
+                                gutterBottom
+                                variant="h6"
+                                component="div"
+                            >
+                                {this.props.t('Note:')}
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                component="div"
+                                dangerouslySetInnerHTML={{ __html: this.props.t('diag-note') }}
+                            />
+                        </Card>
+                        {this.getTypesSelector()}
+                        {this.props.dataAux ? (
+                            <Paper
+                                variant="outlined"
+                                style={styles.descriptionPanel}
+                            >
+                                <ul>
+                                    {Object.keys(this.props.dataAux).map(key => (
+                                        <li key={key}>{key}</li>
+                                    ))}
+                                </ul>
+                            </Paper>
+                        ) : null}
+                    </Grid2>
+                    <Grid2
+                        size={{ lg: 8, md: 4, xs: 12 }}
+                        className="sendData-grid"
+                        style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                    >
+                        <Paper style={styles.sentData}>
+                            <Typography
+                                gutterBottom
+                                variant="h6"
+                                component="div"
+                            >
+                                {this.props.t('Sent data:')}
+                            </Typography>
+                        </Paper>
+                        <Editor
+                            editValueMode
+                            themeType={this.props.themeType}
+                            value={JSON.stringify(this.props.dataAux, null, 2)}
+                        />
+                    </Grid2>
                 </Grid2>
-            </Grid2>
-        </div>;
+            </div>
+        );
     }
 }
 

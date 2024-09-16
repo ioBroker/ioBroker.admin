@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Dialog,
@@ -151,7 +151,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
         }
     }
 
-    onChange(value: string) {
+    onChange(value: string): void {
         const newState: Partial<HostEditState> = { text: value };
         const json = this.prepareObject(value);
         if (json) {
@@ -165,7 +165,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
         this.setState(newState as HostEditState);
     }
 
-    onUpdate() {
+    onUpdate(): void {
         try {
             const obj = JSON.parse(this.state.text) as ioBroker.HostObject;
             obj._id = this.props.obj._id; // do not allow change of id
@@ -175,17 +175,17 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
         }
     }
 
-    setCommonItem(json: ioBroker.HostObject, name: string, value: any) {
+    setCommonItem(json: ioBroker.HostObject, name: string, value: any): void {
         (json.common as Record<string, any>)[name] = value;
         this.onChange(JSON.stringify(json, null, 2));
     }
 
-    removeCommonItem(json: ioBroker.HostObject, name: string) {
+    removeCommonItem(json: ioBroker.HostObject, name: string): void {
         delete (json.common as Record<string, any>).common[name];
         this.onChange(JSON.stringify(json, null, 2));
     }
 
-    buttonAddKey(nameKey: string, cb: () => void) {
+    buttonAddKey(nameKey: string, cb: () => void): JSX.Element {
         const { t } = this.props;
         return (
             <div style={styles.marginBlock}>
@@ -202,7 +202,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
         );
     }
 
-    buttonRemoveKey(nameKey: string, cb: () => void) {
+    buttonRemoveKey(nameKey: string, cb: () => void): JSX.Element {
         const { t } = this.props;
         return (
             <Tooltip
@@ -218,7 +218,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
         );
     }
 
-    renderCommonEdit() {
+    renderCommonEdit(): JSX.Element {
         try {
             const json = JSON.parse(this.state.text);
             const disabled = false;
@@ -308,7 +308,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
         }
     }
 
-    render() {
+    render(): JSX.Element {
         // const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
 
         return (

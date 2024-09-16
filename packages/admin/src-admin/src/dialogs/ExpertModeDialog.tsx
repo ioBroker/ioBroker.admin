@@ -8,12 +8,12 @@ import {
     FormControlLabel,
     Checkbox,
     Grid2,
-    DialogTitle, IconButton, Typography, Box,
+    DialogTitle,
+    IconButton,
+    Typography,
+    Box,
 } from '@mui/material';
-import {
-    Build as BuildIcon,
-    Check as CheckIcon,
-} from '@mui/icons-material';
+import { Build as BuildIcon, Check as CheckIcon } from '@mui/icons-material';
 
 import { I18n, IconExpert, type IobTheme } from '@iobroker/adapter-react-v5';
 
@@ -57,89 +57,114 @@ interface ExpertModeDialogProps {
 const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose }) => {
     const [doNotShow, setDoNotShow] = useState(false);
 
-    return <Dialog
-        onClose={() => onClose()}
-        open={!0}
-        sx={{ '& .MuiDialog-paper': styles.paper }}
-    >
-        <DialogTitle>
-            <IconExpert style={{ marginRight: 8 }} />
-            {I18n.t('Expert mode')}
-        </DialogTitle>
-        <DialogContent style={styles.overflowHidden} dividers>
-            <Grid2 container>
-                <Grid2 style={styles.width100}>
-                    <Box component="div" sx={styles.root}>
-                        <div style={styles.pre}>
-                            <Typography
-                                style={styles.text}
-                                variant="body2"
-                                component="p"
-                            >
-                                {expertMode ? I18n.t('Now the expert mode will be deactivated only during this browser session.') : I18n.t('Now the expert mode will be active only during this browser session.')}
-                            </Typography>
-                            {!expertMode ? <Typography
-                                style={styles.textBold}
-                                variant="body2"
-                                component="p"
-                            >
-                                {I18n.t('The expert mode allows you to view and edit system internal details.')}
-                            </Typography> : null}
-                            {!expertMode ? <Typography
-                                style={styles.textBold}
-                                variant="body2"
-                                component="p"
-                            >
-                                {I18n.t('Please make sure you know what you are doing!')}
-                            </Typography> : null}
-                            <Typography
-                                style={styles.text}
-                                variant="body2"
-                                component="p"
-                            >
-                                {I18n.t('If you need to save the mode all the time, you can do this in the system settings.')}
-                            </Typography>
-                            {I18n.t('Use this button:')}
-                            <IconButton
-                                color="primary"
-                                size="small"
-                                onClick={() => onClose('openSettings')}
-                            >
-                                <BuildIcon />
-                            </IconButton>
-                        </div>
-                    </Box>
-                </Grid2>
-                <Grid2>
-                    <FormControlLabel
-                        control={<Checkbox
-                            id="expert-mode-do-not-show"
-                            checked={doNotShow}
-                            onChange={e => setDoNotShow(e.target.checked)}
-                        />}
-                        label={I18n.t('Do not show this dialog in this browser session any more')}
-                    />
-                </Grid2>
-            </Grid2>
-        </DialogContent>
-        <DialogActions>
-            <Button
-                id="expert-mode-dialog-ok"
-                variant="contained"
-                autoFocus
-                onClick={() => {
-                    if (doNotShow) {
-                        ((window as any)._sessionStorage as Storage || window.sessionStorage).setItem('App.doNotShowExpertDialog', 'true');
-                    }
-                    onClose(true);
-                }}
-                color="primary"
-                startIcon={<CheckIcon />}
+    return (
+        <Dialog
+            onClose={() => onClose()}
+            open={!0}
+            sx={{ '& .MuiDialog-paper': styles.paper }}
+        >
+            <DialogTitle>
+                <IconExpert style={{ marginRight: 8 }} />
+                {I18n.t('Expert mode')}
+            </DialogTitle>
+            <DialogContent
+                style={styles.overflowHidden}
+                dividers
             >
-                {I18n.t('Ok')}
-            </Button>
-        </DialogActions>
-    </Dialog>;
+                <Grid2 container>
+                    <Grid2 style={styles.width100}>
+                        <Box
+                            component="div"
+                            sx={styles.root}
+                        >
+                            <div style={styles.pre}>
+                                <Typography
+                                    style={styles.text}
+                                    variant="body2"
+                                    component="p"
+                                >
+                                    {expertMode
+                                        ? I18n.t(
+                                              'Now the expert mode will be deactivated only during this browser session.',
+                                          )
+                                        : I18n.t(
+                                              'Now the expert mode will be active only during this browser session.',
+                                          )}
+                                </Typography>
+                                {!expertMode ? (
+                                    <Typography
+                                        style={styles.textBold}
+                                        variant="body2"
+                                        component="p"
+                                    >
+                                        {I18n.t('The expert mode allows you to view and edit system internal details.')}
+                                    </Typography>
+                                ) : null}
+                                {!expertMode ? (
+                                    <Typography
+                                        style={styles.textBold}
+                                        variant="body2"
+                                        component="p"
+                                    >
+                                        {I18n.t('Please make sure you know what you are doing!')}
+                                    </Typography>
+                                ) : null}
+                                <Typography
+                                    style={styles.text}
+                                    variant="body2"
+                                    component="p"
+                                >
+                                    {I18n.t(
+                                        'If you need to save the mode all the time, you can do this in the system settings.',
+                                    )}
+                                </Typography>
+                                {I18n.t('Use this button:')}
+                                <IconButton
+                                    color="primary"
+                                    size="small"
+                                    onClick={() => onClose('openSettings')}
+                                >
+                                    <BuildIcon />
+                                </IconButton>
+                            </div>
+                        </Box>
+                    </Grid2>
+                    <Grid2>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    id="expert-mode-do-not-show"
+                                    checked={doNotShow}
+                                    onChange={e => setDoNotShow(e.target.checked)}
+                                />
+                            }
+                            label={I18n.t('Do not show this dialog in this browser session any more')}
+                        />
+                    </Grid2>
+                </Grid2>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    id="expert-mode-dialog-ok"
+                    variant="contained"
+                    autoFocus
+                    onClick={() => {
+                        if (doNotShow) {
+                            (((window as any)._sessionStorage as Storage) || window.sessionStorage).setItem(
+                                'App.doNotShowExpertDialog',
+                                'true',
+                            );
+                        }
+                        onClose(true);
+                    }}
+                    color="primary"
+                    startIcon={<CheckIcon />}
+                >
+                    {I18n.t('Ok')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 };
 
 export default ExpertModeDialog;

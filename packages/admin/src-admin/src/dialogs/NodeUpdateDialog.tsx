@@ -1,9 +1,13 @@
 import React from 'react';
 import {
     Box,
-    Button, CircularProgress,
-    Dialog, DialogActions, DialogContent,
-    DialogTitle, Typography,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Typography,
 } from '@mui/material';
 import { Close as CloseIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 
@@ -48,7 +52,11 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
      */
     render(): React.JSX.Element {
         return (
-            <Dialog open={!0} maxWidth="lg" fullWidth>
+            <Dialog
+                open={!0}
+                maxWidth="lg"
+                fullWidth
+            >
                 <DialogTitle>{I18n.t('Node.js upgrade')}</DialogTitle>
                 <DialogContent style={{ height: 100, padding: '0 20px', overflow: 'hidden' }}>
                     {!this.state.finished ? (

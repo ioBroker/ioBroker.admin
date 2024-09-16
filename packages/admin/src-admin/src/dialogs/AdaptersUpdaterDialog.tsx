@@ -21,13 +21,7 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import {
-    type AdminConnection,
-    I18n,
-    Utils,
-    type IobTheme,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
@@ -50,9 +44,9 @@ const styles: Record<string, any> = {
         position: 'sticky',
         bottom: -10,
         pl: 1,
-        background: theme.name === 'blue' ? '#5d6467' : (theme.name === 'dark' ? '#5b5b5b' : '#FFF'),
+        background: theme.name === 'blue' ? '#5d6467' : theme.name === 'dark' ? '#5b5b5b' : '#FFF',
     }),
-    container:{
+    container: {
         overflow: 'hidden',
         height: 'calc(100% - 48px)',
         '@media screen and (max-width: 602px)': {
@@ -119,9 +113,18 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             updated: [],
             /** If an upgrade process has been stopped, e.g., due to an error */
             stopped: false,
-            debug: ((window as any)._localStorage as Storage || window.localStorage).getItem('AdaptersUpdaterDialog.debug') === 'true',
-            stopOnError: ((window as any)._localStorage as Storage || window.localStorage).getItem('AdaptersUpdaterDialog.stopOnError') !== 'false',
-            closeOnFinished: ((window as any)._localStorage as Storage || window.localStorage).getItem('AdaptersUpdaterDialog.closeOnFinished') === 'true',
+            debug:
+                (((window as any)._localStorage as Storage) || window.localStorage).getItem(
+                    'AdaptersUpdaterDialog.debug',
+                ) === 'true',
+            stopOnError:
+                (((window as any)._localStorage as Storage) || window.localStorage).getItem(
+                    'AdaptersUpdaterDialog.stopOnError',
+                ) !== 'false',
+            closeOnFinished:
+                (((window as any)._localStorage as Storage) || window.localStorage).getItem(
+                    'AdaptersUpdaterDialog.closeOnFinished',
+                ) === 'true',
             currentVersion: '',
         };
 
@@ -136,7 +139,10 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
     onStartUpdate() {
         this.setState({ inProcess: true }, () => {
             this.props.onSetCommandRunning(true);
-            this.processList = [...this.state.selected].map(adapter => ({ adapter, version: this.props.repository[adapter]?.version }));
+            this.processList = [...this.state.selected].map(adapter => ({
+                adapter,
+                version: this.props.repository[adapter]?.version,
+            }));
 
             this.updateAdapters(() => {
                 this.setState({ inProcess: false, finished: true }, () => {
@@ -162,182 +168,228 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             this.updateAdapter(adapter, version, () => {
                 const updated = [...this.state.updated];
                 updated.push(adapter);
-                this.setState({ updated }, () =>
-                    setTimeout(() => this.updateAdapters(cb), 200));
+                this.setState({ updated }, () => setTimeout(() => this.updateAdapters(cb), 200));
             });
         }
     }
 
     render() {
-        const languageButtonActive = this.props.noTranslation ? Utils.getStyle(this.props.theme, styles.languageButtonActive) : undefined;
+        const languageButtonActive = this.props.noTranslation
+            ? Utils.getStyle(this.props.theme, styles.languageButtonActive)
+            : undefined;
 
-        return <Dialog
-            open={!0}
-            maxWidth="lg"
-            fullWidth={!!this.state.current}
-            onClose={() => this.props.onClose(!!this.state.updated.length)}
-            aria-labelledby="update-dialog-title"
-            aria-describedby="update-dialog-description"
-            sx={{ '& .MuiPaper-root': styles.dialogRoot }}
-            scroll="paper"
-        >
-            <DialogTitle id="update-dialog-title">
-                <div style={styles.wrapperHead}>
-                    {this.props.t('Update %s adapter(s)', this.state.selected.length)}
-                    {!this.state.finished && !this.state.inProcess && <Tooltip title={this.props.t('Select/Unselect all')} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-                        <Checkbox
-                            checked={this.state.selected.length === this.updateAvailable.length}
-                            style={styles.checkbox}
-                            tabIndex={-1}
-                            indeterminate={this.state.selected.length !== this.updateAvailable.length && this.state.selected.length !== 0}
-                            disableRipple
-                            onClick={() => {
-                                let selected: string[] = [];
-                                if (this.state.selected.length !== this.updateAvailable.length) {
-                                    selected = [...this.updateAvailable];
-                                }
-                                this.setState({ selected });
-                            }}
-                        />
-                    </Tooltip>}
-                    {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
-                        size="large"
-                        style={{ ...styles.languageButton, ...languageButtonActive }}
-                        onClick={() => this.props.toggleTranslation()}
-                        title={I18n.t('Disable/Enable translation')}
-                    >
-                        <LanguageIcon />
-                    </IconButton> : null}
-                </div>
-            </DialogTitle>
-            <DialogContent sx={{ '&.MuiDialogContent-root': styles.content }} style={{ height: '100%' }}>
-                <Grid2 container direction="row" sx={styles.container}>
-                    <Grid2 style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
-                        <div style={{ height: '100%', overflow: 'auto' }}>
-                            <AdaptersUpdater
-                                finished={this.state.finished}
-                                inProcess={this.state.inProcess}
-                                selected={this.state.selected}
-                                current={this.state.current}
-                                stopped={this.state.stopped}
-                                updated={this.state.updated}
-                                lang={this.props.lang}
-                                installed={this.props.installed}
-                                repository={this.props.repository}
-                                noTranslation={this.props.noTranslation}
-                                toggleTranslation={this.props.toggleTranslation}
-                                onUpdateSelected={(selected: string[], updateAvailable: string[]) => {
-                                    if (updateAvailable) {
-                                        this.updateAvailable = updateAvailable;
+        return (
+            <Dialog
+                open={!0}
+                maxWidth="lg"
+                fullWidth={!!this.state.current}
+                onClose={() => this.props.onClose(!!this.state.updated.length)}
+                aria-labelledby="update-dialog-title"
+                aria-describedby="update-dialog-description"
+                sx={{ '& .MuiPaper-root': styles.dialogRoot }}
+                scroll="paper"
+            >
+                <DialogTitle id="update-dialog-title">
+                    <div style={styles.wrapperHead}>
+                        {this.props.t('Update %s adapter(s)', this.state.selected.length)}
+                        {!this.state.finished && !this.state.inProcess && (
+                            <Tooltip
+                                title={this.props.t('Select/Unselect all')}
+                                slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                            >
+                                <Checkbox
+                                    checked={this.state.selected.length === this.updateAvailable.length}
+                                    style={styles.checkbox}
+                                    tabIndex={-1}
+                                    indeterminate={
+                                        this.state.selected.length !== this.updateAvailable.length &&
+                                        this.state.selected.length !== 0
                                     }
-                                    this.setState({ selected });
+                                    disableRipple
+                                    onClick={() => {
+                                        let selected: string[] = [];
+                                        if (this.state.selected.length !== this.updateAvailable.length) {
+                                            selected = [...this.updateAvailable];
+                                        }
+                                        this.setState({ selected });
+                                    }}
+                                />
+                            </Tooltip>
+                        )}
+                        {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? (
+                            <IconButton
+                                size="large"
+                                style={{ ...styles.languageButton, ...languageButtonActive }}
+                                onClick={() => this.props.toggleTranslation()}
+                                title={I18n.t('Disable/Enable translation')}
+                            >
+                                <LanguageIcon />
+                            </IconButton>
+                        ) : null}
+                    </div>
+                </DialogTitle>
+                <DialogContent
+                    sx={{ '&.MuiDialogContent-root': styles.content }}
+                    style={{ height: '100%' }}
+                >
+                    <Grid2
+                        container
+                        direction="row"
+                        sx={styles.container}
+                    >
+                        <Grid2 style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
+                            <div style={{ height: '100%', overflow: 'auto' }}>
+                                <AdaptersUpdater
+                                    finished={this.state.finished}
+                                    inProcess={this.state.inProcess}
+                                    selected={this.state.selected}
+                                    current={this.state.current}
+                                    stopped={this.state.stopped}
+                                    updated={this.state.updated}
+                                    lang={this.props.lang}
+                                    installed={this.props.installed}
+                                    repository={this.props.repository}
+                                    noTranslation={this.props.noTranslation}
+                                    toggleTranslation={this.props.toggleTranslation}
+                                    onUpdateSelected={(selected: string[], updateAvailable: string[]) => {
+                                        if (updateAvailable) {
+                                            this.updateAvailable = updateAvailable;
+                                        }
+                                        this.setState({ selected });
+                                    }}
+                                    theme={this.props.theme}
+                                />
+                            </div>
+                        </Grid2>
+                        {!!this.state.current && (
+                            <Grid2
+                                style={{
+                                    height: '100%',
+                                    overflow: 'hidden',
+                                    width: 'calc(100% - 260px)',
+                                    minWidth: 240,
                                 }}
-                                theme={this.props.theme}
-                            />
-                        </div>
+                            >
+                                <Command
+                                    noSpacing
+                                    key={this.state.current}
+                                    ready
+                                    host={this.props.currentHost}
+                                    socket={this.props.socket}
+                                    t={this.props.t}
+                                    cmd={`upgrade ${this.state.current}@${this.state.currentVersion}${this.state.debug ? ' --debug' : ''}`}
+                                    onFinished={() => this.onAdapterFinished()}
+                                    errorFunc={() => {
+                                        if (this.state.stopOnError) {
+                                            this.setState({ stopped: true, finished: true });
+                                            this.onAdapterFinished = null;
+                                            this.props.onSetCommandRunning(false);
+                                        } else {
+                                            this.onAdapterFinished();
+                                        }
+                                    }}
+                                />
+                            </Grid2>
+                        )}
                     </Grid2>
-                    {!!this.state.current && <Grid2
-                        style={{
-                            height: '100%',
-                            overflow: 'hidden',
-                            width: 'calc(100% - 260px)',
-                            minWidth: 240,
+                    <Toolbar
+                        variant="dense"
+                        disableGutters
+                        sx={styles.appBar}
+                    >
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    disabled={this.state.finished}
+                                    checked={this.state.stopOnError}
+                                    onChange={() => {
+                                        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+                                            'AdaptersUpdaterDialog.stopOnError',
+                                            this.state.stopOnError ? 'false' : 'true',
+                                        );
+                                        this.setState({ stopOnError: !this.state.stopOnError });
+                                    }}
+                                />
+                            }
+                            label={this.props.t('Stop on error')}
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    disabled={this.state.finished}
+                                    checked={this.state.closeOnFinished}
+                                    onChange={() => {
+                                        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+                                            'AdaptersUpdaterDialog.closeOnFinished',
+                                            this.state.closeOnFinished ? 'false' : 'true',
+                                        );
+                                        this.setState({ closeOnFinished: !this.state.closeOnFinished });
+                                    }}
+                                />
+                            }
+                            label={this.props.t('Close on finished')}
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    disabled={this.state.finished || this.state.inProcess}
+                                    checked={this.state.debug}
+                                    onChange={() => {
+                                        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+                                            'AdaptersUpdaterDialog.debug',
+                                            this.state.debug ? 'false' : 'true',
+                                        );
+                                        this.setState({ debug: !this.state.debug });
+                                    }}
+                                />
+                            }
+                            label={this.props.t('Debug info')}
+                        />
+                    </Toolbar>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        id="adapters-update-dialog-update"
+                        variant="contained"
+                        disabled={
+                            this.state.stopped ||
+                            this.state.inProcess ||
+                            this.state.finished ||
+                            !this.state.selected.length
+                        }
+                        onClick={() => this.onStartUpdate()}
+                        color="primary"
+                        autoFocus
+                        startIcon={<CheckIcon />}
+                    >
+                        {this.props.t('Update')}
+                    </Button>
+                    <Button
+                        id="adapters-update-dialog-cancel"
+                        variant="contained"
+                        disabled={!this.state.inProcess}
+                        color="grey"
+                        startIcon={<CancelIcon />}
+                        onClick={() => {
+                            this.setState({ stopped: true, finished: true });
+                            this.props.onSetCommandRunning(false);
                         }}
                     >
-                        <Command
-                            noSpacing
-                            key={this.state.current}
-                            ready
-                            host={this.props.currentHost}
-                            socket={this.props.socket}
-                            t={this.props.t}
-                            cmd={`upgrade ${this.state.current}@${this.state.currentVersion}${this.state.debug ? ' --debug' : ''}`}
-                            onFinished={() => this.onAdapterFinished()}
-                            errorFunc={() => {
-                                if (this.state.stopOnError) {
-                                    this.setState({ stopped: true, finished: true });
-                                    this.onAdapterFinished = null;
-                                    this.props.onSetCommandRunning(false);
-                                } else {
-                                    this.onAdapterFinished();
-                                }
-                            }}
-                        />
-                    </Grid2>}
-                </Grid2>
-                <Toolbar variant="dense" disableGutters sx={styles.appBar}>
-                    <FormControlLabel
-                        control={<Checkbox
-                            disabled={this.state.finished}
-                            checked={this.state.stopOnError}
-                            onChange={() => {
-                                ((window as any)._localStorage as Storage || window.localStorage).setItem('AdaptersUpdaterDialog.stopOnError', this.state.stopOnError ? 'false' : 'true');
-                                this.setState({ stopOnError: !this.state.stopOnError });
-                            }}
-                        />}
-                        label={this.props.t('Stop on error')}
-                    />
-                    <FormControlLabel
-                        control={<Checkbox
-                            disabled={this.state.finished}
-                            checked={this.state.closeOnFinished}
-                            onChange={() => {
-                                ((window as any)._localStorage as Storage || window.localStorage).setItem('AdaptersUpdaterDialog.closeOnFinished', this.state.closeOnFinished ? 'false' : 'true');
-                                this.setState({ closeOnFinished: !this.state.closeOnFinished });
-                            }}
-                        />}
-                        label={this.props.t('Close on finished')}
-                    />
-                    <FormControlLabel
-                        control={<Checkbox
-                            disabled={this.state.finished || this.state.inProcess}
-                            checked={this.state.debug}
-                            onChange={() => {
-                                ((window as any)._localStorage as Storage || window.localStorage).setItem('AdaptersUpdaterDialog.debug', this.state.debug ? 'false' : 'true');
-                                this.setState({ debug: !this.state.debug });
-                            }}
-                        />}
-                        label={this.props.t('Debug info')}
-                    />
-                </Toolbar>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    id="adapters-update-dialog-update"
-                    variant="contained"
-                    disabled={this.state.stopped || this.state.inProcess || this.state.finished || !this.state.selected.length}
-                    onClick={() => this.onStartUpdate()}
-                    color="primary"
-                    autoFocus
-                    startIcon={<CheckIcon />}
-                >
-                    {this.props.t('Update')}
-                </Button>
-                <Button
-                    id="adapters-update-dialog-cancel"
-                    variant="contained"
-                    disabled={!this.state.inProcess}
-                    color="grey"
-                    startIcon={<CancelIcon />}
-                    onClick={() => {
-                        this.setState({ stopped: true, finished: true });
-                        this.props.onSetCommandRunning(false);
-                    }}
-                >
-                    {this.props.t('Cancel')}
-                </Button>
-                <Button
-                    id="adapters-update-dialog-close"
-                    variant="contained"
-                    onClick={() => this.props.onClose(!!this.state.updated.length)}
-                    disabled={this.state.inProcess && !this.state.stopped}
-                    color={(this.state.stopped ? 'error' : 'grey')}
-                    startIcon={<CloseIcon />}
-                >
-                    {this.props.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                        {this.props.t('Cancel')}
+                    </Button>
+                    <Button
+                        id="adapters-update-dialog-close"
+                        variant="contained"
+                        onClick={() => this.props.onClose(!!this.state.updated.length)}
+                        disabled={this.state.inProcess && !this.state.stopped}
+                        color={this.state.stopped ? 'error' : 'grey'}
+                        startIcon={<CloseIcon />}
+                    >
+                        {this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

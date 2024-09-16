@@ -40,9 +40,13 @@ import {
 } from '@mui/icons-material';
 
 import {
-    I18n, Utils,
-    SelectWithIcon, type IobTheme,
-    type AdminConnection, type ThemeType, type ThemeName,
+    I18n,
+    Utils,
+    SelectWithIcon,
+    type IobTheme,
+    type AdminConnection,
+    type ThemeType,
+    type ThemeName,
 } from '@iobroker/adapter-react-v5';
 import type { CompactHost } from '@/types';
 
@@ -129,9 +133,9 @@ const styles: Record<string, any> = {
         width: 200,
     },
     table: {
-    // '& *': {
-    //     color: 'black'
-    // }
+        // '& *': {
+        //     color: 'black'
+        // }
     },
     paperTable: {
         width: '100%',
@@ -171,10 +175,13 @@ const styles: Record<string, any> = {
     },
 };
 
-type CompactRepository = Record<string, {
-    icon: ioBroker.AdapterCommon['icon'];
-    version: string;
-}>;
+type CompactRepository = Record<
+    string,
+    {
+        icon: ioBroker.AdapterCommon['icon'];
+        version: string;
+    }
+>;
 
 interface TabPanelProps {
     children: React.JSX.Element | React.JSX.Element[];
@@ -188,24 +195,44 @@ interface TabPanelProps {
 }
 
 function TabPanel({
-    style, children, value, index, title, custom, boxHeight, black, ...props
+    style,
+    children,
+    value,
+    index,
+    title,
+    custom,
+    boxHeight,
+    black,
+    ...props
 }: TabPanelProps): React.JSX.Element | null {
     if (custom) {
         return <div {...props}>{value === index && children}</div>;
     }
     if (value === index) {
-        return <div {...props} style={style}>
-            <AppBar position="static" color="default">
-                <div style={{ ...styles.headerBlock, color: !black ? 'white' : undefined }}>
-                    {title}
-                </div>
-            </AppBar>
-            <Box style={boxHeight ? { height: 'calc(100% - 45px)' } : undefined} p={3}>
-                <Typography style={boxHeight ? { height: '100%' } : undefined} component="div">
-                    {children}
-                </Typography>
-            </Box>
-        </div>;
+        return (
+            <div
+                {...props}
+                style={style}
+            >
+                <AppBar
+                    position="static"
+                    color="default"
+                >
+                    <div style={{ ...styles.headerBlock, color: !black ? 'white' : undefined }}>{title}</div>
+                </AppBar>
+                <Box
+                    style={boxHeight ? { height: 'calc(100% - 45px)' } : undefined}
+                    p={3}
+                >
+                    <Typography
+                        style={boxHeight ? { height: '100%' } : undefined}
+                        component="div"
+                    >
+                        {children}
+                    </Typography>
+                </Box>
+            </div>
+        );
     }
     return null;
 }
@@ -246,25 +273,29 @@ interface EnhancedTableHeadProps {
 function EnhancedTableHead(props: EnhancedTableHeadProps): React.JSX.Element {
     const { numSelected, rowCount, onSelectAllClick } = props;
 
-    return <TableHead>
-        <TableRow>
-            <TableCell padding="checkbox">
-                <Checkbox
-                    indeterminate={numSelected > 0 && numSelected < rowCount}
-                    checked={rowCount > 0 && numSelected === rowCount}
-                    onChange={(event: React.ChangeEvent) => onSelectAllClick(event)}
-                    inputProps={{ 'aria-label': 'select all desserts' }}
-                />
-            </TableCell>
-            {headCells.map(headCell => <TableCell
-                key={headCell.id}
-                align={headCell.numeric ? 'right' : 'left'}
-                padding={headCell.disablePadding ? 'none' : 'normal'}
-            >
-                <TableSortLabel>{headCell.label}</TableSortLabel>
-            </TableCell>)}
-        </TableRow>
-    </TableHead>;
+    return (
+        <TableHead>
+            <TableRow>
+                <TableCell padding="checkbox">
+                    <Checkbox
+                        indeterminate={numSelected > 0 && numSelected < rowCount}
+                        checked={rowCount > 0 && numSelected === rowCount}
+                        onChange={(event: React.ChangeEvent) => onSelectAllClick(event)}
+                        inputProps={{ 'aria-label': 'select all desserts' }}
+                    />
+                </TableCell>
+                {headCells.map(headCell => (
+                    <TableCell
+                        key={headCell.id}
+                        align={headCell.numeric ? 'right' : 'left'}
+                        padding={headCell.disablePadding ? 'none' : 'normal'}
+                    >
+                        <TableSortLabel>{headCell.label}</TableSortLabel>
+                    </TableCell>
+                ))}
+            </TableRow>
+        </TableHead>
+    );
 }
 
 function buildComment(comment: DiscoveryInstanceComment) {
@@ -353,16 +384,25 @@ function DiscoveryDialog({
     theme,
 }: DiscoveryDialogProps) {
     const [step, setStep] = useState<number>(0);
-    const [listMethods, setListMethods] = useState<Record<string, { type: string; source: string; timeout?: number }>>({});
+    const [listMethods, setListMethods] = useState<Record<string, { type: string; source: string; timeout?: number }>>(
+        {},
+    );
     const [checkboxChecked, setCheckboxChecked] = useState<Record<string, boolean>>({});
     const [disableScanner, setDisableScanner] = useState<boolean>(false);
     const [discoveryData, setDiscoveryData] = useState<DiscoveryObject | null>(null);
 
     useEffect(() => {
         async function fetchData() {
-            const resultList: Record<string, { type: string; source: string; timeout?: number }> = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
+            const resultList: Record<string, { type: string; source: string; timeout?: number }> = await socket.sendTo(
+                'system.adapter.discovery.0',
+                'listMethods',
+                null,
+            );
             const listChecked: Record<string, boolean> = {};
-            const lastSelectionStr = ((window as any)._localStorage as Storage || window.localStorage).getItem('App.discoveryLastSelection') || null;
+            const lastSelectionStr =
+                (((window as any)._localStorage as Storage) || window.localStorage).getItem(
+                    'App.discoveryLastSelection',
+                ) || null;
             let lastSelection: null | Record<string, boolean>;
             if (lastSelectionStr) {
                 try {
@@ -395,8 +435,7 @@ function DiscoveryDialog({
             }
         }
 
-        readOldData()
-            .catch(e => console.warn(`Cannot read system.discovery: ${e}`));
+        readOldData().catch(e => console.warn(`Cannot read system.discovery: ${e}`));
     }, [socket]);
 
     const [aliveHosts, setAliveHosts] = useState<Record<string, boolean>>({});
@@ -404,7 +443,7 @@ function DiscoveryDialog({
     const [hostInstances, setHostInstances] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        hosts.forEach(async ({ _id }: {_id: string}) => {
+        hosts.forEach(async ({ _id }: { _id: string }) => {
             const aliveValue = await socket.getState(`${_id}.alive`);
 
             setAliveHosts(prev => ({
@@ -430,12 +469,12 @@ function DiscoveryDialog({
     const [cmdName, setCmdName] = useState('install');
     const [suggested, setSuggested] = useStateLocal(true, 'discovery.suggested');
     const [showAll, setShowAll] = useStateLocal(true, 'discovery.showAll');
-    const [showLicenseDialog, setShowLicenseDialog] = useState<{ obj: DiscoveryInstance; cb:(() => void) } | null>(null);
-    const [showInputsDialog, setShowInputsDialog] = useState<{ obj: DiscoveryInstance; cb:(() => void) } | null>(null);
+    const [showLicenseDialog, setShowLicenseDialog] = useState<{ obj: DiscoveryInstance; cb: () => void } | null>(null);
+    const [showInputsDialog, setShowInputsDialog] = useState<{ obj: DiscoveryInstance; cb: () => void } | null>(null);
 
     const black = themeType === 'dark';
 
-    const [instancesInputsParams, setInstancesInputsParams] = useState<{ native: Record<string, any> }>({ native: { } });
+    const [instancesInputsParams, setInstancesInputsParams] = useState<{ native: Record<string, any> }>({ native: {} });
     const steps = ['Select methods', 'Create instances', 'Installation process'];
     const [logs, setLogs] = useState<Record<string, any>>({});
     const [finishInstall, setFinishInstall] = useState(false);
@@ -495,7 +534,8 @@ function DiscoveryDialog({
 
     const stepDown = () => setStep(step - 1);
 
-    const extendObject = (id: string, data: Record<string, any>) => socket.extendObject(id, data).catch((error: any) => window.alert(error));
+    const extendObject = (id: string, data: Record<string, any>) =>
+        socket.extendObject(id, data).catch((error: any) => window.alert(error));
 
     const discoverScanner = async () => {
         setDisableScanner(true);
@@ -538,7 +578,9 @@ function DiscoveryDialog({
     };
 
     const checkLicenseAndInputs = (objName: string, cb: () => void) => {
-        const instanceObj: DiscoveryInstance | null = discoveryData?.native?.newInstances.find(ob => ob._id === objName);
+        const instanceObj: DiscoveryInstance | null = discoveryData?.native?.newInstances.find(
+            ob => ob._id === objName,
+        );
         const obj: DiscoveryInstance | null = instanceObj ? JSON.parse(JSON.stringify(instanceObj)) : null;
         let license = true;
         if (obj?.comment?.license && obj.comment.license !== 'MIT') {
@@ -577,11 +619,12 @@ function DiscoveryDialog({
 
         if (selected.length > index) {
             setTimeout(
-                () => checkLicenseAndInputs(selected[index], () => {
-                    setCurrentInstall(index + 1);
-                    setCmdName('install');
-                    setInstallProgress(true);
-                }),
+                () =>
+                    checkLicenseAndInputs(selected[index], () => {
+                        setCurrentInstall(index + 1);
+                        setCmdName('install');
+                        setInstallProgress(true);
+                    }),
                 100,
             );
         } else {
@@ -589,7 +632,7 @@ function DiscoveryDialog({
         }
     };
 
-    const inputsDialog = showInputsDialog ?
+    const inputsDialog = showInputsDialog ? (
         <GenerateInputsModal
             socket={socket}
             theme={theme}
@@ -608,7 +651,8 @@ function DiscoveryDialog({
                     goToNextInstance(obj._id, 'Error: configuration dialog canceled');
                 }
             }}
-        /> : null;
+        />
+    ) : null;
 
     const resetStateBack = () => {
         setSelected([]);
@@ -645,481 +689,548 @@ function DiscoveryDialog({
         />
     ) : null;
 
-    return <ThemeProvider theme={theme}>
-        {licenseDialog}
-        {inputsDialog}
-        <Dialog
-            onClose={(event, reason) => {
-                if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
-                    onClose();
-                }
-            }}
-            open={!0}
-            sx={{ '& .MuiDialog-paper': styles.paper }}
-        >
-            <h2 style={styles.heading}>
-                <VisibilityIcon
-                    style={{
-                        color: 'rgb(77 171 245)',
-                        fontSize: 36,
-                        marginLeft: 25,
-                        marginRight: 10,
-                    }}
-                />
-                {I18n.t('Find devices and services')}
-            </h2>
-            <Stepper style={styles.stepper} alternativeLabel activeStep={step}>
-                {steps.map(label => <Step key={label}>
-                    <StepLabel>{I18n.t(label)}</StepLabel>
-                </Step>)}
-            </Stepper>
-            <DialogContent style={{ ...styles.flex, ...styles.overflowHidden }} dividers>
-                <div style={styles.root}>
-                    <TabPanel
-                        style={{ ...styles.overflowAuto, color: black ? 'white' : undefined }}
-                        value={step}
-                        index={0}
-                        black={black}
-                        title={I18n.t('Discover all possible devices')}
-                    >
-                        {!disableScanner ? <>
-                            {' '}
-                            <div style={styles.headerText}>{I18n.t('press_discover')}</div>
-                            {discoveryData?.native?.lastScan && <div style={styles.descriptionHeaderText}>
-                                {I18n.t(
-                                    'Last scan on %s',
-                                    Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat),
-                                )}
-                            </div>}
-                            <div
-                                style={{ ...styles.headerBlock, color: !black ? 'white' : undefined }}
-                            >
-                                {I18n.t('Use following methods:')}
-                            </div>
-                            {Object.keys(listMethods).map(key => <div key={key}>
-                                <Checkbox
-                                    checked={checkboxChecked[key]}
-                                    disabled={disableScanner}
-                                    onChange={(_, value) => {
-                                        const newCheckboxChecked = JSON.parse(
-                                            JSON.stringify(checkboxChecked),
-                                        );
-                                        newCheckboxChecked[key] = value;
-                                        ((window as any)._localStorage || window.localStorage).setItem(
-                                            'App.discoveryLastSelection',
-                                            JSON.stringify(newCheckboxChecked),
-                                        );
-                                        setCheckboxChecked(newCheckboxChecked);
-                                    }}
-                                />
-                                {key}
-                            </div>)}
-                        </> : (scanRunning && <div>
-                            {devicesProgress >= 99
-                                ? `Lookup services - ${servicesProgress}%`
-                                : `Lookup devices - ${devicesProgress}%`}
-                            {disableScanner && <LinearProgress
-                                variant="determinate"
-                                value={devicesProgress >= 99 ? servicesProgress : devicesProgress}
-                            />}
-                            {devicesProgress >= 99
-                                ? `${instancesFound} service(s) found`
-                                : `${devicesFound} device(s) found`}
-                        </div>)}
-                    </TabPanel>
-                    <TabPanel
-                        style={styles.overflowAuto}
-                        value={step}
-                        index={1}
-                        title={
-                            discoveryData?.native?.lastScan
-                                ? I18n.t(
-                                    'Create instances automatically - Last scan on %s',
-                                    Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat),
+    return (
+        <ThemeProvider theme={theme}>
+            {licenseDialog}
+            {inputsDialog}
+            <Dialog
+                onClose={(event, reason) => {
+                    if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                        onClose();
+                    }
+                }}
+                open={!0}
+                sx={{ '& .MuiDialog-paper': styles.paper }}
+            >
+                <h2 style={styles.heading}>
+                    <VisibilityIcon
+                        style={{
+                            color: 'rgb(77 171 245)',
+                            fontSize: 36,
+                            marginLeft: 25,
+                            marginRight: 10,
+                        }}
+                    />
+                    {I18n.t('Find devices and services')}
+                </h2>
+                <Stepper
+                    style={styles.stepper}
+                    alternativeLabel
+                    activeStep={step}
+                >
+                    {steps.map(label => (
+                        <Step key={label}>
+                            <StepLabel>{I18n.t(label)}</StepLabel>
+                        </Step>
+                    ))}
+                </Stepper>
+                <DialogContent
+                    style={{ ...styles.flex, ...styles.overflowHidden }}
+                    dividers
+                >
+                    <div style={styles.root}>
+                        <TabPanel
+                            style={{ ...styles.overflowAuto, color: black ? 'white' : undefined }}
+                            value={step}
+                            index={0}
+                            black={black}
+                            title={I18n.t('Discover all possible devices')}
+                        >
+                            {!disableScanner ? (
+                                <>
+                                    {' '}
+                                    <div style={styles.headerText}>{I18n.t('press_discover')}</div>
+                                    {discoveryData?.native?.lastScan && (
+                                        <div style={styles.descriptionHeaderText}>
+                                            {I18n.t(
+                                                'Last scan on %s',
+                                                Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat),
+                                            )}
+                                        </div>
+                                    )}
+                                    <div style={{ ...styles.headerBlock, color: !black ? 'white' : undefined }}>
+                                        {I18n.t('Use following methods:')}
+                                    </div>
+                                    {Object.keys(listMethods).map(key => (
+                                        <div key={key}>
+                                            <Checkbox
+                                                checked={checkboxChecked[key]}
+                                                disabled={disableScanner}
+                                                onChange={(_, value) => {
+                                                    const newCheckboxChecked = JSON.parse(
+                                                        JSON.stringify(checkboxChecked),
+                                                    );
+                                                    newCheckboxChecked[key] = value;
+                                                    ((window as any)._localStorage || window.localStorage).setItem(
+                                                        'App.discoveryLastSelection',
+                                                        JSON.stringify(newCheckboxChecked),
+                                                    );
+                                                    setCheckboxChecked(newCheckboxChecked);
+                                                }}
+                                            />
+                                            {key}
+                                        </div>
+                                    ))}
+                                </>
+                            ) : (
+                                scanRunning && (
+                                    <div>
+                                        {devicesProgress >= 99
+                                            ? `Lookup services - ${servicesProgress}%`
+                                            : `Lookup devices - ${devicesProgress}%`}
+                                        {disableScanner && (
+                                            <LinearProgress
+                                                variant="determinate"
+                                                value={devicesProgress >= 99 ? servicesProgress : devicesProgress}
+                                            />
+                                        )}
+                                        {devicesProgress >= 99
+                                            ? `${instancesFound} service(s) found`
+                                            : `${devicesFound} device(s) found`}
+                                    </div>
                                 )
-                                : I18n.t('Create instances automatically')
-                        }
-                    >
-                        <div style={styles.wrapperSwitch}>
-                            <div style={styles.divSwitch}>
-                                <div style={!showAll ? { color: 'green' } : undefined}>
-                                    {I18n.t('hide ignored')}
-                                </div>
-                                <Switch
-                                    checked={showAll}
-                                    onChange={e => setShowAll(e.target.checked)}
-                                    color="primary"
-                                />
-                                <div style={showAll ? { color: 'green' } : undefined}>{I18n.t('show ignored')}</div>
-                            </div>
-                            <div style={{ ...styles.divSwitch, ...styles.marginLeft }}>
-                                <div style={!suggested ? { color: 'green' } : undefined}>
-                                    {I18n.t('hide suggested')}
-                                </div>
-                                <Switch
-                                    checked={suggested}
-                                    onChange={e => setSuggested(e.target.checked)}
-                                    color="primary"
-                                />
-                                <div style={suggested ? { color: 'green' } : undefined}>
-                                    {I18n.t('show suggested')}
-                                </div>
-                            </div>
-                        </div>
-                        <Paper style={styles.paperTable}>
-                            <TableContainer>
-                                <Table style={styles.table} size="small">
-                                    <EnhancedTableHead
-                                        numSelected={selected.length}
-                                        onSelectAllClick={handleSelectAllClick}
-                                        rowCount={discoveryData?.native?.newInstances?.length || 0}
+                            )}
+                        </TabPanel>
+                        <TabPanel
+                            style={styles.overflowAuto}
+                            value={step}
+                            index={1}
+                            title={
+                                discoveryData?.native?.lastScan
+                                    ? I18n.t(
+                                          'Create instances automatically - Last scan on %s',
+                                          Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat),
+                                      )
+                                    : I18n.t('Create instances automatically')
+                            }
+                        >
+                            <div style={styles.wrapperSwitch}>
+                                <div style={styles.divSwitch}>
+                                    <div style={!showAll ? { color: 'green' } : undefined}>
+                                        {I18n.t('hide ignored')}
+                                    </div>
+                                    <Switch
+                                        checked={showAll}
+                                        onChange={e => setShowAll(e.target.checked)}
+                                        color="primary"
                                     />
-                                    <TableBody>
-                                        {discoveryData?.native?.newInstances
-                                            ?.filter((el: any) => {
-                                                if (!suggested) {
-                                                    return !el.comment?.advice;
-                                                }
-                                                if (!showAll) {
-                                                    return !el?.comment?.ack;
-                                                }
-                                                return true;
-                                            })
-                                            .map((obj: any, idx: number) => (
-                                                <TableRow
-                                                    hover
-                                                    role="checkbox"
-                                                    key={obj._id}
-                                                    selected={obj.comment?.advice}
-                                                >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox
-                                                            checked={isSelected(obj._id, selected)}
-                                                            onClick={e => handleClick(e, obj._id, selected, setSelected)}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell component="th" scope="row" padding="none">
-                                                        <div style={styles.instanceWrapper}>
-                                                            <Avatar
-                                                                variant="square"
-                                                                alt={obj._id.replace('system.adapter.', '')}
-                                                                src={repository[obj.common.name]?.icon}
-                                                                style={styles.instanceIcon}
-                                                            />
-                                                            <div style={styles.instanceId}>
-                                                                {obj._id.replace('system.adapter.', '')}
-                                                            </div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        {checkSelectHosts ? <SelectWithIcon
-                                                            fullWidth
-                                                            lang={I18n.getLanguage()}
-                                                            list={hosts as ioBroker.Object[]}
-                                                            t={I18n.t}
-                                                            value={hostInstances[obj._id] || currentHost}
-                                                            themeType={themeType}
-                                                            onChange={val => setHostInstances({
-                                                                ...hostInstances,
-                                                                [obj._id]: val,
-                                                            })}
-                                                        /> : '_'}
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        {buildComment(obj.comment)}
-                                                    </TableCell>
-                                                    <TableCell align="right" padding="checkbox">
-                                                        <Checkbox
-                                                            checked={!!obj?.comment?.ack}
-                                                            onClick={() => {
-                                                                const newInstances = JSON.parse(
-                                                                    JSON.stringify(
-                                                                        discoveryData?.native.newInstances,
-                                                                    ),
-                                                                );
-
-                                                                newInstances[idx].comment = {
-                                                                    ...newInstances[idx].comment,
-                                                                    ack: !newInstances[idx].comment.ack,
-                                                                };
-
-                                                                extendObject('system.discovery', {
-                                                                    native: { newInstances },
-                                                                });
-                                                            }}
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </Paper>
-                    </TabPanel>
-                    <TabPanel
-                        value={step}
-                        index={2}
-                        style={{ ...styles.overflowAuto, height: '100%' }}
-                        boxHeight
-                        title={I18n.t('Install adapters')}
-                    >
-                        <div style={{ display: 'flex', height: '100%' }}>
-                            <div>
-                                {selected.map((el, idx) => (
-                                    <Box
-                                        component="div"
-                                        key={el}
-                                        onClick={finishInstall ? () => setSelectLogsIndex(idx) : undefined}
-                                        sx={{
-                                            ...styles.headerBlockDisplayItem,
-                                            ...(finishInstall ? styles.pointer : undefined),
-                                            ...(finishInstall ? styles.hover : undefined),
-                                            ...(finishInstall && selectLogsIndex === idx ? styles.activeBlock : undefined),
-                                        }}
+                                    <div style={showAll ? { color: 'green' } : undefined}>{I18n.t('show ignored')}</div>
+                                </div>
+                                <div style={{ ...styles.divSwitch, ...styles.marginLeft }}>
+                                    <div style={!suggested ? { color: 'green' } : undefined}>
+                                        {I18n.t('hide suggested')}
+                                    </div>
+                                    <Switch
+                                        checked={suggested}
+                                        onChange={e => setSuggested(e.target.checked)}
+                                        color="primary"
+                                    />
+                                    <div style={suggested ? { color: 'green' } : undefined}>
+                                        {I18n.t('show suggested')}
+                                    </div>
+                                </div>
+                            </div>
+                            <Paper style={styles.paperTable}>
+                                <TableContainer>
+                                    <Table
+                                        style={styles.table}
+                                        size="small"
                                     >
-                                        <div style={styles.width200}>
-                                            <div style={styles.instanceWrapper}>
-                                                <Avatar
-                                                    variant="square"
-                                                    alt={el.replace('system.adapter.', '')}
-                                                    src={
-                                                        repository[el.replace('system.adapter.', '').split('.')[0]]
-                                                            ?.icon
+                                        <EnhancedTableHead
+                                            numSelected={selected.length}
+                                            onSelectAllClick={handleSelectAllClick}
+                                            rowCount={discoveryData?.native?.newInstances?.length || 0}
+                                        />
+                                        <TableBody>
+                                            {discoveryData?.native?.newInstances
+                                                ?.filter((el: any) => {
+                                                    if (!suggested) {
+                                                        return !el.comment?.advice;
                                                     }
-                                                    style={styles.instanceIcon}
-                                                />
-                                                <div style={styles.instanceId}>
-                                                    {el.replace('system.adapter.', '')}
+                                                    if (!showAll) {
+                                                        return !el?.comment?.ack;
+                                                    }
+                                                    return true;
+                                                })
+                                                .map((obj: any, idx: number) => (
+                                                    <TableRow
+                                                        hover
+                                                        role="checkbox"
+                                                        key={obj._id}
+                                                        selected={obj.comment?.advice}
+                                                    >
+                                                        <TableCell padding="checkbox">
+                                                            <Checkbox
+                                                                checked={isSelected(obj._id, selected)}
+                                                                onClick={e =>
+                                                                    handleClick(e, obj._id, selected, setSelected)
+                                                                }
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell
+                                                            component="th"
+                                                            scope="row"
+                                                            padding="none"
+                                                        >
+                                                            <div style={styles.instanceWrapper}>
+                                                                <Avatar
+                                                                    variant="square"
+                                                                    alt={obj._id.replace('system.adapter.', '')}
+                                                                    src={repository[obj.common.name]?.icon}
+                                                                    style={styles.instanceIcon}
+                                                                />
+                                                                <div style={styles.instanceId}>
+                                                                    {obj._id.replace('system.adapter.', '')}
+                                                                </div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell align="left">
+                                                            {checkSelectHosts ? (
+                                                                <SelectWithIcon
+                                                                    fullWidth
+                                                                    lang={I18n.getLanguage()}
+                                                                    list={hosts as ioBroker.Object[]}
+                                                                    t={I18n.t}
+                                                                    value={hostInstances[obj._id] || currentHost}
+                                                                    themeType={themeType}
+                                                                    onChange={val =>
+                                                                        setHostInstances({
+                                                                            ...hostInstances,
+                                                                            [obj._id]: val,
+                                                                        })
+                                                                    }
+                                                                />
+                                                            ) : (
+                                                                '_'
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell align="left">{buildComment(obj.comment)}</TableCell>
+                                                        <TableCell
+                                                            align="right"
+                                                            padding="checkbox"
+                                                        >
+                                                            <Checkbox
+                                                                checked={!!obj?.comment?.ack}
+                                                                onClick={() => {
+                                                                    const newInstances = JSON.parse(
+                                                                        JSON.stringify(
+                                                                            discoveryData?.native.newInstances,
+                                                                        ),
+                                                                    );
+
+                                                                    newInstances[idx].comment = {
+                                                                        ...newInstances[idx].comment,
+                                                                        ack: !newInstances[idx].comment.ack,
+                                                                    };
+
+                                                                    extendObject('system.discovery', {
+                                                                        native: { newInstances },
+                                                                    });
+                                                                }}
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Paper>
+                        </TabPanel>
+                        <TabPanel
+                            value={step}
+                            index={2}
+                            style={{ ...styles.overflowAuto, height: '100%' }}
+                            boxHeight
+                            title={I18n.t('Install adapters')}
+                        >
+                            <div style={{ display: 'flex', height: '100%' }}>
+                                <div>
+                                    {selected.map((el, idx) => (
+                                        <Box
+                                            component="div"
+                                            key={el}
+                                            onClick={finishInstall ? () => setSelectLogsIndex(idx) : undefined}
+                                            sx={{
+                                                ...styles.headerBlockDisplayItem,
+                                                ...(finishInstall ? styles.pointer : undefined),
+                                                ...(finishInstall ? styles.hover : undefined),
+                                                ...(finishInstall && selectLogsIndex === idx
+                                                    ? styles.activeBlock
+                                                    : undefined),
+                                            }}
+                                        >
+                                            <div style={styles.width200}>
+                                                <div style={styles.instanceWrapper}>
+                                                    <Avatar
+                                                        variant="square"
+                                                        alt={el.replace('system.adapter.', '')}
+                                                        src={
+                                                            repository[el.replace('system.adapter.', '').split('.')[0]]
+                                                                ?.icon
+                                                        }
+                                                        style={styles.instanceIcon}
+                                                    />
+                                                    <div style={styles.instanceId}>
+                                                        {el.replace('system.adapter.', '')}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        {currentInstall === idx + 1 && !installStatus[idx + 1] && <CircularProgress size={20} />}
-                                        {installStatus[idx + 1] === 'error' ? <ReportProblemIcon style={styles.installError} /> :
-                                            installStatus[idx + 1] === 'success' ? <AssignmentTurnedInIcon style={styles.installSuccess} /> : null}
-                                    </Box>
-                                ))}
-                            </div>
-                            {currentInstall && (installProgress || finishInstall) &&
-                                <div style={{ overflow: 'hidden', width: 'calc(100% - 260px)' }}>
-                                    <Command
-                                        noSpacing
-                                        key={`${currentInstall}-${cmdName}`}
-                                        ready
-                                        host={currentHost}
-                                        logsRead={
-                                            finishInstall ? logs[selected[selectLogsIndex]] || ['skipped'] : null
-                                        }
-                                        showElement={!finishInstall}
-                                        socket={socket}
-                                        t={I18n.t}
-                                        cmd={
-                                            finishInstall
-                                                ? ''
-                                                : `${cmdName} ${
-                                                    selected[currentInstall - 1]
-                                                        .replace('system.adapter.', '')
-                                                        .split('.')[0]
-                                                }`
-                                        }
-                                        onFinished={(_, logsSuccess) => {
-                                            let data = JSON.parse(
-                                                JSON.stringify(
-                                                    discoveryData?.native.newInstances.find(
-                                                        (obj: any) => obj._id === selected[currentInstall - 1],
+                                            {currentInstall === idx + 1 && !installStatus[idx + 1] && (
+                                                <CircularProgress size={20} />
+                                            )}
+                                            {installStatus[idx + 1] === 'error' ? (
+                                                <ReportProblemIcon style={styles.installError} />
+                                            ) : installStatus[idx + 1] === 'success' ? (
+                                                <AssignmentTurnedInIcon style={styles.installSuccess} />
+                                            ) : null}
+                                        </Box>
+                                    ))}
+                                </div>
+                                {currentInstall && (installProgress || finishInstall) && (
+                                    <div style={{ overflow: 'hidden', width: 'calc(100% - 260px)' }}>
+                                        <Command
+                                            noSpacing
+                                            key={`${currentInstall}-${cmdName}`}
+                                            ready
+                                            host={currentHost}
+                                            logsRead={
+                                                finishInstall ? logs[selected[selectLogsIndex]] || ['skipped'] : null
+                                            }
+                                            showElement={!finishInstall}
+                                            socket={socket}
+                                            t={I18n.t}
+                                            cmd={
+                                                finishInstall
+                                                    ? ''
+                                                    : `${cmdName} ${
+                                                          selected[currentInstall - 1]
+                                                              .replace('system.adapter.', '')
+                                                              .split('.')[0]
+                                                      }`
+                                            }
+                                            onFinished={(_, logsSuccess) => {
+                                                let data = JSON.parse(
+                                                    JSON.stringify(
+                                                        discoveryData?.native.newInstances.find(
+                                                            (obj: any) => obj._id === selected[currentInstall - 1],
+                                                        ),
                                                     ),
-                                                ),
-                                            );
-                                            delete data.comment;
+                                                );
+                                                delete data.comment;
 
-                                            let adapterId = data._id.split('.');
-                                            adapterId.pop();
-                                            adapterId = adapterId.join('.');
-                                            socket.getObject(adapterId).then((obj: ioBroker.AdapterObject) => {
-                                                data = { ...obj, ...data };
-                                                data.common = Object.assign(obj.common, data.common);
-                                                data.native = Object.assign(obj.native, data.native);
-                                                data.type = 'instance';
+                                                let adapterId = data._id.split('.');
+                                                adapterId.pop();
+                                                adapterId = adapterId.join('.');
+                                                socket.getObject(adapterId).then((obj: ioBroker.AdapterObject) => {
+                                                    data = { ...obj, ...data };
+                                                    data.common = Object.assign(obj.common, data.common);
+                                                    data.native = Object.assign(obj.native, data.native);
+                                                    data.type = 'instance';
 
-                                                // set log level
-                                                if (defaultLogLevel) {
-                                                    data.common.logLevel = defaultLogLevel;
-                                                }
-                                                data.common.logLevel = data.common.logLevel || 'info';
+                                                    // set log level
+                                                    if (defaultLogLevel) {
+                                                        data.common.logLevel = defaultLogLevel;
+                                                    }
+                                                    data.common.logLevel = data.common.logLevel || 'info';
 
-                                                if (
-                                                    instancesInputsParams.native
-                                                        && Object.keys(instancesInputsParams.native).length
-                                                ) {
-                                                    Object.assign(data.native, instancesInputsParams.native);
-                                                    setInstancesInputsParams({ native: { } });
-                                                }
-                                                if (checkSelectHosts && hostInstances[data._id]) {
-                                                    data.common.host = hostInstances[data._id];
-                                                }
+                                                    if (
+                                                        instancesInputsParams.native &&
+                                                        Object.keys(instancesInputsParams.native).length
+                                                    ) {
+                                                        Object.assign(data.native, instancesInputsParams.native);
+                                                        setInstancesInputsParams({ native: {} });
+                                                    }
+                                                    if (checkSelectHosts && hostInstances[data._id]) {
+                                                        data.common.host = hostInstances[data._id];
+                                                    }
 
-                                                // write created instance
-                                                extendObject(data._id, data).then(() => {
-                                                    if (currentInstall < selected.length) {
-                                                        // install next
-                                                        checkLicenseAndInputs(selected[currentInstall], () => {
-                                                            setCurrentInstall(currentInstall + 1);
-                                                            setCmdName('install');
-                                                        });
-                                                        setLogs({
-                                                            ...logs,
-                                                            [selected[currentInstall - 1]]: logsSuccess,
-                                                        });
-                                                        setInstallStatus({
-                                                            ...installStatus,
-                                                            [currentInstall]: 'success',
-                                                        });
-                                                    } else {
-                                                        setLogs({
-                                                            ...logs,
-                                                            [selected[currentInstall - 1]]: logsSuccess,
-                                                        });
-                                                        setInstallStatus({
-                                                            ...installStatus,
-                                                            [currentInstall]: 'success',
-                                                        });
-                                                        setSelectLogsIndex(currentInstall - 1);
-                                                        const dataDiscovery = JSON.parse(
-                                                            JSON.stringify(discoveryData),
-                                                        );
-                                                        if (dataDiscovery) {
-                                                            dataDiscovery.native.newInstances = dataDiscovery.native.newInstances.filter(
-                                                                ({ _id }: {_id: string}) => {
-                                                                    const find = selected.find(
-                                                                        el => el === _id,
-                                                                    );
-                                                                    if (!find) {
-                                                                        return true;
-                                                                    }
-                                                                    return installStatus[selected.indexOf(find) + 1] !== 'success';
-                                                                },
+                                                    // write created instance
+                                                    extendObject(data._id, data).then(() => {
+                                                        if (currentInstall < selected.length) {
+                                                            // install next
+                                                            checkLicenseAndInputs(selected[currentInstall], () => {
+                                                                setCurrentInstall(currentInstall + 1);
+                                                                setCmdName('install');
+                                                            });
+                                                            setLogs({
+                                                                ...logs,
+                                                                [selected[currentInstall - 1]]: logsSuccess,
+                                                            });
+                                                            setInstallStatus({
+                                                                ...installStatus,
+                                                                [currentInstall]: 'success',
+                                                            });
+                                                        } else {
+                                                            setLogs({
+                                                                ...logs,
+                                                                [selected[currentInstall - 1]]: logsSuccess,
+                                                            });
+                                                            setInstallStatus({
+                                                                ...installStatus,
+                                                                [currentInstall]: 'success',
+                                                            });
+                                                            setSelectLogsIndex(currentInstall - 1);
+                                                            const dataDiscovery = JSON.parse(
+                                                                JSON.stringify(discoveryData),
                                                             );
+                                                            if (dataDiscovery) {
+                                                                dataDiscovery.native.newInstances =
+                                                                    dataDiscovery.native.newInstances.filter(
+                                                                        ({ _id }: { _id: string }) => {
+                                                                            const find = selected.find(
+                                                                                el => el === _id,
+                                                                            );
+                                                                            if (!find) {
+                                                                                return true;
+                                                                            }
+                                                                            return (
+                                                                                installStatus[
+                                                                                    selected.indexOf(find) + 1
+                                                                                ] !== 'success'
+                                                                            );
+                                                                        },
+                                                                    );
+                                                                socket.setObject('system.discovery', dataDiscovery);
+                                                            }
+                                                            setFinishInstall(true);
+                                                            window.alert(I18n.t('Finished'));
+                                                        }
+                                                    });
+                                                });
+                                            }}
+                                            errorFunc={(el, logsError) => {
+                                                if (el === 51 && cmdName === 'install') {
+                                                    setCmdName('upload');
+                                                    return;
+                                                }
+                                                if (selected.length > currentInstall && cmdName === 'upload') {
+                                                    checkLicenseAndInputs(selected[currentInstall], () =>
+                                                        setCurrentInstall(currentInstall + 1),
+                                                    );
+                                                    setInstallStatus({ ...installStatus, [currentInstall]: 'error' });
+                                                } else {
+                                                    if (selected.length > currentInstall) {
+                                                        setInstallStatus({
+                                                            ...installStatus,
+                                                            [currentInstall]: 'error',
+                                                        });
+                                                        checkLicenseAndInputs(selected[currentInstall], () =>
+                                                            setCurrentInstall(currentInstall + 1),
+                                                        );
+                                                        setCmdName('install');
+                                                        setLogs({ ...logs, [selected[currentInstall - 1]]: logsError });
+                                                    } else {
+                                                        setInstallStatus({
+                                                            ...installStatus,
+                                                            [currentInstall]: 'error',
+                                                        });
+                                                        setLogs({ ...logs, [selected[currentInstall - 1]]: logsError });
+                                                        setFinishInstall(true);
+                                                        setSelectLogsIndex(currentInstall - 1);
+                                                        const dataDiscovery = JSON.parse(JSON.stringify(discoveryData));
+                                                        if (dataDiscovery) {
+                                                            dataDiscovery.native.newInstances =
+                                                                dataDiscovery.native.newInstances.filter(
+                                                                    ({ _id }: { _id: string }) => {
+                                                                        const find = selected.find(ele => ele === _id);
+                                                                        if (!find) {
+                                                                            return true;
+                                                                        }
+                                                                        return (
+                                                                            installStatus[
+                                                                                selected.indexOf(find) + 1
+                                                                            ] !== 'success'
+                                                                        );
+                                                                    },
+                                                                );
                                                             socket.setObject('system.discovery', dataDiscovery);
                                                         }
-                                                        setFinishInstall(true);
-                                                        window.alert(I18n.t('Finished'));
                                                     }
-                                                });
-                                            });
-                                        }}
-                                        errorFunc={(el, logsError) => {
-                                            if (el === 51 && cmdName === 'install') {
-                                                setCmdName('upload');
-                                                return;
-                                            }
-                                            if (selected.length > currentInstall && cmdName === 'upload') {
-                                                checkLicenseAndInputs(selected[currentInstall], () => setCurrentInstall(currentInstall + 1));
-                                                setInstallStatus({ ...installStatus, [currentInstall]: 'error' });
-                                            } else {
-                                                if (selected.length > currentInstall) {
-                                                    setInstallStatus({
-                                                        ...installStatus,
-                                                        [currentInstall]: 'error',
-                                                    });
-                                                    checkLicenseAndInputs(selected[currentInstall], () => setCurrentInstall(currentInstall + 1));
-                                                    setCmdName('install');
-                                                    setLogs({ ...logs, [selected[currentInstall - 1]]: logsError });
-                                                } else {
-                                                    setInstallStatus({
-                                                        ...installStatus,
-                                                        [currentInstall]: 'error',
-                                                    });
-                                                    setLogs({ ...logs, [selected[currentInstall - 1]]: logsError });
-                                                    setFinishInstall(true);
-                                                    setSelectLogsIndex(currentInstall - 1);
-                                                    const dataDiscovery = JSON.parse(JSON.stringify(discoveryData));
-                                                    if (dataDiscovery) {
-                                                        dataDiscovery.native.newInstances = dataDiscovery.native.newInstances.filter(({ _id }: {_id: string}) => {
-                                                            const find = selected.find(ele => ele === _id);
-                                                            if (!find) {
-                                                                return true;
-                                                            }
-                                                            return installStatus[selected.indexOf(find) + 1] !== 'success';
-                                                        });
-                                                        socket.setObject('system.discovery', dataDiscovery);
-                                                    }
+                                                    window.alert(`error ${selected[currentInstall - 1]}`);
                                                 }
-                                                window.alert(`error ${selected[currentInstall - 1]}`);
-                                            }
-                                        }}
-                                    />
-                                </div>}
-                        </div>
-                    </TabPanel>
-                </div>
-            </DialogContent>
-            <DialogActions>
-                {step > 0 && step !== 4 && <Button
-                    variant="contained"
-                    disabled={step === 0}
-                    onClick={() => {
-                        if (step === 2) {
-                            resetStateBack();
-                        }
-                        stepDown();
-                    }}
-                    color="grey"
-                    startIcon={<NavigateBeforeIcon />}
-                >
-                    {I18n.t('Back')}
-                </Button>}
-                {step === 0 && <Button
-                    variant="contained"
-                    autoFocus
-                    disabled={disableScanner}
-                    onClick={discoverScanner}
-                    color="primary"
-                    startIcon={<SearchIcon />}
-                >
-                    {I18n.t('Discover')}
-                </Button>}
-                {step !== 2 && step !== 4 && <Tooltip
-                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
-                    title={
-                        step === 0
-                            ? I18n.t('Skip discovery process and go to install with last scan results')
-                            : ''
-                    }
-                >
-                    <span style={{ marginLeft: 8 }}>
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </TabPanel>
+                    </div>
+                </DialogContent>
+                <DialogActions>
+                    {step > 0 && step !== 4 && (
                         <Button
                             variant="contained"
-                            disabled={
-                                !discoveryData
-                                    || !discoveryData?.native?.lastScan
-                                    || step === 2
-                                    || disableScanner
-                                    || (step === 1 && !selected.length)
-                            }
+                            disabled={step === 0}
                             onClick={() => {
-                                stepUp();
-                                if (step === 1) {
-                                    checkInstall();
+                                if (step === 2) {
+                                    resetStateBack();
                                 }
+                                stepDown();
                             }}
-                            color={step === 1 ? 'primary' : 'grey'}
-                            startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
+                            color="grey"
+                            startIcon={<NavigateBeforeIcon />}
                         >
-                            {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
+                            {I18n.t('Back')}
                         </Button>
-                    </span>
-                </Tooltip>}
-                <Button
-                    variant="contained"
-                    disabled={disableScanner}
-                    onClick={() => onClose()}
-                    color={step === 2 ? 'primary' : 'grey'}
-                    startIcon={<CloseIcon />}
-                >
-                    {I18n.t(step === 2 ? 'Finish' : 'Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    </ThemeProvider>;
+                    )}
+                    {step === 0 && (
+                        <Button
+                            variant="contained"
+                            autoFocus
+                            disabled={disableScanner}
+                            onClick={discoverScanner}
+                            color="primary"
+                            startIcon={<SearchIcon />}
+                        >
+                            {I18n.t('Discover')}
+                        </Button>
+                    )}
+                    {step !== 2 && step !== 4 && (
+                        <Tooltip
+                            slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                            title={
+                                step === 0
+                                    ? I18n.t('Skip discovery process and go to install with last scan results')
+                                    : ''
+                            }
+                        >
+                            <span style={{ marginLeft: 8 }}>
+                                <Button
+                                    variant="contained"
+                                    disabled={
+                                        !discoveryData ||
+                                        !discoveryData?.native?.lastScan ||
+                                        step === 2 ||
+                                        disableScanner ||
+                                        (step === 1 && !selected.length)
+                                    }
+                                    onClick={() => {
+                                        stepUp();
+                                        if (step === 1) {
+                                            checkInstall();
+                                        }
+                                    }}
+                                    color={step === 1 ? 'primary' : 'grey'}
+                                    startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
+                                >
+                                    {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
+                                </Button>
+                            </span>
+                        </Tooltip>
+                    )}
+                    <Button
+                        variant="contained"
+                        disabled={disableScanner}
+                        onClick={() => onClose()}
+                        color={step === 2 ? 'primary' : 'grey'}
+                        startIcon={<CloseIcon />}
+                    >
+                        {I18n.t(step === 2 ? 'Finish' : 'Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </ThemeProvider>
+    );
 }
 
 export default DiscoveryDialog;

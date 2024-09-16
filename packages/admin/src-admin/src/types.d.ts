@@ -28,6 +28,7 @@ export type Repository = Record<string, RepositoryEntry>;
 /**
  * Specific value or a string in general
  */
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export type ValueOrString<T> = T | (string & object);
 
 export type ioBrokerObject<Native extends object = object, Common extends object = object> = ioBroker.AnyObject & {

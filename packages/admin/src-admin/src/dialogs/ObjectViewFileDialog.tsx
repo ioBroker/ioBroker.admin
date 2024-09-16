@@ -1,27 +1,11 @@
 import React, { Component } from 'react';
 
-import {
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Fab,
-} from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Fab } from '@mui/material';
 
 // Icons
-import {
-    Close as CloseIcon,
-    PlayArrow as PlayIcon,
-    GetApp as DownloadIcon,
-} from '@mui/icons-material';
+import { Close as CloseIcon, PlayArrow as PlayIcon, GetApp as DownloadIcon } from '@mui/icons-material';
 
-import {
-    withWidth, type IobTheme,
-    type Translate, type AdminConnection,
-    Utils,
-} from '@iobroker/adapter-react-v5';
+import { withWidth, type IobTheme, type Translate, type AdminConnection, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ioBrokerObject } from '@/types';
 
@@ -94,7 +78,8 @@ class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectVi
     }
 
     componentDidMount() {
-        this.props.socket.getBinaryState(this.props.obj._id)
+        this.props.socket
+            .getBinaryState(this.props.obj._id)
             .then((data: string) => {
                 let ext = this.props.obj._id.toLowerCase().split('.').pop();
 
@@ -126,42 +111,73 @@ class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectVi
     }
 
     render() {
-        return <Dialog
-            style={styles.dialog}
-            open={!0}
-            maxWidth={this.state.audio ? 'sm' : 'md'}
-            onClose={() => this.props.onClose()}
-            fullWidth
-            aria-labelledby="object-view-dialog-title"
-        >
-            <DialogTitle id="object-view-dialog-title">
-                {this.props.t('View file in state: %s', this.props.obj._id)}
-            </DialogTitle>
-            <DialogContent style={styles.content}>
-                {this.state.error ? <Box component="div" sx={styles.error}>{this.state.error === 'State is not binary' ? this.props.t('No file stored yet') : this.props.t(this.state.error)}</Box> : null}
-                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                {this.state.audio ? <audio ref={this.audioRef} src={`data:${this.state.mime};base64,${this.state.binary}`} /> : null}
-                {this.state.audio ? <Fab color="primary" onClick={() => this.audioRef.current && this.audioRef.current.play()}>
-                    <PlayIcon />
-                </Fab> : null }
-                {this.state.image ? <img src={`data:${this.state.mime};base64,${this.state.binary}`} alt={this.props.obj._id} style={styles.image} /> : null}
-                {this.state.text !== null ? <pre style={styles.text}>{this.state.text}</pre> : null}
-            </DialogContent>
-            <DialogActions>
-                <a style={styles.download} download={this.state.fileName} href={`data:${this.state.mime};base64,${this.state.binary}`}>
-                    <DownloadIcon style={{ paddingRight: 8, height: 12 }} />
-                    <span>{this.props.t('Download')}</span>
-                </a>
-                <Button
-                    variant="contained"
-                    onClick={() => this.props.onClose()}
-                    startIcon={<CloseIcon />}
-                    color="grey"
-                >
-                    {this.props.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+        return (
+            <Dialog
+                style={styles.dialog}
+                open={!0}
+                maxWidth={this.state.audio ? 'sm' : 'md'}
+                onClose={() => this.props.onClose()}
+                fullWidth
+                aria-labelledby="object-view-dialog-title"
+            >
+                <DialogTitle id="object-view-dialog-title">
+                    {this.props.t('View file in state: %s', this.props.obj._id)}
+                </DialogTitle>
+                <DialogContent style={styles.content}>
+                    {this.state.error ? (
+                        <Box
+                            component="div"
+                            sx={styles.error}
+                        >
+                            {this.state.error === 'State is not binary'
+                                ? this.props.t('No file stored yet')
+                                : this.props.t(this.state.error)}
+                        </Box>
+                    ) : null}
+                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                    {this.state.audio ? (
+                        <audio
+                            ref={this.audioRef}
+                            src={`data:${this.state.mime};base64,${this.state.binary}`}
+                        />
+                    ) : null}
+                    {this.state.audio ? (
+                        <Fab
+                            color="primary"
+                            onClick={() => this.audioRef.current && this.audioRef.current.play()}
+                        >
+                            <PlayIcon />
+                        </Fab>
+                    ) : null}
+                    {this.state.image ? (
+                        <img
+                            src={`data:${this.state.mime};base64,${this.state.binary}`}
+                            alt={this.props.obj._id}
+                            style={styles.image}
+                        />
+                    ) : null}
+                    {this.state.text !== null ? <pre style={styles.text}>{this.state.text}</pre> : null}
+                </DialogContent>
+                <DialogActions>
+                    <a
+                        style={styles.download}
+                        download={this.state.fileName}
+                        href={`data:${this.state.mime};base64,${this.state.binary}`}
+                    >
+                        <DownloadIcon style={{ paddingRight: 8, height: 12 }} />
+                        <span>{this.props.t('Download')}</span>
+                    </a>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.props.onClose()}
+                        startIcon={<CloseIcon />}
+                        color="grey"
+                    >
+                        {this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

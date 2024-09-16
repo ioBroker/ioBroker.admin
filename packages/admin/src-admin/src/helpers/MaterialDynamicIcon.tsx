@@ -91,7 +91,9 @@ function MaterialDynamicIcon({
             if (!ICON_CACHE[adapter]) {
                 ICON_CACHE[adapter] = socket.getObject(`system.adapter.${adapter}`);
             }
-            void ICON_CACHE[adapter].then(obj => obj?.common?.icon && setUrl(`../../adapter/${adapter}/${obj.common.icon}`));
+            void ICON_CACHE[adapter].then(
+                obj => obj?.common?.icon && setUrl(`../../adapter/${adapter}/${obj.common.icon}`),
+            );
         }
     }, [adapter, socket]);
 

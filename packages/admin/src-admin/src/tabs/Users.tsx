@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import {
     type AdminConnection,
@@ -21,7 +21,7 @@ interface UsersProps {
     theme: IobTheme;
 }
 
-export default function Users(props: UsersProps) {
+export default function Users(props: UsersProps): JSX.Element {
     return (
         <TabContainer>
             <TabContent

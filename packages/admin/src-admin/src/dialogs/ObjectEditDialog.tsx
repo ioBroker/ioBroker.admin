@@ -2,25 +2,12 @@ import React, { Component } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import type { editor as MonacoEditorType } from 'monaco-editor';
 
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 // Icons
-import {
-    Close as CloseIcon,
-    Check as CheckIcon,
-} from '@mui/icons-material';
+import { Close as CloseIcon, Check as CheckIcon } from '@mui/icons-material';
 
-import {
-    withWidth,
-    type Translate,
-    type ThemeName,
-} from '@iobroker/adapter-react-v5';
+import { withWidth, type Translate, type ThemeName } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -70,51 +57,53 @@ class ObjectEditDialog extends Component<ObjectEditDialogProps, ObjectEditDialog
     }
 
     render() {
-        return <Dialog
-            style={styles.dialog}
-            open={!0}
-            onClose={() => this.props.onClose()}
-            fullWidth
-            fullScreen
-            aria-labelledby="object-edit-dialog-title"
-        >
-            <DialogTitle id="object-edit-dialog-title">
-                {
-                    this.props.t('Edit object: %s', this.props.obj._id)
-                }
-            </DialogTitle>
-            <DialogContent style={styles.content}>
-                <MonacoEditor
-                    width="100%"
-                    height="100%"
-                    language="json"
-                    theme={this.props.themeName === 'dark' ? 'vs-dark' : 'vs-light'}
-                    value={this.state.code}
-                    options={{ selectOnLineNumbers: true }}
-                    onChange={(newValue, e) => ObjectEditDialog.onChange(newValue, e)}
-                    editorDidMount={(editor/* , monaco */) => ObjectEditDialog.editorDidMount(editor/* , monaco */)}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={!this.state.changed}
-                    onClick={() => this.onSave()}
-                    startIcon={<CheckIcon />}
-                >
-                    {this.props.t('Save')}
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={() => this.props.onClose()}
-                    startIcon={<CloseIcon />}
-                    color="grey"
-                >
-                    {this.props.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+        return (
+            <Dialog
+                style={styles.dialog}
+                open={!0}
+                onClose={() => this.props.onClose()}
+                fullWidth
+                fullScreen
+                aria-labelledby="object-edit-dialog-title"
+            >
+                <DialogTitle id="object-edit-dialog-title">
+                    {this.props.t('Edit object: %s', this.props.obj._id)}
+                </DialogTitle>
+                <DialogContent style={styles.content}>
+                    <MonacoEditor
+                        width="100%"
+                        height="100%"
+                        language="json"
+                        theme={this.props.themeName === 'dark' ? 'vs-dark' : 'vs-light'}
+                        value={this.state.code}
+                        options={{ selectOnLineNumbers: true }}
+                        onChange={(newValue, e) => ObjectEditDialog.onChange(newValue, e)}
+                        editorDidMount={(editor /* , monaco */) =>
+                            ObjectEditDialog.editorDidMount(editor /* , monaco */)
+                        }
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={!this.state.changed}
+                        onClick={() => this.onSave()}
+                        startIcon={<CheckIcon />}
+                    >
+                        {this.props.t('Save')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.props.onClose()}
+                        startIcon={<CloseIcon />}
+                        color="grey"
+                    >
+                        {this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

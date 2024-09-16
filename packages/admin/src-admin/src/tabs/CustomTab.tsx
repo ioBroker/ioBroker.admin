@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import { LinearProgress } from '@mui/material';
 
 import { withWidth, type ThemeType, Router } from '@iobroker/adapter-react-v5';
@@ -30,7 +30,7 @@ export async function getHref(
     hosts: Record<string, ioBroker.HostObject>,
     adminInstance: string,
     themeType: ThemeType,
-) {
+): Promise<string> {
     const instances = await instancesWorker.getInstances();
     let adapter = tab.replace(/^tab-/, '');
     const m = adapter.match(/-(\d+)$/);
@@ -73,7 +73,7 @@ export async function getHref(
         if (instNum === null) {
             _instNum = parseInt(instance._id.split('.').pop(), 10);
         } else {
-            _instNum = instNum as number;
+            _instNum = instNum;
         }
 
         // replace
@@ -139,7 +139,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         });
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.registered) {
             this.props.onUnregisterIframeRef(this.refIframe);
             this.registered = false;
@@ -151,7 +151,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         );
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (!this.registered && this.refIframe?.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
@@ -163,7 +163,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         );
     }
 
-    componentDidUpdate(/* prevProps, prevState, snapshot */) {
+    componentDidUpdate(/* prevProps, prevState, snapshot */): void {
         if (!this.registered && this.refIframe?.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
@@ -192,7 +192,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         }
     };
 
-    render() {
+    render(): JSX.Element {
         if (!this.state.href) {
             return <LinearProgress />;
         }

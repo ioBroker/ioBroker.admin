@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Dialog,
@@ -120,7 +120,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
         this.wordCache = {};
     }
 
-    translate = (word: string, arg1: any, arg2: any) => {
+    translate = (word: string, arg1: any, arg2: any): string => {
         if (arg1 !== undefined) {
             return this.props.t(word, arg1, arg2);
         }
@@ -132,7 +132,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
         return this.wordCache[word];
     };
 
-    onDelete(withChildren?: boolean) {
+    onDelete(withChildren?: boolean): void {
         const id = this.state.deleteObjectShow.id;
         if (withChildren) {
             this.props.socket
@@ -147,7 +147,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
         }
     }
 
-    renderToast() {
+    renderToast(): JSX.Element {
         return (
             <Snackbar
                 key="toast"
@@ -173,7 +173,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
         );
     }
 
-    renderDeleteDialog() {
+    renderDeleteDialog(): JSX.Element | null {
         if (!this.state.deleteObjectShow) {
             return null;
         }
@@ -243,7 +243,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
         );
     }
 
-    render() {
+    render(): JSX.Element[] {
         return [
             this.renderToast(),
             <ObjectBrowser
@@ -299,7 +299,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
                     } else {
                         (((window as any)._localStorage as Storage) || window.localStorage).setItem(
                             `${this.dialogName || 'App'}.selected`,
-                            (selected as string) || '',
+                            selected || '',
                         );
                     }
                 }}
@@ -308,7 +308,6 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
                 objectStatesView
                 objectImportExport
                 objectEditOfAccessControl
-                // eslint-disable-next-line react/no-unstable-nested-components
                 modalNewObject={(context: ObjectBrowserClass) => (
                     <ObjectAddNewObject
                         objects={context.objects}
@@ -323,12 +322,11 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
                         onApply={() => context.setState({ modalNewObj: null })}
                     />
                 )}
-                // eslint-disable-next-line react/no-unstable-nested-components
                 modalEditOfAccessControl={(context: ObjectBrowserClass, objData: TreeItemData) => (
                     <ObjectEditOfAccessControl
                         theme={this.props.theme}
                         themeType={this.props.themeType}
-                        extendObject={async (id: string, data: Partial<ioBroker.Object>) => {
+                        extendObject={(id: string, data: Partial<ioBroker.Object>): void => {
                             this.props.socket.extendObject(id, data).catch(error => window.alert(error));
 
                             objData.aclTooltip = null;

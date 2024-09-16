@@ -19,12 +19,7 @@ import {
 } from '@mui/material';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
-import {
-    Language as UrlIcon,
-    Sms as SmsIcon,
-    Close as CloseIcon,
-    Check as CheckIcon,
-} from '@mui/icons-material';
+import { Language as UrlIcon, Sms as SmsIcon, Close as CloseIcon, Check as CheckIcon } from '@mui/icons-material';
 
 import { I18n, Icon, type IobTheme } from '@iobroker/adapter-react-v5';
 
@@ -92,16 +87,22 @@ if (!Array.prototype.flat) {
             // eslint-disable-next-line
             const depth = Number.isNaN(arguments[0]) ? 1 : Number(arguments[0]);
 
-            return depth ? Array.prototype.reduce.call(this, (acc: any, cur: any) => {
-                if (Array.isArray(cur)) {
-                    // eslint-disable-next-line prefer-spread
-                    acc.push.apply(acc, flat.call(cur, depth - 1));
-                } else {
-                    acc.push(cur);
-                }
+            return depth
+                ? Array.prototype.reduce.call(
+                      this,
+                      (acc: any, cur: any) => {
+                          if (Array.isArray(cur)) {
+                              // eslint-disable-next-line prefer-spread
+                              acc.push.apply(acc, flat.call(cur, depth - 1));
+                          } else {
+                              acc.push(cur);
+                          }
 
-                return acc;
-            }, []) : Array.prototype.slice.call(this);
+                          return acc;
+                      },
+                      [],
+                  )
+                : Array.prototype.slice.call(this);
         },
         writable: true,
     });
@@ -148,7 +149,8 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         super(props);
 
         this.state = {
-            autoCompleteValue: ((window as any)._localstorage || window.localStorage).getItem('App.autocomplete') || null,
+            autoCompleteValue:
+                ((window as any)._localstorage || window.localStorage).getItem('App.autocomplete') || null,
             debug: ((window as any)._localstorage || window.localStorage).getItem('App.gitDebug') === 'true',
             url: ((window as any)._localstorage || window.localStorage).getItem('App.userUrl') || '',
             currentTab: ((window as any)._localstorage || window.localStorage).getItem('App.gitTab') || 'npm',
@@ -156,223 +158,262 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
     }
 
     renderNpm() {
-        return this.state.currentTab === 'npm' ? <Paper
-            style={styles.tabPaper}
-            id="github-install-dialog-panel-npm"
-        >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.debug}
-                            onChange={e => {
-                                ((window as any)._localstorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
-                                this.setState({ debug: e.target.checked });
-                            }}
-                        />
-                    }
-                    label={this.props.t('Debug outputs')}
-                />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                <SmsIcon style={{ marginRight: 10 }} />
-                <Autocomplete
-                    fullWidth
-                    value={this.state.autoCompleteValue}
-                    onChange={(_, newValue) => {
-                        ((window as any)._localstorage || window.localStorage).setItem('App.autocomplete', newValue);
-                        this.setState({ autoCompleteValue: newValue });
-                    }}
-                    options={this.getList()}
-                    getOptionLabel={option => option?.name ?? ''}
-                    renderInput={params => {
-                        const _params = { ...params };
-                        _params.InputProps = _params.InputProps || {} as any;
-                        _params.InputProps.startAdornment = <InputAdornment position="start">
-                            <Icon src={this.state.autoCompleteValue?.icon || ''} style={styles.listIcon} />
-                        </InputAdornment>;
-
-                        return <TextField
-                            variant="standard"
-                            {...params}
-                            label={I18n.t('Select adapter')}
-                        />;
-                    }}
-                    renderOption={(props, option) =>
-                        <Box
-                            component="li"
-                            sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
-                            {...props}
-                        >
-                            <Icon src={option?.icon || ''} style={styles.listIconWithMargin} />
-                            {option?.name ?? ''}
-                        </Box>}
-                />
-            </div>
-            <div style={{
-                fontSize: 24,
-                fontWeight: 'bold',
-                marginTop: 40,
-            }}
+        return this.state.currentTab === 'npm' ? (
+            <Paper
+                style={styles.tabPaper}
+                id="github-install-dialog-panel-npm"
             >
-                {this.props.t('Warning!')}
-            </div>
-            <div style={styles.warningText}>
-                {this.props.t('npm_warning', 'NPM', 'NPM')}
-            </div>
-            <div style={styles.noteText}>
-                {this.props.t('github_note')}
-            </div>
-        </Paper> : null;
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={this.state.debug}
+                                onChange={e => {
+                                    ((window as any)._localstorage || window.localStorage).setItem(
+                                        'App.gitDebug',
+                                        e.target.checked ? 'true' : 'false',
+                                    );
+                                    this.setState({ debug: e.target.checked });
+                                }}
+                            />
+                        }
+                        label={this.props.t('Debug outputs')}
+                    />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                    <SmsIcon style={{ marginRight: 10 }} />
+                    <Autocomplete
+                        fullWidth
+                        value={this.state.autoCompleteValue}
+                        onChange={(_, newValue) => {
+                            ((window as any)._localstorage || window.localStorage).setItem(
+                                'App.autocomplete',
+                                newValue,
+                            );
+                            this.setState({ autoCompleteValue: newValue });
+                        }}
+                        options={this.getList()}
+                        getOptionLabel={option => option?.name ?? ''}
+                        renderInput={params => {
+                            const _params = { ...params };
+                            _params.InputProps = _params.InputProps || ({} as any);
+                            _params.InputProps.startAdornment = (
+                                <InputAdornment position="start">
+                                    <Icon
+                                        src={this.state.autoCompleteValue?.icon || ''}
+                                        style={styles.listIcon}
+                                    />
+                                </InputAdornment>
+                            );
+
+                            return (
+                                <TextField
+                                    variant="standard"
+                                    {...params}
+                                    label={I18n.t('Select adapter')}
+                                />
+                            );
+                        }}
+                        renderOption={(props, option) => (
+                            <Box
+                                component="li"
+                                sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                                {...props}
+                            >
+                                <Icon
+                                    src={option?.icon || ''}
+                                    style={styles.listIconWithMargin}
+                                />
+                                {option?.name ?? ''}
+                            </Box>
+                        )}
+                    />
+                </div>
+                <div
+                    style={{
+                        fontSize: 24,
+                        fontWeight: 'bold',
+                        marginTop: 40,
+                    }}
+                >
+                    {this.props.t('Warning!')}
+                </div>
+                <div style={styles.warningText}>{this.props.t('npm_warning', 'NPM', 'NPM')}</div>
+                <div style={styles.noteText}>{this.props.t('github_note')}</div>
+            </Paper>
+        ) : null;
     }
 
     renderGitHub() {
-        return this.state.currentTab === 'GitHub' ? <Paper
-            style={styles.tabPaper}
-            id="github-install-dialog-panel-github"
-        >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.debug}
-                            onChange={e => {
-                                ((window as any)._localstorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
-                                this.setState({ debug: e.target.checked });
-                            }}
-                        />
-                    }
-                    label={this.props.t('Debug outputs')}
-                />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                <SmsIcon style={{ marginRight: 10 }} />
-                <Autocomplete
-                    fullWidth
-                    value={this.state.autoCompleteValue}
-                    getOptionDisabled={option => !!option?.nogit}
-                    renderOption={(props, option) =>
-                        <Box
-                            component="li"
-                            sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
-                            {...props}
-                        >
-                            <Icon src={option?.icon || ''} style={styles.listIconWithMargin} />
-                            {option?.name ?? ''}
-                            {option?.nogit && <div
-                                style={styles.errorTextNoGit}
-                            >
-                                {I18n.t('This adapter cannot be installed from git as must be built before installation.')}
-                            </div>}
-                        </Box>}
-                    onChange={(_, newValue) => {
-                        ((window as any)._localstorage || window.localStorage).setItem('App.autocomplete', newValue);
-                        this.setState({ autoCompleteValue: newValue });
-                    }}
-                    options={this.getList()}
-                    getOptionLabel={option => option?.name ?? ''}
-                    renderInput={params => {
-                        const _params = { ...params };
-                        _params.InputProps = _params.InputProps || {} as any;
-                        _params.InputProps.startAdornment = <InputAdornment position="start">
-                            <Icon
-                                src={this.state.autoCompleteValue?.icon || ''}
-                                style={styles.listIconWithMargin}
-                            />
-                        </InputAdornment>;
-
-                        return <TextField
-                            variant="standard"
-                            {...params}
-                            label={I18n.t('Select adapter')}
-                        />;
-                    }}
-                />
-            </div>
-            <div style={{
-                fontSize: 24,
-                fontWeight: 'bold',
-                marginTop: 40,
-            }}
+        return this.state.currentTab === 'GitHub' ? (
+            <Paper
+                style={styles.tabPaper}
+                id="github-install-dialog-panel-github"
             >
-                {this.props.t('Warning!')}
-            </div>
-            <div style={styles.warningText}>
-                {this.props.t('github_warning', 'GitHub', 'GitHub')}
-            </div>
-            <div style={styles.noteText}>
-                {this.props.t('github_note')}
-            </div>
-        </Paper> : null;
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={this.state.debug}
+                                onChange={e => {
+                                    ((window as any)._localstorage || window.localStorage).setItem(
+                                        'App.gitDebug',
+                                        e.target.checked ? 'true' : 'false',
+                                    );
+                                    this.setState({ debug: e.target.checked });
+                                }}
+                            />
+                        }
+                        label={this.props.t('Debug outputs')}
+                    />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                    <SmsIcon style={{ marginRight: 10 }} />
+                    <Autocomplete
+                        fullWidth
+                        value={this.state.autoCompleteValue}
+                        getOptionDisabled={option => !!option?.nogit}
+                        renderOption={(props, option) => (
+                            <Box
+                                component="li"
+                                sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                                {...props}
+                            >
+                                <Icon
+                                    src={option?.icon || ''}
+                                    style={styles.listIconWithMargin}
+                                />
+                                {option?.name ?? ''}
+                                {option?.nogit && (
+                                    <div style={styles.errorTextNoGit}>
+                                        {I18n.t(
+                                            'This adapter cannot be installed from git as must be built before installation.',
+                                        )}
+                                    </div>
+                                )}
+                            </Box>
+                        )}
+                        onChange={(_, newValue) => {
+                            ((window as any)._localstorage || window.localStorage).setItem(
+                                'App.autocomplete',
+                                newValue,
+                            );
+                            this.setState({ autoCompleteValue: newValue });
+                        }}
+                        options={this.getList()}
+                        getOptionLabel={option => option?.name ?? ''}
+                        renderInput={params => {
+                            const _params = { ...params };
+                            _params.InputProps = _params.InputProps || ({} as any);
+                            _params.InputProps.startAdornment = (
+                                <InputAdornment position="start">
+                                    <Icon
+                                        src={this.state.autoCompleteValue?.icon || ''}
+                                        style={styles.listIconWithMargin}
+                                    />
+                                </InputAdornment>
+                            );
+
+                            return (
+                                <TextField
+                                    variant="standard"
+                                    {...params}
+                                    label={I18n.t('Select adapter')}
+                                />
+                            );
+                        }}
+                    />
+                </div>
+                <div
+                    style={{
+                        fontSize: 24,
+                        fontWeight: 'bold',
+                        marginTop: 40,
+                    }}
+                >
+                    {this.props.t('Warning!')}
+                </div>
+                <div style={styles.warningText}>{this.props.t('github_warning', 'GitHub', 'GitHub')}</div>
+                <div style={styles.noteText}>{this.props.t('github_note')}</div>
+            </Paper>
+        ) : null;
     }
 
     renderCustom() {
-        return this.state.currentTab === 'URL' ? <Paper
-            style={styles.tabPaper}
-            id="github-install-dialog-panel-custom"
-        >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={this.state.debug}
-                        onChange={e => {
-                            ((window as any)._localstorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
-                            this.setState({ debug: e.target.checked });
-                        }}
-                    />}
-                    label={this.props.t('Debug outputs')}
-                />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <TextField
-                    variant="standard"
-                    fullWidth
-                    label={this.props.t('URL')}
-                    helperText={this.props.t('URL or file path')}
-                    value={this.state.url}
-                    onChange={event => {
-                        ((window as any)._localstorage || window.localStorage).setItem('App.userUrl', event.target.value);
-                        this.setState({ url: event.target.value });
-                    }}
-                    onKeyUp={event => {
-                        if (event.key === 'Enter' && this.state.url) {
-                            if (!this.state.url.includes('.')) {
-                                this.props.installFromUrl(`iobroker.${this.state.url}`, this.state.debug, true);
-                            } else {
-                                this.props.installFromUrl(this.state.url, this.state.debug, true);
-                            }
-                        }
-                    }}
-                    slotProps={{
-                        input: {
-                            endAdornment: this.state.url ? <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={() => this.setState({ url: '' })}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment> : null,
-                        },
-                    }}
-                />
-            </div>
-            <div
-                style={{
-                    fontSize: 24,
-                    fontWeight: 'bold',
-                    marginTop: 40,
-                }}
+        return this.state.currentTab === 'URL' ? (
+            <Paper
+                style={styles.tabPaper}
+                id="github-install-dialog-panel-custom"
             >
-                {this.props.t('Warning!')}
-            </div>
-            <div style={styles.warningText}>
-                {this.props.t('github_warning', 'URL', 'URL')}
-            </div>
-            <div style={styles.noteText}>
-                {this.props.t('github_note')}
-            </div>
-        </Paper> : null;
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={this.state.debug}
+                                onChange={e => {
+                                    ((window as any)._localstorage || window.localStorage).setItem(
+                                        'App.gitDebug',
+                                        e.target.checked ? 'true' : 'false',
+                                    );
+                                    this.setState({ debug: e.target.checked });
+                                }}
+                            />
+                        }
+                        label={this.props.t('Debug outputs')}
+                    />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <TextField
+                        variant="standard"
+                        fullWidth
+                        label={this.props.t('URL')}
+                        helperText={this.props.t('URL or file path')}
+                        value={this.state.url}
+                        onChange={event => {
+                            ((window as any)._localstorage || window.localStorage).setItem(
+                                'App.userUrl',
+                                event.target.value,
+                            );
+                            this.setState({ url: event.target.value });
+                        }}
+                        onKeyUp={event => {
+                            if (event.key === 'Enter' && this.state.url) {
+                                if (!this.state.url.includes('.')) {
+                                    this.props.installFromUrl(`iobroker.${this.state.url}`, this.state.debug, true);
+                                } else {
+                                    this.props.installFromUrl(this.state.url, this.state.debug, true);
+                                }
+                            }
+                        }}
+                        slotProps={{
+                            input: {
+                                endAdornment: this.state.url ? (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.setState({ url: '' })}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ) : null,
+                            },
+                        }}
+                    />
+                </div>
+                <div
+                    style={{
+                        fontSize: 24,
+                        fontWeight: 'bold',
+                        marginTop: 40,
+                    }}
+                >
+                    {this.props.t('Warning!')}
+                </div>
+                <div style={styles.warningText}>{this.props.t('github_warning', 'URL', 'URL')}</div>
+                <div style={styles.noteText}>{this.props.t('github_note')}</div>
+            </Paper>
+        ) : null;
     }
 
     getList() {
@@ -427,108 +468,150 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             this.setState({ autoCompleteValue: null, url: '' });
         };
 
-        return <Dialog
-            onClose={() => this.props.onClose()}
-            open={!0}
-            sx={{ '& .MuiDialog-paper': styles.paper }}
-        >
-            <DialogContent dividers>
-                <Box component="div" sx={styles.root}>
-                    <AppBar position="static" color="default">
-                        <Tabs
-                            value={this.state.currentTab}
-                            onChange={(_e, newTab) => {
-                                ((window as any)._localstorage || window.localStorage).setItem('App.gitTab', newTab);
-                                this.setState({ currentTab: newTab });
-                            }}
-                            variant="fullWidth"
-                            indicatorColor="secondary"
+        return (
+            <Dialog
+                onClose={() => this.props.onClose()}
+                open={!0}
+                sx={{ '& .MuiDialog-paper': styles.paper }}
+            >
+                <DialogContent dividers>
+                    <Box
+                        component="div"
+                        sx={styles.root}
+                    >
+                        <AppBar
+                            position="static"
+                            color="default"
                         >
-                            <Tab
-                                label={this.props.t('From npm')}
-                                wrapped
-                                sx={{ '&.Mui-selected': styles.tabSelected }}
-                                icon={<img src={npmIcon} alt="npm" width={24} height={24} />}
-                                {...a11yProps('npm')}
-                                value="npm"
-                            />
-                            <Tab
-                                label={this.props.t('From github')}
-                                wrapped
-                                sx={{ '&.Mui-selected': styles.tabSelected }}
-                                icon={<GithubIcon style={{ width: 24, height: 24 }} width={24} height={24} />}
-                                {...a11yProps('github')}
-                                value="GitHub"
-                            />
-                            <Tab
-                                label={this.props.t('Custom')}
-                                wrapped
-                                sx={{ '&.Mui-selected': styles.tabSelected }}
-                                icon={<UrlIcon width={24} height={24} />}
-                                {...a11yProps('custom')}
-                                value="URL"
-                            />
-                        </Tabs>
-                    </AppBar>
-                    <Box component="div" sx={styles.title}>
-                        {this.props.t('Install or update the adapter from %s', this.state.currentTab || 'npm')}
+                            <Tabs
+                                value={this.state.currentTab}
+                                onChange={(_e, newTab) => {
+                                    ((window as any)._localstorage || window.localStorage).setItem(
+                                        'App.gitTab',
+                                        newTab,
+                                    );
+                                    this.setState({ currentTab: newTab });
+                                }}
+                                variant="fullWidth"
+                                indicatorColor="secondary"
+                            >
+                                <Tab
+                                    label={this.props.t('From npm')}
+                                    wrapped
+                                    sx={{ '&.Mui-selected': styles.tabSelected }}
+                                    icon={
+                                        <img
+                                            src={npmIcon}
+                                            alt="npm"
+                                            width={24}
+                                            height={24}
+                                        />
+                                    }
+                                    {...a11yProps('npm')}
+                                    value="npm"
+                                />
+                                <Tab
+                                    label={this.props.t('From github')}
+                                    wrapped
+                                    sx={{ '&.Mui-selected': styles.tabSelected }}
+                                    icon={
+                                        <GithubIcon
+                                            style={{ width: 24, height: 24 }}
+                                            width={24}
+                                            height={24}
+                                        />
+                                    }
+                                    {...a11yProps('github')}
+                                    value="GitHub"
+                                />
+                                <Tab
+                                    label={this.props.t('Custom')}
+                                    wrapped
+                                    sx={{ '&.Mui-selected': styles.tabSelected }}
+                                    icon={
+                                        <UrlIcon
+                                            width={24}
+                                            height={24}
+                                        />
+                                    }
+                                    {...a11yProps('custom')}
+                                    value="URL"
+                                />
+                            </Tabs>
+                        </AppBar>
+                        <Box
+                            component="div"
+                            sx={styles.title}
+                        >
+                            {this.props.t('Install or update the adapter from %s', this.state.currentTab || 'npm')}
+                        </Box>
+                        {this.renderNpm()}
+                        {this.renderGitHub()}
+                        {this.renderCustom()}
                     </Box>
-                    {this.renderNpm()}
-                    {this.renderGitHub()}
-                    {this.renderCustom()}
-                </Box>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    id="github-install-dialog-ok"
-                    variant="contained"
-                    disabled={((this.state.currentTab === 'GitHub' || this.state.currentTab === 'npm') && !this.state.autoCompleteValue?.value) || (this.state.currentTab === 'URL' && !this.state.url)}
-                    autoFocus
-                    onClick={async () => {
-                        if (this.state.currentTab === 'GitHub') {
-                            const parts = (this.state.autoCompleteValue?.value || '').split('/');
-                            const _url = `${parts[1]}/ioBroker.${parts[0]}`;
-                            this.props.installFromUrl(_url, this.state.debug, true);
-                        } else if (this.state.currentTab === 'URL') {
-                            if (!this.state.url.includes('.')) {
-                                this.props.installFromUrl(`iobroker.${this.state.url}`, this.state.debug, true);
-                            } else {
-                                this.props.installFromUrl(this.state.url, this.state.debug, true);
-                            }
-                        } else if (this.state.currentTab === 'npm') {
-                            const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];
-                            const adapterName = fullAdapterName.includes('.') ? fullAdapterName.split('.')[1] : fullAdapterName;
-
-                            try {
-                                await this.props.installFromUrl(`iobroker.${adapterName}@latest`, this.state.debug, true);
-                                // on npm installations we want to perform an additional upload
-                                this.props.upload(adapterName);
-                            } catch (e) {
-                                console.error(`Installation from url failed: ${e.message}`);
-                            }
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        id="github-install-dialog-ok"
+                        variant="contained"
+                        disabled={
+                            ((this.state.currentTab === 'GitHub' || this.state.currentTab === 'npm') &&
+                                !this.state.autoCompleteValue?.value) ||
+                            (this.state.currentTab === 'URL' && !this.state.url)
                         }
-                        this.props.onClose();
-                        closeInit();
-                    }}
-                    color="primary"
-                    startIcon={<CheckIcon />}
-                >
-                    {this.props.t('Install')}
-                </Button>
-                <Button
-                    id="github-install-dialog-close"
-                    variant="contained"
-                    onClick={() => {
-                        this.props.onClose();
-                        closeInit();
-                    }}
-                    color="grey"
-                    startIcon={<CloseIcon />}
-                >
-                    {this.props.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                        autoFocus
+                        onClick={async () => {
+                            if (this.state.currentTab === 'GitHub') {
+                                const parts = (this.state.autoCompleteValue?.value || '').split('/');
+                                const _url = `${parts[1]}/ioBroker.${parts[0]}`;
+                                this.props.installFromUrl(_url, this.state.debug, true);
+                            } else if (this.state.currentTab === 'URL') {
+                                if (!this.state.url.includes('.')) {
+                                    this.props.installFromUrl(`iobroker.${this.state.url}`, this.state.debug, true);
+                                } else {
+                                    this.props.installFromUrl(this.state.url, this.state.debug, true);
+                                }
+                            } else if (this.state.currentTab === 'npm') {
+                                const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];
+                                const adapterName = fullAdapterName.includes('.')
+                                    ? fullAdapterName.split('.')[1]
+                                    : fullAdapterName;
+
+                                try {
+                                    await this.props.installFromUrl(
+                                        `iobroker.${adapterName}@latest`,
+                                        this.state.debug,
+                                        true,
+                                    );
+                                    // on npm installations we want to perform an additional upload
+                                    this.props.upload(adapterName);
+                                } catch (e) {
+                                    console.error(`Installation from url failed: ${e.message}`);
+                                }
+                            }
+                            this.props.onClose();
+                            closeInit();
+                        }}
+                        color="primary"
+                        startIcon={<CheckIcon />}
+                    >
+                        {this.props.t('Install')}
+                    </Button>
+                    <Button
+                        id="github-install-dialog-close"
+                        variant="contained"
+                        onClick={() => {
+                            this.props.onClose();
+                            closeInit();
+                        }}
+                        color="grey"
+                        startIcon={<CloseIcon />}
+                    >
+                        {this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 
