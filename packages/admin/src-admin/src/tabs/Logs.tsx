@@ -289,24 +289,6 @@ const COLORS_DARK = [
     'rgba(255,255,105,0.1)',
 ];
 
-// Number prototype is read-only, properties should not be added
-function padding2(num: number) {
-    let s = num.toString();
-    if (s.length < 2) {
-        s = `0${s}`;
-    }
-    return s;
-}
-function padding3(num: number) {
-    let s = num.toString();
-    if (s.length < 2) {
-        s = `00${s}`;
-    } else if (s.length < 3) {
-        s = `0${s}`;
-    }
-    return s;
-}
-
 interface LogLineSavedExtended extends LogLineSaved {
     odd?: boolean;
     time?: string;
@@ -405,7 +387,11 @@ class Logs extends Component<LogsProps, LogsState> {
         this.t = props.t;
     }
 
-    readLogs(force: boolean, logFiles?: { path: { fileName: string; size: number }; name: string }[], cb?: () => void) {
+    readLogs(
+        force: boolean,
+        logFiles?: { path: { fileName: string; size: number }; name: string }[],
+        cb?: () => void,
+    ): void {
         if (this.props.logsWorker && this.state.hosts) {
             this.props.logsWorker.getLogs(force).then(results => {
                 if (!results) {
@@ -429,8 +415,8 @@ class Logs extends Component<LogsProps, LogsState> {
                     if (!item.time) {
                         const date = new Date(item.ts);
                         item.time =
-                            `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
-                            `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}.${padding3(date.getMilliseconds())}`;
+                            `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ` +
+                            `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}.${date.getMilliseconds().toString().padStart(3, '0')}`;
                     }
                     if (item.severity === 'error') {
                         logErrors++;
@@ -522,7 +508,7 @@ class Logs extends Component<LogsProps, LogsState> {
         return [];
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         // this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
         this.props.logsWorker.registerHandler(this.logHandler);
         this.props.clearErrors();
@@ -540,13 +526,13 @@ class Logs extends Component<LogsProps, LogsState> {
         });
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         // this.props.logsWorker && this.props.logsWorker.enableCountErrors(true);
         this.props.logsWorker.unregisterHandler(this.logHandler);
         this.props.clearErrors();
     }
 
-    getSourceIcon(from: string) {
+    getSourceIcon(from: string): string | null {
         const adapterName = from.replace(/\.\d+$/, '');
         let icon = this.state.adapters[adapterName]?.icon;
         if (icon) {
@@ -559,7 +545,7 @@ class Logs extends Component<LogsProps, LogsState> {
         return icon || null;
     }
 
-    logHandler = (newLogs: LogLineSaved[], size: number) => {
+    logHandler = (newLogs: LogLineSaved[], size: number): void => {
         if (this.ignoreNextLogs) {
             this.ignoreNextLogs = false;
             return;
@@ -589,8 +575,8 @@ class Logs extends Component<LogsProps, LogsState> {
             if (!item.time) {
                 const date = new Date(item.ts);
                 item.time =
-                    `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
-                    `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}.${padding3(date.getMilliseconds())}`;
+                    `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ` +
+                    `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}.${date.getMilliseconds().toString().padStart(3, '0')}`;
             }
             if (item.severity === 'error') {
                 logErrors++;
@@ -634,7 +620,7 @@ class Logs extends Component<LogsProps, LogsState> {
         this.setState(newState as LogsState);
     };
 
-    clearLog() {
+    clearLog(): void {
         this.props.logsWorker?.clearLines();
         this.props.clearErrors();
         this.setState({
@@ -645,22 +631,22 @@ class Logs extends Component<LogsProps, LogsState> {
         });
     }
 
-    handleMessageChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    handleMessageChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
         (((window as any)._localStorage as Storage) || window.localStorage).setItem('Log.message', event.target.value);
         this.setState({ message: event.target.value });
     }
 
-    handleSourceChange(source: string) {
+    handleSourceChange(source: string): void {
         (((window as any)._localStorage as Storage) || window.localStorage).setItem('Log.source', source);
         this.setState({ source });
     }
 
-    handleSeverityChange(event: SelectChangeEvent<string>) {
+    handleSeverityChange(event: SelectChangeEvent<string>): void {
         (((window as any)._localStorage as Storage) || window.localStorage).setItem('Log.severity', event.target.value);
         this.setState({ severity: event.target.value });
     }
 
-    handleLogDelete() {
+    handleLogDelete(): void {
         this.props.socket
             .delLogs(this.state.currentHost)
             .then(() => this.clearLog())
@@ -671,16 +657,16 @@ class Logs extends Component<LogsProps, LogsState> {
             });
     }
 
-    handleLogPause() {
+    handleLogPause(): void {
         this.setState({ pause: this.state.pause ? 0 : this.state.logs.length });
     }
 
-    static openTab(path: string) {
+    static openTab(path: string): void {
         const tab = window.open(path, '_blank');
         tab.focus();
     }
 
-    getLogFiles() {
+    getLogFiles(): JSX.Element[] {
         return this.state.logFiles.map(entry => (
             <MenuItem
                 style={styles.downloadEntry}
@@ -701,7 +687,7 @@ class Logs extends Component<LogsProps, LogsState> {
         ));
     }
 
-    getSeverities() {
+    getSeverities(): JSX.Element[] {
         const severities = [];
 
         for (const i in this.severities) {
@@ -719,7 +705,7 @@ class Logs extends Component<LogsProps, LogsState> {
         return severities;
     }
 
-    getSources() {
+    getSources(): JSX.Element[] {
         const sources = Object.keys(this.state.sources).sort();
         sources.unshift('1');
 
@@ -754,7 +740,7 @@ class Logs extends Component<LogsProps, LogsState> {
             keyPrefix: 'r' | '';
             length: number;
         },
-    ) {
+    ): void {
         const row = this.state.logs[i];
         if (!row) {
             return;
@@ -848,7 +834,7 @@ class Logs extends Component<LogsProps, LogsState> {
         );
     }
 
-    getRows() {
+    getRows(): JSX.Element[] {
         const rows: JSX.Element[] = [];
         const options: {
             filterMessage: string;
@@ -903,7 +889,7 @@ class Logs extends Component<LogsProps, LogsState> {
         return rows;
     }
 
-    renderClearDialog() {
+    renderClearDialog(): JSX.Element {
         if (!this.state.logDeleteDialog) {
             return null;
         }
@@ -949,13 +935,13 @@ class Logs extends Component<LogsProps, LogsState> {
         );
     }
 
-    changePid() {
+    changePid(): void {
         const pid = !this.state.pid;
         (((window as any)._localStorage as Storage) || window.localStorage).setItem('Logs.pid', pid ? 'true' : 'false');
         this.setState({ pid });
     }
 
-    renderToolbar() {
+    renderToolbar(): JSX.Element {
         const pauseChild = !this.state.pause ? (
             <PauseIcon />
         ) : (
@@ -1160,7 +1146,7 @@ class Logs extends Component<LogsProps, LogsState> {
         );
     }
 
-    renderTableHeader() {
+    renderTableHeader(): JSX.Element {
         const sources = Object.keys(this.state.sources).sort();
         sources.unshift('1');
 
@@ -1289,7 +1275,7 @@ class Logs extends Component<LogsProps, LogsState> {
         );
     }
 
-    render() {
+    render(): JSX.Element {
         if (!this.state.logs) {
             return <LinearProgress />;
         }

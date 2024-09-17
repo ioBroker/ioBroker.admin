@@ -164,7 +164,11 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
             }
             // request GUI for this notification
             this.props.socket
-                .sendTo(this.props.instanceId.replace('system.adapter.', ''), 'getNotificationSchema', contextData)
+                .sendTo(
+                    this.props.instanceId.replace('system.adapter.', ''),
+                    'admin:getNotificationSchema',
+                    contextData,
+                )
                 .then((result: { data: Record<string, any> | null; schema: ConfigItemPanel | null }) => {
                     if (result) {
                         this.setState({

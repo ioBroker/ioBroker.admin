@@ -1311,7 +1311,7 @@ class App extends Router<AppProps, AppState> {
     updateHosts = (events: HostEvent[]): void => {
         const hosts: CompactHost[] = JSON.parse(JSON.stringify(this.state.hosts));
 
-        events.map((event: HostEvent): void => {
+        events.forEach((event: HostEvent): void => {
             const elementFind = hosts.find(host => host._id === event.id);
             if (elementFind) {
                 const index = hosts.indexOf(elementFind);

@@ -136,15 +136,13 @@ class MDUtils {
         text: string,
         header: MarkdownHeader,
         path?: string,
-    ):
-        | string
-        | {
-              parts: { type: string; lines: string[] }[];
-              content: Record<string, MarkdownContent>;
-              title: string;
-              changeLog: string;
-              license: string;
-          } {
+    ): {
+        parts: { type: string; lines: string[] }[];
+        content: Record<string, MarkdownContent>;
+        title: string;
+        changeLog: string;
+        license: string;
+    } {
         path = path || '';
 
         const { body, license, changelog } = MDUtils.extractLicenseAndChangelog(text, true);

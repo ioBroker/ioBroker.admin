@@ -316,8 +316,26 @@ const NotificationsDialog = ({
 
     let firstKey = '';
     Object.keys(messages).map(scope =>
-        Object.keys(messages[scope]).map(name => (firstKey = firstKey || `${scope}-${name}`)),
+        Object.keys(messages[scope]).map(name => (firstKey = firstKey || `${scope}--${name}`)),
     );
+    // if a panel does not exist, set it to the first one
+    if (panel) {
+        const [scope, name] = panel.split('--');
+        if (!messages[scope]) {
+            setPanel(firstKey);
+        } else if (!messages[scope][name]) {
+            // find the first message in this scope
+            let found = false;
+            for (const key in messages[scope]) {
+                found = true;
+                setPanel(`${scope}--${key}`);
+                break;
+            }
+            if (!found) {
+                setPanel(firstKey);
+            }
+        }
+    }
 
     return (
         <Dialog
@@ -371,7 +389,7 @@ const NotificationsDialog = ({
                             {Object.keys(messages).map(scope =>
                                 Object.keys(messages[scope]).map((name, idx) => {
                                     const entry = messages[scope][name];
-                                    const key = `${scope}-${name}`;
+                                    const key = `${scope}--${name}`;
 
                                     return (
                                         <Tab
@@ -394,7 +412,7 @@ const NotificationsDialog = ({
                     </AppBar>
                     {Object.keys(messages).map(scope =>
                         Object.keys(messages[scope]).map(name => {
-                            const key = `${scope}-${name}`;
+                            const key = `${scope}--${name}`;
                             if (panel === key || (!panel && key === firstKey)) {
                                 const entry = messages[scope][name];
                                 console.log(`Active panel: ${panel}`, `Key: ${key}`);
@@ -421,7 +439,7 @@ const NotificationsDialog = ({
                                         <div>
                                             {entry.instances
                                                 ? Object.keys(entry.instances).map(nameInst => {
-                                                      const accKey = `${key}-${nameInst}`;
+                                                      const accKey = `${key}--${nameInst}`;
                                                       if (autoCollapse) {
                                                           handleChangeAccordion(accKey)('', true);
                                                           setAutoCollapse(false);

@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component, createRef, type JSX } from 'react';
 
 import { IconButton, LinearProgress, Tooltip, Paper, InputAdornment, TextField, Box } from '@mui/material';
 
@@ -256,7 +256,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return this.wordCache[word];
     };
 
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         this.props.instancesWorker.registerHandler(this.getInstances);
         await this.updateData();
         const deleteCustomSupported = await this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM');
@@ -265,28 +265,30 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
     }
 
-    async updateData() {
+    async updateData(): Promise<void> {
         await this.getParamsLocalAndPanel();
         await this.getData();
         await this.getHostsData();
         await this.getInstances();
     }
 
-    async componentWillUnmount() {
+    componentWillUnmount(): void {
         this.subscribeStates(true);
         this.props.instancesWorker.unregisterHandler(this.getInstances);
     }
 
-    getStates(update?: boolean) {
+    getStates(update?: boolean): Promise<Record<string, ioBroker.State>> {
         if (update) {
             this.statePromise = null;
         }
-        this.statePromise = this.statePromise || this.props.socket.getForeignStates('system.adapter.*');
+        if (!(this.statePromise instanceof Promise)) {
+            this.statePromise = this.props.socket.getForeignStates('system.adapter.*');
+        }
 
         return this.statePromise;
     }
 
-    static getDerivedStateFromProps(props: InstancesProps, state: InstancesState) {
+    static getDerivedStateFromProps(props: InstancesProps, state: InstancesState): Partial<InstancesState> | null {
         const location = Router.getLocation();
 
         const newState: Partial<InstancesState> = {
@@ -301,7 +303,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return newState;
     }
 
-    getInstances = async () => {
+    getInstances = async (): Promise<void> => {
         const start = Date.now();
         let instances: ioBroker.InstanceObject[] = [];
         const instancesFromWorker = await this.props.instancesWorker.getInstances();
@@ -400,7 +402,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 common.localLinks || common.localLink || '';
             let links: Record<string, string | InstanceLink> | null = null;
             if (rawLinks && typeof rawLinks === 'string') {
-                links = { _default: rawLinks as string };
+                links = { _default: rawLinks };
             } else if (rawLinks && typeof rawLinks === 'object') {
                 links = rawLinks as Record<string, string>;
             }
@@ -411,9 +413,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 instance.links = instance.links || [];
                 let link: InstanceLink;
                 if (typeof links[linkName] === 'string') {
-                    link = { link: links[linkName] as string };
+                    link = { link: links[linkName] };
                 } else {
-                    link = links[linkName] as InstanceLink;
+                    link = links[linkName];
                 }
 
                 const urls =
@@ -430,7 +432,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 } else if (typeof name === 'object') {
                     name = AdminUtils.getText(name, this.props.lang);
                 } else {
-                    name = this.t(name as string);
+                    name = this.t(name);
                 }
 
                 if (urls.length === 1) {
@@ -489,7 +491,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         this.setState(newState as InstancesState);
     };
 
-    getParamsLocalAndPanel = async () => {
+    getParamsLocalAndPanel = async (): Promise<void> => {
         let compact = false;
         try {
             const baseSettings = await this.props.socket.readBaseSettings(this.state.currentHost);
@@ -532,7 +534,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         });
     };
 
-    async getData(update?: boolean) {
+    async getData(update?: boolean): Promise<void> {
         try {
             const adapters = this.props.socket.getAdapters(update);
             const statesProm = this.getStates();
@@ -554,7 +556,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
     }
 
-    onStateChange = (id: string, state: ioBroker.State | null) => {
+    onStateChange = (id: string, state: ioBroker.State | null): void => {
         const oldState = this.states[id];
         this.states[id] = state;
         if ((!oldState && state) || (oldState && !state) || (oldState && state && oldState.val !== state.val)) {
@@ -574,7 +576,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
     };
 
-    subscribeStates(isUnsubscribe?: boolean) {
+    subscribeStates(isUnsubscribe?: boolean): void {
         const func = isUnsubscribe ? this.props.socket.unsubscribeState : this.props.socket.subscribeState;
         // func('system.adapter.*', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.alive', this.onStateChange);
@@ -691,7 +693,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
     }
 
-    static getLogLevelIcon(level: ioBroker.LogLevel) {
+    static getLogLevelIcon(level: ioBroker.LogLevel): JSX.Element | null {
         if (level === 'debug') {
             return <BugReportIcon />;
         }
@@ -707,7 +709,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return null;
     }
 
-    onDeleteInstance = (instance: InstanceEntry, deleteCustom: boolean, deleteAdapter: boolean) => {
+    onDeleteInstance = (instance: InstanceEntry, deleteCustom: boolean, deleteAdapter: boolean): void => {
         this.setState({ deleting: instance.id }, () =>
             this.props.executeCommand(
                 `del ${deleteAdapter ? instance.id.split('.')[0] : instance.id}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`,
@@ -719,7 +721,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return !!this.states[`${instanceId}.plugins.sentry.enabled`]?.val;
     }
 
-    cacheInstances() {
+    cacheInstances(): InstanceItem[] {
         const currentHostNoPrefix = this.state.currentHost.replace(/^system.host./, '');
 
         this._cacheList = Object.keys(this.state.instances).map(id => {
@@ -826,7 +828,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return this._cacheList;
     }
 
-    clearAllFilters() {
+    clearAllFilters(): void {
         const state: Partial<InstancesState> = {
             playArrow: 0,
             onlyCurrentHost: false,
@@ -854,9 +856,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     onMaxCompactGroupNumber = (maxCompactGroupNumber: number): void => this.setState({ maxCompactGroupNumber });
 
-    onRegisterClose = (panel: string, closeCommand: (() => void) | null) => (this.closeCommands[panel] = closeCommand);
+    onRegisterClose = (panel: string, closeCommand: (() => void) | null): void => {
+        this.closeCommands[panel] = closeCommand;
+    };
 
-    getPanels() {
+    getPanels(): JSX.Element[] | JSX.Element {
         if (!this._cacheList) {
             this.cacheInstances();
         }
@@ -982,14 +986,14 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return list.map(({ render }) => render);
     }
 
-    onToggleExpanded = (panel: string, expanded: boolean) => {
+    onToggleExpanded = (panel: string, expanded: boolean): void => {
         if (this.expanded !== panel && expanded && this.closeCommands[this.expanded]) {
             this.closeCommands[this.expanded]();
         }
         this.expanded = expanded ? panel : null;
     };
 
-    async getHostsData() {
+    async getHostsData(): Promise<void> {
         this.props.socket
             .getHostInfo(this.state.currentHost, false, 10000)
             .catch(error => {
@@ -1025,7 +1029,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
     }
 
-    changeStartedStopped = () => {
+    changeStartedStopped = (): void => {
         this._cacheList = null;
         this.setState(state => {
             const playArrow = !state.playArrow ? 1 : state.playArrow === 1 ? 2 : 0;
@@ -1034,13 +1038,13 @@ class Instances extends Component<InstancesProps, InstancesState> {
         });
     };
 
-    changeCompactGroup(filterCompactGroup: string | number) {
+    changeCompactGroup(filterCompactGroup: string | number): void {
         this._cacheList = null;
         this.localStorage.setItem('Instances.filterCompactGroup', JSON.stringify(filterCompactGroup));
         this.setState({ filterCompactGroup });
     }
 
-    handleFilterChange(event: React.ChangeEvent<HTMLInputElement>) {
+    handleFilterChange(event: React.ChangeEvent<HTMLInputElement>): void {
         if (this.typingTimer) {
             clearTimeout(this.typingTimer);
         }
@@ -1057,7 +1061,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         );
     }
 
-    renderFilterDialog() {
+    renderFilterDialog(): JSX.Element | null {
         if (!this.state.showFilterDialog) {
             return null;
         }
@@ -1079,7 +1083,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         );
     }
 
-    render() {
+    render(): JSX.Element {
         if (!this.state.instances) {
             return <LinearProgress />;
         }

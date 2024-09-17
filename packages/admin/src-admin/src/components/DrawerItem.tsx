@@ -110,7 +110,7 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
                         alignItems="center"
                         style={styles.noWrap}
                     >
-                        <Grid2 item>
+                        <Grid2>
                             <ListItemIcon
                                 style={{ minWidth: 0, color }}
                                 sx={selected ? styles.selectedIcon : undefined}

@@ -1,4 +1,4 @@
-import React, { type JSX } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/browser';
 
@@ -80,13 +80,14 @@ if (
         throw error;
     };
     window.onunhandledrejection = (event: PromiseRejectionEvent) => {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         const errText = event.toString();
         if (typeof event === 'object' && errText && versionChanged.find(e => errText.includes(e))) {
             console.error(`Try to detect admin version change: ${event.reason}`);
             window.location.reload();
             return;
         }
-        throw event;
+        throw event as unknown as Error;
     };
 }
 
