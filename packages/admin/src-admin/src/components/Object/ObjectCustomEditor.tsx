@@ -268,7 +268,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 }
                 let jsonSchema: ConfigItemPanel;
                 try {
-                    jsonSchema = JSON5.parse(jsonText) as ConfigItemPanel;
+                    jsonSchema = JSON5.parse(jsonText);
                     this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};
                     this.jsonConfigs[adapter].json = jsonSchema;
                 } catch (e) {
@@ -296,7 +296,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         items: Record<string, any>,
         attr: string,
         processed: string[],
-    ) {
+    ): boolean | undefined {
         if (processed.includes(attr)) {
             return undefined;
         }
@@ -342,7 +342,6 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             data[attr] = items[attr].default === undefined ? null : items[attr].default;
         } else {
             try {
-                // eslint-disable-next-line no-new-func
                 const f = new Function(
                     'data',
                     'originalData',
@@ -361,6 +360,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     this.props.socket,
                 );
             } catch (e) {
+                // eslint-disable-next-line @typescript-eslint/no-base-to-string
                 console.error(`Cannot execute ${func}: ${e}`);
                 data[attr] = !items[attr] || items[attr].default === undefined ? null : items[attr].default;
             }
@@ -401,7 +401,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 });
 
                 // now init default that must be calculated
-                attrs.forEach(async attr => {
+                attrs.forEach((attr): void => {
                     if (items[attr].defaultFunc) {
                         this._executeCustom(
                             items[attr].defaultFunc,
@@ -502,7 +502,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         );
     }
 
-    combineNewAndOld(instance: string, ignoreUnderscore = false) {
+    combineNewAndOld(instance: string, ignoreUnderscore = false): Record<string, any> {
         const data = { ...(this.commonConfig[instance] || {}), ...(this.state.newValues[instance] || {}) };
 
         if (ignoreUnderscore) {
@@ -519,7 +519,12 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         return data;
     }
 
-    renderOneCustom(instance: string, instanceObj: ioBroker.InstanceObject, customObj: ioBroker.AnyObject, i: number) {
+    renderOneCustom(
+        instance: string,
+        instanceObj: ioBroker.InstanceObject,
+        customObj: ioBroker.AnyObject,
+        i: number,
+    ): JSX.Element | null {
         const adapter = instance.split('.')[0];
 
         const icon = `${URL_PREFIX}/adapter/${adapter}/${this.props.objects[`system.adapter.${adapter}`].common.icon}`;
@@ -547,7 +552,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             // evaluate function
             if (
                 this._executeCustom(
-                    this.jsonConfigs[adapter].json.hidden as string,
+                    this.jsonConfigs[adapter].json.hidden,
                     data,
                     customObj,
                     instanceObj,
@@ -567,7 +572,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>)[this.props.lang] ||
                     (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>).en;
             } else {
-                help = this.props.t(this.jsonConfigs[adapter].json.help as string);
+                help = this.props.t(this.jsonConfigs[adapter].json.help);
             }
         }
 
@@ -720,7 +725,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         );
     }
 
-    renderErrorMessage() {
+    renderErrorMessage(): JSX.Element {
         return (
             !!this.state.error && (
                 <DialogError
@@ -747,13 +752,13 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         });
     }
 
-    saveOneState(ids: string[], cb: () => void, _objects?: any, _oldObjects?: any) {
+    saveOneState(ids: string[], cb: () => void, _objects?: any, _oldObjects?: any): void {
         _objects = _objects || {};
         _oldObjects = _oldObjects || {};
 
         if (!ids?.length) {
             // save all objects
-            const keys = Object.keys(_objects);
+            const keys: string[] = Object.keys(_objects);
             if (!keys.length) {
                 this.setState({ maxOids: 0 }, () => this.props.onProgress(false));
                 if (cb) {
@@ -763,7 +768,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 this.setState({
                     progress: Math.round(((this.state.maxOids - keys.length) / this.state.maxOids) * 50) + 50,
                 });
-                const id = keys.shift() as string;
+                const id = keys.shift();
                 if (JSON.stringify(_objects[id].common) !== JSON.stringify(_oldObjects[id].common)) {
                     if (!this.changedIds.includes(id)) {
                         this.changedIds.push(id);
@@ -791,7 +796,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             // 0 - 50
             this.setState({ progress: Math.round(((maxOids - ids.length) / maxOids) * 50) });
 
-            const id = ids.shift() as string;
+            const id = ids.shift();
             this.getObject(_objects, _oldObjects, id).then((obj: Record<string, any>) => {
                 if (!obj) {
                     window.alert(`Invalid object ${id}`);
@@ -871,9 +876,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         }
     }
 
-    renderConfirmationDialog() {
+    renderConfirmationDialog(): JSX.Element | null {
         if (!this.state.showConfirmation) {
-            return false;
+            return null;
         }
         return (
             <ConfirmDialog
@@ -917,7 +922,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         }
     };
 
-    render() {
+    render(): JSX.Element {
         if (this.customObj === null) {
             return <div style={{ color: '#F55', fontSize: 32 }}>{this.props.t('Object does not exist!')}</div>;
         }

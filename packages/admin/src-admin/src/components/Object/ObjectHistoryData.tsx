@@ -355,7 +355,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         if (!historyInstance) {
             return Promise.resolve([] as SupportedFeatures);
         }
-        if (this.supportedFeaturesPromises[historyInstance]) {
+        if (this.supportedFeaturesPromises[historyInstance] instanceof Promise) {
             return this.supportedFeaturesPromises[historyInstance];
         }
 
@@ -383,11 +383,11 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         return this.supportedFeaturesPromises[historyInstance];
     }
 
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         await this.props.socket.subscribeState(this.props.obj._id, this.onChange);
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.timeTimer) {
             clearTimeout(this.timeTimer);
             this.timeTimer = undefined;
@@ -401,7 +401,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         this.props.socket.unsubscribeState(this.props.obj._id, this.onChange);
     }
 
-    onChange = (id: string, state: ioBroker.State) => {
+    onChange = (id: string, state: ioBroker.State): void => {
         if (
             id === this.props.obj._id &&
             state &&
@@ -470,7 +470,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         });
     }
 
-    getHistoryInstances() {
+    getHistoryInstances(): Promise<{ id: string; alive: boolean }[]> {
         const list: { id: string; alive: boolean }[] = [];
         const ids: string[] = [];
         this.props.customsInstances.forEach(instance => {
@@ -501,7 +501,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         return Promise.resolve(list);
     }
 
-    readHistory(start?: number, end?: number) {
+    readHistory(start?: number, end?: number): Promise<void | null> {
         start = start || this.state.start;
         end = end || this.state.end;
 
@@ -610,7 +610,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             });
     }
 
-    readHistoryRange() {
+    readHistoryRange(): Promise<void> {
         const now = new Date();
         const oldest = new Date(2_000, 0, 1);
 
@@ -655,7 +655,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             });
     }
 
-    onToggleSelect(e: React.KeyboardEvent | React.MouseEvent, ts: number, column: string) {
+    onToggleSelect(e: React.KeyboardEvent | React.MouseEvent, ts: number, column: string): void {
         let selected = [...this.state.selected];
         const pos = selected.indexOf(ts);
         if (e.shiftKey && this.state.lastSelected) {
@@ -702,7 +702,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         this.setState({ selected, lastSelected: ts, lastSelectedColumn: column });
     }
 
-    getTableRows() {
+    getTableRows(): JSX.Element[] {
         const rows = [];
         for (let r = this.state.values.length - 1; r >= 0; r--) {
             const state = this.state.values[r];
@@ -838,7 +838,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         return rows;
     }
 
-    shiftTime() {
+    shiftTime(): void {
         const now = new Date();
         const delay = 60000 - now.getSeconds() - (1000 - now.getMilliseconds());
 
@@ -1001,7 +1001,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         this.setState({ start, end }, () => this.readHistory());
     }
 
-    renderTable() {
+    renderTable(): JSX.Element {
         if (!this.state.historyInstance) {
             return <div style={{ marginTop: 20, fontSize: 24 }}>{this.props.t('History instance not selected')}</div>;
         }
@@ -1057,7 +1057,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         return <LinearProgress />;
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element {
         return (
             <Dialog
                 open={!!this.state.areYouSure}
@@ -1106,12 +1106,12 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         );
     }
 
-    onDelete() {
+    onDelete(): void {
         const tasks = this.state.selected.map(ts => ({ state: { ts }, id: this.props.obj._id }));
         this.props.socket.sendTo(this.state.historyInstance, 'delete', tasks).then(() => this.readHistory());
     }
 
-    onUpdate() {
+    onUpdate(): void {
         let val = this.state.edit.val;
 
         if (this.props.obj.common) {
@@ -1147,7 +1147,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             .then(() => this.readHistory());
     }
 
-    onInsert() {
+    onInsert(): void {
         let val = this.state.edit.val;
 
         if (this.props.obj.common) {
@@ -1331,7 +1331,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         this.setState({ end, relativeRange: 'absolute' }, () => this.readHistory());
     }
 
-    renderToolbar() {
+    renderToolbar(): JSX.Element {
         return (
             <Toolbar>
                 <FormControl
@@ -1595,7 +1595,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         );
     }
 
-    exportData() {
+    exportData(): void {
         let element = window.document.getElementById('export-file');
         if (!element) {
             element = document.createElement('a');
@@ -1631,7 +1631,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         document.body.removeChild(element);
     }
 
-    render() {
+    render(): JSX.Element {
         if (!this.state.historyInstances) {
             return <LinearProgress />;
         }

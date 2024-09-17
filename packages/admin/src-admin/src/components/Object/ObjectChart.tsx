@@ -298,7 +298,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         this.chart = {};
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.socket.subscribeState(this.props.obj._id, this.onChange);
         window.addEventListener('resize', this.onResize);
         this.prepareData()
@@ -306,7 +306,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             .then(() => this.setRelativeInterval(this.state.relativeRange, true, () => this.forceUpdate()));
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.readTimeout) {
             clearTimeout(this.readTimeout);
             this.readTimeout = null;
@@ -345,7 +345,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         window.removeEventListener('resize', this.onResize);
     }
 
-    onResize = () => {
+    onResize = (): void => {
         if (this.timerResize) {
             clearTimeout(this.timerResize);
         }
@@ -355,7 +355,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         });
     };
 
-    onChange = (id: string, state: ioBroker.State) => {
+    onChange = (id: string, state: ioBroker.State): void => {
         if (
             id === this.props.obj._id &&
             state &&
@@ -467,7 +467,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         });
     }
 
-    getHistoryInstances() {
+    getHistoryInstances(): Promise<{ id: string; alive: boolean }[]> {
         if (this.props.historyInstance) {
             return Promise.resolve([]);
         }
@@ -505,7 +505,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         return Promise.resolve(list);
     }
 
-    readHistoryRange() {
+    readHistoryRange(): Promise<void> {
         const now = new Date();
         const oldest = new Date(2000, 0, 1);
 
@@ -535,7 +535,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         return Promise.resolve();
     }
 
-    readHistory(start?: number, end?: number) {
+    readHistory(start?: number, end?: number): Promise<{ val: ioBroker.StateValue; ts: number }[]> {
         /* interface GetHistoryOptions {
             instance?: string;
             start?: number;
@@ -857,12 +857,11 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    static getDerivedStateFromProps(_props: ObjectChartProps, _state: ObjectChartState): void {
+    static getDerivedStateFromProps(_props: ObjectChartProps, _state: ObjectChartState): null {
         return null;
     }
 
-    updateChart(start?: number, end?: number, withReadData?: boolean, cb?: () => void) {
+    updateChart(start?: number, end?: number, withReadData?: boolean, cb?: () => void): void {
         if (start) {
             this.start = start;
         }
@@ -918,7 +917,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         }, 400);
     }
 
-    setNewRange(readData?: boolean) {
+    setNewRange(readData?: boolean): void {
         /* if (this.rangeRef.current &&
             this.rangeRef.current.childNodes[1] &&
             this.rangeRef.current.childNodes[1].value) {
@@ -950,7 +949,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         }
     }
 
-    shiftTime() {
+    shiftTime(): void {
         const now = new Date();
         const delay = 60000 - now.getSeconds() - (1000 - now.getMilliseconds());
 
@@ -1027,7 +1026,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         }, delay || 60000);
     }
 
-    setRelativeInterval(mins: string, dontSave?: boolean, cb?: () => void) {
+    setRelativeInterval(mins: string, dontSave?: boolean, cb?: () => void): void {
         if (!dontSave) {
             this.localStorage.setItem('App.relativeRange', mins);
             this.setState({ relativeRange: mins });
@@ -1118,7 +1117,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         );
     }
 
-    installEventHandlers() {
+    installEventHandlers(): void {
         if (!this.echartsReact || typeof this.echartsReact.getEchartsInstance !== 'function') {
             return;
         }
@@ -1235,7 +1234,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         }
     }
 
-    private renderChart() {
+    private renderChart(): JSX.Element {
         if (!this.state.historyInstance) {
             return (
                 <div style={{ marginTop: 20, fontSize: 24, marginLeft: 24 }}>
@@ -1269,7 +1268,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         return <LinearProgress />;
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(): void {
         if (this.divRef.current) {
             const width = this.divRef.current.offsetWidth;
             const height = this.divRef.current.offsetHeight;
@@ -1286,7 +1285,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         }
     }
 
-    setStartDate(min: Date) {
+    setStartDate(min: Date): void {
         const minNumber: number = min.getTime();
         if (this.timeTimer) {
             clearTimeout(this.timeTimer);
@@ -1303,7 +1302,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         );
     }
 
-    setEndDate(max: Date) {
+    setEndDate(max: Date): void {
         const maxNumber: number = max.getTime();
         this.localStorage.setItem('App.relativeRange', 'absolute');
         this.localStorage.setItem('App.absoluteStart', this.state.min.toString());
@@ -1318,7 +1317,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         );
     }
 
-    openEcharts() {
+    openEcharts(): void {
         const args = [
             `id=${window.encodeURIComponent(this.props.obj._id)}`,
             `instance=${window.encodeURIComponent(this.state.historyInstance)}`,
@@ -1338,7 +1337,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         );
     }
 
-    async onStepChanged(stepType: string) {
+    async onStepChanged(stepType: string): Promise<void> {
         // save in an object
         const obj = await this.props.socket.getObject(this.props.obj._id);
         if (
@@ -1352,7 +1351,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         this.setState({ stepType, showStepMenu: null });
     }
 
-    renderToolbar() {
+    renderToolbar(): JSX.Element | null {
         if (this.props.noToolbar) {
             return null;
         }
@@ -1368,7 +1367,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                         <Select
                             variant="standard"
                             value={this.state.historyInstance}
-                            onChange={async e => {
+                            onChange={(e): void => {
                                 this.localStorage.setItem('App.historyInstance', e.target.value);
                                 this.setState({ historyInstance: e.target.value });
                             }}
@@ -1593,7 +1592,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         );
     }
 
-    render() {
+    render(): JSX.Element {
         if (!this.state.historyInstances && !this.state.defaultHistory) {
             return <LinearProgress />;
         }
