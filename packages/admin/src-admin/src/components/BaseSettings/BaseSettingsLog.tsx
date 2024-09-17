@@ -499,7 +499,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         );
     }
 
-    renderFile(name: string): React.JSX.Element {
+    renderFile(name: string): JSX.Element {
         return (
             <Accordion
                 key={name}

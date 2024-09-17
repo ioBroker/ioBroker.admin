@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { Button, Dialog, DialogContent, DialogTitle, AppBar, Toolbar, Stepper, Step, StepLabel } from '@mui/material';
 
@@ -130,7 +130,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         };
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.socket.getCurrentInstance().then((namespace: string) =>
             this.props.socket.getObject(`system.adapter.${namespace}`).then(obj => {
                 this.adminInstance = obj;
@@ -139,7 +139,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         );
     }
 
-    renderWelcome() {
+    renderWelcome(): JSX.Element {
         // shutterstock Standard commercial license on ioBroker GmbH: https://www.shutterstock.com/de/image-vector/welcome-neon-text-vector-sign-design-1186433386
         return (
             <div style={{ ...styles.paper, ...styles.welcomeBackground }}>
@@ -150,13 +150,11 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                         variant="contained"
                         color="primary"
                         onClick={() =>
-                            this.props.socket
-                                .getCompactSystemConfig(true)
-                                .then(obj =>
-                                    this.setState({
-                                        activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0),
-                                    }),
-                                )
+                            this.props.socket.getCompactSystemConfig(true).then(obj =>
+                                this.setState({
+                                    activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0),
+                                }),
+                            )
                         }
                     >
                         {I18n.t('Start wizard')} <PlayArrowIcon style={styles.playIcon} />
@@ -167,7 +165,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         );
     }
 
-    renderLicense() {
+    renderLicense(): JSX.Element {
         return (
             <WizardLicenseTab
                 t={I18n.t}
@@ -187,7 +185,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         );
     }
 
-    renderPassword() {
+    renderPassword(): JSX.Element {
         return (
             <WizardPasswordTab
                 t={I18n.t}
@@ -202,7 +200,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         );
     }
 
-    renderSettings() {
+    renderSettings(): JSX.Element {
         return (
             <WizardSettingsTab
                 t={I18n.t}
@@ -232,7 +230,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         );
     }
 
-    renderAuthentication() {
+    renderAuthentication(): JSX.Element {
         return (
             <WizardAuthSSLTab
                 t={I18n.t}
@@ -247,7 +245,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         );
     }
 
-    renderPortForwarding() {
+    renderPortForwarding(): JSX.Element {
         return (
             <WizardPortForwarding
                 t={I18n.t}
@@ -261,9 +259,9 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
     }
 
     /**
-     * Render the adapters selection wizard tab
+     * Render the adapter selection wizard tab
      */
-    renderAdapters() {
+    renderAdapters(): JSX.Element {
         return (
             <WizardAdaptersTab
                 host={this.props.host}
@@ -274,7 +272,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         );
     }
 
-    async onClose() {
+    async onClose(): Promise<void> {
         // read if discovery is available
         const discovery = await this.props.socket.getState('system.adapter.discovery.0.alive');
 
@@ -343,7 +341,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         }
     }
 
-    renderFinish() {
+    renderFinish(): JSX.Element {
         // Free Image license: https://pixabay.com/illustrations/road-sky-mountains-clouds-black-908176/
         return (
             <div style={{ ...styles.paper, ...styles.finishBackground }}>
@@ -371,7 +369,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         );
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 style={styles.dialog}

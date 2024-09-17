@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Grid2,
@@ -76,7 +76,7 @@ class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, WizardAuthSSLTab
         };
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
                 <form

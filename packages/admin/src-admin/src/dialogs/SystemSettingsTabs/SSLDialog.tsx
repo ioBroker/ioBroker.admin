@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Grid2, FormControl, TextField, Paper, InputAdornment, IconButton } from '@mui/material';
 

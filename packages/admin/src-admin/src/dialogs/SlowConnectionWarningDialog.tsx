@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { Dialog, DialogContent, DialogActions, DialogTitle, DialogContentText, TextField, Button } from '@mui/material';
 
@@ -44,14 +44,14 @@ export class SlowConnectionWarningDialogClass extends Component<
         this.mobile = window.innerWidth < MOBILE_WIDTH;
     }
 
-    static getReadTimeoutMs() {
+    static getReadTimeoutMs(): number {
         return (
             parseInt(((window as any)._localStorage || window.localStorage).getItem('App.readTimeoutMs'), 10) ||
             (AdminConnection.isCloud() ? 40_000 : 15_000)
         );
     }
 
-    static saveReadTimeoutMs(readTimeoutMs: number) {
+    static saveReadTimeoutMs(readTimeoutMs: number): number {
         if (readTimeoutMs) {
             return ((window as any)._localStorage || window.localStorage).setItem(
                 'App.readTimeoutMs',
@@ -61,7 +61,7 @@ export class SlowConnectionWarningDialogClass extends Component<
         return ((window as any)._localStorage || window.localStorage).removeItem('App.readTimeoutMs');
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 open={!0}

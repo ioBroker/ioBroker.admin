@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Dialog,
@@ -194,8 +194,8 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
         };
     }
 
-    componentDidMount() {
-        fetch(`https://rating.iobroker.net/adapter/${this.props.adapter}?uuid=${this.props.uuid}`)
+    componentDidMount(): void {
+        void fetch(`https://rating.iobroker.net/adapter/${this.props.adapter}?uuid=${this.props.uuid}`)
             .then(res => res.json())
             .then((votings: RatingDialogVotings) => {
                 votings = votings || {};
@@ -263,7 +263,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
     /**
      * Renders the info text component, which explains the rating section
      */
-    renderInfoText(): React.JSX.Element {
+    renderInfoText(): JSX.Element {
         return (
             <div style={styles.infoTextContainer}>
                 <InfoIcon />
@@ -272,7 +272,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
         );
     }
 
-    renderComments() {
+    renderComments(): JSX.Element {
         if (this.state.votings?.comments && this.state.votings.comments.length) {
             const found = this.state.votings.comments.find(
                 comment =>
@@ -368,7 +368,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
         return null;
     }
 
-    render() {
+    render(): JSX.Element {
         let item: { r: number; ts: number };
         let versions: string[];
         if (this.state.votings) {

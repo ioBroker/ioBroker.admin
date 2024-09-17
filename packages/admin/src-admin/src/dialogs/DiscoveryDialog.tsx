@@ -184,7 +184,7 @@ type CompactRepository = Record<
 >;
 
 interface TabPanelProps {
-    children: React.JSX.Element | React.JSX.Element[];
+    children: JSX.Element | JSX.Element[];
     value: number;
     index: number;
     title: string;
@@ -204,7 +204,7 @@ function TabPanel({
     boxHeight,
     black,
     ...props
-}: TabPanelProps): React.JSX.Element | null {
+}: TabPanelProps): JSX.Element | null {
     if (custom) {
         return <div {...props}>{value === index && children}</div>;
     }
@@ -270,7 +270,7 @@ interface EnhancedTableHeadProps {
     rowCount: number;
 }
 
-function EnhancedTableHead(props: EnhancedTableHeadProps): React.JSX.Element {
+function EnhancedTableHead(props: EnhancedTableHeadProps): JSX.Element {
     const { numSelected, rowCount, onSelectAllClick } = props;
 
     return (

@@ -147,7 +147,7 @@ interface JsControllerDialogProps {
 }
 
 const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDialogProps) => {
-    const [readme, setReadme] = useState<(string | React.JSX.Element)[] | null>(null);
+    const [readme, setReadme] = useState<(string | JSX.Element)[] | null>(null);
     const [location, setLocation] = useState('');
     const [os, setOS] = useState('');
 
@@ -190,7 +190,7 @@ const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDi
                             _readme = _readme.replace(/x\.y\.z/g, version);
                             const readmeLines = _readme.split('<!-- copy');
 
-                            const parts: (string | React.JSX.Element)[] = [];
+                            const parts: (string | JSX.Element)[] = [];
                             readmeLines.forEach(chapter => {
                                 if (chapter.includes('-->')) {
                                     const parts_ = chapter.split('-->');

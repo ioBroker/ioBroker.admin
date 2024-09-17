@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 
 import {
@@ -165,7 +165,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         };
     }
 
-    onValueChanged(value: any, id: string, name: 'title' | 'link') {
+    onValueChanged(value: any, id: string, name: 'title' | 'link'): void {
         const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         const item = array.find(element => element.title === id);
@@ -187,11 +187,11 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         this.props.onChange(newData, newConfig);
     }
 
-    onDelete(id: string) {
+    onDelete(id: string): void {
         const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         const index = array.findIndex(element => element.title === id);
-        delete array[index];
+        array.splice(index, 1);
         newData.native.repositories = arrayToRepo(array);
         if (this.props.dataAux.common.activeRepo === id) {
             if (Object.keys(newData.native.repositories).length) {
@@ -205,7 +205,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         }
     }
 
-    onAdd = () => {
+    onAdd = (): void => {
         const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         array.push({
@@ -216,7 +216,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         this.props.onChange(newData);
     };
 
-    onRestore = () => {
+    onRestore = (): void => {
         const newData = AdminUtils.clone(this.props.data);
         newData.native.repositories = {
             // @ts-expect-error will be fixed in js-controller
@@ -261,13 +261,13 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         const newConfig = AdminUtils.clone(this.props.dataAux);
         if (!this.props.multipleRepos) {
             newConfig.common.activeRepo = 'stable';
-            return newConfig;
+            this.props.onChange(newData, newConfig);
+            return;
         }
         newConfig.common.activeRepo = ['stable'];
         newConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
 
         this.props.onChange(newData, newConfig);
-        return null;
     };
 
     getUpdateDefaultRepo = (
@@ -275,8 +275,10 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         newData?: ioBrokerObject<{ repositories: Repository }>,
         oldTitle?: string,
         newTitle?: string,
-    ) => {
-        const newConfig = AdminUtils.clone(this.props.dataAux);
+    ): ioBrokerObject<object, { activeRepo: string | string[] }> => {
+        const newConfig: ioBrokerObject<object, { activeRepo: string | string[] }> = AdminUtils.clone(
+            this.props.dataAux,
+        );
         if (!this.props.multipleRepos) {
             newConfig.common.activeRepo = newRepo;
             return newConfig;
@@ -308,7 +310,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         return newConfig;
     };
 
-    onSortEnd = ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
+    onSortEnd = ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }): void => {
         console.log(oldIndex, newIndex);
         const newData = AdminUtils.clone(this.props.data);
         const items = repoToArray(newData.native.repositories);
@@ -337,7 +339,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         newData: ioBrokerObject<object, { activeRepo: string | string[] }>,
         error: boolean,
         showWarning: boolean,
-    ) {
+    ): void {
         if (showWarning) {
             this.setState({ confirm: true, confirmValue: { newData, error } });
         } else {
@@ -345,7 +347,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         }
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (this.state.confirm) {
             return (
                 <ConfirmDialog
@@ -364,7 +366,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         return null;
     }
 
-    renderSortableItem(item: RepositoryArray[number], index: number) {
+    renderSortableItem(item: RepositoryArray[number], index: number): JSX.Element {
         const result = (
             <TableRow className="float_row">
                 <TableCell
@@ -571,7 +573,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         );
     }
 
-    renderSortableList(items: RepositoryArray) {
+    renderSortableList(items: RepositoryArray): JSX.Element {
         const result = (
             <Table style={styles.table}>
                 <TableHead>
@@ -631,7 +633,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
     /**
      * Render the auto upgrade policy
      */
-    renderAutoUpgradePolicy(): React.JSX.Element {
+    renderAutoUpgradePolicy(): JSX.Element {
         const policy: ioBroker.AutoUpgradePolicy =
             this.props.dataAux.common.adapterAutoUpgrade?.defaultPolicy || 'none';
         const activatedRepos = this.props.dataAux.common.adapterAutoUpgrade?.repositories || {};
@@ -659,7 +661,12 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                         }}
                     >
                         {AUTO_UPGRADE_SETTINGS.map(option => (
-                            <MenuItem value={option}>{AUTO_UPGRADE_OPTIONS_MAPPING[option]}</MenuItem>
+                            <MenuItem
+                                key={option}
+                                value={option}
+                            >
+                                {AUTO_UPGRADE_OPTIONS_MAPPING[option]}
+                            </MenuItem>
                         ))}
                     </Select>
                 </div>
@@ -667,8 +674,8 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>
                         {I18n.t('repo_update_hint')
                             .split('\n')
-                            .map(line => (
-                                <div>{line}</div>
+                            .map((line: string, i: number) => (
+                                <div key={i}>{line}</div>
                             ))}
                     </Typography>
                 </IsVisible>
@@ -683,7 +690,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         );
     }
 
-    render() {
+    render(): JSX.Element {
         const items = repoToArray(this.props.data.native.repositories);
 
         return (

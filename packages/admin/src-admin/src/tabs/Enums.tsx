@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import {
     type AdminConnection,
@@ -19,7 +19,7 @@ interface EnumsProps {
     theme: IobTheme;
 }
 
-function Enums(props: EnumsProps): React.JSX.Element {
+function Enums(props: EnumsProps): JSX.Element {
     return (
         <TabContainer>
             <TabContent style={{ display: 'flex', flexDirection: 'column', overflow: 'auto' }}>

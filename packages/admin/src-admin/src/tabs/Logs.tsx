@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Button,
@@ -746,7 +746,7 @@ class Logs extends Component<LogsProps, LogsState> {
 
     getOneRow(
         i: number,
-        rows: React.JSX.Element[],
+        rows: JSX.Element[],
         options: {
             filterMessage: string;
             sourceFilter: string;
@@ -849,7 +849,7 @@ class Logs extends Component<LogsProps, LogsState> {
     }
 
     getRows() {
-        const rows: React.JSX.Element[] = [];
+        const rows: JSX.Element[] = [];
         const options: {
             filterMessage: string;
             sourceFilter: string;

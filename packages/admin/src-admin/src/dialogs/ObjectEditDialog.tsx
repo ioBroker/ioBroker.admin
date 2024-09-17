@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import type { editor as MonacoEditorType } from 'monaco-editor';
 
@@ -43,20 +43,20 @@ class ObjectEditDialog extends Component<ObjectEditDialogProps, ObjectEditDialog
         };
     }
 
-    static editorDidMount(editor: MonacoEditorType.IStandaloneCodeEditor /* , monaco */) {
+    static editorDidMount(editor: MonacoEditorType.IStandaloneCodeEditor /* , monaco */): void {
         console.log('editorDidMount', editor);
         editor.focus();
     }
 
-    static onChange(newValue: string, e: MonacoEditorType.IModelContentChangedEvent) {
+    static onChange(newValue: string, e: MonacoEditorType.IModelContentChangedEvent): void {
         console.log('onChange', newValue, e);
     }
 
-    onSave() {
+    onSave(): void {
         this.props.onClose();
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 style={styles.dialog}

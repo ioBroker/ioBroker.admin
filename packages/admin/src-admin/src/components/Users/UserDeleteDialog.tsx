@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 
 import { Close as IconCancel, Delete as IconDelete } from '@mui/icons-material';
@@ -12,7 +12,7 @@ interface UserDeleteDialogProps {
     deleteUser: (userId: string) => void;
 }
 
-export default function UserDeleteDialog(props: UserDeleteDialogProps): React.JSX.Element {
+export default function UserDeleteDialog(props: UserDeleteDialogProps): JSX.Element {
     return (
         <Dialog
             open={!0}

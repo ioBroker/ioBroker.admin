@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { useDrop } from 'react-dnd';
 
 import { Tooltip, IconButton } from '@mui/material';

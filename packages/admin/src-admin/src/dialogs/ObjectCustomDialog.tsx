@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, AppBar, Tabs, Tab, Box } from '@mui/material';
 
@@ -108,7 +108,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         };
     }
 
-    isChartAvailable() {
+    isChartAvailable(): boolean {
         let chartAvailable = this.props.objectIDs.length === 1;
         if (chartAvailable) {
             const id = this.props.objectIDs[0];
@@ -124,7 +124,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         return chartAvailable;
     }
 
-    renderCharts() {
+    renderCharts(): JSX.Element {
         return (
             <ObjectChart
                 id="custom-tabpanel-chart"
@@ -143,7 +143,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         );
     }
 
-    renderTable() {
+    renderTable(): JSX.Element {
         return (
             <ObjectHistoryData
                 id="custom-tabpanel-history"
@@ -160,7 +160,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         );
     }
 
-    renderCustomEditor() {
+    renderCustomEditor(): JSX.Element {
         return (
             <ObjectCustomEditor
                 id="custom-tabpanel-settings"
@@ -194,7 +194,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         );
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }
@@ -209,7 +209,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         );
     }
 
-    onClose() {
+    onClose(): void {
         if (this.state.hasChanges) {
             this.setState({ confirmDialog: true });
         } else {
@@ -217,9 +217,9 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         }
     }
 
-    renderWarningDialog() {
+    renderWarningDialog(): JSX.Element | null {
         if (!this.state.showWarning) {
-            return false;
+            return null;
         }
         return (
             <ConfirmDialog
@@ -239,7 +239,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         );
     }
 
-    render() {
+    render(): JSX.Element {
         const varType = this.props.objects[this.props.objectIDs[0]]?.common?.type;
 
         return (

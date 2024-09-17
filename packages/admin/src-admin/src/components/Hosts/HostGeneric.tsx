@@ -252,7 +252,7 @@ function toggleClassName(el: HTMLElement, name: string): void {
     setTimeout(_classNames => (el.className = _classNames), 100, classNames.join(' '));
 }
 
-function getLogLevelIcon(level: ioBroker.LogLevel | ''): React.JSX.Element | null {
+function getLogLevelIcon(level: ioBroker.LogLevel | ''): JSX.Element | null {
     if (level === 'debug') {
         return <BugReportIcon />;
     }
@@ -793,7 +793,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderNotificationsBadge(children?: React.ReactNode, styled?: boolean): React.JSX.Element {
+    renderNotificationsBadge(children?: React.ReactNode, styled?: boolean): JSX.Element {
         return (
             <Badge
                 sx={

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, type JSX } from 'react';
 
 import {
     Button,
@@ -266,7 +266,7 @@ interface TabPanelOptions {
     index: number;
     styleDiv: React.CSSProperties;
     sxBox: Record<string, any>;
-    children: React.JSX.Element;
+    children: JSX.Element;
 }
 
 const TabPanel = ({ children, value, index, styleDiv, sxBox, ...other }: TabPanelOptions) => (

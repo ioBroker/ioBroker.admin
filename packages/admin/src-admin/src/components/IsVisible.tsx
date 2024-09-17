@@ -1,4 +1,4 @@
-import type React from 'react';
+import { type JSX } from 'react';
 
 function getAttr(obj: Record<any, any>, attr: string | string[]): boolean {
     if (!obj) {
@@ -22,13 +22,11 @@ interface IsVisibleProps {
     name?: string;
     config?: Record<string, any>;
     value?: boolean;
-    children: React.JSX.Element | React.JSX.Element[] | string;
+    children: JSX.Element | JSX.Element[] | string;
 }
 
-function IsVisible(props: IsVisibleProps) {
-    const {
-        config, children, name, value,
-    } = props;
+function IsVisible(props: IsVisibleProps): JSX.Element | JSX.Element[] | string {
+    const { config, children, name, value } = props;
 
     if (value !== undefined) {
         return value === false ? null : children;

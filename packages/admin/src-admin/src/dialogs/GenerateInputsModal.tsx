@@ -45,7 +45,7 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 interface TabPanelProps {
-    children: React.JSX.Element;
+    children: JSX.Element;
     value: number;
     index: number;
     title: string;
@@ -148,7 +148,7 @@ export interface DiscoveryObject {
     };
 }
 
-function _setValueInObj(obj: Record<string, any>, path: string[], value: string | number | boolean) {
+function _setValueInObj(obj: Record<string, any>, path: string[], value: string | number | boolean): void {
     const attr = path.unshift();
     if (!path.length) {
         obj[attr] = value;

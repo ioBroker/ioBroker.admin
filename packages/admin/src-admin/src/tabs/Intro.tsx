@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import semver from 'semver';
 
@@ -611,7 +611,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         });
     }
 
-    editLinkCard(): React.JSX.Element | null {
+    editLinkCard(): JSX.Element | null {
         if (this.state.editLink) {
             return (
                 <EditIntroLinkDialog
@@ -652,7 +652,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         return null;
     }
 
-    getButtons(): React.JSX.Element[] {
+    getButtons(): JSX.Element[] {
         const buttons = [];
 
         if (this.state.edit) {
@@ -1384,15 +1384,15 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    getHostDescription(id: string): React.JSX.Element {
+    getHostDescription(id: string): JSX.Element {
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
         if (hostData && hostData.alive === false) {
             return <div style={styles.hostOffline}>{this.props.t('Offline')}</div>;
         }
 
-        let nodeUpdate: string | React.JSX.Element = '';
-        let npmUpdate: string | React.JSX.Element = '';
+        let nodeUpdate: string | JSX.Element = '';
+        let npmUpdate: string | JSX.Element = '';
         if (hostData) {
             try {
                 if (
@@ -1521,7 +1521,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         );
     }
 
-    getHostDescriptionAll(id: string): { el: React.JSX.Element; text: string } {
+    getHostDescriptionAll(id: string): { el: JSX.Element; text: string } {
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
         return {
@@ -1604,7 +1604,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
     /**
      * Render toast if content has been copied
      */
-    renderCopiedToast(): React.JSX.Element {
+    renderCopiedToast(): JSX.Element {
         return (
             <Snackbar
                 anchorOrigin={{
@@ -1619,7 +1619,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         );
     }
 
-    render(): React.JSX.Element {
+    render(): JSX.Element {
         if (!this.state.instances) {
             return <LinearProgress />;
         }

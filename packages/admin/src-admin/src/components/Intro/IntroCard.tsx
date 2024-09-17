@@ -213,10 +213,10 @@ export interface IntroCardProps {
     };
     color: string;
     image: string;
-    children?: React.JSX.Element | React.JSX.Element[] | string | string[] | null | undefined;
-    title: string | React.JSX.Element;
+    children?: JSX.Element | JSX.Element[] | string | string[] | null | undefined;
+    title: string | JSX.Element;
     showInfo?: boolean;
-    getHostDescriptionAll?: () => { el: React.JSX.Element; text: string };
+    getHostDescriptionAll?: () => { el: JSX.Element; text: string };
     openSnackBarFunc?: () => void;
     style?: React.CSSProperties;
     theme: IobTheme;
@@ -246,7 +246,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
         this.setState({ expanded: !this.state.expanded });
     }
 
-    renderContent(): React.JSX.Element | React.JSX.Element[] | string | string[] | null | undefined {
+    renderContent(): JSX.Element | JSX.Element[] | string | string[] | null | undefined {
         return this.props.children;
     }
 

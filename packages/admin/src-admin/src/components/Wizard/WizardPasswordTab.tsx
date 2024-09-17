@@ -1,4 +1,4 @@
-import React, { createRef, Component } from 'react';
+import React, { createRef, Component, type JSX } from 'react';
 
 import { TextField, Grid2, Toolbar, Button, Paper, Box } from '@mui/material';
 

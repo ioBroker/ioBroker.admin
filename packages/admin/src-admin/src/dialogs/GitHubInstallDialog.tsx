@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import {
     Button,
@@ -463,7 +463,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             .sort((a: any, b: any) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
     }
 
-    render(): React.JSX.Element {
+    render(): JSX.Element {
         const closeInit = () => {
             this.setState({ autoCompleteValue: null, url: '' });
         };

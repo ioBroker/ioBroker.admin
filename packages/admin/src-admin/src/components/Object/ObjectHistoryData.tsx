@@ -1197,7 +1197,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         this.setState({ edit });
     }
 
-    renderEditDialog(): React.JSX.Element {
+    renderEditDialog(): JSX.Element {
         return (
             <Dialog
                 open={this.state.updateOpened || this.state.insertOpened}

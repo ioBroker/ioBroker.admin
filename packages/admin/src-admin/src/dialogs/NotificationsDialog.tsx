@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, type JSX } from 'react';
 
 import {
     Button,
@@ -135,7 +135,7 @@ interface StatusOptions {
     isDark: boolean;
 }
 
-const Status = ({ severity, isDark, ...props }: StatusOptions) => {
+function Status({ severity, isDark, ...props }: StatusOptions): JSX.Element {
     if (severity === 'notify') {
         return (
             <BellIcon
@@ -160,21 +160,23 @@ const Status = ({ severity, isDark, ...props }: StatusOptions) => {
             {...props}
         />
     );
-};
+}
 
-const a11yProps = (index: number) => ({
-    id: `scrollable-force-tab-${index}`,
-    'aria-controls': `scrollable-force-tabpanel-${index}`,
-});
+function a11yProps(index: number): { id: string; 'aria-controls': string } {
+    return {
+        id: `scrollable-force-tab-${index}`,
+        'aria-controls': `scrollable-force-tabpanel-${index}`,
+    };
+}
 
 interface TabPanelOptions {
     index: string;
     style: React.CSSProperties;
     sxBox: Record<string, any>;
-    children: React.JSX.Element[];
+    children: JSX.Element[];
 }
 
-const TabPanel = ({ children, index, sxBox, style }: TabPanelOptions) => (
+const TabPanel = ({ children, index, sxBox, style }: TabPanelOptions): JSX.Element => (
     <div
         role="tabpanel"
         id={`scrollable-force-tabpanel-${index}`}
@@ -216,7 +218,7 @@ interface MessagesPerScope {
     [scope: string]: Record<string, Message & { host: string }>;
 }
 
-function onLink(linkCommand: BackEndCommandOpenLink, instanceId: string, onClose: () => void) {
+function onLink(linkCommand: BackEndCommandOpenLink, instanceId: string, onClose: () => void): void {
     let target;
     let url = '';
     if (!linkCommand.url) {
@@ -276,7 +278,7 @@ const NotificationsDialog = ({
     theme,
     isFloatComma,
     socket,
-}: NotificationDialogOptions) => {
+}: NotificationDialogOptions): JSX.Element => {
     const notificationManagerInstalled = !!Object.values(instances).find(
         instance => instance.common.name === 'notification-manager',
     );
@@ -301,7 +303,7 @@ const NotificationsDialog = ({
     const [expanded, setExpanded] = useState('');
     const [autoCollapse, setAutoCollapse] = useState(true);
 
-    const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
+    const handleChange = (_event: React.SyntheticEvent, newValue: string): void => {
         setAutoCollapse(true);
         setPanel(newValue);
         setExpanded('');

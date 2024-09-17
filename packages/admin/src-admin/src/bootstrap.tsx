@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { createRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/browser';
 

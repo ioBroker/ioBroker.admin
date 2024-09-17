@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
@@ -286,7 +286,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         ];
     }
 
-    onMap = (map: Map) => {
+    onMap = (map: Map): void => {
         if (this.props.saving) {
             return;
         }
@@ -317,7 +317,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         }
     };
 
-    getSelect(e: Setting, i: number) {
+    getSelect(e: Setting, i: number): JSX.Element | null {
         let value = (this.props.data.common as Record<string, any>)[e.id];
 
         if (e.id === 'defaultLogLevel' && !value) {

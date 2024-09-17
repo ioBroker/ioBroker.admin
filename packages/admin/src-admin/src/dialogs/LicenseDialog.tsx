@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, type JSX } from 'react';
 import Markdown from 'react-markdown';
 
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, LinearProgress } from '@mui/material';
@@ -62,7 +62,7 @@ interface LicenseDialogProps {
     onClose: (accepted?: boolean) => void;
 }
 
-const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
+function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.Element {
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(true);
     const [scrolled, setScrolled] = useState(false);
@@ -150,7 +150,7 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
         };
     }, [loading]);
 
-    let content: React.JSX.Element;
+    let content: JSX.Element;
     if (!loading && text) {
         if (text.startsWith('#')) {
             content = (
@@ -250,6 +250,6 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
             </DialogActions>
         </Dialog>
     );
-};
+}
 
 export default LicenseDialog;

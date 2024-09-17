@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 
@@ -131,7 +131,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
         }
     };
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.socket.getObject('system.meta.uuid').then(obj => {
             this.props.socket
                 .subscribeObject('system.licenses', this.onLicensesChanged)
@@ -140,7 +140,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
         });
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.props.socket.unsubscribeObject('system.licenses', this.onLicensesChanged);
     }
 
@@ -150,7 +150,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
         this.props.onChange(newData);
     }
 
-    async requestLicenses() {
+    async requestLicenses(): Promise<void> {
         this.setState({ requesting: true });
         try {
             let password = this.props.data.native.password;
@@ -193,7 +193,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
         }
     }
 
-    renderLicenses() {
+    renderLicenses(): JSX.Element {
         return (
             <div style={styles.tableDiv}>
                 <TableContainer>
@@ -256,7 +256,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
         );
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <div style={styles.tabPanel}>
                 <TextField

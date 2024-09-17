@@ -437,8 +437,8 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
         moment.locale(this.lang);
     }
 
-    getDependencies(): React.JSX.Element[] {
-        const result: React.JSX.Element[] = [];
+    getDependencies(): JSX.Element[] {
+        const result: JSX.Element[] = [];
 
         this.props.dependencies?.forEach(dependency => {
             result.push(
@@ -454,8 +454,8 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
         return result;
     }
 
-    getNews(): React.JSX.Element[] {
-        const result: React.JSX.Element[] = [];
+    getNews(): JSX.Element[] {
+        const result: JSX.Element[] = [];
 
         this.props.news?.forEach(entry => {
             const news: string[] = (entry.news ? entry.news.split('\n') : [])

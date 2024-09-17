@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import Dropzone from 'react-dropzone';
 
 import {
@@ -110,7 +110,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
         return result;
     }
 
-    static detectType(name: string) {
+    static detectType(name: string): string {
         name = name.toLowerCase();
 
         if (name.includes('public') || name.includes('cert')) {
@@ -125,7 +125,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
         return '';
     }
 
-    render() {
+    render(): JSX.Element {
         const arr = CertificatesDialog.certToArray(this.props.data.native.certificates);
 
         const rows = arr.map((e, i) => {

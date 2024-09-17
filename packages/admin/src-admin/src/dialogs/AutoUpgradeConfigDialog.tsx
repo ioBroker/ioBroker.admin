@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Select, Typography } from '@mui/material';
 
 import { Close as CloseIcon } from '@mui/icons-material';
@@ -111,7 +111,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<
     /**
      * Render the element
      */
-    render(): React.JSX.Element {
+    render(): JSX.Element {
         return (
             <Dialog
                 open={!0}
@@ -139,7 +139,12 @@ export default class AutoUpgradeConfigDialog extends React.Component<
                             onChange={e => this.setState({ policy: e.target.value as ioBroker.AutoUpgradePolicy })}
                         >
                             {AUTO_UPGRADE_SETTINGS.map(option => (
-                                <MenuItem value={option}>{AUTO_UPGRADE_OPTIONS_MAPPING[option]}</MenuItem>
+                                <MenuItem
+                                    key={option}
+                                    value={option}
+                                >
+                                    {AUTO_UPGRADE_OPTIONS_MAPPING[option]}
+                                </MenuItem>
                             ))}
                         </Select>
                         <IsVisible value={this.state.repositories.includes('beta') && this.state.policy !== 'none'}>

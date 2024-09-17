@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -100,11 +100,11 @@ const styles: Record<string, any> = {
 };
 
 const DndPreview = () => {
-    const preview = usePreview<React.JSX.Element>();
+    const preview = usePreview<JSX.Element>();
     const display = preview.display;
 
     // TODO: How to fix this?
-    const { item, style } = preview as unknown as { item: { preview: React.JSX.Element }; style: React.CSSProperties };
+    const { item, style } = preview as unknown as { item: { preview: JSX.Element }; style: React.CSSProperties };
     if (!display) {
         return null;
     }
@@ -571,8 +571,8 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
 
         const name: string = this.getName(container.data?.common?.name);
         const idText: string = container.id;
-        let nameRx: React.JSX.Element[] | null;
-        let idRx: React.JSX.Element[] | null;
+        let nameRx: JSX.Element[] | null;
+        let idRx: JSX.Element[] | null;
         if (this.state.search) {
             const search = this.state.search;
             const pos = name.toLowerCase().indexOf(search);

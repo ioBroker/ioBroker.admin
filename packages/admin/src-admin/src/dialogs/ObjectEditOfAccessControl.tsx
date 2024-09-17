@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, type JSX } from 'react';
 import { Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Switch } from '@mui/material';
 
 import { I18n, Icon, type IobTheme, type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
@@ -58,13 +58,11 @@ export type AccessControlObject = {
     };
 } & ioBroker.PartialObject;
 
-const newValueAccessControl = (value: number, newValue: number, mask: number) => {
-    // eslint-disable-next-line no-bitwise
+function newValueAccessControl(value: number, newValue: number, mask: number): number {
     value |= newValue & mask;
-    // eslint-disable-next-line no-bitwise
     value &= newValue | (~mask & 0xffff);
     return value;
-};
+}
 
 interface ObjectRightsProps {
     value: number;
@@ -86,19 +84,18 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
     mask,
     setMask,
     disabled,
-}) => {
-    useEffect(() => {
+}): JSX.Element => {
+    useEffect((): void => {
         if (applyToChildren) {
             let _checkDifferent = 0;
             for (let e = 0; e < differentValues.length; e++) {
-                // eslint-disable-next-line no-bitwise
                 _checkDifferent |= value ^ differentValues[e];
             }
             setMask(_checkDifferent);
         } else {
             setMask(0);
         }
-    }, [differentValues, applyToChildren]);
+    }, [differentValues, applyToChildren, setMask, value]);
 
     let newSelected = value;
 
@@ -151,7 +148,6 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
                                     newSelected -= obj.valueNum;
                                     bool = true;
                                 }
-                                // eslint-disable-next-line no-bitwise
                                 const masked = mask & obj.valueNum;
                                 return (
                                     <div
@@ -186,16 +182,13 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
                                                 style={masked ? { opacity: 0.5 } : undefined}
                                                 onChange={e => {
                                                     if (masked) {
-                                                        // eslint-disable-next-line no-bitwise
                                                         mask &= ~obj.valueNum & 0xffff;
                                                         setMask(mask);
                                                     }
                                                     let newValue = value;
                                                     if (!e.target.checked) {
-                                                        // eslint-disable-next-line no-bitwise
                                                         newValue &= ~obj.valueNum & 0xffff;
                                                     } else {
-                                                        // eslint-disable-next-line no-bitwise
                                                         newValue |= obj.valueNum;
                                                     }
                                                     setValue(newValue);
@@ -386,7 +379,7 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
         setDifferentObject(_differentObject);
 
         setIds(_ids);
-    }, [objects, selected]);
+    }, [objects, selected, differentGroup, differentOwner, modalEmptyId]);
 
     useEffect(() => {
         if (applyToChildren) {
@@ -430,7 +423,18 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
             setOwnerGroups(el => el.filter(({ value }) => value !== 'different'));
             setOwnerUsers(el => el.filter(({ value }) => value !== 'different'));
         }
-    }, [applyToChildren, differentOwner, differentGroup]);
+    }, [
+        ownerUsers,
+        applyToChildren,
+        differentOwner,
+        differentGroup,
+        objects,
+        selected,
+        stateOwnerGroup,
+        stateOwnerUser,
+        different,
+        ownerGroups,
+    ]);
 
     if (!ids.length) {
         return <LinearProgress />;
@@ -445,7 +449,7 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
             onClose={onClose}
             onApply={() => {
                 setProgress(true);
-                setTimeout(async () => {
+                setTimeout((): void => {
                     if (!applyToChildren) {
                         const newAcl: AccessControlObject['acl'] = Utils.clone(objects[selected].acl || {});
                         newAcl.object = valueObjectAccessControl;
@@ -458,11 +462,9 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
                         extendObject(selected, { acl: newAcl } as Partial<ioBroker.Object>);
                     } else {
                         // let maskState = Object.keys(differentHexState).reduce((sum, key) => sum | (differentHexState[key] ? parseInt(key, 16) : 0), 0);
-                        // eslint-disable-next-line no-bitwise
                         const _maskState = ~maskState & 0xffff;
 
                         // let maskObject = Object.keys(differentHexObject).reduce((sum, key) => sum | (differentHexObject[key] ? parseInt(key, 16) : 0), 0);
-                        // eslint-disable-next-line no-bitwise
                         const _maskObject = ~maskObject & 0xffff;
 
                         for (let i = 0; i < ids.length; i++) {
@@ -483,7 +485,7 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
                                     _maskObject,
                                 );
                             }
-                            await extendObject(key, { acl: newAcl } as Partial<ioBroker.Object>);
+                            extendObject(key, { acl: newAcl } as Partial<ioBroker.Object>);
                         }
                     }
 

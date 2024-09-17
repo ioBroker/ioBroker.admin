@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, type JSX } from 'react';
 import semver from 'semver';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, CardMedia, Typography, Box } from '@mui/material';
@@ -89,7 +89,7 @@ const styles: Record<string, any> = {
     },
 };
 
-const Status = ({ name }: { name: string }) => {
+const Status = ({ name }: { name: string }): JSX.Element => {
     switch (name) {
         case 'warning':
             return (
@@ -140,14 +140,16 @@ function checkConditions(condition: string, installedVersion: string): boolean {
         } catch {
             return false;
         }
-    } else if (condition.startsWith('smaller')) {
+    }
+    if (condition.startsWith('smaller')) {
         const vers = condition.substring(8, condition.length - 1).trim();
         try {
             return semver.lt(installedVersion, vers);
         } catch {
             return false;
         }
-    } else if (condition.startsWith('between')) {
+    }
+    if (condition.startsWith('between')) {
         const vers1 = condition.substring(8, condition.indexOf(',')).trim();
         const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
         try {
@@ -155,9 +157,8 @@ function checkConditions(condition: string, installedVersion: string): boolean {
         } catch {
             return false;
         }
-    } else {
-        return true;
     }
+    return true;
 }
 
 type DbType = 'file' | 'jsonl' | 'redis';
@@ -307,7 +308,7 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
                     linkTitle:
                         typeof message.linkTitle === 'object'
                             ? message.linkTitle[context.lang] || message.linkTitle.en
-                            : (message.linkTitle as string),
+                            : message.linkTitle,
                     img: message.img,
                 });
             }
@@ -319,7 +320,7 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
     return messagesToShow;
 };
 
-const NewsAdminDialog = ({
+function NewsAdminDialog({
     newsArr,
     current,
     onSetLastNewsId,
@@ -327,7 +328,7 @@ const NewsAdminDialog = ({
     newsArr: ShowMessage[];
     current: string;
     onSetLastNewsId: (id?: string) => void;
-}) => {
+}): JSX.Element {
     const [id, setId] = useState(current);
     const [last, setLast] = useState(false);
     const [indexArr, setIndexArr] = useState(0);
@@ -350,7 +351,7 @@ const NewsAdminDialog = ({
         }
     }, [last]);
 
-    const onClose = () => {
+    const onClose = (): void => {
         // setOpen(false);
         setLast(!last);
         onSetLastNewsId(id);
@@ -443,6 +444,6 @@ const NewsAdminDialog = ({
             </DialogActions>
         </Dialog>
     );
-};
+}
 
 export default NewsAdminDialog;

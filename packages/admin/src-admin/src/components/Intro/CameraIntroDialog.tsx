@@ -35,7 +35,7 @@ interface CameraIntroLinkDialogProps {
     socket: AdminConnection;
     interval?: string;
     onClose: () => void;
-    name: string | React.JSX.Element;
+    name: string | JSX.Element;
     addTs?: boolean;
     cameraUrl: string;
 }

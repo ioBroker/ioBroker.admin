@@ -16,8 +16,8 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 interface InstanceInfoProps {
-    children: (React.JSX.Element | string)[] | React.JSX.Element | string;
-    icon?: React.JSX.Element;
+    children: (JSX.Element | string)[] | JSX.Element | string;
+    icon?: JSX.Element;
     tooltip?: string;
     style?: React.CSSProperties;
 }

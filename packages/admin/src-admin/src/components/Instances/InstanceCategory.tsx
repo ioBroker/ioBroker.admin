@@ -36,7 +36,7 @@ const styles: Record<string, React.CSSProperties> = {
 interface InstanceCategoryProps {
     name: string;
     key: string;
-    children: React.JSX.Element[] | React.JSX.Element;
+    children: JSX.Element[] | JSX.Element;
     expanded: boolean;
     onExpand: (expanded: boolean) => void;
 }

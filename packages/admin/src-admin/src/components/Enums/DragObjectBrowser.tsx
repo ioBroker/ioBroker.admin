@@ -19,20 +19,20 @@ import ObjectBrowser, {
 export interface DragItem {
     data: TreeItemData;
     children: DragItem[];
-    // preview: React.JSX.Element | null;
+    // preview: JSX.Element | null;
 }
 
 interface DragWrapperProps {
     item: TreeItem;
     style: React.CSSProperties;
-    children: React.JSX.Element | null;
+    children: JSX.Element | null;
     lang: ioBroker.Languages;
 }
 
 interface DragSettings {
     type: string;
     end: (item: TreeItem, monitor: any) => void;
-    item: { data: TreeItemData; preview: React.JSX.Element | null };
+    item: { data: TreeItemData; preview: JSX.Element | null };
     collect: (monitor: DragSourceMonitor) => {
         isDragging?: boolean;
         canDrag?: boolean;

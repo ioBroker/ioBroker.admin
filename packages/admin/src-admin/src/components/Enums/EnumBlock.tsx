@@ -203,8 +203,8 @@ interface EnumBlockProps {
     cachedIcons: Record<string, string>;
     iconDragRef?: ConnectDragSource;
     isDragging?: boolean;
-    name?: React.JSX.Element[];
-    idText?: React.JSX.Element[];
+    name?: JSX.Element[];
+    idText?: JSX.Element[];
     getEnumTemplate: (prefix: string) => ioBroker.EnumObject;
 }
 
@@ -575,9 +575,9 @@ interface EnumBlockDragProps {
     currentCategory: string;
     getEnumTemplate: (prefix: string) => ioBroker.EnumObject;
     getName: (name: ioBroker.StringOrTranslated) => string;
-    idText?: React.JSX.Element[];
+    idText?: JSX.Element[];
     members: Record<string, ioBroker.Object>;
-    name?: React.JSX.Element[];
+    name?: JSX.Element[];
     onCollapse: () => void;
     removeMemberFromEnum: (memberId: string, enumId: string) => void;
     showEnumDeleteDialog: (enumItem: ioBroker.EnumObject) => void;
@@ -635,7 +635,7 @@ const EnumBlockDrag = (props: EnumBlockDragProps) => {
         }),
 
         end: (
-            draggedItem: { enumId: string; preview: React.JSX.Element },
+            draggedItem: { enumId: string; preview: JSX.Element },
             monitor: DragSourceMonitor<DragItem, { enumId: string }>,
         ) => {
             const dropResult = monitor.getDropResult();

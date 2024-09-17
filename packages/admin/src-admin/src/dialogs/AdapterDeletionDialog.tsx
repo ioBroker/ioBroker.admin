@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Button,
@@ -57,7 +57,7 @@ class AdapterDeletionDialog extends Component<AdapterDeletionDialogProps, Adapte
         this.t = props.t;
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM').then(deleteCustomSupported => {
             if (deleteCustomSupported) {
                 this.props.socket.getObject(`system.adapter.${this.props.adapter}`).then(obj => {
@@ -73,7 +73,7 @@ class AdapterDeletionDialog extends Component<AdapterDeletionDialogProps, Adapte
         });
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 onClose={this.props.onClose}

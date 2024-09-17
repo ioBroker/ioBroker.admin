@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, type JSX } from 'react';
 
 import {
     Grid2,
@@ -95,11 +95,10 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
 
     getRights(type: keyof ACLRights): number[][] {
         const rts = this.props.data.common.defaultNewAcl[type];
-        // eslint-disable-next-line no-bitwise
         return ACLDialog.permBits.map(bitGroup => bitGroup.map(bit => rts & bit));
     }
 
-    getTable(owner: keyof ACLRights): React.JSX.Element {
+    getTable(owner: keyof ACLRights): JSX.Element {
         const checks = this.getRights(owner);
         const checkboxes = checks.map((elem, index) => (
             <Fragment key={index}>
@@ -178,12 +177,11 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
 
     handleCheck(ownerType: keyof ACLRights, elemNum: number, num: number): void {
         const newData = AdminUtils.clone(this.props.data);
-        // eslint-disable-next-line no-bitwise
         newData.common.defaultNewAcl[ownerType] ^= ACLDialog.permBits[elemNum][num];
         this.props.onChange(newData);
     }
 
-    render() {
+    render(): JSX.Element {
         const lang = I18n.getLanguage();
         const users = this.props.users.map((elem, index) => (
             <MenuItem

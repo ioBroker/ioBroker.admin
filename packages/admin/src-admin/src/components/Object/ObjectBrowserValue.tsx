@@ -301,7 +301,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
     /**
      * Render time picker component for date type
      */
-    renderTimePicker(): React.JSX.Element {
+    renderTimePicker(): JSX.Element {
         return (
             <LocalizationProvider
                 adapterLocale={localeMap[this.props.lang]}
@@ -332,7 +332,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         );
     }
 
-    renderChart(): React.JSX.Element {
+    renderChart(): JSX.Element {
         return (
             <ObjectChart
                 t={this.props.t}
@@ -361,7 +361,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         }
     }
 
-    renderJsonEditor(): React.JSX.Element {
+    renderJsonEditor(): JSX.Element {
         return (
             <Editor
                 error={this.state.jsonError}

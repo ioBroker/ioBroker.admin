@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Fab } from '@mui/material';
 
@@ -77,7 +77,7 @@ class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectVi
         this.audioRef = React.createRef();
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.socket
             .getBinaryState(this.props.obj._id)
             .then((data: string) => {
@@ -110,7 +110,7 @@ class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectVi
             .catch(error => this.setState({ error }));
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 style={styles.dialog}
@@ -134,7 +134,6 @@ class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectVi
                                 : this.props.t(this.state.error)}
                         </Box>
                     ) : null}
-                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                     {this.state.audio ? (
                         <audio
                             ref={this.audioRef}

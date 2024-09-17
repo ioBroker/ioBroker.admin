@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import {
     Box,
     Button,
@@ -50,7 +50,7 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
     /**
      * Render the element
      */
-    render(): React.JSX.Element {
+    render(): JSX.Element {
         return (
             <Dialog
                 open={!0}

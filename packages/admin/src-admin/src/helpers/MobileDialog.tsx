@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 export const MOBILE_WIDTH = 800;
 
@@ -49,10 +49,10 @@ class MobileDialog<TProps, TState extends MobileDialogState = MobileDialogState>
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     getButtonTitle(
-        icon: React.JSX.Element,
+        icon: JSX.Element,
         text: string,
-        moreMobileIcon?: React.JSX.Element,
-    ): string | React.JSX.Element | null {
+        moreMobileIcon?: JSX.Element,
+    ): string | JSX.Element | null {
         if (icon && text) {
             if (this.state.mobile) {
                 if (moreMobileIcon) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, type JSX } from 'react';
 
 import { Button, Menu, MenuItem, Tooltip } from '@mui/material';
 
@@ -21,7 +21,7 @@ interface CustomSelectButtonProps {
     onClick: (name: string | number) => void;
     value: string | number;
     contained?: boolean;
-    buttonIcon?: React.JSX.Element;
+    buttonIcon?: JSX.Element;
     icons?: boolean;
     t: Translate;
     translateSuffix?: string;
@@ -39,7 +39,7 @@ function CustomSelectButton({
     t,
     translateSuffix,
     noTranslation,
-}: CustomSelectButtonProps): React.JSX.Element {
+}: CustomSelectButtonProps): JSX.Element {
     const [anchorEl, setAnchorEl] = useState(null);
     translateSuffix = translateSuffix || '';
 

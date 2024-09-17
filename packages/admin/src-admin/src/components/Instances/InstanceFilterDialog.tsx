@@ -186,7 +186,7 @@ const modeArray = ['none', 'daemon', 'schedule', 'once'];
 //     'enabled and OK'
 // ];
 
-const getModeIcon = (idx: number, style: React.CSSProperties): React.JSX.Element | null => {
+const getModeIcon = (idx: number, style: React.CSSProperties): JSX.Element | null => {
     if (idx === 1) {
         return <SettingsIcon style={style} />;
     }

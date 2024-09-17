@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import semver from 'semver';
 
 import {
@@ -231,7 +231,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         return news;
     }
 
-    renderOneAdapter(adapter: string): React.JSX.Element | null {
+    renderOneAdapter(adapter: string): JSX.Element | null {
         const checked = this.props.selected.includes(adapter);
         if ((this.props.finished || this.props.inProcess) && !checked) {
             return null;
@@ -327,11 +327,11 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         );
     }
 
-    getReactNews(adapter: string, fromVersion: string): React.JSX.Element[] {
+    getReactNews(adapter: string, fromVersion: string): JSX.Element[] {
         const adapterObj = this.props.repository[adapter];
         const installed = this.props.installed[adapter];
         fromVersion = fromVersion || installed.version;
-        const result: React.JSX.Element[] = [];
+        const result: JSX.Element[] = [];
 
         if (installed && adapterObj?.news) {
             Object.keys(adapterObj.news).forEach(version => {

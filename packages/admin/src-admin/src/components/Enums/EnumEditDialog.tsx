@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, Grid2, Button } from '@mui/material';
 

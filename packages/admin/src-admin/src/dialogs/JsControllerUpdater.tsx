@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import ipaddr from 'ipaddr.js';
 
 import { LinearProgress, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
@@ -72,7 +72,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
      *
      * @param updating target value true if update is in progress
      */
-    setUpdating(updating: boolean) {
+    setUpdating(updating: boolean): void {
         if (this.updating !== updating) {
             this.updating = updating;
             this.props.onUpdating(updating);
@@ -81,9 +81,9 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
 
     /**
      * Determine the correct ip address of the server
-     * If the current admin instance is running on the host to be updated, we take it from browser, else we try to get information from the host object
+     * If the current admin instance is running on the host to be updated, we take it from the browser, else we try to get information from the host object
      */
-    async findIpAddress() {
+    async findIpAddress(): Promise<void> {
         // Controller to update: this.props.hostId
         // Current admin instance: this.props.adminInstance = 'admin.X'
         // read settings of admin.X
@@ -173,7 +173,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
      * Lifecycle hook called if component will unmount
      * Clearing intervals and timers here
      */
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = null;
@@ -238,7 +238,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
     /**
      * Render the UI
      */
-    render(): React.JSX.Element {
+    render(): JSX.Element {
         return (
             <Dialog
                 onClose={(_e, reason) => {

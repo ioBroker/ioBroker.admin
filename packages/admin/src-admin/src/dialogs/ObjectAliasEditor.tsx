@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Button,
@@ -133,7 +133,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
         return text.toString();
     }
 
-    renderAddNewAlias() {
+    renderAddNewAlias(): JSX.Element | null {
         if (!this.state.showAddNewAlias) {
             return null;
         }
@@ -456,7 +456,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
         );
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 key="editAlias"

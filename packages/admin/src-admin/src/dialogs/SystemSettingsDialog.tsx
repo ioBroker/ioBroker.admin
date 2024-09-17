@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Dialog,
@@ -145,7 +145,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         this.getSettings(/* this.state.currentHost */).catch(e => window.alert(`Cannot read settings: ${e}`));
     }
 
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         const multipleRepos = await this.props.socket.checkFeatureSupported('CONTROLLER_MULTI_REPO');
         const licenseManager = await this.props.socket.checkFeatureSupported('CONTROLLER_LICENSE_MANAGER');
         const namespace = await this.props.socket.getCurrentInstance();
@@ -155,7 +155,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         this.setState({ host: obj.common.host, multipleRepos, licenseManager });
     }
 
-    async getSettings() {
+    async getSettings(): Promise<void> {
         const newState: Partial<SystemSettingsDialogState> = { loading: false };
         try {
             let systemRepositories = await this.props.socket.getObject('system.repositories');
@@ -241,7 +241,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         }
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (this.state.confirmExit) {
             return (
                 <ConfirmDialog
@@ -253,7 +253,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         return null;
     }
 
-    onSave() {
+    onSave(): void {
         let repoChanged = false;
         this.setState({ saving: true }, async () => {
             try {
@@ -421,7 +421,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         ];
     }
 
-    onChangeDiagType = (type: 'none' | 'extended' | 'no-city') => {
+    onChangeDiagType = (type: 'none' | 'extended' | 'no-city'): void => {
         this.props.socket.getDiagData(this.props.currentHost, type).then(diagData =>
             this.setState({
                 diagData,
@@ -436,7 +436,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         );
     };
 
-    getDialogContent(tabsList: SystemSettingsDialogTab[]) {
+    getDialogContent(tabsList: SystemSettingsDialogTab[]): JSX.Element {
         if (this.state.loading) {
             return <LinearProgress />;
         }
@@ -475,11 +475,11 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         );
     }
 
-    static onTabChanged = (newTab: string) => {
+    static onTabChanged = (newTab: string): void => {
         Router.doNavigate(null, 'system', newTab);
     };
 
-    onChangedTab(id: any, data: any, idAux: any, dataAux: any, cb: () => void) {
+    onChangedTab(id: any, data: any, idAux: any, dataAux: any, cb: () => void): void {
         if (data || dataAux) {
             const state: SystemSettingsDialogState = { ...this.state };
             if (data) {
@@ -492,7 +492,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         }
     }
 
-    render() {
+    render(): JSX.Element {
         const changed = !(
             JSON.stringify(this.state.systemRepositories) === this.originalRepositories &&
             JSON.stringify(this.state.systemConfig) === this.originalConfig &&

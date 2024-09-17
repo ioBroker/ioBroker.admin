@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { green, grey, orange, red } from '@mui/material/colors';
 

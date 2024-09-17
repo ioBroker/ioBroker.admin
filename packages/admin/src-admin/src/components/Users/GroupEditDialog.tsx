@@ -49,7 +49,7 @@ interface PermissionsTabProps {
     innerWidth: number;
 }
 
-function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
+function PermissionsTab(props: PermissionsTabProps): JSX.Element {
     const mapObject = <T, Result>(object: Record<string, T>, mapFunction: (item: T, key: string) => Result): Result[] =>
         Object.values(object).map((value, index) => {
             const key = Object.keys(object)[index];

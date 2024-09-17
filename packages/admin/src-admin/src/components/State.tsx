@@ -22,7 +22,7 @@ const styles: Record<string, any> = {
 
 interface StateProps {
     state: boolean;
-    children: React.JSX.Element | React.JSX.Element[] | string | string[];
+    children: JSX.Element | JSX.Element[] | string | string[];
 }
 
 function State(props: StateProps): JSX.Element {

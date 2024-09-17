@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { IconButton, Tooltip, InputAdornment, LinearProgress, TextField, Box } from '@mui/material';
 

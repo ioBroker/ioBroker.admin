@@ -213,7 +213,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
 
         let count = 0;
 
-        let rows: React.JSX.Element[] = [];
+        let rows: JSX.Element[] = [];
 
         if (this.props.oneListView) {
             for (let i = 0; i < this.props.listOfVisibleAdapter.length; i++) {
@@ -321,7 +321,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 </div>
             ) : null;
         }
-        const items: React.JSX.Element[] = [];
+        const items: JSX.Element[] = [];
 
         for (let i = 0; i < this.props.listOfVisibleAdapter.length; i++) {
             const adapterName = this.props.listOfVisibleAdapter[i];

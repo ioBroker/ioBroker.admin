@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { useDrop, type DropTargetMonitor } from 'react-dnd';
 import { Typography, Card, CardContent, IconButton } from '@mui/material';
 

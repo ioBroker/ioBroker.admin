@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 
 import { Close as IconCancel, Delete as IconDelete } from '@mui/icons-material';
@@ -13,7 +13,7 @@ interface GroupDeleteDialogProps {
     styles: Record<string, React.CSSProperties>;
 }
 
-export default function GroupDeleteDialog(props: GroupDeleteDialogProps): React.JSX.Element {
+export default function GroupDeleteDialog(props: GroupDeleteDialogProps): JSX.Element {
     return (
         <Dialog
             open={!0}
