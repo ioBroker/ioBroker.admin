@@ -103,9 +103,9 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
 
     static arrayToCert(array: CertificateArray): Certificate {
         const result: Record<string, string> = {};
-        for (const k in array) {
-            result[array[k].title] = array[k].data;
-        }
+        array.forEach(e => {
+            result[e.title] = e.data;
+        });
 
         return result;
     }
@@ -251,7 +251,6 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                                     }
                                     if (fileRejections.length) {
                                         const msg: string[] = [];
-                                        // eslint-disable-next-line array-callback-return
                                         fileRejections.map(e => {
                                             const m = `${e.file.name}: `;
                                             const mm: string[] = [];
@@ -263,10 +262,9 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                                     }
 
                                     if (acceptedFiles.length) {
-                                        // eslint-disable-next-line array-callback-return
                                         acceptedFiles.map(file => {
                                             const reader = new FileReader();
-                                            reader.onload = async e => this.onAdd(file.name, e.target.result as string);
+                                            reader.onload = e => this.onAdd(file.name, e.target.result as string);
                                             reader.readAsText(file);
                                         });
                                     } else if (!fileRejections.length) {
@@ -334,7 +332,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
         );
     }
 
-    onChangeText = (value: string, id: string, name: 'title' | 'data') => {
+    onChangeText = (value: string, id: string, name: 'title' | 'data'): void => {
         const newData = AdminUtils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
         array.find(element => element.title === id)[name] = value;
@@ -342,21 +340,20 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
         this.props.onChange(newData);
     };
 
-    onDelete = (id: string) => {
+    onDelete = (id: string): void => {
         const newData = AdminUtils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
         const index = array.findIndex(element => element.title === id);
-        delete array[index];
+        array.splice(index, 1);
         newData.native.certificates = CertificatesDialog.arrayToCert(array);
         this.props.onChange(newData);
     };
 
-    onAdd = (title?: string, data?: string) => {
+    onAdd = (title?: string, data?: string): void => {
         const newData = AdminUtils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
         if (!title) {
             let i = 1;
-            // eslint-disable-next-line
             while (array.find(item => item.title === `${this.props.t('certificate')}_${i}`)) {
                 i++;
             }

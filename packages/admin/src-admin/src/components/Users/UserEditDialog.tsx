@@ -70,6 +70,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                 });
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.user, props.isNew]);
 
     const idExists = props.users.find(user => user._id === props.user._id);

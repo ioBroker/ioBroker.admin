@@ -474,7 +474,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         );
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (this.state.confirm) {
             return (
                 <ConfirmDialog
@@ -494,7 +494,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         return null;
     }
 
-    getCounters = () => {
+    getCounters = (): JSX.Element => {
         const items = countries.map((elem, index) => (
             <MenuItem
                 value={elem.name}
@@ -530,13 +530,13 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         );
     };
 
-    handleChangeCountry = (evt: SelectChangeEvent<string>) => {
+    handleChangeCountry = (evt: SelectChangeEvent<string>): void => {
         const value = evt.target.value;
         const id = 'country';
         this.doChange(id, value);
     };
 
-    onChangeText = (evt: { target: { value: string } }, id: string) => {
+    onChangeText = (evt: { target: { value: string } }, id: string): void => {
         const value = evt.target.value;
         this.onChangeInput(value, id);
 
@@ -558,9 +558,9 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         }
     };
 
-    onChangeInput = (value: any, id: string, cb?: () => void) => this.doChange(id, value, cb);
+    onChangeInput = (value: any, id: string, cb?: () => void): void => this.doChange(id, value, cb);
 
-    onChangeCity = (evt: { target: { value: string } }) => {
+    onChangeCity = (evt: { target: { value: string } }): void => {
         this.onChangeText(evt, 'city');
 
         if (this.cityTimer) {
@@ -590,7 +590,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         }, 500);
     };
 
-    handleChange = (evt: { target: { value: string } }, selectId: number) => {
+    handleChange = (evt: { target: { value: string } }, selectId: number): void => {
         const value = evt.target.value;
         const id = this.getSettings()[selectId].id;
 
@@ -605,18 +605,18 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         }
     };
 
-    doChange = (name: string, value: any, cb?: () => void) => {
+    doChange = (name: string, value: any, cb?: () => void): void => {
         const newData = AdminUtils.clone(this.props.data);
         (newData.common as Record<string, any>)[name] = value;
         this.props.onChange(newData, null, () => cb && cb());
     };
 
-    onMarkerDragend = (evt: DragEndEvent) => {
+    onMarkerDragend = (evt: DragEndEvent): void => {
         const ll = JSON.parse(JSON.stringify(evt.target._latlng));
         this.doChange('latitude', ll.lat, () => this.doChange('longitude', ll.lng));
     };
 
-    render() {
+    render(): JSX.Element {
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
         const center: LatLngTuple = [

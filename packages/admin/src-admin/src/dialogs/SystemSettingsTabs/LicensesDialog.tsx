@@ -132,7 +132,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
     };
 
     componentDidMount(): void {
-        this.props.socket.getObject('system.meta.uuid').then(obj => {
+        void this.props.socket.getObject('system.meta.uuid').then(obj => {
             this.props.socket
                 .subscribeObject('system.licenses', this.onLicensesChanged)
                 .catch(e => window.alert(`Cannot subscribe on system.licenses: ${e}`));
@@ -141,7 +141,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
     }
 
     componentWillUnmount(): void {
-        this.props.socket.unsubscribeObject('system.licenses', this.onLicensesChanged);
+        void this.props.socket.unsubscribeObject('system.licenses', this.onLicensesChanged);
     }
 
     doChange(name: 'login' | 'password', value: string): void {

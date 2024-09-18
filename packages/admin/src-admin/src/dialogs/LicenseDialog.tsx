@@ -157,7 +157,6 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
                 <Markdown
                     className="markdown"
                     components={{
-                        // eslint-disable-next-line react/no-unstable-nested-components
                         h1: h1Props => (
                             <Box
                                 component="h1"
@@ -166,7 +165,6 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
                                 {h1Props.children}
                             </Box>
                         ),
-                        // eslint-disable-next-line react/no-unstable-nested-components
                         h2: h2Props => (
                             <Box
                                 component="h2"

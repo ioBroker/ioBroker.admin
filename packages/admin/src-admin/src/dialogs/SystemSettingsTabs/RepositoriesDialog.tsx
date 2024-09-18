@@ -99,6 +99,7 @@ const styles: Record<string, any> = {
     },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;
 
 type RepositoryArray = Array<{ title: string; link: string }>;
@@ -112,10 +113,10 @@ function repoToArray(repos: Repository): RepositoryArray {
 
 function arrayToRepo(array: RepositoryArray): Repository {
     const result: Repository = {};
-    for (const k in array) {
+    array.forEach(item => {
         // @ts-expect-error will be fixed in js-controller
-        result[array[k].title] = { link: array[k].link };
-    }
+        result[item.title] = { link: item.link };
+    })
 
     return result;
 }

@@ -48,7 +48,7 @@ interface SSLDialogProps {
 }
 
 class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
-    render() {
+    render(): JSX.Element {
         const { data } = this.props;
         const { letsEncrypt } = data.native || {};
         return (
@@ -185,12 +185,12 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
         );
     }
 
-    onChangeText(evt: { target: { value: string } }, id: 'email' | 'domains' | 'path') {
+    onChangeText(evt: { target: { value: string } }, id: 'email' | 'domains' | 'path'): void {
         const value = evt.target.value;
         this.doChange(id, value);
     }
 
-    doChange(name: 'email' | 'domains' | 'path', value: string) {
+    doChange(name: 'email' | 'domains' | 'path', value: string): void {
         const newData = AdminUtils.clone(this.props.data);
         newData.native.letsEncrypt = newData.native.letsEncrypt || {};
         newData.native.letsEncrypt[name] = value;

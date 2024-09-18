@@ -19,7 +19,6 @@ import AdminUtils from '@/AdminUtils';
 import Editor from '../../components/Editor';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
-// eslint-disable-next-line no-undef
 (window as any).ace.config.set('basePath', 'lib/js/ace');
 
 const styles: Record<string, React.CSSProperties> = {
@@ -66,7 +65,7 @@ interface StatisticsDialogProps {
 }
 
 class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
-    static getTypes() {
+    static getTypes(): { id: string; title: string }[] {
         return [
             {
                 id: 'none',
@@ -87,7 +86,7 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
         ];
     }
 
-    getTypesSelector() {
+    getTypesSelector(): JSX.Element {
         const { common } = this.props.data;
 
         const items = StatisticsDialog.getTypes().map((elem, index) => (
@@ -127,20 +126,20 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
         );
     }
 
-    doChange(name: string, value: string) {
+    doChange(name: string, value: string): void {
         const newData = AdminUtils.clone(this.props.data);
         (newData.common as Record<string, any>)[name] = value;
         this.props.onChange(newData);
     }
 
-    handleChangeType = (value: 'none' | 'normal' | 'no-city' | 'extended') => {
+    handleChangeType = (value: 'none' | 'normal' | 'no-city' | 'extended'): void => {
         this.doChange('diag', value);
         if (this.props.handle) {
             this.props.handle(value);
         }
     };
 
-    render() {
+    render(): JSX.Element {
         return (
             <div style={{ ...styles.tabPanel, height: '100%' }}>
                 <Grid2

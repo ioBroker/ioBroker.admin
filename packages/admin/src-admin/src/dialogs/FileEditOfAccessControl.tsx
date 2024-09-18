@@ -262,7 +262,7 @@ async function loadPath(
 
     if (folders[adapter + part]) {
         if (path.length - 1 === level) {
-            // try to find file
+            // try to find a file
             const aa = `${adapter + part}/${path[level]}`;
             const ff = folders[adapter + part].find(item => item.id === aa);
             if (ff && ff.folder) {

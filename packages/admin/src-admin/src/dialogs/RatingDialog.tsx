@@ -476,7 +476,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                             disabled={!this.state.ratingNumber || this.state.votings === null}
                             onClick={() => {
                                 if (this.state.ratingNumber !== item?.r || this.state.ratingComment) {
-                                    this.setAdapterRating(
+                                    void this.setAdapterRating(
                                         this.props.adapter,
                                         this.props.version,
                                         this.state.ratingNumber,

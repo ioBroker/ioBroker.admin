@@ -286,7 +286,6 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
             }
 
             if (showIt && message['number-of-objects']) {
-                // eslint-disable-next-line no-eval
                 showIt = eval(`${context.noObjects} ${message['number-of-objects']}`);
             }
 
@@ -349,6 +348,7 @@ function NewsAdminDialog({
         } else {
             setId(newsArr[0].id);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [last]);
 
     const onClose = (): void => {

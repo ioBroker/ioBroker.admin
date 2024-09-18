@@ -422,7 +422,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
     }
 
     onChangeDiagType = (type: 'none' | 'extended' | 'no-city'): void => {
-        this.props.socket.getDiagData(this.props.currentHost, type).then(diagData =>
+        void this.props.socket.getDiagData(this.props.currentHost, type).then(diagData =>
             this.setState({
                 diagData,
                 systemConfig: {
