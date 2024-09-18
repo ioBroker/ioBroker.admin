@@ -546,10 +546,11 @@ adapter.on('message', obj => {
 
 All types could have:
 
--   `sm` - width in 1/12 of screen on small screen
--   `md` - width in 1/12 of screen on middle screens
--   `lg` - width in 1/12 of screen on large screens
--   `xs` - width in 1/12 of screen on tiny screens
+-   `xl` - width in 1/12 of screen on extra large screens (1536px < width)
+-   `lg` - width in 1/12 of screen on large screens (1200px <= width < 1536px)
+-   `md` - width in 1/12 of screen on middle screens (900px <= width < 1200px)
+-   `sm` - width in 1/12 of screen on small screen (600px <= width < 900px)
+-   `xs` - width in 1/12 of screen on tiny screens (width < 600px)
 -   `newLine` - should be shown from new line
 -   `label` - String or object like {en: 'Name', ru: 'Имя'}
 -   `hidden` - JS function that could use `native.attribute` for calculation
@@ -557,8 +558,8 @@ All types could have:
 -   `disabled` - JS function that could use `native.attribute` for calculation
 -   `help` - help text (multi-language)
 -   `helpLink` - href to help (could be used only together with `help`)
--   `style` - css style in ReactJS notation: `radiusBorder` and not `radius-border`.
--   `darkStyle` - css style for dark mode
+-   `style` - CSS style in ReactJS notation: `radiusBorder` and not `radius-border`.
+-   `darkStyle` - CSS style for dark mode
 -   `validator` - JS function: true no error, false - error
 -   `validatorErrorText` - Text to show if validator fails
 -   `validatorNoSaveOnError` - disable save button if error
