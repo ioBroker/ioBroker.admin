@@ -69,7 +69,8 @@ class AdminUtils {
 
     /**
      * Format bytes to MB or GB
-     * @param bytes
+     *
+     * @param bytes the number of bytes
      */
     static formatRam(bytes: number): string {
         const GB = Math.floor((bytes / (1024 * 1024 * 1024)) * 10) / 10;
@@ -116,7 +117,7 @@ class AdminUtils {
     }
 
     // Big thanks to: https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
-    static invertColor(hex: string, bw: boolean) {
+    static invertColor(hex: string, bw: boolean): string {
         if (hex === undefined || hex === null || hex === '' || typeof hex !== 'string') {
             return '';
         }
@@ -148,7 +149,8 @@ class AdminUtils {
 
     /**
      * Format number in seconds to time text
-     * @param seconds
+     *
+     * @param seconds the number of seconds
      * @param t i18n.t function
      */
     static formatSeconds(seconds: number, t: Translate): string {
@@ -249,11 +251,10 @@ class AdminUtils {
     }
 
     static ip2int(ip: string): number {
-        // eslint-disable-next-line no-bitwise
         return ip.split('.').reduce((ipInt, octet) => (ipInt << 8) + parseInt(octet, 10), 0) >>> 0;
     }
 
-    static findNetworkAddressOfHost(obj: ioBroker.HostObject, localIp: string) {
+    static findNetworkAddressOfHost(obj: ioBroker.HostObject, localIp: string): null | string {
         const networkInterfaces = obj?.native?.hardware?.networkInterfaces;
         if (!networkInterfaces) {
             return null;
@@ -277,7 +278,6 @@ class AdminUtils {
                 } else if (
                     ip.family === 'IPv4' &&
                     localIp.includes('.') &&
-                    // eslint-disable-next-line no-bitwise
                     (AdminUtils.ip2int(localIp) & AdminUtils.ip2int(ip.netmask)) ===
                         (AdminUtils.ip2int(ip.address) & AdminUtils.ip2int(ip.netmask))
                 ) {
@@ -330,7 +330,7 @@ class AdminUtils {
         hosts: Record<string, ioBroker.HostObject>,
         currentHostname: string,
         adminInstance: string,
-    ) {
+    ): string {
         if (!instanceObj || !instanceObj.common) {
             return null;
         }
@@ -730,7 +730,7 @@ class AdminUtils {
     /** The languages for which docs are generated */
     static SUPPORTED_DOC_LANGUAGES: ioBroker.Languages[] = ['en', 'de', 'ru', 'zh-cn'];
 
-    static checkPassword(password: string, passwordRepeat?: string) {
+    static checkPassword(password: string, passwordRepeat?: string): false | string {
         password = password || '';
         passwordRepeat = passwordRepeat || '';
         if (
@@ -774,8 +774,10 @@ class AdminUtils {
      * Get Link to adapter docs in given language
      *
      * @param options the adapter name without ioBroker. prefix and the language information
+     * @param options.adapterName the adapter name without ioBroker. prefix
+     * @param options.lang the language for the docs
      */
-    static getDocsLinkForAdapter(options: { lang: ioBroker.Languages; adapterName: string }) {
+    static getDocsLinkForAdapter(options: { lang: ioBroker.Languages; adapterName: string }): string {
         const { adapterName } = options;
         let { lang } = options;
 
@@ -786,7 +788,7 @@ class AdminUtils {
         return `https://www.iobroker.net/#${lang}/adapters/adapterref/iobroker.${adapterName}/README.md`;
     }
 
-    static updateAvailable(oldVersion: string, newVersion: string) {
+    static updateAvailable(oldVersion: string, newVersion: string): boolean {
         try {
             return semver.gt(newVersion, oldVersion) === true;
         } catch {
@@ -796,11 +798,14 @@ class AdminUtils {
     }
 
     static getText(word: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
-        if (word && typeof word === 'object') {
+        if (typeof word === 'object') {
+            if (!word) {
+                return '';
+            }
             return (word[lang] || word.en || '').toString();
         }
 
-        return (word || '').toString();
+        return word ? word.toString() : '';
     }
 
     static clone<T>(obj: T): T {

@@ -74,14 +74,14 @@ export default class LogsWorker {
         socket.registerConnectionHandler(this.connectionHandler);
     }
 
-    setCurrentHost(currentHost: string) {
+    setCurrentHost(currentHost: string): void {
         if (currentHost !== this.currentHost) {
             this.currentHost = currentHost;
-            this.getLogs(true);
+            void this.getLogs(true);
         }
     }
 
-    enableCountErrors(isEnabled: boolean) {
+    enableCountErrors(isEnabled: boolean): void {
         if (this.countErrors !== isEnabled) {
             this.countErrors = isEnabled;
             if (!this.countErrors) {
@@ -94,7 +94,7 @@ export default class LogsWorker {
         }
     }
 
-    enableCountWarnings(isEnabled: boolean) {
+    enableCountWarnings(isEnabled: boolean): void {
         if (this.countWarnings !== isEnabled) {
             this.countWarnings = isEnabled;
             if (!this.countWarnings) {
@@ -107,21 +107,21 @@ export default class LogsWorker {
         }
     }
 
-    resetErrors() {
+    resetErrors(): void {
         if (this.errors) {
             this.errors = 0;
             this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
         }
     }
 
-    resetWarnings() {
+    resetWarnings(): void {
         if (this.warnings) {
             this.warnings = 0;
             this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
         }
     }
 
-    logHandler = (line: LogLine | string) => {
+    logHandler = (line: LogLine | string): void => {
         const result = this._processLine(line);
 
         if (result?.objLine) {
@@ -150,22 +150,22 @@ export default class LogsWorker {
         }
     };
 
-    connectionHandler = (isConnected: boolean) => {
+    connectionHandler = (isConnected: boolean): void => {
         if (isConnected && !this.connected) {
             this.connected = true;
-            this.getLogs(true);
+            void this.getLogs(true);
         } else if (!isConnected && this.connected) {
             this.connected = false;
         }
     };
 
-    registerHandler(cb: (events: LogLineSaved[], messageSize: number) => void) {
+    registerHandler(cb: (events: LogLineSaved[], messageSize: number) => void): void {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
         }
     }
 
-    unregisterHandler(cb: (events: LogLineSaved[], messageSize: number) => void) {
+    unregisterHandler(cb: (events: LogLineSaved[], messageSize: number) => void): void {
         const pos = this.handlers.indexOf(cb);
 
         if (pos !== -1) {
@@ -173,13 +173,13 @@ export default class LogsWorker {
         }
     }
 
-    registerErrorCountHandler(cb: (errors: number) => void) {
+    registerErrorCountHandler(cb: (errors: number) => void): void {
         if (!this.errorCountHandlers.includes(cb)) {
             this.errorCountHandlers.push(cb);
         }
     }
 
-    unregisterErrorCountHandler(cb: (errors: number) => void) {
+    unregisterErrorCountHandler(cb: (errors: number) => void): void {
         const pos = this.errorCountHandlers.indexOf(cb);
 
         if (pos !== -1) {
@@ -187,13 +187,13 @@ export default class LogsWorker {
         }
     }
 
-    registerWarningCountHandler(cb: (warnings: number) => void) {
+    registerWarningCountHandler(cb: (warnings: number) => void): void {
         if (!this.warningCountHandlers.includes(cb)) {
             this.warningCountHandlers.push(cb);
         }
     }
 
-    unregisterWarningCountHandler(cb: (warnings: number) => void) {
+    unregisterWarningCountHandler(cb: (warnings: number) => void): void {
         const pos = this.warningCountHandlers.indexOf(cb);
 
         if (pos !== -1) {
@@ -324,7 +324,7 @@ export default class LogsWorker {
             return Promise.resolve({ logs: [], logSize: 0 });
         }
 
-        if (!update && this.promise) {
+        if (!update && this.promise instanceof Promise) {
             return this.promise;
         }
 
@@ -346,7 +346,7 @@ export default class LogsWorker {
                 }
 
                 const logSizeStr: string | null = lines ? (lines as string[]).pop() : null;
-                let logSize: number = 0;
+                let logSize = 0;
 
                 if (typeof logSizeStr === 'string') {
                     logSize = parseInt(logSizeStr, 10);
@@ -395,7 +395,7 @@ export default class LogsWorker {
         return this.promise;
     }
 
-    clearLines() {
+    clearLines(): void {
         this.logs = [];
         this.logSize = 0;
 

@@ -5,7 +5,7 @@
  *
  * To all editors: please merge asap the changes to https://github.com/ioBroker/adapter-react/blob/master/src/Components/ObjectBrowser.js
  * This file is here only temporary for better debugging
- * */
+ */
 import React, { Component, createRef, type JSX } from 'react';
 import SVG from 'react-inlinesvg';
 
@@ -191,7 +191,6 @@ export interface TreeItemData {
     /** translated common.name in lower case for filtering */
     fName?: string;
     /** Link to parent item */
-    // eslint-disable-next-line no-use-before-define
     parent?: TreeItem;
     level?: number;
     icon?: string | JSX.Element | null;
@@ -1117,11 +1116,14 @@ function binarySearch(list: string[], find: string, _start?: number, _end?: numb
 }
 
 function getName(name: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
-    if (name && typeof name === 'object') {
+    if (typeof name === 'object') {
+        if (!name) {
+            return '';
+        }
         return (name[lang] || name.en || '').toString();
     }
 
-    return (name || '').toString();
+    return name ? name.toString() : '';
 }
 
 export function getSelectIdIconFromObjects(
@@ -1378,7 +1380,7 @@ function applyFilter(
         }
         if (!filteredOut && filters.role && common) {
             if (common) {
-                filteredOut = !(common.role && common.role.startsWith(context.role as string));
+                filteredOut = !(common.role && common.role.startsWith(context.role));
             } else {
                 filteredOut = true;
             }
@@ -1707,7 +1709,7 @@ function buildTree(
                             cRoot = _cRoot;
                             info.ids.push(curPath); // IDs will be added by alphabet
                         } else if (cRoot.children) {
-                            cRoot = cRoot.children.find(item => item.data.name === parts[k]) as TreeItem;
+                            cRoot = cRoot.children.find(item => item.data.name === parts[k]);
                         }
                     }
                 }
@@ -1778,8 +1780,8 @@ function buildTree(
     }
 
     info.roomEnums.sort((a, b) => {
-        const aName: string = getName(objects[a]?.common?.name, options.lang) || (a.split('.').pop() as string);
-        const bName: string = getName(objects[b]?.common?.name, options.lang) || (b.split('.').pop() as string);
+        const aName: string = getName(objects[a]?.common?.name, options.lang) || a.split('.').pop();
+        const bName: string = getName(objects[b]?.common?.name, options.lang) || b.split('.').pop();
         if (aName > bName) {
             return 1;
         }
@@ -1789,8 +1791,8 @@ function buildTree(
         return 0;
     });
     info.funcEnums.sort((a, b) => {
-        const aName: string = getName(objects[a]?.common?.name, options.lang) || (a.split('.').pop() as string);
-        const bName: string = getName(objects[b]?.common?.name, options.lang) || (b.split('.').pop() as string);
+        const aName: string = getName(objects[a]?.common?.name, options.lang) || a.split('.').pop();
+        const bName: string = getName(objects[b]?.common?.name, options.lang) || b.split('.').pop();
         if (aName > bName) {
             return 1;
         }
@@ -1824,7 +1826,7 @@ function findNode(root: TreeItem, id: string, _parts?: string[], _path?: string,
             if (_id === _path) {
                 found = root.children[i];
                 break;
-            } else if (_id > (_path as string)) {
+            } else if (_id > _path) {
                 break;
             }
         }
@@ -2525,10 +2527,10 @@ interface ObjectBrowserProps {
     objectImportExport?: boolean; // optional toolbar button
     objectEditOfAccessControl?: boolean; // Access Control
     /** modal add object */
-    // eslint-disable-next-line no-use-before-define
+
     modalNewObject?: (oBrowser: ObjectBrowserClass) => JSX.Element;
     /** modal Edit Of Access Control */
-    // eslint-disable-next-line no-use-before-define
+
     modalEditOfAccessControl: (oBrowser: ObjectBrowserClass, data: TreeItemData) => JSX.Element;
     onObjectDelete?: (id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) => void;
     /**
@@ -3074,7 +3076,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.systemConfig =
                 this.systemConfig ||
                 (objects?.['system.config'] as ioBroker.SystemConfigObject) ||
-                ((await props.socket.getObject('system.config')) as ioBroker.SystemConfigObject);
+                (await props.socket.getObject('system.config'));
 
             this.systemConfig.common = this.systemConfig.common || ({} as ioBroker.SystemConfigCommon);
             this.systemConfig.common.defaultNewAcl = this.systemConfig.common.defaultNewAcl || {
@@ -3832,13 +3834,16 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         obj: ioBroker.AdapterObject,
     ): Record<string, CustomAdminColumnStored[]> | null {
         if (obj.common && obj.common.adminColumns && obj.common.name) {
-            let columns: string | (string | ioBroker.CustomAdminColumn)[] = obj.common.adminColumns;
+            const columns: string | (string | ioBroker.CustomAdminColumn)[] = obj.common.adminColumns;
+            let aColumns: (string | ioBroker.CustomAdminColumn)[] | undefined;
             if (columns && typeof columns !== 'object') {
-                columns = [columns];
+                aColumns = [columns];
+            } else if (columns) {
+                aColumns = columns as (string | ioBroker.CustomAdminColumn)[];
             }
             let cColumns: CustomAdminColumnStored[] | null;
             if (columns) {
-                cColumns = (columns as (string | ioBroker.CustomAdminColumn)[])
+                cColumns = aColumns
                     .map((_item: string | ioBroker.CustomAdminColumn) => {
                         if (typeof _item !== 'object') {
                             return { path: _item, name: _item.split('.').pop() };
@@ -3874,7 +3879,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             objTypes: item.objTypes,
                         } as CustomAdminColumnStored;
                     })
-                    .filter(item => item) as CustomAdminColumnStored[];
+                    .filter((item: CustomAdminColumnStored) => item);
             } else {
                 cColumns = null;
             }
@@ -5310,7 +5315,6 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         const funcRenderStateObject = (value: 'object' | 'state'): void => {
             const rights: number = acl[value];
             check.forEach((el, i) => {
-                // eslint-disable-next-line no-bitwise
                 if (rights & el.valueNum) {
                     arrayTooltipText.push(
                         <span key={value + i}>
@@ -5775,7 +5779,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         info.style = getValueStyle({ state, isExpertMode: this.state.filter.expertMode, isButton: item.data.button });
 
-        let val: JSX.Element[] = info.valTextRx as JSX.Element[];
+        let val: JSX.Element[] = info.valTextRx;
         if (!this.state.filter.expertMode) {
             if (item.data.button) {
                 val = [
@@ -5874,7 +5878,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        Promise.all(promises).then(() => {
+        void Promise.all(promises).then(() => {
             setTimeout(() => this._syncEnum(id, enumIds, newArray, cb), 0);
         });
     }
@@ -5896,7 +5900,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
         const type = this.state.enumDialog.type;
         const item = this.state.enumDialog.item;
-        const itemEnums: string[] = this.state.enumDialogEnums as string[];
+        const itemEnums: string[] = this.state.enumDialogEnums;
         const enumsOriginal = this.state.enumDialog.enumsOriginal;
 
         const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums)
@@ -6014,7 +6018,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     roles={this.info.roles}
                     onClose={(obj?: ioBroker.Object | null) => {
                         if (obj) {
-                            this.info.objects[this.state.roleDialog as string] = obj;
+                            this.info.objects[this.state.roleDialog] = obj;
                         }
                         this.setState({ roleDialog: null });
                     }}
@@ -6047,14 +6051,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.props.socket
                 .getObject(this.state.columnsEditCustomDialog?.obj?._id || '')
                 .then(obj => {
-                    if (
-                        obj &&
-                        ObjectBrowserClass.setCustomValue(
-                            obj,
-                            this.state.columnsEditCustomDialog?.it as AdapterColumn,
-                            value,
-                        )
-                    ) {
+                    if (obj && ObjectBrowserClass.setCustomValue(obj, this.state.columnsEditCustomDialog?.it, value)) {
                         return this.props.socket.setObject(obj._id, obj);
                     }
                     throw new Error(this.props.t('ra_Cannot update attribute, because not found in the object'));
@@ -6829,7 +6826,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             <IconCopy
                                 className="copyButton"
                                 style={styles.cellCopyButton}
-                                onClick={e => this.onCopy(e, item.data?.title as string)}
+                                onClick={e => this.onCopy(e, item.data?.title)}
                             />
                         </Box>
                     ) : null}
@@ -7239,7 +7236,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 <IconCopy
                                     className="copyButton"
                                     style={styles.cellCopyButtonInDetails}
-                                    onClick={e => this.onCopy(e, item.data?.title as string)}
+                                    onClick={e => this.onCopy(e, item.data?.title)}
                                 />
                             ) : null}
                         </div>
@@ -7437,7 +7434,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        return items as JSX.Element[];
+        return items;
     }
 
     private calculateColumnsVisibility(
@@ -7685,9 +7682,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if ((e.target as HTMLDivElement).dataset.left === 'true') {
                 this.resizeLeft = true;
                 this.resizerNextDiv = this.resizerActiveDiv.previousElementSibling as HTMLDivElement;
-                let handle: HTMLDivElement | null = this.resizerNextDiv.querySelector(
-                    '.iob-ob-resize-handler',
-                ) as HTMLDivElement;
+                let handle: HTMLDivElement | null = this.resizerNextDiv.querySelector('.iob-ob-resize-handler');
                 while (this.resizerNextDiv && !handle && i < 10) {
                     this.resizerNextDiv = this.resizerNextDiv.previousElementSibling as HTMLDivElement;
                     handle = this.resizerNextDiv.querySelector('.iob-ob-resize-handler');
@@ -7706,8 +7701,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
             this.resizerNextName = this.resizerNextDiv.dataset.name || null;
 
-            this.resizerMin = parseInt(this.resizerActiveDiv.dataset.min as string, 10) || 0;
-            this.resizerNextMin = parseInt(this.resizerNextDiv.dataset.min as string, 10) || 0;
+            this.resizerMin = parseInt(this.resizerActiveDiv.dataset.min, 10) || 0;
+            this.resizerNextMin = parseInt(this.resizerNextDiv.dataset.min, 10) || 0;
 
             this.resizerPosition = e.clientX;
 

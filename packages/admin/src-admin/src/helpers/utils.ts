@@ -13,6 +13,10 @@ export function isObject(it: any): it is Record<string, any> {
     // return it && typeof it === 'object' && !(it instanceof Array);
 }
 
+export function isTouchDevice(): boolean {
+    return 'ontouchstart' in window || window.navigator.maxTouchPoints > 0 || window.navigator.msMaxTouchPoints > 0;
+}
+
 /** Url where controller changelog is reachable */
 export const CONTROLLER_CHANGELOG_URL = 'https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md';
 

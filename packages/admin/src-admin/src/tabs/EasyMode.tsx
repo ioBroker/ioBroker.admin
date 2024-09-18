@@ -144,7 +144,7 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
 
     componentDidMount(): void {
         if (!this.props.configs) {
-            this.props.socket
+            void this.props.socket
                 .getEasyMode()
                 .then((config: EasyModeConfig) => this.setState({ configs: config.configs }));
         }

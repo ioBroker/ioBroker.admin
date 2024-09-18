@@ -21,7 +21,6 @@ interface UserBlockProps {
     showUserEditDialog: (user: ioBroker.UserObject, isNew: boolean) => void;
     showUserDeleteDialog: (user: ioBroker.UserObject) => void;
     updateData: () => void;
-    // eslint-disable-next-line react/no-unused-prop-types
     addUserToGroup?: (userId: string, groupId: string) => void;
     removeUserFromGroup: (userId: string, groupId: string) => void;
     getText: (text: ioBroker.StringOrTranslated) => string;
@@ -60,7 +59,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                         style={{ color: textColor }}
                         disabled={props.user.common.dontDelete}
                         onChange={() => {
-                            props.socket
+                            void props.socket
                                 .extendObject(props.user._id, {
                                     common: {
                                         enabled: !props.user.common.enabled,
@@ -189,7 +188,7 @@ const UserBlockDrag: React.FC<UserBlockProps> = props => {
 
     useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });
-    }, []);
+    }, [preview]);
 
     return (
         <div ref={dragRef}>

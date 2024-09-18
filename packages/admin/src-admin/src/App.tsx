@@ -900,7 +900,7 @@ class App extends Router<AppProps, AppState> {
 
     enableGuiSettings(enabled: boolean, ownSettings?: boolean): void {
         if (enabled && !this.guiSettings) {
-            this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`).then(async obj => {
+            void this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`).then(async obj => {
                 this.guiSettings = obj || JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
 
                 if (ownSettings || !this.guiSettings.native || !Object.keys(this.guiSettings.native).length) {
@@ -946,7 +946,7 @@ class App extends Router<AppProps, AppState> {
                 await this.getGUISettings();
             });
         } else if (!enabled && this.guiSettings) {
-            this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`).then(async obj => {
+            void this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`).then(async obj => {
                 if (!obj) {
                     try {
                         // create an object if not exists
@@ -1204,7 +1204,7 @@ class App extends Router<AppProps, AppState> {
                                     });
 
                                     // start ping interval
-                                    this.makePingAuth();
+                                    void this.makePingAuth();
                                 }
                             } catch (e) {
                                 console.error(`Could not determine user to show: ${e}`);
@@ -1214,7 +1214,7 @@ class App extends Router<AppProps, AppState> {
 
                         this.setState(newState as AppState, () => this.setCurrentTabTitle());
 
-                        this.socket.subscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
+                        void this.socket.subscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
 
                         // Give some time for communication
                         setTimeout(() => this.logsWorkerChanged(this.state.currentHost), 1000);
@@ -1223,7 +1223,7 @@ class App extends Router<AppProps, AppState> {
                             () =>
                                 this.findNewsInstance().then(instance => {
                                     this.newsInstance = instance;
-                                    this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.onNews);
+                                    void this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.onNews);
                                 }),
                             5_000,
                         );
@@ -1248,10 +1248,10 @@ class App extends Router<AppProps, AppState> {
 
                             // on mount, we only show the dialog if there are warnings available
                             if (isWarningAvailable) {
-                                this.showAdaptersWarning(notifications, newState.currentHost);
+                                void this.showAdaptersWarning(notifications, newState.currentHost);
                             }
 
-                            this.handleNewNotifications(notifications);
+                            void void this.handleNewNotifications(notifications);
                         }, 3_000);
                     } catch (error) {
                         console.error(error);
@@ -1332,7 +1332,7 @@ class App extends Router<AppProps, AppState> {
     };
 
     repoChangeHandler = (): void => {
-        this.readRepoAndInstalledInfo(this.state.currentHost, null, true).then(() => console.log('Repo updated!'));
+        void this.readRepoAndInstalledInfo(this.state.currentHost, null, true).then(() => console.log('Repo updated!'));
     };
 
     adaptersChangeHandler = (events: AdapterEvent[]): void => {
@@ -2730,7 +2730,7 @@ class App extends Router<AppProps, AppState> {
                                         await this.readRepoAndInstalledInfo(host, this.state.hosts);
                                         // read notifications from host
                                         const notifications = await this.hostsWorker.getNotifications(host);
-                                        this.showAdaptersWarning(notifications, host);
+                                        void this.showAdaptersWarning(notifications, host);
                                     },
                                 );
                             }}

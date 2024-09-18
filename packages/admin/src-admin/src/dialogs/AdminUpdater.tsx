@@ -78,7 +78,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         this.link = `${window.location.protocol}//${window.location.host}/`;
     }
 
-    setUpdating(updating: boolean) {
+    setUpdating(updating: boolean): void {
         if (this.updating !== updating) {
             this.updating = updating;
             this.props.onUpdating(updating);
@@ -99,7 +99,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         };
     }
 
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         const { certPrivateName, certPublicName, port, useHttps } = await this.getWebserverParams();
 
         // remember the current version
@@ -123,7 +123,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         }, 10_000); // give 10 seconds to controller to start update
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = null;
@@ -170,7 +170,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         }
     }
 
-    async checkStatus() {
+    async checkStatus(): Promise<void> {
         console.log(`Request update status from: ${this.link}`);
         try {
             const res = await fetch(this.link);
@@ -195,7 +195,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
                         response.stdout.unshift('---------------------------------------------------');
                         response.stdout.unshift(I18n.t('updating %s to %s...', 'admin', this.props.version));
                     }
-                    this.setState({ response, error: null }, async () => {
+                    this.setState({ response, error: null }, (): void => {
                         if (response && !response.running) {
                             if (this.interval) {
                                 clearInterval(this.interval);
@@ -233,7 +233,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
     /**
      * Wait until admin is up again
      */
-    waitForAdapterStart() {
+    waitForAdapterStart(): void {
         this.interval = setInterval(async () => {
             try {
                 await fetch(this.link);
@@ -246,7 +246,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         }, 1_000);
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 onClose={(e, reason) => {

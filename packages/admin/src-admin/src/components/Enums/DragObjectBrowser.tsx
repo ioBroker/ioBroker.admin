@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, type JSX } from 'react';
 
 import { useDrag, type DragSourceMonitor } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
@@ -49,14 +49,13 @@ interface DragObjectBrowserProps {
     theme: IobTheme;
 }
 
-const DragObjectBrowser = (props: DragObjectBrowserProps) => {
+const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element => {
     const [wrapperState, setWrapperState] = useState({ DragWrapper: null });
     const objectRef = React.useRef<Record<string, ioBroker.Object> | null>(null);
 
     useEffect(() => {
-        // eslint-disable-next-line react/no-unstable-nested-components
-        const DragWrapper = (dragProps: DragWrapperProps) => {
-            const onDragEnd = (item: TreeItem, monitor: DragSourceMonitor<TreeItem, { enumId: string }>) => {
+        const DragWrapper = (dragProps: DragWrapperProps): JSX.Element => {
+            const onDragEnd = (item: TreeItem, monitor: DragSourceMonitor<TreeItem, { enumId: string }>): void => {
                 const dropResult = monitor.getDropResult();
                 if (item.data && dropResult) {
                     if (item.data.obj) {
@@ -122,7 +121,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps) => {
 
             useEffect(() => {
                 preview(getEmptyImage(), { captureDraggingState: true });
-            }, []);
+            }, [preview]);
 
             return (
                 <Box

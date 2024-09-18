@@ -299,9 +299,9 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
     }
 
     componentDidMount(): void {
-        this.props.socket.subscribeState(this.props.obj._id, this.onChange);
+        void this.props.socket.subscribeState(this.props.obj._id, this.onChange);
         window.addEventListener('resize', this.onResize);
-        this.prepareData()
+        void this.prepareData()
             .then(() => !this.props.noToolbar && this.readHistoryRange())
             .then(() => this.setRelativeInterval(this.state.relativeRange, true, () => this.forceUpdate()));
     }
@@ -384,7 +384,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                     this.setState({ historyInstances }, () => {
                         // read data if the instance becomes alive
                         if (historyInstances[itemIndex].alive && this.state.historyInstance === instance) {
-                            this.readHistoryRange().then(() => this.updateChart());
+                            void this.readHistoryRange().then(() => this.updateChart());
                         }
                     });
                 }
@@ -886,7 +886,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             }
 
             if (withReadData) {
-                this.readHistory(start, end).then((values: HistoryItem[]) => {
+                void this.readHistory(start, end).then((values: HistoryItem[]) => {
                     if (typeof this.echartsReact?.getEchartsInstance === 'function') {
                         this.echartsReact.getEchartsInstance().setOption({
                             series: [{ data: this.convertData(values) }],

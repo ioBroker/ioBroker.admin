@@ -89,7 +89,7 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
      *
      * @param options Adapter specific information
      */
-    renderAdapterAccordion(options: AdapterOptions): React.ReactNode {
+    renderAdapterAccordion(options: AdapterOptions): JSX.Element | null {
         const { name, description } = options;
 
         const adapter = this.state.repository[name];
@@ -165,7 +165,7 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
     /**
      * Render the actual content
      */
-    renderContent(): React.ReactNode {
+    renderContent(): JSX.Element {
         return (
             <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
                 <Typography sx={{ paddingTop: 2 }}>{I18n.t('wizard adapter general description')}</Typography>
@@ -221,7 +221,7 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
     /**
      * Render the component
      */
-    render(): React.ReactNode {
+    render(): JSX.Element {
         const repositoryReceived = Object.keys(this.state.repository).length > 0;
 
         return (

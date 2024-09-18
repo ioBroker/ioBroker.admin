@@ -504,7 +504,6 @@ export interface FileBrowserProps {
 
     restrictToFolder?: string;
 
-    // eslint-disable-next-line no-use-before-define
     modalEditOfAccessControl?: (obj: FileBrowserClass) => JSX.Element | null;
 
     allowNonRestricted?: boolean;
@@ -801,7 +800,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         } else {
             const folder = foldersList.shift();
             if (folder) {
-                this.browseFolder(folder, newFoldersNotNull)
+                void this.browseFolder(folder, newFoldersNotNull)
                     .catch((e: Error) => console.error(`Cannot read folder ${folder}: ${e.message}`))
                     .then(() => {
                         setTimeout(() => this.browseFoldersCb(foldersList, newFoldersNotNull, cb), 0);
@@ -860,7 +859,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
             this.browseList[0].processing = true;
             this.props.socket
-                .readDir(this.browseList[0].adapter, this.browseList[0].relPath as string)
+                .readDir(this.browseList[0].adapter, this.browseList[0].relPath)
                 .then(files => {
                     if (this.browseList) {
                         // if component still mounted
@@ -2110,7 +2109,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                                 } else {
                                     const id = `${parentFolder}/${file.name}`;
 
-                                    this.uploadFile(id, reader.result as string).then(() => {
+                                    void this.uploadFile(id, reader.result as string).then(() => {
                                         if (!--count) {
                                             this.setState({ uploadFile: false }, () => {
                                                 if (this.supportSubscribes) {
@@ -2202,7 +2201,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 if (item.level >= 1) {
                     const parts = id.split('/');
                     const adapter = parts.shift();
-                    this.props.socket.deleteFolder(adapter || '', parts.join('/')).then(() => {
+                    void this.props.socket.deleteFolder(adapter || '', parts.join('/')).then(() => {
                         // remove this folder
                         const folders = JSON.parse(JSON.stringify(this.state.folders));
                         delete folders[item.id];
@@ -2288,7 +2287,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     aria-labelledby="ar_dialog_file_delete_title"
                 >
                     <DialogTitle id="ar_dialog_file_delete_title">
-                        {this.props.t('ra_Confirm deletion of %s', this.state.deleteItem.split('/').pop() as string)}
+                        {this.props.t('ra_Confirm deletion of %s', this.state.deleteItem.split('/').pop())}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>{this.props.t('ra_Are you sure?')}</DialogContentText>

@@ -65,11 +65,11 @@ class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPassword
         this.focusRef = createRef();
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.focusRef.current?.focus();
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
                 <form

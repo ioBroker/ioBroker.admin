@@ -100,11 +100,11 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         };
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.getSettings(this.state.currentHost);
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (this.state.confirmExit) {
             return (
                 <ConfirmDialog
@@ -116,7 +116,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         return null;
     }
 
-    renderRestartDialog() {
+    renderRestartDialog(): JSX.Element | null {
         if (this.state.showRestart) {
             return (
                 <ConfirmDialog
@@ -158,8 +158,8 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         return null;
     }
 
-    getSettings(host: string) {
-        this.props.socket.readBaseSettings(host || this.state.currentHost).then(settings => {
+    getSettings(host: string): void {
+        void this.props.socket.readBaseSettings(host || this.state.currentHost).then(settings => {
             const answer = settings as { config?: ioBroker.IoBrokerJson; isActive?: boolean };
             if (answer?.config) {
                 this.originalSettings = JSON.parse(JSON.stringify(answer.config));
@@ -177,7 +177,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         });
     }
 
-    onSave(host?: string) {
+    onSave(host?: string): void {
         const settings = {
             system: this.state.system,
             multihostService: this.state.multihostService,
@@ -205,7 +205,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         });
     }
 
-    updateSettings(name: keyof BaseSettingsDialogState, settings: any) {
+    updateSettings(name: keyof BaseSettingsDialogState, settings: any): void {
         const hasChanges = [...this.state.hasChanges];
         const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
 
@@ -219,7 +219,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         this.setState({ [name]: settings, hasChanges } as any);
     }
 
-    renderSystem() {
+    renderSystem(): JSX.Element {
         const name = 'system';
         return (
             <BaseSettingsSystem
@@ -231,7 +231,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         );
     }
 
-    renderMultihost() {
+    renderMultihost(): JSX.Element {
         const name = 'multihostService';
         return (
             <BaseSettingsMultihost
@@ -244,7 +244,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         );
     }
 
-    renderObjects() {
+    renderObjects(): JSX.Element {
         const name = 'objects';
         return (
             <BaseSettingsObjects
@@ -257,7 +257,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         );
     }
 
-    renderStates() {
+    renderStates(): JSX.Element {
         const name = 'states';
         return (
             <BaseSettingsStates
@@ -270,7 +270,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         );
     }
 
-    renderLog() {
+    renderLog(): JSX.Element {
         const name = 'log';
         return (
             <BaseSettingsLog
@@ -283,7 +283,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         );
     }
 
-    renderPlugins() {
+    renderPlugins(): JSX.Element {
         const name = 'plugins';
         return (
             <BaseSettingsPlugins
@@ -295,7 +295,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         );
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 style={styles.dialog}

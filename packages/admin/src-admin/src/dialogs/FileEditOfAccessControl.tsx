@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, type JSX } from 'react';
 import { Checkbox, LinearProgress, Switch } from '@mui/material';
 
 import {
@@ -36,10 +36,9 @@ const readWriteArray: Record<string, { name: 'read' | 'write'; valueNum: number;
     },
 ];
 
-const newValueAccessControl = (value: number, newValue: number, mask: number) => {
-    // eslint-disable-next-line no-bitwise
+const newValueAccessControl = (value: number, newValue: number, mask: number): number => {
     value |= newValue & mask;
-    // eslint-disable-next-line no-bitwise
+
     value &= newValue | (~mask & 0xffff);
     return value;
 };
@@ -69,14 +68,13 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
         if (applyToChildren) {
             let _checkDifferent = 0;
             for (let e = 0; e < differentValues.length; e++) {
-                // eslint-disable-next-line no-bitwise
                 _checkDifferent |= value ^ differentValues[e];
             }
             setMask(_checkDifferent);
         } else {
             setMask(0);
         }
-    }, [differentValues, applyToChildren]);
+    }, [differentValues, applyToChildren, setMask, value]);
 
     let newSelected = value;
 
@@ -126,7 +124,7 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
                         >
                             {el[name].map((obj, idx) => {
                                 let bool = false;
-                                // eslint-disable-next-line no-bitwise
+
                                 const masked = mask & obj.valueNum;
 
                                 if (newSelected - obj.valueNum >= 0) {
@@ -167,16 +165,13 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
                                                 style={masked ? { opacity: 0.5 } : undefined}
                                                 onChange={e => {
                                                     if (masked) {
-                                                        // eslint-disable-next-line no-bitwise
                                                         mask &= ~obj.valueNum & 0xffff;
                                                         setMask(mask);
                                                     }
                                                     let newValue = value;
                                                     if (!e.target.checked) {
-                                                        // eslint-disable-next-line no-bitwise
                                                         newValue &= ~obj.valueNum & 0xffff;
                                                     } else {
-                                                        // eslint-disable-next-line no-bitwise
                                                         newValue |= obj.valueNum;
                                                     }
                                                     setValue(newValue);
@@ -194,7 +189,7 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
     );
 };
 
-async function loadFolders(folderId: string, folders: Folders, socket: AdminConnection) {
+async function loadFolders(folderId: string, folders: Folders, socket: AdminConnection): Promise<void> {
     let files = folders[folderId];
     if (!files) {
         const parts = folderId.split('/');
@@ -253,7 +248,7 @@ async function loadPath(
     adapter: string = '',
     part: string = '',
     level: number = 0,
-) {
+): Promise<void> {
     if (typeof path === 'string') {
         path = path.split('/');
         level = 0;
@@ -330,7 +325,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
     folders,
     socket,
     theme,
-}) => {
+}: FileEditOfAccessControlProps): JSX.Element => {
     const select = selected.substring(0, selected.lastIndexOf('/')) || selected;
     const object: FolderOrFileItem =
         (selected.split('/').length === 1
@@ -356,7 +351,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
     useEffect(() => {
         const _differentObject: number[] = [];
 
-        const id = object.id as string;
+        const id = object.id;
 
         let _differentOwner = false;
         let _differentGroup = false;
@@ -366,7 +361,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
         const _ids: (MetaObject | FolderOrFileItem)[] = [];
         let count = 0;
 
-        loadPath(socket, folders, id).then(() => {
+        void loadPath(socket, folders, id).then(() => {
             const list = flatList(folders);
 
             const idWithSlash = `${id}/`;
@@ -493,6 +488,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
 
             setIds(_ids);
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [objects, selected]);
 
     useEffect(() => {
@@ -513,6 +509,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
             }
         }
         console.log(`stateOwnerUser ${stateOwnerUser}`);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [applyToChildren, stateOwnerUser, stateOwnerGroup, differentOwner, differentGroup]);
 
     if (!ids.length) {
@@ -576,7 +573,6 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                             }
                         }
                     } else {
-                        // eslint-disable-next-line no-bitwise
                         const _maskObject = ~maskObject & 0xffff;
                         for (let i = 0; i < ids.length; i++) {
                             const item = ids[i];

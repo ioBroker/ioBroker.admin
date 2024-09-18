@@ -205,7 +205,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
     }
 
     componentDidMount(): void {
-        this.props.socket.getIpAddresses(this.props.currentHost).then(_IPs => {
+        void this.props.socket.getIpAddresses(this.props.currentHost).then(_IPs => {
             const IPs = [..._IPs];
             if (!IPs.includes('0.0.0.0')) {
                 IPs.push('0.0.0.0');

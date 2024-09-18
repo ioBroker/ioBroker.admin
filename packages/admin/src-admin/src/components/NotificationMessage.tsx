@@ -163,7 +163,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                 delete contextData.offlineMessage;
             }
             // request GUI for this notification
-            this.props.socket
+            void this.props.socket
                 .sendTo(
                     this.props.instanceId.replace('system.adapter.', ''),
                     'admin:getNotificationSchema',
@@ -229,7 +229,6 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                     schema={this.state.schema}
                     data={this.state.data}
                     onError={(error?: boolean) => this.setState({ error })}
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     onChange={(_data: Record<string, any>) => {
                         // ignore for now
                     }}

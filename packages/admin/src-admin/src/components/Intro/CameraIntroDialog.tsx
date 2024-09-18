@@ -85,7 +85,7 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
                 const parts = this.props.camera.split('.');
                 const adapter = parts.shift();
                 const instance = parts.shift();
-                this.props.socket
+                void this.props.socket
                     .sendTo(`${adapter}.${instance}`, 'image', {
                         name: parts.pop(),
                         width: this.cameraRef.current.width,

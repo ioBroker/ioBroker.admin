@@ -54,7 +54,10 @@ interface ExpertModeDialogProps {
     onClose: (result?: string | boolean) => void;
 }
 
-const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose }) => {
+const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({
+    expertMode,
+    onClose,
+}: ExpertModeDialogProps): JSX.Element => {
     const [doNotShow, setDoNotShow] = useState(false);
 
     return (

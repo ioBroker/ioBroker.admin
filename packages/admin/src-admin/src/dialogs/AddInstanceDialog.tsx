@@ -143,8 +143,8 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         );
     }
 
-    componentDidMount() {
-        this.props.instancesWorker.getInstances().then((instances: Record<string, ioBroker.InstanceObject>) => {
+    componentDidMount(): void {
+        void this.props.instancesWorker.getInstances().then((instances: Record<string, ioBroker.InstanceObject>) => {
             const instanceNumbers = Object.keys(instances)
                 .filter(id => instances[id]?.common?.name === this.props.adapter)
                 .map(id => id.substring(id.lastIndexOf('.') + 1));
@@ -153,7 +153,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         });
     }
 
-    getAvailableInstances() {
+    getAvailableInstances(): JSX.Element[] {
         const result = [];
         result.push(
             <MenuItem
@@ -180,7 +180,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         return result;
     }
 
-    checkDependencies(dependencies = this.props.dependencies) {
+    checkDependencies(dependencies = this.props.dependencies): string | JSX.Element[] {
         if (!dependencies) {
             return '';
         }
@@ -213,7 +213,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         return typeof text === 'object' ? '' : text;
     }
 
-    renderOneMessage(message: Message, index: number) {
+    renderOneMessage(message: Message, index: number): JSX.Element {
         return (
             <Grid2 key={index}>
                 <Typography sx={styles[`messageTitle_${message.level || 'warn'}`]}>
@@ -243,7 +243,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         );
     }
 
-    renderMessages() {
+    renderMessages(): JSX.Element | null {
         if (this.messages) {
             return (
                 <Grid2
@@ -260,7 +260,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         return null;
     }
 
-    render() {
+    render(): JSX.Element {
         const checkDeps = this.checkDependencies();
 
         return (

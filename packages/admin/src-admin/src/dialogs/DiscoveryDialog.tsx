@@ -298,7 +298,7 @@ function EnhancedTableHead(props: EnhancedTableHeadProps): JSX.Element {
     );
 }
 
-function buildComment(comment: DiscoveryInstanceComment) {
+function buildComment(comment: DiscoveryInstanceComment): string {
     if (!comment) {
         return 'new';
     }
@@ -382,7 +382,7 @@ function DiscoveryDialog({
     hosts,
     onClose,
     theme,
-}: DiscoveryDialogProps) {
+}: DiscoveryDialogProps): JSX.Element {
     const [step, setStep] = useState<number>(0);
     const [listMethods, setListMethods] = useState<Record<string, { type: string; source: string; timeout?: number }>>(
         {},

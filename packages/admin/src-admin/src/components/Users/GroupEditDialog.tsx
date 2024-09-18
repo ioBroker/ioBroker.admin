@@ -208,14 +208,15 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
             const icon = GROUPS_ICONS[Math.round(Math.random() * (GROUPS_ICONS.length - 1))];
 
             if (icon) {
-                Utils.getSvg(icon).then((fileBlob: string) => {
+                void Utils.getSvg(icon).then((fileBlob: string) => {
                     const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
                 });
             }
         }
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.onChange, props.group, props.isNew]);
 
     const idExists = props.groups.find(group => group._id === props.group._id);
     const idChanged = props.group._id !== originalId;
@@ -224,12 +225,12 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
         props.group._id !== 'system.group.' &&
         (props.group.common as any).password === (props.group.common as any).passwordRepeat;
 
-    const getShortId = (_id: string) => _id.split('.').pop();
+    const getShortId = (_id: string): string => _id.split('.').pop();
 
-    const name2Id = (name: string) =>
+    const name2Id = (name: string): string =>
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
 
-    const changeShortId = (_id: string, short: string) => {
+    const changeShortId = (_id: string, short: string): string => {
         const idArray = _id.split('.');
         idArray[idArray.length - 1] = short;
         return idArray.join('.');

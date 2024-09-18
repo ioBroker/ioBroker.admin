@@ -339,13 +339,13 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         this.timeTimer = undefined;
         this.subscribes = [];
 
-        this.prepareData()
+        void this.prepareData()
             .then(() => this.readHistoryRange())
             .then(() => {
                 if (relativeRange !== 'absolute') {
                     this.setRelativeInterval(this.state.relativeRange, true);
                 } else {
-                    this.readHistory();
+                    void this.readHistory();
                 }
             });
     }
@@ -368,7 +368,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 resolve([]);
             }, 2_000);
 
-            this.props.socket
+            void this.props.socket
                 .sendTo(historyInstance, 'features', null)
                 .then((result: { supportedFeatures: SupportedFeatures }) => {
                     if (this.readSupportedFeaturesTimeout) {
@@ -421,7 +421,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                     this.setState({ historyInstances }, () => {
                         // read data if the instance becomes alive
                         if (historyInstances[itemIndex].alive && this.state.historyInstance === instance) {
-                            this.readHistoryRange().then(() => this.readHistory());
+                            void this.readHistoryRange().then(() => this.readHistory());
                         }
                     });
                 }
@@ -765,7 +765,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                         key={ts.toString() + (state.val || '').toString()}
                     >
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ts')}>
-                            {`${this.formatTimestamp(state.ts)}`}
+                            {`${ObjectHistoryData.formatTimestamp(state.ts)}`}
                             {selected && this.state.lastSelectedColumn === 'ts' ? (
                                 <Box
                                     component="div"
@@ -1108,7 +1108,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
     onDelete(): void {
         const tasks = this.state.selected.map(ts => ({ state: { ts }, id: this.props.obj._id }));
-        this.props.socket.sendTo(this.state.historyInstance, 'delete', tasks).then(() => this.readHistory());
+        void this.props.socket.sendTo(this.state.historyInstance, 'delete', tasks).then(() => this.readHistory());
     }
 
     onUpdate(): void {
@@ -1142,7 +1142,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         if (!this.state.lcVisible && state.lc) {
             delete state.lc;
         }
-        this.props.socket
+        void this.props.socket
             .sendTo(this.state.historyInstance, 'update', [{ id: this.props.obj._id, state }])
             .then(() => this.readHistory());
     }
@@ -1183,7 +1183,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             }
         }
 
-        this.props.socket
+        void this.props.socket
             .sendTo(this.state.historyInstance, 'insert', [{ id: this.props.obj._id, state }])
             .then(() => this.readHistory());
     }
@@ -1345,8 +1345,9 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                         onChange={e => {
                             const historyInstance = e.target.value;
                             this.localStorage.setItem('App.historyInstance', historyInstance);
-                            this.readSupportedFeatures(historyInstance).then((supportedFeatures: SupportedFeatures) =>
-                                this.setState({ historyInstance, supportedFeatures }, () => this.readHistory()),
+                            void this.readSupportedFeatures(historyInstance).then(
+                                (supportedFeatures: SupportedFeatures) =>
+                                    this.setState({ historyInstance, supportedFeatures }, () => this.readHistory()),
                             );
                         }}
                     >
@@ -1612,7 +1613,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 !state.e &&
                 lines.push(
                     [
-                        this.formatTimestamp(state.ts),
+                        ObjectHistoryData.formatTimestamp(state.ts),
                         state.val === null || state.val === undefined ? 'null' : state.val.toString(),
                         state.ack ? 'true' : 'false',
                         state.from || '',
@@ -1657,7 +1658,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
      *
      * @param ts the timestamp
      */
-    formatTimestamp(ts: number): string {
+    static formatTimestamp(ts: number): string {
         return `${new Date(ts).toLocaleDateString()} ${new Date(ts).toLocaleTimeString()}.${(ts % 1_000).toString().padStart(3, '0')}`;
     }
 }

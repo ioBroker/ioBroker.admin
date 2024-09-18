@@ -250,10 +250,12 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
         return this.props.children;
     }
 
+    // eslint-disable-next-line class-methods-use-this
     openDialog(): void {
         // do nothing
     }
 
+    // eslint-disable-next-line class-methods-use-this
     renderDialogs(): JSX.Element | null {
         return null;
     }

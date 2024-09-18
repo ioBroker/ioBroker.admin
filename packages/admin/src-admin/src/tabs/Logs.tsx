@@ -393,7 +393,7 @@ class Logs extends Component<LogsProps, LogsState> {
         cb?: () => void,
     ): void {
         if (this.props.logsWorker && this.state.hosts) {
-            this.props.logsWorker.getLogs(force).then(results => {
+            void this.props.logsWorker.getLogs(force).then(results => {
                 if (!results) {
                     return;
                 }
@@ -513,7 +513,7 @@ class Logs extends Component<LogsProps, LogsState> {
         this.props.logsWorker.registerHandler(this.logHandler);
         this.props.clearErrors();
 
-        this.props.socket.getCompactAdapters().then(async (adapters: Record<string, CompactAdapterInfo>) => {
+        void this.props.socket.getCompactAdapters().then(async (adapters: Record<string, CompactAdapterInfo>) => {
             const _hosts: CompactHost[] = await this.props.socket.getCompactHosts();
             const hosts: Record<string, CompactHost> = {};
             _hosts.forEach(item => (hosts[item._id] = item));

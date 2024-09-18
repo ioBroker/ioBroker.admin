@@ -208,7 +208,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
             this.props.object?.common?.custom &&
             this.props.object.common.custom[this.props.defaultHistory]?.enabled
         ) {
-            this.props.socket
+            void this.props.socket
                 .getState(`system.adapter.${this.props.defaultHistory}.alive`)
                 .then((state: ioBroker.State | null | undefined) => this.setState({ chart: !!state?.val }));
         }

@@ -60,7 +60,7 @@ export default class HostsWorker {
         }
     }
 
-    objectChangeHandler = (id: string, obj: ioBroker.HostObject) => {
+    objectChangeHandler = (id: string, obj: ioBroker.HostObject): void => {
         // if host
         if (id.startsWith('system.host.')) {
             let type: HostEventType;
@@ -104,7 +104,7 @@ export default class HostsWorker {
         }
     };
 
-    aliveChangeHandler = (id: string, state: ioBroker.State) => {
+    aliveChangeHandler = (id: string, state: ioBroker.State): void => {
         // if instance
         if (id.startsWith('system.host.') && id.endsWith('.alive')) {
             let type: HostEventType;
@@ -143,8 +143,8 @@ export default class HostsWorker {
         }
     };
 
-    getHosts(update?: boolean) {
-        if (!update && this.promise) {
+    getHosts(update?: boolean): Promise<void | Record<string, ioBroker.HostObject>> {
+        if (!update && this.promise instanceof Promise) {
             return this.promise;
         }
 
@@ -160,7 +160,7 @@ export default class HostsWorker {
         return this.promise;
     }
 
-    connectionHandler = (isConnected: boolean) => {
+    connectionHandler = (isConnected: boolean): void => {
         if (isConnected && !this.connected) {
             this.connected = true;
 
@@ -170,12 +170,12 @@ export default class HostsWorker {
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
 
                 // read all hosts anew and inform about it
-                this.getHosts(true).then(
+                void this.getHosts(true).then(
                     hosts => hosts && Object.keys(hosts).forEach(id => this.objectChangeHandler(id, hosts[id])),
                 );
             }
             if (this.aliveHandlers.length) {
-                this.socket.subscribeState('system.host.*.alive', this.aliveChangeHandler);
+                void this.socket.subscribeState('system.host.*.alive', this.aliveChangeHandler);
             }
         } else if (!isConnected && this.connected) {
             this.connected = false;
@@ -183,7 +183,7 @@ export default class HostsWorker {
         }
     };
 
-    registerHandler(cb: (events: HostEvent[]) => void) {
+    registerHandler(cb: (events: HostEvent[]) => void): void {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
 
@@ -195,7 +195,7 @@ export default class HostsWorker {
         }
     }
 
-    unregisterHandler(cb: (events: HostEvent[]) => void) {
+    unregisterHandler(cb: (events: HostEvent[]) => void): void {
         const pos = this.handlers.indexOf(cb);
         if (pos !== -1) {
             this.handlers.splice(pos, 1);
@@ -207,17 +207,17 @@ export default class HostsWorker {
         }
     }
 
-    registerAliveHandler(cb: (events: HostAliveEvent[]) => void) {
+    registerAliveHandler(cb: (events: HostAliveEvent[]) => void): void {
         if (!this.aliveHandlers.includes(cb)) {
             this.aliveHandlers.push(cb);
 
             if (this.aliveHandlers.length === 1 && this.connected) {
-                this.socket.subscribeState('system.host.*.alive', this.aliveChangeHandler);
+                void this.socket.subscribeState('system.host.*.alive', this.aliveChangeHandler);
             }
         }
     }
 
-    unregisterAliveHandler(cb: (events: HostAliveEvent[]) => void) {
+    unregisterAliveHandler(cb: (events: HostAliveEvent[]) => void): void {
         const pos = this.aliveHandlers.indexOf(cb);
         if (pos !== -1) {
             this.aliveHandlers.splice(pos, 1);
@@ -227,7 +227,7 @@ export default class HostsWorker {
         }
     }
 
-    onNotificationHandler = (id: string /* , state */) => {
+    onNotificationHandler = (id: string /* , state */): void => {
         const host = id.replace(/\.notifications\..+$/, '');
 
         // ignore subscribe events
@@ -241,7 +241,7 @@ export default class HostsWorker {
                     this.notificationTimer = null;
                     this.notificationPromises[host_] = this._getNotificationsFromHosts(host_, true);
 
-                    this.notificationPromises[host_].then(
+                    void this.notificationPromises[host_].then(
                         notifications => notifications && this.notificationsHandlers.forEach(cb => cb(notifications)),
                     );
                 },
@@ -252,7 +252,7 @@ export default class HostsWorker {
     };
 
     _getNotificationsFromHosts(hostId: string, update?: boolean): Promise<Record<string, NotificationAnswer | null>> {
-        if (!update && this.notificationPromises[hostId]) {
+        if (!update && this.notificationPromises[hostId] instanceof Promise) {
             return this.notificationPromises[hostId];
         }
 
@@ -286,18 +286,18 @@ export default class HostsWorker {
         return result;
     }
 
-    registerNotificationHandler(cb: (notifications: Record<string, NotificationAnswer>) => void) {
+    registerNotificationHandler(cb: (notifications: Record<string, NotificationAnswer>) => void): void {
         if (!this.notificationsHandlers.includes(cb)) {
             this.notificationsHandlers.push(cb);
 
             if (this.notificationsHandlers.length === 1 && this.connected) {
                 this.subscribeTs = Date.now();
-                this.socket.subscribeState('system.host.*.notifications.*', this.onNotificationHandler);
+                void this.socket.subscribeState('system.host.*.notifications.*', this.onNotificationHandler);
             }
         }
     }
 
-    unregisterNotificationHandler(cb: (notifications: Record<string, NotificationAnswer>) => void) {
+    unregisterNotificationHandler(cb: (notifications: Record<string, NotificationAnswer>) => void): void {
         const pos = this.notificationsHandlers.indexOf(cb);
 
         if (pos !== -1) {

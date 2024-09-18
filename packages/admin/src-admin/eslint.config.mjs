@@ -8,4 +8,17 @@ config.forEach(rule => {
     }
 });
 
-export default [...config, ...reactConfig];
+export default [
+  ...config,
+    ...reactConfig,
+    {
+        languageOptions: {
+            parserOptions: {
+                projectService: {
+                    allowDefaultProject: ['*.js', '*.mjs'],
+                },
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
+    },
+];

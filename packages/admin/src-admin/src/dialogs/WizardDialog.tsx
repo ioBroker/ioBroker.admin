@@ -131,7 +131,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
     }
 
     componentDidMount(): void {
-        this.props.socket.getCurrentInstance().then((namespace: string) =>
+        void this.props.socket.getCurrentInstance().then((namespace: string) =>
             this.props.socket.getObject(`system.adapter.${namespace}`).then(obj => {
                 this.adminInstance = obj;
                 this.setState({ auth: obj.native.auth, secure: obj.native.secure });

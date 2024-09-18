@@ -131,12 +131,12 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
         this.updateAvailable = [];
     }
 
-    updateAdapter(adapter: string, version: string, cb: () => void) {
+    updateAdapter(adapter: string, version: string, cb: () => void): void {
         this.onAdapterFinished = cb;
         this.setState({ current: adapter, currentVersion: version });
     }
 
-    onStartUpdate() {
+    onStartUpdate(): void {
         this.setState({ inProcess: true }, () => {
             this.props.onSetCommandRunning(true);
             this.processList = [...this.state.selected].map(adapter => ({
@@ -157,7 +157,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
         });
     }
 
-    updateAdapters(cb: () => void) {
+    updateAdapters(cb: () => void): void {
         if (!this.processList || !this.processList.length || this.state.stopped) {
             if (cb) {
                 cb();
@@ -173,7 +173,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
         }
     }
 
-    render() {
+    render(): JSX.Element {
         const languageButtonActive = this.props.noTranslation
             ? Utils.getStyle(this.props.theme, styles.languageButtonActive)
             : undefined;

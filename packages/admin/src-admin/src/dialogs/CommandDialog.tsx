@@ -69,7 +69,7 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
         };
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 scroll="paper"

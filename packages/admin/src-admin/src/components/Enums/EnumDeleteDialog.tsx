@@ -14,7 +14,7 @@ interface EnumDeleteDialogProps {
     deleteEnum: (enumId: string) => void;
 }
 
-function EnumDeleteDialog(props: EnumDeleteDialogProps) {
+function EnumDeleteDialog(props: EnumDeleteDialogProps): JSX.Element {
     return (
         <Dialog
             open={!0}

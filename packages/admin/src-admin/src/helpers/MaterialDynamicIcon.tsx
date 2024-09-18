@@ -88,7 +88,7 @@ function MaterialDynamicIcon({
 
     useEffect(() => {
         if (adapter && socket) {
-            if (!ICON_CACHE[adapter]) {
+            if (!(ICON_CACHE[adapter] instanceof Promise)) {
                 ICON_CACHE[adapter] = socket.getObject(`system.adapter.${adapter}`);
             }
             void ICON_CACHE[adapter].then(

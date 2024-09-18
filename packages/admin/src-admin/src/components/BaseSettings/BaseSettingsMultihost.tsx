@@ -58,7 +58,7 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
         };
 
         if (settings.password) {
-            this.props.socket
+            void this.props.socket
                 .decrypt(settings.password)
                 .then((plainPass: string) => this.setState({ password: plainPass }));
         }
@@ -77,7 +77,7 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
         };
 
         if (this.state.password) {
-            this.props.socket.encrypt(this.state.password).then((encodedPass: string) => {
+            void this.props.socket.encrypt(this.state.password).then((encodedPass: string) => {
                 newState.password = encodedPass;
                 this.props.onChange(newState);
             });

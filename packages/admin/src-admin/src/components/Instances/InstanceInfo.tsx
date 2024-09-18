@@ -22,7 +22,7 @@ interface InstanceInfoProps {
     style?: React.CSSProperties;
 }
 
-const InstanceInfo = (props: InstanceInfoProps) => (
+const InstanceInfo = (props: InstanceInfoProps): JSX.Element => (
     <Grid2
         container
         title={props.icon ? '' : props.tooltip || ''}

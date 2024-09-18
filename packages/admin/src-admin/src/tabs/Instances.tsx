@@ -994,7 +994,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
     };
 
     async getHostsData(): Promise<void> {
-        this.props.socket
+        void this.props.socket
             .getHostInfo(this.state.currentHost, false, 10000)
             .catch(error => {
                 if (!error.toString().includes('May not read')) {

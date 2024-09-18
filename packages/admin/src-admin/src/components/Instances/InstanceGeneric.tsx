@@ -64,6 +64,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 import { amber, blue, green, grey, orange, red } from '@mui/material/colors';
 
+import { isTouchDevice } from '@/helpers/utils';
 import State from '@/components/State';
 import InstanceInfo from '@/components/Instances/InstanceInfo';
 import sentry from '@/assets/sentry.svg';
@@ -81,10 +82,6 @@ export const arrayTier = [
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
-
-function isTouchDevice(): boolean {
-    return 'ontouchstart' in window || window.navigator.maxTouchPoints > 0 || window.navigator.msMaxTouchPoints > 0;
-}
 
 export const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({
@@ -459,7 +456,7 @@ export default abstract class InstanceGeneric<
         this.props.context.onRegisterClose(this.props.id, null);
     }
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
+    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
     getDefaultState(props: TProps): InstanceGenericState {
         return {
             openDialog: false,
@@ -938,7 +935,7 @@ export default abstract class InstanceGeneric<
                 ok={this.props.context.t('Stop admin')}
                 onClose={result => {
                     if (result) {
-                        this.setCommonValue(this.state.showStopAdminDialog as string, { enabled: false });
+                        void this.setCommonValue(this.state.showStopAdminDialog as string, { enabled: false });
                     }
                     this.setState({ showStopAdminDialog: false });
                 }}
@@ -1219,7 +1216,7 @@ export default abstract class InstanceGeneric<
                             ) {
                                 this.setState({ showStopAdminDialog: `system.adapter.${this.props.instance.id}` });
                             } else {
-                                this.setCommonValue(`system.adapter.${this.props.instance.id}`, {
+                                void this.setCommonValue(`system.adapter.${this.props.instance.id}`, {
                                     enabled: !this.props.item.running,
                                 });
                             }

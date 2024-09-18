@@ -48,11 +48,7 @@ class MobileDialog<TProps, TState extends MobileDialogState = MobileDialogState>
     };
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    getButtonTitle(
-        icon: JSX.Element,
-        text: string,
-        moreMobileIcon?: JSX.Element,
-    ): string | JSX.Element | null {
+    getButtonTitle(icon: JSX.Element, text: string, moreMobileIcon?: JSX.Element): string | JSX.Element | null {
         if (icon && text) {
             if (this.state.mobile) {
                 if (moreMobileIcon) {

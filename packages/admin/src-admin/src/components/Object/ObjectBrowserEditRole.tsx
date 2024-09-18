@@ -32,8 +32,8 @@ class ObjectBrowserEditRole extends Component<ObjectBrowserEditRoleProps, Object
         };
     }
 
-    componentDidMount() {
-        this.props.socket
+    componentDidMount(): void {
+        void this.props.socket
             .getObject(this.props.id)
             .then((obj: ioBroker.Object) => {
                 this.object = obj;
@@ -43,13 +43,13 @@ class ObjectBrowserEditRole extends Component<ObjectBrowserEditRoleProps, Object
             .catch((e: string) => console.error(e));
     }
 
-    onUpdate() {
+    onUpdate(): void {
         this.object.common = this.object.common || ({} as ioBroker.ObjectCommon);
         this.object.common.role = this.state.roleInput;
-        this.props.socket.setObject(this.object._id, this.object).then(() => this.props.onClose(this.object));
+        void this.props.socket.setObject(this.object._id, this.object).then(() => this.props.onClose(this.object));
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Dialog
                 key="objectBrowserEditRole"

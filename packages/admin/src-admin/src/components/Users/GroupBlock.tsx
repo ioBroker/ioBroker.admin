@@ -25,11 +25,11 @@ interface GroupBlockProps {
     theme: IobTheme;
 }
 
-function canMeDrop(monitor: DropTargetMonitor<{ userId: ioBroker.ObjectIDs.User }>, props: GroupBlockProps) {
+function canMeDrop(monitor: DropTargetMonitor<{ userId: ioBroker.ObjectIDs.User }>, props: GroupBlockProps): boolean {
     return props.group.common.members ? !props.group.common.members.includes(monitor.getItem().userId) : true;
 }
 
-const GroupBlock: React.FC<GroupBlockProps> = props => {
+const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Element => {
     const [{ CanDrop, isOver /* , isCanDrop */ }, drop] = useDrop(
         () => ({
             accept: 'user',

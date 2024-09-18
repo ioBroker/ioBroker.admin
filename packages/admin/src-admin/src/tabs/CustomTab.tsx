@@ -123,7 +123,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             hosts[host._id] = host;
         }
 
-        getHref(
+        void getHref(
             this.props.instancesWorker,
             this.props.tab,
             this.props.hostname,
@@ -170,6 +170,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         }
     }
 
+    // eslint-disable-next-line class-methods-use-this
     onMessage = (event: MessageEvent & { message: string }): void => {
         if (event.origin !== window.location.origin) {
             return;

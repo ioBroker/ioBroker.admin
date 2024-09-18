@@ -63,21 +63,21 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
             const icon = USER_ICONS[Math.round(Math.random() * (USER_ICONS.length - 1))];
 
             if (icon) {
-                Utils.getSvg(icon).then((fileBlob: string) => {
+                void Utils.getSvg(icon).then((fileBlob: string) => {
                     const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
                 });
             }
         }
-    }, []);
+    }, [props.user, props.isNew]);
 
     const idExists = props.users.find(user => user._id === props.user._id);
     const idChanged = props.user._id !== originalId;
 
-    const getShortId = (_id: string) => _id.split('.').pop();
+    const getShortId = (_id: string): string => _id.split('.').pop();
 
-    const name2Id = (name: string) =>
+    const name2Id = (name: string): string =>
         name
             .replace(Utils.FORBIDDEN_CHARS, '_')
             .replace(/\s/g, '_')
@@ -87,7 +87,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
             .replace(/__/g, '_')
             .toLowerCase();
 
-    const changeShortId = (_id: string, short: string) => {
+    const changeShortId = (_id: string, short: string): string => {
         const idArray = _id.split('.');
         idArray[idArray.length - 1] = short;
         return idArray.join('.');

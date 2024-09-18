@@ -118,11 +118,11 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
         this.focusRef = createRef();
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.focusRef.current?.focus();
     }
 
-    async readStatistics() {
+    async readStatistics(): Promise<void> {
         // Get current host
         const instance = await this.props.socket.getCurrentInstance();
         // read settings of current instance
@@ -135,7 +135,7 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
         this.setState({ diagData, requesting: false });
     }
 
-    renderStatisticsDialog() {
+    renderStatisticsDialog(): JSX.Element | null {
         if (!this.state.showStatisticsDialog) {
             return null;
         }
@@ -182,7 +182,7 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
         );
     }
 
-    renderNotAgree() {
+    renderNotAgree(): JSX.Element | null {
         if (!this.state.notAgree) {
             return null;
         }
@@ -217,7 +217,7 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
         );
     }
 
-    renderLicenseText() {
+    static renderLicenseText(): JSX.Element {
         const text = LicenseTexts[I18n.getLanguage()] || LicenseTexts.en;
         const lines = text.split('\n');
         return (
@@ -234,7 +234,7 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
         );
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
                 <Grid2
@@ -303,7 +303,7 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
                     <Grid2>
                         <h1>{this.props.t('License terms')}</h1>
                     </Grid2>
-                    <Grid2 style={styles.licenseDiv}>{this.renderLicenseText()}</Grid2>
+                    <Grid2 style={styles.licenseDiv}>{WizardLicenseTab.renderLicenseText()}</Grid2>
                 </Grid2>
                 <Toolbar style={styles.toolbar}>
                     <div style={styles.grow} />

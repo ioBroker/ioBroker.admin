@@ -155,7 +155,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
     }
 
     getCamerasInstances(): void {
-        this.props.socket.getAdapterInstances('cameras', true).then(list => {
+        void this.props.socket.getAdapterInstances('cameras', true).then(list => {
             const cameraList: { id: string; name: string }[] = [];
             const promises: Promise<{ id: string; name: string }>[] = [];
             list.forEach(obj => {
@@ -180,7 +180,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                 }
             });
 
-            Promise.all(promises).then(() => this.setState({ cameraList }));
+            void Promise.all(promises).then(() => this.setState({ cameraList }));
         });
     }
 

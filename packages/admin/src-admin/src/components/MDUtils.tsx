@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * */
+ */
 import { Utils } from '@iobroker/adapter-react-v5';
 
 export const EXPAND_LANGUAGE = {

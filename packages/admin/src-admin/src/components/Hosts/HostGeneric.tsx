@@ -382,7 +382,7 @@ export default abstract class HostGeneric<
         this.setState({
             errorHost: {
                 notifications: notifications[this.props.hostId],
-                count: this.calculateWarning(notifications[this.props.hostId]),
+                count: HostGeneric.calculateWarning(notifications[this.props.hostId]),
             },
         });
 
@@ -398,24 +398,24 @@ export default abstract class HostGeneric<
     componentDidMount(): void {
         this.props.hostsWorker.registerNotificationHandler(this.notificationHandler);
 
-        this.props.hostsWorker
+        void this.props.hostsWorker
             .getNotifications(this.props.hostId)
             .then(notifications => this.notificationHandler(notifications));
 
-        this.props.socket.subscribeState(`${this.props.hostId}.inputCount`, this.eventsInputFunc);
-        this.props.socket.subscribeState(`${this.props.hostId}.outputCount`, this.eventsOutputFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.inputCount`, this.eventsInputFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.outputCount`, this.eventsOutputFunc);
 
-        this.props.socket.subscribeState(`${this.props.hostId}.cpu`, this.cpuFunc);
-        this.props.socket.subscribeState(`${this.props.hostId}.mem`, this.memFunc);
-        this.props.socket.subscribeState(`${this.props.hostId}.uptime`, this.uptimeFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.cpu`, this.cpuFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.mem`, this.memFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.uptime`, this.uptimeFunc);
 
-        this.getInitialDiskStates().finally(async () => {
+        void this.getInitialDiskStates().finally(async () => {
             await this.props.socket.subscribeState(`${this.props.hostId}.diskFree`, this.warningFunc);
             await this.props.socket.subscribeState(`${this.props.hostId}.diskSize`, this.warningFunc);
             await this.props.socket.subscribeState(`${this.props.hostId}.diskWarning`, this.warningFunc);
         });
 
-        this.props.socket.subscribeState(`${this.props.hostId}.logLevel`, this.logLevelFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.logLevel`, this.logLevelFunc);
     }
 
     componentWillUnmount(): void {
@@ -498,7 +498,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    calculateWarning(notifications: NotificationAnswer | null): number {
+    static calculateWarning(notifications: NotificationAnswer | null): number {
         if (!notifications) {
             return 0;
         }
@@ -624,7 +624,7 @@ export default abstract class HostGeneric<
                     component="div"
                     onClick={event => {
                         event.stopPropagation();
-                        this.openHostUpdateDialog();
+                        void this.openHostUpdateDialog();
                     }}
                     sx={genericStyles.buttonUpdate}
                 >

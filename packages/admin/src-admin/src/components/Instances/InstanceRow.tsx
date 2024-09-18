@@ -197,7 +197,7 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
         this.state = this.getDefaultState(props);
     }
 
-    renderDetails() {
+    renderDetails(): JSX.Element {
         const { instance, item } = this.props;
 
         return (
@@ -363,7 +363,7 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
         );
     }
 
-    render() {
+    render(): JSX.Element {
         const { instance, item } = this.props;
         const status = this.props.context.getInstanceStatus(instance.obj);
 

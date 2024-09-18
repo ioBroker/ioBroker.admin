@@ -517,11 +517,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     }
 
     componentDidMount(): void {
-        this.props.socket.subscribeObject(this.props.obj._id, this.onObjectUpdated);
+        void this.props.socket.subscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
     componentWillUnmount(): void {
-        this.props.socket.unsubscribeObject(this.props.obj._id, this.onObjectUpdated);
+        void this.props.socket.unsubscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
     onObjectUpdated = (id: string, obj: ioBroker.AnyObject): void => {
@@ -581,7 +581,6 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             // we cannot check the value with type mixed
                             return '';
                         }
-                        // eslint-disable-next-line valid-typeof
                         return result !== null && typeof result !== finalType
                             ? this.props.t('Type of result is not as expected: %s', finalType)
                             : '';
@@ -858,7 +857,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         this.onChange(JSON.stringify(json, null, 2));
     }
 
-    buttonAddKey(nameKey: string, cb: () => void): JSX.Element {
+    static buttonAddKey(nameKey: string, cb: () => void): JSX.Element {
         return (
             <div style={styles.marginBlock}>
                 <Button
@@ -952,7 +951,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 onChange={el => this.setCommonItem(json, 'name', el.target.value)}
                             />
                         ) : (
-                            this.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))
+                            ObjectBrowserEditObject.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))
                         )}
                         {checkState ? (
                             typeof json.common.type !== 'undefined' ? (
@@ -985,7 +984,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     {this.buttonRemoveKey('type', () => this.removeCommonItem(json, 'type'))}
                                 </Box>
                             ) : (
-                                this.buttonAddKey('type', () => this.setCommonItem(json, 'type', 'string'))
+                                ObjectBrowserEditObject.buttonAddKey('type', () =>
+                                    this.setCommonItem(json, 'type', 'string'),
+                                )
                             )
                         ) : null}
                         <Box
@@ -1013,7 +1014,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         {this.buttonRemoveKey('read', () => this.removeCommonItem(json, 'read'))}
                                     </Box>
                                 ) : (
-                                    this.buttonAddKey('read', () => this.setCommonItem(json, 'read', true))
+                                    ObjectBrowserEditObject.buttonAddKey('read', () =>
+                                        this.setCommonItem(json, 'read', true),
+                                    )
                                 )
                             ) : null}
                             {checkState ? (
@@ -1037,7 +1040,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         {this.buttonRemoveKey('write', () => this.removeCommonItem(json, 'write'))}
                                     </Box>
                                 ) : (
-                                    this.buttonAddKey('write', () => this.setCommonItem(json, 'write', true))
+                                    ObjectBrowserEditObject.buttonAddKey('write', () =>
+                                        this.setCommonItem(json, 'write', true),
+                                    )
                                 )
                             ) : null}
                         </Box>
@@ -1065,7 +1070,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
                                 </Box>
                             ) : (
-                                this.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
+                                ObjectBrowserEditObject.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
                             )
                         ) : null}
                         {typeof json.common.color !== 'undefined' ? (
@@ -1085,7 +1090,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
                             </Box>
                         ) : (
-                            this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
+                            ObjectBrowserEditObject.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
                         )}
                         <Box
                             component="div"
@@ -1116,7 +1121,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         component="div"
                                         sx={styles.flex}
                                     >
-                                        {this.buttonAddKey('min', () => this.setCommonItem(json, 'min', 0))}
+                                        {ObjectBrowserEditObject.buttonAddKey('min', () =>
+                                            this.setCommonItem(json, 'min', 0),
+                                        )}
                                     </Box>
                                 )
                             ) : null}
@@ -1141,7 +1148,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         component="div"
                                         sx={styles.flex}
                                     >
-                                        {this.buttonAddKey('max', () => this.setCommonItem(json, 'max', 100))}
+                                        {ObjectBrowserEditObject.buttonAddKey('max', () =>
+                                            this.setCommonItem(json, 'max', 100),
+                                        )}
                                     </Box>
                                 )
                             ) : null}
@@ -1166,7 +1175,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         component="div"
                                         sx={styles.flex}
                                     >
-                                        {this.buttonAddKey('step', () => this.setCommonItem(json, 'step', 1))}
+                                        {ObjectBrowserEditObject.buttonAddKey('step', () =>
+                                            this.setCommonItem(json, 'step', 1),
+                                        )}
                                     </Box>
                                 )
                             ) : null}
@@ -1189,7 +1200,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 </Box>
                             ) : (
                                 <div style={styles.flexDrop}>
-                                    {this.buttonAddKey('unit', () => this.setCommonItem(json, 'unit', ''))}
+                                    {ObjectBrowserEditObject.buttonAddKey('unit', () =>
+                                        this.setCommonItem(json, 'unit', ''),
+                                    )}
                                 </div>
                             )
                         ) : null}
@@ -1214,7 +1227,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             component="div"
                             sx={styles.flex}
                         >
-                            {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
+                            {ObjectBrowserEditObject.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
                         </Box>
                     )}
                 </Box>
@@ -1259,17 +1272,19 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 label={this.props.t('Alias state')}
                                 value={json.common?.alias?.id || ''}
                                 style={styles.aliasIdEdit}
-                                InputProps={{
-                                    endAdornment: json.common?.alias?.id ? (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                size="large"
-                                                onClick={() => this.setAliasItem(json, 'id', '')}
-                                            >
-                                                <IconClose />
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ) : null,
+                                slotProps={{
+                                    input: {
+                                        endAdornment: json.common?.alias?.id ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    size="large"
+                                                    onClick={() => this.setAliasItem(json, 'id', '')}
+                                                >
+                                                    <IconClose />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                    },
                                 }}
                                 onChange={e => this.setAliasItem(json, 'id', e.target.value)}
                                 margin="normal"
@@ -1291,17 +1306,19 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 label={this.props.t('Alias read state')}
                                 value={json.common?.alias?.id?.read || ''}
                                 style={styles.aliasIdEdit}
-                                InputProps={{
-                                    endAdornment: json.common?.alias?.id?.read ? (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                size="large"
-                                                onClick={() => this.setAliasItem(json, 'id.read', '')}
-                                            >
-                                                <IconClose />
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ) : null,
+                                slotProps={{
+                                    input: {
+                                        endAdornment: json.common?.alias?.id?.read ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    size="large"
+                                                    onClick={() => this.setAliasItem(json, 'id.read', '')}
+                                                >
+                                                    <IconClose />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                    },
                                 }}
                                 onChange={e => this.setAliasItem(json, 'id.read', e.target.value)}
                                 margin="normal"
@@ -1323,17 +1340,19 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 label={this.props.t('Alias write state')}
                                 value={json.common?.alias?.id?.write || ''}
                                 style={styles.aliasIdEdit}
-                                InputProps={{
-                                    endAdornment: json.common?.alias?.id?.write ? (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                size="large"
-                                                onClick={() => this.setAliasItem(json, 'id.write', '')}
-                                            >
-                                                <IconClose />
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ) : null,
+                                slotProps={{
+                                    input: {
+                                        endAdornment: json.common?.alias?.id?.write ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    size="large"
+                                                    onClick={() => this.setAliasItem(json, 'id.write', '')}
+                                                >
+                                                    <IconClose />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                    },
                                 }}
                                 onChange={e => this.setAliasItem(json, 'id.write', e.target.value)}
                                 margin="normal"
@@ -1380,22 +1399,24 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 value={json.common?.alias?.read || 'val'}
                                 style={styles.funcEdit}
                                 error={!!this.state.readError}
-                                InputProps={{
-                                    endAdornment: json.common?.alias?.read ? (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                size="large"
-                                                onClick={() => this.setAliasItem(json, 'read', '')}
-                                            >
-                                                <IconClose />
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ) : null,
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <IconFx style={styles.funcIcon} />
-                                        </InputAdornment>
-                                    ),
+                                slotProps={{
+                                    input: {
+                                        endAdornment: json.common?.alias?.read ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    size="large"
+                                                    onClick={() => this.setAliasItem(json, 'read', '')}
+                                                >
+                                                    <IconClose />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <IconFx style={styles.funcIcon} />
+                                            </InputAdornment>
+                                        ),
+                                    },
                                 }}
                                 onChange={e => this.setAliasItem(json, 'read', e.target.value)}
                                 helperText={
@@ -1416,22 +1437,24 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     this.state.writeError || `${this.props.t('JS function like')} "(val - 21) * 5"`
                                 }
                                 style={styles.funcEdit}
-                                InputProps={{
-                                    endAdornment: json.common?.alias?.write ? (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                size="large"
-                                                onClick={() => this.setAliasItem(json, 'write', '')}
-                                            >
-                                                <IconClose />
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ) : null,
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <IconFx style={styles.funcIcon} />
-                                        </InputAdornment>
-                                    ),
+                                slotProps={{
+                                    input: {
+                                        endAdornment: json.common?.alias?.write ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    size="large"
+                                                    onClick={() => this.setAliasItem(json, 'write', '')}
+                                                >
+                                                    <IconClose />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <IconFx style={styles.funcIcon} />
+                                            </InputAdornment>
+                                        ),
+                                    },
                                 }}
                                 onChange={e => this.setAliasItem(json, 'write', e.target.value)}
                                 margin="normal"

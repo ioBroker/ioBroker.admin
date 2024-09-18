@@ -321,7 +321,7 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
                         },
                         () => {
                             if (addInstanceDialog) {
-                                this.addInstance({
+                                void this.addInstance({
                                     adapterName: addInstanceDialog,
                                     instance: addInstanceId,
                                     context,

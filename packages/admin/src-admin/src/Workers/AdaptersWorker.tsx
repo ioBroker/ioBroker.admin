@@ -40,7 +40,7 @@ export default class AdaptersWorker {
         this.objects = null;
     }
 
-    objectChangeHandler = (id: string, obj: ioBroker.AdapterObject) => {
+    objectChangeHandler = (id: string, obj: ioBroker.AdapterObject): void => {
         this.objects = this.objects || {};
         // if instance
         if (id.match(/^system\.adapter\.[^.]+$/)) {
@@ -94,13 +94,13 @@ export default class AdaptersWorker {
         }
     };
 
-    isForceUpdate() {
+    isForceUpdate(): boolean {
         return this.forceUpdate;
     }
 
     // be careful with this object. Do not change them.
-    getAdapters(update?: boolean) {
-        if (!update && this.promise) {
+    getAdapters(update?: boolean): Promise<void | Record<string, ioBroker.AdapterObject>> {
+        if (!update && this.promise instanceof Promise) {
             return this.promise;
         }
 
@@ -119,7 +119,7 @@ export default class AdaptersWorker {
         return this.promise;
     }
 
-    connectionHandler = (isConnected: boolean) => {
+    connectionHandler = (isConnected: boolean): void => {
         if (isConnected && !this.connected) {
             this.connected = true;
 
@@ -128,7 +128,7 @@ export default class AdaptersWorker {
                     .subscribeObject('system.adapter.*', this.objectChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
 
-                this.getAdapters(true).then(
+                void this.getAdapters(true).then(
                     adapters =>
                         adapters && Object.keys(adapters).forEach(id => this.objectChangeHandler(id, adapters[id])),
                 );
@@ -138,7 +138,7 @@ export default class AdaptersWorker {
         }
     };
 
-    registerHandler(cb: (events: AdapterEvent[]) => void) {
+    registerHandler(cb: (events: AdapterEvent[]) => void): void {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
 
@@ -150,7 +150,7 @@ export default class AdaptersWorker {
         }
     }
 
-    unregisterHandler(cb: (events: AdapterEvent[]) => void) {
+    unregisterHandler(cb: (events: AdapterEvent[]) => void): void {
         const pos = this.handlers.indexOf(cb);
         if (pos !== -1) {
             this.handlers.splice(pos, 1);
@@ -163,7 +163,7 @@ export default class AdaptersWorker {
         }
     }
 
-    repoChangeHandler = (/* id, obj */) => {
+    repoChangeHandler = (/* id, obj */): void => {
         if (this.repoTimer) {
             clearTimeout(this.repoTimer);
         }
@@ -173,7 +173,7 @@ export default class AdaptersWorker {
         }, 500);
     };
 
-    registerRepositoryHandler(cb: () => void) {
+    registerRepositoryHandler(cb: () => void): void {
         if (!this.repositoryHandlers.includes(cb)) {
             this.repositoryHandlers.push(cb);
 
@@ -185,7 +185,7 @@ export default class AdaptersWorker {
         }
     }
 
-    unregisterRepositoryHandler(cb: () => void) {
+    unregisterRepositoryHandler(cb: () => void): void {
         const pos = this.repositoryHandlers.indexOf(cb);
         if (pos !== -1) {
             this.repositoryHandlers.splice(pos, 1);

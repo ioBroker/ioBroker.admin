@@ -182,7 +182,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 : AdminUtils.deepClone(this.props.objects[this.props.objectIDs[0]] || null);
 
         if (this.customObj) {
-            this.loadAllCustoms().then(() => {
+            void this.loadAllCustoms().then(() => {
                 this.commonConfig = this.getCommonConfig();
                 this.setState({ loaded: true, newValues: {} });
             });
@@ -774,7 +774,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                         this.changedIds.push(id);
                     }
 
-                    this.props.socket.setObject(id, _objects[id]).then(async () => {
+                    void this.props.socket.setObject(id, _objects[id]).then(async () => {
                         delete _objects[id];
                         delete _oldObjects[id];
                         this.props.objects[id] = await this.props.socket.getObject(id);

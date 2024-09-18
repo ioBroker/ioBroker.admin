@@ -761,7 +761,7 @@ export default abstract class AdapterGeneric<
                                 disabled={!this.state.adapterInstallSpecificVersion}
                                 onClick={() => {
                                     if (this.state.adapterInstallSpecificVersion) {
-                                        this.update(this.state.adapterInstallSpecificVersion);
+                                        void this.update(this.state.adapterInstallSpecificVersion);
                                         this.setState({
                                             showInstallVersion: false,
                                             adapterInstallSpecificVersion: '',
@@ -805,7 +805,7 @@ export default abstract class AdapterGeneric<
                                 key={version}
                                 sx={this.styles.currentVersion}
                                 onClick={() => {
-                                    this.update(version);
+                                    void this.update(version);
                                     this.setState({ showInstallVersion: false, showDialog: false });
                                 }}
                             >

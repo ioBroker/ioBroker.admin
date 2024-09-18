@@ -167,7 +167,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
             firstDayOfWeek: 'monday',
         };
 
-        this.props.socket.getCompactSystemConfig(true).then(obj =>
+        void this.props.socket.getCompactSystemConfig(true).then(obj =>
             this.setState(
                 {
                     tempUnit: obj.common.tempUnit,
@@ -186,7 +186,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
         );
     }
 
-    positionReady(position: { coords: { latitude: number; longitude: number } }) {
+    positionReady(position: { coords: { latitude: number; longitude: number } }): void {
         this.setState(
             {
                 latitude: parseFloat(position.coords.latitude.toFixed(8)),
@@ -196,7 +196,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
         );
     }
 
-    getPositionForAddress() {
+    getPositionForAddress(): void {
         window
             .fetch(
                 `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(`${this.state.country} ${this.state.city} ${this.state.address}`)}`,
@@ -227,7 +227,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
             .catch(e => window.alert(this.props.t('Cannot fetch address %s', e)));
     }
 
-    updateMap() {
+    updateMap(): void {
         // OPEN STREET MAPS
         if (window.navigator.geolocation && (!this.state.longitude || !this.state.latitude)) {
             window.navigator.geolocation.getCurrentPosition(position => this.positionReady(position));
@@ -284,11 +284,11 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
         this.OSM.oMap.setView(new View({ center, zoom }));
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.updateMap();
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
                 <Grid2

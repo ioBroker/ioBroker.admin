@@ -17,7 +17,7 @@ interface CategoryLabelProps {
     themeType: ThemeType;
 }
 
-const CategoryLabel = (props: CategoryLabelProps) => {
+const CategoryLabel = (props: CategoryLabelProps): JSX.Element => {
     const [, drop] = useDrop(() => ({
         accept: ['enum'],
         drop: () => ({ enumId: props.categoryData._id }),

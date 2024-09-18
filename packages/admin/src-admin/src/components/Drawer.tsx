@@ -301,7 +301,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     componentDidMount(): void {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
 
-        this.onNotificationsHandler().then(() => {
+        void this.onNotificationsHandler().then(() => {
             this.props.hostsWorker.registerNotificationHandler(this.onNotificationsHandler);
 
             if (!this.logsHandlerRegistered) {
@@ -493,7 +493,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             });
 
             // Convert
-            this.props.socket.getCompactSystemConfig().then(systemConfig => {
+            void this.props.socket.getCompactSystemConfig().then(systemConfig => {
                 const tabsVisible: { name: string; visible: boolean; color?: string }[] =
                     systemConfig.common.tabsVisible || [];
 
@@ -527,7 +527,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                     const newTabsVisible = tabs.map(({ name, visible, color }) => ({ name, visible, color }));
 
                     if (JSON.stringify(newTabsVisible) !== JSON.stringify(tabsVisible)) {
-                        this.props.socket.getSystemConfig(true).then(_systemConfig => {
+                        void this.props.socket.getSystemConfig(true).then(_systemConfig => {
                             _systemConfig.common.tabsVisible = tabsVisible;
 
                             return this.props.socket
@@ -688,7 +688,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         compact={!this.isSwipeable() && state !== STATES.opened}
                         onClick={e => {
                             if (e.ctrlKey || e.shiftKey) {
-                                getHref(
+                                void getHref(
                                     this.props.instancesWorker,
                                     tab.name,
                                     this.props.hostname,

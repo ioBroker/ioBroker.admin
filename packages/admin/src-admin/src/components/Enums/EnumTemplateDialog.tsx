@@ -94,7 +94,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
         };
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.setState({ loading: true }, () => {
             const templates: EnumIcon[] = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
             const icons: string[] = [];
@@ -112,11 +112,11 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                 }
             });
 
-            Promise.all(promises).then(() => this.setState({ icons, loading: false }));
+            void Promise.all(promises).then(() => this.setState({ icons, loading: false }));
         });
     }
 
-    render() {
+    render(): JSX.Element {
         const templates = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
 
         return (

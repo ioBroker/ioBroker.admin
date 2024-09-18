@@ -589,7 +589,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         if (this.state.text) {
             this.parseText(this.state.text);
         }
-        this.props.socket
+        void this.props.socket
             ?.getRepository(this.props.currentHost, {})
             .then(repo => this.setState({ adapterNews: repo[this.props.adapter]?.news }));
     }

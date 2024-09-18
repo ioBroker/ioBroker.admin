@@ -196,7 +196,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
         const alive: Record<string, boolean> = JSON.parse(JSON.stringify(this.state.alive));
         let changed = false;
 
-        Promise.all(
+        void Promise.all(
             events.map(async event => {
                 const host = hosts.find(it => it._id === event.id);
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, Component } from 'react';
+import React, { useEffect, useRef, Component, type JSX } from 'react';
 import { type ConnectDragSource, type DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import type { DropTargetMonitor } from 'react-dnd/src/types';
@@ -29,6 +29,7 @@ import {
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
+import { isTouchDevice } from '@/helpers/utils';
 import { type DragItem } from './DragObjectBrowser';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
@@ -175,10 +176,6 @@ declare global {
     }
 }
 
-export function isTouchDevice(): boolean {
-    return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-}
-
 interface EnumBlockProps {
     enum: ioBroker.EnumObject | null;
     members: Record<string, ioBroker.Object>;
@@ -227,7 +224,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
         };
     }
 
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         // find all icons
         const icons = [...this.state.icons];
         let changed = false;
@@ -325,7 +322,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
         }
     }
 
-    render() {
+    render(): JSX.Element {
         const props = this.props;
         const common: EnumCommon | null = props.enum?.common as EnumCommon;
         const textColor = Utils.getInvertedColor(common?.color, props.themeType, true);
@@ -592,7 +589,7 @@ interface EnumBlockDragProps {
     childrenCount: number;
 }
 
-function canMeDrop(monitor: DropTargetMonitor<DragItem, { enumId: string }>, enumItem: ioBroker.EnumObject) {
+function canMeDrop(monitor: DropTargetMonitor<DragItem, { enumId: string }>, enumItem: ioBroker.EnumObject): boolean {
     if (!monitor.getItem() || !monitor.getItem().data) {
         return true;
     }
@@ -602,7 +599,7 @@ function canMeDrop(monitor: DropTargetMonitor<DragItem, { enumId: string }>, enu
     return enumItem.common?.members ? !enumItem.common.members.includes(monitor.getItem().data.id) : true;
 }
 
-const EnumBlockDrag = (props: EnumBlockDragProps) => {
+const EnumBlockDrag = (props: EnumBlockDragProps): JSX.Element => {
     const [{ canDrop, isOver }, drop] = useDrop(
         () => ({
             accept: ['object', 'enum'],
@@ -656,7 +653,7 @@ const EnumBlockDrag = (props: EnumBlockDragProps) => {
 
     useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });
-    }, []);
+    }, [preview]);
 
     if (!props.enum) {
         return (

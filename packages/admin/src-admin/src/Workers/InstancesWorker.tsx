@@ -36,7 +36,7 @@ export default class InstancesWorker {
         this.objects = null;
     }
 
-    objectChangeHandler = (id: string, obj?: ioBroker.InstanceObject) => {
+    objectChangeHandler = (id: string, obj?: ioBroker.InstanceObject): void => {
         this.objects = this.objects || {};
         // if instance
         if (id.match(/^system\.adapter\.[^.]+\.\d+$/)) {
@@ -88,13 +88,13 @@ export default class InstancesWorker {
         }
     };
 
-    isForceUpdate() {
+    isForceUpdate(): boolean {
         return this.forceUpdate;
     }
 
     // be careful with this object. Do not change them.
     getInstances(update?: boolean): Promise<void | Record<string, ioBroker.InstanceObject>> {
-        if (!update && this.promise) {
+        if (!update && this.promise instanceof Promise) {
             return this.promise;
         }
 
@@ -113,7 +113,7 @@ export default class InstancesWorker {
         return this.promise;
     }
 
-    connectionHandler = (isConnected: boolean) => {
+    connectionHandler = (isConnected: boolean): void => {
         if (isConnected && !this.connected) {
             this.connected = true;
 
@@ -122,7 +122,7 @@ export default class InstancesWorker {
                     .subscribeObject('system.adapter.*', this.objectChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
 
-                this.getInstances(true).then(
+                void this.getInstances(true).then(
                     instances =>
                         instances && Object.keys(instances).forEach(id => this.objectChangeHandler(id, instances[id])),
                 );
@@ -132,7 +132,7 @@ export default class InstancesWorker {
         }
     };
 
-    registerHandler(cb: (events: InstanceEvent[]) => void, doNotRequestAdapters?: boolean) {
+    registerHandler(cb: (events: InstanceEvent[]) => void, doNotRequestAdapters?: boolean): void {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
 
@@ -145,7 +145,7 @@ export default class InstancesWorker {
         }
     }
 
-    unregisterHandler(cb: (events: InstanceEvent[]) => void) {
+    unregisterHandler(cb: (events: InstanceEvent[]) => void): void {
         const pos = this.handlers.indexOf(cb);
         if (pos !== -1) {
             this.handlers.splice(pos, 1);

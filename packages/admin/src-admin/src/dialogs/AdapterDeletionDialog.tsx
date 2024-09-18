@@ -58,9 +58,9 @@ class AdapterDeletionDialog extends Component<AdapterDeletionDialogProps, Adapte
     }
 
     componentDidMount(): void {
-        this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM').then(deleteCustomSupported => {
+        void this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM').then(deleteCustomSupported => {
             if (deleteCustomSupported) {
-                this.props.socket.getObject(`system.adapter.${this.props.adapter}`).then(obj => {
+                return this.props.socket.getObject(`system.adapter.${this.props.adapter}`).then(obj => {
                     if (obj?.common) {
                         if (obj.common.supportCustoms) {
                             this.setState({ deleteCustomSupported: obj.common.supportCustoms });

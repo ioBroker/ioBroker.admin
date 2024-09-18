@@ -67,7 +67,7 @@ interface EnumEditDialogProps {
     innerWidth: number;
 }
 
-function EnumEditDialog(props: EnumEditDialogProps) {
+function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
     const idExists = props.enums.find(enumItem => enumItem._id === props.enum._id);
 
     let canSave = props.enum._id !== 'system.enum.';
@@ -76,9 +76,9 @@ function EnumEditDialog(props: EnumEditDialogProps) {
         canSave = false;
     }
 
-    const getShortId = (_id: string) => _id.split('.').pop();
+    const getShortId = (_id: string): string => _id.split('.').pop();
 
-    const name2Id = (name: string) =>
+    const name2Id = (name: string): string =>
         name
             .replace(Utils.FORBIDDEN_CHARS, '_')
             .replace(/\s/g, '_')
@@ -90,7 +90,7 @@ function EnumEditDialog(props: EnumEditDialogProps) {
     const getText = (text: ioBroker.StringOrTranslated): string =>
         text && typeof text === 'object' ? text[props.lang] || text.en : (text as string) || '';
 
-    const changeShortId = (_id: string, short: string) => {
+    const changeShortId = (_id: string, short: string): string => {
         const idArray = _id.split('.');
         idArray[idArray.length - 1] = short;
         return idArray.join('.');

@@ -197,7 +197,7 @@ class Command extends Component<CommandProps, CommandState> {
                     // it takes some time to creat the object
                     setTimeout(
                         _adapter => {
-                            this.props.socket.getObject(_adapter).then(obj => {
+                            void this.props.socket.getObject(_adapter).then(obj => {
                                 AdminUtils.fixAdminUI(obj);
                                 if (obj && obj.common?.adminUI?.config !== 'none') {
                                     Router.doNavigate('tab-instances', 'config', _adapter);

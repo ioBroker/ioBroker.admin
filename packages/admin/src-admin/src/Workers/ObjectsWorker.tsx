@@ -39,7 +39,7 @@ export default class ObjectsWorker {
         this.objects = null;
     }
 
-    objectChangeHandler = (id: string, obj: ioBroker.Object | null) => {
+    objectChangeHandler = (id: string, obj: ioBroker.Object | null): void => {
         this.objects = this.objects || {};
         // if instance
         let oldObj: ioBroker.Object | undefined;
@@ -86,7 +86,7 @@ export default class ObjectsWorker {
 
     // be careful with this object. Do not change them.
     getObjects(update?: boolean): Promise<void | Record<string, ioBroker.Object>> {
-        if (!update && this.promise) {
+        if (!update && this.promise instanceof Promise) {
             return this.promise;
         }
 
@@ -101,7 +101,7 @@ export default class ObjectsWorker {
         return this.promise;
     }
 
-    connectionHandler = (isConnected: boolean) => {
+    connectionHandler = (isConnected: boolean): void => {
         if (isConnected && !this.connected) {
             this.connected = true;
 
@@ -110,7 +110,7 @@ export default class ObjectsWorker {
                     .subscribeObject('*', this.objectChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on objects: ${e}`));
 
-                this.getObjects(true).then(
+                void this.getObjects(true).then(
                     objects => objects && Object.keys(objects).forEach(id => this.objectChangeHandler(id, objects[id])),
                 );
             }
