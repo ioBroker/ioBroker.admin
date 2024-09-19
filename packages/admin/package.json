@@ -91,7 +91,8 @@
         "react-3-build": "node tasks --react-3-build",
         "react-5-copy": "node tasks --react-5-copy",
         "react-6-patch": "node tasks --react-6-patch",
-        "build:frontend": "node tasks"
+        "build:frontend": "node tasks",
+        "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"
     },
     "author": "bluefox <dogafox@gmail.com>"
 }

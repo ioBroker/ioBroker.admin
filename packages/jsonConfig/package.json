@@ -9,7 +9,8 @@
         "clean": "rimraf build",
         "prepublishOnly": "npm run build",
         "build:ts": "tsc -p tsconfig.json",
-        "lint": "eslint -c eslint.config.mjs src"
+        "lint": "eslint -c eslint.config.mjs src",
+        "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"
     },
     "publishConfig": {
         "access": "public"

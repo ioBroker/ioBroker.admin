@@ -222,7 +222,7 @@ Possible types:
     -   `timeout` - timeout for request in ms. Default: none.
     -   `onLoaded` - execute the button logic once initially
 
--   `setState` - button that set instance's state (admin >= 7.1.0)
+-   `setState` - button that sets instance's state
     -   `id` - `system.adapter.myAdapter.%INSTANCE%.test`, you can use the placeholder `%INSTANCE%` to replace it with the current instance name
     -   `ack` - false (default false)
     -   `val` - '${data.myText}\_test' or number. Type will be detected automatically from the state type and converting done too
@@ -493,7 +493,7 @@ adapter.on('message', obj => {
 -   `port` - Special input for ports. It checks automatically if port is used by other instances and shows a warning
     -   `min` - minimal allowed port number. It could be 0. And if the value is then zero, the check if the port is occupied will not happen.
 
--   `state` - Show control or information from the state
+-   `state` - (admin >= 7.1.0) Show control or information from the state
     -   `oid` - Which object ID should be taken for the controlling. The ID is without "adapter.X." prefix
     -   `system` - If true, the state will be taken from system.adapter.XX.I. and not from XX.I
     -   `control` - How the value of the state should be shown: `text`, `html`, `input`, `slider`, `select`, `button`, `switch`, `number`
