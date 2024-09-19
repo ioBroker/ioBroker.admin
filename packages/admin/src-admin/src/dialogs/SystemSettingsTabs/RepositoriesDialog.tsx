@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 
 import {
@@ -12,8 +12,11 @@ import {
     TableRow,
     TextField,
     Tooltip,
-    InputAdornment, IconButton,
-    Select, MenuItem, Typography,
+    InputAdornment,
+    IconButton,
+    Select,
+    MenuItem,
+    Typography,
 } from '@mui/material';
 
 import {
@@ -24,12 +27,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import {
-    I18n,
-    withWidth,
-    Confirm as ConfirmDialog,
-    type Translate, type ThemeType,
-} from '@iobroker/adapter-react-v5';
+import { I18n, withWidth, Confirm as ConfirmDialog, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';
@@ -72,7 +70,7 @@ const styles: Record<string, any> = {
     stableColumn: {
         width: 80,
     },
-    upgradePolicyColumn:  {
+    upgradePolicyColumn: {
         width: 190,
         textAlign: 'center',
     },
@@ -101,6 +99,7 @@ const styles: Record<string, any> = {
     },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;
 
 type RepositoryArray = Array<{ title: string; link: string }>;
@@ -114,10 +113,10 @@ function repoToArray(repos: Repository): RepositoryArray {
 
 function arrayToRepo(array: RepositoryArray): Repository {
     const result: Repository = {};
-    for (const k in array) {
+    array.forEach(item => {
         // @ts-expect-error will be fixed in js-controller
-        result[array[k].title] = { link: array[k].link };
-    }
+        result[item.title] = { link: item.link };
+    });
 
     return result;
 }
@@ -131,7 +130,10 @@ interface RepositoriesDialogProps {
     multipleRepos: boolean;
     repoInfo: Repository;
     saving: boolean;
-    onChange: (data: ioBrokerObject<{ repositories: Repository }>, dataAux?: ioBrokerObject<object, { activeRepo: string | string[] }>) => void;
+    onChange: (
+        data: ioBrokerObject<{ repositories: Repository }>,
+        dataAux?: ioBrokerObject<object, { activeRepo: string | string[] }>,
+    ) => void;
     adminGuiConfig: AdminGuiConfig;
     themeType: ThemeType;
 }
@@ -151,7 +153,11 @@ const SortableItem = SortableElement<{ value: any }>(({ value }: { value: any })
 class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProps, RepositoriesDialogState> {
     constructor(props: RepositoriesDialogProps) {
         super(props);
-        const repos = (typeof this.props.dataAux.common.activeRepo === 'string' ? [this.props.dataAux.common.activeRepo] : this.props.dataAux.common.activeRepo).filter(r => r);
+        const repos = (
+            typeof this.props.dataAux.common.activeRepo === 'string'
+                ? [this.props.dataAux.common.activeRepo]
+                : this.props.dataAux.common.activeRepo
+        ).filter(r => r);
 
         this.state = {
             error: !repos.length,
@@ -160,7 +166,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         };
     }
 
-    onValueChanged(value: any, id: string, name: 'title' | 'link') {
+    onValueChanged(value: any, id: string, name: 'title' | 'link'): void {
         const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         const item = array.find(element => element.title === id);
@@ -169,10 +175,11 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         newData.native.repositories = arrayToRepo(array);
 
         let newConfig;
-        if ((
-            (typeof this.props.dataAux.common.activeRepo === 'string' && this.props.dataAux.common.activeRepo === id) ||
-            (typeof this.props.dataAux.common.activeRepo !== 'string' && this.props.dataAux.common.activeRepo.includes(id))
-        ) &&
+        if (
+            ((typeof this.props.dataAux.common.activeRepo === 'string' &&
+                this.props.dataAux.common.activeRepo === id) ||
+                (typeof this.props.dataAux.common.activeRepo !== 'string' &&
+                    this.props.dataAux.common.activeRepo.includes(id))) &&
             name === 'title'
         ) {
             newConfig = this.getUpdateDefaultRepo(value, newData, oldTitle, value);
@@ -181,11 +188,11 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         this.props.onChange(newData, newConfig);
     }
 
-    onDelete(id: string) {
+    onDelete(id: string): void {
         const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         const index = array.findIndex(element => element.title === id);
-        delete array[index];
+        array.splice(index, 1);
         newData.native.repositories = arrayToRepo(array);
         if (this.props.dataAux.common.activeRepo === id) {
             if (Object.keys(newData.native.repositories).length) {
@@ -199,7 +206,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         }
     }
 
-    onAdd = () => {
+    onAdd = (): void => {
         const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         array.push({
@@ -210,7 +217,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         this.props.onChange(newData);
     };
 
-    onRestore = () => {
+    onRestore = (): void => {
         const newData = AdminUtils.clone(this.props.data);
         newData.native.repositories = {
             // @ts-expect-error will be fixed in js-controller
@@ -223,8 +230,9 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
             },
         };
         // Store old information if already read
-        const oldStable = Object.keys(this.props.data.native.repositories)
-            .find(name => this.props.data.native.repositories[name].link === newData.native.repositories.stable.link);
+        const oldStable = Object.keys(this.props.data.native.repositories).find(
+            name => this.props.data.native.repositories[name].link === newData.native.repositories.stable.link,
+        );
         if (oldStable) {
             if (newData.native.repositories.stable.json) {
                 newData.native.repositories.stable.json = this.props.data.native.repositories[oldStable].json;
@@ -236,8 +244,9 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                 newData.native.repositories.stable.time = this.props.data.native.repositories[oldStable].time;
             }
         }
-        const oldBeta = Object.keys(this.props.data.native.repositories)
-            .find(name => this.props.data.native.repositories[name].link === newData.native.repositories.beta.link);
+        const oldBeta = Object.keys(this.props.data.native.repositories).find(
+            name => this.props.data.native.repositories[name].link === newData.native.repositories.beta.link,
+        );
         if (oldBeta) {
             if (newData.native.repositories.beta.json) {
                 newData.native.repositories.beta.json = this.props.data.native.repositories[oldBeta].json;
@@ -253,17 +262,24 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         const newConfig = AdminUtils.clone(this.props.dataAux);
         if (!this.props.multipleRepos) {
             newConfig.common.activeRepo = 'stable';
-            return newConfig;
+            this.props.onChange(newData, newConfig);
+            return;
         }
         newConfig.common.activeRepo = ['stable'];
         newConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
 
         this.props.onChange(newData, newConfig);
-        return null;
     };
 
-    getUpdateDefaultRepo = (newRepo: string, newData?: ioBrokerObject<{ repositories: Repository }>, oldTitle?: string, newTitle?: string) => {
-        const newConfig = AdminUtils.clone(this.props.dataAux);
+    getUpdateDefaultRepo = (
+        newRepo: string,
+        newData?: ioBrokerObject<{ repositories: Repository }>,
+        oldTitle?: string,
+        newTitle?: string,
+    ): ioBrokerObject<object, { activeRepo: string | string[] }> => {
+        const newConfig: ioBrokerObject<object, { activeRepo: string | string[] }> = AdminUtils.clone(
+            this.props.dataAux,
+        );
         if (!this.props.multipleRepos) {
             newConfig.common.activeRepo = newRepo;
             return newConfig;
@@ -282,7 +298,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         newConfig.common.activeRepo = newConfig.common.activeRepo || [];
         if (typeof newConfig.common.activeRepo !== 'string') {
             if (!newConfig.common.activeRepo.includes(newRepo)) {
-            // sort activeRepo anew
+                // sort activeRepo anew
                 const items = repoToArray(newData.native.repositories);
                 newConfig.common.activeRepo.sort((a, b) => {
                     const indexA = items.findIndex(item => item.title === a);
@@ -295,7 +311,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         return newConfig;
     };
 
-    onSortEnd = ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
+    onSortEnd = ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }): void => {
         console.log(oldIndex, newIndex);
         const newData = AdminUtils.clone(this.props.data);
         const items = repoToArray(newData.native.repositories);
@@ -320,7 +336,11 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         this.props.onChange(newData, newConfig);
     };
 
-    onChangeActiveRepo(newData: ioBrokerObject<object, {activeRepo: string | string[]}>, error: boolean, showWarning: boolean) {
+    onChangeActiveRepo(
+        newData: ioBrokerObject<object, { activeRepo: string | string[] }>,
+        error: boolean,
+        showWarning: boolean,
+    ): void {
         if (showWarning) {
             this.setState({ confirm: true, confirmValue: { newData, error } });
         } else {
@@ -328,282 +348,381 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         }
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (this.state.confirm) {
-            return <ConfirmDialog
-                text={this.props.t('confirm_change_repo')}
-                onClose={result => {
-                    const value = this.state.confirmValue;
-                    this.setState({ confirm: false, confirmValue: null }, () => {
-                        if (result) {
-                            this.setState({ error: value.error }, () => this.props.onChange(null, value.newData));
-                        }
-                    });
-                }}
-            />;
+            return (
+                <ConfirmDialog
+                    text={this.props.t('confirm_change_repo')}
+                    onClose={result => {
+                        const value = this.state.confirmValue;
+                        this.setState({ confirm: false, confirmValue: null }, () => {
+                            if (result) {
+                                this.setState({ error: value.error }, () => this.props.onChange(null, value.newData));
+                            }
+                        });
+                    }}
+                />
+            );
         }
         return null;
     }
 
-    renderSortableItem(item: RepositoryArray[number], index: number) {
-        const result = <TableRow className="float_row">
-            <TableCell style={styles.dragColumn} className="float_cell" title={this.props.t('Drag and drop to reorder')}>
-                <DragHandle />
-            </TableCell>
-            <TableCell style={styles.enableColumn} className="float_cell">
-                {index + 1}
-                {this.props.multipleRepos ? <Checkbox
-                    disabled={this.props.adminGuiConfig.admin.settings.activeRepo === false || this.props.saving}
-                    sx={this.state.error ? styles.checkboxError : undefined}
-                    title={this.state.error ? I18n.t('At least one repo must be selected') : ''}
-                    checked={typeof this.props.dataAux.common.activeRepo === 'string' ? this.props.dataAux.common.activeRepo === item.title : this.props.dataAux.common.activeRepo.includes(item.title)}
-                    onChange={() => {
-                        let showWarning = false;
-                        const newData = AdminUtils.clone(this.props.dataAux);
-                        if (typeof newData.common.activeRepo === 'string') {
-                            newData.common.activeRepo = [newData.common.activeRepo];
-                        }
-                        let pos = newData.common.activeRepo.indexOf(item.title);
-                        if (pos === -1) {
-                            newData.common.activeRepo.push(item.title);
-                            // newData.common.activeRepo.sort();
-                            // sort repos according to order of repos
-                            const arr = repoToArray(this.props.data.native.repositories);
-                            newData.common.activeRepo.sort((a, b) => {
-                                const indexA = arr.findIndex(it => it.title === a);
-                                const indexB = arr.findIndex(it => it.title === b);
-                                return indexA - indexB;
-                            });
-
-                            showWarning = item.title.toLowerCase().startsWith('beta');
-                        } else {
-                            newData.common.activeRepo.splice(pos, 1);
-                        }
-
-                        if (item.title.toLowerCase().startsWith('beta') && newData.common.activeRepo.find(r => r.toLowerCase().startsWith('stable'))) {
-                            pos = newData.common.activeRepo.findIndex(r => r.toLowerCase().startsWith('stable'));
-                            newData.common.activeRepo.splice(pos, 1);
-                        } else if (item.title.toLowerCase().startsWith('stable') && newData.common.activeRepo.find(r => r.toLowerCase().startsWith('beta'))) {
-                            pos = newData.common.activeRepo.findIndex(r => r.toLowerCase().startsWith('beta'));
-                            newData.common.activeRepo.splice(pos, 1);
-                        }
-
-                        const _error = !newData.common.activeRepo.length;
-                        this.onChangeActiveRepo(newData, _error, showWarning);
-                    }}
-                /> : null}
-            </TableCell>
-            <TableCell style={styles.stableColumn} className="float_cell">
-                <Tooltip
-                    title={I18n.t('Flag will be automatically detected as repository will be read for the first time')}
-                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+    renderSortableItem(item: RepositoryArray[number], index: number): JSX.Element {
+        const result = (
+            <TableRow className="float_row">
+                <TableCell
+                    style={styles.dragColumn}
+                    className="float_cell"
+                    title={this.props.t('Drag and drop to reorder')}
                 >
-                    <span>
-                        <Checkbox
-                            disabled
-                            // @ts-expect-error will be fixed in js-controller
-                            checked={this.props.repoInfo[item.title]?.stable}
-                            indeterminate={!this.props.repoInfo[item.title]}
-                        />
-                    </span>
-                </Tooltip>
-            </TableCell>
-            <TableCell style={styles.upgradePolicyColumn} className="float_cell">
-                <Tooltip
-                    title={I18n.t('Allow automatic adapter upgrades for this repository')}
-                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    <DragHandle />
+                </TableCell>
+                <TableCell
+                    style={styles.enableColumn}
+                    className="float_cell"
                 >
-                    <span>
+                    {index + 1}
+                    {this.props.multipleRepos ? (
                         <Checkbox
-                            disabled={this.props.saving}
-                            checked={this.props.dataAux.common?.adapterAutoUpgrade?.repositories[item.title]}
-                            onChange={e => {
-                                const sysConfig = AdminUtils.clone(this.props.dataAux);
+                            disabled={
+                                this.props.adminGuiConfig.admin.settings.activeRepo === false || this.props.saving
+                            }
+                            sx={this.state.error ? styles.checkboxError : undefined}
+                            title={this.state.error ? I18n.t('At least one repo must be selected') : ''}
+                            checked={
+                                typeof this.props.dataAux.common.activeRepo === 'string'
+                                    ? this.props.dataAux.common.activeRepo === item.title
+                                    : this.props.dataAux.common.activeRepo.includes(item.title)
+                            }
+                            onChange={() => {
+                                let showWarning = false;
+                                const newData = AdminUtils.clone(this.props.dataAux);
+                                if (typeof newData.common.activeRepo === 'string') {
+                                    newData.common.activeRepo = [newData.common.activeRepo];
+                                }
+                                let pos = newData.common.activeRepo.indexOf(item.title);
+                                if (pos === -1) {
+                                    newData.common.activeRepo.push(item.title);
+                                    // newData.common.activeRepo.sort();
+                                    // sort repos according to order of repos
+                                    const arr = repoToArray(this.props.data.native.repositories);
+                                    newData.common.activeRepo.sort((a, b) => {
+                                        const indexA = arr.findIndex(it => it.title === a);
+                                        const indexB = arr.findIndex(it => it.title === b);
+                                        return indexA - indexB;
+                                    });
 
-                                if (!sysConfig.common.adapterAutoUpgrade) {
-                                    sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
+                                    showWarning = item.title.toLowerCase().startsWith('beta');
+                                } else {
+                                    newData.common.activeRepo.splice(pos, 1);
                                 }
 
-                                sysConfig.common.adapterAutoUpgrade.repositories[item.title] = e.target.checked;
+                                if (
+                                    item.title.toLowerCase().startsWith('beta') &&
+                                    newData.common.activeRepo.find(r => r.toLowerCase().startsWith('stable'))
+                                ) {
+                                    pos = newData.common.activeRepo.findIndex(r =>
+                                        r.toLowerCase().startsWith('stable'),
+                                    );
+                                    newData.common.activeRepo.splice(pos, 1);
+                                } else if (
+                                    item.title.toLowerCase().startsWith('stable') &&
+                                    newData.common.activeRepo.find(r => r.toLowerCase().startsWith('beta'))
+                                ) {
+                                    pos = newData.common.activeRepo.findIndex(r => r.toLowerCase().startsWith('beta'));
+                                    newData.common.activeRepo.splice(pos, 1);
+                                }
 
-                                this.props.onChange(this.props.data, sysConfig);
+                                const _error = !newData.common.activeRepo.length;
+                                this.onChangeActiveRepo(newData, _error, showWarning);
                             }}
                         />
-                    </span>
-                </Tooltip>
-            </TableCell>
-            <TableCell style={styles.nameRow} className="float_cell">
-                <TextField
-                    variant="standard"
-                    disabled={this.props.saving}
-                    value={item.title}
-                    style={styles.input}
-                    className="xs-centered"
-                    onChange={evt => this.onValueChanged(evt.target.value, item.title, 'title')}
-                    slotProps={{
-                        inputLabel: {
-                            shrink: true,
-                        },
-                        input: {
-                            endAdornment: item.title ? <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={() => this.onValueChanged('', item.title, 'title')}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment> : null,
-                        },
-                    }}
-                />
-            </TableCell>
-            <TableCell className="grow_cell float_cell">
-                <TextField
-                    disabled={this.props.saving}
-                    variant="standard"
-                    id={`default_${index}`}
-                    value={item.link}
-                    style={styles.input}
-                    className="xs-centered"
-                    onChange={evt => this.onValueChanged(evt.target.value, item.title, 'link')}
-                    slotProps={{
-                        inputLabel: {
-                            shrink: true,
-                        },
-                        input: {
-                            readOnly: false,
-                            endAdornment: item.link ? <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={() => this.onValueChanged('', item.title, 'link')}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment> : null,
-                        },
-                    }}
-                />
-            </TableCell>
-            <TableCell style={styles.buttonColumn} className="float_cell">
-                <Fab
-                    disabled={this.props.saving}
-                    size="small"
-                    color="secondary"
-                    aria-label="add"
-                    onClick={() => this.onDelete(item.title)}
+                    ) : null}
+                </TableCell>
+                <TableCell
+                    style={styles.stableColumn}
+                    className="float_cell"
                 >
-                    <DeleteIcon />
-                </Fab>
-            </TableCell>
-        </TableRow>;
+                    <Tooltip
+                        title={I18n.t(
+                            'Flag will be automatically detected as repository will be read for the first time',
+                        )}
+                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    >
+                        <span>
+                            <Checkbox
+                                disabled
+                                // @ts-expect-error will be fixed in js-controller
+                                checked={this.props.repoInfo[item.title]?.stable}
+                                indeterminate={!this.props.repoInfo[item.title]}
+                            />
+                        </span>
+                    </Tooltip>
+                </TableCell>
+                <TableCell
+                    style={styles.upgradePolicyColumn}
+                    className="float_cell"
+                >
+                    <Tooltip
+                        title={I18n.t('Allow automatic adapter upgrades for this repository')}
+                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    >
+                        <span>
+                            <Checkbox
+                                disabled={this.props.saving}
+                                checked={this.props.dataAux.common?.adapterAutoUpgrade?.repositories[item.title]}
+                                onChange={e => {
+                                    const sysConfig = AdminUtils.clone(this.props.dataAux);
 
-        return <SortableItem key={index} index={index} value={result} />;
+                                    if (!sysConfig.common.adapterAutoUpgrade) {
+                                        sysConfig.common.adapterAutoUpgrade = {
+                                            repositories: {},
+                                            defaultPolicy: 'none',
+                                        };
+                                    }
+
+                                    sysConfig.common.adapterAutoUpgrade.repositories[item.title] = e.target.checked;
+
+                                    this.props.onChange(this.props.data, sysConfig);
+                                }}
+                            />
+                        </span>
+                    </Tooltip>
+                </TableCell>
+                <TableCell
+                    style={styles.nameRow}
+                    className="float_cell"
+                >
+                    <TextField
+                        variant="standard"
+                        disabled={this.props.saving}
+                        value={item.title}
+                        style={styles.input}
+                        className="xs-centered"
+                        onChange={evt => this.onValueChanged(evt.target.value, item.title, 'title')}
+                        slotProps={{
+                            inputLabel: {
+                                shrink: true,
+                            },
+                            input: {
+                                endAdornment: item.title ? (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.onValueChanged('', item.title, 'title')}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ) : null,
+                            },
+                        }}
+                    />
+                </TableCell>
+                <TableCell className="grow_cell float_cell">
+                    <TextField
+                        disabled={this.props.saving}
+                        variant="standard"
+                        id={`default_${index}`}
+                        value={item.link}
+                        style={styles.input}
+                        className="xs-centered"
+                        onChange={evt => this.onValueChanged(evt.target.value, item.title, 'link')}
+                        slotProps={{
+                            inputLabel: {
+                                shrink: true,
+                            },
+                            input: {
+                                readOnly: false,
+                                endAdornment: item.link ? (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.onValueChanged('', item.title, 'link')}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ) : null,
+                            },
+                        }}
+                    />
+                </TableCell>
+                <TableCell
+                    style={styles.buttonColumn}
+                    className="float_cell"
+                >
+                    <Fab
+                        disabled={this.props.saving}
+                        size="small"
+                        color="secondary"
+                        aria-label="add"
+                        onClick={() => this.onDelete(item.title)}
+                    >
+                        <DeleteIcon />
+                    </Fab>
+                </TableCell>
+            </TableRow>
+        );
+
+        return (
+            <SortableItem
+                key={index}
+                index={index}
+                value={result}
+            />
+        );
     }
 
-    renderSortableList(items: RepositoryArray) {
-        const result = <Table style={styles.table}>
-            <TableHead>
-                <TableRow className="float_row">
-                    <TableCell style={styles.dragColumn} className="float_cell" />
-                    <TableCell style={styles.enableColumn} className="float_cell">{this.props.multipleRepos ? I18n.t('Active') : ''}</TableCell>
-                    <TableCell style={styles.stableColumn} className="float_cell">{I18n.t('Stable')}</TableCell>
-                    <TableCell style={styles.upgradePolicyColumn} className="float_cell">{I18n.t('Auto-Upgrade')}</TableCell>
-                    <TableCell style={styles.nameRow} className="float_cell">
-                        {this.props.t('name')}
-                    </TableCell>
-                    <TableCell className="grow_cell float_cell">
-                        {this.props.t('link')}
-                    </TableCell>
-                    <TableCell style={styles.buttonColumn} className="float_cell"> </TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {items.map((item, index) =>
-                    this.renderSortableItem(item, index))}
-            </TableBody>
-        </Table>;
+    renderSortableList(items: RepositoryArray): JSX.Element {
+        const result = (
+            <Table style={styles.table}>
+                <TableHead>
+                    <TableRow className="float_row">
+                        <TableCell
+                            style={styles.dragColumn}
+                            className="float_cell"
+                        />
+                        <TableCell
+                            style={styles.enableColumn}
+                            className="float_cell"
+                        >
+                            {this.props.multipleRepos ? I18n.t('Active') : ''}
+                        </TableCell>
+                        <TableCell
+                            style={styles.stableColumn}
+                            className="float_cell"
+                        >
+                            {I18n.t('Stable')}
+                        </TableCell>
+                        <TableCell
+                            style={styles.upgradePolicyColumn}
+                            className="float_cell"
+                        >
+                            {I18n.t('Auto-Upgrade')}
+                        </TableCell>
+                        <TableCell
+                            style={styles.nameRow}
+                            className="float_cell"
+                        >
+                            {this.props.t('name')}
+                        </TableCell>
+                        <TableCell className="grow_cell float_cell">{this.props.t('link')}</TableCell>
+                        <TableCell
+                            style={styles.buttonColumn}
+                            className="float_cell"
+                        >
+                            {' '}
+                        </TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>{items.map((item, index) => this.renderSortableItem(item, index))}</TableBody>
+            </Table>
+        );
 
-        return <SortableList
-            helperClass="draggable-item"
-            useDragHandle
-            lockAxis="y"
-            onSortEnd={this.onSortEnd}
-            value={result}
-        />;
+        return (
+            <SortableList
+                helperClass="draggable-item"
+                useDragHandle
+                lockAxis="y"
+                onSortEnd={this.onSortEnd}
+                value={result}
+            />
+        );
     }
 
     /**
      * Render the auto upgrade policy
      */
-    renderAutoUpgradePolicy(): React.JSX.Element {
-        const policy: ioBroker.AutoUpgradePolicy = this.props.dataAux.common.adapterAutoUpgrade?.defaultPolicy || 'none';
+    renderAutoUpgradePolicy(): JSX.Element {
+        const policy: ioBroker.AutoUpgradePolicy =
+            this.props.dataAux.common.adapterAutoUpgrade?.defaultPolicy || 'none';
         const activatedRepos = this.props.dataAux.common.adapterAutoUpgrade?.repositories || {};
 
-        return <div style={{ display: 'flex', marginLeft: 20, flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
-                <Select
-                    variant="standard"
-                    style={{ marginLeft: 8 }}
-                    value={policy}
-                    onChange={e => {
-                        const sysConfig = AdminUtils.clone(this.props.dataAux);
+        return (
+            <div style={{ display: 'flex', marginLeft: 20, flexDirection: 'column' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography>
+                        {I18n.t('Allow only the following upgrades to be performed automatically:')}
+                    </Typography>
+                    <Select
+                        variant="standard"
+                        style={{ marginLeft: 8 }}
+                        value={policy}
+                        onChange={e => {
+                            const sysConfig = AdminUtils.clone(this.props.dataAux);
 
-                        if (!sysConfig.common.adapterAutoUpgrade) {
-                            sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
-                        }
+                            if (!sysConfig.common.adapterAutoUpgrade) {
+                                sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
+                            }
 
-                        sysConfig.common.adapterAutoUpgrade.defaultPolicy = e.target.value;
+                            sysConfig.common.adapterAutoUpgrade.defaultPolicy = e.target.value;
 
-                        this.props.onChange(this.props.data, sysConfig);
-                    }}
-                >
-                    {AUTO_UPGRADE_SETTINGS.map(
-                        option => <MenuItem value={option}>{AUTO_UPGRADE_OPTIONS_MAPPING[option]}</MenuItem>,
-                    )}
-                </Select>
+                            this.props.onChange(this.props.data, sysConfig);
+                        }}
+                    >
+                        {AUTO_UPGRADE_SETTINGS.map(option => (
+                            <MenuItem
+                                key={option}
+                                value={option}
+                            >
+                                {AUTO_UPGRADE_OPTIONS_MAPPING[option]}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </div>
+                <IsVisible value={!!(activatedRepos.beta || activatedRepos['Beta (latest)']) && policy !== 'none'}>
+                    <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>
+                        {I18n.t('repo_update_hint')
+                            .split('\n')
+                            .map((line: string, i: number) => (
+                                <div key={i}>{line}</div>
+                            ))}
+                    </Typography>
+                </IsVisible>
+                <IsVisible value={policy === 'major'}>
+                    <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>
+                        {I18n.t(
+                            'The current selected configuration will allow to automatically pull in incompatible changes of this adapter!',
+                        )}
+                    </Typography>
+                </IsVisible>
             </div>
-            <IsVisible value={!!(activatedRepos.beta || activatedRepos['Beta (latest)']) && policy !== 'none'}>
-                <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>{I18n.t('repo_update_hint').split('\n').map(line => <div>{line}</div>)}</Typography>
-            </IsVisible>
-            <IsVisible value={policy === 'major'}>
-                <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>{I18n.t('The current selected configuration will allow to automatically pull in incompatible changes of this adapter!')}</Typography>
-            </IsVisible>
-        </div>;
+        );
     }
 
-    render() {
+    render(): JSX.Element {
         const items = repoToArray(this.props.data.native.repositories);
 
-        return <div style={styles.tabPanel}>
-            {this.renderConfirmDialog()}
-            <div style={styles.buttonPanel}>
-                <Fab
-                    size="small"
-                    color="primary"
-                    disabled={this.props.saving}
-                    aria-label="add"
-                    onClick={this.onAdd}
-                    style={styles.fabButton}
-                    title={this.props.t('Add new line to the repository list')}
-                >
-                    <AddIcon />
-                </Fab>
-                <Fab
-                    size="small"
-                    disabled={this.props.saving}
-                    onClick={this.onRestore}
-                    style={styles.fabButton}
-                    title={this.props.t('Restore repository list to default')}
-                >
-                    <RestoreIcon />
-                </Fab>
-                {this.renderAutoUpgradePolicy()}
+        return (
+            <div style={styles.tabPanel}>
+                {this.renderConfirmDialog()}
+                <div style={styles.buttonPanel}>
+                    <Fab
+                        size="small"
+                        color="primary"
+                        disabled={this.props.saving}
+                        aria-label="add"
+                        onClick={this.onAdd}
+                        style={styles.fabButton}
+                        title={this.props.t('Add new line to the repository list')}
+                    >
+                        <AddIcon />
+                    </Fab>
+                    <Fab
+                        size="small"
+                        disabled={this.props.saving}
+                        onClick={this.onRestore}
+                        style={styles.fabButton}
+                        title={this.props.t('Restore repository list to default')}
+                    >
+                        <RestoreIcon />
+                    </Fab>
+                    {this.renderAutoUpgradePolicy()}
+                </div>
+                <TableContainer>{this.renderSortableList(items)}</TableContainer>
             </div>
-            <TableContainer>
-                {this.renderSortableList(items)}
-            </TableContainer>
-        </div>;
+        );
     }
 }
 

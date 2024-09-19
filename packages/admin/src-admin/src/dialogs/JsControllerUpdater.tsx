@@ -1,19 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import ipaddr from 'ipaddr.js';
 
-import {
-    LinearProgress,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-} from '@mui/material';
+import { LinearProgress, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
-import {
-    Close as CloseIcon,
-    Refresh as ReloadIcon,
-} from '@mui/icons-material';
+import { Close as CloseIcon, Refresh as ReloadIcon } from '@mui/icons-material';
 
 import { type AdminConnection, I18n, type ThemeType } from '@iobroker/adapter-react-v5';
 
@@ -33,7 +23,7 @@ interface ServerResponse {
     stdout: string[];
     /** if installation process succeeded */
     success?: boolean;
- }
+}
 
 interface JsControllerUpdaterProps {
     socket: AdminConnection;
@@ -82,7 +72,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
      *
      * @param updating target value true if update is in progress
      */
-    setUpdating(updating: boolean) {
+    setUpdating(updating: boolean): void {
         if (this.updating !== updating) {
             this.updating = updating;
             this.props.onUpdating(updating);
@@ -91,13 +81,15 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
 
     /**
      * Determine the correct ip address of the server
-     * If the current admin instance is running on the host to be updated, we take it from browser, else we try to get information from the host object
+     * If the current admin instance is running on the host to be updated, we take it from the browser, else we try to get information from the host object
      */
-    async findIpAddress() {
+    async findIpAddress(): Promise<void> {
         // Controller to update: this.props.hostId
         // Current admin instance: this.props.adminInstance = 'admin.X'
         // read settings of admin.X
-        const instanceObj: ioBroker.InstanceObject = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`) as any as ioBroker.InstanceObject;
+        const instanceObj: ioBroker.InstanceObject = (await this.props.socket.getObject(
+            `system.adapter.${this.props.adminInstance}`,
+        )) as any as ioBroker.InstanceObject;
         if (instanceObj.common.host === this.props.hostId) {
             return;
         }
@@ -181,7 +173,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
      * Lifecycle hook called if component will unmount
      * Clearing intervals and timers here
      */
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = null;
@@ -246,7 +238,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
     /**
      * Render the UI
      */
-    render(): React.JSX.Element {
+    render(): JSX.Element {
         return (
             <Dialog
                 onClose={(_e, reason) => {
@@ -260,37 +252,40 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             >
                 <DialogTitle>{I18n.t('Updating %s...', 'js-controller')}</DialogTitle>
                 <DialogContent style={{ height: 400, padding: '0 20px', overflow: 'hidden' }}>
-                    {(!this.state.response || this.state.response.running) && !this.state.error ?
-                        <LinearProgress /> : null}
-                    {this.state.response || this.state.error ? <textarea
-                        ref={this.textareaRef}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            resize: 'none',
-                            background: this.props.themeType === 'dark' ? '#000' : '#fff',
-                            color: this.props.themeType === 'dark' ? '#EEE' : '#111',
-                            boxSizing: 'border-box',
-                            fontFamily:
-                                'Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace',
-                            border: this.state.response?.success
-                                ? '2px solid green'
-                                : this.state.error ||
-                                  (this.state.response &&
-                                      !this.state.response.running &&
-                                      !this.state.response.success)
-                                    ? '2px solid red'
-                                    : undefined,
-                        }}
-                        value={
-                            this.state.error
-                                ? this.state.error
-                                : this.state.response.stderr && this.state.response.stderr.length
-                                    ? this.state.response.stderr.join('\n')
-                                    : this.state.response.stdout.join('\n')
-                        }
-                        readOnly
-                    /> : null}
+                    {(!this.state.response || this.state.response.running) && !this.state.error ? (
+                        <LinearProgress />
+                    ) : null}
+                    {this.state.response || this.state.error ? (
+                        <textarea
+                            ref={this.textareaRef}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                resize: 'none',
+                                background: this.props.themeType === 'dark' ? '#000' : '#fff',
+                                color: this.props.themeType === 'dark' ? '#EEE' : '#111',
+                                boxSizing: 'border-box',
+                                fontFamily:
+                                    'Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace',
+                                border: this.state.response?.success
+                                    ? '2px solid green'
+                                    : this.state.error ||
+                                        (this.state.response &&
+                                            !this.state.response.running &&
+                                            !this.state.response.success)
+                                      ? '2px solid red'
+                                      : undefined,
+                            }}
+                            value={
+                                this.state.error
+                                    ? this.state.error
+                                    : this.state.response.stderr && this.state.response.stderr.length
+                                      ? this.state.response.stderr.join('\n')
+                                      : this.state.response.stdout.join('\n')
+                            }
+                            readOnly
+                        />
+                    ) : null}
                 </DialogContent>
                 <DialogActions>
                     <Button

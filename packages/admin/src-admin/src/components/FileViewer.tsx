@@ -1,15 +1,8 @@
 // File viewer in adapter-react does not support write
 import { Buffer } from 'buffer';
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
 
 // Icons
 import { FaCopy as CopyIcon } from 'react-icons/fa';
@@ -21,14 +14,7 @@ import type { Connection } from '@iobroker/socket-client';
 import * as ace from 'ace-builds';
 import 'ace-builds/src-noconflict/ext-modelist';
 
-import {
-    Utils,
-    withWidth,
-    IconNoIcon,
-    Icon,
-    type ThemeType,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { Utils, withWidth, IconNoIcon, Icon, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
 
 import Editor from './Editor';
 
@@ -232,14 +218,15 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
         }
     };
 
-    writeFile64 = () => {
+    writeFile64 = (): void => {
         // File viewer in adapter-react does not support write
         const parts = this.props.href.split('/');
         const data = this.state.editingValue;
         parts.splice(0, 2);
         const adapter = parts[0];
         const name = parts.splice(1).join('/');
-        this.props.socket.writeFile64(adapter, name, Buffer.from(data).toString('base64'))
+        this.props.socket
+            .writeFile64(adapter, name, Buffer.from(data).toString('base64'))
             .then(() => this.props.onClose())
             .catch(e => window.alert(`Cannot write file: ${e}`));
     };
@@ -262,7 +249,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
         }
     }
 
-    getContent(): React.JSX.Element | null {
+    getContent(): JSX.Element | null {
         if (this.state.ext && EXTENSIONS.images.includes(this.state.ext)) {
             if (this.state.imgError) {
                 return <IconNoIcon style={{ ...styles.img, ...this.props.getStyleBackgroundImage() }} />;
@@ -290,7 +277,6 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                         alignItems: 'center',
                     }}
                 >
-                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                     <audio
                         style={{ width: '100%' }}
                         src={this.props.href}
@@ -310,7 +296,6 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                         alignItems: 'center',
                     }}
                 >
-                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                     <video
                         style={{ width: '100%', height: '100%' }}
                         controls
@@ -325,17 +310,23 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
         }
         if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             // File viewer in adapter-react does not support write
-            return <Editor
-                mode={FileViewer.getEditFile(this.props.formatEditFile)}
-                themeType={this.props.themeType}
-                value={this.state.editingValue || this.state.code || this.state.text}
-                onChange={this.state.editing ? newValue => this.setState({ editingValue: newValue, changed: true }) : undefined}
-            />;
+            return (
+                <Editor
+                    mode={FileViewer.getEditFile(this.props.formatEditFile)}
+                    themeType={this.props.themeType}
+                    value={this.state.editingValue || this.state.code || this.state.text}
+                    onChange={
+                        this.state.editing
+                            ? newValue => this.setState({ editingValue: newValue, changed: true })
+                            : undefined
+                    }
+                />
+            );
         }
         return null;
     }
 
-    render(): React.JSX.Element {
+    render(): JSX.Element {
         return (
             <Dialog
                 sx={{

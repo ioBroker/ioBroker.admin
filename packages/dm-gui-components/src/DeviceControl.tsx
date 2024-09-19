@@ -1,8 +1,5 @@
-import React, { Component } from 'react';
-import {
-    Button, Fab,
-    Switch,
-} from '@mui/material';
+import React, { Component, type JSX } from 'react';
+import { Button, Fab, Switch } from '@mui/material';
 
 import type { Connection } from '@iobroker/adapter-react-v5';
 import type { ControlBase, ControlState, DeviceControl } from '@iobroker/dm-utils';
@@ -15,7 +12,11 @@ interface DeviceControlProps {
     control: DeviceControl;
     socket: Connection;
     /** Control handler to set the state */
-    controlHandler: (deviceId: string, control: ControlBase, state: ControlState) => () => Promise<ioBroker.State | null>;
+    controlHandler: (
+        deviceId: string,
+        control: ControlBase,
+        state: ControlState,
+    ) => () => Promise<ioBroker.State | null>;
     /** Control handler to read the state */
     controlStateHandler: (deviceId: string, control: ControlBase) => () => Promise<ioBroker.State | null>;
     colors: { primary: string; secondary: string };
@@ -39,16 +40,22 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
         };
     }
 
-    componentDidMount() {
+    async componentDidMount(): Promise<void> {
         if (this.props.control.stateId) {
-            this.props.socket.subscribeState(this.props.control.stateId, this.stateHandler);
+            const mayBePromise = this.props.socket.subscribeState(this.props.control.stateId, this.stateHandler);
+            if (mayBePromise instanceof Promise) {
+                await mayBePromise;
+            }
         }
     }
 
-    stateHandler = async (id: string, state: ioBroker.State) => {
+    stateHandler = async (id: string, state: ioBroker.State): Promise<void> => {
         if (id === this.props.control.stateId && state) {
             // request new state
-            const newState: ioBroker.State | null = await (this.props.controlStateHandler(this.props.deviceId, this.props.control)());
+            const newState: ioBroker.State | null = await this.props.controlStateHandler(
+                this.props.deviceId,
+                this.props.control,
+            )();
             if (newState?.ts && (!this.state.ts || newState.ts > this.state.ts)) {
                 this.setState({
                     value: newState.val,
@@ -58,13 +65,16 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
         }
     };
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.props.control.stateId) {
             this.props.socket.unsubscribeState(this.props.control.stateId, this.stateHandler);
         }
     }
 
-    static getDerivedStateFromProps(props: DeviceControlProps, state: DeviceControlState) {
+    static getDerivedStateFromProps(
+        props: DeviceControlProps,
+        state: DeviceControlState,
+    ): Partial<DeviceControlState> | null {
         if (props.control.state?.ts && (!state.ts || props.control.state?.ts > state.ts)) {
             return {
                 value: props.control.state.val,
@@ -75,8 +85,8 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
         return null;
     }
 
-    async sendControl(deviceId: string, control: ControlBase, value: ControlState) {
-        const result = await (this.props.controlHandler(deviceId, control, value)());
+    async sendControl(deviceId: string, control: ControlBase, value: ControlState): Promise<void> {
+        const result = await this.props.controlHandler(deviceId, control, value)();
         if (result?.ts && (!this.state.ts || result?.ts > this.state.ts)) {
             this.setState({
                 value: result.val,
@@ -85,44 +95,50 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
         }
     }
 
-    renderButton() {
+    renderButton(): JSX.Element {
         const tooltip = getTranslation(this.props.control.description ?? '');
         const icon = renderControlIcon(this.props.control, this.props.colors, this.state.value);
 
         if (!this.props.control.label) {
-            return <Fab
-                size="small"
+            return (
+                <Fab
+                    size="small"
+                    disabled={this.props.disabled}
+                    title={tooltip}
+                    onClick={() => this.sendControl(this.props.deviceId, this.props.control, true)}
+                >
+                    {icon}
+                </Fab>
+            );
+        }
+        return (
+            <Button
                 disabled={this.props.disabled}
                 title={tooltip}
                 onClick={() => this.sendControl(this.props.deviceId, this.props.control, true)}
+                startIcon={icon}
             >
-                {icon}
-            </Fab>;
-        }
-        return <Button
-            disabled={this.props.disabled}
-            title={tooltip}
-            onClick={() => this.sendControl(this.props.deviceId, this.props.control, true)}
-            startIcon={icon}
-        >
-            {getTranslation(this.props.control.label)}
-        </Button>;
+                {getTranslation(this.props.control.label)}
+            </Button>
+        );
     }
 
-    renderSwitch() {
+    renderSwitch(): JSX.Element {
         const tooltip = getTranslation(this.props.control.description ?? '');
         // const icon = renderIcon(this.props.control, this.props.colors, this.state.value);
 
-        return <Switch
-            disabled={this.props.disabled}
-            title={tooltip}
-            checked={!!this.state.value}
-            onChange={e => this.sendControl(this.props.deviceId, this.props.control, e.target.checked)}
-        />;
+        return (
+            <Switch
+                disabled={this.props.disabled}
+                title={tooltip}
+                checked={!!this.state.value}
+                onChange={e => this.sendControl(this.props.deviceId, this.props.control, e.target.checked)}
+            />
+        );
     }
 
-    getColor() {
-        let color;
+    getColor(): string | undefined {
+        let color: string | undefined;
         if (this.state.value) {
             color = this.props.control.colorOn || 'primary';
         } else if (this.props.control.type === 'switch') {
@@ -138,57 +154,67 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
     }
 
     // TODO: implement the following render methods
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderSelect() {
-
+    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
+    renderSelect(): JSX.Element | null {
+        return null;
     }
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderSlider() {
-
+    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
+    renderSlider(): JSX.Element | null {
+        return null;
     }
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderColor() {
-
+    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
+    renderColor(): JSX.Element | null {
+        return null;
     }
 
-    renderIcon() {
+    renderIcon(): JSX.Element {
         const tooltip = getTranslation(this.props.control.description ?? '');
         const icon = renderControlIcon(this.props.control, this.props.colors, this.state.value);
         const color = this.getColor();
-        const style: React.CSSProperties | undefined = color === this.props.colors.primary || color === this.props.colors.secondary ? {} : { color };
-        const colorProps = color === this.props.colors.primary ? 'primary' : (color === this.props.colors.secondary ? 'secondary' : undefined);
+        const style: React.CSSProperties | undefined =
+            color === this.props.colors.primary || color === this.props.colors.secondary ? {} : { color };
+        const colorProps =
+            color === this.props.colors.primary
+                ? 'primary'
+                : color === this.props.colors.secondary
+                  ? 'secondary'
+                  : undefined;
 
         if (!this.props.control.label) {
             style.width = 34;
             style.height = 34;
             style.minHeight = 34;
 
-            return <Fab
+            return (
+                <Fab
+                    disabled={this.props.disabled}
+                    size="small"
+                    title={tooltip}
+                    color={colorProps}
+                    style={style}
+                    onClick={() => this.sendControl(this.props.deviceId, this.props.control, !this.state.value)}
+                >
+                    {icon}
+                </Fab>
+            );
+        }
+        return (
+            <Button
                 disabled={this.props.disabled}
-                size="small"
                 title={tooltip}
                 color={colorProps}
                 style={style}
                 onClick={() => this.sendControl(this.props.deviceId, this.props.control, !this.state.value)}
+                startIcon={icon}
             >
-                {icon}
-            </Fab>;
-        }
-        return <Button
-            disabled={this.props.disabled}
-            title={tooltip}
-            color={colorProps}
-            style={style}
-            onClick={() => this.sendControl(this.props.deviceId, this.props.control, !this.state.value)}
-            startIcon={icon}
-        >
-            {getTranslation(this.props.control.label)}
-        </Button>;
+                {getTranslation(this.props.control.label)}
+            </Button>
+        );
     }
 
-    render() {
+    render(): JSX.Element {
         if (this.props.control.type === 'button') {
             return this.renderButton();
         }
@@ -201,8 +227,6 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
             return this.renderSwitch();
         }
 
-        return <div style={{ color: 'red' }}>
-            {this.props.control.type}
-        </div>;
+        return <div style={{ color: 'red' }}>{this.props.control.type}</div>;
     }
 }

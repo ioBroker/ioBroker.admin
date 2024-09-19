@@ -26,7 +26,6 @@ import Web, { type AdminAdapterConfig } from './lib/web';
 const adapterName = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
     .pop();
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 
 const { getInstalledInfo } = utils.commonTools;
 
@@ -92,8 +91,6 @@ class Admin extends utils.Adapter {
 
     private timerNews: NodeJS.Timeout;
 
-    private _running: boolean;
-
     private _tasks: ioBroker.AnyObject[];
 
     constructor(options: Partial<utils.AdapterOptions> = {}) {
@@ -118,8 +115,9 @@ class Admin extends utils.Adapter {
 
     /**
      * Is called if a subscribed object changes
-     * @param id
-     * @param obj
+     *
+     * @param id object ID that changed
+     * @param obj the changed object value
      */
     onObjectChange(id: string, obj: ioBroker.Object | null | undefined): void {
         if (obj) {
@@ -140,7 +138,7 @@ class Admin extends utils.Adapter {
                 }
                 this.updaterTimeout = setTimeout(() => {
                     this.updaterTimeout = null;
-                    this.writeUpdateInfo();
+                    void this.writeUpdateInfo();
                 }, 5_000);
             }
         } else {
@@ -156,8 +154,9 @@ class Admin extends utils.Adapter {
 
     /**
      * Is called if a subscribed state was changed
-     * @param id
-     * @param state
+     *
+     * @param id state ID that changed
+     * @param state the changed state value
      */
     onStateChange(id: string, state: ioBroker.State | null | undefined): void {
         if (socket) {
@@ -174,37 +173,37 @@ class Admin extends utils.Adapter {
     /**
      * Is called when databases are connected and adapter received configuration.
      */
-    onReady(): void {
-        this.getForeignObject('system.config', (err, obj) => {
-            if (!err && obj) {
-                obj.native = obj.native || {};
-                if (this.config.language) {
-                    systemLanguage = this.config.language;
-                } else if (obj.common?.language) {
-                    systemLanguage = obj.common.language;
-                }
-
-                if (!obj.native.secret) {
-                    crypto.randomBytes(24, (_ex, buf) => {
-                        this.secret = buf.toString('hex');
-                        this.extendForeignObject('system.config', { native: { secret: this.secret } });
-                        this.init();
-                    });
-                } else {
-                    this.secret = obj.native.secret;
-                    this.init();
-                }
-            } else {
-                this.secret = secret;
-                this.log.error('Cannot find object system.config');
+    async onReady(): Promise<void> {
+        const systemConfig = await this.getForeignObjectAsync('system.config');
+        if (systemConfig) {
+            systemConfig.native = systemConfig.native || {};
+            if (this.config.language) {
+                systemLanguage = this.config.language;
+            } else if (systemConfig.common?.language) {
+                systemLanguage = systemConfig.common.language;
             }
-        });
+
+            if (!systemConfig.native.secret) {
+                crypto.randomBytes(24, (_ex, buf) => {
+                    this.secret = buf.toString('hex');
+                    this.extendForeignObject('system.config', { native: { secret: this.secret } });
+                    this.init();
+                });
+            } else {
+                this.secret = systemConfig.native.secret;
+                this.init();
+            }
+        } else {
+            this.secret = secret;
+            this.log.error('Cannot find object system.config');
+        }
     }
 
     /**
      * Some message was sent to this instance over the message box. Used by email, pushover, text2speech, ...
      * Using this method requires "common.messagebox" property to be set to true in io-package.json
-     * @param obj
+     *
+     * @param obj the message object
      */
     onMessage(obj: ioBroker.Message): void {
         if (!obj) {
@@ -245,7 +244,7 @@ class Admin extends utils.Adapter {
                         { value: 1, label: 'first' },
                         { value: 2, label: 'second' },
                     ],
-                    obj.callback
+                    obj.callback,
                 )
             );
         } else if (obj.command === 'selectSendTo') {
@@ -261,7 +260,7 @@ class Admin extends utils.Adapter {
                         { label: 'Åland Islands', value: 'AX' },
                         { label: 'Albania', value: 'AL' },
                     ],
-                    obj.callback
+                    obj.callback,
                 )
             );
         } else if (obj.command === 'url') {
@@ -280,7 +279,8 @@ class Admin extends utils.Adapter {
 
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
-     * @param callback
+     *
+     * @param callback Callback after unloading
      */
     onUnload(callback: () => void): void {
         if (this.timerRepo) {
@@ -321,7 +321,7 @@ class Admin extends utils.Adapter {
 
     async createUpdateInfo(): Promise<void> {
         const promises = [];
-        // create connected object and state
+        // create a connected object and state
         const updatesNumberObj = objects[`${this.namespace}.info.updatesNumber`];
 
         if (!updatesNumberObj || !updatesNumberObj.common || updatesNumberObj.common.type !== 'number') {
@@ -351,7 +351,7 @@ class Admin extends utils.Adapter {
                 native: {},
             };
 
-            this.setObject(obj._id, obj);
+            await this.setObject(obj._id, obj);
         }
 
         const updatesListObj = objects[`${this.namespace}.info.updatesList`];
@@ -383,7 +383,7 @@ class Admin extends utils.Adapter {
                 native: {},
             };
 
-            this.setObject(obj._id, obj);
+            await this.setObject(obj._id, obj);
         }
 
         const newUpdatesObj = objects[`${this.namespace}.info.newUpdates`];
@@ -492,14 +492,15 @@ class Admin extends utils.Adapter {
     /**
      * Write the update information to the states
      */
-    writeUpdateInfo(
+    async writeUpdateInfo(
         /** current sources, if given */
-        sources?: Record<string, ioBroker.RepositoryJsonAdapterContent>
-    ): void {
+        sources?: Record<string, ioBroker.RepositoryJsonAdapterContent>,
+    ): Promise<void> {
         if (!objects['system.config'] || !objects['system.config'].common) {
             return this.log.warn('Repository cannot be read. Invalid "system.config" object.');
         }
-        const { activeRepo } = (objects['system.config'] as unknown as ioBroker.SystemConfigObject).common;
+        const activeRepo: string[] | undefined = (objects['system.config'] as unknown as ioBroker.SystemConfigObject)
+            .common?.activeRepo;
         const systemRepos = objects['system.repositories'];
 
         if (!sources) {
@@ -508,22 +509,22 @@ class Admin extends utils.Adapter {
             // If multi-repo case
             if (Array.isArray(activeRepo)) {
                 if (systemRepos?.native?.repositories) {
-                    activeRepo.forEach(repo => {
+                    for (const repo of activeRepo) {
                         if (systemRepos.native.repositories[repo]?.json) {
                             Object.assign(sources, systemRepos.native.repositories[repo].json);
                         } else {
-                            this.setState('info.updatesNumber', 0, true);
-                            this.setState('info.updatesList', '', true);
-                            this.setState('info.newUpdates', false, true);
-                            this.setState('info.updatesJson', '{}', true);
-                            this.setState('info.lastUpdateCheck', Date.now(), true);
+                            await this.setState('info.updatesNumber', 0, true);
+                            await this.setState('info.updatesList', '', true);
+                            await this.setState('info.newUpdates', false, true);
+                            await this.setState('info.updatesJson', '{}', true);
+                            await this.setState('info.lastUpdateCheck', Date.now(), true);
                             if (systemRepos.native.repositories[repo]) {
                                 this.log.warn(`Repository cannot be read: Active repo - ${repo}`);
                             } else {
                                 this.log.warn('No repository source configured');
                             }
                         }
-                    });
+                    }
                 }
             } else if (systemRepos?.native?.repositories?.[activeRepo]?.json) {
                 sources = systemRepos.native.repositories[activeRepo].json;
@@ -531,11 +532,11 @@ class Admin extends utils.Adapter {
         }
 
         if (!Object.keys(sources).length) {
-            this.setState('info.updatesNumber', 0, true);
-            this.setState('info.updatesList', '', true);
-            this.setState('info.newUpdates', false, true);
-            this.setState('info.updatesJson', '{}', true);
-            this.setState('info.lastUpdateCheck', Date.now(), true);
+            await this.setState('info.updatesNumber', 0, true);
+            await this.setState('info.updatesList', '', true);
+            await this.setState('info.newUpdates', false, true);
+            await this.setState('info.updatesJson', '{}', true);
+            await this.setState('info.lastUpdateCheck', Date.now(), true);
             if (Array.isArray(activeRepo)) {
                 let found = false;
                 if (systemRepos?.native?.repositories) {
@@ -552,18 +553,18 @@ class Admin extends utils.Adapter {
                             systemRepos?.native?.repositories
                                 ? Object.keys(systemRepos.native.repositories).join(', ')
                                 : 'none'
-                        }. Active repo(s): "${activeRepo.join('", "')}"`
+                        }. Active repo(s): "${activeRepo.join('", "')}"`,
                     );
                 }
-            } else if (systemRepos?.native?.repositories?.[activeRepo]) {
-                this.log.warn(`Repository cannot be read. Active repo: ${activeRepo}`);
+            } else if (systemRepos?.native?.repositories?.[activeRepo as unknown as string]) {
+                this.log.warn(`Repository cannot be read. Active repo: "${activeRepo as unknown as string}"`);
             } else {
                 this.log.warn(
                     `No repository source configured. Possible values: ${
                         systemRepos?.native?.repositories
                             ? Object.keys(systemRepos.native.repositories).join(', ')
                             : 'none'
-                    }. Active repo: "${activeRepo}"`
+                    }. Active repo: "${activeRepo as unknown as string}"`,
                 );
             }
             return;
@@ -574,72 +575,71 @@ class Admin extends utils.Adapter {
         const updatesJson: Record<string, UpdateInfo> = {};
         let newUpdateIndicator = false;
 
-        this.getState('info.updatesJson', (_err, state) => {
-            let oldUpdates;
-            if (typeof state?.val === 'string') {
-                try {
-                    oldUpdates = JSON.parse(state.val) || {};
-                } catch (e) {
-                    oldUpdates = {};
-                    this.log.warn(`Cannot parse info.updatesJson: ${e}`);
-                }
-            } else {
+        const state = await this.getStateAsync('info.updatesJson');
+        let oldUpdates;
+        if (typeof state?.val === 'string') {
+            try {
+                oldUpdates = JSON.parse(state.val) || {};
+            } catch (e) {
                 oldUpdates = {};
+                this.log.warn(`Cannot parse info.updatesJson: ${e}`);
             }
+        } else {
+            oldUpdates = {};
+        }
 
-            Object.keys(sources).forEach(name => {
-                try {
-                    if (installed[name]?.version && sources[name].version) {
+        Object.keys(sources).forEach(name => {
+            try {
+                if (installed[name]?.version && sources[name].version) {
+                    if (
+                        sources[name].version !== installed[name].version &&
+                        !this.upToDate(sources[name].version, installed[name].version)
+                    ) {
+                        // Check if updates are new or already known to user
                         if (
-                            sources[name].version !== installed[name].version &&
-                            !this.upToDate(sources[name].version, installed[name].version)
+                            !oldUpdates ||
+                            !oldUpdates[name] ||
+                            oldUpdates[name].availableVersion !== sources[name].version
                         ) {
-                            // Check if updates are new or already known to user
-                            if (
-                                !oldUpdates ||
-                                !oldUpdates[name] ||
-                                oldUpdates[name].availableVersion !== sources[name].version
-                            ) {
-                                newUpdateIndicator = true;
-                            } // endIf
-                            updatesJson[name] = {
-                                availableVersion: sources[name].version,
-                                installedVersion: installed[name].version,
-                            };
-                            // remove first part of the name
-                            const n = name.indexOf('.');
-                            list.push(n === -1 ? name : name.substring(n + 1));
-                        }
+                            newUpdateIndicator = true;
+                        } // endIf
+                        updatesJson[name] = {
+                            availableVersion: sources[name].version,
+                            installedVersion: installed[name].version,
+                        };
+                        // remove the first part of the name
+                        const n = name.indexOf('.');
+                        list.push(n === -1 ? name : name.substring(n + 1));
                     }
-                } catch (err) {
-                    this.log.warn(`Error on version check for ${name}: ${err}`);
                 }
+            } catch (err) {
+                this.log.warn(`Error on version check for ${name}: ${err}`);
+            }
+        });
+
+        await this.setState('info.updatesNumber', list.length, true);
+        await this.setState('info.updatesList', list.join(', '), true);
+        await this.setState('info.newUpdates', newUpdateIndicator, true);
+        await this.setState('info.updatesJson', JSON.stringify(updatesJson), true);
+        await this.setState('info.lastUpdateCheck', Date.now(), true);
+
+        if (!newUpdateIndicator) {
+            return;
+        }
+
+        const textArr = [];
+        for (const [adapter, updateInfo] of Object.entries(updatesJson)) {
+            const text = getAdapterUpdateText({
+                adapter,
+                installedVersion: updateInfo.installedVersion,
+                newVersion: updateInfo.availableVersion,
+                lang: systemLanguage,
             });
 
-            this.setState('info.updatesNumber', list.length, true);
-            this.setState('info.updatesList', list.join(', '), true);
-            this.setState('info.newUpdates', newUpdateIndicator, true);
-            this.setState('info.updatesJson', JSON.stringify(updatesJson), true);
-            this.setState('info.lastUpdateCheck', Date.now(), true);
+            textArr.push(text);
+        }
 
-            if (!newUpdateIndicator) {
-                return;
-            }
-
-            const textArr = [];
-            for (const [adapter, updateInfo] of Object.entries(updatesJson)) {
-                const text = getAdapterUpdateText({
-                    adapter,
-                    installedVersion: updateInfo.installedVersion,
-                    newVersion: updateInfo.availableVersion,
-                    lang: systemLanguage,
-                });
-
-                textArr.push(text);
-            }
-
-            this.registerNotification('admin', 'adapterUpdates', textArr.join('\n'));
-        });
+        await this.registerNotification('admin', 'adapterUpdates', textArr.join('\n'));
     }
 
     initSocket(server: unknown, store: unknown): void {
@@ -666,32 +666,11 @@ class Admin extends utils.Adapter {
             .catch(error => this.log.error(`Cannot read UUID: ${error}`));
     }
 
-    processTasks(): void {
-        if (!this._running && this._tasks.length) {
-            this._running = true;
-
-            const obj = this._tasks.shift();
-            if (!obj.acl || obj.acl.owner !== this.config.defaultUser) {
-                obj.acl.owner = this.config.defaultUser;
-                this.setForeignObject(obj._id, obj, () =>
-                    setImmediate(() => {
-                        this._running = false;
-                        this.processTasks();
-                    })
-                );
-            } else {
-                setImmediate(() => {
-                    this._running = false;
-                    this.processTasks();
-                });
-            }
-        }
-    }
-
-    async applyRightsToObjects(pattern: string, types: string[] | string): Promise<void> {
+    async applyRightsToObjects(pattern: string, types: string[] | string): Promise<number> {
+        let len = 0;
         if (typeof types === 'object') {
             for (const type of types) {
-                this.applyRightsToObjects(pattern, type);
+                len += await this.applyRightsToObjects(pattern, type);
             }
         } else {
             try {
@@ -703,57 +682,52 @@ class Admin extends utils.Adapter {
                 this._tasks = this._tasks || [];
 
                 for (const row of doc.rows) {
-                    this._tasks.push(row.value as ioBroker.AnyObject);
+                    const obj: ioBroker.AnyObject = row.value as ioBroker.AnyObject;
+                    if (!obj.acl || obj.acl.owner !== this.config.defaultUser) {
+                        obj.acl.owner = this.config.defaultUser;
+                        await this.setForeignObjectAsync(obj._id, obj);
+                        len++;
+                    }
                 }
-                this.processTasks();
             } catch (e) {
                 this.log.error(`Error applying rights to objects: ${e.message}`);
             }
         }
+        return len;
     }
 
-    applyRights(): void {
-        const promises: Promise<boolean>[] = [];
+    async applyRights(): Promise<void> {
         this.config.accessAllowedConfigs = this.config.accessAllowedConfigs || [];
         this.config.accessAllowedTabs = this.config.accessAllowedTabs || [];
+        let len = 0;
+        for (const id of this.config.accessAllowedConfigs) {
+            const obj = await this.getForeignObjectAsync(`system.adapter.${id}`);
+            if (obj?.acl && obj.acl.owner !== this.config.defaultUser) {
+                obj.acl.owner = this.config.defaultUser;
+                await this.setForeignObjectAsync(`system.adapter.${id}`, obj);
+                len++;
+            }
+        }
 
-        this.config.accessAllowedConfigs.forEach(id =>
-            promises.push(
-                new Promise(resolve =>
-                    this.getForeignObject(`system.adapter.${id}`, (err, obj) => {
-                        if (obj?.acl && obj.acl.owner !== this.config.defaultUser) {
-                            obj.acl.owner = this.config.defaultUser;
-                            this.setForeignObject(`system.adapter.${id}`, obj, err => resolve(!err));
-                        } else {
-                            resolve(false);
-                        }
-                    })
-                )
-            )
-        );
-
-        this.config.accessAllowedTabs.forEach(id => {
+        for (const id of this.config.accessAllowedTabs) {
             if (id.startsWith('devices.')) {
-                // change rights of all alias.*
-                this.applyRightsToObjects('alias', ['state', 'channel']);
+                // change rights of all `alias.*`
+                len += await this.applyRightsToObjects('alias', ['state', 'channel']);
             } else if (id.startsWith('javascript.')) {
                 // change rights of all script.js.*
-                this.applyRightsToObjects('javascript', ['script', 'channel']);
+                len += await this.applyRightsToObjects('javascript', ['script', 'channel']);
             } else if (id.startsWith('fullcalendar.')) {
                 // change rights of all fullcalendar.*
-                this.applyRightsToObjects('fullcalendar', ['schedule']);
+                len += await this.applyRightsToObjects('fullcalendar', ['schedule']);
             } else if (id.startsWith('scenes.')) {
                 // change rights of all scenes.*
-                this.applyRightsToObjects('scenes', ['state', 'channel']);
+                len += await this.applyRightsToObjects('scenes', ['state', 'channel']);
             }
-        });
+        }
 
-        Promise.all(promises).then(results => {
-            const len = results.filter(r => !!r).length;
-            if (len) {
-                this.log.info(`Updated ${len} objects`);
-            }
-        });
+        if (len) {
+            this.log.info(`Updated ${len} objects`);
+        }
     }
 
     /**
@@ -968,7 +942,7 @@ class Admin extends utils.Adapter {
                 await this.registerNotification(
                     'admin',
                     `${message.class}News`,
-                    `${message.title.en}\n${message.content.en}`
+                    `${message.title.en}\n${message.content.en}`,
                 );
             }
         }
@@ -977,12 +951,12 @@ class Admin extends utils.Adapter {
     /**
      * Check if adapter is active
      *
-     * @param adapterName
-     * @param instances
+     * @param adapterName name of the adapter
+     * @param instances list of instances
      */
     checkActive(
         adapterName: string,
-        instances: Awaited<ioBroker.GetObjectViewPromise<ioBroker.InstanceObject>>
+        instances: Awaited<ioBroker.GetObjectViewPromise<ioBroker.InstanceObject>>,
     ): boolean {
         return !!Object.keys(instances)
             .filter(id => id.startsWith(`adapter.system.${adapterName}.`))
@@ -992,8 +966,8 @@ class Admin extends utils.Adapter {
     /**
      * Check if conditions met
      *
-     * @param condition
-     * @param installedVersion
+     * @param condition condition to check
+     * @param installedVersion installed version
      */
     checkConditions(condition: string, installedVersion: string): boolean {
         if (condition.startsWith('equals')) {
@@ -1320,7 +1294,7 @@ class Admin extends utils.Adapter {
                     this.config.tmpPathAllow = true;
                 }
 
-                this.createUpdateInfo().then(() => this.writeUpdateInfo());
+                void this.createUpdateInfo().then(() => this.writeUpdateInfo());
             }
 
             if (callback) {
@@ -1342,7 +1316,7 @@ class Admin extends utils.Adapter {
                     // read a current version
                     if (Array.isArray(repository[_adapter].blockedVersions)) {
                         const instance = instances.rows.find(
-                            item => item.value?.common.name === _adapter && item.value.common.enabled
+                            item => item.value?.common.name === _adapter && item.value.common.enabled,
                         );
                         if (instance?.value?.common?.version) {
                             for (let i = 0; i < repository[_adapter].blockedVersions.length; i++) {
@@ -1350,7 +1324,7 @@ class Admin extends utils.Adapter {
                                     if (
                                         semver.satisfies(
                                             instance.value.common.version,
-                                            repository[_adapter].blockedVersions[i]
+                                            repository[_adapter].blockedVersions[i],
                                         )
                                     ) {
                                         // stop all instances
@@ -1362,8 +1336,8 @@ class Admin extends utils.Adapter {
                                                 this.log.warn(
                                                     `Instance ${obj._id.replace(
                                                         'system.adapter.',
-                                                        ''
-                                                    )} was disabled because blocked. Please update ${_adapter} to newer or available version`
+                                                        '',
+                                                    )} was disabled because blocked. Please update ${_adapter} to newer or available version`,
                                                 );
                                                 this.sendToHost(obj.common.host, 'addNotification', {
                                                     scope: 'system',
@@ -1376,7 +1350,7 @@ class Admin extends utils.Adapter {
                                     }
                                 } catch {
                                     this.log.error(
-                                        `Cannot check revoked versions: ${repository[_adapter].blockedVersions[i]}`
+                                        `Cannot check revoked versions: ${repository[_adapter].blockedVersions[i]}`,
                                     );
                                     // ignore
                                 }
@@ -1385,8 +1359,8 @@ class Admin extends utils.Adapter {
                     } else {
                         this.log.error(
                             `Invalid blockedVersions for ${_adapter}: ${JSON.stringify(
-                                repository[_adapter].blockedVersions
-                            )}. Expected array like ["<= 3.17.4"] or also ["~3.14.0", "~3.15.0", "~3.16.0"]`
+                                repository[_adapter].blockedVersions,
+                            )}. Expected array like ["<= 3.17.4"] or also ["~3.14.0", "~3.15.0", "~3.16.0"]`,
                         );
                     }
                 }
@@ -1402,7 +1376,7 @@ class Admin extends utils.Adapter {
             const ioPackage = JSON.parse(
                 fs.readFileSync(path.join(utils.controllerDir, 'io-package.json'), {
                     encoding: 'utf-8',
-                })
+                }),
             );
 
             ioPackage.objects.forEach(async (obj: ioBroker.AnyObject) => {
@@ -1427,15 +1401,15 @@ class Admin extends utils.Adapter {
             }
             this.log.debug(
                 `Next repo update on ${new Date(
-                    Date.now() + this.config.autoUpdate * ONE_HOUR_MS + 1
-                ).toLocaleString()}`
+                    Date.now() + this.config.autoUpdate * ONE_HOUR_MS + 1,
+                ).toLocaleString()}`,
             );
             this.timerRepo = setTimeout(
-                () => {
+                async () => {
                     this.timerRepo = null;
-                    this.updateRegister();
+                    await this.updateRegister();
                 },
-                this.config.autoUpdate * ONE_HOUR_MS + 1
+                this.config.autoUpdate * ONE_HOUR_MS + 1,
             );
         }
     }
@@ -1463,14 +1437,14 @@ class Admin extends utils.Adapter {
                         npm: CURRENT_MAX_MAJOR_NPM,
                     });
                 }
-            })
+            }),
         );
     }
 
     /**
      * Read repository information from active repository
      */
-    updateRegister(): void {
+    async updateRegister(): Promise<void> {
         if (lastRepoUpdate && Date.now() - lastRepoUpdate < 3600000) {
             this.log.error('Automatic repository update is not allowed more than once a hour');
             this.restartRepoUpdate();
@@ -1479,11 +1453,8 @@ class Admin extends utils.Adapter {
 
         lastRepoUpdate = Date.now();
 
-        this.getForeignObject('system.config', async (err, systemConfig) => {
-            if (err) {
-                this.log.error('May not read "system.config"');
-            }
-
+        try {
+            const systemConfig = await this.getForeignObjectAsync('system.config');
             if (systemConfig?.common) {
                 try {
                     const repos = await this.getForeignObjectAsync('system.repositories');
@@ -1500,14 +1471,12 @@ class Admin extends utils.Adapter {
                     // if repo is valid and actual
                     if (Array.isArray(active)) {
                         if (
-                            !err &&
                             Date.now() < repos.ts + this.config.autoUpdate * ONE_HOUR_MS &&
                             !active.find(repo => !repos?.native?.repositories?.[repo]?.json)
                         ) {
                             exists = true;
                         }
                     } else if (
-                        !err &&
                         repos?.native?.repositories?.[active]?.json &&
                         Date.now() < repos.ts + this.config.autoUpdate * ONE_HOUR_MS
                     ) {
@@ -1541,13 +1510,13 @@ class Admin extends utils.Adapter {
 
                                     socket?.repoUpdated();
                                     this.checkRevokedVersions(
-                                        _repository as unknown as Record<string, ioBroker.RepositoryJsonAdapterContent>
+                                        _repository as unknown as Record<string, ioBroker.RepositoryJsonAdapterContent>,
                                     ).catch(e => this.log.error(`Cannot check revoked versions: ${e}`));
                                 }
 
                                 // start the next cycle
                                 this.restartRepoUpdate();
-                            }
+                            },
                         );
                     } else if (this.config.autoUpdate) {
                         let interval = repos.ts + this.config.autoUpdate * ONE_HOUR_MS - Date.now() + 1;
@@ -1558,16 +1527,18 @@ class Admin extends utils.Adapter {
                         if (this.timerRepo) {
                             clearTimeout(this.timerRepo);
                         }
-                        this.timerRepo = setTimeout(() => {
+                        this.timerRepo = setTimeout(async () => {
                             this.timerRepo = null;
-                            this.updateRegister();
+                            await this.updateRegister();
                         }, interval);
                     }
                 } catch (err) {
                     this.log.error(`May not read "system.repositories": ${err}`);
                 }
             }
-        });
+        } catch {
+            this.log.error('May not read "system.config"');
+        }
     }
 
     // this function re-check if the common objects like '0_userdata.0' exist
@@ -1652,10 +1623,10 @@ class Admin extends utils.Adapter {
             this.config.defaultUser = `system.user.${this.config.defaultUser}`;
         }
 
-        this.checkCommonObjects().catch((e: unknown) => this.log.warn(`Cannot check common objects: ${e}`));
+        this.checkCommonObjects().catch((e: Error) => this.log.warn(`Cannot check common objects: ${e?.message}`));
 
         this.getData(
-            adapter => (webServer = new Web(adapter.config, adapter, this.initSocket.bind(this), { systemLanguage }))
+            adapter => (webServer = new Web(adapter.config, adapter, this.initSocket.bind(this), { systemLanguage })),
         );
 
         if (
@@ -1664,7 +1635,7 @@ class Admin extends utils.Adapter {
             !this.config.auth &&
             this.config.defaultUser !== 'system.user.admin'
         ) {
-            this.applyRights();
+            this.applyRights().catch((e: Error) => this.log.warn(`Cannot apply rights: ${e?.message}`));
         }
 
         // By default, update repository every 24 hours
@@ -1682,7 +1653,7 @@ class Admin extends utils.Adapter {
         }
 
         // check info.connected
-        this.getObjectAsync('info.connected').then(obj => {
+        void this.getObjectAsync('info.connected').then(obj => {
             if (!obj) {
                 const packageJson = JSON.parse(fs.readFileSync(`${__dirname}/../io-package.json`).toString('utf8'));
                 const obj = packageJson.instanceObjects.find((o: ioBroker.AnyObject) => o._id === 'info.connected');
@@ -1693,36 +1664,41 @@ class Admin extends utils.Adapter {
         });
 
         if (this.config.autoUpdate) {
-            this.updateRegister();
+            void this.updateRegister().catch(e => this.log.error(`Cannot update repository: ${e}`));
         }
 
-        this.updateNews();
+        void this.updateNews().catch(e => this.log.error(`Cannot update news: ${e}`));
         this.updateIcons();
-        this.validateUserData0();
+        void this.validateUserData0().catch(e => this.log.error(`Cannot validate 0_userdata: ${e}`));
     }
 
     /**
      * Create 0_userdata if it does not exist
      */
-    validateUserData0(): void {
-        this.getForeignObject('0_userdata.0', (err, obj) => {
-            if (!obj) {
-                try {
-                    const ioContent = fs.readFileSync(`${utils.controllerDir}/io-package.json`).toString('utf8');
-                    const io = JSON.parse(ioContent);
-                    if (io.objects) {
-                        const userData = io.objects.find((obj: ioBroker.AnyObject) => obj._id === '0_userdata.0');
-                        if (userData) {
-                            this.setForeignObject(userData._id, userData, () =>
-                                this.log.info('Object 0_userdata.0 was re-created')
-                            );
-                        }
+    async validateUserData0(): Promise<void> {
+        let obj: ioBroker.MetaObject | null | undefined;
+        try {
+            obj = await this.getForeignObjectAsync('0_userdata.0');
+        } catch {
+            // ignore
+        }
+        if (!obj) {
+            try {
+                const ioContent = fs.readFileSync(`${utils.controllerDir}/io-package.json`).toString('utf8');
+                const io = JSON.parse(ioContent);
+                if (io.objects) {
+                    const userData: ioBroker.MetaObject | null = io.objects.find(
+                        (obj: ioBroker.AnyObject) => obj._id === '0_userdata.0',
+                    );
+                    if (userData) {
+                        await this.setForeignObjectAsync(userData._id, userData);
+                        this.log.info('Object 0_userdata.0 was re-created');
                     }
-                } catch (e) {
-                    this.log.error(`Cannot read ${utils.controllerDir}/io-package.json: ${e}`);
                 }
+            } catch (e) {
+                this.log.error(`Cannot read ${utils.controllerDir}/io-package.json: ${e}`);
             }
-        });
+        }
     }
 }
 

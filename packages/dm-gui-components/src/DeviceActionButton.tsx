@@ -13,22 +13,18 @@ interface DeviceActionButtonProps {
 }
 
 export default function DeviceActionButton(props: DeviceActionButtonProps): React.JSX.Element {
-    const {
-        deviceId,
-        action,
-        refresh,
-        deviceHandler,
-        disabled,
-    } = props;
+    const { deviceId, action, refresh, deviceHandler, disabled } = props;
 
     const icon = renderActionIcon(action);
 
     const tooltip = getTranslation(action.description ?? '') || (icon ? null : action.id);
 
-    return <TooltipButton
-        tooltip={tooltip || undefined}
-        disabled={disabled || action.disabled}
-        Icon={icon}
-        onClick={deviceHandler(deviceId, action, refresh)}
-    />;
+    return (
+        <TooltipButton
+            tooltip={tooltip || undefined}
+            disabled={disabled || action.disabled}
+            Icon={icon}
+            onClick={deviceHandler(deviceId, action, refresh)}
+        />
+    );
 }

@@ -5,12 +5,13 @@
     "scripts": {
         "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && craco start",
         "old-start": "react-scripts start",
-        "lint": "eslint --fix --ext .js,.jsx,.tsx src",
+        "lint": "eslint -c eslint.config.mjs src",
         "build": "craco build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "check-ts": "tsc --noEmit --checkJS false",
-        "tsc": "tsc --project tsconfig.json"
+        "tsc": "tsc --project tsconfig.json",
+        "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"
     },
     "eslintConfig": {
         "extends": "react-app"
@@ -42,5 +43,5 @@
             }
         ]
     ],
-    "version": "7.1.0"
+    "version": "7.1.1"
 }

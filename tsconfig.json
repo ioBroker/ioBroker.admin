@@ -1,10 +1,10 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "paths": {
-      "@iobroker/jsonConfig": ["./packages/jsonConfig/src"],
-      "@iobroker/dm-gui-components": ["./packages/dm-gui-components/src"],
-      "iobroker.admin": ["./packages/admin/src-admin/src"]
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "paths": {
+            "@iobroker/jsonConfig": ["./packages/jsonConfig/src"],
+            "@iobroker/dm-gui-components": ["./packages/dm-gui-components/src"],
+            "iobroker.admin": ["./packages/admin/src-admin/src"]
+        }
     }
-  }
 }

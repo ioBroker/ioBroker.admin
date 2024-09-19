@@ -1,12 +1,25 @@
-import React, { createRef, type RefObject } from 'react';
+import React, { createRef, type JSX, type RefObject } from 'react';
 import Dropzone from 'react-dropzone';
 
 import {
-    Button, Dialog, DialogActions, DialogContent, DialogTitle,
-    IconButton, InputAdornment, Paper,
-    Table, TableBody, TableCell, TableContainer,
-    TableHead, TableRow, TableSortLabel,
-    TextField, Toolbar, Tooltip,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    InputAdornment,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TableSortLabel,
+    TextField,
+    Toolbar,
+    Tooltip,
     Typography,
     FormHelperText,
 } from '@mui/material';
@@ -30,7 +43,6 @@ import { I18n } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemTableIndexed, ConfigItemPanel, ConfigItemTable } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
-// eslint-disable-next-line import/no-cycle
 import ConfigPanel from './ConfigPanel';
 
 const MAX_SIZE = 1024 * 1024; // 1MB
@@ -109,9 +121,7 @@ const styles: Record<string, React.CSSProperties> = {
         height: 100,
         position: 'relative',
     },
-    dropZoneEmpty: {
-
-    },
+    dropZoneEmpty: {},
     uploadDiv: {
         position: 'relative',
         width: '100%',
@@ -176,8 +186,12 @@ const styles: Record<string, React.CSSProperties> = {
     },
 };
 
-function objectToArray(object: Record<string, any>, nameOfFirstAttr: string, nameOfSecondAttr?: string) {
-    nameOfFirstAttr  = nameOfFirstAttr || 'key';
+function objectToArray(
+    object: Record<string, any>,
+    nameOfFirstAttr: string,
+    nameOfSecondAttr?: string,
+): Record<string, any>[] {
+    nameOfFirstAttr = nameOfFirstAttr || 'key';
 
     const array: Record<string, any>[] = [];
     Object.keys(object).forEach(key => {
@@ -195,8 +209,12 @@ function objectToArray(object: Record<string, any>, nameOfFirstAttr: string, nam
     return array;
 }
 
-function arrayToObject(array: Record<string, any>[], nameOfFirstAttr: string, nameOfSecondAttr?: string) {
-    nameOfFirstAttr  = nameOfFirstAttr  || 'key';
+function arrayToObject(
+    array: Record<string, any>[],
+    nameOfFirstAttr: string,
+    nameOfSecondAttr?: string,
+): Record<string, any> {
+    nameOfFirstAttr = nameOfFirstAttr || 'key';
 
     const object: Record<string, any> = {};
 
@@ -240,7 +258,6 @@ interface ConfigTableState extends ConfigGenericState {
 function encrypt(secret: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
-        // eslint-disable-next-line no-bitwise
         result += String.fromCharCode(secret[i % secret.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -248,7 +265,6 @@ function encrypt(secret: string, value: string): string {
 function decrypt(secret: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
-        // eslint-disable-next-line no-bitwise
         result += String.fromCharCode(secret[i % secret.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -277,12 +293,17 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
      */
     async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        const _value: Record<string, any>[] | Record<string, any> = ConfigGeneric.getValue(this.props.data, this.props.attr) || [];
+        const _value: Record<string, any>[] | Record<string, any> =
+            ConfigGeneric.getValue(this.props.data, this.props.attr) || [];
         let value: Record<string, any>[];
 
         // if the list is given as an object
         if (this.props.schema.objKeyName) {
-            value = objectToArray(_value as Record<string, any>, this.props.schema.objKeyName, this.props.schema.objValueName);
+            value = objectToArray(
+                _value as Record<string, any>,
+                this.props.schema.objKeyName,
+                this.props.schema.objValueName,
+            );
         } else {
             value = _value as Record<string, any>[];
         }
@@ -304,17 +325,20 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             });
         }
 
-        this.setState({
-            value,
-            visibleValue: null,
-            orderBy: /* this.props.schema.items.length ? this.props.schema.items[0].attr : */'',
-            order: 'asc',
-            iteration: 0,
-            filterOn: [],
-        }, () => this.validateUniqueProps());
+        this.setState(
+            {
+                value,
+                visibleValue: null,
+                orderBy: /* this.props.schema.items.length ? this.props.schema.items[0].attr : */ '',
+                order: 'asc',
+                iteration: 0,
+                filterOn: [],
+            },
+            () => this.validateUniqueProps(),
+        );
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.typingTimer) {
             clearTimeout(this.typingTimer);
             this.typingTimer = null;
@@ -322,9 +346,10 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         super.componentWillUnmount();
     }
 
-    itemTable(attrItem: string, data: Record<string, any>, idx: number) {
+    itemTable(attrItem: string, data: Record<string, any>, idx: number): JSX.Element | null {
         const { schema } = this.props;
-        const schemaForAttribute = schema.items && schema.items.find((el: ConfigItemTableIndexed) => el.attr === attrItem);
+        const schemaForAttribute =
+            schema.items && schema.items.find((el: ConfigItemTableIndexed) => el.attr === attrItem);
 
         if (!schemaForAttribute) {
             return null;
@@ -336,61 +361,64 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             },
         };
 
-        return <ConfigPanel
-            index={idx + this.state.iteration}
-            arrayIndex={idx}
-            changed={this.props.changed}
-            globalData={this.props.data}
-            socket={this.props.socket}
-            adapterName={this.props.adapterName}
-            instance={this.props.instance}
-            common={this.props.common}
-            alive={this.props.alive}
-            themeType={this.props.themeType}
-            themeName={this.props.themeName}
-            data={data}
-            table
-            custom
-            schema={schemaItem as ConfigItemPanel}
-            systemConfig={this.props.systemConfig}
-            dateFormat={this.props.dateFormat}
-            isFloatComma={this.props.isFloatComma}
-            imagePrefix={this.props.imagePrefix}
-            onCommandRunning={this.props.onCommandRunning}
-            forceUpdate={this.props.forceUpdate}
-            originalData={this.props.originalData}
-            customs={this.props.customs}
-            theme={this.props.theme}
-            DeviceManager={this.props.DeviceManager}
-            onChange={(attr: string, valueChange: any) => {
-                const newObj: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
-                newObj[idx][attr] = valueChange;
-                this.setState({ value: newObj }, () => {
-                    this.validateUniqueProps();
-                    this.onChangeWrapper(newObj, true);
-                });
-            }}
-            onError={(error: string, attr?: string) => this.onError(error, attr)}
-            onBackEndCommand={this.props.onBackEndCommand}
-        />;
+        return (
+            <ConfigPanel
+                index={idx + this.state.iteration}
+                arrayIndex={idx}
+                changed={this.props.changed}
+                globalData={this.props.data}
+                socket={this.props.socket}
+                adapterName={this.props.adapterName}
+                instance={this.props.instance}
+                common={this.props.common}
+                alive={this.props.alive}
+                themeType={this.props.themeType}
+                themeName={this.props.themeName}
+                data={data}
+                table
+                custom
+                schema={schemaItem as ConfigItemPanel}
+                systemConfig={this.props.systemConfig}
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
+                imagePrefix={this.props.imagePrefix}
+                onCommandRunning={this.props.onCommandRunning}
+                forceUpdate={this.props.forceUpdate}
+                originalData={this.props.originalData}
+                customs={this.props.customs}
+                theme={this.props.theme}
+                DeviceManager={this.props.DeviceManager}
+                onChange={(attr: string, valueChange: any) => {
+                    const newObj: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
+                    newObj[idx][attr] = valueChange;
+                    this.setState({ value: newObj }, () => {
+                        this.validateUniqueProps();
+                        this.onChangeWrapper(newObj, true);
+                    });
+                }}
+                onError={(error: string, attr?: string) => this.onError(error, attr)}
+                onBackEndCommand={this.props.onBackEndCommand}
+            />
+        );
     }
 
     /**
      * Validate that columns configured in `uniqueColumns` have unique values
      */
-    validateUniqueProps() {
+    validateUniqueProps(): void {
         if (!this.props.schema.uniqueColumns) {
             return;
         }
 
         for (const uniqueCol of this.props.schema.uniqueColumns) {
-            /** @type {string[]} */
             const allVals: (string | number)[] = [];
             const found = this.state.value.find(entry => {
                 const val = entry[uniqueCol];
                 if (allVals.includes(val)) {
                     this.onError(uniqueCol, 'is not unique');
-                    this.setState({ errorMessage: I18n.t('Non-allowed duplicate entry "%s" in column "%s"', val, uniqueCol) });
+                    this.setState({
+                        errorMessage: I18n.t('Non-allowed duplicate entry "%s" in column "%s"', val, uniqueCol),
+                    });
                     return true;
                 }
                 allVals.push(val);
@@ -414,32 +442,36 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         return 0;
     }
 
-    static getComparator(order: 'desc' | 'asc', orderBy: string) {
+    static getComparator(
+        order: 'desc' | 'asc',
+        orderBy: string,
+    ): (a: Record<string, any>, b: Record<string, any>) => number {
         return order === 'desc'
-            ? (a: Record<string, any>, b: Record<string, any>) =>  ConfigTable.descendingComparator(a, b, orderBy)
+            ? (a: Record<string, any>, b: Record<string, any>) => ConfigTable.descendingComparator(a, b, orderBy)
             : (a: Record<string, any>, b: Record<string, any>) => -ConfigTable.descendingComparator(a, b, orderBy);
     }
 
-    static getFilterValue(el: React.RefObject<HTMLInputElement>) {
+    static getFilterValue(el: React.RefObject<HTMLInputElement>): string {
         return (el?.current?.children[0]?.children[0] as HTMLInputElement)?.value;
     }
 
-    static setFilterValue(el: React.RefObject<HTMLInputElement>, filterValue: string) {
-        return (el.current.children[0].children[0] as HTMLInputElement).value = filterValue;
+    static setFilterValue(el: React.RefObject<HTMLInputElement>, filterValue: string): string {
+        return ((el.current.children[0].children[0] as HTMLInputElement).value = filterValue);
     }
 
-    handleRequestSort = (property: string, orderCheck: boolean = false) => {
+    handleRequestSort = (property: string, orderCheck: boolean = false): void => {
         const { order, orderBy } = this.state;
         if (orderBy) {
             const isAsc = orderBy === property && order === 'asc';
-            const newOrder = orderCheck ? order : (isAsc ? 'desc' : 'asc');
+            const newOrder = orderCheck ? order : isAsc ? 'desc' : 'asc';
             const newValue = this.stableSort(newOrder, property);
             this.setState({ order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 }, () =>
-                this.applyFilter(false, newValue));
+                this.applyFilter(false, newValue),
+            );
         }
     };
 
-    stableSort = (order: 'desc' | 'asc', orderBy: string) => {
+    stableSort = (order: 'desc' | 'asc', orderBy: string): Record<string, any>[] => {
         const { value } = this.state;
         const comparator = ConfigTable.getComparator(order, orderBy);
         const stabilizedThis = value.map((el, index) => ({ el, index }));
@@ -455,118 +487,180 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         return stabilizedThis.map(el => el.el);
     };
 
-    enhancedTableHead(buttonsWidth: number, doAnyFilterSet: boolean) {
+    enhancedTableHead(buttonsWidth: number, doAnyFilterSet: boolean): JSX.Element {
         const { schema } = this.props;
         const { order, orderBy } = this.state;
-        return <TableHead>
-            <TableRow>
-                {schema.items && schema.items.map((headCell: ConfigItemTableIndexed, i: number) =>
-                    <TableCell
-                        style={{ width: typeof headCell.width === 'string' && headCell.width.endsWith('%') ? headCell.width : headCell.width }}
-                        key={`${headCell.attr}_${i}`}
-                        align="left"
-                        sortDirection={orderBy === headCell.attr ? order : false}
-                    >
-                        <div style={{ ...styles.flex, ...(schema.showFirstAddOnTop ? { flexDirection: 'column' } : undefined) }}>
-                            {!i && !schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                                <span>
-                                    <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
-                                        <AddIcon />
-                                    </IconButton>
-                                </span>
-                            </Tooltip> : null}
-                            {headCell.sort && <TableSortLabel
-                                active
-                                style={orderBy !== headCell.attr ? styles.silver : undefined}
-                                direction={orderBy === headCell.attr ? order : 'asc'}
-                                onClick={() => this.handleRequestSort(headCell.attr)}
-                            />}
-                            {headCell.filter && this.state.filterOn.includes(headCell.attr) ?
-                                <TextField
-                                    variant="standard"
-                                    ref={this.filterRefs[headCell.attr]}
-                                    onChange={() => this.applyFilter()}
-                                    title={I18n.t('ra_You can filter entries by entering here some text')}
-                                    InputProps={{
-                                        endAdornment: ConfigTable.getFilterValue(this.filterRefs[headCell.attr]) && <InputAdornment position="end">
-                                            <IconButton
-                                                size="small"
-                                                onClick={() => {
-                                                    ConfigTable.setFilterValue(this.filterRefs[headCell.attr], '');
-                                                    this.applyFilter();
-                                                }}
-                                            >
-                                                <CloseIcon />
-                                            </IconButton>
-                                        </InputAdornment>,
-                                    }}
-                                    fullWidth
-                                    placeholder={this.getText(headCell.title)}
-                                />
-                                : <span style={styles.headerText}>{this.getText(headCell.title)}</span>}
-                            {headCell.filter ? <IconButton
-                                title={I18n.t('ra_Show/hide filter input')}
-                                size="small"
-                                onClick={() => {
-                                    const filterOn = [...this.state.filterOn];
-                                    const pos = this.state.filterOn.indexOf(headCell.attr);
-                                    if (pos === -1) {
-                                        filterOn.push(headCell.attr);
-                                    } else {
-                                        filterOn.splice(pos, 1);
-                                    }
-                                    this.setState({ filterOn }, () => {
-                                        if (pos && ConfigTable.getFilterValue(this.filterRefs[headCell.attr])) {
-                                            ConfigTable.setFilterValue(this.filterRefs[headCell.attr], '');
-                                            this.applyFilter();
-                                        }
-                                    });
+        return (
+            <TableHead>
+                <TableRow>
+                    {schema.items &&
+                        schema.items.map((headCell: ConfigItemTableIndexed, i: number) => (
+                            <TableCell
+                                style={{
+                                    width:
+                                        typeof headCell.width === 'string' && headCell.width.endsWith('%')
+                                            ? headCell.width
+                                            : headCell.width,
                                 }}
+                                key={`${headCell.attr}_${i}`}
+                                align="left"
+                                sortDirection={orderBy === headCell.attr ? order : false}
                             >
-                                {this.state.filterOn.includes(headCell.attr) ? <IconFilterOff /> : <IconFilterOn />}
-                            </IconButton> : null}
-                        </div>
-                    </TableCell>)}
-                {!schema.noDelete && <TableCell
-                    style={{
-                        paddingLeft: 20, paddingRight: 20, width: buttonsWidth, textAlign: 'right',
-                    }}
-                    padding="checkbox"
-                >
-                    {schema.import ? <IconButton
-                        style={{ marginRight: 10 }}
-                        size="small"
-                        onClick={() => this.setState({ showImportDialog: true })}
-                        title={I18n.t('ra_import data from %s file', 'CSV')}
-                    >
-                        <ImportIcon />
-                    </IconButton> : null}
-                    {schema.export ? <IconButton
-                        style={{ marginRight: 10 }}
-                        size="small"
-                        onClick={() => this.onExport()}
-                        title={I18n.t('ra_Export data to %s file', 'CSV')}
-                    >
-                        <ExportIcon />
-                    </IconButton> : null}
-                    <IconButton disabled size="small">
-                        <DeleteIcon />
-                    </IconButton>
-                </TableCell>}
-            </TableRow>
-        </TableHead>;
+                                <div
+                                    style={{
+                                        ...styles.flex,
+                                        ...(schema.showFirstAddOnTop ? { flexDirection: 'column' } : undefined),
+                                    }}
+                                >
+                                    {!i && !schema.noDelete ? (
+                                        <Tooltip
+                                            title={
+                                                doAnyFilterSet
+                                                    ? I18n.t('ra_Cannot add items with set filter')
+                                                    : I18n.t('ra_Add row')
+                                            }
+                                            slotProps={{ popper: { sx: styles.tooltip } }}
+                                        >
+                                            <span>
+                                                <IconButton
+                                                    size="small"
+                                                    color="primary"
+                                                    disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter}
+                                                    onClick={this.onAdd}
+                                                >
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </span>
+                                        </Tooltip>
+                                    ) : null}
+                                    {headCell.sort && (
+                                        <TableSortLabel
+                                            active
+                                            style={orderBy !== headCell.attr ? styles.silver : undefined}
+                                            direction={orderBy === headCell.attr ? order : 'asc'}
+                                            onClick={() => this.handleRequestSort(headCell.attr)}
+                                        />
+                                    )}
+                                    {headCell.filter && this.state.filterOn.includes(headCell.attr) ? (
+                                        <TextField
+                                            variant="standard"
+                                            ref={this.filterRefs[headCell.attr]}
+                                            onChange={() => this.applyFilter()}
+                                            title={I18n.t('ra_You can filter entries by entering here some text')}
+                                            slotProps={{
+                                                input: {
+                                                    endAdornment: ConfigTable.getFilterValue(
+                                                        this.filterRefs[headCell.attr],
+                                                    ) && (
+                                                        <InputAdornment position="end">
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => {
+                                                                    ConfigTable.setFilterValue(
+                                                                        this.filterRefs[headCell.attr],
+                                                                        '',
+                                                                    );
+                                                                    this.applyFilter();
+                                                                }}
+                                                            >
+                                                                <CloseIcon />
+                                                            </IconButton>
+                                                        </InputAdornment>
+                                                    ),
+                                                },
+                                            }}
+                                            fullWidth
+                                            placeholder={this.getText(headCell.title)}
+                                        />
+                                    ) : (
+                                        <span style={styles.headerText}>{this.getText(headCell.title)}</span>
+                                    )}
+                                    {headCell.filter ? (
+                                        <IconButton
+                                            title={I18n.t('ra_Show/hide filter input')}
+                                            size="small"
+                                            onClick={() => {
+                                                const filterOn = [...this.state.filterOn];
+                                                const pos = this.state.filterOn.indexOf(headCell.attr);
+                                                if (pos === -1) {
+                                                    filterOn.push(headCell.attr);
+                                                } else {
+                                                    filterOn.splice(pos, 1);
+                                                }
+                                                this.setState({ filterOn }, () => {
+                                                    if (
+                                                        pos &&
+                                                        ConfigTable.getFilterValue(this.filterRefs[headCell.attr])
+                                                    ) {
+                                                        ConfigTable.setFilterValue(this.filterRefs[headCell.attr], '');
+                                                        this.applyFilter();
+                                                    }
+                                                });
+                                            }}
+                                        >
+                                            {this.state.filterOn.includes(headCell.attr) ? (
+                                                <IconFilterOff />
+                                            ) : (
+                                                <IconFilterOn />
+                                            )}
+                                        </IconButton>
+                                    ) : null}
+                                </div>
+                            </TableCell>
+                        ))}
+                    {!schema.noDelete && (
+                        <TableCell
+                            style={{
+                                paddingLeft: 20,
+                                paddingRight: 20,
+                                width: buttonsWidth,
+                                textAlign: 'right',
+                            }}
+                            padding="checkbox"
+                        >
+                            {schema.import ? (
+                                <IconButton
+                                    style={{ marginRight: 10 }}
+                                    size="small"
+                                    onClick={() => this.setState({ showImportDialog: true })}
+                                    title={I18n.t('ra_import data from %s file', 'CSV')}
+                                >
+                                    <ImportIcon />
+                                </IconButton>
+                            ) : null}
+                            {schema.export ? (
+                                <IconButton
+                                    style={{ marginRight: 10 }}
+                                    size="small"
+                                    onClick={() => this.onExport()}
+                                    title={I18n.t('ra_Export data to %s file', 'CSV')}
+                                >
+                                    <ExportIcon />
+                                </IconButton>
+                            ) : null}
+                            <IconButton
+                                disabled
+                                size="small"
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </TableCell>
+                    )}
+                </TableRow>
+            </TableHead>
+        );
     }
 
-    onDelete = (index: number) => () => {
+    onDelete = (index: number) => (): void => {
         const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
         newValue.splice(index, 1);
 
         this.setState({ value: newValue, iteration: this.state.iteration + 10_000 }, () =>
-            this.applyFilter(false, null, () =>
-                this.onChangeWrapper(newValue)));
+            this.applyFilter(false, null, () => this.onChangeWrapper(newValue)),
+        );
     };
 
-    onExport() {
+    onExport(): void {
         const { schema } = this.props;
         const { value } = this.state;
         const cols = schema.items.map((it: ConfigItemTableIndexed) => it.attr);
@@ -603,7 +697,8 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         // the first line is header
         const { schema } = this.props;
 
-        const header = lines.shift()
+        const header = lines
+            .shift()
             .split(';')
             .filter(it => it && schema.items.find((it2: ConfigItemTableIndexed) => it2.attr === it));
 
@@ -627,7 +722,6 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                     val = true;
                 } else if (value === 'false') {
                     val = false;
-                    // eslint-disable-next-line no-restricted-properties
                 } else if (window.isFinite(value as any as number)) {
                     const attr = this.props.schema.items.find((it: ConfigItemTableIndexed) => it.attr === header[p]);
                     if (attr && attr.type === 'number') {
@@ -656,7 +750,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         }
     }
 
-    onClone = (index: number) => () => {
+    onClone = (index: number) => (): void => {
         const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
         const cloned: Record<string, any> = JSON.parse(JSON.stringify(newValue[index]));
         if (typeof this.props.schema.clone === 'string' && typeof cloned[this.props.schema.clone] === 'string') {
@@ -669,8 +763,11 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             } else {
                 text += '_';
             }
-            // eslint-disable-next-line no-loop-func
-            while (newValue.find((it: Record<string, any>) => it[this.props.schema.clone as string] === text + i.toString())) {
+            while (
+                newValue.find(
+                    (it: Record<string, any>) => it[this.props.schema.clone as string] === text + i.toString(),
+                )
+            ) {
                 i++;
             }
             cloned[this.props.schema.clone] = `${cloned[this.props.schema.clone]}_${i}`;
@@ -679,79 +776,106 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         newValue.splice(index, 0, cloned);
 
         this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () =>
-            this.applyFilter(false, null, () =>
-                this.onChangeWrapper(newValue)));
+            this.applyFilter(false, null, () => this.onChangeWrapper(newValue)),
+        );
     };
 
-    onChangeWrapper = (newValue: Record<string, any>[], updateVisible?: boolean) => {
+    onChangeWrapper = (newValue: Record<string, any>[], updateVisible?: boolean): void => {
         if (this.typingTimer) {
             clearTimeout(this.typingTimer);
         }
 
-        this.typingTimer = setTimeout((value, _updateVisible) => {
-            this.typingTimer = null;
+        this.typingTimer = setTimeout(
+            (value, _updateVisible) => {
+                this.typingTimer = null;
 
-            if (this.props.schema.encryptedAttributes) {
-                const _value = JSON.parse(JSON.stringify(value));
-                _value.forEach((el: Record<string, any>) => {
-                    this.props.schema.encryptedAttributes.forEach((attr: string) => {
-                        if (el[attr]) {
-                            el[attr] = encrypt(this.secret, el[attr]);
-                        }
+                let mayBePromise: Promise<void> | void;
+                if (this.props.schema.encryptedAttributes) {
+                    const _value = JSON.parse(JSON.stringify(value));
+                    _value.forEach((el: Record<string, any>) => {
+                        this.props.schema.encryptedAttributes.forEach((attr: string) => {
+                            if (el[attr]) {
+                                el[attr] = encrypt(this.secret, el[attr]);
+                            }
+                        });
                     });
-                });
 
-                if (this.props.schema.objKeyName) {
-                    const objValue = arrayToObject(_value, this.props.schema.objKeyName, this.props.schema.objValueName);
-                    this.onChange(this.props.attr, objValue);
+                    if (this.props.schema.objKeyName) {
+                        const objValue = arrayToObject(
+                            _value,
+                            this.props.schema.objKeyName,
+                            this.props.schema.objValueName,
+                        );
+                        mayBePromise = this.onChange(this.props.attr, objValue);
+                    } else {
+                        mayBePromise = this.onChange(this.props.attr, _value);
+                    }
+                } else if (this.props.schema.objKeyName) {
+                    const objValue = arrayToObject(
+                        JSON.parse(JSON.stringify(value)),
+                        this.props.schema.objKeyName,
+                        this.props.schema.objValueName,
+                    );
+                    mayBePromise = this.onChange(this.props.attr, objValue);
                 } else {
-                    this.onChange(this.props.attr, _value);
+                    mayBePromise = this.onChange(this.props.attr, value);
                 }
-            } else if (this.props.schema.objKeyName) {
-                const objValue = arrayToObject(JSON.parse(JSON.stringify(value)), this.props.schema.objKeyName, this.props.schema.objValueName);
-                this.onChange(this.props.attr, objValue);
-            } else {
-                this.onChange(this.props.attr, value);
-            }
-
-            if (_updateVisible) {
-                this.applyFilter(false, value);
-                this.handleRequestSort(this.state.orderBy, true);
-            }
-        }, 300, newValue, updateVisible);
+                if (mayBePromise instanceof Promise) {
+                    mayBePromise.catch(e => console.error(`Cannot save: ${e}`));
+                }
+                if (_updateVisible) {
+                    this.applyFilter(false, value);
+                    this.handleRequestSort(this.state.orderBy, true);
+                }
+            },
+            300,
+            newValue,
+            updateVisible,
+        );
     };
 
-    onAdd = () => {
+    onAdd = (): void => {
         const { schema } = this.props;
         const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
-        const newItem = schema.items?.reduce((accumulator: Record<string, any>, currentValue: ConfigItemTableIndexed) => {
-            let defaultValue;
-            if (currentValue.defaultFunc) {
-                if (this.props.custom) {
-                    defaultValue = currentValue.defaultFunc ? this.executeCustom(
-                        currentValue.defaultFunc,
-                        this.props.data,
-                        this.props.customObj,
-                        this.props.instanceObj,
-                        newValue.length,
-                        this.props.data,
-                    ) : this.props.schema.default;
+        const newItem = schema.items?.reduce(
+            (accumulator: Record<string, any>, currentValue: ConfigItemTableIndexed) => {
+                let defaultValue;
+                if (currentValue.defaultFunc) {
+                    if (this.props.custom) {
+                        defaultValue = currentValue.defaultFunc
+                            ? this.executeCustom(
+                                  currentValue.defaultFunc,
+                                  this.props.data,
+                                  this.props.customObj,
+                                  this.props.instanceObj,
+                                  newValue.length,
+                                  this.props.data,
+                              )
+                            : this.props.schema.default;
+                    } else {
+                        defaultValue = currentValue.defaultFunc
+                            ? this.execute(
+                                  currentValue.defaultFunc,
+                                  this.props.schema.default,
+                                  this.props.data,
+                                  newValue.length,
+                                  this.props.data,
+                              )
+                            : this.props.schema.default;
+                    }
                 } else {
-                    defaultValue = currentValue.defaultFunc ? this.execute(currentValue.defaultFunc, this.props.schema.default, this.props.data, newValue.length, this.props.data) : this.props.schema.default;
+                    defaultValue = currentValue.default === undefined ? null : currentValue.default;
                 }
-            } else {
-                defaultValue = currentValue.default === undefined ? null : currentValue.default;
-            }
 
-            accumulator[currentValue.attr] = defaultValue;
-            return accumulator;
-        }, {});
+                accumulator[currentValue.attr] = defaultValue;
+                return accumulator;
+            },
+            {},
+        );
 
         newValue.push(newItem);
 
-        this.setState({ value: newValue }, () =>
-            this.applyFilter(false, null, () =>
-                this.onChangeWrapper(newValue)));
+        this.setState({ value: newValue }, () => this.applyFilter(false, null, () => this.onChangeWrapper(newValue)));
     };
 
     isAnyFilterSet(): boolean {
@@ -765,7 +889,9 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             let valueInputRef = ConfigTable.getFilterValue(this.filterRefs[attr]);
             if (!clear && valueInputRef) {
                 valueInputRef = valueInputRef.toLowerCase();
-                visibleValue = visibleValue.filter(idx => value[idx] && value[idx][attr] && value[idx][attr].toLowerCase().includes(valueInputRef));
+                visibleValue = visibleValue.filter(
+                    idx => value[idx] && value[idx][attr] && value[idx][attr].toLowerCase().includes(valueInputRef),
+                );
             } else if (this.filterRefs[attr].current) {
                 ConfigTable.setFilterValue(this.filterRefs[attr], '');
             }
@@ -789,27 +915,27 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         }
     };
 
-    onMoveUp(idx: number) {
+    onMoveUp(idx: number): void {
         const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
         const item = newValue[idx];
         newValue.splice(idx, 1);
         newValue.splice(idx - 1, 0, item);
         this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () =>
-            this.applyFilter(false, null, () =>
-                this.onChangeWrapper(newValue)));
+            this.applyFilter(false, null, () => this.onChangeWrapper(newValue)),
+        );
     }
 
-    onMoveDown(idx: number) {
+    onMoveDown(idx: number): void {
         const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
         const item = newValue[idx];
         newValue.splice(idx, 1);
         newValue.splice(idx + 1, 0, item);
         this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () =>
-            this.applyFilter(false, null, () =>
-                this.onChangeWrapper(newValue)));
+            this.applyFilter(false, null, () => this.onChangeWrapper(newValue)),
+        );
     }
 
-    onDrop(acceptedFiles: File[]) {
+    onDrop(acceptedFiles: File[]): void {
         const file = acceptedFiles[0];
         const reader = new FileReader();
 
@@ -820,138 +946,162 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 window.alert(I18n.t('ra_File is too big. Max %sk allowed. Try use SVG.', Math.round(MAX_SIZE / 1024)));
                 return;
             }
-            const text = new Uint8Array(reader.result as ArrayBufferLike)
-                .reduce((data, byte) => data + String.fromCharCode(byte), '');
+            const text = new Uint8Array(reader.result as ArrayBufferLike).reduce(
+                (data, byte) => data + String.fromCharCode(byte),
+                '',
+            );
 
             this.onImport(text);
         };
         reader.readAsArrayBuffer(file);
     }
 
-    showTypeOfImportDialog() {
+    showTypeOfImportDialog(): JSX.Element | null {
         if (!this.state.showTypeOfImportDialog) {
             return null;
         }
-        return <Dialog
-            open={!0}
-            onClose={() => this.setState({ showTypeOfImportDialog: false })}
-            maxWidth="md"
-        >
-            <DialogTitle>{I18n.t('ra_Append or replace?')}</DialogTitle>
-            <DialogContent>
-                {I18n.t('ra_Append %s entries or replace existing?', this.state.showTypeOfImportDialog.length)}
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    autoFocus
-                    onClick={() => {
-                        const value: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
+        return (
+            <Dialog
+                open={!0}
+                onClose={() => this.setState({ showTypeOfImportDialog: false })}
+                maxWidth="md"
+            >
+                <DialogTitle>{I18n.t('ra_Append or replace?')}</DialogTitle>
+                <DialogContent>
+                    {I18n.t('ra_Append %s entries or replace existing?', this.state.showTypeOfImportDialog.length)}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        autoFocus
+                        onClick={() => {
+                            const value: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
 
-                        (this.state.showTypeOfImportDialog as Record<string, any>[])
-                            .forEach((obj: Record<string, any>) => value.push(obj));
+                            (this.state.showTypeOfImportDialog as Record<string, any>[]).forEach(
+                                (obj: Record<string, any>) => value.push(obj),
+                            );
 
-                        this.setState({
-                            value,
-                            iteration: this.state.iteration + 10000,
-                            showTypeOfImportDialog: false,
-                        }, () =>
-                            this.applyFilter(false, null, () =>
-                                this.onChangeWrapper(value)));
-                    }}
-                >
-                    {I18n.t('ra_Append')}
-                </Button>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    autoFocus
-                    onClick={() => {
-                        const value: Record<string, any>[] = this.state.showTypeOfImportDialog as Record<string, any>[];
-                        this.setState({
-                            value,
-                            iteration: this.state.iteration + 10000,
-                            showTypeOfImportDialog: false,
-                        }, () =>
-                            this.applyFilter(false, null, () =>
-                                this.onChangeWrapper(value)));
-                    }}
-                >
-                    {I18n.t('ra_Replace')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                            this.setState(
+                                {
+                                    value,
+                                    iteration: this.state.iteration + 10000,
+                                    showTypeOfImportDialog: false,
+                                },
+                                () => this.applyFilter(false, null, () => this.onChangeWrapper(value)),
+                            );
+                        }}
+                    >
+                        {I18n.t('ra_Append')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        autoFocus
+                        onClick={() => {
+                            const value: Record<string, any>[] = this.state.showTypeOfImportDialog as Record<
+                                string,
+                                any
+                            >[];
+                            this.setState(
+                                {
+                                    value,
+                                    iteration: this.state.iteration + 10000,
+                                    showTypeOfImportDialog: false,
+                                },
+                                () => this.applyFilter(false, null, () => this.onChangeWrapper(value)),
+                            );
+                        }}
+                    >
+                        {I18n.t('ra_Replace')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
-    showImportDialog() {
+    showImportDialog(): JSX.Element | null {
         if (!this.state.showImportDialog) {
             return null;
         }
-        return <Dialog
-            open={!0}
-            onClose={() => this.setState({ showImportDialog: false })}
-            sx={{
-                '& .MuiDialog-paper': {
-                    minHeight: 500,
-                },
-            }}
-            maxWidth="md"
-            fullWidth
-        >
-            <DialogTitle>{I18n.t('ra_Import from %s', 'CSV')}</DialogTitle>
-            <DialogContent>
-                <Dropzone
-                    multiple={false}
-                    accept={{ 'text/csv': ['.csv'] }}
-                    maxSize={MAX_SIZE}
-                    onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
-                    onDragLeave={() => this.setState({ uploadFile: true })}
-                    onDrop={(acceptedFiles, errors) => {
-                        this.setState({ uploadFile: false });
-                        if (!acceptedFiles.length) {
-                            window.alert((errors && errors[0] && errors[0].errors && errors[0].errors[0] && errors[0].errors[0].message) || I18n.t('ra_Cannot upload'));
-                        } else {
-                            this.onDrop(acceptedFiles);
-                        }
-                    }}
-                >
-                    {({ getRootProps, getInputProps }) => <div
-                        style={{
-                            ...styles.uploadDiv,
-                            ...(this.state.uploadFile === 'dragging' ? styles.uploadDivDragging : undefined),
-                            ...styles.dropZone,
-                            ...(!this.state.icon ? styles.dropZoneEmpty : undefined),
+        return (
+            <Dialog
+                open={!0}
+                onClose={() => this.setState({ showImportDialog: false })}
+                sx={{
+                    '& .MuiDialog-paper': {
+                        minHeight: 500,
+                    },
+                }}
+                maxWidth="md"
+                fullWidth
+            >
+                <DialogTitle>{I18n.t('ra_Import from %s', 'CSV')}</DialogTitle>
+                <DialogContent>
+                    <Dropzone
+                        multiple={false}
+                        accept={{ 'text/csv': ['.csv'] }}
+                        maxSize={MAX_SIZE}
+                        onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
+                        onDragLeave={() => this.setState({ uploadFile: true })}
+                        onDrop={(acceptedFiles, errors) => {
+                            this.setState({ uploadFile: false });
+                            if (!acceptedFiles.length) {
+                                window.alert(
+                                    (errors &&
+                                        errors[0] &&
+                                        errors[0].errors &&
+                                        errors[0].errors[0] &&
+                                        errors[0].errors[0].message) ||
+                                        I18n.t('ra_Cannot upload'),
+                                );
+                            } else {
+                                this.onDrop(acceptedFiles);
+                            }
                         }}
-                        {...getRootProps()}
                     >
-                        <input {...getInputProps()} />
-                        <div style={styles.uploadCenterDiv}>
-                            <div style={styles.uploadCenterTextAndIcon}>
-                                <ImportIcon style={styles.uploadCenterIcon} />
-                                <div style={styles.uploadCenterText}>
-                                    {this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
-                                        I18n.t('ra_Place your files here or click here to open the browse dialog')}
+                        {({ getRootProps, getInputProps }) => (
+                            <div
+                                style={{
+                                    ...styles.uploadDiv,
+                                    ...(this.state.uploadFile === 'dragging' ? styles.uploadDivDragging : undefined),
+                                    ...styles.dropZone,
+                                    ...(!this.state.icon ? styles.dropZoneEmpty : undefined),
+                                }}
+                                {...getRootProps()}
+                            >
+                                <input {...getInputProps()} />
+                                <div style={styles.uploadCenterDiv}>
+                                    <div style={styles.uploadCenterTextAndIcon}>
+                                        <ImportIcon style={styles.uploadCenterIcon} />
+                                        <div style={styles.uploadCenterText}>
+                                            {this.state.uploadFile === 'dragging'
+                                                ? I18n.t('ra_Drop file here')
+                                                : I18n.t(
+                                                      'ra_Place your files here or click here to open the browse dialog',
+                                                  )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>}
-                </Dropzone>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    onClick={() => this.setState({ showImportDialog: false })}
-                    color="primary"
-                    startIcon={<IconClose />}
-                >
-                    {I18n.t('Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                        )}
+                    </Dropzone>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ showImportDialog: false })}
+                        color="primary"
+                        startIcon={<IconClose />}
+                    >
+                        {I18n.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
-    renderItem(/* error, disabled, defaultValue */) {
+    renderItem(/* error, disabled, defaultValue */): JSX.Element | null {
         const { schema } = this.props;
         let { visibleValue } = this.state;
 
@@ -968,90 +1118,182 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             tdStyle = { paddingTop: 1, paddingBottom: 1 };
         }
 
-        return <Paper style={styles.paper}>
-            {this.showImportDialog()}
-            {this.showTypeOfImportDialog()}
-            {schema.label ? <div style={styles.label}>
-                <Toolbar
-                    variant="dense"
-                    style={styles.rootTool}
-                >
-                    <Typography style={styles.title} variant="h6" id="tableTitle" component="div">
-                        {this.getText(schema.label)}
-                    </Typography>
-                </Toolbar>
-            </div> : null}
-            <TableContainer>
-                <Table style={styles.table} size="small">
-                    {this.enhancedTableHead(!doAnyFilterSet && !this.state.orderBy ? 120 : 64, doAnyFilterSet)}
-                    <TableBody>
-                        {visibleValue.map((idx, i) =>
-                            <TableRow
-                                hover
-                                key={`${idx}_${i}`}
+        return (
+            <Paper style={styles.paper}>
+                {this.showImportDialog()}
+                {this.showTypeOfImportDialog()}
+                {schema.label ? (
+                    <div style={styles.label}>
+                        <Toolbar
+                            variant="dense"
+                            style={styles.rootTool}
+                        >
+                            <Typography
+                                style={styles.title}
+                                variant="h6"
+                                id="tableTitle"
+                                component="div"
                             >
-                                {schema.items && schema.items.map((headCell: ConfigItemTableIndexed) =>
-                                    <TableCell key={`${headCell.attr}_${idx}`} align="left" style={tdStyle}>
-                                        {this.itemTable(headCell.attr, this.state.value[idx], idx)}
-                                    </TableCell>)}
-                                {!schema.noDelete && <TableCell align="left" style={{ ...tdStyle, ...styles.buttonCell }}>
-                                    {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                                        <IconButton size="small" onClick={() => this.onMoveUp(idx)}>
-                                            <UpIcon />
-                                        </IconButton>
-                                    </Tooltip> : <div style={styles.buttonEmpty} />) : null}
-                                    {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('ra_Move down')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                                        <IconButton size="small" onClick={() => this.onMoveDown(idx)}>
-                                            <DownIcon />
-                                        </IconButton>
-                                    </Tooltip> : <div style={styles.buttonEmpty} />) : null}
-                                    <Tooltip title={I18n.t('ra_Delete current row')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                                        <IconButton size="small" onClick={this.onDelete(idx)}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                    {this.props.schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                                        <IconButton size="small" onClick={this.onClone(idx)}>
-                                            <CopyContentIcon />
-                                        </IconButton>
-                                    </Tooltip> : null}
-                                </TableCell>}
-                            </TableRow>)}
-                        {!schema.noDelete && visibleValue.length >= (schema.showSecondAddAt || 5) ?
-                            <TableRow>
-                                <TableCell colSpan={schema.items.length + 1} style={{ ...tdStyle }}>
-                                    <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                                        <span>
-                                            <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
-                                                <AddIcon />
-                                            </IconButton>
-                                        </span>
-                                    </Tooltip>
-                                </TableCell>
-                            </TableRow> : null}
-                    </TableBody>
-                </Table>
-                {!visibleValue.length && this.state.value.length ?
-                    <div style={styles.filteredOut}>
-                        <Typography style={styles.title} variant="h6" id="tableTitle" component="div">
-                            {I18n.t('ra_All items are filtered out')}
-                            <IconButton
-                                size="small"
-                                onClick={() => this.applyFilter(true)}
+                                {this.getText(schema.label)}
+                            </Typography>
+                        </Toolbar>
+                    </div>
+                ) : null}
+                <TableContainer>
+                    <Table
+                        style={styles.table}
+                        size="small"
+                    >
+                        {this.enhancedTableHead(!doAnyFilterSet && !this.state.orderBy ? 120 : 64, doAnyFilterSet)}
+                        <TableBody>
+                            {visibleValue.map((idx, i) => (
+                                <TableRow
+                                    hover
+                                    key={`${idx}_${i}`}
+                                >
+                                    {schema.items &&
+                                        schema.items.map((headCell: ConfigItemTableIndexed) => (
+                                            <TableCell
+                                                key={`${headCell.attr}_${idx}`}
+                                                align="left"
+                                                style={tdStyle}
+                                            >
+                                                {this.itemTable(headCell.attr, this.state.value[idx], idx)}
+                                            </TableCell>
+                                        ))}
+                                    {!schema.noDelete && (
+                                        <TableCell
+                                            align="left"
+                                            style={{ ...tdStyle, ...styles.buttonCell }}
+                                        >
+                                            {!doAnyFilterSet && !this.state.orderBy ? (
+                                                i ? (
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Move up')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => this.onMoveUp(idx)}
+                                                        >
+                                                            <UpIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                ) : (
+                                                    <div style={styles.buttonEmpty} />
+                                                )
+                                            ) : null}
+                                            {!doAnyFilterSet && !this.state.orderBy ? (
+                                                i < visibleValue.length - 1 ? (
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Move down')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => this.onMoveDown(idx)}
+                                                        >
+                                                            <DownIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                ) : (
+                                                    <div style={styles.buttonEmpty} />
+                                                )
+                                            ) : null}
+                                            <Tooltip
+                                                title={I18n.t('ra_Delete current row')}
+                                                slotProps={{ popper: { sx: styles.tooltip } }}
+                                            >
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={this.onDelete(idx)}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                            {this.props.schema.clone ? (
+                                                <Tooltip
+                                                    title={I18n.t('ra_Clone current row')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
+                                                >
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={this.onClone(idx)}
+                                                    >
+                                                        <CopyContentIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            ) : null}
+                                        </TableCell>
+                                    )}
+                                </TableRow>
+                            ))}
+                            {!schema.noDelete && visibleValue.length >= (schema.showSecondAddAt || 5) ? (
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={schema.items.length + 1}
+                                        style={{ ...tdStyle }}
+                                    >
+                                        <Tooltip
+                                            title={
+                                                doAnyFilterSet
+                                                    ? I18n.t('ra_Cannot add items with set filter')
+                                                    : I18n.t('ra_Add row')
+                                            }
+                                            slotProps={{ popper: { sx: styles.tooltip } }}
+                                        >
+                                            <span>
+                                                <IconButton
+                                                    size="small"
+                                                    color="primary"
+                                                    disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter}
+                                                    onClick={this.onAdd}
+                                                >
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </span>
+                                        </Tooltip>
+                                    </TableCell>
+                                </TableRow>
+                            ) : null}
+                        </TableBody>
+                    </Table>
+                    {!visibleValue.length && this.state.value.length ? (
+                        <div style={styles.filteredOut}>
+                            <Typography
+                                style={styles.title}
+                                variant="h6"
+                                id="tableTitle"
+                                component="div"
                             >
-                                <CloseIcon />
-                            </IconButton>
-                        </Typography>
-                    </div> : null}
-            </TableContainer>
-            {schema.help ?
-                <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText>
-                : null}
-            {this.state.errorMessage ? <div style={{ display: 'flex', padding: '5px' }}>
-                <ErrorIcon color="error" />
-                <span style={{ color: 'red', alignSelf: 'center' }}>{this.state.errorMessage}</span>
-            </div> : null}
-        </Paper>;
+                                {I18n.t('ra_All items are filtered out')}
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.applyFilter(true)}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </Typography>
+                        </div>
+                    ) : null}
+                </TableContainer>
+                {schema.help ? (
+                    <FormHelperText>
+                        {this.renderHelp(
+                            this.props.schema.help,
+                            this.props.schema.helpLink,
+                            this.props.schema.noTranslation,
+                        )}
+                    </FormHelperText>
+                ) : null}
+                {this.state.errorMessage ? (
+                    <div style={{ display: 'flex', padding: '5px' }}>
+                        <ErrorIcon color="error" />
+                        <span style={{ color: 'red', alignSelf: 'center' }}>{this.state.errorMessage}</span>
+                    </div>
+                ) : null}
+            </Paper>
+        );
     }
 }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import type { ConfigItemImageSendTo } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -16,13 +16,13 @@ class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImag
 
     private _context: string | undefined;
 
-    componentDidMount() {
+    componentDidMount(): void {
         super.componentDidMount();
 
         this.askInstance();
     }
 
-    askInstance() {
+    askInstance(): void {
         if (this.props.alive) {
             let data = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
@@ -31,7 +31,7 @@ class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImag
                     try {
                         data = JSON.parse(dataStr);
                     } catch {
-                        console.error(`Cannot parse json data: ${data}`);
+                        console.error(`Cannot parse json data: ${JSON.stringify(data)}`);
                     }
                 }
             }
@@ -40,23 +40,25 @@ class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImag
                 data = null;
             }
 
-            this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
+            void this.props.socket
+                .sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
                 .then(image => this.setState({ image: image || '' }));
         }
     }
 
-    getContext() {
+    getContext(): string {
         const context: Record<string, any> = {};
 
         if (Array.isArray(this.props.schema.alsoDependsOn)) {
-            this.props.schema.alsoDependsOn.forEach(attr =>
-                context[attr] = ConfigGeneric.getValue(this.props.data, attr));
+            this.props.schema.alsoDependsOn.forEach(
+                attr => (context[attr] = ConfigGeneric.getValue(this.props.data, attr)),
+            );
         }
 
         return JSON.stringify(context);
     }
 
-    renderItem(/* error, disabled, defaultValue */) {
+    renderItem(/* error, disabled, defaultValue */): JSX.Element {
         if (this.props.alive) {
             const context = this.getContext();
             if (context !== this._context || !this.initialized) {
@@ -70,11 +72,13 @@ class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImag
             return null;
         }
 
-        return <img
-            alt="dynamic content"
-            src={this.state.image}
-            style={{ width: this.props.schema.width || '100%', height: this.props.schema.height }}
-        />;
+        return (
+            <img
+                alt="dynamic content"
+                src={this.state.image}
+                style={{ width: this.props.schema.width || '100%', height: this.props.schema.height }}
+            />
+        );
     }
 }
 

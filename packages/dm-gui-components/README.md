@@ -1,7 +1,9 @@
 # ReactJS component for ioBroker device manager
+
 This component requires the [dm-utils](https://github.com/ioBroker/dm-utils) in adapter.
 
 ## Usage
+
 ```jsx
 import React from 'react';
 import DeviceList from '@iobroker/dm-gui-components';
@@ -14,28 +16,36 @@ render() {
    />;
 }
 ```
+
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
 
 ## Changelog
+
 ### **WORK IN PROGRESS**
-* (foxriver76) update adapter-react-v5 version
+
+-   (foxriver76) update adapter-react-v5 version
 
 ### 0.0.10 (2023-12-14)
-* (bluefox) Changed layout of the device list
+
+-   (bluefox) Changed layout of the device list
 
 ### 0.0.7 (2023-12-14)
-* (bluefox) Added alive flag
+
+-   (bluefox) Added alive flag
 
 ### 0.0.4 (2023-12-12)
-* (bluefox) return the style of big cards
+
+-   (bluefox) return the style of big cards
 
 ### 0.0.3 (2023-12-12)
-* (bluefox) initial commit
+
+-   (bluefox) initial commit
 
 ## License
+
 MIT License
 
 Copyright (c) 2023-2024 Jey Cee <iobroker@all-smart.net>

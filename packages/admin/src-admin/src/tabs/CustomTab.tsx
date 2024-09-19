@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import { LinearProgress } from '@mui/material';
 
 import { withWidth, type ThemeType, Router } from '@iobroker/adapter-react-v5';
@@ -30,7 +30,7 @@ export async function getHref(
     hosts: Record<string, ioBroker.HostObject>,
     adminInstance: string,
     themeType: ThemeType,
-) {
+): Promise<string> {
     const instances = await instancesWorker.getInstances();
     let adapter = tab.replace(/^tab-/, '');
     const m = adapter.match(/-(\d+)$/);
@@ -73,22 +73,17 @@ export async function getHref(
         if (instNum === null) {
             _instNum = parseInt(instance._id.split('.').pop(), 10);
         } else {
-            _instNum = instNum as number;
+            _instNum = instNum;
         }
 
         // replace
-        const hrefs = AdminUtils.replaceLink(
-            href,
-            adapter,
-            _instNum,
-            {
-                hostname,
-                // it cannot be void
-                instances: instances as Record<string, ioBroker.InstanceObject>,
-                hosts,
-                adminInstance,
-            },
-        );
+        const hrefs = AdminUtils.replaceLink(href, adapter, _instNum, {
+            hostname,
+            // it cannot be void
+            instances: instances as Record<string, ioBroker.InstanceObject>,
+            hosts,
+            adminInstance,
+        });
 
         href = hrefs ? hrefs[0]?.url : '';
     }
@@ -128,46 +123,54 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             hosts[host._id] = host;
         }
 
-        getHref(
+        void getHref(
             this.props.instancesWorker,
             this.props.tab,
             this.props.hostname,
             hosts,
             this.props.adminInstance,
             this.props.themeName,
-        )
-            .then(href => {
-                this.setState({ href });
-                // check if href exists
-                // fetch(href)
-                //     .then(() => this.setState({ href }))
-                //     .catch(() => this.setState({ href: href.includes('tab_m.html') ? href.replace('tab_m.html', 'tab.html') : href.replace('tab.html', 'tab_m.html') }));
-            });
+        ).then(href => {
+            this.setState({ href });
+            // check if href exists
+            // fetch(href)
+            //     .then(() => this.setState({ href }))
+            //     .catch(() => this.setState({ href: href.includes('tab_m.html') ? href.replace('tab_m.html', 'tab.html') : href.replace('tab.html', 'tab_m.html') }));
+        });
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.registered) {
             this.props.onUnregisterIframeRef(this.refIframe);
             this.registered = false;
         }
-        (window.removeEventListener || window.detachEvent)(window.removeEventListener ? 'message' : 'onmessage', this.onMessage, false);
+        (window.removeEventListener || window.detachEvent)(
+            window.removeEventListener ? 'message' : 'onmessage',
+            this.onMessage,
+            false,
+        );
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (!this.registered && this.refIframe?.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
-        (window.addEventListener || window.attachEvent)(window.addEventListener ? 'message' : 'onmessage', this.onMessage, false);
+        (window.addEventListener || window.attachEvent)(
+            window.addEventListener ? 'message' : 'onmessage',
+            this.onMessage,
+            false,
+        );
     }
 
-    componentDidUpdate(/* prevProps, prevState, snapshot */) {
+    componentDidUpdate(/* prevProps, prevState, snapshot */): void {
         if (!this.registered && this.refIframe?.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
     }
 
+    // eslint-disable-next-line class-methods-use-this
     onMessage = (event: MessageEvent & { message: string }): void => {
         if (event.origin !== window.location.origin) {
             return;
@@ -180,7 +183,8 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         } else if (event.data === 'nochange' || event.message === 'nochange') {
             // this.props.configStored(true);
             console.warn('Application sends "nochange" message, but it is not processed yet');
-        } else if ((typeof event.data === 'string' && event.data.startsWith('goto:')) ||
+        } else if (
+            (typeof event.data === 'string' && event.data.startsWith('goto:')) ||
             (typeof event.message === 'string' && event.message.startsWith('goto:'))
         ) {
             const [, url] = (event.data || event.message).split(':');
@@ -189,21 +193,23 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         }
     };
 
-    render() {
+    render(): JSX.Element {
         if (!this.state.href) {
             return <LinearProgress />;
         }
 
-        return <iframe
-            ref={el => this.refIframe = el}
-            title={this.props.tab}
-            style={styles.root}
-            src={this.state.href}
-            onError={e => {
-                (e.target as HTMLIFrameElement).onerror = null;
-                this.setState({ href: this.state.href.replace('tab_m.html', 'tab.html') });
-            }}
-        />;
+        return (
+            <iframe
+                ref={el => (this.refIframe = el)}
+                title={this.props.tab}
+                style={styles.root}
+                src={this.state.href}
+                onError={e => {
+                    (e.target as HTMLIFrameElement).onerror = null;
+                    this.setState({ href: this.state.href.replace('tab_m.html', 'tab.html') });
+                }}
+            />
+        );
     }
 }
 

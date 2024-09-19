@@ -18,11 +18,13 @@ export default function InstanceActionButton(params: InstanceActionButtonProps):
 
     const icon = renderActionIcon(action);
 
-    return <TooltipButton
-        tooltip={tooltip}
-        label={title}
-        disabled={action.disabled}
-        Icon={icon}
-        onClick={instanceHandler(action)}
-    />;
+    return (
+        <TooltipButton
+            tooltip={tooltip}
+            label={title}
+            disabled={action.disabled}
+            Icon={icon}
+            onClick={instanceHandler(action)}
+        />
+    );
 }

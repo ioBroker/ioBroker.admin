@@ -1,4 +1,4 @@
-import React, { createRef } from 'react';
+import React, { createRef, type JSX } from 'react';
 import semver from 'semver';
 
 import {
@@ -12,7 +12,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Dialog, Box,
+    Dialog,
+    Box,
 } from '@mui/material';
 
 import {
@@ -35,8 +36,10 @@ import IsVisible from '@/components/IsVisible';
 import AdminUtils from '@/AdminUtils';
 import {
     TabHeader,
-    type AdminConnection, type IobTheme,
-    type ThemeType, type Translate,
+    type AdminConnection,
+    type IobTheme,
+    type ThemeType,
+    type Translate,
     TabContainer,
     Utils,
 } from '@iobroker/adapter-react-v5';
@@ -47,10 +50,7 @@ import type { InstanceEvent } from '@/Workers/InstancesWorker';
 import type { CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 
-import type {
-    Ratings,
-    AdapterCacheEntry,
-} from '@/components/Adapters/AdapterGeneric';
+import type { Ratings, AdapterCacheEntry } from '@/components/Adapters/AdapterGeneric';
 import type HostsWorker from '@/Workers/HostsWorker';
 import GitHubInstallDialog from '@/dialogs/GitHubInstallDialog';
 import AdapterInstallDialog, {
@@ -64,20 +64,23 @@ import type { AdminGuiConfig } from '@/types';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdminUpdater from '@/dialogs/AdminUpdater';
 
-type DockerInformation = {
-    /** If it is a Docker installation */
-    isDocker: boolean;
-    /** If it is the official Docker image */
-    isOfficial: true;
-    /** Semver string for official Docker image */
-    officialVersion: string;
-} | {
-    /** If it is a Docker installation */
-    isDocker: boolean;
-    /** If it is the official Docker image */
-    isOfficial: false;
-};
-type Platform = 'aix'
+type DockerInformation =
+    | {
+          /** If it is a Docker installation */
+          isDocker: boolean;
+          /** If it is the official Docker image */
+          isOfficial: true;
+          /** Semver string for official Docker image */
+          officialVersion: string;
+      }
+    | {
+          /** If it is a Docker installation */
+          isDocker: boolean;
+          /** If it is the official Docker image */
+          isOfficial: false;
+      };
+type Platform =
+    | 'aix'
     | 'android'
     | 'darwin'
     | 'freebsd'
@@ -308,7 +311,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             init: false,
             update: false,
             filterConnectionType: false,
-            search: ((window as any)._localStorage as Storage || window.localStorage).getItem('Adapter.search') || '',
+            search: (((window as any)._localStorage as Storage) || window.localStorage).getItem('Adapter.search') || '',
             oneListView: false,
             tableViewMode: false,
             updateList: false,
@@ -349,24 +352,26 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return this.wordCache[word];
     };
 
-    renderSlowConnectionWarning() {
+    renderSlowConnectionWarning(): JSX.Element | null {
         if (!this.state.showSlowConnectionWarning) {
             return null;
         }
-        return <SlowConnectionWarningDialog
-            readTimeoutMs={this.state.readTimeoutMs}
-            t={this.t}
-            onClose={readTimeoutMs => {
-                if (readTimeoutMs) {
-                    this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () => this.updateAll());
-                } else {
-                    this.setState({ showSlowConnectionWarning: false });
-                }
-            }}
-        />;
+        return (
+            <SlowConnectionWarningDialog
+                readTimeoutMs={this.state.readTimeoutMs}
+                t={this.t}
+                onClose={readTimeoutMs => {
+                    if (readTimeoutMs) {
+                        this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () => this.updateAll());
+                    } else {
+                        this.setState({ showSlowConnectionWarning: false });
+                    }
+                }}
+            />
+        );
     }
 
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         if (this.props.ready) {
             await this.updateAll();
             if (this.state.search) {
@@ -382,7 +387,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         await this.getAdaptersInfo(update, indicateUpdate);
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(): void {
         const descWidth = this.getDescWidth();
         if (this.state.descWidth !== descWidth) {
             this.setState({ descWidth });
@@ -392,7 +397,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.updateTimeout) {
             clearTimeout(this.updateTimeout);
         }
@@ -417,7 +422,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.props.instancesWorker.unregisterHandler(this.onAdaptersChanged);
     }
 
-    onAdaptersChanged = (events: (AdapterEvent | InstanceEvent)[]) => {
+    onAdaptersChanged = (events: (AdapterEvent | InstanceEvent)[]): void => {
         this.tempAdapters = this.tempAdapters || JSON.parse(JSON.stringify(this.state.adapters || {}));
         this.tempInstalled = this.tempInstalled || JSON.parse(JSON.stringify(this.state.installed || {}));
         this.tempInstances = this.tempInstances || JSON.parse(JSON.stringify(this.state.compactInstances || {}));
@@ -450,7 +455,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     // Update attributes
                     Object.keys(this.tempInstalled[name]).forEach(attr => {
                         if ((event.obj.common as Record<string, any>)[attr] !== undefined && attr !== 'installedFrom') {
-                            (this.tempInstalled[name] as Record<string, any>)[attr] = (event.obj.common as Record<string, any>)[attr];
+                            (this.tempInstalled[name] as Record<string, any>)[attr] = (
+                                event.obj.common as Record<string, any>
+                            )[attr];
                         }
                     });
                 } else {
@@ -472,7 +479,11 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             const compactInstances = this.tempInstances;
             this.tempInstances = null;
 
-            this.analyseInstalled({ adapters, installedLocal: installed, cb: () => this.calculateInfo(compactInstances) });
+            this.analyseInstalled({
+                adapters,
+                installedLocal: installed,
+                cb: () => this.calculateInfo(compactInstances),
+            });
         }, 300);
     };
 
@@ -485,10 +496,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         installedGlobal?: InstalledInfo;
         repository?: Record<string, RepoAdapterObject>;
         cb?: () => void;
-    }) {
-        let {
-            adapters, repository,
-        } = options;
+    }): void {
+        let { adapters, repository } = options;
 
         const { cb, installedLocal } = options;
         let { installedGlobal } = options;
@@ -557,9 +566,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     installedGlobal = { ...installedGlobal, ...res };
                 }
             } catch (e) {
-                window.alert(
-                    `Cannot getInstalled from "${host._id}" (timeout ${this.state.readTimeoutMs}ms): ${e}`,
-                );
+                window.alert(`Cannot getInstalled from "${host._id}" (timeout ${this.state.readTimeoutMs}ms): ${e}`);
                 if (e.toString().includes('timeout')) {
                     this.setState({ showSlowConnectionWarning: true });
                 }
@@ -569,11 +576,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return { installedLocal, installedGlobal };
     }
 
-    async getAdapters(
-        update?: boolean,
-        bigUpdate?: boolean,
-        indicateUpdate?: boolean,
-    ) {
+    async getAdapters(update?: boolean, bigUpdate?: boolean, indicateUpdate?: boolean): Promise<void> {
         console.log('[ADAPTERS] getAdapters');
 
         const currentHost = this.state.currentHost;
@@ -586,7 +589,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         let adapters: Record<string, ioBroker.AdapterObject>;
 
         try {
-            adapters = await this.props.adaptersWorker.getAdapters(update) || {};
+            adapters = (await this.props.adaptersWorker.getAdapters(update)) || {};
         } catch (e) {
             window.alert(`Cannot getAdapters: ${e}`);
         }
@@ -595,14 +598,13 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
 
         let repository: Record<string, RepoAdapterObject>;
         try {
-            repository = await this.props.socket
-                .getRepository(
-                    currentHost,
-                    { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate || indicateUpdate },
-                    update,
-                    this.state.readTimeoutMs,
-                );
-        } catch (e)  {
+            repository = await this.props.socket.getRepository(
+                currentHost,
+                { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate || indicateUpdate },
+                update,
+                this.state.readTimeoutMs,
+            );
+        } catch (e) {
             window.alert(`Cannot getRepository: ${e}`);
             if (e.toString().includes('timeout')) {
                 this.setState({ showSlowConnectionWarning: true });
@@ -610,7 +612,10 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         }
 
         return this.analyseInstalled({
-            adapters, installedLocal, repository, installedGlobal,
+            adapters,
+            installedLocal,
+            repository,
+            installedGlobal,
         });
     }
 
@@ -639,11 +644,12 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         adapterName: string,
         adapters: Record<string, ioBroker.AdapterCommon | AdapterCacheEntry>,
         lang: ioBroker.Languages,
-    ) {
+    ): string {
         if (!adapters[adapterName]) {
             return adapterName;
         }
-        const titleObj: ioBroker.StringOrTranslated = (adapters[adapterName] as ioBroker.AdapterCommon).titleLang || adapters[adapterName].title;
+        const titleObj: ioBroker.StringOrTranslated =
+            (adapters[adapterName] as ioBroker.AdapterCommon).titleLang || adapters[adapterName].title;
         let title: string;
         if (typeof titleObj === 'object') {
             title = titleObj[lang] || titleObj.en;
@@ -662,7 +668,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         sortByName: boolean,
         sortPopularFirst?: boolean,
         sortRecentlyUpdated?: boolean,
-    ) {
+    ): void {
         const titles: { [adapterName: string]: string } = {};
         list.sort((a, b) => {
             if (sortPopularFirst) {
@@ -692,7 +698,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
 
             if (installed[a] && installed[b]) {
                 if (sortByName) {
-                    return a > b ? 1 : (a < b ? -1 : 0);
+                    return a > b ? 1 : a < b ? -1 : 0;
                 }
                 titles[a] = titles[a] || Adapters.getAdapterTitle(a, adapters, lang);
                 titles[b] = titles[b] || Adapters.getAdapterTitle(b, adapters, lang);
@@ -707,7 +713,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             }
 
             if (sortByName) {
-                return a > b ? 1 : (a < b ? -1 : 0);
+                return a > b ? 1 : a < b ? -1 : 0;
             }
             // sort by real language name and not by adapter name
             titles[a] = titles[a] || Adapters.getAdapterTitle(a, adapters, lang);
@@ -720,13 +726,13 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     calculateInfo(
         compactInstances: Record<string, CompactInstanceInfo>,
         ratings?: Ratings | null,
-        hostData?: HostInfo & { 'Active instances': number; location: string; Uptime: number } | null,
+        hostData?: (HostInfo & { 'Active instances': number; location: string; Uptime: number }) | null,
         compactRepositories?: CompactSystemRepository | null,
-    ) {
+    ): Promise<void> {
         hostData = hostData || this.state.hostData;
         ratings = ratings || this.state.ratings;
         compactInstances = compactInstances || this.state.compactInstances;
-        if (!(compactRepositories as CompactSystemRepository)?._id) {
+        if (!compactRepositories?._id) {
             compactRepositories = this.state.compactRepositories;
         }
 
@@ -738,13 +744,15 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         const nodeJsVersion = (hostData?.['Node.js'] || '').replace('v', '');
         const hostOs = hostData?.os || '';
 
-        const categories: { [categoryType: string]: {
-            name: string;
-            translation: string;
-            count: number;
-            installed: number;
-            adapters: string[];
-        }; } = {};
+        const categories: {
+            [categoryType: string]: {
+                name: string;
+                translation: string;
+                count: number;
+                installed: number;
+                adapters: string[];
+            };
+        } = {};
         const categoriesSorted: {
             name: string;
             translation: string;
@@ -755,7 +763,11 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         let categoriesExpanded: { [categoryName: string]: boolean } = {};
         try {
             categoriesExpanded =
-                JSON.parse(((window as any)._localStorage as Storage || window.localStorage).getItem('Adapters.expandedCategories')) || {};
+                JSON.parse(
+                    (((window as any)._localStorage as Storage) || window.localStorage).getItem(
+                        'Adapters.expandedCategories',
+                    ),
+                ) || {};
         } catch {
             // ignore
         }
@@ -809,8 +821,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     } ${this.getWordVotes(adapter.rating.rating.c)})`,
                     _installed && _installed.version && adapter.rating[_installed.version]
                         ? `${this.t('Rating for')} v${_installed.version}: ${adapter.rating[_installed.version].r} (${
-                            adapter.rating[_installed.version].c
-                        } ${this.getWordVotes(adapter.rating.rating.c)})`
+                              adapter.rating[_installed.version].c
+                          } ${this.getWordVotes(adapter.rating.rating.c)})`
                         : '',
                 ]
                     .filter(i => i)
@@ -872,11 +884,14 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         const sortByName = this.state.filterTiles === 'Name A-Z';
 
         Object.keys(categories).forEach(type =>
-            Adapters.sortAdapters(categories[type].adapters, this.props.lang, installed, repository, sortByName));
+            Adapters.sortAdapters(categories[type].adapters, this.props.lang, installed, repository, sortByName),
+        );
 
         let installedList = 0;
         try {
-            installedList = JSON.parse(((window as any)._localStorage as Storage || window.localStorage).getItem('Adapters.installedList'));
+            installedList = JSON.parse(
+                (((window as any)._localStorage as Storage) || window.localStorage).getItem('Adapters.installedList'),
+            );
             // @ts-expect-error back compatibility
             if (installedList === false) {
                 installedList = 0;
@@ -884,12 +899,19 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         } catch {
             // ignore
         }
-        const oneListView = ((window as any)._localStorage as Storage || window.localStorage).getItem('Adapters.list') === 'true';
-        const tableViewMode = ((window as any)._localStorage as Storage || window.localStorage).getItem('Adapters.viewMode') === 'true';
-        const updateList = ((window as any)._localStorage as Storage || window.localStorage).getItem('Adapters.updateList') === 'true';
+        const oneListView =
+            (((window as any)._localStorage as Storage) || window.localStorage).getItem('Adapters.list') === 'true';
+        const tableViewMode =
+            (((window as any)._localStorage as Storage) || window.localStorage).getItem('Adapters.viewMode') === 'true';
+        const updateList =
+            (((window as any)._localStorage as Storage) || window.localStorage).getItem('Adapters.updateList') ===
+            'true';
         const categoriesTiles =
-            ((window as any)._localStorage as Storage || window.localStorage).getItem('Adapters.categoriesTiles') || 'All';
-        let filterTiles = ((window as any)._localStorage as Storage || window.localStorage).getItem('Adapters.filterTiles') || 'Description A-Z';
+            (((window as any)._localStorage as Storage) || window.localStorage).getItem('Adapters.categoriesTiles') ||
+            'All';
+        let filterTiles =
+            (((window as any)._localStorage as Storage) || window.localStorage).getItem('Adapters.filterTiles') ||
+            'Description A-Z';
         if (filterTiles === 'A-Z') {
             filterTiles = 'Description A-Z';
         }
@@ -905,7 +927,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     ratings,
                     filterTiles,
                     categoriesTiles,
-                    compactRepositories: compactRepositories as CompactSystemRepository,
+                    compactRepositories,
                     installedList,
                     compactInstances,
                     updateList,
@@ -925,7 +947,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         });
     }
 
-    async getAdaptersInfo(update?: boolean, indicateUpdate?: boolean) {
+    async getAdaptersInfo(update?: boolean, indicateUpdate?: boolean): Promise<void> {
         if (!this.state.currentHost) {
             return;
         }
@@ -943,12 +965,13 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                         this.setState({ update: true }, () => resolve());
                     });
                 }
-                const hostData: HostInfo & { 'Active instances': number; location: string; Uptime: number } = await this.props.socket.getHostInfo(currentHost, update, this.state.readTimeoutMs).catch(e => {
-                    window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`);
-                    if (e.toString().includes('timeout')) {
-                        this.setState({ showSlowConnectionWarning: true });
-                    }
-                });
+                const hostData: HostInfo & { 'Active instances': number; location: string; Uptime: number } =
+                    await this.props.socket.getHostInfo(currentHost, update, this.state.readTimeoutMs).catch(e => {
+                        window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`);
+                        if (e.toString().includes('timeout')) {
+                            this.setState({ showSlowConnectionWarning: true });
+                        }
+                    });
 
                 if (this.props.adminGuiConfig.admin.adapters?.allowAdapterRating !== false) {
                     try {
@@ -961,17 +984,15 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     ratings = null;
                 }
 
-                const compactInstances = await this.props.socket.getCompactInstances(update)
-                    .catch(e => {
-                        window.alert(`Cannot read countsOfInstances: ${e}`);
-                        return {};
-                    });
+                const compactInstances = await this.props.socket.getCompactInstances(update).catch(e => {
+                    window.alert(`Cannot read countsOfInstances: ${e}`);
+                    return {};
+                });
 
-                const compactRepositoriesEx = await this.props.socket.getCompactSystemRepositories(update)
-                    .catch(e => {
-                        window.alert(`Cannot read getCompactSystemRepositories: ${e}`);
-                        return {};
-                    });
+                const compactRepositoriesEx = await this.props.socket.getCompactSystemRepositories(update).catch(e => {
+                    window.alert(`Cannot read getCompactSystemRepositories: ${e}`);
+                    return {};
+                });
                 const compactRepositories: CompactSystemRepository = compactRepositoriesEx as CompactSystemRepository;
 
                 await this.calculateInfo(compactInstances || {}, ratings, hostData, compactRepositories);
@@ -981,12 +1002,12 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         }
     }
 
-    toggleCategory(category: string) {
+    toggleCategory(category: string): void {
         this.setState(oldState => {
             const categoriesExpanded = oldState.categoriesExpanded;
             categoriesExpanded[category] = !categoriesExpanded[category];
 
-            ((window as any)._localStorage as Storage || window.localStorage).setItem(
+            (((window as any)._localStorage as Storage) || window.localStorage).setItem(
                 'Adapters.expandedCategories',
                 JSON.stringify(categoriesExpanded),
             );
@@ -1017,8 +1038,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                                 result = installed
                                     ? checkVersion
                                         ? semver.satisfies(installed.version, dependency[name], {
-                                            includePrerelease: true,
-                                        })
+                                              includePrerelease: true,
+                                          })
                                         : true
                                     : false;
                             } catch {
@@ -1028,7 +1049,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     });
                 } else if (typeof dependencies === 'object') {
                     // back compatibility
-                    const _deps: { [_adapterName: string]: string } = dependencies as any as { [_adapterName: string]: string };
+                    const _deps: { [_adapterName: string]: string } = dependencies as any as {
+                        [_adapterName: string]: string;
+                    };
                     Object.keys(_deps).forEach(_adapterName => {
                         if (_adapterName && _deps[_adapterName] !== undefined && result) {
                             const installed = this.state.installed[_adapterName];
@@ -1037,8 +1060,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                                 result = installed
                                     ? checkVersion
                                         ? semver.satisfies(installed.version, _deps[_adapterName], {
-                                            includePrerelease: true,
-                                        })
+                                              includePrerelease: true,
+                                          })
                                         : true
                                     : false;
                             } catch {
@@ -1047,7 +1070,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                         }
                     });
                 } else {
-                    console.error(`[ADAPTERS] Invalid dependencies for ${adapterName}: ${JSON.stringify(dependencies)}`);
+                    console.error(
+                        `[ADAPTERS] Invalid dependencies for ${adapterName}: ${JSON.stringify(dependencies)}`,
+                    );
                 }
             }
 
@@ -1076,14 +1101,17 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return true;
     }
 
-    handleFilterChange(event: React.ChangeEvent<HTMLInputElement>) {
+    handleFilterChange(event: React.ChangeEvent<HTMLInputElement>): void {
         if (this.typingTimer) {
             clearTimeout(this.typingTimer);
         }
 
         this.typingTimer = setTimeout(
             value => {
-                ((window as any)._localStorage as Storage || window.localStorage).setItem('Adapter.search', value || '');
+                (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+                    'Adapter.search',
+                    value || '',
+                );
                 this.typingTimer = null;
                 this.filterAdapters(value);
             },
@@ -1096,14 +1124,14 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     //     this.setState({ filterConnectionType: !this.state.filterConnectionType });
     // }
 
-    expandAll() {
+    expandAll(): void {
         this.setState(oldState => {
             const categories = oldState.categories;
             const categoriesExpanded = oldState.categoriesExpanded;
 
             categories.forEach(category => (categoriesExpanded[category.name] = true));
 
-            ((window as any)._localStorage as Storage || window.localStorage).setItem(
+            (((window as any)._localStorage as Storage) || window.localStorage).setItem(
                 'Adapters.expandedCategories',
                 JSON.stringify(categoriesExpanded),
             );
@@ -1112,10 +1140,10 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         });
     }
 
-    collapseAll() {
+    collapseAll(): void {
         const categoriesExpanded = {};
 
-        ((window as any)._localStorage as Storage || window.localStorage).setItem(
+        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
             'Adapters.expandedCategories',
             JSON.stringify(categoriesExpanded),
         );
@@ -1123,16 +1151,19 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.setState({ categoriesExpanded });
     }
 
-    listTable() {
+    listTable(): void {
         const oneListView = !this.state.oneListView;
         if (oneListView) {
             this.expandAll();
         }
-        ((window as any)._localStorage as Storage || window.localStorage).setItem('Adapters.list', oneListView ? 'true' : 'false');
+        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+            'Adapters.list',
+            oneListView ? 'true' : 'false',
+        );
         this.setState({ oneListView });
     }
 
-    changeViewMode() {
+    changeViewMode(): void {
         this.cache.listOfVisibleAdapter = null;
         const tableViewMode = !this.state.tableViewMode;
 
@@ -1140,43 +1171,61 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         let filterTiles = this.state.filterTiles;
         if (tableViewMode && filterTiles !== 'Description A-Z' && filterTiles !== 'Name A-Z') {
             filterTiles = 'Description A-Z';
-            ((window as any)._localStorage as Storage || window.localStorage).setItem('Adapters.filterTiles', filterTiles);
+            (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+                'Adapters.filterTiles',
+                filterTiles,
+            );
         }
 
-        ((window as any)._localStorage as Storage || window.localStorage).setItem('Adapters.viewMode', tableViewMode ? 'true' : 'false');
+        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+            'Adapters.viewMode',
+            tableViewMode ? 'true' : 'false',
+        );
         this.setState({ tableViewMode, filterTiles });
     }
 
-    changeUpdateList() {
+    changeUpdateList(): void {
         this.cache.listOfVisibleAdapter = null;
         const updateList = !this.state.updateList;
-        ((window as any)._localStorage as Storage || window.localStorage).setItem('Adapters.updateList', updateList ? 'true' : 'false');
+        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+            'Adapters.updateList',
+            updateList ? 'true' : 'false',
+        );
         this.setState({ updateList });
     }
 
-    changeInstalledList(onlyInstalled?: boolean) {
+    changeInstalledList(onlyInstalled?: boolean): void {
         this.cache.listOfVisibleAdapter = null;
         let installedList = !this.state.installedList ? 1 : this.state.installedList < 2 ? 2 : 0;
         if (!installedList && onlyInstalled) {
             installedList = 1;
         }
-        ((window as any)._localStorage as Storage || window.localStorage).setItem('Adapters.installedList', JSON.stringify(installedList));
+        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+            'Adapters.installedList',
+            JSON.stringify(installedList),
+        );
         this.setState({ installedList });
     }
 
-    changeFilterTiles(filterTiles: string) {
+    changeFilterTiles(filterTiles: string): void {
         this.cache.listOfVisibleAdapter = null; // rebuild cache
-        ((window as any)._localStorage as Storage || window.localStorage).setItem('Adapters.filterTiles', filterTiles);
+        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+            'Adapters.filterTiles',
+            filterTiles,
+        );
         this.setState({ filterTiles });
     }
 
-    changeCategoriesTiles(categoriesTiles: string) {
+    changeCategoriesTiles(categoriesTiles: string): void {
         this.cache.listOfVisibleAdapter = null;
-        ((window as any)._localStorage as Storage || window.localStorage).setItem('Adapters.categoriesTiles', categoriesTiles);
+        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+            'Adapters.categoriesTiles',
+            categoriesTiles,
+        );
         this.setState({ categoriesTiles });
     }
 
-    filterAdapters(search?: string) {
+    filterAdapters(search?: string): void {
         search = search === undefined ? this.state.search : search;
         search = (search || '').toLowerCase().trim();
         let filteredList: string[] = [];
@@ -1213,7 +1262,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     } else {
                         adapter.keywords?.forEach(value => value.includes(search) && filteredList.push(name));
                     }
-                }));
+                }),
+            );
         } else {
             filteredList = null;
         }
@@ -1224,10 +1274,10 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         });
     }
 
-    clearAllFilters() {
-        ((window as any)._localStorage as Storage || window.localStorage).removeItem('Adapter.search');
-        ((window as any)._localStorage as Storage || window.localStorage).removeItem('Adapters.installedList');
-        ((window as any)._localStorage as Storage || window.localStorage).removeItem('Adapters.updateList');
+    clearAllFilters(): void {
+        (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapter.search');
+        (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.installedList');
+        (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.updateList');
         if (this.inputRef.current) {
             this.inputRef.current.value = '';
         }
@@ -1298,9 +1348,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         } as AdaptersContext;
     }
 
-    setAdminUpgradeTo = (version: string) => this.setState({ adminUpgradeTo: version });
+    setAdminUpgradeTo = (version: string): void => this.setState({ adminUpgradeTo: version });
 
-    buildCache(context: AdaptersContext) {
+    buildCache(context: AdaptersContext): void {
         this.cache.listOfVisibleAdapter = [];
         this.cache.adapters = {};
         const now = Date.now();
@@ -1311,11 +1361,13 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
 
         // get all visible adapters
         this.state.categories
-            .filter(cat =>
-                this.state.tableViewMode ||
-                !this.state.categoriesTiles ||
-                this.state.categoriesTiles === 'All' ||
-                cat.name === this.state.categoriesTiles)
+            .filter(
+                cat =>
+                    this.state.tableViewMode ||
+                    !this.state.categoriesTiles ||
+                    this.state.categoriesTiles === 'All' ||
+                    cat.name === this.state.categoriesTiles,
+            )
             .forEach(category =>
                 category.adapters.forEach(adapterName => {
                     const adapter = this.state.repository[adapterName];
@@ -1348,7 +1400,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                             if (titleObj && typeof titleObj === 'object') {
                                 title = titleObj[this.props.lang] || titleObj.en;
                             } else {
-                                title = titleObj as string || adapterName;
+                                title = (titleObj as string) || adapterName;
                             }
                             title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
 
@@ -1379,19 +1431,21 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                                 sentry: !!adapter.plugins?.sentry,
                                 daysAgo: daysAgo10,
                                 stat: adapter.stat || 0,
-                                daysAgoText: (daysAgo || daysAgo === 0)
-                                    ? daysAgo === 0
-                                        ? textDaysAgo0
-                                        : _daysAgo10 === 1
-                                            ? textDaysAgo1.replace('%d', daysAgo.toString())
-                                            : _daysAgo10 === 2 || _daysAgo10 === 3 || _daysAgo10 === 4
+                                daysAgoText:
+                                    daysAgo || daysAgo === 0
+                                        ? daysAgo === 0
+                                            ? textDaysAgo0
+                                            : _daysAgo10 === 1
+                                              ? textDaysAgo1.replace('%d', daysAgo.toString())
+                                              : _daysAgo10 === 2 || _daysAgo10 === 3 || _daysAgo10 === 4
                                                 ? textDaysAgo2.replace('%d', daysAgo.toString())
                                                 : textDaysAgo.replace('%d', daysAgo.toString())
-                                    : '',
+                                        : '',
                             };
                         }
                     }
-                }));
+                }),
+            );
 
         this.listOfVisibleAdapterLength = this.cache.listOfVisibleAdapter.length;
 
@@ -1405,7 +1459,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     this.state.installed,
                     this.cache.adapters,
                     sortByName,
-                ));
+                ),
+            );
         }
 
         Adapters.sortAdapters(
@@ -1422,27 +1477,28 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.forceUpdate();
     }
 
-    getUpdater() {
+    getUpdater(): JSX.Element | null {
         if (!this.state.showUpdater) {
             return null;
         }
-        return <AdaptersUpdaterDialog
-            theme={this.props.theme}
-            onSetCommandRunning={commandRunning => this.props.onSetCommandRunning(commandRunning)}
-            t={this.props.t}
-            currentHost={this.state.currentHost}
-            lang={this.props.lang}
-            installed={this.state.installed}
-            repository={this.state.repository}
-            toggleTranslation={this.props.toggleTranslation}
-            noTranslation={this.props.noTranslation}
-            onClose={reload =>
-                this.setState({ showUpdater: false }, () => reload && this.updateAll(true, false))}
-            socket={this.props.socket}
-        />;
+        return (
+            <AdaptersUpdaterDialog
+                theme={this.props.theme}
+                onSetCommandRunning={commandRunning => this.props.onSetCommandRunning(commandRunning)}
+                t={this.props.t}
+                currentHost={this.state.currentHost}
+                lang={this.props.lang}
+                installed={this.state.installed}
+                repository={this.state.repository}
+                toggleTranslation={this.props.toggleTranslation}
+                noTranslation={this.props.noTranslation}
+                onClose={reload => this.setState({ showUpdater: false }, () => reload && this.updateAll(true, false))}
+                socket={this.props.socket}
+            />
+        );
     }
 
-    getDescWidth() {
+    getDescWidth(): number {
         if (this.props.menuOpened) {
             return document.body.scrollWidth - SUM - 180 + 13;
         }
@@ -1453,70 +1509,84 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return document.body.scrollWidth - SUM - 50 + 13;
     }
 
-    getStatistics() {
+    getStatistics(): JSX.Element | null {
         if (this.state.showStatistics) {
-            return <Dialog open={!0} onClose={() => this.setState({ showStatistics: false })}>
-                <DialogTitle>{this.t('Statistics')}</DialogTitle>
-                <DialogContent style={{ fontSize: 16 }}>
-                    <Box component="div" sx={styles.counters}>
-                        {this.t('Total adapters')}
-:
-                        {' '}
-                        <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.allAdapters}</span>
-                    </Box>
-                    <Box component="div" sx={styles.counters}>
-                        {this.t('Installed adapters')}
-:
-                        {' '}
-                        <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.installedAdapters}</span>
-                    </Box>
-                    <Box component="div" sx={styles.counters}>
-                        {this.t('Last month updated adapters')}
-:
-                        {' '}
-                        <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.recentUpdatedAdapters}</span>
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        onClick={() => this.setState({ showStatistics: false })}
-                        color="primary"
-                        autoFocus
-                        startIcon={<CloseIcon />}
-                    >
-                        {this.props.t('Close')}
-                    </Button>
-                </DialogActions>
-            </Dialog>;
+            return (
+                <Dialog
+                    open={!0}
+                    onClose={() => this.setState({ showStatistics: false })}
+                >
+                    <DialogTitle>{this.t('Statistics')}</DialogTitle>
+                    <DialogContent style={{ fontSize: 16 }}>
+                        <Box
+                            component="div"
+                            sx={styles.counters}
+                        >
+                            {this.t('Total adapters')}:{' '}
+                            <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.allAdapters}</span>
+                        </Box>
+                        <Box
+                            component="div"
+                            sx={styles.counters}
+                        >
+                            {this.t('Installed adapters')}:{' '}
+                            <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.installedAdapters}</span>
+                        </Box>
+                        <Box
+                            component="div"
+                            sx={styles.counters}
+                        >
+                            {this.t('Last month updated adapters')}:{' '}
+                            <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.recentUpdatedAdapters}</span>
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            variant="contained"
+                            onClick={() => this.setState({ showStatistics: false })}
+                            color="primary"
+                            autoFocus
+                            startIcon={<CloseIcon />}
+                        >
+                            {this.props.t('Close')}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            );
         }
         return null;
     }
 
-    renderGitHubInstallDialog(context: AdaptersContext) {
+    renderGitHubInstallDialog(context: AdaptersContext): JSX.Element | null {
         if (!this.state.gitHubInstallDialog) {
             return null;
         }
 
-        return <GitHubInstallDialog
-            t={this.t}
-            categories={this.state.categories}
-            installed={this.state.installedGlobal}
-            upload={adapterName => this.props.executeCommand(`upload ${adapterName}${this.props.expertMode ? ' --debug' : ''}`)}
-            installFromUrl={(adapterName, debug, customUrl) => this.addInstance({
-                adapterName,
-                debug,
-                customUrl,
-                context,
-            })}
-            repository={this.state.repository}
-            onClose={() => {
-                this.setState({ gitHubInstallDialog: false });
-            }}
-        />;
+        return (
+            <GitHubInstallDialog
+                t={this.t}
+                categories={this.state.categories}
+                installed={this.state.installedGlobal}
+                upload={adapterName =>
+                    this.props.executeCommand(`upload ${adapterName}${this.props.expertMode ? ' --debug' : ''}`)
+                }
+                installFromUrl={(adapterName, debug, customUrl) =>
+                    this.addInstance({
+                        adapterName,
+                        debug,
+                        customUrl,
+                        context,
+                    })
+                }
+                repository={this.state.repository}
+                onClose={() => {
+                    this.setState({ gitHubInstallDialog: false });
+                }}
+            />
+        );
     }
 
-    renderHeader() {
+    renderHeader(): JSX.Element {
         let updateAllButtonAvailable =
             !this.props.commandRunning &&
             !!this.props.ready &&
@@ -1532,191 +1602,270 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             updateAllButtonAvailable = false;
         }
 
-        return <TabHeader>
-            <Tooltip title={this.t('Change view mode')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                <IconButton size="large" onClick={() => this.changeViewMode()}>
-                    {this.state.tableViewMode ? <ViewModuleIcon /> : <ViewListIcon />}
-                </IconButton>
-            </Tooltip>
-            <Tooltip title={this.t('Check adapter for updates')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                <IconButton size="large" onClick={() => this.updateAll(true, true)}>
-                    <RefreshIcon />
-                </IconButton>
-            </Tooltip>
-            {this.state.tableViewMode && !this.state.oneListView && <Tooltip
-                title={this.t('expand all')}
-                slotProps={{ popper: { sx: styles.tooltip } }}
-            >
-                <IconButton size="large" onClick={() => this.expandAll()}>
-                    <FolderOpenIcon />
-                </IconButton>
-            </Tooltip>}
-            {this.state.tableViewMode && !this.state.oneListView && <Tooltip
-                title={this.t('collapse all')}
-                slotProps={{ popper: { sx: styles.tooltip } }}
-            >
-                <IconButton size="large" onClick={() => this.collapseAll()}>
-                    <FolderIcon />
-                </IconButton>
-            </Tooltip>}
-            {this.state.tableViewMode && <Tooltip title={this.t('list')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                <IconButton size="large" onClick={() => this.listTable()}>
-                    <ListIcon color={this.state.oneListView ? 'primary' : 'inherit'} />
-                </IconButton>
-            </Tooltip>}
+        return (
+            <TabHeader>
+                <Tooltip
+                    title={this.t('Change view mode')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <IconButton
+                        size="large"
+                        onClick={() => this.changeViewMode()}
+                    >
+                        {this.state.tableViewMode ? <ViewModuleIcon /> : <ViewListIcon />}
+                    </IconButton>
+                </Tooltip>
+                <Tooltip
+                    title={this.t('Check adapter for updates')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <IconButton
+                        size="large"
+                        onClick={() => this.updateAll(true, true)}
+                    >
+                        <RefreshIcon />
+                    </IconButton>
+                </Tooltip>
+                {this.state.tableViewMode && !this.state.oneListView && (
+                    <Tooltip
+                        title={this.t('expand all')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            size="large"
+                            onClick={() => this.expandAll()}
+                        >
+                            <FolderOpenIcon />
+                        </IconButton>
+                    </Tooltip>
+                )}
+                {this.state.tableViewMode && !this.state.oneListView && (
+                    <Tooltip
+                        title={this.t('collapse all')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            size="large"
+                            onClick={() => this.collapseAll()}
+                        >
+                            <FolderIcon />
+                        </IconButton>
+                    </Tooltip>
+                )}
+                {this.state.tableViewMode && (
+                    <Tooltip
+                        title={this.t('list')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            size="large"
+                            onClick={() => this.listTable()}
+                        >
+                            <ListIcon color={this.state.oneListView ? 'primary' : 'inherit'} />
+                        </IconButton>
+                    </Tooltip>
+                )}
 
-            {/* <Tooltip title={this.t('Filter local connection type')} slotProps={{ popper: { sx: styles.tooltip } }}>
+                {/* <Tooltip title={this.t('Filter local connection type')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="large" onClick={() => this.toggleConnectionTypeFilter()}>
                     <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
                 </IconButton>
              </Tooltip> */}
-            {this.state.updateList ? <IconButton size="large" onClick={() => this.changeInstalledList(true)}>
-                <StarIcon
-                    color="primary"
-                    style={{ opacity: 0.3, color: this.state.installedList === 2 ? 'red' : undefined }}
-                />
-            </IconButton> :
-                <Tooltip
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                    title={this.t(
-                        !this.state.installedList
-                            ? 'Show only installed'
-                            : this.state.installedList === 1
-                                ? 'Showed only installed adapters'
-                                : 'Showed only installed adapters without instance.',
-                    )}
-                >
-                    <IconButton size="large" onClick={() => this.changeInstalledList()}>
+                {this.state.updateList ? (
+                    <IconButton
+                        size="large"
+                        onClick={() => this.changeInstalledList(true)}
+                    >
                         <StarIcon
-                            style={this.state.installedList === 2 ? { color: 'red' } : null}
-                            color={
-                                this.state.installedList === 1 ? 'primary' : 'inherit'
-                            }
+                            color="primary"
+                            style={{ opacity: 0.3, color: this.state.installedList === 2 ? 'red' : undefined }}
                         />
                     </IconButton>
-                </Tooltip>}
-            <IsVisible config={this.props.adminGuiConfig.admin} name="admin.adapters.filterUpdates">
-                <Tooltip title={this.t('Filter adapter with updates')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <IconButton size="large" onClick={() => this.changeUpdateList()}>
-                        <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
-                    </IconButton>
-                </Tooltip>
-            </IsVisible>
-            {updateAllButtonAvailable && <Tooltip title={this.t('Update all adapters')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                <IconButton
-                    size="large"
-                    onClick={() => this.setState({ showUpdater: true })}
-                    sx={styles.updateAllButton}
+                ) : (
+                    <Tooltip
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                        title={this.t(
+                            !this.state.installedList
+                                ? 'Show only installed'
+                                : this.state.installedList === 1
+                                  ? 'Showed only installed adapters'
+                                  : 'Showed only installed adapters without instance.',
+                        )}
+                    >
+                        <IconButton
+                            size="large"
+                            onClick={() => this.changeInstalledList()}
+                        >
+                            <StarIcon
+                                style={this.state.installedList === 2 ? { color: 'red' } : null}
+                                color={this.state.installedList === 1 ? 'primary' : 'inherit'}
+                            />
+                        </IconButton>
+                    </Tooltip>
+                )}
+                <IsVisible
+                    config={this.props.adminGuiConfig.admin}
+                    name="admin.adapters.filterUpdates"
                 >
-                    <UpdateIcon />
-                    <UpdateIcon className="admin-update-second-icon" />
-                </IconButton>
-            </Tooltip>}
+                    <Tooltip
+                        title={this.t('Filter adapter with updates')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            size="large"
+                            onClick={() => this.changeUpdateList()}
+                        >
+                            <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
+                        </IconButton>
+                    </Tooltip>
+                </IsVisible>
+                {updateAllButtonAvailable && (
+                    <Tooltip
+                        title={this.t('Update all adapters')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            size="large"
+                            onClick={() => this.setState({ showUpdater: true })}
+                            sx={styles.updateAllButton}
+                        >
+                            <UpdateIcon />
+                            <UpdateIcon className="admin-update-second-icon" />
+                        </IconButton>
+                    </Tooltip>
+                )}
 
-            {this.props.expertMode && this.props.adminGuiConfig.admin?.adapters.gitHubInstall !== false &&
-                <Tooltip title={this.t('Install from custom URL')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <IconButton size="large" onClick={() => this.setState({ gitHubInstallDialog: true })}>
-                        <GithubIcon />
-                    </IconButton>
-                </Tooltip>}
-            <div style={styles.grow} />
-            <TextField
-                variant="standard"
-                inputRef={this.inputRef}
-                label={this.t('Filter by name')}
-                defaultValue={this.state.search}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.handleFilterChange(event)}
-                slotProps={{
-                    input: {
-                        endAdornment: this.state.search ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => {
-                                    ((window as any)._localStorage as Storage || window.localStorage).removeItem('Adapter.search');
-                                    this.inputRef.current.value = '';
-                                    this.setState({ search: '' }, () => this.filterAdapters());
-                                }}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null,
-                    },
-                }}
-            />
+                {this.props.expertMode && this.props.adminGuiConfig.admin?.adapters.gitHubInstall !== false && (
+                    <Tooltip
+                        title={this.t('Install from custom URL')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            size="large"
+                            onClick={() => this.setState({ gitHubInstallDialog: true })}
+                        >
+                            <GithubIcon />
+                        </IconButton>
+                    </Tooltip>
+                )}
+                <div style={styles.grow} />
+                <TextField
+                    variant="standard"
+                    inputRef={this.inputRef}
+                    label={this.t('Filter by name')}
+                    defaultValue={this.state.search}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.handleFilterChange(event)}
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.search ? (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => {
+                                            (
+                                                ((window as any)._localStorage as Storage) || window.localStorage
+                                            ).removeItem('Adapter.search');
+                                            this.inputRef.current.value = '';
+                                            this.setState({ search: '' }, () => this.filterAdapters());
+                                        }}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ) : null,
+                        },
+                    }}
+                />
 
-            {!this.state.tableViewMode && <CustomSelectButton
-                t={this.t}
-                icons
-                contained={this.state.categoriesTiles !== 'All'}
-                translateSuffix="_group"
-                arrayItem={[{ name: 'All' }, ...this.state.categories]}
-                onClick={value => this.changeCategoriesTiles(value as string)}
-                value={this.state.categoriesTiles}
-            />}
-            <CustomSelectButton
-                t={this.t}
-                arrayItem={this.state.tableViewMode ? FILTERS.filter(item => !item.notByList) : FILTERS}
-                onClick={value => this.changeFilterTiles(value as string)}
-                value={this.state.filterTiles}
-            />
-            <div style={styles.grow} />
-            <IsVisible config={this.props.adminGuiConfig.admin} name="admin.adapters.statistics">
-                <Box
-                    component="div"
-                    sx={Utils.getStyle(this.props.theme, styles.infoAdapters, { display: { sm: 'none', md: 'inline-block' } })}
-                    onClick={() => this.setState({ showStatistics: true })}
+                {!this.state.tableViewMode && (
+                    <CustomSelectButton
+                        t={this.t}
+                        icons
+                        contained={this.state.categoriesTiles !== 'All'}
+                        translateSuffix="_group"
+                        arrayItem={[{ name: 'All' }, ...this.state.categories]}
+                        onClick={value => this.changeCategoriesTiles(value as string)}
+                        value={this.state.categoriesTiles}
+                    />
+                )}
+                <CustomSelectButton
+                    t={this.t}
+                    arrayItem={this.state.tableViewMode ? FILTERS.filter(item => !item.notByList) : FILTERS}
+                    onClick={value => this.changeFilterTiles(value as string)}
+                    value={this.state.filterTiles}
+                />
+                <div style={styles.grow} />
+                <IsVisible
+                    config={this.props.adminGuiConfig.admin}
+                    name="admin.adapters.statistics"
                 >
-                    <Box component="div" sx={{ ...styles.counters, ...styles.greenText }}>
-                        {this.t('Selected adapters')}
-                        <div ref={this.countRef} />
+                    <Box
+                        component="div"
+                        sx={Utils.getStyle(this.props.theme, styles.infoAdapters, {
+                            display: { sm: 'none', md: 'inline-block' },
+                        })}
+                        onClick={() => this.setState({ showStatistics: true })}
+                    >
+                        <Box
+                            component="div"
+                            sx={{ ...styles.counters, ...styles.greenText }}
+                        >
+                            {this.t('Selected adapters')}
+                            <div ref={this.countRef} />
+                        </Box>
+                        <Box
+                            component="div"
+                            sx={styles.counters}
+                        >
+                            {this.t('Total adapters')}:<div>{this.allAdapters}</div>
+                        </Box>
+                        <Box
+                            component="div"
+                            sx={styles.counters}
+                        >
+                            {this.t('Installed adapters')}:<div>{this.installedAdapters}</div>
+                        </Box>
+                        <Box
+                            component="div"
+                            sx={styles.counters}
+                        >
+                            {this.t('Last month updated adapters')}:<div>{this.recentUpdatedAdapters}</div>
+                        </Box>
                     </Box>
-                    <Box component="div" sx={styles.counters}>
-                        {this.t('Total adapters')}
-                        :
-                        <div>{this.allAdapters}</div>
-                    </Box>
-                    <Box component="div" sx={styles.counters}>
-                        {this.t('Installed adapters')}
-                        :
-                        <div>{this.installedAdapters}</div>
-                    </Box>
-                    <Box component="div" sx={styles.counters}>
-                        {this.t('Last month updated adapters')}
-                        :
-                        <div>{this.recentUpdatedAdapters}</div>
-                    </Box>
-                </Box>
-            </IsVisible>
-        </TabHeader>;
+                </IsVisible>
+            </TabHeader>
+        );
     }
 
     /**
      * Perform the Admin Upgrade via Webserver
      * This allows showing UI progress even admin is down
      */
-    renderWebserverUpgrade() {
+    renderWebserverUpgrade(): JSX.Element | null {
         if (!this.state.adminUpgradeTo) {
             return null;
         }
 
-        return <AdminUpdater
-            socket={this.props.socket}
-            themeType={this.props.themeType}
-            host={this.props.adminHost}
-            onClose={() => {
-                console.log('Close dialog');
-                this.setState({ adminUpgradeTo: '', showDialog: false });
-            }}
-            version={this.state.adminUpgradeTo}
-            adminInstance={this.props.adminInstance}
-            onUpdating={isUpdating => {
-                this.props.onUpdating(isUpdating);
-            }}
-            currentAdminVersion={this.props.currentAdminVersion}
-        />;
+        return (
+            <AdminUpdater
+                socket={this.props.socket}
+                themeType={this.props.themeType}
+                host={this.props.adminHost}
+                onClose={() => {
+                    console.log('Close dialog');
+                    this.setState({ adminUpgradeTo: '', showDialog: false });
+                }}
+                version={this.state.adminUpgradeTo}
+                adminInstance={this.props.adminInstance}
+                onUpdating={isUpdating => {
+                    this.props.onUpdating(isUpdating);
+                }}
+                currentAdminVersion={this.props.currentAdminVersion}
+            />
+        );
     }
 
-    render() {
+    render(): JSX.Element {
         if (!this.state.init) {
             return <LinearProgress />;
         }
@@ -1750,19 +1899,23 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         let stableRepo = Utils.isStableRepository(this.props.systemConfig.common.activeRepo);
 
         // if repositories are available
-        const repositories: Record<string, ioBroker.RepositoryInformation> = this.state.compactRepositories?.native?.repositories;
+        const repositories: Record<string, ioBroker.RepositoryInformation> =
+            this.state.compactRepositories?.native?.repositories;
         if (repositories) {
             // new style with multiple active repositories
             if (this.props.systemConfig.common.activeRepo) {
                 if (Array.isArray(this.props.systemConfig.common.activeRepo)) {
                     // if any active repo is not stable, show warning
                     stableRepo = !this.props.systemConfig.common.activeRepo.find(
-                        repo => !repo.toLowerCase().startsWith('stable') && !repositories[repo]?.json?._repoInfo?.stable,
+                        repo =>
+                            !repo.toLowerCase().startsWith('stable') && !repositories[repo]?.json?._repoInfo?.stable,
                     );
                 } else if (typeof this.props.systemConfig.common.activeRepo === 'string') {
                     // if active repo is not stable, show warning
-                    // @ts-expect-error deprecated, but could still come
-                    stableRepo = !this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable') && !repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo?.stable;
+                    stableRepo =
+                        // @ts-expect-error deprecated, but could still come
+                        !this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable') &&
+                        !repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo?.stable;
                 }
             }
         }
@@ -1810,47 +1963,53 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         const context = this.getContext(this.state.descWidth < 50);
 
         if (!this.cache.listOfVisibleAdapter) {
-            this.buildCacheTimer = this.buildCacheTimer || setTimeout(() => {
-                this.buildCacheTimer = null;
-                this.buildCache(context);
-            }, 0);
+            this.buildCacheTimer =
+                this.buildCacheTimer ||
+                setTimeout(() => {
+                    this.buildCacheTimer = null;
+                    this.buildCache(context);
+                }, 0);
         }
 
-        return <TabContainer>
-            {this.state.update && <Grid2>
-                <LinearProgress />
-            </Grid2>}
+        return (
+            <TabContainer>
+                {this.state.update && (
+                    <Grid2>
+                        <LinearProgress />
+                    </Grid2>
+                )}
 
-            {this.renderHeader()}
+                {this.renderHeader()}
 
-            <AdaptersList
-                stableRepo={stableRepo}
-                repoName={repoName}
-                context={context}
-                systemConfig={this.props.systemConfig}
-                tableViewMode={this.state.tableViewMode}
-                oneListView={this.state.oneListView}
-                update={this.state.update}
-                cachedAdapters={this.cache.adapters}
-                categories={this.state.categories}
-                categoriesExpanded={this.state.categoriesExpanded}
-                listOfVisibleAdapter={this.cache.listOfVisibleAdapter}
-                toggleCategory={category => this.toggleCategory(category)}
-                clearAllFilters={() => this.clearAllFilters()}
-                descWidth={this.state.descWidth}
-                sortByName={this.state.filterTiles === 'Name A-Z'}
-                sortPopularFirst={context.sortPopularFirst}
-                sortRecentlyUpdated={context.sortRecentlyUpdated}
-                commandRunning={this.props.commandRunning}
-            />
+                <AdaptersList
+                    stableRepo={stableRepo}
+                    repoName={repoName}
+                    context={context}
+                    systemConfig={this.props.systemConfig}
+                    tableViewMode={this.state.tableViewMode}
+                    oneListView={this.state.oneListView}
+                    update={this.state.update}
+                    cachedAdapters={this.cache.adapters}
+                    categories={this.state.categories}
+                    categoriesExpanded={this.state.categoriesExpanded}
+                    listOfVisibleAdapter={this.cache.listOfVisibleAdapter}
+                    toggleCategory={category => this.toggleCategory(category)}
+                    clearAllFilters={() => this.clearAllFilters()}
+                    descWidth={this.state.descWidth}
+                    sortByName={this.state.filterTiles === 'Name A-Z'}
+                    sortPopularFirst={context.sortPopularFirst}
+                    sortRecentlyUpdated={context.sortRecentlyUpdated}
+                    commandRunning={this.props.commandRunning}
+                />
 
-            {this.getUpdater()}
-            {this.getStatistics()}
-            {this.renderSlowConnectionWarning()}
-            {this.renderGitHubInstallDialog(context)}
-            {this.renderWebserverUpgrade()}
-            {this.renderDialogs(context)}
-        </TabContainer>;
+                {this.getUpdater()}
+                {this.getStatistics()}
+                {this.renderSlowConnectionWarning()}
+                {this.renderGitHubInstallDialog(context)}
+                {this.renderWebserverUpgrade()}
+                {this.renderDialogs(context)}
+            </TabContainer>
+        );
     }
 }
 

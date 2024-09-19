@@ -1,10 +1,6 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import {
-    Button,
-    TextField,
-    IconButton,
-} from '@mui/material';
+import { Button, TextField, IconButton } from '@mui/material';
 
 import {
     Article as IconText,
@@ -56,7 +52,7 @@ interface ConfigFileState extends ConfigGenericState {
 class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
     private imagePrefix = '../..';
 
-    componentDidMount() {
+    componentDidMount(): void {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         this.imagePrefix = this.props.imagePrefix === undefined ? './files' : this.props.imagePrefix;
@@ -65,13 +61,17 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
 
     static getDerivedStateFromProps(props: ConfigFileProps, state: ConfigFileState): Partial<ConfigFileState> | null {
         const value = ConfigGeneric.getValue(props.data, props.attr);
-        if (value === null || value === undefined || value.toString().trim() !== (state.value ||  '').toString().trim()) {
+        if (
+            value === null ||
+            value === undefined ||
+            value.toString().trim() !== (state.value || '').toString().trim()
+        ) {
             return { value: value ?? '' };
         }
         return null;
     }
 
-    loadFile() {
+    loadFile(): Promise<{ file: string; mimeType: string } | null> {
         const pos = this.state.value.indexOf('/');
         if (pos !== -1) {
             const adapter = this.state.value.substring(0, pos);
@@ -82,36 +82,48 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
         return Promise.resolve(null);
     }
 
-    play() {
-        this.loadFile()
-            .then(data => {
-                if (typeof AudioContext !== 'undefined' && data?.file) {
-                    const context = new AudioContext();
-                    const buf = ConfigFileSelector.base64ToArrayBuffer(data.file);
-                    context.decodeAudioData(buf, buffer => {
+    play(): void {
+        void this.loadFile().then(data => {
+            if (typeof AudioContext !== 'undefined' && data?.file) {
+                const context = new AudioContext();
+                const buf = ConfigFileSelector.base64ToArrayBuffer(data.file);
+                void context.decodeAudioData(
+                    buf,
+                    (buffer: AudioBuffer): void => {
                         const source = context.createBufferSource(); // creates a sound source
-                        source.buffer = buffer;                      // tell the source which sounds to play
-                        source.connect(context.destination);         // connect the source to the context's destination (the speakers)
+                        source.buffer = buffer; // tell the source which sounds to play
+                        source.connect(context.destination); // connect the source to the context's destination (the speakers)
                         source.start(0);
-                    }, err => window.alert(`Cannot play: ${err}`));
-                }
-            });
+                    },
+                    (err: DOMException): void => window.alert(`Cannot play: ${err.message}`),
+                );
+            }
+        });
     }
 
-    getIcon() {
+    getIcon(): JSX.Element | null {
         const extension = this.state.value.split('.').pop().toLowerCase();
         if (IMAGE_EXT.includes(extension)) {
-            return <div
-                style={{
-                    ...styles.selectedImage,
-                    backgroundImage: `url(${this.imagePrefix}/${this.state.value})`,
-                    backgroundSize: 'contain',
-                    backgroundRepeat: 'no-repeat',
-                }}
-            />;
+            return (
+                <div
+                    style={{
+                        ...styles.selectedImage,
+                        backgroundImage: `url(${this.imagePrefix}/${this.state.value})`,
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                    }}
+                />
+            );
         }
         if (AUDIO_EXT.includes(extension)) {
-            return <IconButton style={{ color: '#00FF00' }} onClick={() => this.play()}><IconPlay /></IconButton>;
+            return (
+                <IconButton
+                    style={{ color: '#00FF00' }}
+                    onClick={() => this.play()}
+                >
+                    <IconPlay />
+                </IconButton>
+            );
         }
         if (DOC_EXT.includes(extension)) {
             return <IconText />;
@@ -125,60 +137,78 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
         return null;
     }
 
-    renderFileBrowser() {
+    renderFileBrowser(): JSX.Element | null {
         if (!this.state.showFileBrowser) {
             return null;
         }
-        return <SelectFileDialog
-            imagePrefix={this.props.imagePrefix}
-            socket={this.props.socket}
-            selected={this.state.value}
-            onClose={() => this.setState({ showFileBrowser: false })}
-            onOk={_value => {
-                const value = Array.isArray(_value) ? _value[0] : _value as string;
-                this.setState({ value }, () =>
-                    this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
-            }}
-            selectOnlyFolders={this.props.schema.selectOnlyFolders}
-            allowUpload={this.props.schema.allowUpload}
-            allowDownload={this.props.schema.allowDownload}
-            allowCreateFolder={this.props.schema.allowCreateFolder}
-            allowView={this.props.schema.allowView}
-            showToolbar={this.props.schema.showToolbar}
-            limitPath={this.props.schema.limitPath}
-            theme={this.props.theme}
-        />;
+        return (
+            <SelectFileDialog
+                imagePrefix={this.props.imagePrefix}
+                socket={this.props.socket}
+                selected={this.state.value}
+                onClose={() => this.setState({ showFileBrowser: false })}
+                onOk={_value => {
+                    const value = Array.isArray(_value) ? _value[0] : _value;
+                    this.setState({ value }, () =>
+                        this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()),
+                    );
+                }}
+                selectOnlyFolders={this.props.schema.selectOnlyFolders}
+                allowUpload={this.props.schema.allowUpload}
+                allowDownload={this.props.schema.allowDownload}
+                allowCreateFolder={this.props.schema.allowCreateFolder}
+                allowView={this.props.schema.allowView}
+                showToolbar={this.props.schema.showToolbar}
+                limitPath={this.props.schema.limitPath}
+                theme={this.props.theme}
+            />
+        );
     }
 
-    renderItem(error: string, disabled: boolean /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */): JSX.Element {
         const icon = this.getIcon();
 
-        return <div style={styles.fullWidth}>
-            {icon}
-            <TextField
-                variant="standard"
-                style={icon ? styles.fullWidthIcon : styles.fullWidthOneButton}
-                value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
-                error={!!error}
-                disabled={!!disabled}
-                slotProps={{
-                    htmlInput: {
-                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                        readOnly: !!this.props.schema.disableEdit,
-                    },
-                }}
-                onChange={e => {
-                    const value = e.target.value;
-                    this.setState({ value }, () =>
-                        this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
-                }}
-                placeholder={this.getText(this.props.schema.placeholder)}
-                label={this.getText(this.props.schema.label)}
-                helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-            />
-            <Button variant="outlined" onClick={() => this.setState({ showFileBrowser: true })}>...</Button>
-            {this.renderFileBrowser()}
-        </div>;
+        return (
+            <div style={styles.fullWidth}>
+                {icon}
+                <TextField
+                    variant="standard"
+                    style={icon ? styles.fullWidthIcon : styles.fullWidthOneButton}
+                    value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
+                    error={!!error}
+                    disabled={!!disabled}
+                    slotProps={{
+                        htmlInput: {
+                            maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                            readOnly: !!this.props.schema.disableEdit,
+                        },
+                    }}
+                    onChange={e => {
+                        const value = e.target.value;
+                        this.setState({ value }, () =>
+                            this.onChange(
+                                this.props.attr,
+                                this.props.schema.trim === false ? value : (value || '').trim(),
+                            ),
+                        );
+                    }}
+                    placeholder={this.getText(this.props.schema.placeholder)}
+                    label={this.getText(this.props.schema.label)}
+                    helperText={this.renderHelp(
+                        this.props.schema.help,
+                        this.props.schema.helpLink,
+                        this.props.schema.noTranslation,
+                    )}
+                />
+                <Button
+                    variant="outlined"
+                    onClick={() => this.setState({ showFileBrowser: true })}
+                >
+                    ...
+                </Button>
+                {this.renderFileBrowser()}
+            </div>
+        );
     }
 }
 

@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, type JSX } from 'react';
 
 import {
     Button,
     Dialog,
     DialogActions,
     DialogContent,
-    Avatar, Card, Checkbox, DialogTitle,
-    FormControlLabel, MenuItem, Select,
+    Avatar,
+    Card,
+    Checkbox,
+    DialogTitle,
+    FormControlLabel,
+    MenuItem,
+    Select,
 } from '@mui/material';
 
 import {
@@ -17,9 +22,7 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
-import {
-    green, grey, orange, red,
-} from '@mui/material/colors';
+import { green, grey, orange, red } from '@mui/material/colors';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -57,31 +60,37 @@ const styles: Record<string, React.CSSProperties> = {
     checkbox: {
         minWidth: 160,
     },
-    statusIcon_1: { // circle
+    statusIcon_1: {
+        // circle
         border: '2px solid grey',
         borderRadius: 20,
         color: 'grey',
     },
-    statusIcon_2: { // square
+    statusIcon_2: {
+        // square
         border: '2px solid grey',
         borderRadius: 20,
         color: '#d32f2f',
     },
-    statusIcon_3: { // triangle
+    statusIcon_3: {
+        // triangle
         border: 0,
         borderRadius: 0,
         color: '#ffa726',
     },
-    statusIcon_4: { // watch
+    statusIcon_4: {
+        // watch
         border: '2px solid grey',
         borderRadius: 20,
         color: '#0055a9',
     },
-    statusIcon_5: { // circle ?
+    statusIcon_5: {
+        // circle ?
         border: '2px solid grey',
         borderRadius: 20,
     },
-    statusIcon_6: { // circle ?
+    statusIcon_6: {
+        // circle ?
         border: '2px solid grey',
         borderRadius: 20,
     },
@@ -103,31 +112,38 @@ const styles: Record<string, React.CSSProperties> = {
         marginRight: 10,
         filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)',
     },
-    statusIcon_green: { // square
+    statusIcon_green: {
+        // square
         border: '2px solid grey',
         borderRadius: 2,
     },
-    statusIcon_red: { // circle
+    statusIcon_red: {
+        // circle
         border: '2px solid grey',
         borderRadius: 20,
     },
-    statusIcon_orange: { // triangle
+    statusIcon_orange: {
+        // triangle
         border: 0,
         borderRadius: 0,
     },
-    statusIcon_orangeDevice: { // triangle
+    statusIcon_orangeDevice: {
+        // triangle
         border: 0,
         borderRadius: 0,
     },
-    statusIcon_blue: { // watch
+    statusIcon_blue: {
+        // watch
         border: '2px solid grey',
         borderRadius: 20,
     },
-    statusIcon_gray: { // circle ?
+    statusIcon_gray: {
+        // circle ?
         border: '2px solid grey',
         borderRadius: 20,
     },
-    statusIcon_grey: { // circle ?
+    statusIcon_grey: {
+        // circle ?
         border: '2px solid grey',
         borderRadius: 20,
     },
@@ -170,7 +186,7 @@ const modeArray = ['none', 'daemon', 'schedule', 'once'];
 //     'enabled and OK'
 // ];
 
-const getModeIcon = (idx: number, style: React.CSSProperties): React.JSX.Element | null => {
+const getModeIcon = (idx: number, style: React.CSSProperties): JSX.Element | null => {
     if (idx === 1) {
         return <SettingsIcon style={style} />;
     }
@@ -184,24 +200,27 @@ const getModeIcon = (idx: number, style: React.CSSProperties): React.JSX.Element
         return <ScheduleIcon style={style} />;
     }
     if (idx === 5) {
-        return <div
-            style={{
-                ...style,
-                width: 20,
-                height: 20,
-                margin: 2,
-                borderRadius: 2,
-            }}
-        >
-            <div style={{
-                width: 'calc(100% - 2px)',
-                height: 'calc(100% - 2px)',
-                borderRadius: 2,
-                margin: 1,
-                backgroundColor: '#66bb6a',
-            }}
-            />
-        </div>;
+        return (
+            <div
+                style={{
+                    ...style,
+                    width: 20,
+                    height: 20,
+                    margin: 2,
+                    borderRadius: 2,
+                }}
+            >
+                <div
+                    style={{
+                        width: 'calc(100% - 2px)',
+                        height: 'calc(100% - 2px)',
+                        borderRadius: 2,
+                        margin: 1,
+                        backgroundColor: '#66bb6a',
+                    }}
+                />
+            </div>
+        );
     }
 
     return null;
@@ -211,8 +230,16 @@ const statusArray: Record<string, { text: string; _class: string; status: string
     none: { text: 'none', _class: '', status: '' },
     disabled: { text: 'disabled', _class: 'statusIcon_grey', status: 'grey' },
     not_alive: { text: 'enabled, but not alive', _class: 'statusIcon_red', status: 'red' },
-    alive_not_connected: { text: 'enabled, alive, but not connected to controller', _class: 'statusIcon_orange', status: 'orange' },
-    alive_no_device: { text: 'enabled, alive, but not connected to device or service', _class: 'statusIcon_orangeDevice', status: 'orange' },
+    alive_not_connected: {
+        text: 'enabled, alive, but not connected to controller',
+        _class: 'statusIcon_orange',
+        status: 'orange',
+    },
+    alive_no_device: {
+        text: 'enabled, alive, but not connected to device or service',
+        _class: 'statusIcon_orangeDevice',
+        status: 'orange',
+    },
     ok: { text: 'enabled and OK', _class: 'statusIcon_green', status: 'green' },
 };
 
@@ -222,114 +249,135 @@ interface InstanceFilterDialogProps {
     filterStatus: string;
 }
 
-const InstanceFilterDialog = ({
-    onClose, filterMode, filterStatus,
-}: InstanceFilterDialogProps) => {
+const InstanceFilterDialog = ({ onClose, filterMode, filterStatus }: InstanceFilterDialogProps): JSX.Element => {
     const [modeCheck, setModeCheck] = useState(filterMode);
     const [statusCheck, setStatusCheck] = useState(filterStatus);
 
-    return <Dialog
-        onClose={() => onClose()}
-        open={!0}
-        sx={{ '& .MuiDialog-paper': styles.paper }}
-    >
-        <DialogTitle style={{ display: 'flex' }}>
-            <div style={{ display: 'flex' }}>
-                <Avatar variant="square" style={styles.square} src={filterIcon} />
-                {I18n.t('Filter instances')}
-            </div>
-        </DialogTitle>
-        <DialogContent style={styles.overflowHidden} dividers>
-            <Card style={styles.root}>
-                <div style={styles.rowBlock}>
-                    <FormControlLabel
-                        style={styles.checkbox}
-                        control={
-                            <Checkbox
-                                checked={!!modeCheck}
-                                onChange={e => (e.target.checked ? setModeCheck('daemon') : setModeCheck(null))}
-                            />
-                        }
-                        label={I18n.t('Filter by mode')}
+    return (
+        <Dialog
+            onClose={() => onClose()}
+            open={!0}
+            sx={{ '& .MuiDialog-paper': styles.paper }}
+        >
+            <DialogTitle style={{ display: 'flex' }}>
+                <div style={{ display: 'flex' }}>
+                    <Avatar
+                        variant="square"
+                        style={styles.square}
+                        src={filterIcon}
                     />
-                    <Select
-                        disabled={!modeCheck}
-                        variant="standard"
-                        value={modeCheck || 'none'}
-                        style={styles.select}
-                        onChange={el => {
-                            if (el.target.value === 'none') {
-                                setModeCheck(null);
-                            } else {
-                                setModeCheck(el.target.value);
-                            }
-                        }}
-                    >
-                        {modeArray.map(el => <MenuItem key={el} value={el}>
-                            {I18n.t(el)}
-                        </MenuItem>)}
-                    </Select>
+                    {I18n.t('Filter instances')}
                 </div>
-                <div style={styles.rowBlock}>
-                    <FormControlLabel
-                        style={styles.checkbox}
-                        control={
-                            <Checkbox
-                                checked={!!statusCheck}
-                                onChange={e => (e.target.checked ? setStatusCheck('ok') : setStatusCheck(null))}
-                            />
-                        }
-                        label={I18n.t('Filter by status')}
-                    />
-                    <Select
-                        disabled={!statusCheck}
-                        variant="standard"
-                        value={statusCheck || 'none'}
-                        style={styles.select}
-                        onChange={el => {
-                            if (el.target.value === 'none') {
-                                setStatusCheck(null);
-                            } else {
-                                setStatusCheck(el.target.value);
+            </DialogTitle>
+            <DialogContent
+                style={styles.overflowHidden}
+                dividers
+            >
+                <Card style={styles.root}>
+                    <div style={styles.rowBlock}>
+                        <FormControlLabel
+                            style={styles.checkbox}
+                            control={
+                                <Checkbox
+                                    checked={!!modeCheck}
+                                    onChange={e => (e.target.checked ? setModeCheck('daemon') : setModeCheck(null))}
+                                />
                             }
-                        }}
-                    >
-                        {Object.keys(statusArray).map((name, idx) => <MenuItem key={name} value={name}>
-                            <div style={styles.menuWrapper}>
-                                {statusArray[name].status ? <div style={styles.iconWrapper}>{getModeIcon(idx, styles[`statusIcon_${idx}`])}</div> : null}
-                                <div style={styles.textWrapper}>{I18n.t(statusArray[name].text)}</div>
-                            </div>
-                        </MenuItem>)}
-                    </Select>
-                </div>
-            </Card>
-        </DialogContent>
-        <DialogActions>
-            <Button
-                variant="contained"
-                autoFocus
-                disabled={modeCheck === filterMode && filterStatus === statusCheck}
-                onClick={() => {
-                    onClose({
-                        filterMode: modeCheck,
-                        filterStatus: statusCheck,
-                    });
-                }}
-                color="primary"
-                startIcon={<IconCheck />}
-            >
-                {I18n.t('Apply')}
-            </Button>
-            <Button
-                color="grey"
-                variant="contained"
-                onClick={() => onClose()}
-                startIcon={<IconClose />}
-            >
-                {I18n.t('Close')}
-            </Button>
-        </DialogActions>
-    </Dialog>;
+                            label={I18n.t('Filter by mode')}
+                        />
+                        <Select
+                            disabled={!modeCheck}
+                            variant="standard"
+                            value={modeCheck || 'none'}
+                            style={styles.select}
+                            onChange={el => {
+                                if (el.target.value === 'none') {
+                                    setModeCheck(null);
+                                } else {
+                                    setModeCheck(el.target.value);
+                                }
+                            }}
+                        >
+                            {modeArray.map(el => (
+                                <MenuItem
+                                    key={el}
+                                    value={el}
+                                >
+                                    {I18n.t(el)}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </div>
+                    <div style={styles.rowBlock}>
+                        <FormControlLabel
+                            style={styles.checkbox}
+                            control={
+                                <Checkbox
+                                    checked={!!statusCheck}
+                                    onChange={e => (e.target.checked ? setStatusCheck('ok') : setStatusCheck(null))}
+                                />
+                            }
+                            label={I18n.t('Filter by status')}
+                        />
+                        <Select
+                            disabled={!statusCheck}
+                            variant="standard"
+                            value={statusCheck || 'none'}
+                            style={styles.select}
+                            onChange={el => {
+                                if (el.target.value === 'none') {
+                                    setStatusCheck(null);
+                                } else {
+                                    setStatusCheck(el.target.value);
+                                }
+                            }}
+                        >
+                            {Object.keys(statusArray).map((name, idx) => (
+                                <MenuItem
+                                    key={name}
+                                    value={name}
+                                >
+                                    <div style={styles.menuWrapper}>
+                                        {statusArray[name].status ? (
+                                            <div style={styles.iconWrapper}>
+                                                {getModeIcon(idx, styles[`statusIcon_${idx}`])}
+                                            </div>
+                                        ) : null}
+                                        <div style={styles.textWrapper}>{I18n.t(statusArray[name].text)}</div>
+                                    </div>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </div>
+                </Card>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    autoFocus
+                    disabled={modeCheck === filterMode && filterStatus === statusCheck}
+                    onClick={() => {
+                        onClose({
+                            filterMode: modeCheck,
+                            filterStatus: statusCheck,
+                        });
+                    }}
+                    color="primary"
+                    startIcon={<IconCheck />}
+                >
+                    {I18n.t('Apply')}
+                </Button>
+                <Button
+                    color="grey"
+                    variant="contained"
+                    onClick={() => onClose()}
+                    startIcon={<IconClose />}
+                >
+                    {I18n.t('Close')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 };
 
 export default InstanceFilterDialog;

@@ -1,16 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
-import {
-    AppBar, CardMedia, CircularProgress,
-    IconButton, Paper, Toolbar,
-} from '@mui/material';
+import { AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar } from '@mui/material';
 
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 
 import {
     ToggleThemeMenu,
-    type IobTheme, type AdminConnection,
-    type ThemeType, type ThemeName,
+    type IobTheme,
+    type AdminConnection,
+    type ThemeType,
+    type ThemeName,
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
@@ -50,7 +49,6 @@ const styles: Record<string, any> = {
     wrapperHeader: {
         display: 'flex',
         alignItems: 'center',
-
     },
     headerName: {
         fontSize: 24,
@@ -144,14 +142,15 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
         };
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (!this.props.configs) {
-            this.props.socket.getEasyMode()
+            void this.props.socket
+                .getEasyMode()
                 .then((config: EasyModeConfig) => this.setState({ configs: config.configs }));
         }
     }
 
-    render() {
+    render(): JSX.Element {
         const {
             t,
             themeName,
@@ -176,79 +175,96 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
 
         const tab = location.id;
         const currentInstance = configs.find(({ id }) => id === tab);
-        return <Paper style={styles.wrapperEasyMode}>
-            <AppBar
-                color="default"
-                position="fixed"
-                sx={styles.appBar}
-            >
-                <Toolbar style={styles.toolBar}>
-                    <div style={styles.wrapperHeader}>
-                        <CardMedia
-                            onClick={(strictMode && !getLocation().dialog) || currentInstance?.tab ? () => navigate(currentInstance?.tab ? 'easy' : 'tab-intro') : null}
-                            style={{
-                                ...styles.img,
-                                ...(themeName === 'colored' ? styles.logoWhite : undefined),
-                                ...(((strictMode && !getLocation().dialog) || currentInstance?.tab) ? styles.logoPointer : undefined),
-                            }}
-                            component="img"
-                            image="img/no-image.png"
-                        />
-                        <div style={styles.headerName}>{t('Easy Admin')}</div>
-                    </div>
-                    <div style={styles.IconButtons}>
-                        {((strictMode && !getLocation().dialog) || currentInstance?.tab) && <IconButton size="large" onClick={() => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')}>
-                            <ArrowBackIcon />
-                        </IconButton>}
-                        <ToggleThemeMenu
+        return (
+            <Paper style={styles.wrapperEasyMode}>
+                <AppBar
+                    color="default"
+                    position="fixed"
+                    sx={styles.appBar}
+                >
+                    <Toolbar style={styles.toolBar}>
+                        <div style={styles.wrapperHeader}>
+                            <CardMedia
+                                onClick={
+                                    (strictMode && !getLocation().dialog) || currentInstance?.tab
+                                        ? () => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')
+                                        : null
+                                }
+                                style={{
+                                    ...styles.img,
+                                    ...(themeName === 'colored' ? styles.logoWhite : undefined),
+                                    ...((strictMode && !getLocation().dialog) || currentInstance?.tab
+                                        ? styles.logoPointer
+                                        : undefined),
+                                }}
+                                component="img"
+                                image="img/no-image.png"
+                            />
+                            <div style={styles.headerName}>{t('Easy Admin')}</div>
+                        </div>
+                        <div style={styles.IconButtons}>
+                            {((strictMode && !getLocation().dialog) || currentInstance?.tab) && (
+                                <IconButton
+                                    size="large"
+                                    onClick={() => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')}
+                                >
+                                    <ArrowBackIcon />
+                                </IconButton>
+                            )}
+                            <ToggleThemeMenu
+                                t={t}
+                                toggleTheme={toggleTheme}
+                                themeName={themeName as 'dark' | 'blue' | 'colored' | 'light'}
+                                size="large"
+                            />
+                        </div>
+                    </Toolbar>
+                </AppBar>
+                {currentInstance ? (
+                    <Paper style={styles.paper}>
+                        <Config
+                            style={styles.iframe}
+                            adapter={currentInstance.id.split('.')[0]}
+                            instance={parseInt(currentInstance.id.split('.')[1], 10)}
+                            jsonConfig={currentInstance.jsonConfig}
+                            materialize={currentInstance.materialize}
+                            tab={currentInstance?.tab}
+                            socket={socket}
+                            easyMode
+                            themeName={themeName}
+                            themeType={themeType}
+                            theme={theme}
+                            width={width}
                             t={t}
-                            toggleTheme={toggleTheme}
-                            themeName={themeName as ('dark' | 'blue' | 'colored' | 'light')}
-                            size="large"
+                            lang={this.props.lang}
+                            icon={currentInstance.icon}
+                            adminInstance={adminInstance}
+                            configStored={configStored}
+                            dateFormat={dateFormat}
+                            isFloatComma={isFloatComma}
+                            // version={currentInstance.version} We don't need a version in easy mode
+                            onRegisterIframeRef={(ref: HTMLIFrameElement) => this.props.onRegisterIframeRef(ref)}
+                            onUnregisterIframeRef={(ref: HTMLIFrameElement) => this.props.onUnregisterIframeRef(ref)}
                         />
+                    </Paper>
+                ) : (
+                    <div style={styles.wrapperCard}>
+                        <div style={styles.controlHeight}>
+                            {configs
+                                .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+                                .map(el => (
+                                    <EasyModeCard
+                                        key={el.id}
+                                        lang={this.props.lang}
+                                        navigate={() => navigate(null, 'config', el.id)}
+                                        {...el}
+                                    />
+                                ))}
+                        </div>
                     </div>
-                </Toolbar>
-            </AppBar>
-            {currentInstance ?
-                <Paper style={styles.paper}>
-                    <Config
-                        style={styles.iframe}
-                        adapter={currentInstance.id.split('.')[0]}
-                        instance={parseInt(currentInstance.id.split('.')[1], 10)}
-                        jsonConfig={currentInstance.jsonConfig}
-                        materialize={currentInstance.materialize}
-                        tab={currentInstance?.tab}
-                        socket={socket}
-                        easyMode
-                        themeName={themeName}
-                        themeType={themeType}
-                        theme={theme}
-                        width={width}
-                        t={t}
-                        lang={this.props.lang}
-                        icon={currentInstance.icon}
-                        adminInstance={adminInstance}
-                        configStored={configStored}
-                        dateFormat={dateFormat}
-                        isFloatComma={isFloatComma}
-                        // version={currentInstance.version} We don't need a version in easy mode
-                        onRegisterIframeRef={(ref: HTMLIFrameElement) => this.props.onRegisterIframeRef(ref)}
-                        onUnregisterIframeRef={(ref: HTMLIFrameElement) => this.props.onUnregisterIframeRef(ref)}
-                    />
-                </Paper> :
-                <div style={styles.wrapperCard}>
-                    <div style={styles.controlHeight}>
-                        {configs
-                            .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
-                            .map(el => <EasyModeCard
-                                key={el.id}
-                                lang={this.props.lang}
-                                navigate={() => navigate(null, 'config', el.id)}
-                                {...el}
-                            />)}
-                    </div>
-                </div>}
-        </Paper>;
+                )}
+            </Paper>
+        );
     }
 }
 

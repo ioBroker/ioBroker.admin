@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import {
-    Add, Delete, Edit,
-    Refresh, Search,
-    Wifi, WifiOff,
+    Add,
+    Delete,
+    Edit,
+    Refresh,
+    Search,
+    Wifi,
+    WifiOff,
     Visibility,
-    LinkOff, Link as LinkIcon,
+    LinkOff,
+    Link as LinkIcon,
     NotListedLocation,
     PlayArrow,
     Stop,
@@ -22,7 +27,7 @@ import {
     QrCode,
 } from '@mui/icons-material';
 
-export default function getIconByName(name: string, style?: React.CSSProperties): React.JSX.Element | null {
+export default function getIconByName(name: string, style?: React.CSSProperties): JSX.Element | null {
     if (name === 'edit' || name === 'rename') {
         return <Edit style={style} />;
     }

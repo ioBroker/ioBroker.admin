@@ -5,7 +5,7 @@ import federation from '@dilesoft/vite-plugin-federation-dynamic';
 import { viteCommonjs, esbuildCommonjs } from '@originjs/vite-plugin-commonjs';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
     return {
         plugins: [
             react(),
@@ -60,9 +60,9 @@ export default defineConfig(({ mode }) => {
                     'prop-types': {
                         singleton: true,
                         // requiredVersion: pkg.dependencies['@mui/material'],
-                    }
-                }
-            })
+                    },
+                },
+            }),
         ],
         server: {
             proxy: {
@@ -70,27 +70,27 @@ export default defineConfig(({ mode }) => {
                 '/adapter': 'http://127.0.0.1:8081',
                 '/session': 'http://127.0.0.1:8081',
                 '/log': 'http://127.0.0.1:8081',
-            }
+            },
         },
         build: {
             cssCodeSplit: false,
-            sourcemap: true
+            sourcemap: true,
         },
         optimizeDeps: {
             esbuildOptions: {
                 define: {
-                    global: 'globalThis'
+                    global: 'globalThis',
                 },
                 plugins: [
                     // Solves:
                     // https://github.com/vitejs/vite/issues/5308
                     esbuildCommonjs(['@iobroker/adapter-react']),
                     NodeGlobalsPolyfillPlugin({
-                        buffer: true
-                    })
-                ]
-            }
+                        buffer: true,
+                    }),
+                ],
+            },
         },
-        base: './'
+        base: './',
     };
 });

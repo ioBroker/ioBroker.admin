@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Button,
@@ -16,19 +16,9 @@ import {
     type SelectChangeEvent,
     Box,
 } from '@mui/material';
-import {
-    Close as CloseIcon,
-    Add as AddIcon,
-    Public as IconWeb,
-    Language as LanguageIcon,
-} from '@mui/icons-material';
+import { Close as CloseIcon, Add as AddIcon, Public as IconWeb, Language as LanguageIcon } from '@mui/icons-material';
 
-import {
-    type AdminConnection,
-    I18n, Utils,
-    type IobTheme,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 import type HostsWorker from '@/Workers/HostsWorker';
 import type InstancesWorker from '@/Workers/InstancesWorker';
@@ -60,9 +50,7 @@ const styles: Record<string, any> = {
     typography: {
         pr: '30px',
     },
-    messageText: {
-
-    },
+    messageText: {},
     messageColor_warn: {
         color: '#cb7642',
     },
@@ -155,46 +143,67 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         );
     }
 
-    componentDidMount() {
-        this.props.instancesWorker.getInstances()
-            .then((instances: Record<string, ioBroker.InstanceObject>) => {
-                const instanceNumbers = Object.keys(instances)
-                    .filter(id => instances[id]?.common?.name === this.props.adapter)
-                    .map(id => id.substring(id.lastIndexOf('.') + 1));
+    componentDidMount(): void {
+        void this.props.instancesWorker.getInstances().then((instances: Record<string, ioBroker.InstanceObject>) => {
+            const instanceNumbers = Object.keys(instances)
+                .filter(id => instances[id]?.common?.name === this.props.adapter)
+                .map(id => id.substring(id.lastIndexOf('.') + 1));
 
-                this.setState({ instanceNumbers });
-            });
+            this.setState({ instanceNumbers });
+        });
     }
 
-    getAvailableInstances() {
+    getAvailableInstances(): JSX.Element[] {
         const result = [];
-        result.push(<MenuItem value="auto" key="auto">{this.t('auto')}</MenuItem>);
+        result.push(
+            <MenuItem
+                value="auto"
+                key="auto"
+            >
+                {this.t('auto')}
+            </MenuItem>,
+        );
 
         for (let i = 0; i <= 10; i++) {
             if (!this.state.instanceNumbers.includes(i.toString())) {
-                result.push(<MenuItem value={i} key={i}>{i}</MenuItem>);
+                result.push(
+                    <MenuItem
+                        value={i}
+                        key={i}
+                    >
+                        {i}
+                    </MenuItem>,
+                );
             }
         }
 
         return result;
     }
 
-    checkDependencies(dependencies = this.props.dependencies) {
+    checkDependencies(dependencies = this.props.dependencies): string | JSX.Element[] {
         if (!dependencies) {
             return '';
         }
         const array = [];
         for (const adapter of dependencies) {
             if (!adapter.installedVersion) {
-                array.push(this.props.t('Latest available version of "%s" is required, but nothing installed. Please install first "%s" and then retry.', adapter.name, adapter.name));
+                array.push(
+                    this.props.t(
+                        'Latest available version of "%s" is required, but nothing installed. Please install first "%s" and then retry.',
+                        adapter.name,
+                        adapter.name,
+                    ),
+                );
             } else if (!adapter.rightVersion) {
-                array.push(`${this.props.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version)}${adapter.installedVersion}`);
+                array.push(
+                    `${this.props.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version)}${adapter.installedVersion}`,
+                );
             }
         }
         return array.length ? array.map(el => <div key={el}>{el}</div>) : '';
     }
 
-    getText(text: string | {[lang: string]: string}, noTranslation?: boolean): string {
+    getText(text: string | { [lang: string]: string }, noTranslation?: boolean): string {
         if (text && typeof text === 'object') {
             if (noTranslation) {
                 return text.en;
@@ -204,127 +213,156 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         return typeof text === 'object' ? '' : text;
     }
 
-    renderOneMessage(message: Message, index: number) {
-        return <Grid2 key={index}>
-            <Typography sx={styles[`messageTitle_${message.level || 'warn'}`]}>
-                {this.getText(message.title, this.props.noTranslation) || ''}
-            </Typography>
-            <Typography component="div" variant="body2" style={styles.messageText}>
-                {this.getText(message.text, this.props.noTranslation) || ''}
-            </Typography>
-            {message.link ? <Button
-                onClick={() => {
-                    const w = window.open(message.link, '_blank');
-                    w.focus();
-                }}
-                startIcon={<IconWeb />}
-                variant="contained"
-                color="grey"
-            >
-                {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
-            </Button> : null}
-        </Grid2>;
+    renderOneMessage(message: Message, index: number): JSX.Element {
+        return (
+            <Grid2 key={index}>
+                <Typography sx={styles[`messageTitle_${message.level || 'warn'}`]}>
+                    {this.getText(message.title, this.props.noTranslation) || ''}
+                </Typography>
+                <Typography
+                    component="div"
+                    variant="body2"
+                    style={styles.messageText}
+                >
+                    {this.getText(message.text, this.props.noTranslation) || ''}
+                </Typography>
+                {message.link ? (
+                    <Button
+                        onClick={() => {
+                            const w = window.open(message.link, '_blank');
+                            w.focus();
+                        }}
+                        startIcon={<IconWeb />}
+                        variant="contained"
+                        color="grey"
+                    >
+                        {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
+                    </Button>
+                ) : null}
+            </Grid2>
+        );
     }
 
-    renderMessages() {
+    renderMessages(): JSX.Element | null {
         if (this.messages) {
-            return <Grid2
-                container
-                spacing={2}
-                direction="column"
-                wrap="nowrap"
-                sx={{ marginBottom: 1 }}
-            >
-                {this.messages.map((message, i) => this.renderOneMessage(message, i))}
-            </Grid2>;
+            return (
+                <Grid2
+                    container
+                    spacing={2}
+                    direction="column"
+                    wrap="nowrap"
+                    sx={{ marginBottom: 1 }}
+                >
+                    {this.messages.map((message, i) => this.renderOneMessage(message, i))}
+                </Grid2>
+            );
         }
         return null;
     }
 
-    render() {
+    render(): JSX.Element {
         const checkDeps = this.checkDependencies();
 
-        return <Dialog
-            onClose={() => {}}
-            open={!0}
-            sx={{ '& .MuiDialog-paper': styles.paper }}
-        >
-            <DialogTitle>
-                <Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>
-                    {this.t('You are going to add new instance:')}
-                    {' '}
-                    {this.props.adapter}
-                    <IconButton
-                        size="large"
-                        sx={styles.closeButton}
-                        onClick={() => this.props.onClose(false)}
+        return (
+            <Dialog
+                onClose={() => {}}
+                open={!0}
+                sx={{ '& .MuiDialog-paper': styles.paper }}
+            >
+                <DialogTitle>
+                    <Typography
+                        component="h2"
+                        variant="h6"
+                        sx={{ '&.MuiTypography-root': styles.typography }}
                     >
-                        <CloseIcon />
-                    </IconButton>
-                    {this.messages && this.lang !== 'en' && this.props.toggleTranslation ? <IconButton
-                        size="large"
-                        style={Utils.getStyle(this.props.theme, styles.languageButton, this.props.noTranslation && styles.languageButtonActive)}
-                        onClick={this.props.toggleTranslation}
-                        title={I18n.t('Disable/Enable translation')}
-                    >
-                        <LanguageIcon />
-                    </IconButton> : null}
-                </Typography>
-            </DialogTitle>
-            <DialogContent dividers>
-                {this.renderMessages()}
-                {!checkDeps && this.props.expertMode ? <Grid2
-                    container
-                    direction="column"
-                >
-                    <HostSelectors
-                        tooltip={this.t('Select host to add the instance')}
-                        expertMode
-                        socket={this.props.socket}
-                        hostsWorker={this.props.hostsWorker}
-                        currentHost={this.props.currentHost}
-                        setCurrentHost={(hostName, hostId) =>
-                            this.props.onHostChange(hostId.replace(/^system\.host\./, ''))}
-                    />
-                    <FormControl variant="standard" style={styles.formControl}>
-                        <InputLabel id="instance-label">{this.t('Instance')}</InputLabel>
-                        <Select
-                            variant="standard"
-                            labelId="instance-label"
-                            value={this.props.currentInstance}
-                            onChange={this.props.onInstanceChange}
+                        {this.t('You are going to add new instance:')} {this.props.adapter}
+                        <IconButton
+                            size="large"
+                            sx={styles.closeButton}
+                            onClick={() => this.props.onClose(false)}
                         >
-                            {this.getAvailableInstances()}
-                        </Select>
-                    </FormControl>
-                </Grid2> : null}
-                <Box component="div" sx={styles.deps}>
-                    {checkDeps}
-                </Box>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    id="instance-add-dialog-ok"
-                    variant="contained"
-                    autoFocus
-                    disabled={!!checkDeps}
-                    onClick={() => this.props.onClose(true)}
-                    color="primary"
-                    startIcon={<AddIcon />}
-                >
-                    {this.t('Add')}
-                </Button>
-                <Button
-                    id="instance-add-dialog-cancel"
-                    variant="contained"
-                    onClick={() => this.props.onClose(false)}
-                    color="grey"
-                    startIcon={<CloseIcon />}
-                >
-                    {this.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                            <CloseIcon />
+                        </IconButton>
+                        {this.messages && this.lang !== 'en' && this.props.toggleTranslation ? (
+                            <IconButton
+                                size="large"
+                                style={Utils.getStyle(
+                                    this.props.theme,
+                                    styles.languageButton,
+                                    this.props.noTranslation && styles.languageButtonActive,
+                                )}
+                                onClick={this.props.toggleTranslation}
+                                title={I18n.t('Disable/Enable translation')}
+                            >
+                                <LanguageIcon />
+                            </IconButton>
+                        ) : null}
+                    </Typography>
+                </DialogTitle>
+                <DialogContent dividers>
+                    {this.renderMessages()}
+                    {!checkDeps && this.props.expertMode ? (
+                        <Grid2
+                            container
+                            direction="column"
+                        >
+                            <HostSelectors
+                                tooltip={this.t('Select host to add the instance')}
+                                expertMode
+                                socket={this.props.socket}
+                                hostsWorker={this.props.hostsWorker}
+                                currentHost={this.props.currentHost}
+                                setCurrentHost={(hostName, hostId) =>
+                                    this.props.onHostChange(hostId.replace(/^system\.host\./, ''))
+                                }
+                            />
+                            <FormControl
+                                variant="standard"
+                                style={styles.formControl}
+                            >
+                                <InputLabel id="instance-label">{this.t('Instance')}</InputLabel>
+                                <Select
+                                    variant="standard"
+                                    labelId="instance-label"
+                                    value={this.props.currentInstance}
+                                    onChange={this.props.onInstanceChange}
+                                >
+                                    {this.getAvailableInstances()}
+                                </Select>
+                            </FormControl>
+                        </Grid2>
+                    ) : null}
+                    <Box
+                        component="div"
+                        sx={styles.deps}
+                    >
+                        {checkDeps}
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        id="instance-add-dialog-ok"
+                        variant="contained"
+                        autoFocus
+                        disabled={!!checkDeps}
+                        onClick={() => this.props.onClose(true)}
+                        color="primary"
+                        startIcon={<AddIcon />}
+                    >
+                        {this.t('Add')}
+                    </Button>
+                    <Button
+                        id="instance-add-dialog-cancel"
+                        variant="contained"
+                        onClick={() => this.props.onClose(false)}
+                        color="grey"
+                        startIcon={<CloseIcon />}
+                    >
+                        {this.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

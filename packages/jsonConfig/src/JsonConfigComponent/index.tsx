@@ -1,17 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { LinearProgress } from '@mui/material';
 
-import {
-    type AdminConnection,
-    I18n,
-    type ThemeName,
-    type ThemeType,
-    type IobTheme,
-} from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type ThemeName, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { BackEndCommand, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
-import ConfigGeneric, { type DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
+import type ConfigGeneric from '#JC/JsonConfigComponent/ConfigGeneric';
+import { type DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
 
@@ -90,7 +85,10 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         this.readData();
     }
 
-    static getDerivedStateFromProps(props: JsonConfigComponentProps, state: JsonConfigComponentState) {
+    static getDerivedStateFromProps(
+        props: JsonConfigComponentProps,
+        state: JsonConfigComponentState,
+    ): Partial<JsonConfigComponentState> | null {
         if (props.updateData !== state.updateData) {
             return {
                 updateData: props.updateData,
@@ -101,7 +99,11 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         return null;
     }
 
-    static async loadI18n(socket: AdminConnection, i18n: boolean | string | Record<string, Record<ioBroker.Languages, string>>, adapterName: string) {
+    static async loadI18n(
+        socket: AdminConnection,
+        i18n: boolean | string | Record<string, Record<ioBroker.Languages, string>>,
+        adapterName: string,
+    ): Promise<string> {
         if (i18n === true || (i18n && typeof i18n === 'string')) {
             const lang = I18n.getLanguage();
             const path = typeof i18n === 'string' ? i18n : 'i18n';
@@ -149,36 +151,45 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
             }
             console.warn(`Cannot find i18n for ${adapterName} / ${fileName}`);
             return '';
-        } if (i18n && typeof i18n === 'object') {
+        }
+        if (i18n && typeof i18n === 'object') {
             I18n.extendTranslations(i18n);
             return '';
         }
         return '';
     }
 
-    onCommandRunning = (commandRunning: boolean) => this.setState({ commandRunning });
+    onCommandRunning = (commandRunning: boolean): void => this.setState({ commandRunning });
 
-    readData() {
-        this.props.socket.getCompactSystemConfig()
+    readData(): void {
+        void this.props.socket
+            .getCompactSystemConfig()
             .then(systemConfig =>
-                this.props.socket.getState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`)
+                this.props.socket
+                    .getState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`)
                     .then(state => {
                         if (this.props.custom) {
                             this.setState({ systemConfig: systemConfig.common, alive: !!(state && state.val) });
                         } else {
                             this.setState({ systemConfig: systemConfig.common, alive: !!(state && state.val) }, () =>
-                                this.props.socket.subscribeState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`, this.onAlive));
+                                this.props.socket.subscribeState(
+                                    `system.adapter.${this.props.adapterName}.${this.props.instance}.alive`,
+                                    this.onAlive,
+                                ),
+                            );
                         }
-                    }));
+                    }),
+            )
+            .catch(e => console.error(`Cannot read system config: ${e}`));
     }
 
-    onAlive = (id: string, state?: ioBroker.State | null) => {
-        if (!!(state?.val) !== this.state.alive) {
+    onAlive = (_id: string, state?: ioBroker.State | null): void => {
+        if (!!state?.val !== this.state.alive) {
             this.setState({ alive: !!state?.val });
         }
     };
 
-    onChange = (attrOrData: string | Record<string, any>, value: any, cb?: () => void, saveConfig?: boolean) => {
+    onChange = (attrOrData: string | Record<string, any>, value: any, cb?: () => void, saveConfig?: boolean): void => {
         if (this.props.onValueChange) {
             this.props.onValueChange(attrOrData as string, value, saveConfig);
             if (cb) {
@@ -200,7 +211,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         }
     };
 
-    onError = (attr: string, error?: string) => {
+    onError = (attr: string, error?: string): void => {
         this.errorCached = this.errorCached || JSON.parse(JSON.stringify(this.state.errors));
         const errors = this.errorCached;
         if (error) {
@@ -213,12 +224,15 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
             clearTimeout(this.errorTimeout);
         }
         if (JSON.stringify(errors) !== JSON.stringify(this.state.errors)) {
-            this.errorTimeout = setTimeout(() =>
-                this.setState({ errors: this.errorCached }, () => {
-                    this.errorTimeout = null;
-                    this.errorCached = null;
-                    this.props.onError(!!Object.keys(this.state.errors).length);
-                }), 50);
+            this.errorTimeout = setTimeout(
+                () =>
+                    this.setState({ errors: this.errorCached }, () => {
+                        this.errorTimeout = null;
+                        this.errorCached = null;
+                        this.props.onError(!!Object.keys(this.state.errors).length);
+                    }),
+                50,
+            );
         } else {
             this.errorCached = null;
         }
@@ -236,7 +250,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         return _list;
     }
 
-    buildDependencies(schema: ConfigItemTabs | ConfigItemPanel) {
+    buildDependencies(schema: ConfigItemTabs | ConfigItemPanel): void {
         const attrs = this.flatten(schema as Record<string, any>);
         Object.keys(attrs).forEach(attr => {
             if (attrs[attr].confirm?.alsoDependsOn) {
@@ -244,7 +258,9 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                     if (!attrs[dep]) {
                         console.error(`[JsonConfigComponent] Attribute ${dep} does not exist!`);
                         if (dep.startsWith('data.')) {
-                            console.warn(`[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`);
+                            console.warn(
+                                `[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`,
+                            );
                         }
                     } else {
                         attrs[dep].confirmDependsOn = attrs[dep].confirmDependsOn || [];
@@ -264,7 +280,9 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                     if (!attrs[dep]) {
                         console.error(`[JsonConfigComponent] Attribute ${dep} does not exist!`);
                         if (dep.startsWith('data.')) {
-                            console.warn(`[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`);
+                            console.warn(
+                                `[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`,
+                            );
                         }
                     } else {
                         attrs[dep].onChangeDependsOn = attrs[dep].onChangeDependsOn || [];
@@ -281,7 +299,9 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                     if (!attrs[dep]) {
                         console.error(`[JsonConfigComponent] Attribute ${dep} does not exist!`);
                         if (dep.startsWith('data.')) {
-                            console.warn(`[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`);
+                            console.warn(
+                                `[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`,
+                            );
                         }
                     } else {
                         attrs[dep].hiddenDependsOn = attrs[dep].hiddenDependsOn || [];
@@ -298,7 +318,9 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                     if (!attrs[dep]) {
                         console.error(`[JsonConfigComponent] Attribute ${dep} does not exist!`);
                         if (dep.startsWith('data.')) {
-                            console.warn(`[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`);
+                            console.warn(
+                                `[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`,
+                            );
                         }
                     } else {
                         attrs[dep].labelDependsOn = attrs[dep].labelDependsOn || [];
@@ -315,7 +337,9 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                     if (!attrs[dep]) {
                         console.error(`[JsonConfigComponent] Attribute ${dep} does not exist!`);
                         if (dep.startsWith('data.')) {
-                            console.warn(`[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`);
+                            console.warn(
+                                `[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`,
+                            );
                         }
                     } else {
                         attrs[dep].helpDependsOn = attrs[dep].helpDependsOn || [];
@@ -329,100 +353,104 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         });
     }
 
-    renderItem(item: ConfigItemTabs | ConfigItemPanel) {
+    renderItem(item: ConfigItemTabs | ConfigItemPanel): JSX.Element | null {
         if (item.type === 'tabs') {
-            return <ConfigTabs
-                DeviceManager={this.props.DeviceManager}
-                adapterName={this.props.adapterName}
-                alive={this.state.alive}
-                changeLanguage={this.changeLanguage}
-                changed={this.state.changed}
-                commandRunning={this.state.commandRunning}
-                common={this.props.common}
-                custom={this.props.custom}
-                customObj={this.props.customObj}
-                customs={this.props.customs}
-                data={this.props.data}
-                dateFormat={this.props.dateFormat}
-                forceUpdate={this.forceAttrUpdate}
-                imagePrefix={this.props.imagePrefix}
-                instance={this.props.instance}
-                instanceObj={this.props.instanceObj}
-                isFloatComma={this.props.isFloatComma}
-                multiEdit={this.props.multiEdit}
-                onChange={this.onChange}
-                onCommandRunning={this.onCommandRunning}
-                onError={(attr, error) => this.onError(attr, error)}
-                onBackEndCommand={this.props.onBackEndCommand}
-                originalData={JSON.parse(this.state.originalData)}
-                registerOnForceUpdate={this.registerOnForceUpdate}
-                root
-                schema={item as ConfigItemTabs}
-                socket={this.props.socket}
-                systemConfig={this.state.systemConfig}
-                theme={this.props.theme}
-                themeName={this.props.themeName}
-                themeType={this.props.themeType}
-            />;
+            return (
+                <ConfigTabs
+                    DeviceManager={this.props.DeviceManager}
+                    adapterName={this.props.adapterName}
+                    alive={this.state.alive}
+                    changeLanguage={this.changeLanguage}
+                    changed={this.state.changed}
+                    commandRunning={this.state.commandRunning}
+                    common={this.props.common}
+                    custom={this.props.custom}
+                    customObj={this.props.customObj}
+                    customs={this.props.customs}
+                    data={this.props.data}
+                    dateFormat={this.props.dateFormat}
+                    forceUpdate={this.forceAttrUpdate}
+                    imagePrefix={this.props.imagePrefix}
+                    instance={this.props.instance}
+                    instanceObj={this.props.instanceObj}
+                    isFloatComma={this.props.isFloatComma}
+                    multiEdit={this.props.multiEdit}
+                    onChange={this.onChange}
+                    onCommandRunning={this.onCommandRunning}
+                    onError={(attr, error) => this.onError(attr, error)}
+                    onBackEndCommand={this.props.onBackEndCommand}
+                    originalData={JSON.parse(this.state.originalData)}
+                    registerOnForceUpdate={this.registerOnForceUpdate}
+                    root
+                    schema={item}
+                    socket={this.props.socket}
+                    systemConfig={this.state.systemConfig}
+                    theme={this.props.theme}
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                />
+            );
         }
-        if (item.type === 'panel' ||
+        if (
+            item.type === 'panel' ||
             // @ts-expect-error type could be empty
             !item.type
         ) {
-            return <ConfigPanel
-                DeviceManager={this.props.DeviceManager}
-                adapterName={this.props.adapterName}
-                alive={this.state.alive}
-                changeLanguage={this.changeLanguage}
-                changed={this.state.changed}
-                commandRunning={this.state.commandRunning}
-                common={this.props.common}
-                custom={this.props.custom}
-                customObj={this.props.customObj}
-                customs={this.props.customs}
-                data={this.props.data}
-                dateFormat={this.props.dateFormat}
-                forceUpdate={this.forceAttrUpdate}
-                imagePrefix={this.props.imagePrefix}
-                index={1000}
-                instance={this.props.instance}
-                instanceObj={this.props.instanceObj}
-                isFloatComma={this.props.isFloatComma}
-                isParentTab={!this.props.embedded}
-                multiEdit={this.props.multiEdit}
-                onChange={this.onChange}
-                onCommandRunning={this.onCommandRunning}
-                onError={(attr, error) => this.onError(attr, error)}
-                onBackEndCommand={this.props.onBackEndCommand}
-                originalData={JSON.parse(this.state.originalData)}
-                registerOnForceUpdate={this.registerOnForceUpdate}
-                root
-                schema={item as ConfigItemPanel}
-                socket={this.props.socket}
-                systemConfig={this.state.systemConfig}
-                theme={this.props.theme}
-                themeName={this.props.themeName}
-                themeType={this.props.themeType}
-            />;
+            return (
+                <ConfigPanel
+                    DeviceManager={this.props.DeviceManager}
+                    adapterName={this.props.adapterName}
+                    alive={this.state.alive}
+                    changeLanguage={this.changeLanguage}
+                    changed={this.state.changed}
+                    commandRunning={this.state.commandRunning}
+                    common={this.props.common}
+                    custom={this.props.custom}
+                    customObj={this.props.customObj}
+                    customs={this.props.customs}
+                    data={this.props.data}
+                    dateFormat={this.props.dateFormat}
+                    forceUpdate={this.forceAttrUpdate}
+                    imagePrefix={this.props.imagePrefix}
+                    index={1000}
+                    instance={this.props.instance}
+                    instanceObj={this.props.instanceObj}
+                    isFloatComma={this.props.isFloatComma}
+                    isParentTab={!this.props.embedded}
+                    multiEdit={this.props.multiEdit}
+                    onChange={this.onChange}
+                    onCommandRunning={this.onCommandRunning}
+                    onError={(attr, error) => this.onError(attr, error)}
+                    onBackEndCommand={this.props.onBackEndCommand}
+                    originalData={JSON.parse(this.state.originalData)}
+                    registerOnForceUpdate={this.registerOnForceUpdate}
+                    root
+                    schema={item}
+                    socket={this.props.socket}
+                    systemConfig={this.state.systemConfig}
+                    theme={this.props.theme}
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                />
+            );
         }
 
         return null;
     }
 
-    changeLanguage = () => {
+    changeLanguage = (): void => {
         this.forceUpdate();
     };
 
-    forceAttrUpdate = (attr: string | string[], data: any) => {
+    forceAttrUpdate = (attr: string | string[], data: any): void => {
         if (Array.isArray(attr)) {
-            attr.forEach(a =>
-                this.forceUpdateHandlers[a] && this.forceUpdateHandlers[a](data));
+            attr.forEach(a => this.forceUpdateHandlers[a] && this.forceUpdateHandlers[a](data));
         } else if (this.forceUpdateHandlers[attr]) {
             this.forceUpdateHandlers[attr](data);
         }
     };
 
-    registerOnForceUpdate = (attr: string, cb: (data: any) => void) => {
+    registerOnForceUpdate = (attr: string, cb: (data: any) => void): void => {
         if (cb) {
             this.forceUpdateHandlers[attr] = cb;
         } else if (this.forceUpdateHandlers[attr]) {
@@ -430,20 +458,22 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         }
     };
 
-    render() {
+    render(): JSX.Element {
         if (!this.state.systemConfig) {
             return <LinearProgress />;
         }
 
-        return <div
-            style={{
-                ...(!this.props.embedded ? styles.root : undefined),
-                ...this.props.style,
-                ...this.state.schema.style,
-            }}
-        >
-            {this.renderItem(this.state.schema)}
-        </div>;
+        return (
+            <div
+                style={{
+                    ...(!this.props.embedded ? styles.root : undefined),
+                    ...this.props.style,
+                    ...this.state.schema.style,
+                }}
+            >
+                {this.renderItem(this.state.schema)}
+            </div>
+        );
     }
 }
 

@@ -1,9 +1,6 @@
 import { useState } from 'react';
 
-export default function useStateLocal(
-    defaultValue: any,
-    key: string,
-): [any, (newValue: any) => void, boolean] {
+export default function useStateLocal(defaultValue: any, key: string): [any, (newValue: any) => void, boolean] {
     const data = (window._localStorage || window.localStorage).getItem(key);
     if (data) {
         try {
@@ -15,7 +12,7 @@ export default function useStateLocal(
 
     const [state, setState] = useState(defaultValue);
 
-    const eventsToInstall = (newValue: any) => {
+    const eventsToInstall = (newValue: any): void => {
         (window._localStorage || window.localStorage).setItem(key, JSON.stringify(newValue));
         setState(newValue);
     };

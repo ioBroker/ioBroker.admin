@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import semver from 'semver';
 
 import {
-    Avatar, Badge, Box,
+    Avatar,
+    Badge,
+    Box,
     FormControl,
     FormHelperText,
     IconButton,
@@ -26,13 +28,15 @@ import {
 
 import { BiChevronDown, BiChevronUp } from 'react-icons/bi';
 
-import {
-    amber, blue, green, grey, red,
-} from '@mui/material/colors';
+import { amber, blue, green, grey, red } from '@mui/material/colors';
 
 import {
-    Utils, IconCopy, type AdminConnection,
-    type IobTheme, type ThemeType, type Translate,
+    Utils,
+    IconCopy,
+    type AdminConnection,
+    type IobTheme,
+    type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import type HostsWorker from '@/Workers/HostsWorker';
@@ -47,7 +51,8 @@ import AdminUtils from '../../AdminUtils';
 import HostEdit from './HostEdit';
 import CustomModal from '../CustomModal';
 
-export const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
+export const boxShadow =
+    '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 export const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
 export const blinkClasses = `
@@ -235,7 +240,7 @@ export const genericStyles: Record<string, any> = {
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 
-function toggleClassName(el: HTMLElement, name: string) {
+function toggleClassName(el: HTMLElement, name: string): void {
     const classNames = el.className.split(' ');
     const pos = classNames.indexOf(name);
     if (pos !== -1) {
@@ -247,7 +252,7 @@ function toggleClassName(el: HTMLElement, name: string) {
     setTimeout(_classNames => (el.className = _classNames), 100, classNames.join(' '));
 }
 
-function getLogLevelIcon(level: ioBroker.LogLevel | ''): React.JSX.Element | null {
+function getLogLevelIcon(level: ioBroker.LogLevel | ''): JSX.Element | null {
     if (level === 'debug') {
         return <BugReportIcon />;
     }
@@ -301,7 +306,10 @@ export interface HostGenericState {
     changeLog: string | null;
 }
 
-export default abstract class HostGeneric<TProps extends HostGenericProps, TState extends HostGenericState> extends Component<TProps, TState> {
+export default abstract class HostGeneric<
+    TProps extends HostGenericProps,
+    TState extends HostGenericState,
+> extends Component<TProps, TState> {
     static formatInfo: Record<string, (value: any, t: Translate) => string> = {
         Uptime: AdminUtils.formatSeconds,
         'System uptime': AdminUtils.formatSeconds,
@@ -359,21 +367,26 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
      */
     async getInitialDiskStates(): Promise<void> {
         const diskWarningState = await this.props.socket.getState(`${this.props.hostId}.diskWarning`);
-        this.diskWarningCache = diskWarningState?.val as number ?? this.diskWarningCache;
+        this.diskWarningCache = (diskWarningState?.val as number) ?? this.diskWarningCache;
 
         const diskFreeState = await this.props.socket.getState(`${this.props.hostId}.diskFree`);
-        this.diskFreeCache = diskFreeState?.val as number ?? this.diskFreeCache;
+        this.diskFreeCache = (diskFreeState?.val as number) ?? this.diskFreeCache;
 
         const diskSizeState = await this.props.socket.getState(`${this.props.hostId}.diskSize`);
-        this.diskSizeCache = diskSizeState?.val as number ?? this.diskSizeCache;
+        this.diskSizeCache = (diskSizeState?.val as number) ?? this.diskSizeCache;
     }
 
-    notificationHandler = (notifications: Record<string, NotificationAnswer>) =>
+    notificationHandler = (notifications: Record<string, NotificationAnswer>): void =>
         notifications &&
         notifications[this.props.hostId] &&
-        this.setState({ errorHost: { notifications: notifications[this.props.hostId], count: this.calculateWarning(notifications[this.props.hostId]) } });
+        this.setState({
+            errorHost: {
+                notifications: notifications[this.props.hostId],
+                count: HostGeneric.calculateWarning(notifications[this.props.hostId]),
+            },
+        });
 
-    readChangeLog() {
+    readChangeLog(): void {
         if (!this.state.changeLog) {
             fetch(CONTROLLER_CHANGELOG_URL.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/'))
                 .then(response => response.text())
@@ -382,31 +395,30 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.hostsWorker.registerNotificationHandler(this.notificationHandler);
 
-        this.props.hostsWorker
+        void this.props.hostsWorker
             .getNotifications(this.props.hostId)
             .then(notifications => this.notificationHandler(notifications));
 
-        this.props.socket.subscribeState(`${this.props.hostId}.inputCount`, this.eventsInputFunc);
-        this.props.socket.subscribeState(`${this.props.hostId}.outputCount`, this.eventsOutputFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.inputCount`, this.eventsInputFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.outputCount`, this.eventsOutputFunc);
 
-        this.props.socket.subscribeState(`${this.props.hostId}.cpu`, this.cpuFunc);
-        this.props.socket.subscribeState(`${this.props.hostId}.mem`, this.memFunc);
-        this.props.socket.subscribeState(`${this.props.hostId}.uptime`, this.uptimeFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.cpu`, this.cpuFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.mem`, this.memFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.uptime`, this.uptimeFunc);
 
-        this.getInitialDiskStates()
-            .finally(async () => {
-                await this.props.socket.subscribeState(`${this.props.hostId}.diskFree`, this.warningFunc);
-                await this.props.socket.subscribeState(`${this.props.hostId}.diskSize`, this.warningFunc);
-                await this.props.socket.subscribeState(`${this.props.hostId}.diskWarning`, this.warningFunc);
-            });
+        void this.getInitialDiskStates().finally(async () => {
+            await this.props.socket.subscribeState(`${this.props.hostId}.diskFree`, this.warningFunc);
+            await this.props.socket.subscribeState(`${this.props.hostId}.diskSize`, this.warningFunc);
+            await this.props.socket.subscribeState(`${this.props.hostId}.diskWarning`, this.warningFunc);
+        });
 
-        this.props.socket.subscribeState(`${this.props.hostId}.logLevel`, this.logLevelFunc);
+        void this.props.socket.subscribeState(`${this.props.hostId}.logLevel`, this.logLevelFunc);
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.props.hostsWorker.unregisterNotificationHandler(this.notificationHandler);
         this.props.socket.unsubscribeState(`${this.props.hostId}.inputCount`, this.eventsInputFunc);
         this.props.socket.unsubscribeState(`${this.props.hostId}.outputCount`, this.eventsOutputFunc);
@@ -422,7 +434,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         this.props.socket.unsubscribeState(`${this.props.hostId}.logLevel`, this.logLevelFunc);
     }
 
-    eventsInputFunc = (id: string, input: ioBroker.State) => {
+    eventsInputFunc = (_id: string, input: ioBroker.State): void => {
         this.inputCache = input && input.val !== null ? `⇥${input.val}` : '-';
         if (this.refEvents.current) {
             this.refEvents.current.innerHTML = `${this.inputCache} / ${this.outputCache}`;
@@ -430,7 +442,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
     };
 
-    eventsOutputFunc = (id: string, output: ioBroker.State) => {
+    eventsOutputFunc = (_id: string, output: ioBroker.State): void => {
         this.outputCache = output && output.val !== null ? `↦${output.val}` : '-';
         if (this.refEvents.current) {
             this.refEvents.current.innerHTML = `${this.inputCache} / ${this.outputCache}`;
@@ -438,7 +450,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
     };
 
-    warningFunc = (name_: string, state: ioBroker.State) => {
+    warningFunc = (name_: string, state: ioBroker.State): void => {
         if (name_.endsWith('diskFree')) {
             this.diskFreeCache = (state?.val as number) || 0;
         } else if (name_.endsWith('diskSize')) {
@@ -458,7 +470,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
     };
 
-    cpuFunc = (id: string, state: ioBroker.State) => {
+    cpuFunc = (_id: string, state: ioBroker.State): void => {
         this.cpuCache = this.formatValue(state, '%');
         if (this.refCpu.current) {
             this.refCpu.current.innerHTML = this.cpuCache;
@@ -466,7 +478,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
     };
 
-    memFunc = (id: string, state: ioBroker.State) => {
+    memFunc = (_id: string, state: ioBroker.State): void => {
         this.memCache = this.formatValue(state, '%');
         if (this.refMem.current) {
             this.refMem.current.innerHTML = this.memCache;
@@ -474,7 +486,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
     };
 
-    uptimeFunc = (id: string, state: ioBroker.State) => {
+    uptimeFunc = (_id: string, state: ioBroker.State): void => {
         if (state?.val) {
             const d = Math.floor((state.val as number) / (3600 * 24));
             const h = Math.floor(((state.val as number) % (3600 * 24)) / 3600);
@@ -486,7 +498,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
     };
 
-    calculateWarning(notifications: NotificationAnswer | null) {
+    static calculateWarning(notifications: NotificationAnswer | null): number {
         if (!notifications) {
             return 0;
         }
@@ -502,7 +514,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         return count;
     }
 
-    formatValue(state: ioBroker.State, unit: string) {
+    formatValue(state: ioBroker.State, unit: string): string {
         if (!state || state.val === null || state.val === undefined) {
             return `-${unit ? ` ${unit}` : ''}`;
         }
@@ -512,54 +524,66 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         return state.val + (unit ? ` ${unit}` : '');
     }
 
-    logLevelFunc = (id: string, state: ioBroker.State) => {
+    logLevelFunc = (id: string, state: ioBroker.State): void => {
         if (state) {
             this.setState({ logLevel: state.val as ioBroker.LogLevel, logLevelSelect: state.val as ioBroker.LogLevel });
         }
     };
 
-    renderDialogLogLevel() {
+    renderDialogLogLevel(): JSX.Element | null {
         if (!this.state.openDialogLogLevel) {
             return null;
         }
-        return <CustomModal
-            theme={this.props.theme}
-            title={this.props.t('Edit log level rule for %s', this.props.host.common.name)}
-            onApply={() => {
-                this.props.socket.setState(`${this.props.hostId}.logLevel`, this.state.logLevelSelect)
-                    .catch(e => window.alert(`Cannot set log level: ${e}`));
-                this.setState({ openDialogLogLevel: false });
-            }}
-            onClose={() => this.setState({ openDialogLogLevel: false, logLevelSelect: this.state.logLevel })}
-        >
-            <FormControl style={{ ...genericStyles.formControl, marginTop: 8 }} variant="outlined">
-                <InputLabel>{this.props.t('log level')}</InputLabel>
-                <Select
-                    variant="standard"
-                    value={this.state.logLevelSelect}
-                    fullWidth
-                    onChange={el => this.setState({ logLevelSelect: el.target.value as ioBroker.LogLevel })}
+        return (
+            <CustomModal
+                theme={this.props.theme}
+                title={this.props.t('Edit log level rule for %s', this.props.host.common.name)}
+                onApply={() => {
+                    this.props.socket
+                        .setState(`${this.props.hostId}.logLevel`, this.state.logLevelSelect)
+                        .catch(e => window.alert(`Cannot set log level: ${e}`));
+                    this.setState({ openDialogLogLevel: false });
+                }}
+                onClose={() => this.setState({ openDialogLogLevel: false, logLevelSelect: this.state.logLevel })}
+            >
+                <FormControl
+                    style={{ ...genericStyles.formControl, marginTop: 8 }}
+                    variant="outlined"
                 >
-                    {arrayLogLevel.map(el => (
-                        <MenuItem key={el} value={el}>
-                            {this.props.t(el)}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            <FormControl style={genericStyles.formControl} variant="outlined">
-                <FormHelperText>
-                    {this.props.t('Log level will be reset to the saved level after the restart of the controller')}
-                </FormHelperText>
-                <FormHelperText>
-                    {this.props.t('You can set the log level permanently in the base host settings')}
-                    <BuildIcon style={genericStyles.baseSettingsButton} />
-                </FormHelperText>
-            </FormControl>
-        </CustomModal>;
+                    <InputLabel>{this.props.t('log level')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={this.state.logLevelSelect}
+                        fullWidth
+                        onChange={el => this.setState({ logLevelSelect: el.target.value as ioBroker.LogLevel })}
+                    >
+                        {arrayLogLevel.map(el => (
+                            <MenuItem
+                                key={el}
+                                value={el}
+                            >
+                                {this.props.t(el)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl
+                    style={genericStyles.formControl}
+                    variant="outlined"
+                >
+                    <FormHelperText>
+                        {this.props.t('Log level will be reset to the saved level after the restart of the controller')}
+                    </FormHelperText>
+                    <FormHelperText>
+                        {this.props.t('You can set the log level permanently in the base host settings')}
+                        <BuildIcon style={genericStyles.baseSettingsButton} />
+                    </FormHelperText>
+                </FormControl>
+            </CustomModal>
+        );
     }
 
-    onCopy() {
+    onCopy(): void {
         const text = [];
         if (this.refCpu.current) {
             text.push(`CPU: ${this.refCpu.current.innerHTML}`);
@@ -581,7 +605,8 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             Object.keys(data).map(value =>
                 text.push(
                     `${this.props.t(value)}: ${HostGeneric.formatInfo[value] ? HostGeneric.formatInfo[value](data[value], this.props.t) : data[value] || '--'}`,
-                ));
+                ),
+            );
         }
 
         Utils.copyToClipboard(text.join('\n'));
@@ -589,48 +614,55 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties) {
-        return upgradeAvailable ? <Tooltip
-            title={this.props.t('Update')}
-            slotProps={{ popper: { sx: genericStyles.tooltip } }}
-        >
-            <Box
-                component="div"
-                onClick={event => {
-                    event.stopPropagation();
-                    this.openHostUpdateDialog();
-                }}
-                sx={genericStyles.buttonUpdate}
+    renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties): JSX.Element {
+        return upgradeAvailable ? (
+            <Tooltip
+                title={this.props.t('Update')}
+                slotProps={{ popper: { sx: genericStyles.tooltip } }}
             >
-                <IconButton style={genericStyles.buttonUpdateIcon} size="small">
-                    <RefreshIcon />
-                </IconButton>
-                <span style={{ color: green[700] }}>{this.props.available}</span>
-            </Box>
-        </Tooltip>
-            :
-            <span style={style}>{this.props.available}</span>;
+                <Box
+                    component="div"
+                    onClick={event => {
+                        event.stopPropagation();
+                        void this.openHostUpdateDialog();
+                    }}
+                    sx={genericStyles.buttonUpdate}
+                >
+                    <IconButton
+                        style={genericStyles.buttonUpdateIcon}
+                        size="small"
+                    >
+                        <RefreshIcon />
+                    </IconButton>
+                    <span style={{ color: green[700] }}>{this.props.available}</span>
+                </Box>
+            </Tooltip>
+        ) : (
+            <span style={style}>{this.props.available}</span>
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderHostBaseEdit() {
-        return this.props.expertMode ? <Tooltip
-            title={this.props.t('Host Base Settings')}
-            slotProps={{ popper: { sx: genericStyles.tooltip } }}
-        >
-            <div>
-                <IconButton
-                    size="large"
-                    disabled={!this.props.alive}
-                    onClick={e => {
-                        e.stopPropagation();
-                        this.setState({ baseSettingsDialog: true });
-                    }}
-                >
-                    <BuildIcon style={genericStyles.baseSettingsButton} />
-                </IconButton>
-            </div>
-        </Tooltip> : null;
+    renderHostBaseEdit(): JSX.Element | null {
+        return this.props.expertMode ? (
+            <Tooltip
+                title={this.props.t('Host Base Settings')}
+                slotProps={{ popper: { sx: genericStyles.tooltip } }}
+            >
+                <div>
+                    <IconButton
+                        size="large"
+                        disabled={!this.props.alive}
+                        onClick={e => {
+                            e.stopPropagation();
+                            this.setState({ baseSettingsDialog: true });
+                        }}
+                    >
+                        <BuildIcon style={genericStyles.baseSettingsButton} />
+                    </IconButton>
+                </div>
+            </Tooltip>
+        ) : null;
     }
 
     /**
@@ -641,125 +673,156 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     renderExtendButton(
         /** if host is expanded */
         open: boolean,
-    ) {
-        return <Tooltip title={this.props.t(open ? 'collapse' : 'Expand')} slotProps={{ popper: { sx: genericStyles.tooltip } }}>
-            <div>
-                <IconButton
-                    size="large"
-                >
-                    {open ? <BiChevronUp /> : <BiChevronDown />}
-                </IconButton>
-            </div>
-        </Tooltip>;
+    ): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.t(open ? 'collapse' : 'Expand')}
+                slotProps={{ popper: { sx: genericStyles.tooltip } }}
+            >
+                <div>
+                    <IconButton size="large">{open ? <BiChevronUp /> : <BiChevronDown />}</IconButton>
+                </div>
+            </Tooltip>
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderRestartButton() {
-        return <Tooltip title={this.props.t('Restart host')} slotProps={{ popper: { sx: genericStyles.tooltip } }}>
-            <div>
+    renderRestartButton(): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.t('Restart host')}
+                slotProps={{ popper: { sx: genericStyles.tooltip } }}
+            >
+                <div>
+                    <IconButton
+                        size="large"
+                        disabled={!this.props.alive}
+                        onClick={event => {
+                            event.stopPropagation();
+                            this.props.socket
+                                .restartController(this.props.hostId)
+                                .catch((err: string) => window.alert(`Cannot restart: ${err}`));
+                        }}
+                    >
+                        <CachedIcon />
+                    </IconButton>
+                </div>
+            </Tooltip>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderEditButton(): JSX.Element {
+        return (
+            <IconButton
+                size="large"
+                onClick={event => {
+                    event.stopPropagation();
+                    this.setState({ editDialog: true });
+                }}
+            >
+                <EditIcon />
+            </IconButton>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderRemoveButton(): JSX.Element {
+        return !this.props.alive && !this.props.isCurrentHost ? (
+            <Tooltip
+                title={
+                    this.props.alive || this.props.isCurrentHost
+                        ? this.props.t('You cannot delete host, when it is alive')
+                        : this.props.t('Remove')
+                }
+                slotProps={{ popper: { sx: genericStyles.tooltip } }}
+            >
                 <IconButton
                     size="large"
-                    disabled={!this.props.alive}
                     onClick={event => {
                         event.stopPropagation();
-                        this.props.socket.restartController(this.props.hostId)
-                            .catch((err: string) => window.alert(`Cannot restart: ${err}`));
+                        this.props.executeCommandRemove();
                     }}
                 >
-                    <CachedIcon />
+                    <DeleteIcon />
                 </IconButton>
-            </div>
-        </Tooltip>;
+            </Tooltip>
+        ) : (
+            <div style={genericStyles.emptyButton} />
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderEditButton() {
-        return <IconButton
-            size="large"
-            onClick={event => {
-                event.stopPropagation();
-                this.setState({ editDialog: true });
-            }}
-        >
-            <EditIcon />
-        </IconButton>;
+    renderCopyButton(style?: React.CSSProperties): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.t('Copy')}
+                slotProps={{ popper: { sx: genericStyles.tooltip } }}
+            >
+                <IconButton
+                    size="large"
+                    onClick={() => this.onCopy()}
+                    style={style}
+                >
+                    <IconCopy />
+                </IconButton>
+            </Tooltip>
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderRemoveButton() {
-        return !this.props.alive && !this.props.isCurrentHost ? <Tooltip
-            title={this.props.alive || this.props.isCurrentHost ? this.props.t('You cannot delete host, when it is alive') : this.props.t('Remove')}
-            slotProps={{ popper: { sx: genericStyles.tooltip } }}
-        >
-            <IconButton
-                size="large"
-                onClick={event => {
-                    event.stopPropagation();
-                    this.props.executeCommandRemove();
+    renderLogLevel(): JSX.Element {
+        return (
+            <Tooltip
+                title={`${this.props.t('loglevel')} ${this.state.logLevel}`}
+                slotProps={{ popper: { sx: genericStyles.tooltip } }}
+            >
+                <IconButton
+                    size="large"
+                    onClick={event => {
+                        event.stopPropagation();
+                        this.setState({ openDialogLogLevel: true });
+                    }}
+                >
+                    <Avatar style={{ ...genericStyles.smallAvatar, ...genericStyles[this.state.logLevel] }}>
+                        {getLogLevelIcon(this.state.logLevel)}
+                    </Avatar>
+                </IconButton>
+            </Tooltip>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderNotificationsBadge(children?: React.ReactNode, styled?: boolean): JSX.Element {
+        return (
+            <Badge
+                sx={
+                    styled
+                        ? {
+                              right: -3,
+                              top: 13,
+                              padding: '0 4px',
+                          }
+                        : undefined
+                }
+                title={this.props.t('Hosts notifications')}
+                badgeContent={this.state.errorHost.count}
+                style={genericStyles.badge}
+                color="error"
+                onClick={e => {
+                    e.stopPropagation();
+                    this.props.showAdaptersWarning(
+                        { [this.props.hostId]: this.state.errorHost.notifications },
+                        this.props.hostId,
+                    );
                 }}
             >
-                <DeleteIcon />
-            </IconButton>
-        </Tooltip>
-            :
-            <div style={genericStyles.emptyButton} />;
+                {children}
+            </Badge>
+        );
     }
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderCopyButton(style?: React.CSSProperties) {
-        return <Tooltip title={this.props.t('Copy')} slotProps={{ popper: { sx: genericStyles.tooltip } }}>
-            <IconButton
-                size="large"
-                onClick={() => this.onCopy()}
-                style={style}
-            >
-                <IconCopy />
-            </IconButton>
-        </Tooltip>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderLogLevel() {
-        return <Tooltip
-            title={`${this.props.t('loglevel')} ${this.state.logLevel}`}
-            slotProps={{ popper: { sx: genericStyles.tooltip } }}
-        >
-            <IconButton
-                size="large"
-                onClick={event => {
-                    event.stopPropagation();
-                    this.setState({ openDialogLogLevel: true });
-                }}
-            >
-                <Avatar style={{ ...genericStyles.smallAvatar, ...genericStyles[this.state.logLevel] }}>
-                    {getLogLevelIcon(this.state.logLevel)}
-                </Avatar>
-            </IconButton>
-        </Tooltip>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderNotificationsBadge(children?: React.ReactNode, styled?: boolean): React.JSX.Element {
-        return <Badge
-            sx={styled ? {
-                right: -3,
-                top: 13,
-                padding: '0 4px',
-            } : undefined}
-            title={this.props.t('Hosts notifications')}
-            badgeContent={this.state.errorHost.count}
-            style={genericStyles.badge}
-            color="error"
-            onClick={e => {
-                e.stopPropagation();
-                this.props.showAdaptersWarning({ [this.props.hostId]: this.state.errorHost.notifications }, this.props.hostId);
-            }}
-        >
-            {children}
-        </Badge>;
-    }
-
-    async openHostUpdateDialog() {
+    async openHostUpdateDialog(): Promise<void> {
         const updateAvailable = await this.props.socket.checkFeatureSupported('CONTROLLER_UI_UPGRADE');
 
         this.setState({
@@ -770,57 +833,65 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         this.readChangeLog();
     }
 
-    renderHostUpdateDialog() {
+    renderHostUpdateDialog(): JSX.Element | null {
         if (!this.state.hostUpdateDialog) {
             return null;
         }
 
-        return <AdapterUpdateDialog
-            adapter={this.props.host.common.name}
-            adapterObject={this.props.jsControllerInfo}
-            t={this.props.t}
-            textUpdate={this.state.updateAvailable ? this.props.t('Start update') : this.props.t('Show instructions')}
-            textInstruction={this.props.t('Show whole changelog')}
-            rightDependencies
-            news={this.getNews()}
-            toggleTranslation={this.props.toggleTranslation}
-            noTranslation={this.props.noTranslation}
-            onUpdate={async () => {
-                if (this.state.updateAvailable) {
-                    this.setState({ hostUpdateDialog: false, updateDialog: true });
-                } else {
-                    this.setState({ hostUpdateDialog: false, instructionDialog: true });
+        return (
+            <AdapterUpdateDialog
+                adapter={this.props.host.common.name}
+                adapterObject={this.props.jsControllerInfo}
+                t={this.props.t}
+                textUpdate={
+                    this.state.updateAvailable ? this.props.t('Start update') : this.props.t('Show instructions')
                 }
-            }}
-            theme={this.props.theme}
-            installedVersion={this.props.host.common.installedVersion}
-            onInstruction={() => {
-                window.open(CONTROLLER_CHANGELOG_URL, '_blank');
-            }}
-            onClose={() => this.setState({ hostUpdateDialog: false })}
-        />;
+                textInstruction={this.props.t('Show whole changelog')}
+                rightDependencies
+                news={this.getNews()}
+                toggleTranslation={this.props.toggleTranslation}
+                noTranslation={this.props.noTranslation}
+                onUpdate={(): void => {
+                    if (this.state.updateAvailable) {
+                        this.setState({ hostUpdateDialog: false, updateDialog: true });
+                    } else {
+                        this.setState({ hostUpdateDialog: false, instructionDialog: true });
+                    }
+                }}
+                theme={this.props.theme}
+                installedVersion={this.props.host.common.installedVersion}
+                onInstruction={() => {
+                    window.open(CONTROLLER_CHANGELOG_URL, '_blank');
+                }}
+                onClose={() => this.setState({ hostUpdateDialog: false })}
+            />
+        );
     }
 
-    renderUpdateDialog() {
+    renderUpdateDialog(): JSX.Element | null {
         if (this.state.updateAvailable && this.state.updateDialog) {
-            return <JsControllerUpdater
-                socket={this.props.socket}
-                hostId={this.props.hostId}
-                version={this.props.jsControllerInfo.version}
-                onClose={() => this.setState({ updateDialog: false })}
-                adminInstance={this.props.adminInstance}
-                onUpdating={(isUpdating: boolean) => this.props.onUpdating(isUpdating)}
-                themeType={this.props.themeType}
-            />;
+            return (
+                <JsControllerUpdater
+                    socket={this.props.socket}
+                    hostId={this.props.hostId}
+                    version={this.props.jsControllerInfo.version}
+                    onClose={() => this.setState({ updateDialog: false })}
+                    adminInstance={this.props.adminInstance}
+                    onUpdating={(isUpdating: boolean) => this.props.onUpdating(isUpdating)}
+                    themeType={this.props.themeType}
+                />
+            );
         }
 
         if (this.state.instructionDialog) {
-            return <JsControllerDialog
-                socket={this.props.socket}
-                hostId={this.props.hostId}
-                version={this.props.jsControllerInfo.version}
-                onClose={() => this.setState({ instructionDialog: false })}
-            />;
+            return (
+                <JsControllerDialog
+                    socket={this.props.socket}
+                    hostId={this.props.hostId}
+                    version={this.props.jsControllerInfo.version}
+                    onClose={() => this.setState({ instructionDialog: false })}
+                />
+            );
         }
 
         return null;
@@ -855,8 +926,9 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                 try {
                     if (semver.gt(version, installed) || all) {
                         let downloaded = false;
-                        let newsText: string = this.props.noTranslation ?
-                            adapter.news[version].en : (adapter.news[version][this.props.lang] || adapter.news[version].en) as string;
+                        let newsText: string = this.props.noTranslation
+                            ? adapter.news[version].en
+                            : adapter.news[version][this.props.lang] || adapter.news[version].en;
 
                         if (adapter.news[version].en === 'see CHANGELOG.md' && this.state.changeLog) {
                             // try to find news in CHANGELOG
@@ -883,49 +955,58 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         return news;
     }
 
-    baseSettingsSettingsDialog() {
+    baseSettingsSettingsDialog(): JSX.Element | null {
         if (!this.state.baseSettingsDialog) {
             return null;
         }
 
-        return <BaseSettingsDialog
-            key="base"
-            currentHost={this.props.hostId}
-            themeType={this.props.themeType}
-            currentHostName={this.props.host.common.name}
-            onClose={() => this.setState({ baseSettingsDialog: false })}
-            lang={this.props.lang}
-            socket={this.props.socket}
-            t={this.props.t}
-        />;
+        return (
+            <BaseSettingsDialog
+                key="base"
+                currentHost={this.props.hostId}
+                themeType={this.props.themeType}
+                currentHostName={this.props.host.common.name}
+                onClose={() => this.setState({ baseSettingsDialog: false })}
+                lang={this.props.lang}
+                socket={this.props.socket}
+                t={this.props.t}
+            />
+        );
     }
 
-    renderEditObjectDialog() {
+    renderEditObjectDialog(): JSX.Element | null {
         if (!this.state.editDialog) {
             return null;
         }
 
-        return <HostEdit
-            obj={this.props.host}
-            t={this.props.t}
-            onClose={obj => this.setState({ editDialog: false }, () => {
-                if (obj) {
-                    this.props.socket.setObject(obj._id, obj)
-                        .then(() => this.forceUpdate())
-                        .catch(e => alert(`Cannot write object: ${e}`));
+        return (
+            <HostEdit
+                obj={this.props.host}
+                t={this.props.t}
+                onClose={obj =>
+                    this.setState({ editDialog: false }, () => {
+                        if (obj) {
+                            this.props.socket
+                                .setObject(obj._id, obj)
+                                .then(() => this.forceUpdate())
+                                .catch(e => alert(`Cannot write object: ${e}`));
+                        }
+                    })
                 }
-            })}
-        />;
+            />
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderDialogs() {
-        return <>
-            {this.renderDialogLogLevel()}
-            {this.renderHostUpdateDialog()}
-            {this.renderUpdateDialog()}
-            {this.renderEditObjectDialog()}
-            {this.baseSettingsSettingsDialog()}
-        </>;
+    renderDialogs(): JSX.Element {
+        return (
+            <>
+                {this.renderDialogLogLevel()}
+                {this.renderHostUpdateDialog()}
+                {this.renderUpdateDialog()}
+                {this.renderEditObjectDialog()}
+                {this.baseSettingsSettingsDialog()}
+            </>
+        );
     }
 }

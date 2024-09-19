@@ -1,22 +1,18 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { Paper } from '@mui/material';
 
-import {
-    withWidth,
-    type ThemeType,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { withWidth, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
 
 const styles: Record<string, any> = {
     paper: {
-        height:    '100%',
+        height: '100%',
         maxHeight: '100%',
-        maxWidth:  '100%',
-        overflow:  'auto',
-        padding:   8,
+        maxWidth: '100%',
+        overflow: 'auto',
+        padding: 8,
     },
     title: {
         width: '100%',
@@ -57,7 +53,7 @@ class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettin
         };
     }
 
-    onChange(value: string) {
+    onChange(value: string): void {
         const newState: BaseSettingsPluginsState = { settings: value };
         try {
             const settings = JSON.parse(value);
@@ -73,18 +69,20 @@ class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettin
         }
     }
 
-    render() {
-        return <Paper style={styles.paper}>
-            <div style={styles.title}>{this.props.t('For future use')}</div>
-            <div style={{ ...styles.divWithoutTitle, ...(this.state.error ? styles.error : undefined) }}>
-                <Editor
-                    // mode="json"
-                    themeType={this.props.themeType}
-                    value={this.state.settings}
-                    onChange={newValue => this.onChange(newValue)}
-                />
-            </div>
-        </Paper>;
+    render(): JSX.Element {
+        return (
+            <Paper style={styles.paper}>
+                <div style={styles.title}>{this.props.t('For future use')}</div>
+                <div style={{ ...styles.divWithoutTitle, ...(this.state.error ? styles.error : undefined) }}>
+                    <Editor
+                        // mode="json"
+                        themeType={this.props.themeType}
+                        value={this.state.settings}
+                        onChange={newValue => this.onChange(newValue)}
+                    />
+                </div>
+            </Paper>
+        );
     }
 }
 

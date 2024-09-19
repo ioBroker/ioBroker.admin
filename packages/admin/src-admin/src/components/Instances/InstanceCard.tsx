@@ -1,22 +1,10 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import {
-    Box,
-    Card,
-    CardContent,
-    CardMedia,
-    Fab,
-    Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Fab, Typography } from '@mui/material';
 
-import {
-    MoreVert as MoreVertIcon,
-} from '@mui/icons-material';
+import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 
-import {
-    Utils,
-    type IobTheme,
-} from '@iobroker/adapter-react-v5';
+import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import InstanceGeneric, {
     type InstanceGenericProps,
@@ -184,173 +172,214 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
         this.state = Object.assign(this.getDefaultState(props), { mouseOver: false });
     }
 
-    renderSecondCardInfo() {
+    renderSecondCardInfo(): JSX.Element {
         if (this.props.deleting || !this.state.expanded) {
             return null;
         }
         const { item, instance } = this.props;
-        return <Box
-            component="div"
-            sx={Utils.getStyle(
-                this.props.context.theme,
-                styles.collapse,
-                !this.state.expanded ? styles.collapseOff : '',
-                this.props.deleting && styles.deleting,
-            )}
-        >
-            <CardContent sx={{ '&.MuiCardContent-root': { ...styles.cardContent, ...styles.overflowAuto } }}>
-                <Box component="div" sx={styles.collapseIcon}>
-                    <Box
-                        component="div"
-                        sx={styles.close}
-                        onClick={() => {
-                            if (this.state.openDialog) {
-                                return;
-                            }
-                            this.setState({ expanded: false }, () =>
-                                this.props.context.onToggleExpanded(this.props.id, false));
-                        }}
-                    />
-                </Box>
-                <Typography gutterBottom component="span" variant="body2">
-                    {this.renderInfo()}
-
-                    {this.renderVersion()}
-
-                    {this.renderMemoryUsage()}
-
-                    {item.running && this.props.context.expertMode &&
-                        <div style={styles.displayFlex}>
-                            {this.renderInputOutput()}
-                        </div>}
-
-                    {this.props.context.expertMode && <div style={styles.displayFlex}>
-                        {this.renderRamLimit()}
-                    </div>}
-
-                    {this.props.context.expertMode && <div style={styles.displayFlex}>
-                        {this.renderLogLevel()}
-                    </div>}
-
-                    {item.modeSchedule && <div style={styles.displayFlex}>
-                        {this.renderSchedule()}
-                    </div>}
-
-                    {this.props.context.expertMode && (instance.mode === 'daemon') &&
-                        <div style={styles.displayFlex}>
-                            {this.renderRestartSchedule()}
-                        </div>}
-
-                    {this.props.context.expertMode && item.checkCompact && item.compact && item.supportCompact &&
-                        <div style={styles.displayFlex}>
-                            {this.renderCompactGroup()}
-                        </div>}
-
-                    {this.props.context.expertMode && <div style={styles.displayFlex}>
-                        {this.renderTier()}
-                    </div>}
-
-                    {this.props.context.hosts.length > 1 || (this.props.context.hosts.length && this.props.context.hosts[0].common?.name !== instance.host) ?
-                        <div style={styles.displayFlex}>
-                            {this.renderHostWithButton()}
-                        </div> : null}
-
-                    <IsVisible config={item} name="allowInstanceSettings">
-                        <Box
-                            component="div"
-                            sx={{ display: { sm: 'none', xs: 'inline-block' } }}
-                        >
-                            {this.renderSettingsButton()}
-                        </Box>
-                    </IsVisible>
-                </Typography>
-            </CardContent>
-
-            <Box component="div" sx={styles.footerBlock}>
-                <IsVisible config={item} name="allowInstanceDelete">
-                    <div style={styles.displayFlex}>
-                        {this.renderDeleteButton()}
-                    </div>
-                </IsVisible>
-
-                {this.props.context.expertMode && item.checkSentry && <div style={styles.displayFlex}>
-                    {this.renderSentry()}
-                </div>}
-
-                {item.supportCompact && this.props.context.expertMode && item.checkCompact && <div style={styles.displayFlex}>
-                    {this.renderCompactGroupEnabled()}
-                </div>}
-            </Box>
-        </Box>;
-    }
-
-    render() {
-        const { item, instance } = this.props;
-
-        return <Card sx={Utils.getStyle(this.props.context.theme, styles.root, this.props.hidden && styles.hidden)}>
-            {this.state.openDialog && this.renderDialogs()}
-            {this.renderSecondCardInfo()}
+        return (
             <Box
                 component="div"
                 sx={Utils.getStyle(
                     this.props.context.theme,
-                    styles.imageBlock,
-                    (!item.running || instance.mode !== 'daemon' || item.stoppedWhenWebExtension !== undefined) && styles.instanceStateNotEnabled1,
-                    item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && (!item.connectedToHost || !item.alive) && styles.instanceStateNotAlive1,
-                    item.running && item.connectedToHost && item.alive && item.connected === false && styles.instanceStateAliveNotConnected1,
-                    item.running && item.connectedToHost && item.alive && item.connected !== false && styles.instanceStateAliveAndConnected1,
+                    styles.collapse,
+                    !this.state.expanded ? styles.collapseOff : '',
+                    this.props.deleting && styles.deleting,
                 )}
             >
-                <CardMedia sx={styles.img} component="img" image={instance.image || 'img/no-image.png'} />
-                <div style={styles.adapter}>{instance.id}</div>
-                <div style={styles.versionDate}>
-                    {/* {expertMode && item.checkCompact && <Tooltip title={t('compact groups')}>
-                    <ViewCompactIcon color="action" style={{ margin: 10 }} />
-                </Tooltip>} */}
-                </div>
-                {!this.state.expanded ? <Fab
-                    onMouseOver={() => this.setState({ mouseOver: true })}
-                    onMouseOut={() => this.setState({ mouseOver: false })}
-                    onClick={() => this.setState({ expanded: true }, () =>
-                        this.props.context.onToggleExpanded(this.props.id, true))}
-                    style={styles.fab}
-                    color="primary"
-                    aria-label="add"
-                >
-                    <MoreVertIcon />
-                </Fab> : null}
-            </Box>
-
-            <CardContent style={styles.cardContentH5}>
-                <Typography gutterBottom variant="h5" component="h5">
-                    <div
-                        // onMouseMove={() => this.setState({ visibleEdit: true })}
-                        onMouseEnter={() => this.setState({ visibleEdit: true })}
-                        onMouseLeave={() => this.setState({ visibleEdit: false })}
-                        style={styles.displayFlex}
+                <CardContent sx={{ '&.MuiCardContent-root': { ...styles.cardContent, ...styles.overflowAuto } }}>
+                    <Box
+                        component="div"
+                        sx={styles.collapseIcon}
                     >
-                        {AdminUtils.getText(item.name, this.props.context.lang)}
-                        {this.renderEditNameButton()}
-                    </div>
-                </Typography>
-
-                <div style={styles.marginTop10}>
-                    <Typography component="span" style={styles.enableButton}>
-                        {this.renderPlayPause()}
                         <Box
                             component="div"
-                            sx={{ display: { sm: 'inline-block', xs: 'none' } }}
+                            sx={styles.close}
+                            onClick={() => {
+                                if (this.state.openDialog) {
+                                    return;
+                                }
+                                this.setState({ expanded: false }, () =>
+                                    this.props.context.onToggleExpanded(this.props.id, false),
+                                );
+                            }}
+                        />
+                    </Box>
+                    <Typography
+                        gutterBottom
+                        component="span"
+                        variant="body2"
+                    >
+                        {this.renderInfo()}
+
+                        {this.renderVersion()}
+
+                        {this.renderMemoryUsage()}
+
+                        {item.running && this.props.context.expertMode && (
+                            <div style={styles.displayFlex}>{this.renderInputOutput()}</div>
+                        )}
+
+                        {this.props.context.expertMode && <div style={styles.displayFlex}>{this.renderRamLimit()}</div>}
+
+                        {this.props.context.expertMode && <div style={styles.displayFlex}>{this.renderLogLevel()}</div>}
+
+                        {item.modeSchedule && <div style={styles.displayFlex}>{this.renderSchedule()}</div>}
+
+                        {this.props.context.expertMode && instance.mode === 'daemon' && (
+                            <div style={styles.displayFlex}>{this.renderRestartSchedule()}</div>
+                        )}
+
+                        {this.props.context.expertMode && item.checkCompact && item.compact && item.supportCompact && (
+                            <div style={styles.displayFlex}>{this.renderCompactGroup()}</div>
+                        )}
+
+                        {this.props.context.expertMode && <div style={styles.displayFlex}>{this.renderTier()}</div>}
+
+                        {this.props.context.hosts.length > 1 ||
+                        (this.props.context.hosts.length &&
+                            this.props.context.hosts[0].common?.name !== instance.host) ? (
+                            <div style={styles.displayFlex}>{this.renderHostWithButton()}</div>
+                        ) : null}
+
+                        <IsVisible
+                            config={item}
+                            name="allowInstanceSettings"
                         >
-                            {this.renderSettingsButton()}
-                        </Box>
-                        {this.renderRestartButton()}
-                        <IsVisible config={item} name="allowInstanceLink">
-                            {this.renderLink()}
+                            <Box
+                                component="div"
+                                sx={{ display: { sm: 'none', xs: 'inline-block' } }}
+                            >
+                                {this.renderSettingsButton()}
+                            </Box>
                         </IsVisible>
                     </Typography>
-                </div>
-            </CardContent>
-        </Card>;
+                </CardContent>
+
+                <Box
+                    component="div"
+                    sx={styles.footerBlock}
+                >
+                    <IsVisible
+                        config={item}
+                        name="allowInstanceDelete"
+                    >
+                        <div style={styles.displayFlex}>{this.renderDeleteButton()}</div>
+                    </IsVisible>
+
+                    {this.props.context.expertMode && item.checkSentry && (
+                        <div style={styles.displayFlex}>{this.renderSentry()}</div>
+                    )}
+
+                    {item.supportCompact && this.props.context.expertMode && item.checkCompact && (
+                        <div style={styles.displayFlex}>{this.renderCompactGroupEnabled()}</div>
+                    )}
+                </Box>
+            </Box>
+        );
+    }
+
+    render(): JSX.Element {
+        const { item, instance } = this.props;
+
+        return (
+            <Card sx={Utils.getStyle(this.props.context.theme, styles.root, this.props.hidden && styles.hidden)}>
+                {this.state.openDialog && this.renderDialogs()}
+                {this.renderSecondCardInfo()}
+                <Box
+                    component="div"
+                    sx={Utils.getStyle(
+                        this.props.context.theme,
+                        styles.imageBlock,
+                        (!item.running || instance.mode !== 'daemon' || item.stoppedWhenWebExtension !== undefined) &&
+                            styles.instanceStateNotEnabled1,
+                        item.running &&
+                            instance.mode === 'daemon' &&
+                            item.stoppedWhenWebExtension === undefined &&
+                            (!item.connectedToHost || !item.alive) &&
+                            styles.instanceStateNotAlive1,
+                        item.running &&
+                            item.connectedToHost &&
+                            item.alive &&
+                            item.connected === false &&
+                            styles.instanceStateAliveNotConnected1,
+                        item.running &&
+                            item.connectedToHost &&
+                            item.alive &&
+                            item.connected !== false &&
+                            styles.instanceStateAliveAndConnected1,
+                    )}
+                >
+                    <CardMedia
+                        sx={styles.img}
+                        component="img"
+                        image={instance.image || 'img/no-image.png'}
+                    />
+                    <div style={styles.adapter}>{instance.id}</div>
+                    <div style={styles.versionDate}>
+                        {/* {expertMode && item.checkCompact && <Tooltip title={t('compact groups')}>
+                    <ViewCompactIcon color="action" style={{ margin: 10 }} />
+                </Tooltip>} */}
+                    </div>
+                    {!this.state.expanded ? (
+                        <Fab
+                            onMouseOver={() => this.setState({ mouseOver: true })}
+                            onMouseOut={() => this.setState({ mouseOver: false })}
+                            onClick={() =>
+                                this.setState({ expanded: true }, () =>
+                                    this.props.context.onToggleExpanded(this.props.id, true),
+                                )
+                            }
+                            style={styles.fab}
+                            color="primary"
+                            aria-label="add"
+                        >
+                            <MoreVertIcon />
+                        </Fab>
+                    ) : null}
+                </Box>
+
+                <CardContent style={styles.cardContentH5}>
+                    <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="h5"
+                    >
+                        <div
+                            // onMouseMove={() => this.setState({ visibleEdit: true })}
+                            onMouseEnter={() => this.setState({ visibleEdit: true })}
+                            onMouseLeave={() => this.setState({ visibleEdit: false })}
+                            style={styles.displayFlex}
+                        >
+                            {AdminUtils.getText(item.name, this.props.context.lang)}
+                            {this.renderEditNameButton()}
+                        </div>
+                    </Typography>
+
+                    <div style={styles.marginTop10}>
+                        <Typography
+                            component="span"
+                            style={styles.enableButton}
+                        >
+                            {this.renderPlayPause()}
+                            <Box
+                                component="div"
+                                sx={{ display: { sm: 'inline-block', xs: 'none' } }}
+                            >
+                                {this.renderSettingsButton()}
+                            </Box>
+                            {this.renderRestartButton()}
+                            <IsVisible
+                                config={item}
+                                name="allowInstanceLink"
+                            >
+                                {this.renderLink()}
+                            </IsVisible>
+                        </Typography>
+                    </div>
+                </CardContent>
+            </Card>
+        );
     }
 }
 

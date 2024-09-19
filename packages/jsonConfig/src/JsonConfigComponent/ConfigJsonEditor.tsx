@@ -1,10 +1,6 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import {
-    FormHelperText,
-    FormControl,
-    Button,
-} from '@mui/material';
+import { FormHelperText, FormControl, Button } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemJsonEditor } from '#JC/types';
@@ -41,14 +37,14 @@ interface ConfigJsonEditorState extends ConfigGenericState {
 }
 
 class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEditorState> {
-    async componentDidMount() {
+    componentDidMount(): void {
         super.componentDidMount();
         const { data, attr } = this.props;
         const value = ConfigGeneric.getValue(data, attr) || {};
         this.setState({ value, initialized: true, jsonError: this.validateJson(value) });
     }
 
-    validateJson(value: string | null | undefined) {
+    validateJson(value: string | null | undefined): boolean {
         let jsonError = false;
         if (this.props.schema.validateJson !== false) {
             if (value || !this.props.schema.allowEmpty) {
@@ -64,52 +60,64 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
         return jsonError;
     }
 
-    renderItem(/* _error: string, _disabled: boolean, defaultValue */) {
+    renderItem(/* _error: string, _disabled: boolean, defaultValue */): JSX.Element | null {
         if (!this.state.initialized) {
             return null;
         }
 
-        const {
-            schema, data, attr,
-        } = this.props;
+        const { schema, data, attr } = this.props;
         const { value, showSelectId } = this.state;
 
-        return <FormControl fullWidth variant="standard">
-            <div style={styles.flex}>
-                <Button
-                    color="grey"
-                    style={styles.button}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => this.setState({ showSelectId: true })}
-                >
-                    {I18n.t('ra_JSON editor')}
-                </Button>
-            </div>
-            {showSelectId ? <CustomModal
-                title={this.getText(schema.label)}
-                overflowHidden
-                onClose={() =>
-                    this.setState({ showSelectId: false, value: ConfigGeneric.getValue(data, attr) || {} })}
-                onApply={() => this.setState({ showSelectId: false }, () => this.onChange(attr, value))}
+        return (
+            <FormControl
+                fullWidth
+                variant="standard"
             >
-                <div style={{ ...styles.wrapper, ...(this.state.jsonError ? {} : undefined) }}>
-                    <Editor
-                        value={typeof value === 'object' ? JSON.stringify(value) : value}
-                        onChange={newValue => this.setState({ value: newValue, jsonError: this.validateJson(newValue) })}
-                        name="ConfigJsonEditor"
-                        themeType={this.props.themeType}
-                    />
+                <div style={styles.flex}>
+                    <Button
+                        color="grey"
+                        style={styles.button}
+                        size="small"
+                        variant="outlined"
+                        onClick={() => this.setState({ showSelectId: true })}
+                    >
+                        {I18n.t('ra_JSON editor')}
+                    </Button>
                 </div>
-            </CustomModal> : null}
-            {schema.help || this.state.jsonError ? <FormHelperText>
-                {this.state.jsonError ? I18n.t('ra_Invalid JSON') : this.renderHelp(
-                    this.props.schema.help,
-                    this.props.schema.helpLink,
-                    this.props.schema.noTranslation,
-                )}
-            </FormHelperText> : null}
-        </FormControl>;
+                {showSelectId ? (
+                    <CustomModal
+                        title={this.getText(schema.label)}
+                        overflowHidden
+                        onClose={() =>
+                            this.setState({ showSelectId: false, value: ConfigGeneric.getValue(data, attr) || {} })
+                        }
+                        onApply={() => this.setState({ showSelectId: false }, () => this.onChange(attr, value))}
+                    >
+                        <div style={{ ...styles.wrapper, ...(this.state.jsonError ? {} : undefined) }}>
+                            <Editor
+                                value={typeof value === 'object' ? JSON.stringify(value) : value}
+                                onChange={newValue =>
+                                    this.setState({ value: newValue, jsonError: this.validateJson(newValue) })
+                                }
+                                name="ConfigJsonEditor"
+                                themeType={this.props.themeType}
+                            />
+                        </div>
+                    </CustomModal>
+                ) : null}
+                {schema.help || this.state.jsonError ? (
+                    <FormHelperText>
+                        {this.state.jsonError
+                            ? I18n.t('ra_Invalid JSON')
+                            : this.renderHelp(
+                                  this.props.schema.help,
+                                  this.props.schema.helpLink,
+                                  this.props.schema.noTranslation,
+                              )}
+                    </FormHelperText>
+                ) : null}
+            </FormControl>
+        );
     }
 }
 

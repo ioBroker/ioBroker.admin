@@ -1,4 +1,5 @@
-![Logo](packages/admin/admin/admin.svg)
+<img src="packages/admin/admin/admin.svg" width="100" height="100" />
+
 # ioBroker.admin
 
 ![Number of Installations](http://iobroker.live/badges/admin-installed.svg)
