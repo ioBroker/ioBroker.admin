@@ -347,8 +347,8 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                                 line
                                     .trim()
                                     .replace(/^\*\s?/, '')
-                                    .replace(/<!--[^>]*->/, '')
-                                    .replace(/<! -[^>]*->/, '')
+                                    .replace(/<!--[^>]*->/g, '')
+                                    .replace(/<! -[^>]*->/g, '')
                                     .trim(),
                             )
                             .filter(line => !!line);

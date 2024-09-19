@@ -164,11 +164,11 @@ async function readFolderRecursive(
 function MemoryWriteStream(): void {
     stream.Transform.call(this);
     this._chunks = [];
-    this._transform = (chunk: unknown, enc: unknown, cb: () => void) => {
+    this._transform = (chunk: unknown, enc: unknown, cb: () => void): void => {
         this._chunks.push(chunk);
         cb();
     };
-    this.collect = () => {
+    this.collect = (): unknown => {
         const result = Buffer.concat(this._chunks);
         this._chunks = [];
         return result;
@@ -321,8 +321,9 @@ class Web {
             } else {
                 template = template.replace(
                     `@@${pattern}@@`,
-                    // @ts-expect-error check later
-                    this.adapter.config[pattern] !== undefined ? this.adapter.config[pattern] : '',
+                    (this.adapter.config as Record<string, any>)[pattern] !== undefined
+                        ? (this.adapter.config as Record<string, any>)[pattern]
+                        : '',
                 );
             }
         });
@@ -349,16 +350,16 @@ class Web {
             }
             if (origin.startsWith('?login')) {
                 return this.LOGIN_PAGE + origin.substring(6);
-            } else if (origin.startsWith('/?login')) {
-                return this.LOGIN_PAGE + origin.substring(7);
-            } else if (origin.startsWith(this.LOGIN_PAGE)) {
-                return origin;
-            } else {
-                return this.LOGIN_PAGE + origin;
             }
-        } else {
-            return `${this.LOGIN_PAGE}?error`;
+            if (origin.startsWith('/?login')) {
+                return this.LOGIN_PAGE + origin.substring(7);
+            }
+            if (origin.startsWith(this.LOGIN_PAGE)) {
+                return origin;
+            }
+            return this.LOGIN_PAGE + origin;
         }
+        return `${this.LOGIN_PAGE}?error`;
     }
 
     /**
@@ -367,19 +368,21 @@ class Web {
      * @param adapterName name of the adapter
      */
     async validateJsonConfig(adapterName: string): Promise<void> {
-        let schema;
+        let schema: Record<string, any> | null = null;
 
         try {
             const schemaRes = await axios.get(this.JSON_CONFIG_SCHEMA_URL);
-            schema = schemaRes.data;
+            schema = schemaRes.data as Record<string, any>;
         } catch (e) {
             this.adapter.log.debug(`Could not get jsonConfig schema: ${e.message}`);
             return;
         }
 
-        const res = await this.adapter.getForeignObjectAsync(`system.adapter.${adapterName}`);
+        const res: ioBroker.AdapterObject | null = await this.adapter.getForeignObjectAsync<`system.adapter.${string}`>(
+            `system.adapter.${adapterName}`,
+        );
 
-        // @ts-expect-error check later
+        // @ts-expect-error fixed in js-controller
         if (res?.common.adminUI?.config === 'json') {
             try {
                 const ajv = new Ajv.Ajv({
@@ -391,7 +394,7 @@ class Web {
 
                 const jsonConfPath = path.join(adapterPath, 'admin', 'jsonConfig.json');
                 const json5ConfPath = path.join(adapterPath, 'admin', 'jsonConfig.json5');
-                let jsonConf;
+                let jsonConf: string;
 
                 if (fs.existsSync(jsonConfPath)) {
                     jsonConf = fs.readFileSync(jsonConfPath, {
@@ -450,24 +453,27 @@ class Web {
             this.server.app.disable('x-powered-by');
 
             // enable use of i-frames together with HTTPS
-            this.server.app.get('/*', (_req, res, next): void => {
-                res.header('X-Frame-Options', 'SAMEORIGIN');
-                next(); // http://expressjs.com/guide.html#passing-route control
-            });
+            this.server.app.get(
+                '/*',
+                (_req: express.Request, res: express.Response, next: express.NextFunction): void => {
+                    res.header('X-Frame-Options', 'SAMEORIGIN');
+                    next(); // http://expressjs.com/guide.html#passing-route control
+                },
+            );
 
             // ONLY for DEBUG
-            /*server.app.use((req, res, next) => {
+            /*server.app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
                 res.header('Access-Control-Allow-Origin', '*');
                 res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
                 next();
             });*/
 
-            this.server.app.get('/version', (_req, res): void => {
+            this.server.app.get('/version', (_req: express.Request, res: express.Response): void => {
                 res.status(200).send(this.adapter.version);
             });
 
             // replace socket.io
-            this.server.app.use((req, res, next): void => {
+            this.server.app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
                 // return favicon always
                 if (req.url === '/favicon.ico') {
                     res.set('Content-Type', 'image/x-icon');
@@ -504,7 +510,7 @@ class Web {
                 next();
             });
 
-            this.server.app.get('*/_socket/info.js', (_req, res): void => {
+            this.server.app.get('*/_socket/info.js', (_req: express.Request, res: express.Response): void => {
                 res.set('Content-Type', 'application/javascript');
                 res.status(200).send(this.getInfoJs());
             });
@@ -515,65 +521,75 @@ class Web {
                 this.store = new AdapterStore({ adapter: this.adapter });
 
                 passport.use(
-                    new Strategy((username, password, done) => {
-                        username = (username || '').toString();
+                    new Strategy(
+                        (
+                            username: string,
+                            password: string,
+                            done: (error: any, user?: string | false) => void,
+                        ): void => {
+                            username = (username || '').toString();
 
-                        if (this.bruteForce[username] && this.bruteForce[username].errors > 4) {
-                            let minutes = new Date().getTime() - this.bruteForce[username].time;
-                            if (this.bruteForce[username].errors < 7) {
-                                if (new Date().getTime() - this.bruteForce[username].time < 60_000) {
-                                    minutes = 1;
+                            if (this.bruteForce[username] && this.bruteForce[username].errors > 4) {
+                                let minutes = new Date().getTime() - this.bruteForce[username].time;
+                                if (this.bruteForce[username].errors < 7) {
+                                    if (new Date().getTime() - this.bruteForce[username].time < 60_000) {
+                                        minutes = 1;
+                                    } else {
+                                        minutes = 0;
+                                    }
+                                } else if (this.bruteForce[username].errors < 10) {
+                                    if (new Date().getTime() - this.bruteForce[username].time < 180_000) {
+                                        minutes = Math.ceil((180_000 - minutes) / 60000);
+                                    } else {
+                                        minutes = 0;
+                                    }
+                                } else if (this.bruteForce[username].errors < 15) {
+                                    if (new Date().getTime() - this.bruteForce[username].time < 600_000) {
+                                        minutes = Math.ceil((60_0000 - minutes) / 60_000);
+                                    } else {
+                                        minutes = 0;
+                                    }
+                                } else if (new Date().getTime() - this.bruteForce[username].time < 3_600_000) {
+                                    minutes = Math.ceil((3_600_000 - minutes) / 60_000);
                                 } else {
                                     minutes = 0;
                                 }
-                            } else if (this.bruteForce[username].errors < 10) {
-                                if (new Date().getTime() - this.bruteForce[username].time < 180_000) {
-                                    minutes = Math.ceil((180_000 - minutes) / 60000);
-                                } else {
-                                    minutes = 0;
+
+                                if (minutes) {
+                                    return done(
+                                        `Too many errors. Try again in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}.`,
+                                        false,
+                                    );
                                 }
-                            } else if (this.bruteForce[username].errors < 15) {
-                                if (new Date().getTime() - this.bruteForce[username].time < 600_000) {
-                                    minutes = Math.ceil((60_0000 - minutes) / 60_000);
-                                } else {
-                                    minutes = 0;
-                                }
-                            } else if (new Date().getTime() - this.bruteForce[username].time < 3_600_000) {
-                                minutes = Math.ceil((3_600_000 - minutes) / 60_000);
-                            } else {
-                                minutes = 0;
                             }
 
-                            if (minutes) {
-                                return done(
-                                    `Too many errors. Try again in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}.`,
-                                    false,
-                                );
-                            }
-                        }
+                            const mayBePromise = this.adapter.checkPassword(
+                                username,
+                                password,
+                                (res: boolean, user: string): void => {
+                                    if (!res) {
+                                        this.bruteForce[username] = this.bruteForce[username] || { errors: 0 };
+                                        this.bruteForce[username].time = new Date().getTime();
+                                        this.bruteForce[username].errors++;
+                                    } else if (this.bruteForce[username]) {
+                                        delete this.bruteForce[username];
+                                    }
 
-                        const mayBePromise = this.adapter.checkPassword(username, password, (res, user) => {
-                            if (!res) {
-                                this.bruteForce[username] = this.bruteForce[username] || { errors: 0 };
-                                this.bruteForce[username].time = new Date().getTime();
-                                this.bruteForce[username].errors++;
-                            } else if (this.bruteForce[username]) {
-                                delete this.bruteForce[username];
-                            }
+                                    if (res) {
+                                        return done(null, (user || username).replace(/^system\.user\./, ''));
+                                    }
+                                    return done(null, false);
+                                },
+                            );
 
-                            if (res) {
-                                return done(null, (user || username).replace(/^system\.user\./, ''));
+                            if (mayBePromise instanceof Promise) {
+                                mayBePromise.catch(e => {
+                                    this.adapter.log.error(`Cannot check password: ${e}`);
+                                    done(null, false);
+                                });
                             }
-                            return done(null, false);
-                        });
-
-                        if (mayBePromise instanceof Promise) {
-                            mayBePromise.catch(e => {
-                                this.adapter.log.error(`Cannot check password: ${e}`);
-                                done(null, false);
-                            });
-                        }
-                    }),
+                        },
+                    ),
                 );
 
                 passport.serializeUser((user, done) => done(null, user));
@@ -597,73 +613,76 @@ class Web {
                 this.server.app.use(passport.session());
                 this.server.app.use(flash());
 
-                this.server.app.post('/login', (req, res, next) => {
-                    let redirect = '/';
-                    req.body = req.body || {};
-                    const isDev = req.url.includes('?dev&');
+                this.server.app.post(
+                    '/login',
+                    (req: express.Request, res: express.Response, next: express.NextFunction): void => {
+                        let redirect = '/';
+                        req.body = req.body || {};
+                        const isDev = req.url.includes('?dev&');
 
-                    const origin = req.body.origin || '?href=%2F';
-                    if (origin) {
-                        const parts = origin.match(/href=(.+)$/);
-                        if (parts && parts.length > 1 && parts[1]) {
-                            redirect = decodeURIComponent(parts[1]);
-                            // if some invalid characters in redirect
-                            if (redirect.match(/[^-_a-zA-Z0-9&%?./]/)) {
-                                redirect = '/';
+                        const origin = req.body.origin || '?href=%2F';
+                        if (origin) {
+                            const parts = origin.match(/href=(.+)$/);
+                            if (parts && parts.length > 1 && parts[1]) {
+                                redirect = decodeURIComponent(parts[1]);
+                                // if some invalid characters in redirect
+                                if (redirect.match(/[^-_a-zA-Z0-9&%?./]/)) {
+                                    redirect = '/';
+                                }
+                            } else {
+                                // extract pathname
+                                redirect = origin.split('?')[0] || '/';
                             }
-                        } else {
-                            // extract pathname
-                            redirect = origin.split('?')[0] || '/';
                         }
-                    }
-                    req.body.password = (req.body.password || '').toString();
-                    req.body.username = (req.body.username || '').toString();
-                    req.body.stayLoggedIn =
-                        req.body.stayloggedin === 'true' ||
-                        req.body.stayloggedin === true ||
-                        req.body.stayloggedin === 'on';
+                        req.body.password = (req.body.password || '').toString();
+                        req.body.username = (req.body.username || '').toString();
+                        req.body.stayLoggedIn =
+                            req.body.stayloggedin === 'true' ||
+                            req.body.stayloggedin === true ||
+                            req.body.stayloggedin === 'on';
 
-                    passport.authenticate('local', (err: Error | null, user: string) => {
-                        if (err) {
-                            this.adapter.log.warn(`Cannot login user: ${err.message}`);
-                            return res.redirect(this.getErrorRedirect(origin));
-                        }
-                        if (!user) {
-                            return res.redirect(this.getErrorRedirect(origin));
-                        }
-                        req.logIn(user, err => {
+                        passport.authenticate('local', (err: Error | null, user: string): void => {
                             if (err) {
-                                this.adapter.log.warn(`Cannot login user: ${err}`);
+                                this.adapter.log.warn(`Cannot login user: ${err.message}`);
                                 return res.redirect(this.getErrorRedirect(origin));
                             }
-
-                            if (req.body.stayLoggedIn) {
-                                req.session.cookie.httpOnly = true;
-                                // https://www.npmjs.com/package/express-session#cookiemaxage-1
-                                // Interval in ms
-                                req.session.cookie.maxAge =
-                                    (this.settings.ttl > ONE_MONTH_SEC ? this.settings.ttl : ONE_MONTH_SEC) * 1000;
-                            } else {
-                                req.session.cookie.httpOnly = true;
-                                // https://www.npmjs.com/package/express-session#cookiemaxage-1
-                                // Interval in ms
-                                req.session.cookie.maxAge = this.settings.ttl * 1000;
+                            if (!user) {
+                                return res.redirect(this.getErrorRedirect(origin));
                             }
+                            req.logIn(user, err => {
+                                if (err) {
+                                    this.adapter.log.warn(`Cannot login user: ${err}`);
+                                    return res.redirect(this.getErrorRedirect(origin));
+                                }
 
-                            if (isDev) {
-                                return res.redirect(`http://127.0.0.1:3000${redirect}`);
-                            } else {
-                                return res.redirect(redirect);
-                            }
-                        });
-                    })(req, res, next);
-                });
+                                if (req.body.stayLoggedIn) {
+                                    req.session.cookie.httpOnly = true;
+                                    // https://www.npmjs.com/package/express-session#cookiemaxage-1
+                                    // Interval in ms
+                                    req.session.cookie.maxAge =
+                                        (this.settings.ttl > ONE_MONTH_SEC ? this.settings.ttl : ONE_MONTH_SEC) * 1000;
+                                } else {
+                                    req.session.cookie.httpOnly = true;
+                                    // https://www.npmjs.com/package/express-session#cookiemaxage-1
+                                    // Interval in ms
+                                    req.session.cookie.maxAge = this.settings.ttl * 1000;
+                                }
 
-                this.server.app.get('/session', (req, res) =>
-                    res.json({ expireInSec: Math.round(req.session.cookie.maxAge / 1_000) }),
+                                if (isDev) {
+                                    return res.redirect(`http://127.0.0.1:3000${redirect}`);
+                                } else {
+                                    return res.redirect(redirect);
+                                }
+                            });
+                        })(req, res, next);
+                    },
                 );
 
-                this.server.app.get('/logout', (req, res) => {
+                this.server.app.get('/session', (req: express.Request, res: express.Response): void => {
+                    res.json({ expireInSec: Math.round(req.session.cookie.maxAge / 1_000) });
+                });
+
+                this.server.app.get('/logout', (req: express.Request, res: express.Response): void => {
                     const isDev = req.url.includes('?dev');
                     let origin = req.url.split('origin=')[1];
                     if (origin) {
@@ -673,7 +692,7 @@ class Web {
                         }
                     }
 
-                    req.logout(() => {
+                    req.logout((): void => {
                         if (isDev) {
                             res.redirect('http://127.0.0.1:3000/index.html?login');
                         } else {
@@ -683,20 +702,22 @@ class Web {
                 });
 
                 // route middleware to make sure a user is logged in
-                this.server.app.use((req, res, next) => {
+                this.server.app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
                     // return favicon always
                     if (req.url === '/favicon.ico') {
                         res.set('Content-Type', 'image/x-icon');
                         if (this.systemConfig.native.vendor.ico) {
                             // convert base64 to ico
                             const text = this.systemConfig.native.vendor.ico.split(',')[1];
-                            return res.send(Buffer.from(text, 'base64'));
+                            res.send(Buffer.from(text, 'base64'));
+                            return;
                         }
-                        return res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
+                        res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
+                        return;
                     }
                     if (/admin\.\d+\/login-bg\.png(\?.*)?$/.test(req.originalUrl)) {
                         // Read the names of files for gong
-                        return this.adapter.readFile(this.adapter.namespace, 'login-bg.png', null, (err, file) => {
+                        this.adapter.readFile(this.adapter.namespace, 'login-bg.png', null, (err, file): void => {
                             if (!err && file) {
                                 res.set('Content-Type', 'image/png');
                                 res.status(200).send(file);
@@ -704,6 +725,7 @@ class Web {
                                 res.status(404).send(get404Page());
                             }
                         });
+                        return;
                     }
                     if (!req.isAuthenticated()) {
                         if (/^\/login\//.test(req.originalUrl) || /\.ico(\?.*)?$/.test(req.originalUrl)) {
@@ -726,27 +748,36 @@ class Web {
                         ) {
                             res.redirect(`${this.LOGIN_PAGE}&href=${encodeURIComponent(req.originalUrl)}`);
                         } else {
-                            return next();
+                            next();
+                            return;
                         }
                     } else {
-                        return next();
+                        next();
+                        return;
                     }
                 });
             } else {
-                this.server.app.get('/logout', (req, res) => res.redirect('/'));
+                this.server.app.get('/logout', (_req: express.Request, res: express.Response): void =>
+                    res.redirect('/'),
+                );
             }
 
-            this.server.app.get('/iobroker_check.html', (req, res) => res.send('ioBroker'));
-
-            this.server.app.get('/validate_config/*', async (req, res) => {
-                const adapterName = req.url.split('/').pop();
-
-                await this.validateJsonConfig(adapterName.toLowerCase());
-
-                res.status(200).send('validated');
+            this.server.app.get('/iobroker_check.html', (_req: express.Request, res: express.Response): void => {
+                res.status(200).send('ioBroker');
             });
 
-            this.server.app.get('/zip/*', (req, res) => {
+            this.server.app.get(
+                '/validate_config/*',
+                async (req: express.Request, res: express.Response): Promise<void> => {
+                    const adapterName = req.url.split('/').pop();
+
+                    await this.validateJsonConfig(adapterName.toLowerCase());
+
+                    res.status(200).send('validated');
+                },
+            );
+
+            this.server.app.get('/zip/*', (req: express.Request, res: express.Response): void => {
                 const parts = req.url.split('/');
                 const filename = parts.pop();
                 let hostname = parts.pop();
@@ -758,7 +789,7 @@ class Web {
                 // @ts-expect-error TODO: binary states have been removed
                 if (this.adapter.getBinaryState) {
                     // @ts-expect-error TODO: binary states have been removed
-                    this.adapter.getBinaryState(`${hostname}.zip.${filename}`, (err, buff) => {
+                    this.adapter.getBinaryState(`${hostname}.zip.${filename}`, (err, buff): void => {
                         if (err) {
                             res.status(500).send(escapeHtml(typeof err === 'string' ? err : JSON.stringify(err)));
                         } else {
@@ -782,7 +813,7 @@ class Web {
             });
 
             // send log files
-            this.server.app.get('/log/*', (req, res) => {
+            this.server.app.get('/log/*', (req: express.Request, res: express.Response): void => {
                 let parts = decodeURIComponent(req.url).split('/');
                 if (parts.length === 5) {
                     parts.shift();
@@ -914,9 +945,10 @@ class Web {
                         tempFileDir: this.settings.tmpPath,
                     }),
                 );
-                this.server.app.post('/upload', (req, res) => {
+                this.server.app.post('/upload', (req: express.Request, res: express.Response): void => {
                     if (!req.files) {
-                        return res.status(400).send('No files were uploaded.');
+                        res.status(400).send('No files were uploaded.');
+                        return;
                     }
 
                     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
@@ -931,37 +963,44 @@ class Web {
 
                     if (myFile) {
                         if (myFile.data && myFile.data.length > 600 * 1024 * 1024) {
-                            return res.status(500).send('File is too big. (Max 600MB)');
+                            res.header('Content-Type', 'text/plain');
+                            res.status(500).send('File is too big. (Max 600MB)');
+                            return;
                         }
                         // Use the mv() method to place the file somewhere on your server
                         myFile.mv(`${this.settings.tmpPath}/restore.iob`, err => {
                             if (err) {
                                 res.status(500).send(escapeHtml(typeof err === 'string' ? err : JSON.stringify(err)));
                             } else {
-                                res.send('File uploaded!');
+                                res.header('Content-Type', 'text/plain');
+                                res.status(200).send('File uploaded!');
                             }
                         });
                     } else {
-                        return res.status(500).send('File not uploaded');
+                        res.header('Content-Type', 'text/plain');
+                        res.status(500).send('File not uploaded');
                     }
                 });
             }
 
             if (!fs.existsSync(this.wwwDir)) {
-                this.server.app.use('/', (req, res) =>
-                    res.send(
+                this.server.app.use('/', (_req: express.Request, res: express.Response): void => {
+                    res.header('Content-Type', 'text/plain');
+                    res.status(404).send(
                         'This adapter cannot be installed directly from GitHub.<br>You must install it from npm.<br>Write for that <i>"npm install iobroker.admin"</i> in according directory.',
-                    ),
-                );
+                    );
+                });
             } else {
-                this.server.app.get('/empty.html', (req, res) => res.send(''));
+                this.server.app.get('/empty.html', (_req: express.Request, res: express.Response): void => {
+                    res.status(200).send('');
+                });
 
-                this.server.app.get('/index.html', (req, res) => {
+                this.server.app.get('/index.html', (_req: express.Request, res: express.Response): void => {
                     this.indexHTML = this.indexHTML || this.prepareIndex();
                     res.header('Content-Type', 'text/html');
                     res.status(200).send(this.indexHTML);
                 });
-                this.server.app.get('/', (req, res) => {
+                this.server.app.get('/', (_req: express.Request, res: express.Response): void => {
                     this.indexHTML = this.indexHTML || this.prepareIndex();
                     res.header('Content-Type', 'text/html');
                     res.status(200).send(this.indexHTML);
@@ -971,9 +1010,9 @@ class Web {
             }
 
             // reverse proxy with url rewrite for couchdb attachments in <adapter-name>.admin
-            this.server.app.use('/adapter/', (req, res) => {
+            this.server.app.use('/adapter/', (req: express.Request, res: express.Response): void => {
                 // Example: /example/?0&attr=1
-                let url;
+                let url: string;
                 try {
                     url = decodeURIComponent(req.url);
                 } catch {
@@ -1008,13 +1047,13 @@ class Web {
                     return;
                 }
 
-                url = url.split('/');
+                const parts = url.split('/');
                 // Skip first /
-                url.shift();
+                parts.shift();
                 // Get ID
-                const adapterName = url.shift();
+                const adapterName = parts.shift();
                 const id = `${adapterName}.admin`;
-                url = url.join('/');
+                url = parts.join('/');
                 const pos = url.indexOf('?');
                 let _instance = 0;
                 if (pos !== -1) {
@@ -1027,27 +1066,28 @@ class Web {
                         const anyConfig = this.settings.accessAllowedConfigs.includes(`${adapterName}.${_instance}`);
                         if (!anyConfig) {
                             res.contentType('text/html');
-                            return res.status(403).send('You are not allowed to access this page');
+                            res.status(403).send('You are not allowed to access this page');
+                            return;
                         }
                     }
                     if (url === 'tab.html' || url === 'tab_m.html') {
                         const anyTabs = this.settings.accessAllowedTabs.includes(`${adapterName}.${_instance}`);
                         if (!anyTabs) {
                             res.contentType('text/html');
-                            return res.status(403).send('You are not allowed to access this page');
+                            res.status(403).send('You are not allowed to access this page');
+                            return;
                         }
                     }
                 }
 
                 // this.adapter.readFile is sanitized
-                this.adapter.readFile(id, url, null, (err, buffer, mimeType) => {
+                this.adapter.readFile(id, url, null, (err, buffer, mimeType): void => {
                     if (!buffer || err) {
                         res.contentType('text/html');
                         res.status(404).send(get404Page(`File ${escapeHtml(url)} not found`));
                     } else {
                         if (mimeType) {
-                            // @ts-expect-error check later but it should be string
-                            res.contentType(mimeType['content-type'] || mimeType);
+                            res.contentType(mimeType);
                         } else {
                             try {
                                 // @ts-expect-error types might be wrong
@@ -1063,9 +1103,9 @@ class Web {
             });
 
             // reverse proxy with url rewrite for couchdb attachments in <adapter-name>
-            this.server.app.use('/files/', async (req, res) => {
+            this.server.app.use('/files/', async (req: express.Request, res: express.Response): Promise<void> => {
                 // Example: /vis.0/main/img/image.png
-                let url;
+                let url: string;
                 try {
                     url = decodeURIComponent(req.url);
                 } catch {
@@ -1076,12 +1116,12 @@ class Web {
                 // add index.html
                 url = url.replace(/\/($|\?|#)/, '/index.html$1');
 
-                url = url.split('/');
+                const parts = url.split('/');
                 // Skip first /files
-                url.shift();
+                parts.shift();
                 // Get ID
-                const adapterName = url.shift();
-                url = url.join('/');
+                const adapterName = parts.shift();
+                url = parts.join('/');
                 const pos = url.indexOf('?');
                 let _instance = 0;
                 if (pos !== -1) {
@@ -1094,14 +1134,16 @@ class Web {
                         const anyConfig = this.settings.accessAllowedConfigs.includes(`${adapterName}.${_instance}`);
                         if (!anyConfig) {
                             res.contentType('text/html');
-                            return res.status(403).send('You are not allowed to access this page');
+                            res.status(403).send('You are not allowed to access this page');
+                            return;
                         }
                     }
                     if (url === 'tab.html' || url === 'tab_m.html') {
                         const anyTabs = this.settings.accessAllowedTabs.includes(`${adapterName}.${_instance}`);
                         if (!anyTabs) {
                             res.contentType('text/html');
-                            return res.status(403).send('You are not allowed to access this page');
+                            res.status(403).send('You are not allowed to access this page');
+                            return;
                         }
                     }
                 }
@@ -1110,16 +1152,11 @@ class Web {
                     if (await this.adapter.fileExists(adapterName, url)) {
                         const { mimeType, file } = await this.adapter.readFileAsync(adapterName, url);
 
-                        if (mimeType) {
-                            // @ts-expect-error should be string
-                            res.contentType(mimeType['content-type'] || mimeType);
-                        } else {
-                            res.contentType('text/javascript');
-                        }
+                        res.contentType(mimeType || 'text/javascript');
 
                         if (adapterName === this.adapter.namespace && url.startsWith('zip/')) {
-                            // special files, that can be read only one time
-                            this.adapter.unlink(adapterName, url, () => {});
+                            // special files, that can be read-only one time
+                            this.adapter.unlink(adapterName, url, (): void => {});
                         }
 
                         res.send(file);
@@ -1151,17 +1188,16 @@ class Web {
             });
 
             // handler for oauth2 redirects
-            this.server.app.use('/oauth2_callbacks/', (req, res) => {
+            this.server.app.use('/oauth2_callbacks/', (req: express.Request, res: express.Response): void => {
                 // extract instance from "http://localhost:8081/oauth2_callbacks/netatmo.0/?state=ABC&code=CDE"
                 const [_instance, params] = req.url.split('?');
                 const instance = _instance.replace(/^\//, '').replace(/\/$/, ''); // remove last and first "/" in "/netatmo.0/"
-                const query: Record<string, unknown> = {};
+                const query: Record<string, string | boolean | number> = {};
                 params.split('&').forEach(param => {
                     const [key, value] = param.split('=');
                     query[key] = value === undefined ? true : value;
                     if (Number.isFinite(query[key])) {
-                        // @ts-expect-error fix later
-                        query[key] = parseFloat(query[key]);
+                        query[key] = parseFloat(query[key] as string);
                     } else if (query[key] === 'true') {
                         query[key] = true;
                     } else if (query[key] === 'false') {
@@ -1174,7 +1210,7 @@ class Web {
                 }
 
                 let timeout: NodeJS.Timeout = setTimeout(
-                    () => {
+                    (): void => {
                         if (timeout) {
                             timeout = null;
                             let text = fs.readFileSync(`${this.baseDir}/public/oauthError.html`).toString('utf8');
@@ -1212,9 +1248,9 @@ class Web {
             });
 
             // 404 handler
-            this.server.app.use((req, res) =>
-                res.status(404).send(get404Page(`File ${escapeHtml(req.url)} not found`)),
-            );
+            this.server.app.use((req: express.Request, res: express.Response): void => {
+                res.status(404).send(get404Page(`File ${escapeHtml(req.url)} not found`));
+            });
 
             try {
                 const webserver = new IoBWebServer.WebServer({
@@ -1311,7 +1347,7 @@ class Web {
                                 !this.settings.bind || this.settings.bind === '0.0.0.0'
                                     ? undefined
                                     : this.settings.bind || undefined,
-                                () => {
+                                (): void => {
                                     void this.adapter.setState('info.connection', true, true);
 
                                     serverListening = true;
@@ -1325,7 +1361,7 @@ class Web {
                                     );
 
                                     if (!this.adapter.config.doNotCheckPublicIP && !this.adapter.config.auth) {
-                                        this.checkTimeout = this.adapter.setTimeout(async () => {
+                                        this.checkTimeout = this.adapter.setTimeout(async (): Promise<void> => {
                                             this.checkTimeout = null;
                                             try {
                                                 await IoBWebServer.checkPublicIP(
@@ -1346,7 +1382,7 @@ class Web {
                                                             'Please enable authentication or disable the access from the internet.',
                                                         instance: `system.adapter.${this.adapter.namespace}`,
                                                     },
-                                                    (/* result */) => {
+                                                    (/* result */): void => {
                                                         /* ignore */
                                                     },
                                                 );
