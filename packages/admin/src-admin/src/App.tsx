@@ -381,6 +381,13 @@ type CompactInstalledInfo = Record<string, {
     ignoreVersion?: string;
 }>;
 
+interface NotificationsCount {
+    /** Number of present warnings */
+    warning: number;
+    /** Number of present notify and info notifications */
+    other: number;
+}
+
 interface AppState {
     connected: boolean;
     progress: number;
@@ -454,7 +461,8 @@ interface AppState {
     updating: boolean;
     notificationsDialog: boolean;
     notifications: Record<string, any>;
-    noNotifications: number;
+    /** Number of active notifications */
+    noNotifications: NotificationsCount;
     configNotSaved: boolean;
     login: boolean;
     hostname: string;
@@ -692,7 +700,10 @@ class App extends Router<AppProps, AppState> {
                 /** Notifications, excluding the system ones */
                 notifications: {},
                 /** Number of new notifications */
-                noNotifications: 0,
+                noNotifications: {
+                    warning: 0,
+                    other: 0,
+                },
 
                 configNotSaved: false,
                 login: false,
@@ -1205,30 +1216,6 @@ class App extends Router<AppProps, AppState> {
                         setTimeout(
                             async () => {
                                 const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
-
-                                let isWarningAvailable = false;
-
-                                for (const hostNotifications of Object.values(notifications)) {
-                                    if (!('system' in hostNotifications.result)) {
-                                        continue;
-                                    }
-
-                                    for (const category of Object.values(hostNotifications.result.system.categories)) {
-                                        if (category.severity === 'alert') {
-                                            isWarningAvailable = true;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                // on mount, we only show the dialog if there are warnings available
-                                if (isWarningAvailable) {
-                                    this.showAdaptersWarning(
-                                        notifications,
-                                        newState.currentHost,
-                                    );
-                                }
-
                                 this.handleNewNotifications(notifications);
                             },
                             3_000,
@@ -1517,8 +1504,10 @@ class App extends Router<AppProps, AppState> {
 
     /** Called when notifications detected, updates the notification indicator */
     handleNewNotifications = async (notifications: Record<string, NotificationAnswer>): Promise<void> => {
-        // console.log(`new notifications: ${JSON.stringify(notifications)}`);
-        let noNotifications = 0;
+        const noNotifications: NotificationsCount = {
+            warning: 0,
+            other: 0,
+        };
 
         // if host is offline it returns null
         if (!notifications) {
@@ -1537,7 +1526,8 @@ class App extends Router<AppProps, AppState> {
 
                 for (const categoryDetails of Object.values(scopeDetails.categories)) {
                     for (const instanceDetails of Object.values(categoryDetails.instances)) {
-                        noNotifications += instanceDetails.messages.length;
+                        const isWarning = categoryDetails.severity === 'alert';
+                        noNotifications[isWarning ? 'warning' : 'other'] += instanceDetails.messages.length;
                     }
                 }
             }
@@ -1548,6 +1538,12 @@ class App extends Router<AppProps, AppState> {
         this.setState({ noNotifications, notifications: { notifications, instances } });
     };
 
+    /**
+     * Shows notifications to the user
+     *
+     * @param notifications present notifications
+     * @param host host to get notifications from
+     */
     showAdaptersWarning = async (notifications: Record<string, NotificationAnswer | null>, host: string) => {
         if (!notifications || !notifications[host] || !notifications[host].result) {
             return;
@@ -2458,8 +2454,9 @@ class App extends Router<AppProps, AppState> {
                         onClick={this.state.noNotifications ? () => this.setState({ notificationsDialog: true }) : null}
                     >
                         <Badge
-                            badgeContent={this.state.noNotifications}
-                            color="secondary"
+                            badgeContent={this.state.noNotifications.other + this.state.noNotifications.warning}
+                            color={this.state.noNotifications.warning > 0 ? 'error' : 'secondary'}
+                            max={99}
                         >
                             <NotificationsIcon />
                         </Badge>
@@ -2608,10 +2605,7 @@ class App extends Router<AppProps, AppState> {
                                     await this.readRepoAndInstalledInfo(host, this.state.hosts);
                                     // read notifications from host
                                     const notifications = await this.hostsWorker.getNotifications(host);
-                                    this.showAdaptersWarning(
-                                        notifications,
-                                        host,
-                                    );
+                                    this.handleNewNotifications(notifications);
                                 },
                             );
                         }}
