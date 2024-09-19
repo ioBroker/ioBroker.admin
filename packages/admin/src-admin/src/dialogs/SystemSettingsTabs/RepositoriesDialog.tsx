@@ -113,9 +113,9 @@ function repoToArray(repos: Repository): RepositoryArray {
 
 function arrayToRepo(array: RepositoryArray): Repository {
     const result: Repository = {};
-    for (const k of array) {
+    for (const item of array) {
         // @ts-expect-error will be fixed in js-controller
-        result[k.title] = { link: k.link };
+        result[item.title] = { link: item.link };
     }
 
     return result;
@@ -192,7 +192,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         const index = array.findIndex(element => element.title === id);
-        delete array[index];
+        array.splice(index, 1);
         newData.native.repositories = arrayToRepo(array);
         if (this.props.dataAux.common.activeRepo === id) {
             if (Object.keys(newData.native.repositories).length) {
@@ -259,7 +259,9 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
             }
         }
 
-        const newConfig = AdminUtils.clone(this.props.dataAux);
+        const newConfig: ioBrokerObject<Record<string, unknown>, { activeRepo: string | string[] }> = AdminUtils.clone(
+            this.props.dataAux,
+        );
         if (!this.props.multipleRepos) {
             newConfig.common.activeRepo = 'stable';
             this.props.onChange(newData, newConfig);
