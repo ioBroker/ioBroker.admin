@@ -450,7 +450,7 @@ class Web {
             this.server.app.disable('x-powered-by');
 
             // enable use of i-frames together with HTTPS
-            this.server.app.get('/*', (req, res, next) => {
+            this.server.app.get('/*', (_req, res, next): void => {
                 res.header('X-Frame-Options', 'SAMEORIGIN');
                 next(); // http://expressjs.com/guide.html#passing-route control
             });
@@ -462,44 +462,49 @@ class Web {
                 next();
             });*/
 
-            this.server.app.get('/version', (req, res) => {
+            this.server.app.get('/version', (_req, res): void => {
                 res.status(200).send(this.adapter.version);
             });
 
             // replace socket.io
-            this.server.app.use((req, res, next) => {
+            this.server.app.use((req, res, next): void => {
                 // return favicon always
                 if (req.url === '/favicon.ico') {
                     res.set('Content-Type', 'image/x-icon');
                     if (this.systemConfig.native.vendor.ico) {
                         // convert base64 to ico
                         const text = this.systemConfig.native.vendor.ico.split(',')[1];
-                        return res.send(Buffer.from(text, 'base64'));
+                        res.send(Buffer.from(text, 'base64'));
+                        return;
                     }
 
-                    return res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
+                    res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
+                    return;
                 } else if (
                     socketIoFile !== false &&
                     (req.url.startsWith('socket.io.js') || req.url.match(/\/socket\.io\.js(\?.*)?$/))
                 ) {
                     if (socketIoFile) {
                         res.contentType('text/javascript');
-                        return res.status(200).send(socketIoFile);
+                        res.status(200).send(socketIoFile);
+                        return;
                     }
                     socketIoFile = fs.readFileSync(path.join(this.wwwDir, 'lib', 'js', 'socket.io.js'), {
                         encoding: 'utf-8',
                     });
                     if (socketIoFile) {
                         res.contentType('text/javascript');
-                        return res.status(200).send(socketIoFile);
+                        res.status(200).send(socketIoFile);
+                        return;
                     }
                     socketIoFile = false;
-                    return res.status(404).send(get404Page());
+                    res.status(404).send(get404Page());
+                    return;
                 }
                 next();
             });
 
-            this.server.app.get('*/_socket/info.js', (req, res) => {
+            this.server.app.get('*/_socket/info.js', (_req, res): void => {
                 res.set('Content-Type', 'application/javascript');
                 res.status(200).send(this.getInfoJs());
             });

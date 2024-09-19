@@ -16,7 +16,12 @@ export default [
                 allowDefaultProject: {
                     allow: ['*.js', '*.mjs'],
                 },
-                tsconfigRootDir: `${import.meta.dirname}/..`,
+                tsconfigRootDir: import.meta.dirname,
+                project: './tsconfig.json',
+                projectService: true,
+                projectFolderIgnoreList: [
+                    "**dist**",
+                ],
             },
         },
     },

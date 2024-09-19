@@ -82,7 +82,7 @@
         "build": "npm run build:frontend && npm run build:backend",
         "build:backend": "tsc -p tsconfig.build.json",
         "clean": "rimraf src-admin/build",
-        "lint-backend": "eslint -c src/eslint.config.mjs src",
+        "lint-backend": "eslint -c eslint.config.mjs src",
         "react-0-configCSS": "node tasks --react-0-configCSS",
         "react-0-iobCSS": "node tasks --react-0-iobCSS",
         "react-0-treeTableCSS": "node tasks --react-0-treeTableCSS",
