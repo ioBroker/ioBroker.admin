@@ -571,7 +571,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
             this.cityTimer = null;
             const provider = new OpenStreetMapProvider();
 
-            provider.search({ query: evt.target.value }).then(results => {
+            void provider.search({ query: evt.target.value }).then(results => {
                 if (results[0]) {
                     setTimeout(
                         () =>

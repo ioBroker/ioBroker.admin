@@ -915,14 +915,17 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         );
     }
 
+    findFreeName(type: string): string {
+        let i = 1;
+        while (Object.keys(this.state.transport).find(id => id === type + i)) {
+            i++;
+        }
+        return type + i;
+    }
+
     add(type: string): void {
         if (type === 'file') {
-            let i = 1;
-
-            while (Object.keys(this.state.transport).find(id => id === type + i)) {
-                i++;
-            }
-            const name = type + i;
+            const name = this.findFreeName(type);
             const transport = JSON.parse(JSON.stringify(this.state.transport));
             transport[name] = {
                 type,
@@ -934,11 +937,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             };
             this.setState({ transport }, () => this.onChange());
         } else if (type === 'syslog') {
-            let i = 1;
-            while (Object.keys(this.state.transport).find(id => id === type + i)) {
-                i++;
-            }
-            const name = type + i;
+            const name = this.findFreeName(type);
             const transport = JSON.parse(JSON.stringify(this.state.transport));
             transport[name] = {
                 type,
@@ -956,11 +955,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             };
             this.setState({ transport }, () => this.onChange());
         } else if (type === 'http') {
-            let i = 1;
-            while (Object.keys(this.state.transport).find(id => id === type + i)) {
-                i++;
-            }
-            const name = type + i;
+            const name = this.findFreeName(type);
             const transport = JSON.parse(JSON.stringify(this.state.transport));
             transport[name] = {
                 type,
@@ -974,11 +969,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             };
             this.setState({ transport }, () => this.onChange());
         } else if (type === 'stream') {
-            let i = 1;
-            while (Object.keys(this.state.transport).find(id => id === type + i)) {
-                i++;
-            }
-            const name = type + i;
+            const name = this.findFreeName(type);
             const transport = JSON.parse(JSON.stringify(this.state.transport));
             transport[name] = {
                 type,
@@ -991,11 +982,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             };
             this.setState({ transport }, () => this.onChange());
         } else if (type === 'seq') {
-            let i = 1;
-            while (Object.keys(this.state.transport).find(id => id === type + i)) {
-                i++;
-            }
-            const name = type + i;
+            const name = this.findFreeName(type);
             const transport = JSON.parse(JSON.stringify(this.state.transport));
             transport[name] = {
                 type,

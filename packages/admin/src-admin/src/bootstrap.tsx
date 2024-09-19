@@ -87,7 +87,12 @@ if (
             window.location.reload();
             return;
         }
-        throw event as unknown as Error;
+        if (event instanceof Error) {
+            throw event;
+        } else {
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            throw new Error(event.toString());
+        }
     };
 }
 

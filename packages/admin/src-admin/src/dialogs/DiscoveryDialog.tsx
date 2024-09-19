@@ -392,7 +392,7 @@ function DiscoveryDialog({
     const [discoveryData, setDiscoveryData] = useState<DiscoveryObject | null>(null);
 
     useEffect(() => {
-        async function fetchData() {
+        async function fetchData(): Promise<void> {
             const resultList: Record<string, { type: string; source: string; timeout?: number }> = await socket.sendTo(
                 'system.adapter.discovery.0',
                 'listMethods',
@@ -424,11 +424,11 @@ function DiscoveryDialog({
             setListMethods(resultList);
         }
 
-        fetchData();
+        void fetchData().catch(e => console.warn(`Cannot read listMethods: ${e}`));
     }, [socket]);
 
     useEffect(() => {
-        async function readOldData() {
+        async function readOldData(): Promise<void> {
             const dataDiscovery = await socket.getObject('system.discovery');
             if (dataDiscovery !== undefined) {
                 setDiscoveryData(dataDiscovery as unknown as DiscoveryObject);
@@ -455,7 +455,7 @@ function DiscoveryDialog({
         if (Object.keys(aliveHosts).filter(key => aliveHosts[key]).length > 1) {
             setCheckSelectHosts(true);
         }
-    }, [hosts, socket]);
+    }, [hosts, socket, aliveHosts]);
 
     const [devicesFound, setDevicesFound] = useState(0);
     const [devicesProgress, setDevicesProgress] = useState(0);
@@ -480,7 +480,7 @@ function DiscoveryDialog({
     const [finishInstall, setFinishInstall] = useState(false);
     const [selectLogsIndex, setSelectLogsIndex] = useState(1);
 
-    const handlerInstall = (name: string, value: ioBroker.State | null | undefined) => {
+    const handlerInstall = (name: string, value: ioBroker.State | null | undefined): void => {
         if (!value) {
             return;
         }
@@ -504,7 +504,7 @@ function DiscoveryDialog({
                 break;
         }
     };
-    const onSystemDiscoveryChanged = (id: string, obj: ioBroker.Object | null | undefined) => {
+    const onSystemDiscoveryChanged = (id: string, obj: ioBroker.Object | null | undefined): void => {
         if (!obj) {
             return;
         }
@@ -513,31 +513,31 @@ function DiscoveryDialog({
         }
     };
     useEffect(() => {
-        socket.subscribeObject('system.discovery', onSystemDiscoveryChanged);
-        socket.subscribeState('discovery.0.devicesFound', handlerInstall);
-        socket.subscribeState('discovery.0.devicesProgress', handlerInstall);
-        socket.subscribeState('discovery.0.instancesFound', handlerInstall);
-        socket.subscribeState('discovery.0.scanRunning', handlerInstall);
-        socket.subscribeState('discovery.0.servicesProgress', handlerInstall);
+        void socket.subscribeObject('system.discovery', onSystemDiscoveryChanged);
+        void socket.subscribeState('discovery.0.devicesFound', handlerInstall);
+        void socket.subscribeState('discovery.0.devicesProgress', handlerInstall);
+        void socket.subscribeState('discovery.0.instancesFound', handlerInstall);
+        void socket.subscribeState('discovery.0.scanRunning', handlerInstall);
+        void socket.subscribeState('discovery.0.servicesProgress', handlerInstall);
 
         return () => {
-            socket.unsubscribeObject('system.discovery', onSystemDiscoveryChanged);
-            socket.unsubscribeState('discovery.0.devicesFound', handlerInstall);
-            socket.unsubscribeState('discovery.0.devicesProgress', handlerInstall);
-            socket.unsubscribeState('discovery.0.instancesFound', handlerInstall);
-            socket.unsubscribeState('discovery.0.scanRunning', handlerInstall);
-            socket.unsubscribeState('discovery.0.servicesProgress', handlerInstall);
+            void socket.unsubscribeObject('system.discovery', onSystemDiscoveryChanged);
+            void socket.unsubscribeState('discovery.0.devicesFound', handlerInstall);
+            void socket.unsubscribeState('discovery.0.devicesProgress', handlerInstall);
+            void socket.unsubscribeState('discovery.0.instancesFound', handlerInstall);
+            void socket.unsubscribeState('discovery.0.scanRunning', handlerInstall);
+            void socket.unsubscribeState('discovery.0.servicesProgress', handlerInstall);
         };
     }, [socket]);
 
-    const stepUp = () => setStep(step + 1);
+    const stepUp = (): void => setStep(step + 1);
 
-    const stepDown = () => setStep(step - 1);
+    const stepDown = (): void => setStep(step - 1);
 
-    const extendObject = (id: string, data: Record<string, any>) =>
+    const extendObject = (id: string, data: Record<string, any>): Promise<void> =>
         socket.extendObject(id, data).catch((error: any) => window.alert(error));
 
-    const discoverScanner = async () => {
+    const discoverScanner = async (): Promise<void> => {
         setDisableScanner(true);
         const dataArray = Object.keys(checkboxChecked).filter(key => checkboxChecked[key]);
         const resultList = await socket.sendTo('system.adapter.discovery.0', 'browse', dataArray);
@@ -549,7 +549,7 @@ function DiscoveryDialog({
         }
     };
 
-    const handleSelectAllClick = (event: any) => {
+    const handleSelectAllClick = (event: any): void => {
         if (event.target.checked) {
             const newSelected = discoveryData?.native?.newInstances?.map(n => n._id);
             setSelected(newSelected);
@@ -558,9 +558,9 @@ function DiscoveryDialog({
         setSelected([]);
     };
 
-    const isSelected = (name: string, arr: string[]) => arr.includes(name);
+    const isSelected = (name: string, arr: string[]): boolean => arr.includes(name);
 
-    const handleClick = (_event: any, name: string, arr: string[], func: (newSelected: any) => void) => {
+    const handleClick = (_event: any, name: string, arr: string[], func: (newSelected: any) => void): void => {
         const selectedIndex = arr.indexOf(name);
         let newSelected: string[] = [];
 
@@ -577,7 +577,7 @@ function DiscoveryDialog({
         func(newSelected);
     };
 
-    const checkLicenseAndInputs = (objName: string, cb: () => void) => {
+    const checkLicenseAndInputs = (objName: string, cb: () => void): void => {
         const instanceObj: DiscoveryInstance | null = discoveryData?.native?.newInstances.find(
             ob => ob._id === objName,
         );
@@ -609,7 +609,7 @@ function DiscoveryDialog({
         }
     };
 
-    const goToNextInstance = (id: string, reason: string) => {
+    const goToNextInstance = (id: string, reason: string): void => {
         const index = selected.indexOf(id) + 1;
         setInstallStatus(status => ({ ...status, [index]: 'error' }));
 
@@ -654,7 +654,7 @@ function DiscoveryDialog({
         />
     ) : null;
 
-    const resetStateBack = () => {
+    const resetStateBack = (): void => {
         setSelected([]);
         setInstallProgress(false);
         setFinishInstall(false);
@@ -663,7 +663,7 @@ function DiscoveryDialog({
         setInstallStatus({});
     };
 
-    const checkInstall = () => {
+    const checkInstall = (): void => {
         checkLicenseAndInputs(selected[0], () => {
             setCurrentInstall(1);
             setInstallProgress(true);
@@ -923,7 +923,7 @@ function DiscoveryDialog({
                                                                         ack: !newInstances[idx].comment.ack,
                                                                     };
 
-                                                                    extendObject('system.discovery', {
+                                                                    void extendObject('system.discovery', {
                                                                         native: { newInstances },
                                                                     });
                                                                 }}
@@ -1021,7 +1021,7 @@ function DiscoveryDialog({
                                                 let adapterId = data._id.split('.');
                                                 adapterId.pop();
                                                 adapterId = adapterId.join('.');
-                                                socket.getObject(adapterId).then((obj: ioBroker.AdapterObject) => {
+                                                void socket.getObject(adapterId).then((obj: ioBroker.AdapterObject) => {
                                                     data = { ...obj, ...data };
                                                     data.common = Object.assign(obj.common, data.common);
                                                     data.native = Object.assign(obj.native, data.native);
@@ -1045,7 +1045,7 @@ function DiscoveryDialog({
                                                     }
 
                                                     // write created instance
-                                                    extendObject(data._id, data).then(() => {
+                                                    void extendObject(data._id, data).then(() => {
                                                         if (currentInstall < selected.length) {
                                                             // install next
                                                             checkLicenseAndInputs(selected[currentInstall], () => {
@@ -1090,7 +1090,10 @@ function DiscoveryDialog({
                                                                             );
                                                                         },
                                                                     );
-                                                                socket.setObject('system.discovery', dataDiscovery);
+                                                                void socket.setObject(
+                                                                    'system.discovery',
+                                                                    dataDiscovery,
+                                                                );
                                                             }
                                                             setFinishInstall(true);
                                                             window.alert(I18n.t('Finished'));
@@ -1143,7 +1146,7 @@ function DiscoveryDialog({
                                                                         );
                                                                     },
                                                                 );
-                                                            socket.setObject('system.discovery', dataDiscovery);
+                                                            void socket.setObject('system.discovery', dataDiscovery);
                                                         }
                                                     }
                                                     window.alert(`error ${selected[currentInstall - 1]}`);

@@ -116,7 +116,7 @@ function arrayToRepo(array: RepositoryArray): Repository {
     array.forEach(item => {
         // @ts-expect-error will be fixed in js-controller
         result[item.title] = { link: item.link };
-    })
+    });
 
     return result;
 }

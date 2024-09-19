@@ -73,11 +73,12 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
     useEffect(() => {
         setLoading(true);
         setText('');
-        if (url.startsWith('https://github.com/')) {
-            url = url.replace('https://github.com/', 'https://raw.githubusercontent.com/').replace('/blob/', '/');
+        let _url = url;
+        if (_url.startsWith('https://github.com/')) {
+            _url = _url.replace('https://github.com/', 'https://raw.githubusercontent.com/').replace('/blob/', '/');
         }
 
-        fetch(url)
+        fetch(_url)
             .then(el => el.text())
             .then(txt => {
                 setText(txt);
@@ -86,32 +87,32 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
             .catch(() => setLoading(false));
     }, [url]);
 
-    const installOnscroll = (): boolean => {
-        const divMarkdown: HTMLDivElement | null = divRef.current?.querySelector('.markdown');
-        if (divMarkdown) {
-            // install on scroll only if the scrollbar is visible
-            if (divMarkdown.scrollHeight <= divMarkdown.clientHeight) {
+    useEffect(() => {
+        const installOnscroll = (): boolean => {
+            const divMarkdown: HTMLDivElement | null = divRef.current?.querySelector('.markdown');
+            if (divMarkdown) {
+                // install on scroll only if the scrollbar is visible
+                if (divMarkdown.scrollHeight <= divMarkdown.clientHeight) {
+                    return true;
+                }
+
+                if (installTimer.current) {
+                    clearInterval(installTimer.current);
+                    installTimer.current = null;
+                }
+                divMarkdown.onscroll = (event: Event) => {
+                    const div: HTMLDivElement = event.target as HTMLDivElement;
+                    // give 10 pixels tolerance for MS-edge
+                    const _scrolled = div.scrollTop + div.clientHeight >= div.scrollHeight - 10;
+                    if (!scrolled && _scrolled) {
+                        setScrolled(_scrolled);
+                    }
+                };
                 return true;
             }
+            return false;
+        };
 
-            if (installTimer.current) {
-                clearInterval(installTimer.current);
-                installTimer.current = null;
-            }
-            divMarkdown.onscroll = (event: Event) => {
-                const div: HTMLDivElement = event.target as HTMLDivElement;
-                // give 10 pixels tolerance for MS-edge
-                const _scrolled = div.scrollTop + div.clientHeight >= div.scrollHeight - 10;
-                if (!scrolled && _scrolled) {
-                    setScrolled(_scrolled);
-                }
-            };
-            return true;
-        }
-        return false;
-    };
-
-    useEffect(() => {
         if (!loading && text) {
             if (text.startsWith('#')) {
                 if (!installOnscroll()) {
@@ -143,12 +144,17 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
                 installTimer.current = null;
             }
 
-            const _divMarkdown: HTMLDivElement | null = divRef.current?.querySelector('.markdown');
-            if (_divMarkdown) {
-                _divMarkdown.onscroll = null;
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            const _preRef: HTMLPreElement | null = preRef.current;
+
+            if (_preRef) {
+                const _divMarkdown: HTMLDivElement | null = _preRef.querySelector('.markdown');
+                if (_divMarkdown) {
+                    _divMarkdown.onscroll = null;
+                }
             }
         };
-    }, [loading]);
+    }, [loading, scrolled, text]);
 
     let content: JSX.Element;
     if (!loading && text) {

@@ -55,7 +55,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
     expertMode,
     initialType,
     initialStateType,
-}) => {
+}): JSX.Element => {
     const names: Record<string, string> = {
         state: I18n.t('New state'),
         channel: I18n.t('New channel'),
@@ -112,7 +112,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
         initialType = storedType;
     }
 
-    function buildId(_name: string) {
+    function buildId(_name: string): string {
         return `${selected}.${_name.toString().replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_')}`;
     }
 
@@ -125,7 +125,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
     );
     const [unique, setUnique] = useState<boolean>(!objects[buildId(names.state)]);
 
-    const onLocalApply = () => {
+    const onLocalApply = (): void => {
         const newObj: ioBrokerObject = {
             common: {
                 name,
@@ -154,7 +154,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
             delete newObj.common.desc;
         }
 
-        setObject(`${selected}.${name.split(' ').join('_')}`, newObj).then(() => onApply());
+        void setObject(`${selected}.${name.split(' ').join('_')}`, newObj).then(() => onApply());
     };
 
     const lang = I18n.getLanguage();

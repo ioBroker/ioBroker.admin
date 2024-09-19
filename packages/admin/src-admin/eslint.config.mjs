@@ -9,8 +9,16 @@ config.forEach(rule => {
 });
 
 export default [
-  ...config,
+    ...config,
     ...reactConfig,
+    {
+        rules: {
+            'no-loop-func': 'off',
+            'no-new-func': 'off',
+            'no-extend-native': 'off',
+            'no-eval': 'off',
+        },
+    },
     {
         languageOptions: {
             parserOptions: {

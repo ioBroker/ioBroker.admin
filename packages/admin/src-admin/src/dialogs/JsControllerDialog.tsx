@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, type JSX } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import {
@@ -146,17 +146,17 @@ interface JsControllerDialogProps {
     onClose: () => void;
 }
 
-const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDialogProps) => {
+const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDialogProps): JSX.Element => {
     const [readme, setReadme] = useState<(string | JSX.Element)[] | null>(null);
     const [location, setLocation] = useState('');
     const [os, setOS] = useState('');
 
-    const copyTextToClipboard = (text: string) => {
+    const copyTextToClipboard = (text: string): void => {
         Utils.copyToClipboard(text);
         window.alert(I18n.t('Copied'));
     };
 
-    useEffect(() => {
+    useEffect((): void => {
         if (!hostId || typeof hostId !== 'string') {
             console.error(`Invalid hostId: "${hostId}" with type ${typeof hostId}`);
         }
@@ -173,7 +173,7 @@ const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDi
                         setOS(data.os);
                     }
 
-                    fetch(
+                    void fetch(
                         `https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/${I18n.getLanguage()}/controller-upgrade.md`,
                     )
                         .then(response => response.text())
@@ -236,7 +236,7 @@ const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDi
         }
     }, [location, os, socket, version, hostId]);
 
-    const renderReadme = () => (
+    const renderReadme = (): JSX.Element => (
         <>
             {readme.map((text, i) =>
                 typeof text === 'object' ? (
@@ -245,7 +245,6 @@ const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDi
                     <ReactMarkdown
                         key={`t_${i}`}
                         components={{
-                            // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
                             em: ({ ...props }) => (
                                 <IconButton
                                     style={styles.copyButtonSmall}
@@ -254,7 +253,6 @@ const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDi
                                     <IconCopy />
                                 </IconButton>
                             ),
-                            // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
                             a: ({ children, ...props }) => (
                                 <a
                                     style={{ color: 'inherit' }}
@@ -263,7 +261,6 @@ const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDi
                                     {children}
                                 </a>
                             ),
-                            // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
                             code: ({ children, ref, ...props }) => (
                                 <Box
                                     component="code"
@@ -283,7 +280,7 @@ const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDi
         </>
     );
 
-    const renderText = () => (
+    const renderText = (): JSX.Element => (
         <Card style={styles.root}>
             <Box
                 component="div"

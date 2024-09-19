@@ -194,14 +194,14 @@ class Hosts extends Component<HostsProps, HostsState> {
               : wordCache[word];
     };
 
-    async componentDidMount() {
-        this.readInfo().then(() => {
+    componentDidMount(): void {
+        void this.readInfo().then(() => {
             this.props.hostsWorker.registerHandler(this.updateHosts);
             this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
         });
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.props.hostsWorker.unregisterHandler(this.updateHosts);
         this.props.hostsWorker.unregisterAliveHandler(this.updateHostsAlive);
     }
@@ -221,15 +221,15 @@ class Hosts extends Component<HostsProps, HostsState> {
                         if (error.toString().includes('timeout')) {
                             this.setState({ showSlowConnectionWarning: true });
                         }
-                        return { id: hosts[h]._id as `system.host.${string}`, data: error.toString() };
+                        return { id: hosts[h]._id, data: error.toString() };
                     })
                     .then((data: Record<string, any>) => {
                         preprocessHostData(data);
-                        return { id: hosts[h]._id as `system.host.${string}`, data };
+                        return { id: hosts[h]._id, data };
                     });
                 promises.push(promise);
             } else {
-                promises.push(Promise.resolve({ id: hosts[h]._id as `system.host.${string}`, data: 'offline' }));
+                promises.push(Promise.resolve({ id: hosts[h]._id, data: 'offline' }));
             }
         }
 
@@ -240,7 +240,7 @@ class Hosts extends Component<HostsProps, HostsState> {
         });
     }
 
-    readInfo() {
+    readInfo(): Promise<void> {
         return this.props.socket.getHosts(true).then(hosts =>
             this.props.socket
                 .getRepository(this.props.currentHost, { update: false }, false, this.state.readTimeoutMs)
@@ -273,11 +273,11 @@ class Hosts extends Component<HostsProps, HostsState> {
         );
     }
 
-    updateHosts = (events: HostEvent[]) => {
+    updateHosts = (events: HostEvent[]): void => {
         const hosts: ioBroker.HostObject[] = JSON.parse(JSON.stringify(this.state.hosts));
         const alive: Record<`system.host.${string}`, boolean> = JSON.parse(JSON.stringify(this.state.alive));
 
-        Promise.all(
+        void Promise.all(
             events.map(async event => {
                 const elementFind = hosts.find(host => host._id === event.id);
                 if (elementFind) {
@@ -291,7 +291,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                     }
                 } else {
                     const state = await this.props.socket.getState(`${event.id}.alive`);
-                    alive[event.id as `system.host.${string}`] = !!state?.val;
+                    alive[event.id] = !!state?.val;
                     // new
                     hosts.push(event.obj);
                 }
@@ -307,7 +307,7 @@ class Hosts extends Component<HostsProps, HostsState> {
         });
     };
 
-    updateHostsAlive = (events: HostAliveEvent[]) => {
+    updateHostsAlive = (events: HostAliveEvent[]): void => {
         const alive: Record<`system.host.${string}`, boolean> = JSON.parse(JSON.stringify(this.state.alive));
         let changed = false;
 
@@ -328,13 +328,13 @@ class Hosts extends Component<HostsProps, HostsState> {
         }
     };
 
-    getPanelsOrRows() {
+    getPanelsOrRows(): string | JSX.Element[] {
         const items = this.renderHosts().filter(host => host);
 
         return items.length ? items : this.t('All items are filtered out');
     }
 
-    renderSlowConnectionWarning() {
+    renderSlowConnectionWarning(): JSX.Element | null {
         if (!this.state.showSlowConnectionWarning) {
             return null;
         }
@@ -353,7 +353,7 @@ class Hosts extends Component<HostsProps, HostsState> {
         );
     }
 
-    renderHosts() {
+    renderHosts(): (JSX.Element | null)[] {
         return this.state.hosts.map(host => {
             if (
                 this.state.filterText &&
@@ -373,7 +373,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                     expertMode={this.props.expertMode}
                     host={host}
                     hostData={this.state.hostsData[host._id]}
-                    hostId={host._id as `system.host.${string}`}
+                    hostId={host._id}
                     hostsWorker={this.props.hostsWorker}
                     isCurrentHost={this.props.currentHost === host._id}
                     jsControllerInfo={this.state.repository['js-controller']}
@@ -392,7 +392,7 @@ class Hosts extends Component<HostsProps, HostsState> {
         });
     }
 
-    renderTableHeader() {
+    renderTableHeader(): JSX.Element {
         return (
             <div style={styles.tabHeaderWrapper}>
                 <div style={styles.tabHeaderFirstItem}>{this.t('Name:')}</div>
@@ -447,7 +447,7 @@ class Hosts extends Component<HostsProps, HostsState> {
         );
     }
 
-    render() {
+    render(): JSX.Element {
         if (!this.state.hosts.length) {
             return <LinearProgress />;
         }

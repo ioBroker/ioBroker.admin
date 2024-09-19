@@ -262,7 +262,11 @@ class AdminUtils {
 
         let hostIp;
         for (const networkInterface of Object.values(networkInterfaces)) {
-            networkInterface?.forEach(ip => {
+            if (!networkInterface) {
+                continue;
+            }
+            for (let i = 0; i < networkInterface.length; i++) {
+                const ip = networkInterface[i];
                 if (ip.internal) {
                     return;
                 }
@@ -285,12 +289,16 @@ class AdminUtils {
                 } else {
                     hostIp = ip.address;
                 }
-            });
+            }
         }
 
         if (!hostIp) {
             for (const networkInterface of Object.values(networkInterfaces)) {
-                networkInterface?.forEach(ip => {
+                if (!networkInterface) {
+                    continue;
+                }
+                for (let i = 0; i < networkInterface.length; i++) {
+                    const ip = networkInterface[i];
                     if (ip.internal) {
                         return;
                     }
@@ -306,18 +314,22 @@ class AdminUtils {
                     } else {
                         hostIp = ip.address;
                     }
-                });
+                }
             }
         }
 
         if (!hostIp) {
             for (const networkInterface of Object.values(networkInterfaces)) {
-                networkInterface?.forEach(ip => {
+                if (!networkInterface) {
+                    continue;
+                }
+                for (let i = 0; i < networkInterface.length; i++) {
+                    const ip = networkInterface[i];
                     if (ip.internal) {
                         return;
                     }
                     hostIp = ip.address;
-                });
+                }
             }
         }
 
@@ -506,7 +518,7 @@ class AdminUtils {
                                     }
                                 }
 
-                                ids.forEach(id => {
+                                for (const id of ids) {
                                     if (_urls.length) {
                                         const item = _urls.find(t => t.instance === id);
                                         if (item) {
@@ -551,7 +563,7 @@ class AdminUtils {
                                             ?.port as number;
                                         _urls.push({ url: _link, port: _port, instance: id });
                                     }
-                                });
+                                }
                             } else {
                                 link = AdminUtils._replaceLink(
                                     link,

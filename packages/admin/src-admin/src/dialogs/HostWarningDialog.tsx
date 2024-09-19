@@ -165,7 +165,7 @@ interface StatusOptions {
     severity?: Severity;
 }
 
-const Status = ({ name, severity, ...props }: StatusOptions) => {
+const Status = ({ name, severity, ...props }: StatusOptions): JSX.Element => {
     switch (name) {
         case 'restartLoop':
             return (
@@ -256,10 +256,12 @@ const Status = ({ name, severity, ...props }: StatusOptions) => {
     }
 };
 
-const a11yProps = (index: number) => ({
-    id: `scrollable-force-tab-${index}`,
-    'aria-controls': `scrollable-force-tabpanel-${index}`,
-});
+function a11yProps(index: number): { id: string; 'aria-controls': string } {
+    return {
+        id: `scrollable-force-tab-${index}`,
+        'aria-controls': `scrollable-force-tabpanel-${index}`,
+    };
+}
 
 interface TabPanelOptions {
     value: number;
@@ -269,7 +271,7 @@ interface TabPanelOptions {
     children: JSX.Element;
 }
 
-const TabPanel = ({ children, value, index, styleDiv, sxBox, ...other }: TabPanelOptions) => (
+const TabPanel = ({ children, value, index, styleDiv, sxBox, ...other }: TabPanelOptions): JSX.Element => (
     <div
         role="tabpanel"
         hidden={value !== index}
@@ -316,20 +318,22 @@ const HostWarningDialog = ({
     dateFormat,
     themeType,
     instances,
-}: HostWarningDialogOptions) => {
+}: HostWarningDialogOptions): JSX.Element => {
     const [value, setValue] = useState(0);
     const [disabled, setDisabled] = useState<string[]>([]);
     const [expanded, setExpanded] = useState('');
     const [autoCollapse, setAutoCollapse] = useState(true);
 
-    const handleChange = (event: unknown, newValue: number) => {
+    const handleChange = (event: unknown, newValue: number): void => {
         setAutoCollapse(true);
         setValue(newValue);
         setExpanded('');
     };
 
-    const handleChangeAccordion = (panel: string) => (_event: unknown, isExpanded: boolean) =>
-        setExpanded(isExpanded ? panel : '');
+    const handleChangeAccordion =
+        (panel: string) =>
+        (_event: unknown, isExpanded: boolean): void =>
+            setExpanded(isExpanded ? panel : '');
 
     const dark = themeType === 'dark';
 

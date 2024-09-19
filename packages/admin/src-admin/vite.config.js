@@ -5,7 +5,7 @@ import federation from '@dilesoft/vite-plugin-federation-dynamic';
 import { viteCommonjs, esbuildCommonjs } from '@originjs/vite-plugin-commonjs';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
     return {
         plugins: [
             react(),

@@ -187,7 +187,7 @@ interface EnumsListProps {
     theme: IobTheme;
 }
 
-interface EnumEditDialog {
+interface EnumEditDialogProps {
     changed: boolean;
     originalItem?: ioBroker.EnumObject;
     newItem?: ioBroker.EnumObject;
@@ -199,7 +199,7 @@ interface EnumsListState {
     enumsTree: TreeItem | null;
     currentCategory: string;
     search: string;
-    enumEditDialog: EnumEditDialog | null;
+    enumEditDialog: EnumEditDialogProps | null;
     enumTemplateDialog: string | null;
     enumDeleteDialog: ioBroker.EnumObject | null;
     members: Record<string, ioBroker.Object>;
@@ -669,7 +669,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
     }
 
     showEnumEditDialog = (enumItem: ioBroker.EnumObject, isNew: boolean): void => {
-        const enumEditDialog: EnumEditDialog = { changed: false };
+        const enumEditDialog: EnumEditDialogProps = { changed: false };
         enumEditDialog.newItem = JSON.parse(JSON.stringify(enumItem));
         enumEditDialog.originalItem = JSON.parse(JSON.stringify(enumItem));
         enumEditDialog.isNew = isNew;

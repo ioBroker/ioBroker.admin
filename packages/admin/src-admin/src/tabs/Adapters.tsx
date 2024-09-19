@@ -1,4 +1,4 @@
-import React, { createRef } from 'react';
+import React, { createRef, type JSX } from 'react';
 import semver from 'semver';
 
 import {
@@ -352,7 +352,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return this.wordCache[word];
     };
 
-    renderSlowConnectionWarning() {
+    renderSlowConnectionWarning(): JSX.Element | null {
         if (!this.state.showSlowConnectionWarning) {
             return null;
         }
@@ -371,7 +371,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         );
     }
 
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         if (this.props.ready) {
             await this.updateAll();
             if (this.state.search) {
@@ -387,7 +387,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         await this.getAdaptersInfo(update, indicateUpdate);
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(): void {
         const descWidth = this.getDescWidth();
         if (this.state.descWidth !== descWidth) {
             this.setState({ descWidth });
@@ -397,7 +397,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.updateTimeout) {
             clearTimeout(this.updateTimeout);
         }
@@ -422,7 +422,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.props.instancesWorker.unregisterHandler(this.onAdaptersChanged);
     }
 
-    onAdaptersChanged = (events: (AdapterEvent | InstanceEvent)[]) => {
+    onAdaptersChanged = (events: (AdapterEvent | InstanceEvent)[]): void => {
         this.tempAdapters = this.tempAdapters || JSON.parse(JSON.stringify(this.state.adapters || {}));
         this.tempInstalled = this.tempInstalled || JSON.parse(JSON.stringify(this.state.installed || {}));
         this.tempInstances = this.tempInstances || JSON.parse(JSON.stringify(this.state.compactInstances || {}));
@@ -496,7 +496,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         installedGlobal?: InstalledInfo;
         repository?: Record<string, RepoAdapterObject>;
         cb?: () => void;
-    }) {
+    }): void {
         let { adapters, repository } = options;
 
         const { cb, installedLocal } = options;
@@ -576,7 +576,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return { installedLocal, installedGlobal };
     }
 
-    async getAdapters(update?: boolean, bigUpdate?: boolean, indicateUpdate?: boolean) {
+    async getAdapters(update?: boolean, bigUpdate?: boolean, indicateUpdate?: boolean): Promise<void> {
         console.log('[ADAPTERS] getAdapters');
 
         const currentHost = this.state.currentHost;
@@ -644,7 +644,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         adapterName: string,
         adapters: Record<string, ioBroker.AdapterCommon | AdapterCacheEntry>,
         lang: ioBroker.Languages,
-    ) {
+    ): string {
         if (!adapters[adapterName]) {
             return adapterName;
         }
@@ -668,7 +668,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         sortByName: boolean,
         sortPopularFirst?: boolean,
         sortRecentlyUpdated?: boolean,
-    ) {
+    ): void {
         const titles: { [adapterName: string]: string } = {};
         list.sort((a, b) => {
             if (sortPopularFirst) {
@@ -728,11 +728,11 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         ratings?: Ratings | null,
         hostData?: (HostInfo & { 'Active instances': number; location: string; Uptime: number }) | null,
         compactRepositories?: CompactSystemRepository | null,
-    ) {
+    ): Promise<void> {
         hostData = hostData || this.state.hostData;
         ratings = ratings || this.state.ratings;
         compactInstances = compactInstances || this.state.compactInstances;
-        if (!(compactRepositories as CompactSystemRepository)?._id) {
+        if (!compactRepositories?._id) {
             compactRepositories = this.state.compactRepositories;
         }
 
@@ -927,7 +927,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     ratings,
                     filterTiles,
                     categoriesTiles,
-                    compactRepositories: compactRepositories as CompactSystemRepository,
+                    compactRepositories,
                     installedList,
                     compactInstances,
                     updateList,
@@ -947,7 +947,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         });
     }
 
-    async getAdaptersInfo(update?: boolean, indicateUpdate?: boolean) {
+    async getAdaptersInfo(update?: boolean, indicateUpdate?: boolean): Promise<void> {
         if (!this.state.currentHost) {
             return;
         }
@@ -1002,7 +1002,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         }
     }
 
-    toggleCategory(category: string) {
+    toggleCategory(category: string): void {
         this.setState(oldState => {
             const categoriesExpanded = oldState.categoriesExpanded;
             categoriesExpanded[category] = !categoriesExpanded[category];
@@ -1101,7 +1101,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return true;
     }
 
-    handleFilterChange(event: React.ChangeEvent<HTMLInputElement>) {
+    handleFilterChange(event: React.ChangeEvent<HTMLInputElement>): void {
         if (this.typingTimer) {
             clearTimeout(this.typingTimer);
         }
@@ -1124,7 +1124,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     //     this.setState({ filterConnectionType: !this.state.filterConnectionType });
     // }
 
-    expandAll() {
+    expandAll(): void {
         this.setState(oldState => {
             const categories = oldState.categories;
             const categoriesExpanded = oldState.categoriesExpanded;
@@ -1140,7 +1140,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         });
     }
 
-    collapseAll() {
+    collapseAll(): void {
         const categoriesExpanded = {};
 
         (((window as any)._localStorage as Storage) || window.localStorage).setItem(
@@ -1151,7 +1151,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.setState({ categoriesExpanded });
     }
 
-    listTable() {
+    listTable(): void {
         const oneListView = !this.state.oneListView;
         if (oneListView) {
             this.expandAll();
@@ -1163,7 +1163,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.setState({ oneListView });
     }
 
-    changeViewMode() {
+    changeViewMode(): void {
         this.cache.listOfVisibleAdapter = null;
         const tableViewMode = !this.state.tableViewMode;
 
@@ -1184,7 +1184,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.setState({ tableViewMode, filterTiles });
     }
 
-    changeUpdateList() {
+    changeUpdateList(): void {
         this.cache.listOfVisibleAdapter = null;
         const updateList = !this.state.updateList;
         (((window as any)._localStorage as Storage) || window.localStorage).setItem(
@@ -1194,7 +1194,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.setState({ updateList });
     }
 
-    changeInstalledList(onlyInstalled?: boolean) {
+    changeInstalledList(onlyInstalled?: boolean): void {
         this.cache.listOfVisibleAdapter = null;
         let installedList = !this.state.installedList ? 1 : this.state.installedList < 2 ? 2 : 0;
         if (!installedList && onlyInstalled) {
@@ -1207,7 +1207,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.setState({ installedList });
     }
 
-    changeFilterTiles(filterTiles: string) {
+    changeFilterTiles(filterTiles: string): void {
         this.cache.listOfVisibleAdapter = null; // rebuild cache
         (((window as any)._localStorage as Storage) || window.localStorage).setItem(
             'Adapters.filterTiles',
@@ -1216,7 +1216,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.setState({ filterTiles });
     }
 
-    changeCategoriesTiles(categoriesTiles: string) {
+    changeCategoriesTiles(categoriesTiles: string): void {
         this.cache.listOfVisibleAdapter = null;
         (((window as any)._localStorage as Storage) || window.localStorage).setItem(
             'Adapters.categoriesTiles',
@@ -1225,7 +1225,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.setState({ categoriesTiles });
     }
 
-    filterAdapters(search?: string) {
+    filterAdapters(search?: string): void {
         search = search === undefined ? this.state.search : search;
         search = (search || '').toLowerCase().trim();
         let filteredList: string[] = [];
@@ -1274,7 +1274,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         });
     }
 
-    clearAllFilters() {
+    clearAllFilters(): void {
         (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapter.search');
         (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.installedList');
         (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.updateList');
@@ -1348,9 +1348,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         } as AdaptersContext;
     }
 
-    setAdminUpgradeTo = (version: string) => this.setState({ adminUpgradeTo: version });
+    setAdminUpgradeTo = (version: string): void => this.setState({ adminUpgradeTo: version });
 
-    buildCache(context: AdaptersContext) {
+    buildCache(context: AdaptersContext): void {
         this.cache.listOfVisibleAdapter = [];
         this.cache.adapters = {};
         const now = Date.now();
@@ -1477,7 +1477,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         this.forceUpdate();
     }
 
-    getUpdater() {
+    getUpdater(): JSX.Element | null {
         if (!this.state.showUpdater) {
             return null;
         }
@@ -1498,7 +1498,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         );
     }
 
-    getDescWidth() {
+    getDescWidth(): number {
         if (this.props.menuOpened) {
             return document.body.scrollWidth - SUM - 180 + 13;
         }
@@ -1509,7 +1509,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return document.body.scrollWidth - SUM - 50 + 13;
     }
 
-    getStatistics() {
+    getStatistics(): JSX.Element | null {
         if (this.state.showStatistics) {
             return (
                 <Dialog
@@ -1557,7 +1557,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return null;
     }
 
-    renderGitHubInstallDialog(context: AdaptersContext) {
+    renderGitHubInstallDialog(context: AdaptersContext): JSX.Element | null {
         if (!this.state.gitHubInstallDialog) {
             return null;
         }
@@ -1586,7 +1586,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         );
     }
 
-    renderHeader() {
+    renderHeader(): JSX.Element {
         let updateAllButtonAvailable =
             !this.props.commandRunning &&
             !!this.props.ready &&
@@ -1841,7 +1841,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
      * Perform the Admin Upgrade via Webserver
      * This allows showing UI progress even admin is down
      */
-    renderWebserverUpgrade() {
+    renderWebserverUpgrade(): JSX.Element | null {
         if (!this.state.adminUpgradeTo) {
             return null;
         }
@@ -1865,7 +1865,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         );
     }
 
-    render() {
+    render(): JSX.Element {
         if (!this.state.init) {
             return <LinearProgress />;
         }

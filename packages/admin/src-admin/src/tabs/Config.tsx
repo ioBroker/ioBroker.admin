@@ -215,21 +215,21 @@ class Config extends Component<ConfigProps, ConfigState> {
         this.registered = false;
     }
 
-    componentDidUpdate(/* prevProps, prevState, snapshot */) {
+    componentDidUpdate(/* prevProps, prevState, snapshot */): void {
         if (!this.registered && this.refIframe?.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         // receive messages from IFRAME
         if (this.props.tab) {
-            this.props.socket.fileExists(`${this.props.adapter}.admin`, 'tab.html').then(exist => {
+            void this.props.socket.fileExists(`${this.props.adapter}.admin`, 'tab.html').then(exist => {
                 if (exist) {
                     this.setState({ checkedExist: 'tab.html' });
                 } else {
-                    this.props.socket
+                    return this.props.socket
                         .fileExists(`${this.props.adapter}.admin`, 'tab_m.html')
                         .then(exists =>
                             exists
@@ -241,7 +241,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         } else {
             // this.props.socket.getState('system.adapter.' + this.props.adapter + '.' + this.props.instance + '.')
             const instanceId = `system.adapter.${this.props.adapter}.${this.props.instance}`;
-            this.props.socket.subscribeObject(instanceId, this.onObjectChange);
+            void this.props.socket.subscribeObject(instanceId, this.onObjectChange);
             this.props.socket
                 .getObject(instanceId)
                 .then(async obj => {
@@ -259,7 +259,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                         connected = await this.props.socket.getState(
                             `${this.props.adapter}.${this.props.instance}.info.connection`,
                         );
-                        this.props.socket.subscribeState(
+                        void this.props.socket.subscribeState(
                             `${this.props.adapter}.${this.props.instance}.info.connection`,
                             this.onStateChange,
                         );
@@ -273,7 +273,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                         extension = await this.props.socket.getState(
                             `${this.props.adapter}.${this.props.instance}.info.extension`,
                         );
-                        this.props.socket.subscribeState(
+                        void this.props.socket.subscribeState(
                             `${this.props.adapter}.${this.props.instance}.info.extension`,
                             this.onStateChange,
                         );
@@ -318,7 +318,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         );
     }
 
-    onObjectChange = (id: string, obj: ioBroker.InstanceObject | null) => {
+    onObjectChange = (id: string, obj: ioBroker.InstanceObject | null): void => {
         if (id === `system.adapter.${this.props.adapter}.${this.props.instance}`) {
             this.setState({
                 running: obj?.common?.onlyWWW || obj?.common?.enabled,
@@ -335,7 +335,7 @@ class Config extends Component<ConfigProps, ConfigState> {
     // orangeDevice - daemon / run, connected to controller, not connected to device
     // orange - daemon / run,not connected
     // red    - daemon / not run, not connected
-    getInstanceStatus() {
+    getInstanceStatus(): string {
         const mode = this.state.common?.mode || '';
         let status = mode === 'daemon' ? 'green' : 'blue';
 
@@ -362,7 +362,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         return status;
     }
 
-    onStateChange = (id: string, state?: ioBroker.State | null) => {
+    onStateChange = (id: string, state?: ioBroker.State | null): void => {
         const instanceId = `system.adapter.${this.props.adapter}.${this.props.instance}`;
         if (id === `${instanceId}.alive`) {
             this.setState({ alive: !!state?.val });
@@ -377,8 +377,8 @@ class Config extends Component<ConfigProps, ConfigState> {
         }
     };
 
-    componentWillUnmount() {
-        this.props.socket.unsubscribeObject(
+    componentWillUnmount(): void {
+        void this.props.socket.unsubscribeObject(
             `system.adapter.${this.props.adapter}.${this.props.instance}`,
             this.onObjectChange,
         );
@@ -420,7 +420,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         }
     };
 
-    renderHelpButton() {
+    renderHelpButton(): JSX.Element | null {
         if (this.props.jsonConfig) {
             return (
                 <div
@@ -456,7 +456,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         return null;
     }
 
-    getConfigurator() {
+    getConfigurator(): JSX.Element | null {
         if (this.props.jsonConfig) {
             return (
                 <JsonConfig
@@ -493,7 +493,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         return null;
     }
 
-    returnStopAdminDialog() {
+    returnStopAdminDialog(): JSX.Element | null {
         return this.state.showStopAdminDialog ? (
             <ConfirmDialog
                 title={this.props.t('Please confirm')}
@@ -513,7 +513,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         ) : null;
     }
 
-    renderLogLevelDialog() {
+    renderLogLevelDialog(): JSX.Element | null {
         if (!this.state.showLogLevelDialog) {
             return null;
         }
@@ -573,7 +573,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                         variant="contained"
                         onClick={() => {
                             if (this.state.logOnTheFlyValue) {
-                                this.props.socket.setState(
+                                void this.props.socket.setState(
                                     `system.adapter.${this.props.adapter}.${this.props.instance}.logLevel`,
                                     this.state.logLevelValue,
                                 );
@@ -601,7 +601,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         );
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Paper style={styles.root}>
                 <AppBar

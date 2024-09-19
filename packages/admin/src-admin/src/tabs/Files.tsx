@@ -39,8 +39,8 @@ class Files extends Component<FilesProps> {
         this.objects = {};
     }
 
-    componentDidMount() {
-        this.props.socket.getObjects(true, true).then(objects => (this.objects = objects));
+    componentDidMount(): void {
+        void this.props.socket.getObjects(true, true).then(objects => (this.objects = objects));
     }
 
     translate = (word: string, arg1?: any, arg2?: any): string => {
@@ -55,7 +55,7 @@ class Files extends Component<FilesProps> {
         return this.wordCache[word];
     };
 
-    renderAclDialog(context: FileBrowserClass) {
+    renderAclDialog(context: FileBrowserClass): JSX.Element {
         return (
             <FileEditOfAccessControl
                 theme={this.props.theme}
@@ -133,7 +133,7 @@ class Files extends Component<FilesProps> {
         );
     }
 
-    render() {
+    render(): JSX.Element {
         if (!this.props.ready) {
             return <LinearProgress />;
         }

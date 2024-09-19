@@ -80,7 +80,6 @@ const styles: Record<string, any> = {
 
 // some older browsers do not have `flat`
 if (!Array.prototype.flat) {
-    // eslint-disable-next-line
     Object.defineProperty(Array.prototype, 'flat', {
         configurable: true,
         value: function flat() {
@@ -157,7 +156,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         };
     }
 
-    renderNpm() {
+    renderNpm(): JSX.Element | null {
         return this.state.currentTab === 'npm' ? (
             <Paper
                 style={styles.tabPaper}
@@ -244,7 +243,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         ) : null;
     }
 
-    renderGitHub() {
+    renderGitHub(): JSX.Element | null {
         return this.state.currentTab === 'GitHub' ? (
             <Paper
                 style={styles.tabPaper}
@@ -339,7 +338,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         ) : null;
     }
 
-    renderCustom() {
+    renderCustom(): JSX.Element | null {
         return this.state.currentTab === 'URL' ? (
             <Paper
                 style={styles.tabPaper}
@@ -379,9 +378,13 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         onKeyUp={event => {
                             if (event.key === 'Enter' && this.state.url) {
                                 if (!this.state.url.includes('.')) {
-                                    this.props.installFromUrl(`iobroker.${this.state.url}`, this.state.debug, true);
+                                    void this.props.installFromUrl(
+                                        `iobroker.${this.state.url}`,
+                                        this.state.debug,
+                                        true,
+                                    );
                                 } else {
-                                    this.props.installFromUrl(this.state.url, this.state.debug, true);
+                                    void this.props.installFromUrl(this.state.url, this.state.debug, true);
                                 }
                             }
                         }}
@@ -416,7 +419,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         ) : null;
     }
 
-    getList() {
+    getList(): ({ value: string; name: string; icon: string; nogit: boolean; title: string } | null)[] {
         const adapters = this.props.categories
             .map(category => category.adapters)
             .flat()
@@ -464,9 +467,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
     }
 
     render(): JSX.Element {
-        const closeInit = () => {
-            this.setState({ autoCompleteValue: null, url: '' });
-        };
+        const closeInit = (): void => this.setState({ autoCompleteValue: null, url: '' });
 
         return (
             <Dialog
@@ -564,12 +565,16 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             if (this.state.currentTab === 'GitHub') {
                                 const parts = (this.state.autoCompleteValue?.value || '').split('/');
                                 const _url = `${parts[1]}/ioBroker.${parts[0]}`;
-                                this.props.installFromUrl(_url, this.state.debug, true);
+                                void this.props.installFromUrl(_url, this.state.debug, true);
                             } else if (this.state.currentTab === 'URL') {
                                 if (!this.state.url.includes('.')) {
-                                    this.props.installFromUrl(`iobroker.${this.state.url}`, this.state.debug, true);
+                                    void this.props.installFromUrl(
+                                        `iobroker.${this.state.url}`,
+                                        this.state.debug,
+                                        true,
+                                    );
                                 } else {
-                                    this.props.installFromUrl(this.state.url, this.state.debug, true);
+                                    void this.props.installFromUrl(this.state.url, this.state.debug, true);
                                 }
                             } else if (this.state.currentTab === 'npm') {
                                 const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];

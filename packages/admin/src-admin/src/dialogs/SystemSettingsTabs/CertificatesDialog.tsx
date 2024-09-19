@@ -251,7 +251,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                                     }
                                     if (fileRejections.length) {
                                         const msg: string[] = [];
-                                        fileRejections.map(e => {
+                                        fileRejections.forEach(e => {
                                             const m = `${e.file.name}: `;
                                             const mm: string[] = [];
                                             e.errors.forEach(ee => mm.push(ee.message));
@@ -262,7 +262,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                                     }
 
                                     if (acceptedFiles.length) {
-                                        acceptedFiles.map(file => {
+                                        acceptedFiles.forEach(file => {
                                             const reader = new FileReader();
                                             reader.onload = e => this.onAdd(file.name, e.target.result as string);
                                             reader.readAsText(file);
