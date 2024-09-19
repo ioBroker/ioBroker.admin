@@ -1,8 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
-import {
-    green, grey, orange, red,
-} from '@mui/material/colors';
+import { green, grey, orange, red } from '@mui/material/colors';
 
 import {
     AppBar,
@@ -217,31 +215,35 @@ class Config extends Component<ConfigProps, ConfigState> {
         this.registered = false;
     }
 
-    componentDidUpdate(/* prevProps, prevState, snapshot */) {
+    componentDidUpdate(/* prevProps, prevState, snapshot */): void {
         if (!this.registered && this.refIframe?.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         // receive messages from IFRAME
         if (this.props.tab) {
-            this.props.socket.fileExists(`${this.props.adapter}.admin`, 'tab.html')
-                .then(exist => {
-                    if (exist) {
-                        this.setState({ checkedExist: 'tab.html' });
-                    } else {
-                        this.props.socket.fileExists(`${this.props.adapter}.admin`, 'tab_m.html')
-                            .then(exists =>
-                                (exists ? this.setState({ checkedExist: 'tab_m.html' }) : window.alert('Cannot find tab(_m).html')));
-                    }
-                });
+            void this.props.socket.fileExists(`${this.props.adapter}.admin`, 'tab.html').then(exist => {
+                if (exist) {
+                    this.setState({ checkedExist: 'tab.html' });
+                } else {
+                    return this.props.socket
+                        .fileExists(`${this.props.adapter}.admin`, 'tab_m.html')
+                        .then(exists =>
+                            exists
+                                ? this.setState({ checkedExist: 'tab_m.html' })
+                                : window.alert('Cannot find tab(_m).html'),
+                        );
+                }
+            });
         } else {
             // this.props.socket.getState('system.adapter.' + this.props.adapter + '.' + this.props.instance + '.')
             const instanceId = `system.adapter.${this.props.adapter}.${this.props.instance}`;
-            this.props.socket.subscribeObject(instanceId, this.onObjectChange);
-            this.props.socket.getObject(instanceId)
+            void this.props.socket.subscribeObject(instanceId, this.onObjectChange);
+            this.props.socket
+                .getObject(instanceId)
                 .then(async obj => {
                     const tempLogLevel = await this.props.socket.getState(`${instanceId}.logLevel`);
                     await this.props.socket.subscribeState(`${instanceId}.logLevel`, this.onStateChange);
@@ -254,8 +256,13 @@ class Config extends Component<ConfigProps, ConfigState> {
 
                     let connected;
                     try {
-                        connected = await this.props.socket.getState(`${this.props.adapter}.${this.props.instance}.info.connection`);
-                        this.props.socket.subscribeState(`${this.props.adapter}.${this.props.instance}.info.connection`, this.onStateChange);
+                        connected = await this.props.socket.getState(
+                            `${this.props.adapter}.${this.props.instance}.info.connection`,
+                        );
+                        void this.props.socket.subscribeState(
+                            `${this.props.adapter}.${this.props.instance}.info.connection`,
+                            this.onStateChange,
+                        );
                     } catch {
                         // ignore
                         connected = null;
@@ -263,8 +270,13 @@ class Config extends Component<ConfigProps, ConfigState> {
 
                     let extension;
                     try {
-                        extension = await this.props.socket.getState(`${this.props.adapter}.${this.props.instance}.info.extension`);
-                        this.props.socket.subscribeState(`${this.props.adapter}.${this.props.instance}.info.extension`, this.onStateChange);
+                        extension = await this.props.socket.getState(
+                            `${this.props.adapter}.${this.props.instance}.info.extension`,
+                        );
+                        void this.props.socket.subscribeState(
+                            `${this.props.adapter}.${this.props.instance}.info.extension`,
+                            this.onStateChange,
+                        );
                     } catch {
                         // ignore
                         extension = null;
@@ -283,7 +295,9 @@ class Config extends Component<ConfigProps, ConfigState> {
                         tempLogLevel: tempLogLevel?.val || obj?.common?.loglevel || 'info',
                         common: obj?.common || {},
                         native: obj?.native || {},
-                        adapterDocLangs: obj?.common?.docs ? Object.keys(obj.common.docs) as ioBroker.Languages[] : ['en'],
+                        adapterDocLangs: obj?.common?.docs
+                            ? (Object.keys(obj.common.docs) as ioBroker.Languages[])
+                            : ['en'],
                     });
                 })
                 .catch(error => {
@@ -297,10 +311,14 @@ class Config extends Component<ConfigProps, ConfigState> {
             this.props.onRegisterIframeRef(this.refIframe);
         }
 
-        (window.addEventListener || window.attachEvent)(window.addEventListener ? 'message' : 'onmessage', this.closeConfig, false);
+        (window.addEventListener || window.attachEvent)(
+            window.addEventListener ? 'message' : 'onmessage',
+            this.closeConfig,
+            false,
+        );
     }
 
-    onObjectChange = (id: string, obj: ioBroker.InstanceObject | null) => {
+    onObjectChange = (id: string, obj: ioBroker.InstanceObject | null): void => {
         if (id === `system.adapter.${this.props.adapter}.${this.props.instance}`) {
             this.setState({
                 running: obj?.common?.onlyWWW || obj?.common?.enabled,
@@ -317,11 +335,14 @@ class Config extends Component<ConfigProps, ConfigState> {
     // orangeDevice - daemon / run, connected to controller, not connected to device
     // orange - daemon / run,not connected
     // red    - daemon / not run, not connected
-    getInstanceStatus() {
+    getInstanceStatus(): string {
         const mode = this.state.common?.mode || '';
         let status = mode === 'daemon' ? 'green' : 'blue';
 
-        if (this.state.common?.enabled && (!this.state.common.webExtension || !this.state.native?.webInstance || mode === 'daemon')) {
+        if (
+            this.state.common?.enabled &&
+            (!this.state.common.webExtension || !this.state.native?.webInstance || mode === 'daemon')
+        ) {
             if (this.state.common.webExtension && this.state.native?.webInstance) {
                 if (this.state.extension !== null) {
                     return this.state.extension ? 'green' : 'red';
@@ -341,7 +362,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         return status;
     }
 
-    onStateChange = (id: string, state?: ioBroker.State | null) => {
+    onStateChange = (id: string, state?: ioBroker.State | null): void => {
         const instanceId = `system.adapter.${this.props.adapter}.${this.props.instance}`;
         if (id === `${instanceId}.alive`) {
             this.setState({ alive: !!state?.val });
@@ -352,14 +373,21 @@ class Config extends Component<ConfigProps, ConfigState> {
         } else if (id === `${this.props.adapter}.${this.props.instance}.info.extension`) {
             this.setState({ extension: state ? !!state.val : null });
         } else if (id === `${instanceId}.logLevel`) {
-            this.setState({ tempLogLevel: state ? state.val as ioBroker.LogLevel : null });
+            this.setState({ tempLogLevel: state ? (state.val as ioBroker.LogLevel) : null });
         }
     };
 
-    componentWillUnmount() {
-        this.props.socket.unsubscribeObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, this.onObjectChange);
+    componentWillUnmount(): void {
+        void this.props.socket.unsubscribeObject(
+            `system.adapter.${this.props.adapter}.${this.props.instance}`,
+            this.onObjectChange,
+        );
 
-        (window.removeEventListener || window.detachEvent)(window.removeEventListener ? 'message' : 'onmessage', this.closeConfig, false);
+        (window.removeEventListener || window.detachEvent)(
+            window.removeEventListener ? 'message' : 'onmessage',
+            this.closeConfig,
+            false,
+        );
 
         if (this.registered && this.refIframe) {
             this.props.onUnregisterIframeRef(this.refIframe);
@@ -382,7 +410,8 @@ class Config extends Component<ConfigProps, ConfigState> {
             this.props.configStored(false);
         } else if (event.data === 'nochange' || event.message === 'nochange') {
             this.props.configStored(true);
-        } else if ((typeof event.data === 'string' && event.data.startsWith('goto:')) ||
+        } else if (
+            (typeof event.data === 'string' && event.data.startsWith('goto:')) ||
             (typeof event.message === 'string' && event.message.startsWith('goto:'))
         ) {
             const [, url] = (event.data || event.message).split(':');
@@ -391,234 +420,324 @@ class Config extends Component<ConfigProps, ConfigState> {
         }
     };
 
-    renderHelpButton() {
+    renderHelpButton(): JSX.Element | null {
         if (this.props.jsonConfig) {
-            return <div
-                style={{
-                    display: 'inline-block',
-                    position: 'absolute',
-                    right: 0,
-                    top: 5,
-                }}
-            >
-                <Tooltip title={this.props.t('Show help for this adapter')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <Fab
-                        sx={{ '&.MuiFab-root': styles.button }}
-                        onClick={() => {
-                            const lang = this.state.adapterDocLangs?.includes(this.props.lang) ? this.props.lang : 'en';
-                            window.open(AdminUtils.getDocsLinkForAdapter({ lang, adapterName: this.props.adapter }), 'help');
-                        }}
+            return (
+                <div
+                    style={{
+                        display: 'inline-block',
+                        position: 'absolute',
+                        right: 0,
+                        top: 5,
+                    }}
+                >
+                    <Tooltip
+                        title={this.props.t('Show help for this adapter')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
                     >
-                        <HelpIcon />
-                    </Fab>
-                </Tooltip>
-            </div>;
+                        <Fab
+                            sx={{ '&.MuiFab-root': styles.button }}
+                            onClick={() => {
+                                const lang = this.state.adapterDocLangs?.includes(this.props.lang)
+                                    ? this.props.lang
+                                    : 'en';
+                                window.open(
+                                    AdminUtils.getDocsLinkForAdapter({ lang, adapterName: this.props.adapter }),
+                                    'help',
+                                );
+                            }}
+                        >
+                            <HelpIcon />
+                        </Fab>
+                    </Tooltip>
+                </div>
+            );
         }
         return null;
     }
 
-    getConfigurator() {
+    getConfigurator(): JSX.Element | null {
         if (this.props.jsonConfig) {
-            return <JsonConfig
-                theme={this.props.theme}
-                width={this.props.width}
-                adapterName={this.props.adapter}
-                instance={this.props.instance}
-                socket={this.props.socket}
-                themeName={this.props.themeName}
-                themeType={this.props.themeType}
-                dateFormat={this.props.dateFormat}
-                isFloatComma={this.props.isFloatComma}
-                configStored={this.props.configStored}
-                t={this.props.t}
-                DeviceManager={DeviceManager as unknown as React.FC<DeviceManagerPropsProps>}
-            />;
+            return (
+                <JsonConfig
+                    theme={this.props.theme}
+                    width={this.props.width}
+                    adapterName={this.props.adapter}
+                    instance={this.props.instance}
+                    socket={this.props.socket}
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                    dateFormat={this.props.dateFormat}
+                    isFloatComma={this.props.isFloatComma}
+                    configStored={this.props.configStored}
+                    t={this.props.t}
+                    DeviceManager={DeviceManager as unknown as React.FC<DeviceManagerPropsProps>}
+                />
+            );
         }
-        const src = `adapter/${this.props.adapter}/` +
-                `${this.props.tab ? this.state.checkedExist : (this.props.materialize ? 'index_m.html' : 'index.html')}?` +
-                `${this.props.instance || 0}&newReact=true&${this.props.instance || 0}&react=${this.props.themeName}`;
+        const src =
+            `adapter/${this.props.adapter}/` +
+            `${this.props.tab ? this.state.checkedExist : this.props.materialize ? 'index_m.html' : 'index.html'}?` +
+            `${this.props.instance || 0}&newReact=true&${this.props.instance || 0}&react=${this.props.themeName}`;
 
         if (this.state.checkedExist) {
-            return <iframe
-                ref={el => this && (this.refIframe = el)}
-                title="config"
-                style={this.props.style}
-                src={src}
-            >
-            </iframe>;
+            return (
+                <iframe
+                    ref={el => this && (this.refIframe = el)}
+                    title="config"
+                    style={this.props.style}
+                    src={src}
+                ></iframe>
+            );
         }
         return null;
     }
 
-    returnStopAdminDialog() {
-        return this.state.showStopAdminDialog ? <ConfirmDialog
-            title={this.props.t('Please confirm')}
-            text={this.props.t('stop_admin', this.props.instance)}
-            ok={this.props.t('Stop admin')}
-            onClose={result => {
-                if (result) {
-                    this.props.socket.extendObject(
-                        `system.adapter.${this.props.adapter}.${this.props.instance}`,
-                        { common: { enabled: false } },
-                    )
-                        .catch(error => window.alert(error));
-                }
-                this.setState({ showStopAdminDialog: false });
-            }}
-        /> : null;
+    returnStopAdminDialog(): JSX.Element | null {
+        return this.state.showStopAdminDialog ? (
+            <ConfirmDialog
+                title={this.props.t('Please confirm')}
+                text={this.props.t('stop_admin', this.props.instance)}
+                ok={this.props.t('Stop admin')}
+                onClose={result => {
+                    if (result) {
+                        this.props.socket
+                            .extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, {
+                                common: { enabled: false },
+                            })
+                            .catch(error => window.alert(error));
+                    }
+                    this.setState({ showStopAdminDialog: false });
+                }}
+            />
+        ) : null;
     }
 
-    renderLogLevelDialog() {
+    renderLogLevelDialog(): JSX.Element | null {
         if (!this.state.showLogLevelDialog) {
             return null;
         }
-        return <Dialog
-            open={!0}
-            onClose={() => this.setState({ showLogLevelDialog: false })}
-        >
-            <DialogTitle>{this.props.t('Edit log level rule for %s', `${this.props.adapter}.${this.props.instance}`)}</DialogTitle>
-            <DialogContent>
-                <FormControl style={{ ...styles.formControl, marginTop: 10 }} variant="outlined">
-                    <InputLabel>{this.props.t('log level')}</InputLabel>
-                    <Select
-                        variant="standard"
-                        value={this.state.logLevelValue}
-                        fullWidth
-                        onChange={el => this.setState({ logLevelValue: el.target.value as ioBroker.LogLevel })}
+        return (
+            <Dialog
+                open={!0}
+                onClose={() => this.setState({ showLogLevelDialog: false })}
+            >
+                <DialogTitle>
+                    {this.props.t('Edit log level rule for %s', `${this.props.adapter}.${this.props.instance}`)}
+                </DialogTitle>
+                <DialogContent>
+                    <FormControl
+                        style={{ ...styles.formControl, marginTop: 10 }}
+                        variant="outlined"
                     >
-                        {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-                            {this.props.t(el)}
-                        </MenuItem>)}
-                    </Select>
-                </FormControl>
-                <FormControl style={styles.formControl} variant="outlined">
-                    <FormControlLabel
-                        control={<Checkbox checked={this.state.logOnTheFlyValue} onChange={e => this.setState({ logOnTheFlyValue: e.target.checked })} />}
-                        label={this.props.t('Without restart')}
-                    />
-                    <FormHelperText>{this.state.logOnTheFlyValue ? this.props.t('Will be reset to the saved log level after restart of adapter') : this.props.t('Log level will be saved permanently')}</FormHelperText>
-                </FormControl>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    color="primary"
-                    variant="contained"
-                    onClick={() => {
-                        if (this.state.logOnTheFlyValue) {
-                            this.props.socket.setState(`system.adapter.${this.props.adapter}.${this.props.instance}.logLevel`, this.state.logLevelValue);
-                        } else {
-                            this.props.socket.extendObject(
-                                `system.adapter.${this.props.adapter}.${this.props.instance}`,
-                                { common: { loglevel: this.state.logLevelValue } },
-                            )
-                                .catch(error => window.alert(`Cannot set log level: ${error}`));
-                        }
-                        this.setState({ showLogLevelDialog: false });
-                    }}
-                >
-                    {this.props.t('Ok')}
-                </Button>
-                <Button
-                    color="grey"
-                    variant="contained"
-                    onClick={() => this.setState({ showLogLevelDialog: false })}
-                >
-                    {this.props.t('Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                        <InputLabel>{this.props.t('log level')}</InputLabel>
+                        <Select
+                            variant="standard"
+                            value={this.state.logLevelValue}
+                            fullWidth
+                            onChange={el => this.setState({ logLevelValue: el.target.value as ioBroker.LogLevel })}
+                        >
+                            {arrayLogLevel.map(el => (
+                                <MenuItem
+                                    key={el}
+                                    value={el}
+                                >
+                                    {this.props.t(el)}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl
+                        style={styles.formControl}
+                        variant="outlined"
+                    >
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={this.state.logOnTheFlyValue}
+                                    onChange={e => this.setState({ logOnTheFlyValue: e.target.checked })}
+                                />
+                            }
+                            label={this.props.t('Without restart')}
+                        />
+                        <FormHelperText>
+                            {this.state.logOnTheFlyValue
+                                ? this.props.t('Will be reset to the saved log level after restart of adapter')
+                                : this.props.t('Log level will be saved permanently')}
+                        </FormHelperText>
+                    </FormControl>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={() => {
+                            if (this.state.logOnTheFlyValue) {
+                                void this.props.socket.setState(
+                                    `system.adapter.${this.props.adapter}.${this.props.instance}.logLevel`,
+                                    this.state.logLevelValue,
+                                );
+                            } else {
+                                this.props.socket
+                                    .extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, {
+                                        common: { loglevel: this.state.logLevelValue },
+                                    })
+                                    .catch(error => window.alert(`Cannot set log level: ${error}`));
+                            }
+                            this.setState({ showLogLevelDialog: false });
+                        }}
+                    >
+                        {this.props.t('Ok')}
+                    </Button>
+                    <Button
+                        color="grey"
+                        variant="contained"
+                        onClick={() => this.setState({ showLogLevelDialog: false })}
+                    >
+                        {this.props.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
-    render() {
-        return <Paper style={styles.root}>
-            <AppBar color="default" position="static">
-                <Toolbar variant="dense">
-                    <Typography variant="h6" color="inherit">
-                        {this.props.jsonConfig ? <Icon src={this.props.icon} style={styles.instanceIcon} />
-                            : null}
-                        {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
-                        {this.props.version ? <span style={{
-                            ...styles.version,
-                            ...styles[this.getInstanceStatus()],
-                        }}
+    render(): JSX.Element {
+        return (
+            <Paper style={styles.root}>
+                <AppBar
+                    color="default"
+                    position="static"
+                >
+                    <Toolbar variant="dense">
+                        <Typography
+                            variant="h6"
+                            color="inherit"
                         >
-v
-                            {this.props.version}
-                        </span> : null}
-                        <Tooltip title={this.props.t('Start/stop')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                            <span>
-                                <IconButton
-                                    size="small"
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        event.preventDefault();
-                                        if (this.state.running && `${this.props.adapter}.${this.props.instance}` === this.props.adminInstance) {
-                                            this.setState({ showStopAdminDialog: true });
-                                        } else {
-                                            this.props.socket.extendObject(
-                                                `system.adapter.${this.props.adapter}.${this.props.instance}`,
-                                                { common: { enabled: !this.state.running } },
-                                            )
-                                                .catch(error => window.alert(`Cannot set log level: ${error}`));
-                                        }
-                                    }}
-                                    onFocus={event => event.stopPropagation()}
-                                    sx={{
-                                        ...styles.buttonControl,
-                                        ...(this.state.canStart ?
-                                            (this.state.running ? styles.enabled : styles.disabled) : styles.hide),
+                            {this.props.jsonConfig ? (
+                                <Icon
+                                    src={this.props.icon}
+                                    style={styles.instanceIcon}
+                                />
+                            ) : null}
+                            {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
+                            {this.props.version ? (
+                                <span
+                                    style={{
+                                        ...styles.version,
+                                        ...styles[this.getInstanceStatus()],
                                     }}
                                 >
-                                    {this.state.running ? <PauseIcon /> : <PlayArrowIcon />}
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                        <Tooltip title={this.props.t('Restart')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                            <span>
-                                <IconButton
-                                    size="small"
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        this.props.socket.extendObject(
-                                            `system.adapter.${this.props.adapter}.${this.props.instance}`,
-                                            {},
-                                        )
-                                            .catch(error => window.alert(`Cannot set log level: ${error}`));
-                                    }}
-                                    onFocus={event => event.stopPropagation()}
-                                    style={{ ...styles.buttonControl, ...(!this.state.canStart ? styles.hide : undefined) }}
-                                    disabled={!this.state.running}
-                                >
-                                    <RefreshIcon />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                        {this.state.tempLogLevel !== this.state.logLevel ?
-                            <Tooltip title={this.props.t('temporary log level')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                                <span style={styles.logLevel}>{this.state.tempLogLevel}</span>
-                            </Tooltip> : null}
-                        <Tooltip title={this.props.t('log level')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                            <span style={styles.logLevel}>{this.state.tempLogLevel !== this.state.logLevel ? `/ ${this.state.logLevel}` : this.state.logLevel}</span>
-                        </Tooltip>
-                        <Tooltip title={this.props.t('Edit log level rule for %s', `${this.props.adapter}.${this.props.instance}`)}>
-                            <IconButton
-                                size="small"
-                                onClick={event => {
-                                    event.stopPropagation();
-                                    this.setState({ showLogLevelDialog: true });
-                                }}
-                                onFocus={event => event.stopPropagation()}
-                                style={{
-                                    ...styles.buttonControl,
-                                    ...(!this.state.canStart ? styles.hide : undefined),
-                                    width: 34,
-                                    height: 34,
-                                }}
+                                    v{this.props.version}
+                                </span>
+                            ) : null}
+                            <Tooltip
+                                title={this.props.t('Start/stop')}
+                                slotProps={{ popper: { sx: styles.tooltip } }}
                             >
-                                <EditIcon style={{ width: 20, height: 20 }} />
-                            </IconButton>
-                        </Tooltip>
-                        {/* <IsVisible config={item} name="allowInstanceLink">
+                                <span>
+                                    <IconButton
+                                        size="small"
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            event.preventDefault();
+                                            if (
+                                                this.state.running &&
+                                                `${this.props.adapter}.${this.props.instance}` ===
+                                                    this.props.adminInstance
+                                            ) {
+                                                this.setState({ showStopAdminDialog: true });
+                                            } else {
+                                                this.props.socket
+                                                    .extendObject(
+                                                        `system.adapter.${this.props.adapter}.${this.props.instance}`,
+                                                        { common: { enabled: !this.state.running } },
+                                                    )
+                                                    .catch(error => window.alert(`Cannot set log level: ${error}`));
+                                            }
+                                        }}
+                                        onFocus={event => event.stopPropagation()}
+                                        sx={{
+                                            ...styles.buttonControl,
+                                            ...(this.state.canStart
+                                                ? this.state.running
+                                                    ? styles.enabled
+                                                    : styles.disabled
+                                                : styles.hide),
+                                        }}
+                                    >
+                                        {this.state.running ? <PauseIcon /> : <PlayArrowIcon />}
+                                    </IconButton>
+                                </span>
+                            </Tooltip>
+                            <Tooltip
+                                title={this.props.t('Restart')}
+                                slotProps={{ popper: { sx: styles.tooltip } }}
+                            >
+                                <span>
+                                    <IconButton
+                                        size="small"
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            this.props.socket
+                                                .extendObject(
+                                                    `system.adapter.${this.props.adapter}.${this.props.instance}`,
+                                                    {},
+                                                )
+                                                .catch(error => window.alert(`Cannot set log level: ${error}`));
+                                        }}
+                                        onFocus={event => event.stopPropagation()}
+                                        style={{
+                                            ...styles.buttonControl,
+                                            ...(!this.state.canStart ? styles.hide : undefined),
+                                        }}
+                                        disabled={!this.state.running}
+                                    >
+                                        <RefreshIcon />
+                                    </IconButton>
+                                </span>
+                            </Tooltip>
+                            {this.state.tempLogLevel !== this.state.logLevel ? (
+                                <Tooltip
+                                    title={this.props.t('temporary log level')}
+                                    slotProps={{ popper: { sx: styles.tooltip } }}
+                                >
+                                    <span style={styles.logLevel}>{this.state.tempLogLevel}</span>
+                                </Tooltip>
+                            ) : null}
+                            <Tooltip
+                                title={this.props.t('log level')}
+                                slotProps={{ popper: { sx: styles.tooltip } }}
+                            >
+                                <span style={styles.logLevel}>
+                                    {this.state.tempLogLevel !== this.state.logLevel
+                                        ? `/ ${this.state.logLevel}`
+                                        : this.state.logLevel}
+                                </span>
+                            </Tooltip>
+                            <Tooltip
+                                title={this.props.t(
+                                    'Edit log level rule for %s',
+                                    `${this.props.adapter}.${this.props.instance}`,
+                                )}
+                            >
+                                <IconButton
+                                    size="small"
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        this.setState({ showLogLevelDialog: true });
+                                    }}
+                                    onFocus={event => event.stopPropagation()}
+                                    style={{
+                                        ...styles.buttonControl,
+                                        ...(!this.state.canStart ? styles.hide : undefined),
+                                        width: 34,
+                                        height: 34,
+                                    }}
+                                >
+                                    <EditIcon style={{ width: 20, height: 20 }} />
+                                </IconButton>
+                            </Tooltip>
+                            {/* <IsVisible config={item} name="allowInstanceLink">
                             <Tooltip title={this.props.t('Instance link %s', this.props.instanceItem?.id)}>
                                 <span>
                                     <IconButton
@@ -643,14 +762,15 @@ v
                                 </div>
                             </Tooltip>
                         </IsVisible> */}
-                    </Typography>
-                    {this.renderHelpButton()}
-                </Toolbar>
-            </AppBar>
-            {this.getConfigurator()}
-            {this.returnStopAdminDialog()}
-            {this.renderLogLevelDialog()}
-        </Paper>;
+                        </Typography>
+                        {this.renderHelpButton()}
+                    </Toolbar>
+                </AppBar>
+                {this.getConfigurator()}
+                {this.returnStopAdminDialog()}
+                {this.renderLogLevelDialog()}
+            </Paper>
+        );
     }
 }
 

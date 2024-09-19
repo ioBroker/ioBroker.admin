@@ -1,88 +1,94 @@
 @font-face {
-  font-family: 'Material Icons';
-  font-style: normal;
-  font-weight: 400;
-  src: url('./fonts/material.woff2') format('woff2'),
-    url('./fonts/material.woff') format('woff');
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src:
+        url('./fonts/material.woff2') format('woff2'),
+        url('./fonts/material.woff') format('woff');
 }
 
 /* hide link on maps */
 .leaflet-control-attribution .leaflet-control {
-  display: none
+    display: none;
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-  background-color: #ccc;
+    width: 5px;
+    height: 5px;
+    background-color: #ccc;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #575757;
-  border-radius: 5px;
+    background-color: #575757;
+    border-radius: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #ccc;
-  border-radius: 5px;
+    background-color: #ccc;
+    border-radius: 5px;
 }
 
 * {
-  box-sizing: inherit;
-  scrollbar-width: thin;
-  scrollbar-color: #575757 #ccc;
+    box-sizing: inherit;
+    scrollbar-width: thin;
+    scrollbar-color: #575757 #ccc;
 }
 
-html, body {
-  height: 100%;
+html,
+body {
+    height: 100%;
 }
 
 html {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Arial, 'Courier New', monospace;
-  font-size: 12px;
-  font-weight: 400;
-  box-sizing: border-box;
-  overflow: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Arial, 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: 400;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 #root {
-  height: inherit;
-  width: inherit;
+    height: inherit;
+    width: inherit;
 }
 
 .draggable-item {
-  z-index: 99999;
+    z-index: 99999;
 }
 
 .material-icons {
-  font-family: 'Material Icons';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -moz-font-feature-settings: 'liga';
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'liga';
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -moz-font-feature-settings: 'liga';
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'liga';
 }
 
 @keyframes updated {
-  0%   {background: #588042FF;}
-  100% {background: #00000000;}
+    0% {
+        background: #588042ff;
+    }
+    100% {
+        background: #00000000;
+    }
 }
 
 /* hide link on maps */
 .leaflet-control-attribution {
-  display: none;
+    display: none;
 }

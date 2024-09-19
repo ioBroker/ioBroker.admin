@@ -193,10 +193,20 @@ export function renderControlIcon(
         return getFaIcon(action.icon, color);
     }
     if (value && action.iconOn?.startsWith('data:image')) {
-        return <Icon src={action.iconOn} style={{ color }} />;
+        return (
+            <Icon
+                src={action.iconOn}
+                style={{ color }}
+            />
+        );
     }
     if (action.icon?.startsWith('data:image')) {
-        return <Icon src={action.icon} style={{ color }} />;
+        return (
+            <Icon
+                src={action.icon}
+                style={{ color }}
+            />
+        );
     }
     return getIconByName(action.id, color);
 }
@@ -210,7 +220,12 @@ export function renderActionIcon(action: ActionBase): React.JSX.Element | null {
         return getFaIcon(action.icon, action.color);
     }
     if (action.icon?.startsWith('data:image')) {
-        return <Icon src={action.icon} style={{ color: action.color }} />;
+        return (
+            <Icon
+                src={action.icon}
+                style={{ color: action.color }}
+            />
+        );
     }
     return getIconByName(action.id, action.color);
 }

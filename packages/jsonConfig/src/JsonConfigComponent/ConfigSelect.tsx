@@ -1,13 +1,6 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import  {
-    InputLabel,
-    FormHelperText,
-    FormControl,
-    Select,
-    MenuItem,
-    ListSubheader,
-} from '@mui/material';
+import { InputLabel, FormHelperText, FormControl, Select, MenuItem, ListSubheader } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -36,7 +29,7 @@ interface ConfigInstanceSelectState extends ConfigGenericState {
 class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstanceSelectState> {
     private initialValue: string | string[] = '';
 
-    componentDidMount() {
+    componentDidMount(): void {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
@@ -54,20 +47,21 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                 label: ioBroker.StringOrTranslated;
                 value?: number | string;
                 hidden?: string | boolean;
-            } =
-                item as {
-                    items: ConfigItemSelectOption[];
-                    label: ioBroker.StringOrTranslated;
-                    value?: number | string;
-                    hidden?: string | boolean;
-                };
+            } = item as {
+                items: ConfigItemSelectOption[];
+                label: ioBroker.StringOrTranslated;
+                value?: number | string;
+                hidden?: string | boolean;
+            };
             if (Array.isArray(groupItem.items)) {
                 selectOptions.push({ label: this.getText(item.label), value: item.value, group: true });
-                groupItem.items.forEach(it => selectOptions.push({
-                    label: this.getText(it.label),
-                    value: it.value,
-                    hidden: it.hidden,
-                }));
+                groupItem.items.forEach(it =>
+                    selectOptions.push({
+                        label: this.getText(it.label),
+                        value: it.value,
+                        hidden: it.hidden,
+                    }),
+                );
             } else {
                 selectOptions.push({
                     label: this.getText(item.label),
@@ -80,14 +74,17 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
         // if __different
         if (Array.isArray(value)) {
             this.initialValue = [...value];
-            selectOptions.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
+            selectOptions.unshift({
+                label: I18n.t(ConfigGeneric.DIFFERENT_LABEL),
+                value: ConfigGeneric.DIFFERENT_VALUE,
+            });
             this.setState({ value: ConfigGeneric.DIFFERENT_VALUE, selectOptions });
         } else {
             this.setState({ value, selectOptions });
         }
     }
 
-    renderItem(error: string, disabled: boolean /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */): JSX.Element {
         if (!this.state.selectOptions) {
             return null;
         }
@@ -99,52 +96,84 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
             }
 
             if (this.props.custom) {
-                return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
+                return !this.executeCustom(
+                    item.hidden,
+                    this.props.data,
+                    this.props.customObj,
+                    this.props.instanceObj,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                );
             }
-            return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
+            return !this.execute(
+                item.hidden,
+                this.props.schema.default,
+                this.props.data,
+                this.props.arrayIndex,
+                this.props.globalData,
+            );
         });
 
-        // eslint-disable-next-line
         const item = selectOptions.find(it => it.value == this.state.value); // let "==" be and not ===
 
-        return <FormControl
-            variant="standard"
-            fullWidth
-            sx={this.props.table !== undefined && styles.noMargin}
-            id={`jsonSelect_${this.props.attr}_${this.props.index || this.props.index === 0 ? this.props.index : ''}`}
-        >
-            {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
-            <Select
+        return (
+            <FormControl
                 variant="standard"
-                error={!!error}
-                disabled={!!disabled}
-                value={this.state.value || '_'}
-                renderValue={() => this.getText(item?.label, this.props.schema.noTranslation)}
-                onChange={e => {
-                    this.setState({ value: e.target.value === '_' ? '' : e.target.value }, () => {
-                        if (this.state.value === ConfigGeneric.DIFFERENT_VALUE) {
-                            this.onChange(this.props.attr, this.initialValue);
-                        } else {
-                            this.onChange(this.props.attr, this.state.value);
-                        }
-                    });
-                }}
+                fullWidth
+                sx={this.props.table !== undefined && styles.noMargin}
+                id={`jsonSelect_${this.props.attr}_${this.props.index || this.props.index === 0 ? this.props.index : ''}`}
             >
-                {selectOptions.map((it, i) => {
-                    if (it.group) {
-                        return <ListSubheader key={i}>{this.getText(it.label, this.props.schema.noTranslation)}</ListSubheader>;
-                    }
-                    return <MenuItem
-                        key={i}
-                        value={it.value}
-                        style={it.value === ConfigGeneric.DIFFERENT_VALUE ? { opacity: 0.5 } : {}}
-                    >
-                        {this.getText(it.label, this.props.schema.noTranslation)}
-                    </MenuItem>;
-                })}
-            </Select>
-            {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
-        </FormControl>;
+                {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
+                <Select
+                    variant="standard"
+                    error={!!error}
+                    disabled={!!disabled}
+                    value={this.state.value || '_'}
+                    renderValue={() => this.getText(item?.label, this.props.schema.noTranslation)}
+                    onChange={e => {
+                        this.setState({ value: e.target.value === '_' ? '' : e.target.value }, () => {
+                            let mayBePromise: void | Promise<void>;
+                            if (this.state.value === ConfigGeneric.DIFFERENT_VALUE) {
+                                mayBePromise = this.onChange(this.props.attr, this.initialValue);
+                            } else {
+                                mayBePromise = this.onChange(this.props.attr, this.state.value);
+                            }
+                            if (mayBePromise instanceof Promise) {
+                                mayBePromise.catch(e => console.error(e));
+                            }
+                        });
+                    }}
+                >
+                    {selectOptions.map((it, i) => {
+                        if (it.group) {
+                            return (
+                                <ListSubheader key={i}>
+                                    {this.getText(it.label, this.props.schema.noTranslation)}
+                                </ListSubheader>
+                            );
+                        }
+                        return (
+                            <MenuItem
+                                key={i}
+                                value={it.value}
+                                style={it.value === ConfigGeneric.DIFFERENT_VALUE ? { opacity: 0.5 } : {}}
+                            >
+                                {this.getText(it.label, this.props.schema.noTranslation)}
+                            </MenuItem>
+                        );
+                    })}
+                </Select>
+                {this.props.schema.help ? (
+                    <FormHelperText>
+                        {this.renderHelp(
+                            this.props.schema.help,
+                            this.props.schema.helpLink,
+                            this.props.schema.noTranslation,
+                        )}
+                    </FormHelperText>
+                ) : null}
+            </FormControl>
+        );
     }
 }
 

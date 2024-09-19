@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Button,
@@ -10,15 +10,9 @@ import {
     DialogTitle,
 } from '@mui/material';
 
-import {
-    Close as CloseIcon,
-    Refresh as ReloadIcon,
-} from '@mui/icons-material';
+import { Close as CloseIcon, Refresh as ReloadIcon } from '@mui/icons-material';
 
-import {
-    I18n, type AdminConnection,
-    type ThemeType,
-} from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection, type ThemeType } from '@iobroker/adapter-react-v5';
 
 interface WebserverParameters {
     useHttps: boolean;
@@ -84,7 +78,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         this.link = `${window.location.protocol}//${window.location.host}/`;
     }
 
-    setUpdating(updating: boolean) {
+    setUpdating(updating: boolean): void {
         if (this.updating !== updating) {
             this.updating = updating;
             this.props.onUpdating(updating);
@@ -105,25 +99,20 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         };
     }
 
-    async componentDidMount() {
-        const {
-            certPrivateName, certPublicName, port, useHttps,
-        } = await this.getWebserverParams();
+    async componentDidMount(): Promise<void> {
+        const { certPrivateName, certPublicName, port, useHttps } = await this.getWebserverParams();
 
         // remember the current version
         this.oldVersion = this.props.currentAdminVersion;
 
-        await this.props.socket.upgradeAdapterWithWebserver(
-            this.props.host,
-            {
-                version: this.props.version,
-                adapterName: 'admin',
-                port,
-                useHttps,
-                certPublicName,
-                certPrivateName,
-            },
-        );
+        await this.props.socket.upgradeAdapterWithWebserver(this.props.host, {
+            version: this.props.version,
+            adapterName: 'admin',
+            port,
+            useHttps,
+            certPublicName,
+            certPrivateName,
+        });
 
         this.setUpdating(true);
         this.interval = setInterval(() => this.checkStatus(), 1_000); // poll every second
@@ -134,7 +123,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         }, 10_000); // give 10 seconds to controller to start update
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = null;
@@ -181,7 +170,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         }
     }
 
-    async checkStatus() {
+    async checkStatus(): Promise<void> {
         console.log(`Request update status from: ${this.link}`);
         try {
             const res = await fetch(this.link);
@@ -206,7 +195,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
                         response.stdout.unshift('---------------------------------------------------');
                         response.stdout.unshift(I18n.t('updating %s to %s...', 'admin', this.props.version));
                     }
-                    this.setState({ response, error: null }, async () => {
+                    this.setState({ response, error: null }, (): void => {
                         if (response && !response.running) {
                             if (this.interval) {
                                 clearInterval(this.interval);
@@ -219,7 +208,10 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
 
                         // scroll down
                         if (this.textareaRef.current) {
-                            setTimeout(() => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight), 100);
+                            setTimeout(
+                                () => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight),
+                                100,
+                            );
                         }
                     });
                 } catch (e) {
@@ -241,82 +233,93 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
     /**
      * Wait until admin is up again
      */
-    waitForAdapterStart() {
+    waitForAdapterStart(): void {
         this.interval = setInterval(async () => {
             try {
                 await fetch(this.link);
                 clearInterval(this.interval);
                 this.interval = null;
                 this.setState({ upAgain: true });
-            } catch  {
+            } catch {
                 // ignore, it will throw until admin is reachable
             }
         }, 1_000);
     }
 
-    render() {
-        return <Dialog
-            onClose={(e, reason) => {
-                if (reason !== 'escapeKeyDown' && reason !== 'backdropClick') {
-                    this.props.onClose();
-                }
-            }}
-            open={!0}
-            maxWidth="lg"
-            fullWidth
-        >
-            <DialogTitle>{I18n.t('Updating %s...', 'admin')}</DialogTitle>
-            <DialogContent style={{ height: 400, padding: '0 20px', overflow: 'hidden' }}>
-                {(!this.state.response || this.state.response.running) && !this.state.error ? <LinearProgress /> : null}
-                {this.state.response || this.state.error ? <textarea
-                    ref={this.textareaRef}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        resize: 'none',
-                        background: this.props.themeType === 'dark' ? '#000' : '#fff',
-                        color: this.props.themeType === 'dark' ? '#EEE' : '#111',
-                        boxSizing: 'border-box',
-                        fontFamily:
-                            'Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace',
-                        border: this.state.response?.success
-                            ? '2px solid green'
-                            : this.state.error ||
-                            (this.state.response &&
-                                !this.state.response.running &&
-                                !this.state.response.success)
-                                ? '2px solid red'
-                                : undefined,
-                    }}
-                    value={
-                        this.state.error
-                            ? this.state.error
-                            : this.state.response.stderr && this.state.response.stderr.length
-                                ? this.state.response.stderr.join('\n')
-                                : this.state.response.stdout.join('\n')
-                    }
-                    readOnly
-                /> : null}
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    // loading={this.state.response?.success && !this.state.upAgain}
-                    variant="contained"
-                    disabled={this.state.starting || (!this.state.error && !this.state.upAgain)}
-                    onClick={() => {
-                        if (this.state.response?.success) {
-                            window.location.reload();
-                        }
+    render(): JSX.Element {
+        return (
+            <Dialog
+                onClose={(e, reason) => {
+                    if (reason !== 'escapeKeyDown' && reason !== 'backdropClick') {
                         this.props.onClose();
-                    }}
-                    color={this.state.response?.success ? 'primary' : 'grey'}
-                    startIcon={this.state.response?.success ? <ReloadIcon /> : <CloseIcon />}
-                >
-                    {this.state.response?.success && !this.state.upAgain ? <CircularProgress /> :
-                        (this.state.response?.success ? I18n.t('Reload') : I18n.t('Close'))}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                    }
+                }}
+                open={!0}
+                maxWidth="lg"
+                fullWidth
+            >
+                <DialogTitle>{I18n.t('Updating %s...', 'admin')}</DialogTitle>
+                <DialogContent style={{ height: 400, padding: '0 20px', overflow: 'hidden' }}>
+                    {(!this.state.response || this.state.response.running) && !this.state.error ? (
+                        <LinearProgress />
+                    ) : null}
+                    {this.state.response || this.state.error ? (
+                        <textarea
+                            ref={this.textareaRef}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                resize: 'none',
+                                background: this.props.themeType === 'dark' ? '#000' : '#fff',
+                                color: this.props.themeType === 'dark' ? '#EEE' : '#111',
+                                boxSizing: 'border-box',
+                                fontFamily:
+                                    'Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace',
+                                border: this.state.response?.success
+                                    ? '2px solid green'
+                                    : this.state.error ||
+                                        (this.state.response &&
+                                            !this.state.response.running &&
+                                            !this.state.response.success)
+                                      ? '2px solid red'
+                                      : undefined,
+                            }}
+                            value={
+                                this.state.error
+                                    ? this.state.error
+                                    : this.state.response.stderr && this.state.response.stderr.length
+                                      ? this.state.response.stderr.join('\n')
+                                      : this.state.response.stdout.join('\n')
+                            }
+                            readOnly
+                        />
+                    ) : null}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        // loading={this.state.response?.success && !this.state.upAgain}
+                        variant="contained"
+                        disabled={this.state.starting || (!this.state.error && !this.state.upAgain)}
+                        onClick={() => {
+                            if (this.state.response?.success) {
+                                window.location.reload();
+                            }
+                            this.props.onClose();
+                        }}
+                        color={this.state.response?.success ? 'primary' : 'grey'}
+                        startIcon={this.state.response?.success ? <ReloadIcon /> : <CloseIcon />}
+                    >
+                        {this.state.response?.success && !this.state.upAgain ? (
+                            <CircularProgress />
+                        ) : this.state.response?.success ? (
+                            I18n.t('Reload')
+                        ) : (
+                            I18n.t('Close')
+                        )}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

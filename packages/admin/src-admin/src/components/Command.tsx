@@ -1,16 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import { amber, blue, red } from '@mui/material/colors';
 
-import {
-    Grid2, LinearProgress, Paper, Switch, Typography,
-} from '@mui/material';
+import { Grid2, LinearProgress, Paper, Switch, Typography } from '@mui/material';
 
-import {
-    Router,
-    type AdminConnection,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { Router, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 
 import AdminUtils, { type Style } from '../AdminUtils';
 
@@ -94,7 +88,7 @@ class Command extends Component<CommandProps, CommandState> {
         this.regExp = new RegExp(Command.pattern.join('|'), 'i');
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (this.props.ready && this.props.cmd) {
             console.log(`STARTED: ${this.props.cmd}`);
             this.executeCommand();
@@ -107,7 +101,7 @@ class Command extends Component<CommandProps, CommandState> {
         // }
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(): void {
         if (!this.state.init && this.props.ready && this.props.cmd) {
             this.executeCommand();
         }
@@ -117,23 +111,27 @@ class Command extends Component<CommandProps, CommandState> {
         this.logRef.current?.scrollIntoView();
     }
 
-    executeCommand() {
+    executeCommand(): void {
         this.setState({ init: true }, () => this.props.onSetCommandRunning && this.props.onSetCommandRunning(true));
 
         this.props.socket.registerCmdStdoutHandler(this.cmdStdoutHandler.bind(this));
         this.props.socket.registerCmdStderrHandler(this.cmdStderrHandler.bind(this));
         this.props.socket.registerCmdExitHandler(this.cmdExitHandler.bind(this));
 
-        const activeCmdId = Math.floor(Math.random() * 0xFFFFFFE) + 1;
+        const activeCmdId = Math.floor(Math.random() * 0xffffffe) + 1;
 
         this.setState({ activeCmdId });
 
-        this.props.socket.cmdExec(this.props.host.startsWith('system.host.') ? this.props.host : (`system.host.${this.props.host}`), this.props.cmd, activeCmdId)
-            .catch(error =>
-                console.log(error));
+        this.props.socket
+            .cmdExec(
+                this.props.host.startsWith('system.host.') ? this.props.host : `system.host.${this.props.host}`,
+                this.props.cmd,
+                activeCmdId,
+            )
+            .catch(error => console.log(error));
     }
 
-    cmdStdoutHandler(id: number, text: string) {
+    cmdStdoutHandler(id: number, text: string): void {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
             const log = this.state.log.slice();
             log.push(text);
@@ -170,7 +168,7 @@ class Command extends Component<CommandProps, CommandState> {
         }
     }
 
-    cmdStderrHandler(id: number, text: string) {
+    cmdStderrHandler(id: number, text: string): void {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
             const log = this.state.log.slice();
             log.push(text);
@@ -183,23 +181,32 @@ class Command extends Component<CommandProps, CommandState> {
         }
     }
 
-    cmdExitHandler(id: number, exitCode: number) {
+    cmdExitHandler(id: number, exitCode: number): void {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
             const log = this.state.log.slice();
-            if (!window.document.hidden && exitCode === 0 && log.length && log[log.length - 1].endsWith('created') && this.props.callback) {
+            if (
+                !window.document.hidden &&
+                exitCode === 0 &&
+                log.length &&
+                log[log.length - 1].endsWith('created') &&
+                this.props.callback
+            ) {
                 const newArr = log[log.length - 1].split(' ');
                 const adapter = newArr.find(el => el.startsWith('system'));
                 if (adapter) {
                     // it takes some time to creat the object
-                    setTimeout(_adapter => {
-                        this.props.socket.getObject(_adapter)
-                            .then(obj => {
+                    setTimeout(
+                        _adapter => {
+                            void this.props.socket.getObject(_adapter).then(obj => {
                                 AdminUtils.fixAdminUI(obj);
                                 if (obj && obj.common?.adminUI?.config !== 'none') {
                                     Router.doNavigate('tab-instances', 'config', _adapter);
                                 }
                             });
-                    }, 1000, adapter);
+                        },
+                        1000,
+                        adapter,
+                    );
                 }
             }
             log.push(`${exitCode !== 0 ? 'ERROR: ' : ''}Process exited with code ${exitCode}`);
@@ -229,7 +236,7 @@ class Command extends Component<CommandProps, CommandState> {
         }
     }
 
-    colorize(text: string, maxLength?: number) {
+    colorize(text: string, maxLength?: number): JSX.Element[] | string {
         if (maxLength) {
             text = text.substring(0, maxLength);
         }
@@ -244,23 +251,65 @@ class Command extends Component<CommandProps, CommandState> {
                 if (pos > 0) {
                     const part = text.substring(0, pos);
                     const message = AdminUtils.parseColorMessage(part);
-                    result.push(<span key={result.length}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
+                    result.push(
+                        <span key={result.length}>
+                            {typeof message === 'object'
+                                ? message.parts.map((item, i) => (
+                                      <span
+                                          key={i}
+                                          style={item.style}
+                                      >
+                                          {item.text}
+                                      </span>
+                                  ))
+                                : message}
+                        </span>,
+                    );
                     text = text.replace(part, '');
                 }
 
                 const part = text.substring(0, match.length);
                 if (part) {
                     const message = AdminUtils.parseColorMessage(part);
-                    result.push(<span key={result.length} style={styles[match.toLowerCase()]}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
+                    result.push(
+                        <span
+                            key={result.length}
+                            style={styles[match.toLowerCase()]}
+                        >
+                            {typeof message === 'object'
+                                ? message.parts.map((item, i) => (
+                                      <span
+                                          key={i}
+                                          style={item.style}
+                                      >
+                                          {item.text}
+                                      </span>
+                                  ))
+                                : message}
+                        </span>,
+                    );
                     text = text.replace(part, '');
                 }
             }
 
             if (text) {
                 const message = AdminUtils.parseColorMessage(text);
-                result.push(<span key={result.length}>
-                    {typeof message === 'object' ? (message as { original: string; parts: { text: string; style: Style }[] }).parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}
-                </span>);
+                result.push(
+                    <span key={result.length}>
+                        {typeof message === 'object'
+                            ? (message as { original: string; parts: { text: string; style: Style }[] }).parts.map(
+                                  (item, i) => (
+                                      <span
+                                          key={i}
+                                          style={item.style}
+                                      >
+                                          {item.text}
+                                      </span>
+                                  ),
+                              )
+                            : message}
+                    </span>,
+                );
             }
 
             return result;
@@ -269,69 +318,98 @@ class Command extends Component<CommandProps, CommandState> {
         return text;
     }
 
-    getLog() {
-        return this.state.log.map((value, index) => <Typography
-            ref={index === this.state.log.length - 1 ? this.logRef : undefined}
-            key={index}
-            component="p"
-            variant="body2"
-        >
-            {this.colorize(value)}
-        </Typography>);
+    getLog(): JSX.Element[] {
+        return this.state.log.map((value, index) => (
+            <Typography
+                ref={index === this.state.log.length - 1 ? this.logRef : undefined}
+                key={index}
+                component="p"
+                variant="body2"
+            >
+                {this.colorize(value)}
+            </Typography>
+        ));
     }
 
-    render() {
-        return <Grid2
-            style={this.props.noSpacing ? { height: '100%', width: '100%' } : {}}
-            container
-            direction="column"
-            spacing={this.props.noSpacing ? 0 : 2}
-        >
-            {this.props.showElement === undefined || this.props.showElement === true ? <Grid2>
-                {!this.state.stopped && <LinearProgress
-                    style={this.props.commandError ? { backgroundColor: '#f44336' } : null}
-                    variant={this.props.inBackground ? 'determinate' : 'indeterminate'}
-                    value={this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : this.props.commandError ? 0 : 100}
-                />}
-            </Grid2> : null}
-            <div style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: this.props.inBackground ? 'space-between' : 'flex-end',
-            }}
+    render(): JSX.Element {
+        return (
+            <Grid2
+                style={this.props.noSpacing ? { height: '100%', width: '100%' } : {}}
+                container
+                direction="column"
+                spacing={this.props.noSpacing ? 0 : 2}
             >
-                <Typography
-                    style={this.props.inBackground ? {
-                        width: 'calc(100% - 180px)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                    } : { display: 'none' }}
-                    component="div"
-                >
-                    {this.colorize(this.state.log[this.state.log.length - 1])}
-                </Typography>
-                {this.props.showElement === undefined || this.props.showElement === true ? <Typography component="div" style={{ width: 250 }}>
-                    <Grid2 component="label" container alignItems="center" spacing={1}>
-                        <Grid2>{this.props.t('less')}</Grid2>
-                        <Grid2>
-                            <Switch
-                                checked={this.state.moreChecked}
-                                onChange={event => this.setState({ moreChecked: event.target.checked })}
-                                color="primary"
+                {this.props.showElement === undefined || this.props.showElement === true ? (
+                    <Grid2>
+                        {!this.state.stopped && (
+                            <LinearProgress
+                                style={this.props.commandError ? { backgroundColor: '#f44336' } : null}
+                                variant={this.props.inBackground ? 'determinate' : 'indeterminate'}
+                                value={
+                                    this.state.max && this.state.value
+                                        ? 100 - Math.round((this.state.value / this.state.max) * 100)
+                                        : this.props.commandError
+                                          ? 0
+                                          : 100
+                                }
                             />
-                        </Grid2>
-                        <Grid2>{this.props.t('more')}</Grid2>
+                        )}
                     </Grid2>
-                </Typography> : null}
-            </div>
-            <Grid2 style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
-                {this.state.moreChecked && <Paper style={this.props.noSpacing ? styles.logNoSpacing : styles.log}>
-                    {this.getLog()}
-                </Paper>}
+                ) : null}
+                <div
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: this.props.inBackground ? 'space-between' : 'flex-end',
+                    }}
+                >
+                    <Typography
+                        style={
+                            this.props.inBackground
+                                ? {
+                                      width: 'calc(100% - 180px)',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                  }
+                                : { display: 'none' }
+                        }
+                        component="div"
+                    >
+                        {this.colorize(this.state.log[this.state.log.length - 1])}
+                    </Typography>
+                    {this.props.showElement === undefined || this.props.showElement === true ? (
+                        <Typography
+                            component="div"
+                            style={{ width: 250 }}
+                        >
+                            <Grid2
+                                component="label"
+                                container
+                                alignItems="center"
+                                spacing={1}
+                            >
+                                <Grid2>{this.props.t('less')}</Grid2>
+                                <Grid2>
+                                    <Switch
+                                        checked={this.state.moreChecked}
+                                        onChange={event => this.setState({ moreChecked: event.target.checked })}
+                                        color="primary"
+                                    />
+                                </Grid2>
+                                <Grid2>{this.props.t('more')}</Grid2>
+                            </Grid2>
+                        </Typography>
+                    ) : null}
+                </div>
+                <Grid2 style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
+                    {this.state.moreChecked && (
+                        <Paper style={this.props.noSpacing ? styles.logNoSpacing : styles.log}>{this.getLog()}</Paper>
+                    )}
+                </Grid2>
             </Grid2>
-        </Grid2>;
+        );
     }
 }
 

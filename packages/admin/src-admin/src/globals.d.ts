@@ -5,9 +5,9 @@ declare global {
         _sessionStorage?: Storage;
     }
 
-    declare module '*.svg'
-    declare module '*.png'
-    declare module '*.jpg'
+    declare module '*.svg';
+    declare module '*.png';
+    declare module '*.jpg';
 
     declare module '@mui/material/Button' {
         interface ButtonPropsColorOverrides {

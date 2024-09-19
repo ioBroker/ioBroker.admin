@@ -1,6 +1,4 @@
-/* eslint-disable jsx-a11y/anchor-has-content */
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import MarkdownView from 'react-showdown';
 import semver from 'semver';
 
@@ -17,20 +15,15 @@ import {
     TableCell,
     TableHead,
     TableRow,
-    Snackbar, Box,
+    Snackbar,
+    Box,
 } from '@mui/material';
 
-import {
-    MdClose as IconClose,
-    MdMenu as IconMenu, MdExpandMore as IconExpandMore,
-} from 'react-icons/md';
+import { MdClose as IconClose, MdMenu as IconMenu, MdExpandMore as IconExpandMore } from 'react-icons/md';
 
 import { FaGithub as IconGithub } from 'react-icons/fa';
 
-import {
-    type AdminConnection, type IobTheme, type ThemeName,
-    I18n, Loader, Utils,
-} from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type IobTheme, type ThemeName, I18n, Loader, Utils } from '@iobroker/adapter-react-v5';
 
 import IconGlobe from '../assets/globe.svg';
 import IconLink from '../assets/link.svg';
@@ -109,7 +102,7 @@ const styles: Record<string, any> = {
         display: 'inline-block',
         marginLeft: 10,
     },
-    adapterCardAttr:{
+    adapterCardAttr: {
         fontWeight: 'bold',
         width: 150,
         display: 'inline-block',
@@ -238,9 +231,7 @@ const styles: Record<string, any> = {
             margin: 0,
         },
     },
-    tableBody: {
-
-    },
+    tableBody: {},
     tableRow: {
         height: 24,
     },
@@ -321,9 +312,7 @@ const styles: Record<string, any> = {
             //background: '#dedede',
         } */
     },
-    paragraph: {
-
-    },
+    paragraph: {},
 
     changeLog: {
         display: 'block',
@@ -364,9 +353,7 @@ const styles: Record<string, any> = {
         fontWeight: 'bold',
         marginRight: 8,
     },
-    changeLogLineText: {
-
-    },
+    changeLogLineText: {},
 
     changeLogAccordion: {
         justifyContent: 'flex-start',
@@ -423,15 +410,23 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
 
     private mounted: boolean;
 
-    private readonly customLink: ({ text, link }: { text: string; link: string }) => React.JSX.Element;
+    private readonly customLink: ({ text, link }: { text: string; link: string }) => JSX.Element;
 
     private readonly customH: ({
-        text, id, level, prefix,
-    }: { text: string; id: string; level: string; prefix: string }) => React.JSX.Element;
+        text,
+        id,
+        level,
+        prefix,
+    }: {
+        text: string;
+        id: string;
+        level: string;
+        prefix: string;
+    }) => JSX.Element;
 
     private readonly meta: () => string;
 
-    private readonly link: () => React.JSX.Element;
+    private readonly link: () => JSX.Element;
 
     constructor(props: MarkdownProps) {
         super(props);
@@ -449,7 +444,9 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             notFound: false,
             affiliate: null,
             adapterNews: null,
-            hideContent: ((window as any)._localStorage as Storage || window.localStorage).getItem('Docs.hideContent') === 'true',
+            hideContent:
+                (((window as any)._localStorage as Storage) || window.localStorage).getItem('Docs.hideContent') ===
+                'true',
         };
 
         this.mounted = false;
@@ -465,7 +462,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
 
         this.contentRef = React.createRef();
 
-        this.customLink = ({ text, link }) =>
+        this.customLink = ({ text, link }) => (
             <Box
                 component="a"
                 className="md-link"
@@ -491,7 +488,8 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 title={link}
             >
                 {text}
-            </Box>;
+            </Box>
+        );
 
         /*
         if (reactObj && (reactObj.type === 'h1' || reactObj.type === 'h2' || reactObj.type === 'h3' || reactObj.type === 'h3')) {
@@ -501,63 +499,102 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             </a></span>);
         }
          */
-        this.customH = ({
-            text, id, level, prefix,
-        }) => {
+        this.customH = ({ text, id, level, prefix }) => {
             const _level = parseInt(level, 10);
 
             if (_level === 1) {
-                return <h1 id={id}>
-                    <span>{text}</span>
-                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
-                </h1>;
-            } if (_level === 2) {
-                return <h2 id={id}>
-                    <span>{text}</span>
-                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
-                </h2>;
-            } if (_level === 3) {
-                return <h3 id={id}>
-                    <span>{text}</span>
-                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
-                </h3>;
-            } if (_level === 4) {
-                return <h4 id={id}>
-                    <span>{text}</span>
-                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
-                </h4>;
-            } if (_level === 5) {
-                return <h5 id={id}>
-                    <span>{text}</span>
-                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
-                </h5>;
+                return (
+                    <h1 id={id}>
+                        <span>{text}</span>
+                        <Box
+                            component="a"
+                            href={`${prefix}?${id}`}
+                            sx={styles.mdHeaderLink}
+                            className="md-h-link"
+                        />
+                    </h1>
+                );
             }
-            return <h6 id={id}>
-                <span>{text}</span>
-                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
-            </h6>;
+            if (_level === 2) {
+                return (
+                    <h2 id={id}>
+                        <span>{text}</span>
+                        <Box
+                            component="a"
+                            href={`${prefix}?${id}`}
+                            sx={styles.mdHeaderLink}
+                            className="md-h-link"
+                        />
+                    </h2>
+                );
+            }
+            if (_level === 3) {
+                return (
+                    <h3 id={id}>
+                        <span>{text}</span>
+                        <Box
+                            component="a"
+                            href={`${prefix}?${id}`}
+                            sx={styles.mdHeaderLink}
+                            className="md-h-link"
+                        />
+                    </h3>
+                );
+            }
+            if (_level === 4) {
+                return (
+                    <h4 id={id}>
+                        <span>{text}</span>
+                        <Box
+                            component="a"
+                            href={`${prefix}?${id}`}
+                            sx={styles.mdHeaderLink}
+                            className="md-h-link"
+                        />
+                    </h4>
+                );
+            }
+            if (_level === 5) {
+                return (
+                    <h5 id={id}>
+                        <span>{text}</span>
+                        <Box
+                            component="a"
+                            href={`${prefix}?${id}`}
+                            sx={styles.mdHeaderLink}
+                            className="md-h-link"
+                        />
+                    </h5>
+                );
+            }
+            return (
+                <h6 id={id}>
+                    <span>{text}</span>
+                    <Box
+                        component="a"
+                        href={`${prefix}?${id}`}
+                        sx={styles.mdHeaderLink}
+                        className="md-h-link"
+                    />
+                </h6>
+            );
         };
         this.meta = () => 'meta'; // text, id, level, prefix,
 
         this.link = () => <div>linkAAAAA</div>; // text, id, level, prefix,
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.mounted = true;
         if (this.state.text) {
             this.parseText(this.state.text);
         }
-        this.props.socket?.getRepository(this.props.currentHost, { })
+        void this.props.socket
+            ?.getRepository(this.props.currentHost, {})
             .then(repo => this.setState({ adapterNews: repo[this.props.adapter]?.news }));
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps: MarkdownProps/* , nextContext */) {
+    UNSAFE_componentWillReceiveProps(nextProps: MarkdownProps /* , nextContext */): void {
         if (this.props.path !== nextProps.path) {
             if (this.mounted) {
                 this.setState({ notFound: false, parts: [] });
@@ -573,16 +610,14 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                     this.load(nextProps.path);
                 }
             } else if (this.mounted) {
-                this.setState({ text: nextProps.text }, () =>
-                    this.parseText());
+                this.setState({ text: nextProps.text }, () => this.parseText());
             }
-        } else
-            if (this.props.language !== nextProps.language) {
-                if (this.mounted) {
-                    this.setState({ notFound: false, parts: [] });
-                }
-                this.load(null, nextProps.language);
+        } else if (this.props.language !== nextProps.language) {
+            if (this.mounted) {
+                this.setState({ notFound: false, parts: [] });
             }
+            this.load(null, nextProps.language);
+        }
     }
 
     /* onHashChange(location) {
@@ -593,7 +628,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         }
     } */
 
-    static onNavigate(id: string, link?: string) {
+    static onNavigate(id: string, link?: string): void {
         if (link && link.match(/^https?:\/\//)) {
             Utils.openLink(link);
         } else if (id) {
@@ -632,7 +667,8 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             } else if (link) {
                 // this.props.onNavigate(null, null, link);
                 link = link.replace(/^#/, '');
-                const el = window.document.getElementById(link) || window.document.getElementById(link.replace('nbsp', ''));
+                const el =
+                    window.document.getElementById(link) || window.document.getElementById(link.replace('nbsp', ''));
                 if (el) {
                     el.scrollIntoView(true);
                 }
@@ -640,7 +676,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         }
     }
 
-    static parseChangeLog(changeLog: string) {
+    static parseChangeLog(changeLog: string): Record<string, MarkdownEntry> {
         const lines = changeLog.split('\n');
         const entries: Record<string, MarkdownEntry> = {};
         let oneEntry: MarkdownEntry;
@@ -680,7 +716,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         return entries;
     }
 
-    parseText(text?: string) {
+    parseText(text?: string): void {
         text = text || this.state.text || '';
 
         if (!text || text.startsWith('<!DOCTYPE html>')) {
@@ -689,14 +725,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             return;
         }
 
-        const {
-            header,
-            parts,
-            content,
-            license,
-            changeLog,
-            title,
-        } = this.format(text);
+        const { header, parts, content, license, changeLog, title } = this.format(text);
         const _title = header.title || title || MDUtils.getTitle(text);
         /* if (_title) {
             window.document.title = _title;
@@ -750,11 +779,11 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         // this.onHashChange && setTimeout(() => this.onHashChange(), 200);
     }
 
-    load(path?: string, language?: string) {
+    load(path?: string, language?: string): void {
         path = path || this.props.path;
         language = language || this.props.language;
         if (path && language) {
-            fetch(`${language}${path[0] === '/' ? path : `/${path}`}`)
+            void fetch(`${language}${path[0] === '/' ? path : `/${path}`}`)
                 .then(res => res.text())
                 .then(text => this.parseText(text));
         }
@@ -770,7 +799,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
     } {
         text = (text || '').trim();
         const result = MDUtils.extractHeader(text);
-        const header = result.header as MarkdownHeader;
+        const header = result.header;
         let body = result.body;
 
         if (body.startsWith('# ')) {
@@ -793,48 +822,62 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         body = body.replace(/`` `(.+)```/g, '```$1```');
 
         body = MDUtils.removeDocsify(body);
-        const {
-            parts, content, license, changeLog, title,
-        } = MDUtils.decorateText(body, header, `${this.props.path && (this.props.path[0] === '/' ? this.props.path : `/${this.props.path}`)}`);
+        const { parts, content, license, changeLog, title } = MDUtils.decorateText(
+            body,
+            header,
+            `${this.props.path && (this.props.path[0] === '/' ? this.props.path : `/${this.props.path}`)}`,
+        );
 
         return {
             header,
             parts,
-            content: content as Record<string, MarkdownContent>,
+            content,
             license,
             changeLog,
             title,
         };
     }
 
-    formatAuthors(text: string) {
-        const parts = text.split(',').map(t => t.trim()).filter(t => t);
+    formatAuthors(text: string): JSX.Element[] {
+        const parts = text
+            .split(',')
+            .map(t => t.trim())
+            .filter(t => t);
 
         const authors = [];
         for (let i = 0; i < parts.length; i++) {
             const m = parts[i].trim().match(/<([-.\w\d_@]+)>$/);
             if (m) {
                 const email = m[1];
-                authors.push(<span
-                    key={parts[i]}
-                    style={styles.email}
-                    title={I18n.t('Click to copy %s', email)}
-                    onClick={e => {
-                        Utils.copyToClipboard(email, e as any as Event);
-                        this.setState({ tooltip: I18n.t('Copied') });
-                    }}
-                >
-                    {parts[i].replace(m[0], '').trim() + (parts.length - 1 === i ? '' : ', ')}
-                </span>);
+                authors.push(
+                    <span
+                        key={parts[i]}
+                        style={styles.email}
+                        title={I18n.t('Click to copy %s', email)}
+                        onClick={e => {
+                            Utils.copyToClipboard(email, e as any as Event);
+                            this.setState({ tooltip: I18n.t('Copied') });
+                        }}
+                    >
+                        {parts[i].replace(m[0], '').trim() + (parts.length - 1 === i ? '' : ', ')}
+                    </span>,
+                );
             } else {
-                authors.push(<span key={parts[i]} style={styles.name}>{parts[i] + (parts.length - 1 === i ? '' : ', ')}</span>);
+                authors.push(
+                    <span
+                        key={parts[i]}
+                        style={styles.name}
+                    >
+                        {parts[i] + (parts.length - 1 === i ? '' : ', ')}
+                    </span>,
+                );
             }
         }
 
         return authors;
     }
 
-    renderHeader() {
+    renderHeader(): JSX.Element | JSX.Element[] {
         const data = [];
 
         if (this.state.header.translatedFrom) {
@@ -842,200 +885,313 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             // Translate language from english to actual language
             translatedFrom = I18n.t(translatedFrom);
 
-            data.push(<Box
-                component="div"
-                key="translatedFrom"
-                sx={styles.headerTranslated}
-                onClick={() => {
-                    if (this.props.onNavigate) {
-                        this.props.onNavigate(this.state.header.translatedFrom);
-                    } else {
-                        // read this.props.link
-                        fetch(this.props.link)
-                            .then(res => res.text())
-                            .then(text => this.setState({ text }, () =>
-                                this.parseText()))
-                            .catch(e => window.alert(`Cannot fetch "${this.props.link}": ${e}`));
-                    }
-                }}
-                title={I18n.t('Go to original')}
-            >
-                {I18n.t('Translated from %s', translatedFrom)}
-            </Box>);
+            data.push(
+                <Box
+                    component="div"
+                    key="translatedFrom"
+                    sx={styles.headerTranslated}
+                    onClick={() => {
+                        if (this.props.onNavigate) {
+                            this.props.onNavigate(this.state.header.translatedFrom);
+                        } else {
+                            // read this.props.link
+                            fetch(this.props.link)
+                                .then(res => res.text())
+                                .then(text => this.setState({ text }, () => this.parseText()))
+                                .catch(e => window.alert(`Cannot fetch "${this.props.link}": ${e}`));
+                        }
+                    }}
+                    title={I18n.t('Go to original')}
+                >
+                    {I18n.t('Translated from %s', translatedFrom)}
+                </Box>,
+            );
         }
 
         if (this.state.header.adapter) {
-            data.push(<h1 key="h1">
-                {[
-                    this.state.header.logo ? <img key="logo" src={`https://www.iobroker.net/${this.state.header.logo}`} alt="logo" style={styles.logoImage} /> : null,
-                    <div key="title" style={styles.titleText}>{this.state.header.title}</div>,
-                ]}
-            </h1>);
+            data.push(
+                <h1 key="h1">
+                    {[
+                        this.state.header.logo ? (
+                            <img
+                                key="logo"
+                                src={`https://www.iobroker.net/${this.state.header.logo}`}
+                                alt="logo"
+                                style={styles.logoImage}
+                            />
+                        ) : null,
+                        <div
+                            key="title"
+                            style={styles.titleText}
+                        >
+                            {this.state.header.title}
+                        </div>,
+                    ]}
+                </h1>,
+            );
             if (this.state.header.readme) {
                 const link = this.state.header.readme.replace(/blob\/master\/README.md$/, '');
-                data.push(<IconButton size="large" key="github" title={I18n.t('Open repository')} onClick={() => Utils.openLink(link)}><IconGithub /></IconButton>);
+                data.push(
+                    <IconButton
+                        size="large"
+                        key="github"
+                        title={I18n.t('Open repository')}
+                        onClick={() => Utils.openLink(link)}
+                    >
+                        <IconGithub />
+                    </IconButton>,
+                );
             }
         }
 
         if (this.state.header.description) {
-            data.push(<span key="description" style={styles.description}>{this.state.header.description}</span>);
+            data.push(
+                <span
+                    key="description"
+                    style={styles.description}
+                >
+                    {this.state.header.description}
+                </span>,
+            );
         }
 
         if (Object.keys(this.state.header).find(attr => ADAPTER_CARD.indexOf(attr) !== -1)) {
-            data.push(<Accordion key="header" style={styles.adapterCard}>
-                <AccordionSummary sx={Utils.getStyle(this.props.theme, styles.summary, { '&.MuiAccordionSummary-expanded': styles.summaryExpanded })} expandIcon={<IconExpandMore />}>{I18n.t('Information')}</AccordionSummary>
-                <AccordionActions>
-                    <List>
-                        {ADAPTER_CARD
-                            .filter(attr => Object.prototype.hasOwnProperty.call(this.state.header.hasOwnProperty, attr))
-                            .map(attr => <ListItem
-                                key={attr}
-                                style={styles.adapterCardListItem}
-                            >
-                                <div style={styles.adapterCardAttr}>
-                                    {I18n.t(attr)}
-:
-                                    {' '}
-                                </div>
-                                <span>{attr === 'authors' ? this.formatAuthors(this.state.header.authors) : (this.state.header as Record<string, string | number | boolean>)[attr].toString()}</span>
-                            </ListItem>)}
-                    </List>
-                </AccordionActions>
-            </Accordion>);
+            data.push(
+                <Accordion
+                    key="header"
+                    style={styles.adapterCard}
+                >
+                    <AccordionSummary
+                        sx={Utils.getStyle(this.props.theme, styles.summary, {
+                            '&.MuiAccordionSummary-expanded': styles.summaryExpanded,
+                        })}
+                        expandIcon={<IconExpandMore />}
+                    >
+                        {I18n.t('Information')}
+                    </AccordionSummary>
+                    <AccordionActions>
+                        <List>
+                            {ADAPTER_CARD.filter(attr =>
+                                Object.prototype.hasOwnProperty.call(this.state.header.hasOwnProperty, attr),
+                            ).map(attr => (
+                                <ListItem
+                                    key={attr}
+                                    style={styles.adapterCardListItem}
+                                >
+                                    <div style={styles.adapterCardAttr}>{I18n.t(attr)}: </div>
+                                    <span>
+                                        {attr === 'authors'
+                                            ? this.formatAuthors(this.state.header.authors)
+                                            : (this.state.header as Record<string, string | number | boolean>)[
+                                                  attr
+                                              ].toString()}
+                                    </span>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </AccordionActions>
+                </Accordion>,
+            );
         }
 
         if (Object.keys(this.state.header).find(attr => attr.startsWith('BADGE-'))) {
-            data.push(<Accordion key="header_badges" style={styles.adapterCard}>
-                <AccordionSummary
-                    sx={{ ...styles.summary, '&.MuiAccordionSummary-expanded': styles.summaryExpanded }}
-                    expandIcon={<IconExpandMore />}
+            data.push(
+                <Accordion
+                    key="header_badges"
+                    style={styles.adapterCard}
                 >
-                    {I18n.t('Badges')}
-                </AccordionSummary>
-                <AccordionActions sx={styles.badgesDetails}>
-                    {Object.keys(this.state.header).filter(attr => attr.startsWith('BADGE-'))
-                        .map((attr, i) => [
-                            (this.state.header as Record<string, string>)[attr].toString().includes('nodei.co') ? <br key={`br${i}`} /> : null,
-                            <img key={`img${i}`} src={(this.state.header as Record<string, string>)[attr]} alt={attr.substring(6)} />,
-                        ])}
-                </AccordionActions>
-            </Accordion>);
+                    <AccordionSummary
+                        sx={{ ...styles.summary, '&.MuiAccordionSummary-expanded': styles.summaryExpanded }}
+                        expandIcon={<IconExpandMore />}
+                    >
+                        {I18n.t('Badges')}
+                    </AccordionSummary>
+                    <AccordionActions sx={styles.badgesDetails}>
+                        {Object.keys(this.state.header)
+                            .filter(attr => attr.startsWith('BADGE-'))
+                            .map((attr, i) => [
+                                (this.state.header as Record<string, string>)[attr].toString().includes('nodei.co') ? (
+                                    <br key={`br${i}`} />
+                                ) : null,
+                                <img
+                                    key={`img${i}`}
+                                    src={(this.state.header as Record<string, string>)[attr]}
+                                    alt={attr.substring(6)}
+                                />,
+                            ])}
+                    </AccordionActions>
+                </Accordion>,
+            );
         }
 
         return data;
     }
 
-    renderInfo() {
-        return <div style={styles.info}>
-            {this.state.header.lastChanged ? [
-                <span key="lastChangedTitle" style={styles.infoTitle}>
-                    {I18n.t('Last changed:')}
-                    {' '}
-                </span>,
-                <span key="lastChangedValue" style={styles.infoValue}>{this.state.header.lastChanged}</span>,
-            ] : null}
-        </div>;
+    renderInfo(): JSX.Element {
+        return (
+            <div style={styles.info}>
+                {this.state.header.lastChanged
+                    ? [
+                          <span
+                              key="lastChangedTitle"
+                              style={styles.infoTitle}
+                          >
+                              {I18n.t('Last changed:')}{' '}
+                          </span>,
+                          <span
+                              key="lastChangedValue"
+                              style={styles.infoValue}
+                          >
+                              {this.state.header.lastChanged}
+                          </span>,
+                      ]
+                    : null}
+            </div>
+        );
     }
 
-    _renderSubContent(menu: MarkdownContent) {
-        return <ul>
-            {menu.children?.map(item => {
-                const ch   = this.state.content[item].children;
-                const link = this.state.content[item].external && this.state.content[item].link;
-                return <li>
-                    <Box component="span" onClick={() => Markdown.onNavigate(item, link)} sx={styles.contentLinks}>{this.state.content[item].title}</Box>
-                    {ch ? this._renderSubContent(this.state.content[item]) : null}
-                </li>;
-            })}
-        </ul>;
+    _renderSubContent(menu: MarkdownContent): JSX.Element {
+        return (
+            <ul>
+                {menu.children?.map((item, i) => {
+                    const ch = this.state.content[item].children;
+                    const link = this.state.content[item].external && this.state.content[item].link;
+                    return (
+                        <li key={link || i}>
+                            <Box
+                                component="span"
+                                onClick={() => Markdown.onNavigate(item, link)}
+                                sx={styles.contentLinks}
+                            >
+                                {this.state.content[item].title}
+                            </Box>
+                            {ch ? this._renderSubContent(this.state.content[item]) : null}
+                        </li>
+                    );
+                })}
+            </ul>
+        );
     }
 
-    renderAffiliates() {
+    renderAffiliates(): JSX.Element | null {
         if (!this.state.affiliate || !this.props.affiliates) {
             return null;
         }
 
         const Affiliates = this.props.affiliates;
 
-        return <Affiliates
-            key="affiliates"
-            language={this.props.language}
-            mobile={this.props.mobile}
-            theme={this.props.themeName}
-            data={this.state.affiliate}
-        />;
+        return (
+            <Affiliates
+                key="affiliates"
+                language={this.props.language}
+                mobile={this.props.mobile}
+                theme={this.props.themeName}
+                data={this.state.affiliate}
+            />
+        );
     }
 
-    onToggleContentButton() {
+    onToggleContentButton(): void {
         this.setState({ hideContent: !this.state.hideContent });
-        ((window as any)._localStorage as Storage || window.localStorage).setItem('Docs.hideContent', this.state.hideContent ? 'false' : 'true');
+        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+            'Docs.hideContent',
+            this.state.hideContent ? 'false' : 'true',
+        );
     }
 
-    renderContentCloseButton() {
-        return <IconButton sx={styles.contentClose} onClick={() => this.onToggleContentButton()}>
-            {this.state.hideContent ? <IconMenu /> :
-                <IconClose />}
-        </IconButton>;
+    renderContentCloseButton(): JSX.Element {
+        return (
+            <IconButton
+                sx={styles.contentClose}
+                onClick={() => this.onToggleContentButton()}
+            >
+                {this.state.hideContent ? <IconMenu /> : <IconClose />}
+            </IconButton>
+        );
     }
 
-    renderContent() {
+    renderContent(): JSX.Element {
         const links = Object.keys(this.state.content);
         if (!links.length) {
             return null;
         }
         if (this.state.hideContent) {
-            return <Paper style={styles.contentDivClosed} onClick={() => this.onToggleContentButton()}>
-                {this.renderContentCloseButton()}
-            </Paper>;
+            return (
+                <Paper
+                    style={styles.contentDivClosed}
+                    onClick={() => this.onToggleContentButton()}
+                >
+                    {this.renderContentCloseButton()}
+                </Paper>
+            );
         }
-        return <Paper sx={styles.contentDiv}>
-            {this.renderContentCloseButton()}
-            <ul>
-                {
-                    links.map(item => {
-                        const link  = this.state.content[item].external && this.state.content[item].link;
-                        const level = this.state.content[item].level;
-                        const   title = this.state.content[item].title.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&');
+        return (
+            <Paper sx={styles.contentDiv}>
+                {this.renderContentCloseButton()}
+                <ul>
+                    {links
+                        .map(item => {
+                            const link = this.state.content[item].external && this.state.content[item].link;
+                            const level = this.state.content[item].level;
+                            const title = this.state.content[item].title
+                                .replace('&gt;', '>')
+                                .replace('&lt;', '<')
+                                .replace('&amp;', '&');
 
-                        return <li key={title} style={{ fontSize: 16 - level * 2, paddingLeft: level * 8, fontWeight: !level ? 'bold' : 'normal' }}>
-                            <Box component="span" onClick={() => Markdown.onNavigate(item, link)} className={styles.contentLinks}>{title}</Box>
-                            {this.state.content[item].children ? this._renderSubContent(this.state.content[item]) : null}
-                        </li>;
-                    }).filter(e => e)
-                }
-            </ul>
-        </Paper>;
+                            return (
+                                <li
+                                    key={title}
+                                    style={{
+                                        fontSize: 16 - level * 2,
+                                        paddingLeft: level * 8,
+                                        fontWeight: !level ? 'bold' : 'normal',
+                                    }}
+                                >
+                                    <Box
+                                        component="span"
+                                        onClick={() => Markdown.onNavigate(item, link)}
+                                        className={styles.contentLinks}
+                                    >
+                                        {title}
+                                    </Box>
+                                    {this.state.content[item].children
+                                        ? this._renderSubContent(this.state.content[item])
+                                        : null}
+                                </li>
+                            );
+                        })
+                        .filter(e => e)}
+                </ul>
+            </Paper>
+        );
     }
 
-    renderLicense() {
+    renderLicense(): JSX.Element | null {
         if (!this.state.license) {
             return null;
         }
         const CustomLink = this.customLink;
         const CustomH = this.customH;
-        return <Accordion>
-            <AccordionSummary
-                sx={{ ...styles.summary, '&.MuiAccordionSummary-expanded': styles.summaryExpanded }}
-                expandIcon={<IconExpandMore />}
-            >
-                {I18n.t('License')}
-                {' '}
-                <span style={styles.license}>
-                    {' '}
-                    {this.state.header.license}
-                </span>
-            </AccordionSummary>
-            <AccordionActions>
-                <MarkdownView
-                    markdown={this.state.license}
-                    options={CONVERTER_OPTIONS}
-                    components={{ CustomLink, CustomH }}
-                />
-            </AccordionActions>
-        </Accordion>;
+        return (
+            <Accordion>
+                <AccordionSummary
+                    sx={{ ...styles.summary, '&.MuiAccordionSummary-expanded': styles.summaryExpanded }}
+                    expandIcon={<IconExpandMore />}
+                >
+                    {I18n.t('License')} <span style={styles.license}> {this.state.header.license}</span>
+                </AccordionSummary>
+                <AccordionActions>
+                    <MarkdownView
+                        markdown={this.state.license}
+                        options={CONVERTER_OPTIONS}
+                        components={{ CustomLink, CustomH }}
+                    />
+                </AccordionActions>
+            </Accordion>
+        );
     }
 
-    renderChangeLogLines() {
+    renderChangeLogLines(): JSX.Element {
         const versions = Object.keys(this.state.changeLog);
 
         const pos1 = versions.indexOf('**WORK');
@@ -1056,80 +1212,112 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         }
         if (pos1 !== -1) {
             versions.unshift('**WORK');
-        } else  if (pos2 !== -1) {
+        } else if (pos2 !== -1) {
             versions.unshift('__WORK');
         }
 
-        return <div style={styles.changeLog} key="change-log">
-            {versions.map(version => {
-                const item = (this.state.changeLog as Record<string, MarkdownEntry>)[version];
-                if (version.includes('WORK')) {
-                    version = 'WORK IN PROGRESS';
-                    item.date = '';
-                }
-                return <Box component="div" key={version} sx={styles.changeLogDiv}>
-                    <div style={styles.changeLogVersion}>
-                        {version}
-                        {item.date ? <span style={styles.changeLogDate}>{item.date }</span> : ''}
-                    </div>
-                    <ul style={styles.changeLogUL}>
-                        {item.lines.map((line, i) => (typeof line === 'object' ?
-                            <Box component="li" key={i} style={styles.changeLogLine}>
-                                <span style={styles.changeLogAuthor}>{line.author}</span>
-                                <span style={styles.changeLogLineText}>{line.line}</span>
-                            </Box>
-                            :
-                            <li key={i} style={styles.changeLogLine}><span style={styles.changeLogLineText}>{line}</span></li>))}
-                    </ul>
-                </Box>;
-            })}
-        </div>;
+        return (
+            <div
+                style={styles.changeLog}
+                key="change-log"
+            >
+                {versions.map(version => {
+                    const item = (this.state.changeLog as Record<string, MarkdownEntry>)[version];
+                    if (version.includes('WORK')) {
+                        version = 'WORK IN PROGRESS';
+                        item.date = '';
+                    }
+                    return (
+                        <Box
+                            component="div"
+                            key={version}
+                            sx={styles.changeLogDiv}
+                        >
+                            <div style={styles.changeLogVersion}>
+                                {version}
+                                {item.date ? <span style={styles.changeLogDate}>{item.date}</span> : ''}
+                            </div>
+                            <ul style={styles.changeLogUL}>
+                                {item.lines.map((line, i) =>
+                                    typeof line === 'object' ? (
+                                        <Box
+                                            component="li"
+                                            key={i}
+                                            style={styles.changeLogLine}
+                                        >
+                                            <span style={styles.changeLogAuthor}>{line.author}</span>
+                                            <span style={styles.changeLogLineText}>{line.line}</span>
+                                        </Box>
+                                    ) : (
+                                        <li
+                                            key={i}
+                                            style={styles.changeLogLine}
+                                        >
+                                            <span style={styles.changeLogLineText}>{line}</span>
+                                        </li>
+                                    ),
+                                )}
+                            </ul>
+                        </Box>
+                    );
+                })}
+            </div>
+        );
     }
 
-    renderChangeLog() {
+    renderChangeLog(): JSX.Element | null {
         if (!this.state.changeLog) {
             return null;
         }
         const CustomLink = this.customLink;
-        const CustomH    = this.customH;
-        return <Accordion>
-            <AccordionSummary
-                sx={{ ...styles.summary, '&.MuiAccordionSummary-expanded': styles.summaryExpanded }}
-                expandIcon={<IconExpandMore />}
-            >
-                {I18n.t('Changelog')}
-            </AccordionSummary>
-            <AccordionActions style={styles.changeLogAccordion}>
-                {typeof this.state.changeLog === 'string' ?
-                    <MarkdownView markdown={this.state.changeLog} options={CONVERTER_OPTIONS} components={{ CustomLink, CustomH }} />
-                    :
-                    this.renderChangeLogLines()}
-            </AccordionActions>
-        </Accordion>;
-    }
-
-    renderSnackbar() {
-        return <Snackbar
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={!!this.state.tooltip}
-            autoHideDuration={6000}
-            onClose={() => this.setState({ tooltip: '' })}
-            message={<span id="message-id">{this.state.tooltip}</span>}
-            action={[
-                <IconButton
-                    size="large"
-                    key="close"
-                    color="inherit"
-                    style={styles.close}
-                    onClick={() => this.setState({ tooltip: '' })}
+        const CustomH = this.customH;
+        return (
+            <Accordion>
+                <AccordionSummary
+                    sx={{ ...styles.summary, '&.MuiAccordionSummary-expanded': styles.summaryExpanded }}
+                    expandIcon={<IconExpandMore />}
                 >
-                    <IconClose />
-                </IconButton>,
-            ]}
-        />;
+                    {I18n.t('Changelog')}
+                </AccordionSummary>
+                <AccordionActions style={styles.changeLogAccordion}>
+                    {typeof this.state.changeLog === 'string' ? (
+                        <MarkdownView
+                            markdown={this.state.changeLog}
+                            options={CONVERTER_OPTIONS}
+                            components={{ CustomLink, CustomH }}
+                        />
+                    ) : (
+                        this.renderChangeLogLines()
+                    )}
+                </AccordionActions>
+            </Accordion>
+        );
     }
 
-    replaceHref(line: string) {
+    renderSnackbar(): JSX.Element {
+        return (
+            <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                open={!!this.state.tooltip}
+                autoHideDuration={6000}
+                onClose={() => this.setState({ tooltip: '' })}
+                message={<span id="message-id">{this.state.tooltip}</span>}
+                action={[
+                    <IconButton
+                        size="large"
+                        key="close"
+                        color="inherit"
+                        style={styles.close}
+                        onClick={() => this.setState({ tooltip: '' })}
+                    >
+                        <IconClose />
+                    </IconButton>,
+                ]}
+            />
+        );
+    }
+
+    replaceHref(line: string): string {
         if (!line) {
             return '';
         }
@@ -1157,8 +1345,8 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 const isImage = link.startsWith('!');
                 link = link.replace(/^!/, '');
                 const pos = link.lastIndexOf('](');
-                const text  = link.substring(0, pos).replace(/^\[/, '');
-                const href  = link.substring(pos + 2).replace(/\)$/, '');
+                const text = link.substring(0, pos).replace(/^\[/, '');
+                const href = link.substring(pos + 2).replace(/\)$/, '');
                 if (!href.startsWith('http')) {
                     if (isImage) {
                         line = line.replace(link, `[${text}](${prefixImage}/${href})`);
@@ -1215,7 +1403,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         } */
     }
 
-    static makeHeadersAsLink(line: string, prefix: string) {
+    static makeHeadersAsLink(line: string, prefix: string): string {
         if (!line) {
             return '';
         }
@@ -1224,7 +1412,10 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             mm.forEach(header => {
                 const level = header.match(/^(#+)\s/)[1].length;
                 const text = header.substring(level + 1);
-                line = line.replace(header, `<CustomH text="${text}" id="${MDUtils.text2link(text)}" level="${level}" prefix="${prefix}" />`);
+                line = line.replace(
+                    header,
+                    `<CustomH text="${text}" id="${MDUtils.text2link(text)}" level="${level}" prefix="${prefix}" />`,
+                );
             });
         }
         return line;
@@ -1236,40 +1427,78 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         } */
     }
 
-    renderTable(lines: string[], key: string) {
-        const header = lines[0].replace(/^\||\|$/g, '').split('|').map(h => h.trim());
+    renderTable(lines: string[], key: string): JSX.Element {
+        const header = lines[0]
+            .replace(/^\||\|$/g, '')
+            .split('|')
+            .map(h => h.trim());
         const CustomLink = this.customLink;
         const CustomH = this.customH;
 
         const rows = [];
         for (let i = 2; i < lines.length; i++) {
-            const parts = lines[i].replace(/^\||\|$/g, '').split('|').map(a => a.trim());
+            const parts = lines[i]
+                .replace(/^\||\|$/g, '')
+                .split('|')
+                .map(a => a.trim());
 
             const cells = [];
             for (let j = 0; j < header.length; j++) {
                 parts[j] = this.replaceHref(parts[j]);
-                const crt = <MarkdownView markdown={parts[j] || ''} options={CONVERTER_OPTIONS} components={{ CustomLink, CustomH }} />;
-                cells.push(<TableCell sx={styles.tableCell} key={`cell${i}_${j}`}>{crt}</TableCell>);
+                const crt = (
+                    <MarkdownView
+                        markdown={parts[j] || ''}
+                        options={CONVERTER_OPTIONS}
+                        components={{ CustomLink, CustomH }}
+                    />
+                );
+                cells.push(
+                    <TableCell
+                        sx={styles.tableCell}
+                        key={`cell${i}_${j}`}
+                    >
+                        {crt}
+                    </TableCell>,
+                );
             }
 
-            rows.push(<TableRow style={styles.tableRow} key={`row${i}`}>{cells}</TableRow>);
+            rows.push(
+                <TableRow
+                    style={styles.tableRow}
+                    key={`row${i}`}
+                >
+                    {cells}
+                </TableRow>,
+            );
         }
-        return <Table key={`table_${key}`} size="small" style={styles.table}>
-            <TableHead style={styles.tableHead}>
-                <TableRow style={styles.tableRowHead}>
-                    {
-                        header.map((h, i) =>
-                            <TableCell sx={styles.tableCellHead} key={`header${i}`}>
-                                <MarkdownView markdown={h} options={CONVERTER_OPTIONS} components={{ CustomLink, CustomH }} />
-                            </TableCell>)
-                    }
-                </TableRow>
-            </TableHead>
-            <TableBody style={styles.tableBody}>{rows}</TableBody>
-        </Table>;
+        return (
+            <Table
+                key={`table_${key}`}
+                size="small"
+                style={styles.table}
+            >
+                <TableHead style={styles.tableHead}>
+                    <TableRow style={styles.tableRowHead}>
+                        {header.map((h, i) => (
+                            <TableCell
+                                sx={styles.tableCellHead}
+                                key={`header${i}`}
+                            >
+                                <MarkdownView
+                                    markdown={h}
+                                    options={CONVERTER_OPTIONS}
+                                    components={{ CustomLink, CustomH }}
+                                />
+                            </TableCell>
+                        ))}
+                    </TableRow>
+                </TableHead>
+                <TableBody style={styles.tableBody}>{rows}</TableBody>
+            </Table>
+        );
     }
 
-    render() {
+    render(): JSX.Element | null {
         if (this.state.notFound) {
             return null; // <Page404 style={styles.root} language={this.props.language}/>;
         }
@@ -1309,45 +1538,95 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             line = line.replace(/<-/g, '&lt;-');
             line = line.replace(/<\/ br>/g, '<br />');
 
-            const rct = <MarkdownView
-                markdown={line}
-                options={CONVERTER_OPTIONS}
-                components={{
-                    CustomLink, CustomH, meta, link,
-                }}
-            />;
+            const rct = (
+                <MarkdownView
+                    markdown={line}
+                    options={CONVERTER_OPTIONS}
+                    components={{
+                        CustomLink,
+                        CustomH,
+                        meta,
+                        link,
+                    }}
+                />
+            );
             /* cconst rct = <ReactMarkdown
                     children={line}
                     components={{ CustomLink, CustomH }}
                 />; */
 
             if (part.type === 'warn') {
-                return <Box component="div" key={`parts${i}`} sx={styles.warn}>{rct}</Box>;
+                return (
+                    <Box
+                        component="div"
+                        key={`parts${i}`}
+                        sx={styles.warn}
+                    >
+                        {rct}
+                    </Box>
+                );
             }
             if (part.type === 'alarm') {
-                return <Box component="div" key={`parts${i}`} sx={styles.alarm}>{rct}</Box>;
+                return (
+                    <Box
+                        component="div"
+                        key={`parts${i}`}
+                        sx={styles.alarm}
+                    >
+                        {rct}
+                    </Box>
+                );
             }
             if (part.type === 'notice') {
-                return <Box component="div" key={`parts${i}`} sx={styles.notice}>{rct}</Box>;
+                return (
+                    <Box
+                        component="div"
+                        key={`parts${i}`}
+                        sx={styles.notice}
+                    >
+                        {rct}
+                    </Box>
+                );
             }
             if (part.type === '@@@') {
-                return <Box component="div" key={`parts${i}`} sx={styles.todo}>{rct}</Box>;
+                return (
+                    <Box
+                        component="div"
+                        key={`parts${i}`}
+                        sx={styles.todo}
+                    >
+                        {rct}
+                    </Box>
+                );
             }
-            return <div key={`parts${i}`} style={styles.paragraph}>{rct}</div>;
+            return (
+                <div
+                    key={`parts${i}`}
+                    style={styles.paragraph}
+                >
+                    {rct}
+                </div>
+            );
         });
 
-        return <Box component="div" sx={Utils.getStyle(this.props.theme, styles.root, this.props.style)} ref={this.contentRef}>
-            {this.renderHeader()}
-            {this.state.title && !this.state.header.adapter ? <h1>{this.state.title}</h1> : null}
-            {this.renderAffiliates()}
-            {reactElements}
-            <hr />
-            {this.renderLicense()}
-            {this.renderChangeLog()}
-            {this.renderInfo()}
-            {this.renderContent()}
-            {this.renderSnackbar()}
-        </Box>;
+        return (
+            <Box
+                component="div"
+                sx={Utils.getStyle(this.props.theme, styles.root, this.props.style)}
+                ref={this.contentRef}
+            >
+                {this.renderHeader()}
+                {this.state.title && !this.state.header.adapter ? <h1>{this.state.title}</h1> : null}
+                {this.renderAffiliates()}
+                {reactElements}
+                <hr />
+                {this.renderLicense()}
+                {this.renderChangeLog()}
+                {this.renderInfo()}
+                {this.renderContent()}
+                {this.renderSnackbar()}
+            </Box>
+        );
     }
 }
 

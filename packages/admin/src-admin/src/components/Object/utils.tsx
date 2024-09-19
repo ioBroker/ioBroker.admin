@@ -13,7 +13,6 @@ import {
     nl as nlLocale,
 } from 'date-fns/locale';
 
-// eslint-disable-next-line import/prefer-default-export
 export const localeMap = {
     en: enLocale,
     fr: frLocale,

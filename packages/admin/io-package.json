@@ -1,595 +1,592 @@
 {
-  "common": {
-    "name": "admin",
-    "version": "7.1.1",
-    "titleLang": {
-      "en": "Admin",
-      "de": "Admin",
-      "ru": "Админ",
-      "pt": "Admin",
-      "pl": "Admin",
-      "fr": "Admin",
-      "nl": "Admin",
-      "it": "Admin",
-      "es": "Admin",
-      "uk": "Admin",
-      "zh-cn": "Admin"
-    },
-    "title": "Admin",
-    "connectionType": "local",
-    "dataSource": "push",
-    "news": {
-      "7.1.1": {
-        "en": "Showed the context menu under cursor position in the object browser\nAdded links to aliases in the object browser\nAdded confirmation for CRON dialog if set to triggering every minute",
-        "de": "Das Kontextmenü unter Cursorposition im Objektbrowser angezeigt\nLinks zu Aliases im Objektbrowser hinzugefügt\nBestätigung für CRON-Dialog hinzugefügt, wenn Sie jede Minute auslösen",
-        "ru": "Показать контекстное меню в позиции курсора в браузере объекта\nДобавлены ссылки на псевдонимы в объектном браузере\nДобавлено подтверждение для диалога CRON, если он настроен на запуск каждую минуту",
-        "pt": "Mostrou o menu de contexto na posição do cursor no navegador objeto\nAdicionados links para aliases no navegador objeto\nAdicionado confirmação para CRON diálogo se definido para acionar cada minuto",
-        "nl": "Het contextmenu getoond onder cursorpositie in de objectbrowser\nLinks naar aliassen toegevoegd in de objectbrowser\nBevestiging voor CRON-dialoog toegevoegd indien ingesteld om elke minuut te activeren",
-        "fr": "Affiche le menu contextuel sous la position du curseur dans le navigateur objet\nAjout de liens vers des alias dans le navigateur objet\nAjout de la confirmation pour la boîte de dialogue CRON si elle est configurée pour déclencher chaque minute",
-        "it": "Mostrato il menu contestuale sotto posizione cursore nel browser oggetto\nAggiunto link a alias nel browser oggetto\nAggiunto la conferma per CRON finestra di dialogo se impostato per attivare ogni minuto",
-        "es": "Muestra el menú contextual bajo la posición del cursor en el navegador objeto\nAñadidos a alias en el navegador objeto\nConfirmación agregada para el diálogo CRON si se establece para activar cada minuto",
-        "pl": "Pokazane menu kontekstowe w pozycji kursora w przeglądarce obiektu\nDodano linki do pseudonimów w przeglądarce obiektu\nDodano potwierdzenie dla okna CRON, jeśli ustawiono na uruchamianie co minutę",
-        "uk": "Показати контекстне меню під назвою курсора в браузері об'єкта\nДодано посилання на псевдоніми в браузері об'єкта\nДодано підтвердження для діалогу CRON, якщо встановити, щоб викликати кожну хвилину",
-        "zh-cn": "在对象浏览器中光标位置下显示上下文菜单\n在对象浏览器中添加的链接\n如果设定为每分钟触发 CRON 对话框, 则添加确认"
-      },
-      "7.1.0": {
-        "en": "Added the possibility to show button in notifications\nRemoved gulp from the build process",
-        "de": "Zusätzlich die Möglichkeit, Schaltfläche in Benachrichtigungen anzeigen\nAus dem Build-Prozess entfernt",
-        "ru": "Добавлена возможность показать кнопку в уведомлениях\nУдаленный глоток из строительного процесса",
-        "pt": "Adicionado a possibilidade de mostrar botão em notificações\nGulp removido do processo de compilação",
-        "nl": "De mogelijkheid toegevoegd om de knop in meldingen te tonen\nGulp uit het bouwproces verwijderd",
-        "fr": "Ajout de la possibilité d'afficher le bouton dans les notifications\nSupprimé gulp du processus de construction",
-        "it": "Aggiunto la possibilità di mostrare pulsante in notifiche\nGolp rimosso dal processo di costruzione",
-        "es": "Se agregó la posibilidad de mostrar botón en notificaciones\nGolp eliminado del proceso de construcción",
-        "pl": "Dodano możliwość wyświetlenia przycisku w powiadomieniach\nUsunięto przełyk z procesu budowania",
-        "uk": "Додано можливість показати кнопку в повідомленнях\nЗняти ковпачок з процесу будівництва",
-        "zh-cn": "添加在通知中显示按钮的可能性\n从构建过程中移除 gulp"
-      },
-      "7.0.25": {
-        "en": "Improvement for automatic tests\nAdded the possibility to style the response text for `textSendTo` in JSON Config",
-        "de": "Verbesserung für automatische Tests\nHinzufügen der Möglichkeit, den Antworttext für `textSendTo` in JSON Config",
-        "ru": "Совершенствование автоматических тестов\nДобавлена возможность отобразить текст ответа для `textSendTo' в JSON Config",
-        "pt": "Melhoria para testes automáticos\nAdicionado a possibilidade de estilo o texto de resposta para `textSendTo` em JSON Config",
-        "nl": "Verbetering van automatische tests\nToegevoegd de mogelijkheid om de response tekst voor te stijlen .textSendTo",
-        "fr": "Amélioration des essais automatiques\nAjout de la possibilité de styler le texte de réponse pour `textSendTo` dans JSON Config",
-        "it": "Miglioramento delle prove automatiche\nAggiunta la possibilità di definire il testo di risposta per `textSendTo` in JSON Config",
-        "es": "Mejora de las pruebas automáticas\nAgregó la posibilidad de estilo del texto de respuesta para 'textSendTo` en JSON Config",
-        "pl": "Poprawa w przypadku badań automatycznych\nDodano możliwość stylizacji tekstu odpowiedzi dla 'textSendTo' w konfiguracji JSON",
-        "uk": "Покращення автоматичних випробувань\nДодано можливість стилю тексту відповіді для `textSendTo`` в JSON Config",
-        "zh-cn": "改进自动测试\n在 JSON 配置中添加了“ textSendTo” 的响应文本样式"
-      },
-      "7.0.24": {
-        "en": "Showed min/max limits by controlling the values\nCorrected style for tabs",
-        "de": "Gezeigte Min/Max-Grenzwerte durch Steuerung der Werte\nKorrigierter Stil für Tabs",
-        "ru": "Показано ограничение min/max, контролируя значения\nИсправленный стиль для вкладок",
-        "pt": "Mostrado limites min/max controlando os valores\nEstilo corrigido para abas",
-        "nl": "Min/max limieten getoond door de waarden te controleren\nGecorrigeerde stijl voor tabbladen",
-        "fr": "Limites min/max indiquées en contrôlant les valeurs\nStyle corrigé pour les onglets",
-        "it": "Mostrati limiti min/max controllando i valori\nStile corretto per schede",
-        "es": "Visualizado min/max límites controlando los valores\nEstilo corregido para pestañas",
-        "pl": "Pokazane wartości graniczne min / max poprzez kontrolę wartości\nPoprawiony styl dla zakładek",
-        "uk": "Виявлені ліміти хв/максів, які контролюють значення\nПравильний стиль для вкладок",
-        "zh-cn": "通过控制值来显示分钟/最大限制\n校正标签样式"
-      },
-      "7.0.23": {
-        "en": "only automatically open the host notification dialog if warnings are available\nimproved style of host notification dialog\nclarified auto upgrade options selection\nCorrected the link in instances, e.g., for vis-2\nCorrected the connection information in the instance tab",
-        "de": "nur automatisch den host-benachrichtigungsdialog öffnen, wenn warnungen verfügbar sind\nverbesserte art der host-benachrichtigung dialog\nclarified auto upgrade optionen auswahl\nKorrigierte den Link in Fällen, z.B. für vis-2\nKorrektur der Verbindungsinformationen in der Registerkarte",
-        "ru": "только автоматически открыть диалог уведомления хоста, если предупреждения доступны\nулучшенный стиль диалога уведомления хоста\nуточненный выбор вариантов автомодернизации\nИсправлена ссылка в случаях, например, для vis-2\nИсправлена информация о подключении на вкладке",
-        "pt": "somente abra automaticamente a caixa de diálogo de notificação do host se os avisos estiverem disponíveis\nmelhorado estilo de caixa de diálogo de notificação do host\nseleção de opções de atualização automática clarificada\nCorrigido o link em instâncias, por exemplo, para vis-2\nCorrigido as informações de conexão na aba da instância",
-        "nl": "alleen automatisch het dialoogvenster host notificatie openen als er waarschuwingen beschikbaar zijn\nverbeterde stijl van host notificatie dialoog\nverduidelijkte selectie van auto-upgradeopties\nCorrectie van de koppeling in gevallen, bijvoorbeeld voor vis-2\nDe verbindingsinformatie in het instantietabblad gecorrigeerd",
-        "fr": "ouvrir automatiquement la boîte de dialogue de notification de l'hôte seulement si des avertissements sont disponibles\namélioration du style de la boîte de dialogue de notification de l'hôte\nsélection d'options de mise à jour automatique clarifiée\nCorrigé le lien dans les cas, p.ex. pour vis-2\nCorrection des informations de connexion dans l'onglet instance",
-        "it": "solo aprire automaticamente la finestra di dialogo di notifica dell'host se sono disponibili avvisi\nstile migliorato della finestra di dialogo di notifica host\nselezione delle opzioni di aggiornamento automatico\nCorretto il collegamento in casi, ad esempio, per vis-2\nCorretto le informazioni di connessione nella scheda di istanza",
-        "es": "sólo abrir automáticamente el diálogo de notificación del host si las advertencias están disponibles\nmejor estilo de diálogo de notificación de host\nopciones de actualización automática aclaradas\nCorregido el enlace en casos, por ejemplo, en relación con-2\nCorregido la información de conexión en la pestaña de instancia",
-        "pl": "jeśli dostępne są ostrzeżenia, otwieraj automatycznie okno powiadomienia hosta\npoprawiony styl okna powiadomień hosta\nwyjaśnienie wyboru opcji auto upgrade\nPoprawiono link w przypadkach, np. dla vis-2\nPoprawiono informacje o połączeniach w zakładce instance",
-        "uk": "тільки автоматично відкрийте діалогове вікно повідомлення про хост, якщо повідомлення доступні\nпокращений стиль діалогу повідомлення про хост\nвизначення параметрів автоматичного оновлення\nВиправлено посилання в екземплярах, наприклад, для vis-2\nВиправлено інформацію про підключення в вкладці екземпляра",
-        "zh-cn": "只当警告可用时自动打开主机通知对话框\n改进主机通知对话框的样式\n澄清自动升级选项\n纠正了例如相对于2的链接\n更正实例标签中的连接信息"
-      },
-      "7.0.22": {
-        "en": "Corrected installation of adapter with the license unequal to MIT\nCorrected width of a side menu\nAllowed the pasting into object JSON editor",
-        "de": "Korrigierte Installation des Adapters mit der Lizenz ungleich MIT\nKorrigierte Breite eines Seitenmenüs\nErlaubt das Einfügen in Objekt JSON Editor",
-        "ru": "Корректированная установка адаптера с лицензией, не равной MIT\nИсправленная ширина бокового меню\nПозволил вставить в объектный редактор JSON",
-        "pt": "Instalação correta do adaptador com a licença desigual ao MIT\nLargura correta de um menu lateral\nPermitido o colar em objeto JSON editor",
-        "nl": "Gecorrigeerde installatie van adapter met de licentie ongelijk aan MIT\nGecorrigeerde breedte van een zijmenu\nPlakken in object JSON-editor toegestaan",
-        "fr": "Installation corrigée de l'adaptateur avec la licence inégale à MIT\nLargeur corrigée d'un menu latéral\nAutorisé le collage dans l'éditeur d'objet JSON",
-        "it": "Installazione corretta dell'adattatore con la licenza non uguale a MIT\nLarghezza corretta di un menu laterale\nConsentito il incollaggio in oggetto editor JSON",
-        "es": "Instalación corregida del adaptador con la licencia desigual al MIT\nAncho corregido de un menú lateral\nPermitió el pegado en el objeto JSON editor",
-        "pl": "Poprawiona instalacja adaptera z licencją nierówną MIT\nSkorygowana szerokość menu bocznego\nDozwolone wklejanie do edytora JSON obiektu",
-        "uk": "Виправлена установка адаптера з ліцензійним нерівномірним для MIT\nВиправлена ширина бічного меню\nДозволено перезапис у редактор JSON",
-        "zh-cn": "修正了适配器的安装,其许可与麻省理工学院不平等\n修正侧菜单的宽度\n允许粘贴到对象 JSON 编辑器"
-      },
-      "7.0.18": {
-        "en": "Corrected export from JSON table\nadded `qrCode` component to JSON config\nCorrected adding of adapters with licenses (other than MIT)\nImproved license dialog",
-        "de": "Berichtigte Ausfuhr aus JSON-Tabelle\n`qrCode`-Komponente zu JSON config hinzugefügt\nKorrigiertes Hinzufügen von Adaptern mit Lizenzen (außer MIT)\nVerbesserter Lizenzdialog",
-        "ru": "Исправленный экспорт из таблицы JSON\nдобавлен компонент \"qrCode\" в конфигурацию JSON\nИсправленное добавление адаптеров с лицензиями (кроме MIT)\nУлучшенный диалог лицензии",
-        "pt": "Exportação correta da tabela JSON\nadicionado componente `qrCode` para JSON config\nAdição correta de adaptadores com licenças (excepto MIT)\nMelhor diálogo de licença",
-        "nl": "Gecorrigeerde uitvoer uit JSON tabel\ntoegevoegd aan JSON config\nGecorrigeerde toevoeging van adapters met licenties (andere dan MIT)\nVerbeterde licentiedialoog",
-        "fr": "Exportation corrigée à partir du tableau JSON\najouté un composant `qrCode` à la configuration JSON\nAjout corrigé d'adaptateurs avec licences (autres que MIT)\nBoîte de dialogue de licence améliorée",
-        "it": "Esportazione corretta dalla tabella JSON\naggiunto componente `qrCode` a JSON config\nCorretto l'aggiunta di adattatori con licenze (diverse da MIT)\nDialogo di licenza migliorata",
-        "es": "Exportación corregida del cuadro JSON\nagregado `qrCode` componente a JSON config\nAgregado corregido de adaptadores con licencias (excepto MIT)\nDiálogo de licencia mejorado",
-        "pl": "Skorygowany wywóz z tabeli JSON\ndodany komponent 'qrCode' do konfiguracji JSON\nPoprawione dodawanie adapterów z licencjami (innych niż MIT)\nUlepszone okno licencji",
-        "uk": "Корисний експорт з таблиці JSON\nдодано компонент `qrCode` до JSON config\nВиправлено додавання адаптерів з ліцензіями (понад MIT)\nПокращено діалогове вікно ліцензії",
-        "zh-cn": "从 JSON 表校正的导出\n在JSON配置中添加“qrCode”组件\n修正了增加持有许可证的适配器(除麻省理工学院外)\n改进许可证对话框"
-      }
-    },
-    "desc": {
-      "en": "The configuration of ioBroker via Web-Interface",
-      "de": "Die Konfiguration von ioBroker über das Web-Interface",
-      "ru": "Конфигурация ioBroker через веб-интерфейс",
-      "pt": "A configuração do ioBroker via Web-Interface",
-      "fr": "La configuration de ioBroker via Web-Interface",
-      "nl": "De configuratie van ioBroker via de webinterface",
-      "it": "La configurazione di ioBroker tramite interfaccia Web",
-      "es": "La configuración de ioBroker a través de la interfaz web",
-      "pl": "Konfiguracja ioBroker za pomocą interfejsu WWW",
-      "uk": "Конфігурація ioBroker через веб-інтерфейс",
-      "zh-cn": "配置ioBroker的Web界面"
-    },
-    "docs": {
-      "en": "docs/en/admin.md",
-      "ru": "docs/ru/admin.md",
-      "de": [
-        "docs/de/admin.md",
-        "docs/de/admin/tab-adapters.md",
-        "docs/de/admin/tab-instances.md",
-        "docs/de/admin/tab-objects.md",
-        "docs/de/admin/tab-states.md",
-        "docs/de/admin/tab-groups.md",
-        "docs/de/admin/tab-users.md",
-        "docs/de/admin/tab-events.md",
-        "docs/de/admin/tab-hosts.md",
-        "docs/de/admin/tab-enums.md",
-        "docs/de/admin/tab-log.md",
-        "docs/de/admin/tab-system.md"
-      ],
-      "pt": "docs/pt/admin.md",
-      "nl": "docs/nl/admin.md",
-      "es": "docs/es/admin.md",
-      "fr": "docs/fr/admin.md",
-      "it": "docs/it/admin.md",
-      "pl": "docs/pl/admin.md",
-      "zh-cn": "docs/zh-cn/admin.md"
-    },
-    "materialize": true,
-    "mode": "daemon",
-    "platform": "Javascript/Node.js",
-    "loglevel": "info",
-    "icon": "admin.svg",
-    "messagebox": true,
-    "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.svg",
-    "keywords": [
-      "setup",
-      "config",
-      "update",
-      "upgrade",
-      "system",
-      "konfiguration",
-      "administration",
-      "einrichtung",
-      "wartung"
-    ],
-    "compact": true,
-    "readme": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
-    "authors": [
-      "bluefox <bluefox@ccu.io>",
-      "hobbyquaker <hq@ccu.io>"
-    ],
-    "dependencies": [
-      {
-        "js-controller": ">=3.3.22"
-      }
-    ],
-    "type": "general",
-    "licenseInformation": {
-      "license": "MIT",
-      "type": "free"
-    },
-    "logTransporter": true,
-    "stopBeforeUpdate": true,
-    "eraseOnUpload": true,
-    "nogit": true,
-    "welcomeScreenPro": [
-      {
-        "link": "admin/index.html",
-        "name": "Admin",
-        "img": "admin/img/admin.svg",
-        "color": "pink",
-        "order": 5,
-        "localLinks": "_default",
-        "localLink": true
-      }
-    ],
-    "localLinks": {
-      "_default": {
-        "link": "%protocol%://%bind%:%port%",
-        "name": {
-          "en": "Admin",
-          "ru": "Админ"
+    "common": {
+        "name": "admin",
+        "version": "7.1.1",
+        "titleLang": {
+            "en": "Admin",
+            "de": "Admin",
+            "ru": "Админ",
+            "pt": "Admin",
+            "pl": "Admin",
+            "fr": "Admin",
+            "nl": "Admin",
+            "it": "Admin",
+            "es": "Admin",
+            "uk": "Admin",
+            "zh-cn": "Admin"
         },
-        "pro": "admin/index.html",
-        "icon": "admin/img/admin.svg",
-        "color": "pink",
-        "order": 5,
-        "intro": true
-      }
-    },
-    "plugins": {
-      "sentry": {
-        "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
-      }
-    },
-    "adminUI": {
-      "config": "json"
-    },
-    "tier": 1
-  },
-  "native": {
-    "autoUpdate": 24,
-    "port": 8081,
-    "auth": false,
-    "secure": false,
-    "bind": "0.0.0.0",
-    "cache": false,
-    "accessLimit": false,
-    "accessApplyRights": false,
-    "accessAllowedConfigs": [],
-    "accessAllowedTabs": [],
-    "leCollection": false,
-    "certPublic": "",
-    "certPrivate": "",
-    "certChained": "",
-    "ttl": 3600,
-    "defaultUser": "admin",
-    "tmpPath": "/tmp",
-    "tmpPathAllow": false,
-    "thresholdValue": 200,
-    "loginBackgroundColor": "",
-    "loginBackgroundImage": false,
-    "loginHideLogo": false,
-    "loginMotto": "",
-    "language": "",
-    "reverseProxy": [],
-    "loadingBackgroundColor": "",
-    "loadingHideLogo": false,
-    "loadingBackgroundImage": false,
-    "doNotCheckPublicIP": false
-  },
-  "notifications": [
-    {
-      "scope": "admin",
-      "name": {
-        "en": "Administration",
-        "de": "Administration",
-        "ru": "Администрация",
-        "pt": "Administração",
-        "nl": "Administratie",
-        "fr": "Administration",
-        "it": "Amministrazione",
-        "es": "Administración",
-        "pl": "Administracja",
-        "uk": "Адміністрація",
-        "zh-cn": "行政部门"
-      },
-      "description": {
-        "en": "These notifications represent news regarding installed adapters or general ioBroker information.",
-        "de": "Diese Benachrichtigungen enthalten Neuigkeiten zu installierten Adaptern oder allgemeine ioBroker-Informationen.",
-        "ru": "Эти уведомления представляют новости о установленных адаптерах или общей информации ioBroker.",
-        "pt": "Estas notificações representam notícias sobre adaptadores instalados ou informações gerais do ioBroker.",
-        "nl": "Deze berichten zijn nieuws over geïnstalleerde adapters of algemene ioBroker informatie.",
-        "fr": "Ces notifications représentent des nouvelles concernant les adaptateurs installés ou les informations générales ioBroker.",
-        "it": "Queste notifiche rappresentano notizie riguardanti adattatori installati o informazioni generali su ioBroker.",
-        "es": "Estas notificaciones representan noticias sobre adaptadores instalados o información general ioBroker.",
-        "pl": "Noty te reprezentują informacje dotyczące zainstalowanych adapterów lub ogólnie dostępnych informacji ioBrokera.",
-        "uk": "Ці повідомлення представляють новини про встановлені адаптери або загальні відомості про ioBroker.",
-        "zh-cn": "这些通知是有关安装的适应器或一般的气箱信息的新闻。."
-      },
-      "categories": [
-        {
-          "category": "adapterUpdates",
-          "name": {
-            "en": "Adapter updates",
-            "de": "Adapter-Updates",
-            "ru": "Обновления адаптера",
-            "pt": "Actualizações do adaptador",
-            "nl": "Adapter updates",
-            "fr": "Mises à jour de l'adaptateur",
-            "it": "Aggiornamenti dell'adattatore",
-            "es": "Actualizaciones de adaptadores",
-            "pl": "Aktualizacje adapterów",
-            "uk": "Оновлення адаптерів",
-            "zh-cn": "适配器更新"
-          },
-          "severity": "notify",
-          "description": {
-            "en": "New adapter updates are available for your ioBroker.",
-            "de": "Es sind neue Adapter Updates für deinen ioBroker verfügbar.",
-            "ru": "Для вашего ioBroker доступны новые обновления адаптера.",
-            "pt": "Estão disponíveis novas actualizações de adaptadores para o seu ioBroker.",
-            "nl": "Nieuwe adapterupdates zijn beschikbaar voor uw ioBroker.",
-            "fr": "De nouvelles mises à jour de l'adaptateur sont disponibles pour ton ioBroker.",
-            "it": "Sono disponibili nuovi aggiornamenti dell'adattatore per il vostro ioBroker.",
-            "es": "Hay nuevas actualizaciones de adaptadores disponibles para su ioBroker.",
-            "pl": "Dostępne są nowe aktualizacje adaptera dla ioBroker.",
-            "uk": "Для вашого ioBroker доступні нові оновлення адаптерів.",
-            "zh-cn": "您的 ioBroker 可以使用新的适配器更新。"
-          },
-          "regex": [],
-          "limit": 1
+        "title": "Admin",
+        "connectionType": "local",
+        "dataSource": "push",
+        "news": {
+            "7.1.1": {
+                "en": "Showed the context menu under cursor position in the object browser\nAdded links to aliases in the object browser\nAdded confirmation for CRON dialog if set to triggering every minute",
+                "de": "Das Kontextmenü unter Cursorposition im Objektbrowser angezeigt\nLinks zu Aliases im Objektbrowser hinzugefügt\nBestätigung für CRON-Dialog hinzugefügt, wenn Sie jede Minute auslösen",
+                "ru": "Показать контекстное меню в позиции курсора в браузере объекта\nДобавлены ссылки на псевдонимы в объектном браузере\nДобавлено подтверждение для диалога CRON, если он настроен на запуск каждую минуту",
+                "pt": "Mostrou o menu de contexto na posição do cursor no navegador objeto\nAdicionados links para aliases no navegador objeto\nAdicionado confirmação para CRON diálogo se definido para acionar cada minuto",
+                "nl": "Het contextmenu getoond onder cursorpositie in de objectbrowser\nLinks naar aliassen toegevoegd in de objectbrowser\nBevestiging voor CRON-dialoog toegevoegd indien ingesteld om elke minuut te activeren",
+                "fr": "Affiche le menu contextuel sous la position du curseur dans le navigateur objet\nAjout de liens vers des alias dans le navigateur objet\nAjout de la confirmation pour la boîte de dialogue CRON si elle est configurée pour déclencher chaque minute",
+                "it": "Mostrato il menu contestuale sotto posizione cursore nel browser oggetto\nAggiunto link a alias nel browser oggetto\nAggiunto la conferma per CRON finestra di dialogo se impostato per attivare ogni minuto",
+                "es": "Muestra el menú contextual bajo la posición del cursor en el navegador objeto\nAñadidos a alias en el navegador objeto\nConfirmación agregada para el diálogo CRON si se establece para activar cada minuto",
+                "pl": "Pokazane menu kontekstowe w pozycji kursora w przeglądarce obiektu\nDodano linki do pseudonimów w przeglądarce obiektu\nDodano potwierdzenie dla okna CRON, jeśli ustawiono na uruchamianie co minutę",
+                "uk": "Показати контекстне меню під назвою курсора в браузері об'єкта\nДодано посилання на псевдоніми в браузері об'єкта\nДодано підтвердження для діалогу CRON, якщо встановити, щоб викликати кожну хвилину",
+                "zh-cn": "在对象浏览器中光标位置下显示上下文菜单\n在对象浏览器中添加的链接\n如果设定为每分钟触发 CRON 对话框, 则添加确认"
+            },
+            "7.1.0": {
+                "en": "Added the possibility to show button in notifications\nRemoved gulp from the build process",
+                "de": "Zusätzlich die Möglichkeit, Schaltfläche in Benachrichtigungen anzeigen\nAus dem Build-Prozess entfernt",
+                "ru": "Добавлена возможность показать кнопку в уведомлениях\nУдаленный глоток из строительного процесса",
+                "pt": "Adicionado a possibilidade de mostrar botão em notificações\nGulp removido do processo de compilação",
+                "nl": "De mogelijkheid toegevoegd om de knop in meldingen te tonen\nGulp uit het bouwproces verwijderd",
+                "fr": "Ajout de la possibilité d'afficher le bouton dans les notifications\nSupprimé gulp du processus de construction",
+                "it": "Aggiunto la possibilità di mostrare pulsante in notifiche\nGolp rimosso dal processo di costruzione",
+                "es": "Se agregó la posibilidad de mostrar botón en notificaciones\nGolp eliminado del proceso de construcción",
+                "pl": "Dodano możliwość wyświetlenia przycisku w powiadomieniach\nUsunięto przełyk z procesu budowania",
+                "uk": "Додано можливість показати кнопку в повідомленнях\nЗняти ковпачок з процесу будівництва",
+                "zh-cn": "添加在通知中显示按钮的可能性\n从构建过程中移除 gulp"
+            },
+            "7.0.25": {
+                "en": "Improvement for automatic tests\nAdded the possibility to style the response text for `textSendTo` in JSON Config",
+                "de": "Verbesserung für automatische Tests\nHinzufügen der Möglichkeit, den Antworttext für `textSendTo` in JSON Config",
+                "ru": "Совершенствование автоматических тестов\nДобавлена возможность отобразить текст ответа для `textSendTo' в JSON Config",
+                "pt": "Melhoria para testes automáticos\nAdicionado a possibilidade de estilo o texto de resposta para `textSendTo` em JSON Config",
+                "nl": "Verbetering van automatische tests\nToegevoegd de mogelijkheid om de response tekst voor te stijlen .textSendTo",
+                "fr": "Amélioration des essais automatiques\nAjout de la possibilité de styler le texte de réponse pour `textSendTo` dans JSON Config",
+                "it": "Miglioramento delle prove automatiche\nAggiunta la possibilità di definire il testo di risposta per `textSendTo` in JSON Config",
+                "es": "Mejora de las pruebas automáticas\nAgregó la posibilidad de estilo del texto de respuesta para 'textSendTo` en JSON Config",
+                "pl": "Poprawa w przypadku badań automatycznych\nDodano możliwość stylizacji tekstu odpowiedzi dla 'textSendTo' w konfiguracji JSON",
+                "uk": "Покращення автоматичних випробувань\nДодано можливість стилю тексту відповіді для `textSendTo`` в JSON Config",
+                "zh-cn": "改进自动测试\n在 JSON 配置中添加了“ textSendTo” 的响应文本样式"
+            },
+            "7.0.24": {
+                "en": "Showed min/max limits by controlling the values\nCorrected style for tabs",
+                "de": "Gezeigte Min/Max-Grenzwerte durch Steuerung der Werte\nKorrigierter Stil für Tabs",
+                "ru": "Показано ограничение min/max, контролируя значения\nИсправленный стиль для вкладок",
+                "pt": "Mostrado limites min/max controlando os valores\nEstilo corrigido para abas",
+                "nl": "Min/max limieten getoond door de waarden te controleren\nGecorrigeerde stijl voor tabbladen",
+                "fr": "Limites min/max indiquées en contrôlant les valeurs\nStyle corrigé pour les onglets",
+                "it": "Mostrati limiti min/max controllando i valori\nStile corretto per schede",
+                "es": "Visualizado min/max límites controlando los valores\nEstilo corregido para pestañas",
+                "pl": "Pokazane wartości graniczne min / max poprzez kontrolę wartości\nPoprawiony styl dla zakładek",
+                "uk": "Виявлені ліміти хв/максів, які контролюють значення\nПравильний стиль для вкладок",
+                "zh-cn": "通过控制值来显示分钟/最大限制\n校正标签样式"
+            },
+            "7.0.23": {
+                "en": "only automatically open the host notification dialog if warnings are available\nimproved style of host notification dialog\nclarified auto upgrade options selection\nCorrected the link in instances, e.g., for vis-2\nCorrected the connection information in the instance tab",
+                "de": "nur automatisch den host-benachrichtigungsdialog öffnen, wenn warnungen verfügbar sind\nverbesserte art der host-benachrichtigung dialog\nclarified auto upgrade optionen auswahl\nKorrigierte den Link in Fällen, z.B. für vis-2\nKorrektur der Verbindungsinformationen in der Registerkarte",
+                "ru": "только автоматически открыть диалог уведомления хоста, если предупреждения доступны\nулучшенный стиль диалога уведомления хоста\nуточненный выбор вариантов автомодернизации\nИсправлена ссылка в случаях, например, для vis-2\nИсправлена информация о подключении на вкладке",
+                "pt": "somente abra automaticamente a caixa de diálogo de notificação do host se os avisos estiverem disponíveis\nmelhorado estilo de caixa de diálogo de notificação do host\nseleção de opções de atualização automática clarificada\nCorrigido o link em instâncias, por exemplo, para vis-2\nCorrigido as informações de conexão na aba da instância",
+                "nl": "alleen automatisch het dialoogvenster host notificatie openen als er waarschuwingen beschikbaar zijn\nverbeterde stijl van host notificatie dialoog\nverduidelijkte selectie van auto-upgradeopties\nCorrectie van de koppeling in gevallen, bijvoorbeeld voor vis-2\nDe verbindingsinformatie in het instantietabblad gecorrigeerd",
+                "fr": "ouvrir automatiquement la boîte de dialogue de notification de l'hôte seulement si des avertissements sont disponibles\namélioration du style de la boîte de dialogue de notification de l'hôte\nsélection d'options de mise à jour automatique clarifiée\nCorrigé le lien dans les cas, p.ex. pour vis-2\nCorrection des informations de connexion dans l'onglet instance",
+                "it": "solo aprire automaticamente la finestra di dialogo di notifica dell'host se sono disponibili avvisi\nstile migliorato della finestra di dialogo di notifica host\nselezione delle opzioni di aggiornamento automatico\nCorretto il collegamento in casi, ad esempio, per vis-2\nCorretto le informazioni di connessione nella scheda di istanza",
+                "es": "sólo abrir automáticamente el diálogo de notificación del host si las advertencias están disponibles\nmejor estilo de diálogo de notificación de host\nopciones de actualización automática aclaradas\nCorregido el enlace en casos, por ejemplo, en relación con-2\nCorregido la información de conexión en la pestaña de instancia",
+                "pl": "jeśli dostępne są ostrzeżenia, otwieraj automatycznie okno powiadomienia hosta\npoprawiony styl okna powiadomień hosta\nwyjaśnienie wyboru opcji auto upgrade\nPoprawiono link w przypadkach, np. dla vis-2\nPoprawiono informacje o połączeniach w zakładce instance",
+                "uk": "тільки автоматично відкрийте діалогове вікно повідомлення про хост, якщо повідомлення доступні\nпокращений стиль діалогу повідомлення про хост\nвизначення параметрів автоматичного оновлення\nВиправлено посилання в екземплярах, наприклад, для vis-2\nВиправлено інформацію про підключення в вкладці екземпляра",
+                "zh-cn": "只当警告可用时自动打开主机通知对话框\n改进主机通知对话框的样式\n澄清自动升级选项\n纠正了例如相对于2的链接\n更正实例标签中的连接信息"
+            },
+            "7.0.22": {
+                "en": "Corrected installation of adapter with the license unequal to MIT\nCorrected width of a side menu\nAllowed the pasting into object JSON editor",
+                "de": "Korrigierte Installation des Adapters mit der Lizenz ungleich MIT\nKorrigierte Breite eines Seitenmenüs\nErlaubt das Einfügen in Objekt JSON Editor",
+                "ru": "Корректированная установка адаптера с лицензией, не равной MIT\nИсправленная ширина бокового меню\nПозволил вставить в объектный редактор JSON",
+                "pt": "Instalação correta do adaptador com a licença desigual ao MIT\nLargura correta de um menu lateral\nPermitido o colar em objeto JSON editor",
+                "nl": "Gecorrigeerde installatie van adapter met de licentie ongelijk aan MIT\nGecorrigeerde breedte van een zijmenu\nPlakken in object JSON-editor toegestaan",
+                "fr": "Installation corrigée de l'adaptateur avec la licence inégale à MIT\nLargeur corrigée d'un menu latéral\nAutorisé le collage dans l'éditeur d'objet JSON",
+                "it": "Installazione corretta dell'adattatore con la licenza non uguale a MIT\nLarghezza corretta di un menu laterale\nConsentito il incollaggio in oggetto editor JSON",
+                "es": "Instalación corregida del adaptador con la licencia desigual al MIT\nAncho corregido de un menú lateral\nPermitió el pegado en el objeto JSON editor",
+                "pl": "Poprawiona instalacja adaptera z licencją nierówną MIT\nSkorygowana szerokość menu bocznego\nDozwolone wklejanie do edytora JSON obiektu",
+                "uk": "Виправлена установка адаптера з ліцензійним нерівномірним для MIT\nВиправлена ширина бічного меню\nДозволено перезапис у редактор JSON",
+                "zh-cn": "修正了适配器的安装,其许可与麻省理工学院不平等\n修正侧菜单的宽度\n允许粘贴到对象 JSON 编辑器"
+            },
+            "7.0.18": {
+                "en": "Corrected export from JSON table\nadded `qrCode` component to JSON config\nCorrected adding of adapters with licenses (other than MIT)\nImproved license dialog",
+                "de": "Berichtigte Ausfuhr aus JSON-Tabelle\n`qrCode`-Komponente zu JSON config hinzugefügt\nKorrigiertes Hinzufügen von Adaptern mit Lizenzen (außer MIT)\nVerbesserter Lizenzdialog",
+                "ru": "Исправленный экспорт из таблицы JSON\nдобавлен компонент \"qrCode\" в конфигурацию JSON\nИсправленное добавление адаптеров с лицензиями (кроме MIT)\nУлучшенный диалог лицензии",
+                "pt": "Exportação correta da tabela JSON\nadicionado componente `qrCode` para JSON config\nAdição correta de adaptadores com licenças (excepto MIT)\nMelhor diálogo de licença",
+                "nl": "Gecorrigeerde uitvoer uit JSON tabel\ntoegevoegd aan JSON config\nGecorrigeerde toevoeging van adapters met licenties (andere dan MIT)\nVerbeterde licentiedialoog",
+                "fr": "Exportation corrigée à partir du tableau JSON\najouté un composant `qrCode` à la configuration JSON\nAjout corrigé d'adaptateurs avec licences (autres que MIT)\nBoîte de dialogue de licence améliorée",
+                "it": "Esportazione corretta dalla tabella JSON\naggiunto componente `qrCode` a JSON config\nCorretto l'aggiunta di adattatori con licenze (diverse da MIT)\nDialogo di licenza migliorata",
+                "es": "Exportación corregida del cuadro JSON\nagregado `qrCode` componente a JSON config\nAgregado corregido de adaptadores con licencias (excepto MIT)\nDiálogo de licencia mejorado",
+                "pl": "Skorygowany wywóz z tabeli JSON\ndodany komponent 'qrCode' do konfiguracji JSON\nPoprawione dodawanie adapterów z licencjami (innych niż MIT)\nUlepszone okno licencji",
+                "uk": "Корисний експорт з таблиці JSON\nдодано компонент `qrCode` до JSON config\nВиправлено додавання адаптерів з ліцензіями (понад MIT)\nПокращено діалогове вікно ліцензії",
+                "zh-cn": "从 JSON 表校正的导出\n在JSON配置中添加“qrCode”组件\n修正了增加持有许可证的适配器(除麻省理工学院外)\n改进许可证对话框"
+            }
         },
-        {
-          "category": "infoNews",
-          "name": {
-            "en": "General news",
-            "de": "Allgemeine Nachrichten",
-            "ru": "Общие новости",
-            "pt": "Notícia geral",
-            "nl": "Generaal",
-            "fr": "Nouvelles générales",
-            "it": "Notizie generali",
-            "es": "Noticias generales",
-            "pl": "Strona oficjalna",
-            "uk": "Новини",
-            "zh-cn": "新闻"
-          },
-          "severity": "notify",
-          "description": {
-            "en": "These messages represent general news, which just have informal purpose and do not need to be read immediately.",
-            "de": "Diese Nachrichten stellen allgemeine Nachrichten dar, die nur informellen Zweck haben und nicht sofort gelesen werden müssen.",
-            "ru": "Эти сообщения представляют собой общие новости, которые просто имеют неформальную цель и не нужно читать немедленно.",
-            "pt": "Essas mensagens representam notícias gerais, que apenas têm um propósito informal e não precisam ser lidas imediatamente.",
-            "nl": "Deze berichten vertegenwoordigen algemene nieuws, wat informeel doel heeft en niet onmiddellijk hoeft te worden gelezen.",
-            "fr": "Ces messages représentent des nouvelles générales, qui ont juste un but informel et ne doivent pas être lus immédiatement.",
-            "it": "Questi messaggi rappresentano notizie generali, che hanno solo scopo informale e non devono essere letti immediatamente.",
-            "es": "Estos mensajes representan noticias generales, que sólo tienen un propósito informal y no necesitan ser leídos inmediatamente.",
-            "pl": "Wiadomości te reprezentują ogólnokrajowe wiadomości, które tylko mają nieformalny cel i nie muszą być odczytane natychmiast.",
-            "uk": "Ці повідомлення представляють загальні новини, які просто мають неформальне призначення і не потрібно негайно прочитати.",
-            "zh-cn": "这些信息是一般新闻,这只是非正式目的,不需要立即阅读。."
-          },
-          "regex": [],
-          "limit": 10
+        "desc": {
+            "en": "The configuration of ioBroker via Web-Interface",
+            "de": "Die Konfiguration von ioBroker über das Web-Interface",
+            "ru": "Конфигурация ioBroker через веб-интерфейс",
+            "pt": "A configuração do ioBroker via Web-Interface",
+            "fr": "La configuration de ioBroker via Web-Interface",
+            "nl": "De configuratie van ioBroker via de webinterface",
+            "it": "La configurazione di ioBroker tramite interfaccia Web",
+            "es": "La configuración de ioBroker a través de la interfaz web",
+            "pl": "Konfiguracja ioBroker za pomocą interfejsu WWW",
+            "uk": "Конфігурація ioBroker через веб-інтерфейс",
+            "zh-cn": "配置ioBroker的Web界面"
         },
-        {
-          "category": "warningNews",
-          "name": {
-            "en": "Important news",
-            "de": "Wichtige Nachrichten",
-            "ru": "Важные новости",
-            "pt": "Notícia importante",
-            "nl": "Belangrijk nieuws",
-            "fr": "Nouvelles importantes",
-            "it": "Notizie importanti",
-            "es": "Noticias importantes",
-            "pl": "Important news",
-            "uk": "Новини",
-            "zh-cn": "重要的新闻"
-          },
-          "severity": "info",
-          "description": {
-            "en": "These messages represent adapter warnings and important changes in the near future.",
-            "de": "Diese Nachrichten stellen Adapterwarnungen und wichtige Veränderungen in der nahen Zukunft dar.",
-            "ru": "Эти сообщения представляют предупреждение о адаптере и важные изменения в ближайшем будущем.",
-            "pt": "Estas mensagens representam avisos de adaptadores e mudanças importantes no futuro próximo.",
-            "nl": "Deze berichten vertegenwoordigen adapter waarschuwingen en belangrijke veranderingen in de nabije toekomst.",
-            "fr": "Ces messages représentent des avertissements d'adaptateur et des changements importants dans un proche avenir.",
-            "it": "Questi messaggi rappresentano avvisi di adattatore e cambiamenti importanti nel prossimo futuro.",
-            "es": "Estos mensajes representan advertencias de adaptador y cambios importantes en el futuro cercano.",
-            "pl": "Wiadomości te reprezentują ostrzeżenia adaptatora i ważne zmiany w najbliższej przyszłości.",
-            "uk": "Ці повідомлення представляють попередження та важливі зміни в найближчому майбутньому.",
-            "zh-cn": "这些信息是适应的预警和近期的重要变化。."
-          },
-          "regex": [],
-          "limit": 10
+        "docs": {
+            "en": "docs/en/admin.md",
+            "ru": "docs/ru/admin.md",
+            "de": [
+                "docs/de/admin.md",
+                "docs/de/admin/tab-adapters.md",
+                "docs/de/admin/tab-instances.md",
+                "docs/de/admin/tab-objects.md",
+                "docs/de/admin/tab-states.md",
+                "docs/de/admin/tab-groups.md",
+                "docs/de/admin/tab-users.md",
+                "docs/de/admin/tab-events.md",
+                "docs/de/admin/tab-hosts.md",
+                "docs/de/admin/tab-enums.md",
+                "docs/de/admin/tab-log.md",
+                "docs/de/admin/tab-system.md"
+            ],
+            "pt": "docs/pt/admin.md",
+            "nl": "docs/nl/admin.md",
+            "es": "docs/es/admin.md",
+            "fr": "docs/fr/admin.md",
+            "it": "docs/it/admin.md",
+            "pl": "docs/pl/admin.md",
+            "zh-cn": "docs/zh-cn/admin.md"
         },
+        "materialize": true,
+        "mode": "daemon",
+        "platform": "Javascript/Node.js",
+        "loglevel": "info",
+        "icon": "admin.svg",
+        "messagebox": true,
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.svg",
+        "keywords": [
+            "setup",
+            "config",
+            "update",
+            "upgrade",
+            "system",
+            "konfiguration",
+            "administration",
+            "einrichtung",
+            "wartung"
+        ],
+        "compact": true,
+        "readme": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
+        "authors": ["bluefox <bluefox@ccu.io>", "hobbyquaker <hq@ccu.io>"],
+        "dependencies": [
+            {
+                "js-controller": ">=3.3.22"
+            }
+        ],
+        "type": "general",
+        "licenseInformation": {
+            "license": "MIT",
+            "type": "free"
+        },
+        "logTransporter": true,
+        "stopBeforeUpdate": true,
+        "eraseOnUpload": true,
+        "nogit": true,
+        "welcomeScreenPro": [
+            {
+                "link": "admin/index.html",
+                "name": "Admin",
+                "img": "admin/img/admin.svg",
+                "color": "pink",
+                "order": 5,
+                "localLinks": "_default",
+                "localLink": true
+            }
+        ],
+        "localLinks": {
+            "_default": {
+                "link": "%protocol%://%bind%:%port%",
+                "name": {
+                    "en": "Admin",
+                    "ru": "Админ"
+                },
+                "pro": "admin/index.html",
+                "icon": "admin/img/admin.svg",
+                "color": "pink",
+                "order": 5,
+                "intro": true
+            }
+        },
+        "plugins": {
+            "sentry": {
+                "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
+            }
+        },
+        "adminUI": {
+            "config": "json"
+        },
+        "tier": 1
+    },
+    "native": {
+        "autoUpdate": 24,
+        "port": 8081,
+        "auth": false,
+        "secure": false,
+        "bind": "0.0.0.0",
+        "cache": false,
+        "accessLimit": false,
+        "accessApplyRights": false,
+        "accessAllowedConfigs": [],
+        "accessAllowedTabs": [],
+        "leCollection": false,
+        "certPublic": "",
+        "certPrivate": "",
+        "certChained": "",
+        "ttl": 3600,
+        "defaultUser": "admin",
+        "tmpPath": "/tmp",
+        "tmpPathAllow": false,
+        "thresholdValue": 200,
+        "loginBackgroundColor": "",
+        "loginBackgroundImage": false,
+        "loginHideLogo": false,
+        "loginMotto": "",
+        "language": "",
+        "reverseProxy": [],
+        "loadingBackgroundColor": "",
+        "loadingHideLogo": false,
+        "loadingBackgroundImage": false,
+        "doNotCheckPublicIP": false
+    },
+    "notifications": [
         {
-          "category": "dangerNews",
-          "name": {
-            "en": "Very important news",
-            "de": "Sehr wichtige Nachrichten",
-            "ru": "Очень важные новости",
-            "pt": "Notícia muito importante",
-            "nl": "Heel belangrijk",
-            "fr": "Nouvelles très importantes",
-            "it": "Notizie molto importanti",
-            "es": "Noticias muy importantes",
-            "pl": "Ważne wiadomości",
-            "uk": "Останні новини",
-            "zh-cn": "非常重要的新闻"
-          },
-          "severity": "alert",
-          "description": {
-            "en": "These notifications are very important. They may give you a hint that an adapter upgrade is required right now to maintain functionality.",
-            "de": "Diese Benachrichtigungen sind sehr wichtig. Sie können Ihnen einen Hinweis geben, dass ein Adapter-Upgrade jetzt erforderlich ist, um die Funktionalität zu erhalten.",
-            "ru": "Эти уведомления очень важны. Они могут дать вам подсказку, что обновление адаптера требуется прямо сейчас для поддержания функциональности.",
-            "pt": "Estas notificações são muito importantes. Eles podem lhe dar uma dica de que uma atualização do adaptador é necessária agora para manter a funcionalidade.",
-            "nl": "Deze berichten zijn heel belangrijk. Ze kunnen je een hint geven dat een adapter upgrade nu nodig is om functionaliteit te behouden.",
-            "fr": "Ces notifications sont très importantes. Ils peuvent vous donner un indice qu'une mise à niveau d'adaptateur est nécessaire pour maintenir la fonctionnalité.",
-            "it": "Queste notifiche sono molto importanti. Essi possono dare un suggerimento che un aggiornamento adattatore è necessario in questo momento per mantenere la funzionalità.",
-            "es": "Estas notificaciones son muy importantes. Pueden darle una pista de que se requiere una actualización del adaptador ahora mismo para mantener la funcionalidad.",
-            "pl": "Te informacje są bardzo ważne. Mogą dać wskazówki, że ulepszanie adapteru jest niezbędne do utrzymania funkcji.",
-            "uk": "Ці повідомлення дуже важливі. Вони можуть надати вам підказку, що оновлення адаптера потрібно прямо зараз для підтримки функціональності.",
-            "zh-cn": "这些通知非常重要。 他们可以向你说明,适应人员升级现在需要保持功能。."
-          },
-          "regex": [],
-          "limit": 10
+            "scope": "admin",
+            "name": {
+                "en": "Administration",
+                "de": "Administration",
+                "ru": "Администрация",
+                "pt": "Administração",
+                "nl": "Administratie",
+                "fr": "Administration",
+                "it": "Amministrazione",
+                "es": "Administración",
+                "pl": "Administracja",
+                "uk": "Адміністрація",
+                "zh-cn": "行政部门"
+            },
+            "description": {
+                "en": "These notifications represent news regarding installed adapters or general ioBroker information.",
+                "de": "Diese Benachrichtigungen enthalten Neuigkeiten zu installierten Adaptern oder allgemeine ioBroker-Informationen.",
+                "ru": "Эти уведомления представляют новости о установленных адаптерах или общей информации ioBroker.",
+                "pt": "Estas notificações representam notícias sobre adaptadores instalados ou informações gerais do ioBroker.",
+                "nl": "Deze berichten zijn nieuws over geïnstalleerde adapters of algemene ioBroker informatie.",
+                "fr": "Ces notifications représentent des nouvelles concernant les adaptateurs installés ou les informations générales ioBroker.",
+                "it": "Queste notifiche rappresentano notizie riguardanti adattatori installati o informazioni generali su ioBroker.",
+                "es": "Estas notificaciones representan noticias sobre adaptadores instalados o información general ioBroker.",
+                "pl": "Noty te reprezentują informacje dotyczące zainstalowanych adapterów lub ogólnie dostępnych informacji ioBrokera.",
+                "uk": "Ці повідомлення представляють новини про встановлені адаптери або загальні відомості про ioBroker.",
+                "zh-cn": "这些通知是有关安装的适应器或一般的气箱信息的新闻。."
+            },
+            "categories": [
+                {
+                    "category": "adapterUpdates",
+                    "name": {
+                        "en": "Adapter updates",
+                        "de": "Adapter-Updates",
+                        "ru": "Обновления адаптера",
+                        "pt": "Actualizações do adaptador",
+                        "nl": "Adapter updates",
+                        "fr": "Mises à jour de l'adaptateur",
+                        "it": "Aggiornamenti dell'adattatore",
+                        "es": "Actualizaciones de adaptadores",
+                        "pl": "Aktualizacje adapterów",
+                        "uk": "Оновлення адаптерів",
+                        "zh-cn": "适配器更新"
+                    },
+                    "severity": "notify",
+                    "description": {
+                        "en": "New adapter updates are available for your ioBroker.",
+                        "de": "Es sind neue Adapter Updates für deinen ioBroker verfügbar.",
+                        "ru": "Для вашего ioBroker доступны новые обновления адаптера.",
+                        "pt": "Estão disponíveis novas actualizações de adaptadores para o seu ioBroker.",
+                        "nl": "Nieuwe adapterupdates zijn beschikbaar voor uw ioBroker.",
+                        "fr": "De nouvelles mises à jour de l'adaptateur sont disponibles pour ton ioBroker.",
+                        "it": "Sono disponibili nuovi aggiornamenti dell'adattatore per il vostro ioBroker.",
+                        "es": "Hay nuevas actualizaciones de adaptadores disponibles para su ioBroker.",
+                        "pl": "Dostępne są nowe aktualizacje adaptera dla ioBroker.",
+                        "uk": "Для вашого ioBroker доступні нові оновлення адаптерів.",
+                        "zh-cn": "您的 ioBroker 可以使用新的适配器更新。"
+                    },
+                    "regex": [],
+                    "limit": 1
+                },
+                {
+                    "category": "infoNews",
+                    "name": {
+                        "en": "General news",
+                        "de": "Allgemeine Nachrichten",
+                        "ru": "Общие новости",
+                        "pt": "Notícia geral",
+                        "nl": "Generaal",
+                        "fr": "Nouvelles générales",
+                        "it": "Notizie generali",
+                        "es": "Noticias generales",
+                        "pl": "Strona oficjalna",
+                        "uk": "Новини",
+                        "zh-cn": "新闻"
+                    },
+                    "severity": "notify",
+                    "description": {
+                        "en": "These messages represent general news, which just have informal purpose and do not need to be read immediately.",
+                        "de": "Diese Nachrichten stellen allgemeine Nachrichten dar, die nur informellen Zweck haben und nicht sofort gelesen werden müssen.",
+                        "ru": "Эти сообщения представляют собой общие новости, которые просто имеют неформальную цель и не нужно читать немедленно.",
+                        "pt": "Essas mensagens representam notícias gerais, que apenas têm um propósito informal e não precisam ser lidas imediatamente.",
+                        "nl": "Deze berichten vertegenwoordigen algemene nieuws, wat informeel doel heeft en niet onmiddellijk hoeft te worden gelezen.",
+                        "fr": "Ces messages représentent des nouvelles générales, qui ont juste un but informel et ne doivent pas être lus immédiatement.",
+                        "it": "Questi messaggi rappresentano notizie generali, che hanno solo scopo informale e non devono essere letti immediatamente.",
+                        "es": "Estos mensajes representan noticias generales, que sólo tienen un propósito informal y no necesitan ser leídos inmediatamente.",
+                        "pl": "Wiadomości te reprezentują ogólnokrajowe wiadomości, które tylko mają nieformalny cel i nie muszą być odczytane natychmiast.",
+                        "uk": "Ці повідомлення представляють загальні новини, які просто мають неформальне призначення і не потрібно негайно прочитати.",
+                        "zh-cn": "这些信息是一般新闻,这只是非正式目的,不需要立即阅读。."
+                    },
+                    "regex": [],
+                    "limit": 10
+                },
+                {
+                    "category": "warningNews",
+                    "name": {
+                        "en": "Important news",
+                        "de": "Wichtige Nachrichten",
+                        "ru": "Важные новости",
+                        "pt": "Notícia importante",
+                        "nl": "Belangrijk nieuws",
+                        "fr": "Nouvelles importantes",
+                        "it": "Notizie importanti",
+                        "es": "Noticias importantes",
+                        "pl": "Important news",
+                        "uk": "Новини",
+                        "zh-cn": "重要的新闻"
+                    },
+                    "severity": "info",
+                    "description": {
+                        "en": "These messages represent adapter warnings and important changes in the near future.",
+                        "de": "Diese Nachrichten stellen Adapterwarnungen und wichtige Veränderungen in der nahen Zukunft dar.",
+                        "ru": "Эти сообщения представляют предупреждение о адаптере и важные изменения в ближайшем будущем.",
+                        "pt": "Estas mensagens representam avisos de adaptadores e mudanças importantes no futuro próximo.",
+                        "nl": "Deze berichten vertegenwoordigen adapter waarschuwingen en belangrijke veranderingen in de nabije toekomst.",
+                        "fr": "Ces messages représentent des avertissements d'adaptateur et des changements importants dans un proche avenir.",
+                        "it": "Questi messaggi rappresentano avvisi di adattatore e cambiamenti importanti nel prossimo futuro.",
+                        "es": "Estos mensajes representan advertencias de adaptador y cambios importantes en el futuro cercano.",
+                        "pl": "Wiadomości te reprezentują ostrzeżenia adaptatora i ważne zmiany w najbliższej przyszłości.",
+                        "uk": "Ці повідомлення представляють попередження та важливі зміни в найближчому майбутньому.",
+                        "zh-cn": "这些信息是适应的预警和近期的重要变化。."
+                    },
+                    "regex": [],
+                    "limit": 10
+                },
+                {
+                    "category": "dangerNews",
+                    "name": {
+                        "en": "Very important news",
+                        "de": "Sehr wichtige Nachrichten",
+                        "ru": "Очень важные новости",
+                        "pt": "Notícia muito importante",
+                        "nl": "Heel belangrijk",
+                        "fr": "Nouvelles très importantes",
+                        "it": "Notizie molto importanti",
+                        "es": "Noticias muy importantes",
+                        "pl": "Ważne wiadomości",
+                        "uk": "Останні новини",
+                        "zh-cn": "非常重要的新闻"
+                    },
+                    "severity": "alert",
+                    "description": {
+                        "en": "These notifications are very important. They may give you a hint that an adapter upgrade is required right now to maintain functionality.",
+                        "de": "Diese Benachrichtigungen sind sehr wichtig. Sie können Ihnen einen Hinweis geben, dass ein Adapter-Upgrade jetzt erforderlich ist, um die Funktionalität zu erhalten.",
+                        "ru": "Эти уведомления очень важны. Они могут дать вам подсказку, что обновление адаптера требуется прямо сейчас для поддержания функциональности.",
+                        "pt": "Estas notificações são muito importantes. Eles podem lhe dar uma dica de que uma atualização do adaptador é necessária agora para manter a funcionalidade.",
+                        "nl": "Deze berichten zijn heel belangrijk. Ze kunnen je een hint geven dat een adapter upgrade nu nodig is om functionaliteit te behouden.",
+                        "fr": "Ces notifications sont très importantes. Ils peuvent vous donner un indice qu'une mise à niveau d'adaptateur est nécessaire pour maintenir la fonctionnalité.",
+                        "it": "Queste notifiche sono molto importanti. Essi possono dare un suggerimento che un aggiornamento adattatore è necessario in questo momento per mantenere la funzionalità.",
+                        "es": "Estas notificaciones son muy importantes. Pueden darle una pista de que se requiere una actualización del adaptador ahora mismo para mantener la funcionalidad.",
+                        "pl": "Te informacje są bardzo ważne. Mogą dać wskazówki, że ulepszanie adapteru jest niezbędne do utrzymania funkcji.",
+                        "uk": "Ці повідомлення дуже важливі. Вони можуть надати вам підказку, що оновлення адаптера потрібно прямо зараз для підтримки функціональності.",
+                        "zh-cn": "这些通知非常重要。 他们可以向你说明,适应人员升级现在需要保持功能。."
+                    },
+                    "regex": [],
+                    "limit": 10
+                }
+            ]
         }
-      ]
-    }
-  ],
-  "objects": [],
-  "instanceObjects": [
-    {
-      "_id": "info",
-      "type": "channel",
-      "common": {
-        "name": {
-          "en": "Information",
-          "de": "Information",
-          "ru": "Информация",
-          "pt": "Em formação",
-          "nl": "Informatie",
-          "fr": "Information",
-          "it": "Informazione",
-          "es": "Información",
-          "pl": "Informacja",
-          "zh-cn": "信息"
+    ],
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "Information",
+                    "de": "Information",
+                    "ru": "Информация",
+                    "pt": "Em formação",
+                    "nl": "Informatie",
+                    "fr": "Information",
+                    "it": "Informazione",
+                    "es": "Información",
+                    "pl": "Informacja",
+                    "zh-cn": "信息"
+                }
+            },
+            "native": {}
+        },
+        {
+            "_id": "",
+            "type": "meta",
+            "common": {
+                "name": {
+                    "en": "user files and images for background",
+                    "de": "Benutzerdateien und Bilder für den Hintergrund",
+                    "ru": "пользовательские файлы и изображения для фона",
+                    "pt": "arquivos e imagens do usuário para plano de fundo",
+                    "nl": "gebruikersbestanden en afbeeldingen voor achtergrond",
+                    "fr": "fichiers utilisateur et images pour l'arrière-plan",
+                    "it": "file utente e immagini per lo sfondo",
+                    "es": "archivos de usuario e imágenes para el fondo",
+                    "pl": "pliki użytkownika i obrazy w tle",
+                    "zh-cn": "背景的用户文件和图像"
+                },
+                "type": "meta.user"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connected",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": {
+                    "en": "Info about connected socket clients",
+                    "de": "Informationen über verbundene Socket-Clients",
+                    "ru": "Информация о подключенных клиентах сокетов",
+                    "pt": "Informações sobre clientes de soquete conectados",
+                    "nl": "Info over aangesloten socket-clients",
+                    "fr": "Informations sur les clients socket connectés",
+                    "it": "Informazioni sui client socket connessi",
+                    "es": "Información sobre clientes de socket conectados",
+                    "pl": "Informacje o podłączonych klientach gniazd",
+                    "zh-cn": "有关已连接套接字客户端的信息"
+                },
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": {
+                    "en": "HTTP server started",
+                    "de": "HTTP-Server gestartet",
+                    "ru": "HTTP-сервер запущен",
+                    "pt": "Servidor HTTP iniciado",
+                    "nl": "HTTP-server gestart",
+                    "fr": "Serveur HTTP démarré",
+                    "it": "Server HTTP avviato",
+                    "es": "Servidor HTTP iniciado",
+                    "pl": "Uruchomiono serwer HTTP",
+                    "zh-cn": "HTTP 服务器已启动"
+                },
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.newsFeed",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Last news feed as JSON",
+                    "de": "Letzter Newsfeed als JSON",
+                    "ru": "Лента последних новостей в формате JSON",
+                    "pt": "Último feed de notícias como JSON",
+                    "nl": "Laatste nieuwsfeed als JSON",
+                    "fr": "Dernier fil d'actualité au format JSON",
+                    "it": "Ultimo feed di notizie come JSON",
+                    "es": "Últimas noticias como JSON",
+                    "pl": "Ostatni kanał wiadomości jako JSON",
+                    "zh-cn": "最后一个新闻提要为 JSON"
+                },
+                "type": "json",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "info.newsETag",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Etag for news feed",
+                    "de": "Etag für Newsfeed",
+                    "ru": "Etag для новостной ленты",
+                    "pt": "Etag para feed de notícias",
+                    "nl": "Etag voor nieuwsfeed",
+                    "fr": "Etag pour le fil d'actualité",
+                    "it": "Etag per il feed di notizie",
+                    "es": "Etag para noticias",
+                    "pl": "Etag dla kanału informacyjnego",
+                    "zh-cn": "用于新闻提要的 Etag"
+                },
+                "type": "string",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "info.newsLastId",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Last news ID",
+                    "de": "Letzte Nachrichten-ID",
+                    "ru": "Идентификатор последней новости",
+                    "pt": "ID da última notícia",
+                    "nl": "Laatste nieuws-ID",
+                    "fr": "Identifiant des dernières nouvelles",
+                    "it": "Ultime notizie ID",
+                    "es": "ID de última noticia",
+                    "pl": "Identyfikator ostatnich wiadomości",
+                    "zh-cn": "最新消息 ID"
+                },
+                "type": "string",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "info.updatesList",
+            "type": "state",
+            "common": {
+                "role": "indicator.updates",
+                "name": {
+                    "en": "List of adapters to update",
+                    "de": "Liste der zu aktualisierenden Adapter",
+                    "ru": "Список адаптеров для обновления",
+                    "pt": "Lista de adaptadores para atualizar",
+                    "nl": "Lijst met adapters die moeten worden bijgewerkt",
+                    "fr": "Liste des adaptateurs à mettre à jour",
+                    "it": "Elenco degli adattatori da aggiornare",
+                    "es": "Lista de adaptadores para actualizar",
+                    "pl": "Lista adapterów do aktualizacji",
+                    "zh-cn": "要更新的适配器列表"
+                },
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
         }
-      },
-      "native": {}
-    },
-    {
-      "_id": "",
-      "type": "meta",
-      "common": {
-        "name": {
-          "en": "user files and images for background",
-          "de": "Benutzerdateien und Bilder für den Hintergrund",
-          "ru": "пользовательские файлы и изображения для фона",
-          "pt": "arquivos e imagens do usuário para plano de fundo",
-          "nl": "gebruikersbestanden en afbeeldingen voor achtergrond",
-          "fr": "fichiers utilisateur et images pour l'arrière-plan",
-          "it": "file utente e immagini per lo sfondo",
-          "es": "archivos de usuario e imágenes para el fondo",
-          "pl": "pliki użytkownika i obrazy w tle",
-          "zh-cn": "背景的用户文件和图像"
-        },
-        "type": "meta.user"
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.connected",
-      "type": "state",
-      "common": {
-        "role": "state",
-        "name": {
-          "en": "Info about connected socket clients",
-          "de": "Informationen über verbundene Socket-Clients",
-          "ru": "Информация о подключенных клиентах сокетов",
-          "pt": "Informações sobre clientes de soquete conectados",
-          "nl": "Info over aangesloten socket-clients",
-          "fr": "Informations sur les clients socket connectés",
-          "it": "Informazioni sui client socket connessi",
-          "es": "Información sobre clientes de socket conectados",
-          "pl": "Informacje o podłączonych klientach gniazd",
-          "zh-cn": "有关已连接套接字客户端的信息"
-        },
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.connection",
-      "type": "state",
-      "common": {
-        "role": "indicator.connected",
-        "name": {
-          "en": "HTTP server started",
-          "de": "HTTP-Server gestartet",
-          "ru": "HTTP-сервер запущен",
-          "pt": "Servidor HTTP iniciado",
-          "nl": "HTTP-server gestart",
-          "fr": "Serveur HTTP démarré",
-          "it": "Server HTTP avviato",
-          "es": "Servidor HTTP iniciado",
-          "pl": "Uruchomiono serwer HTTP",
-          "zh-cn": "HTTP 服务器已启动"
-        },
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.newsFeed",
-      "type": "state",
-      "common": {
-        "name": {
-          "en": "Last news feed as JSON",
-          "de": "Letzter Newsfeed als JSON",
-          "ru": "Лента последних новостей в формате JSON",
-          "pt": "Último feed de notícias como JSON",
-          "nl": "Laatste nieuwsfeed als JSON",
-          "fr": "Dernier fil d'actualité au format JSON",
-          "it": "Ultimo feed di notizie come JSON",
-          "es": "Últimas noticias como JSON",
-          "pl": "Ostatni kanał wiadomości jako JSON",
-          "zh-cn": "最后一个新闻提要为 JSON"
-        },
-        "type": "json",
-        "read": true,
-        "write": false
-      }
-    },
-    {
-      "_id": "info.newsETag",
-      "type": "state",
-      "common": {
-        "name": {
-          "en": "Etag for news feed",
-          "de": "Etag für Newsfeed",
-          "ru": "Etag для новостной ленты",
-          "pt": "Etag para feed de notícias",
-          "nl": "Etag voor nieuwsfeed",
-          "fr": "Etag pour le fil d'actualité",
-          "it": "Etag per il feed di notizie",
-          "es": "Etag para noticias",
-          "pl": "Etag dla kanału informacyjnego",
-          "zh-cn": "用于新闻提要的 Etag"
-        },
-        "type": "string",
-        "read": true,
-        "write": false
-      }
-    },
-    {
-      "_id": "info.newsLastId",
-      "type": "state",
-      "common": {
-        "name": {
-          "en": "Last news ID",
-          "de": "Letzte Nachrichten-ID",
-          "ru": "Идентификатор последней новости",
-          "pt": "ID da última notícia",
-          "nl": "Laatste nieuws-ID",
-          "fr": "Identifiant des dernières nouvelles",
-          "it": "Ultime notizie ID",
-          "es": "ID de última noticia",
-          "pl": "Identyfikator ostatnich wiadomości",
-          "zh-cn": "最新消息 ID"
-        },
-        "type": "string",
-        "read": true,
-        "write": false
-      }
-    },
-    {
-      "_id": "info.updatesList",
-      "type": "state",
-      "common": {
-        "role": "indicator.updates",
-        "name": {
-          "en": "List of adapters to update",
-          "de": "Liste der zu aktualisierenden Adapter",
-          "ru": "Список адаптеров для обновления",
-          "pt": "Lista de adaptadores para atualizar",
-          "nl": "Lijst met adapters die moeten worden bijgewerkt",
-          "fr": "Liste des adaptateurs à mettre à jour",
-          "it": "Elenco degli adattatori da aggiornare",
-          "es": "Lista de adaptadores para actualizar",
-          "pl": "Lista adapterów do aktualizacji",
-          "zh-cn": "要更新的适配器列表"
-        },
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    }
-  ]
+    ]
 }

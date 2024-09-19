@@ -1,4 +1,4 @@
-import React, { type RefObject, Suspense } from 'react';
+import React, { type RefObject, Suspense, type JSX } from 'react';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -26,7 +26,8 @@ import {
     Button,
     DialogContent,
     DialogContentText,
-    DialogActions, Box,
+    DialogActions,
+    Box,
 } from '@mui/material';
 
 // @material-ui/icons
@@ -43,23 +44,25 @@ import {
     Notifications as NotificationsIcon,
 } from '@mui/icons-material';
 
-import {
-    AdminConnection as Connection,
-    type FilteredNotificationInformation,
-    PROGRESS,
-} from '@iobroker/socket-client';
+import { AdminConnection as Connection, type FilteredNotificationInformation, PROGRESS } from '@iobroker/socket-client';
 
 import {
     LoaderPT,
     LoaderMV,
     LoaderVendor,
     Loader,
-    I18n, Router, Confirm as ConfirmDialog,
-    Icon, withWidth, Theme,
+    I18n,
+    Router,
+    Confirm as ConfirmDialog,
+    Icon,
+    withWidth,
+    Theme,
     IconExpert,
     ToggleThemeMenu,
-    type IobTheme, type ThemeName,
-    type AdminConnection, type ThemeType,
+    type IobTheme,
+    type ThemeName,
+    type AdminConnection,
+    type ThemeType,
     Utils,
 } from '@iobroker/adapter-react-v5';
 
@@ -76,9 +79,7 @@ import ukAR from '@iobroker/adapter-react-v5/i18n/uk.json';
 import zhCNAR from '@iobroker/adapter-react-v5/i18n/zh-cn.json';
 
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
-import type {
-    AdminGuiConfig, CompactAdapterInfo, CompactHost, NotificationsCount,
-} from '@/types';
+import type { AdminGuiConfig, CompactAdapterInfo, CompactHost, NotificationsCount } from '@/types';
 import type { InstanceConfig } from '@/tabs/EasyMode';
 
 import CommandDialog from './dialogs/CommandDialog';
@@ -158,7 +159,8 @@ const query: { login?: boolean } = {};
         if (!parts[0]) {
             return;
         }
-        (query as Record<string, boolean | string>)[parts[0]] = parts[1] === undefined ? true : decodeURIComponent(parts[1]);
+        (query as Record<string, boolean | string>)[parts[0]] =
+            parts[1] === undefined ? true : decodeURIComponent(parts[1]);
     });
 
 const styles: Record<string, any> = {
@@ -216,11 +218,17 @@ const styles: Record<string, any> = {
         mt: `${theme.mixins.toolbar?.minHeight}px`,
         '@media (min-width:0px) and (orientation: landscape)': {
             // @ts-expect-error must be defined
-            mt: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)']?.minHeight ? `${theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)'].minHeight}px` : undefined,
+            mt: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)']?.minHeight
+                ? // @ts-expect-error must be defined
+                  `${theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)'].minHeight}px`
+                : undefined,
         },
         '@media (min-width:600px)': {
             // @ts-expect-error must be defined
-            mt: theme.mixins.toolbar['@media (min-width:600px)']?.minHeight ? `${theme.mixins.toolbar['@media (min-width:600px)'].minHeight}px` : undefined,
+            mt: theme.mixins.toolbar['@media (min-width:600px)']?.minHeight
+                ? // @ts-expect-error must be defined
+                  `${theme.mixins.toolbar['@media (min-width:600px)'].minHeight}px`
+                : undefined,
         },
     }),
     contentMargin: {
@@ -374,14 +382,20 @@ interface AppProps {
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
-type CompactRepository = Record<string, {
-    icon: ioBroker.AdapterCommon['icon'];
-    version: string;
-}>;
-type CompactInstalledInfo = Record<string, {
-    version: string;
-    ignoreVersion?: string;
-}>;
+type CompactRepository = Record<
+    string,
+    {
+        icon: ioBroker.AdapterCommon['icon'];
+        version: string;
+    }
+>;
+type CompactInstalledInfo = Record<
+    string,
+    {
+        version: string;
+        ignoreVersion?: string;
+    }
+>;
 
 interface AppState {
     connected: boolean;
@@ -402,7 +416,11 @@ interface AppState {
         arg?: string;
     };
     systemConfig: ioBroker.SystemConfigObject;
-    showHostWarning: { host: string; instances: Record<string, ioBroker.InstanceObject>; result: FilteredNotificationInformation } | null;
+    showHostWarning: {
+        host: string;
+        instances: Record<string, ioBroker.InstanceObject>;
+        result: FilteredNotificationInformation;
+    } | null;
     user: {
         id: string;
         name: string;
@@ -567,13 +585,17 @@ class App extends Router<AppProps, AppState> {
         };
 
         // merge together
-        Object.keys(translations).forEach(
-            (lang: ioBroker.Languages) => Object.assign(this.translations[lang], translations[lang]),
+        Object.keys(translations).forEach((lang: ioBroker.Languages) =>
+            Object.assign(this.translations[lang], translations[lang]),
         );
 
         // init translations
         I18n.setTranslations(this.translations);
-        I18n.setLanguage((window.navigator.language || window.navigator.userLanguage || 'en').substring(0, 2).toLowerCase() as ioBroker.Languages);
+        I18n.setLanguage(
+            (window.navigator.language || window.navigator.userLanguage || 'en')
+                .substring(0, 2)
+                .toLowerCase() as ioBroker.Languages,
+        );
 
         this.refUser = React.createRef<HTMLDivElement>();
         this.refUserDiv = React.createRef<HTMLDivElement>();
@@ -595,7 +617,7 @@ class App extends Router<AppProps, AppState> {
             if (drawerStateStr) {
                 drawerState = parseInt(drawerStateStr, 10) as 0 | 1 | 2;
             } else {
-                drawerState = this.props.width === 'xs' ? DrawerStates.closed as 1 : DrawerStates.opened as 0;
+                drawerState = this.props.width === 'xs' ? (DrawerStates.closed as 1) : (DrawerStates.opened as 0);
             }
 
             const theme = App.createTheme();
@@ -719,23 +741,25 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    static getDerivedStateFromError(error: null | { message: string; stack: any }) {
+    static getDerivedStateFromError(error: null | { message: string; stack: any }): {
+        hasGlobalError: null | { message: string; stack: any };
+    } {
         // Update state so the next render will show the fallback UI.
         return { hasGlobalError: error };
     }
 
-    componentDidCatch(error: Error) {
+    componentDidCatch(error: Error): void {
         this.setState({ hasGlobalError: error });
     }
 
-    setUnsavedData(hasUnsavedData: boolean) {
+    setUnsavedData(hasUnsavedData: boolean): void {
         if (hasUnsavedData !== this.state.unsavedDataInDialog) {
             this.setState({ unsavedDataInDialog: hasUnsavedData });
         }
     }
 
     // If the background color must be inverted. Depends on the current theme.
-    mustInvertBackground(color: string) {
+    mustInvertBackground(color: string): boolean {
         if (!color) {
             return false;
         }
@@ -749,7 +773,7 @@ class App extends Router<AppProps, AppState> {
 
     localStorageGetItem = (name: string): any => this.guiSettings.native.localStorage[name];
 
-    localStorageSetItem = (name: string, value: any) => {
+    localStorageSetItem = (name: string, value: any): void => {
         if (value === null) {
             value = 'null';
         } else if (value === undefined) {
@@ -761,7 +785,7 @@ class App extends Router<AppProps, AppState> {
         this.localStorageSave();
     };
 
-    localStorageRemoveItem = (name: string) => {
+    localStorageRemoveItem = (name: string): void => {
         if (Object.prototype.hasOwnProperty.call(this.guiSettings.native.localStorage, name)) {
             delete this.guiSettings.native.localStorage[name];
             this.localStorageSave();
@@ -770,7 +794,7 @@ class App extends Router<AppProps, AppState> {
 
     sessionStorageGetItem = (name: string): any => this.guiSettings.native.sessionStorage[name];
 
-    sessionStorageSetItem = (name: string, value: any) => {
+    sessionStorageSetItem = (name: string, value: any): void => {
         if (value === null) {
             value = 'null';
         } else if (value === undefined) {
@@ -781,14 +805,14 @@ class App extends Router<AppProps, AppState> {
         this.localStorageSave();
     };
 
-    sessionStorageRemoveItem = (name: string) => {
+    sessionStorageRemoveItem = (name: string): void => {
         if (Object.prototype.hasOwnProperty.call(this.guiSettings.native.sessionStorage, name)) {
             delete this.guiSettings.native.sessionStorage[name];
             this.localStorageSave();
         }
     };
 
-    localStorageSave() {
+    localStorageSave(): void {
         if (this.localStorageTimer) {
             clearTimeout(this.localStorageTimer);
         }
@@ -798,7 +822,7 @@ class App extends Router<AppProps, AppState> {
         }, 200);
     }
 
-    toggleTranslation = () => {
+    toggleTranslation = (): void => {
         (window._localStorage || window.localStorage).setItem(
             'App.noTranslation',
             this.state.noTranslation ? 'false' : 'true',
@@ -806,7 +830,7 @@ class App extends Router<AppProps, AppState> {
         this.setState({ noTranslation: !this.state.noTranslation });
     };
 
-    async getGUISettings() {
+    async getGUISettings(): Promise<void> {
         let obj;
 
         if (!this.adminInstance) {
@@ -860,10 +884,10 @@ class App extends Router<AppProps, AppState> {
             if (drawerStateStr) {
                 drawerState = parseInt(drawerStateStr, 10) as 0 | 1 | 2;
             } else {
-                drawerState = this.props.width === 'xs' ? DrawerStates.closed as 1 : DrawerStates.opened as 0;
+                drawerState = this.props.width === 'xs' ? (DrawerStates.closed as 1) : (DrawerStates.opened as 0);
             }
             const noTranslation =
-                    (window._localStorage || window.localStorage).getItem('App.noTranslation') !== 'false';
+                (window._localStorage || window.localStorage).getItem('App.noTranslation') !== 'false';
 
             this.setState({ guiSettings: true, drawerState, noTranslation }, () => {
                 if (Utils.getThemeName() !== this.state.theme.name) {
@@ -878,96 +902,96 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    enableGuiSettings(enabled: boolean, ownSettings?: boolean) {
+    enableGuiSettings(enabled: boolean, ownSettings?: boolean): void {
         if (enabled && !this.guiSettings) {
-            this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
-                .then(async obj => {
-                    this.guiSettings = obj || JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
+            void this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`).then(async obj => {
+                this.guiSettings = obj || JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
 
-                    if (ownSettings || !this.guiSettings.native || !Object.keys(this.guiSettings.native).length) {
-                        this.guiSettings.native = { localStorage: {}, sessionStorage: {} };
-                        Object.keys(window.localStorage).forEach(name => {
-                            if (
-                                name !== 'getItem' &&
-                                name !== 'setItem' &&
-                                name !== 'removeItem' &&
-                                name !== 'clear' &&
-                                name !== 'key' &&
-                                name !== 'length'
-                            ) {
-                                this.guiSettings.native.localStorage[name] = window.localStorage.getItem(name);
-                            }
-                        });
-
-                        Object.keys(window.sessionStorage).forEach(name => {
-                            if (
-                                name !== 'getItem' &&
-                                name !== 'setItem' &&
-                                name !== 'removeItem' &&
-                                name !== 'clear' &&
-                                name !== 'key' &&
-                                name !== 'length'
-                            ) {
-                                this.guiSettings.native.sessionStorage[name] = window.sessionStorage.getItem(name);
-                            }
-                        });
-                        await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
-                        await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
-                            val: true,
-                            ack: true,
-                        });
-                    } else {
-                        await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
-                            val: true,
-                            ack: true,
-                        });
-                        window.location.reload();
-                    }
-
-                    await this.getGUISettings();
-                });
-        } else if (!enabled && this.guiSettings) {
-            this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
-                .then(async obj => {
-                    if (!obj) {
-                        try {
-                            // create an object if not exists
-                            await this.socket.setObject(
-                                `system.adapter.${this.adminInstance}.guiSettings`,
-                                DEFAULT_GUI_SETTINGS_OBJECT,
-                            );
-                        } catch (e) {
-                            console.error(`Cannot create system.adapter.${this.adminInstance}.guiSettings": ${e}`);
+                if (ownSettings || !this.guiSettings.native || !Object.keys(this.guiSettings.native).length) {
+                    this.guiSettings.native = { localStorage: {}, sessionStorage: {} };
+                    Object.keys(window.localStorage).forEach(name => {
+                        if (
+                            name !== 'getItem' &&
+                            name !== 'setItem' &&
+                            name !== 'removeItem' &&
+                            name !== 'clear' &&
+                            name !== 'key' &&
+                            name !== 'length'
+                        ) {
+                            this.guiSettings.native.localStorage[name] = window.localStorage.getItem(name);
                         }
-                    }
-                    window._localStorage = null;
-                    window._sessionStorage = null;
+                    });
 
-                    // clear localStorage
-                    Object.keys(window.localStorage).forEach(key => window.localStorage.removeItem(key));
-                    Object.keys(window.sessionStorage).forEach(key => window.sessionStorage.removeItem(key));
+                    Object.keys(window.sessionStorage).forEach(name => {
+                        if (
+                            name !== 'getItem' &&
+                            name !== 'setItem' &&
+                            name !== 'removeItem' &&
+                            name !== 'clear' &&
+                            name !== 'key' &&
+                            name !== 'length'
+                        ) {
+                            this.guiSettings.native.sessionStorage[name] = window.sessionStorage.getItem(name);
+                        }
+                    });
+                    await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
+                    await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
+                        val: true,
+                        ack: true,
+                    });
+                } else {
+                    await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
+                        val: true,
+                        ack: true,
+                    });
+                    window.location.reload();
+                }
 
-                    Object.keys(this.guiSettings.native.localStorage).forEach(name =>
-                        window.localStorage.setItem(name, this.guiSettings.native.localStorage[name]));
-                    Object.keys(this.guiSettings.native.sessionStorage).forEach(name =>
-                        window.sessionStorage.setItem(name, this.guiSettings.native.sessionStorage[name]));
-
-                    this.guiSettings = null;
-
+                await this.getGUISettings();
+            });
+        } else if (!enabled && this.guiSettings) {
+            void this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`).then(async obj => {
+                if (!obj) {
                     try {
-                        await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
-                            val: false,
-                            ack: true,
-                        });
+                        // create an object if not exists
+                        await this.socket.setObject(
+                            `system.adapter.${this.adminInstance}.guiSettings`,
+                            DEFAULT_GUI_SETTINGS_OBJECT,
+                        );
                     } catch (e) {
-                        window.alert(`Cannot disable settings: ${e}`);
+                        console.error(`Cannot create system.adapter.${this.adminInstance}.guiSettings": ${e}`);
                     }
-                    this.setState({ guiSettings: false });
-                });
+                }
+                window._localStorage = null;
+                window._sessionStorage = null;
+
+                // clear localStorage
+                Object.keys(window.localStorage).forEach(key => window.localStorage.removeItem(key));
+                Object.keys(window.sessionStorage).forEach(key => window.sessionStorage.removeItem(key));
+
+                Object.keys(this.guiSettings.native.localStorage).forEach(name =>
+                    window.localStorage.setItem(name, this.guiSettings.native.localStorage[name]),
+                );
+                Object.keys(this.guiSettings.native.sessionStorage).forEach(name =>
+                    window.sessionStorage.setItem(name, this.guiSettings.native.sessionStorage[name]),
+                );
+
+                this.guiSettings = null;
+
+                try {
+                    await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
+                        val: false,
+                        ack: true,
+                    });
+                } catch (e) {
+                    window.alert(`Cannot disable settings: ${e}`);
+                }
+                this.setState({ guiSettings: false });
+            });
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (!this.state.login) {
             window.addEventListener('hashchange', this.onHashChanged, false);
 
@@ -993,9 +1017,12 @@ class App extends Router<AppProps, AppState> {
                         });
                     } else if (progress === PROGRESS.READY) {
                         // BF: (2022.05.09) here must be this.socket.getVersion(true), but I have no Idea, why it does not work :(
-                        this.socket.getVersion()
+                        this.socket
+                            .getVersion()
                             .then(async versionInfo => {
-                                console.log(`Stored version: ${this.state.versionAdmin}, new version: ${versionInfo.version}`);
+                                console.log(
+                                    `Stored version: ${this.state.versionAdmin}, new version: ${versionInfo.version}`,
+                                );
                                 if (this.state.versionAdmin && this.state.versionAdmin !== versionInfo.version) {
                                     window.alert('New adapter version detected. Reloading...');
                                     setTimeout(() => window.location.reload(), 500);
@@ -1082,7 +1109,10 @@ class App extends Router<AppProps, AppState> {
                     // Combine adminGuiConfig with user settings
                     this.adminGuiConfig = {
                         admin: {
-                            menu: {}, settings: {}, adapters: {}, login: {},
+                            menu: {},
+                            settings: {},
+                            adapters: {},
+                            login: {},
                         },
                         ...this.socket.systemConfig.native?.vendor,
                     };
@@ -1158,8 +1188,7 @@ class App extends Router<AppProps, AppState> {
                         // Read user and show him
                         if (this.socket.isSecure || this.socket.systemConfig.native?.vendor) {
                             try {
-                                const user = await this.socket
-                                    .getCurrentUser();
+                                const user = await this.socket.getCurrentUser();
 
                                 const userObj = await this.socket.getObject(`system.user.${user}`);
 
@@ -1171,22 +1200,17 @@ class App extends Router<AppProps, AppState> {
                                     this.setState({
                                         user: {
                                             id: userObj._id,
-                                            name: Utils.getObjectNameFromObj(
-                                                userObj,
-                                                this.socket.systemLang,
-                                            ),
+                                            name: Utils.getObjectNameFromObj(userObj, this.socket.systemLang),
                                             color: userObj.common.color,
                                             icon: userObj.common.icon,
-                                            invertBackground: this.mustInvertBackground(
-                                                userObj.common.color,
-                                            ),
+                                            invertBackground: this.mustInvertBackground(userObj.common.color),
                                         },
                                     });
 
                                     // start ping interval
-                                    this.makePingAuth();
+                                    void this.makePingAuth();
                                 }
-                            } catch (e)  {
+                            } catch (e) {
                                 console.error(`Could not determine user to show: ${e}`);
                                 this.showAlert(e, 'error');
                             }
@@ -1194,27 +1218,24 @@ class App extends Router<AppProps, AppState> {
 
                         this.setState(newState as AppState, () => this.setCurrentTabTitle());
 
-                        this.socket.subscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
+                        void this.socket.subscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
 
                         // Give some time for communication
                         setTimeout(() => this.logsWorkerChanged(this.state.currentHost), 1000);
 
-                        setTimeout(() => this.findNewsInstance()
-                            .then(instance => {
-                                this.newsInstance = instance;
-                                this.socket.subscribeState(
-                                    `admin.${instance}.info.newsFeed`,
-                                    this.onNews,
-                                );
-                            }), 5_000);
-
                         setTimeout(
-                            async () => {
-                                const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
-                                this.handleNewNotifications(notifications);
-                            },
-                            3_000,
+                            () =>
+                                this.findNewsInstance().then(instance => {
+                                    this.newsInstance = instance;
+                                    void this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.onNews);
+                                }),
+                            5_000,
                         );
+
+                        setTimeout(async () => {
+                            const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
+                            await this.handleNewNotifications(notifications);
+                        }, 3_000);
                     } catch (error) {
                         console.error(error);
                         this.showAlert(error, 'error');
@@ -1247,7 +1268,7 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         window.removeEventListener('hashchange', this.onHashChanged, false);
         this.socket?.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
 
@@ -1270,35 +1291,34 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    updateHosts = (events: HostEvent[]) => {
+    updateHosts = (events: HostEvent[]): void => {
         const hosts: CompactHost[] = JSON.parse(JSON.stringify(this.state.hosts));
 
-        Promise.all(
-            events.map(async event => {
-                const elementFind = hosts.find(host => host._id === event.id);
-                if (elementFind) {
-                    const index = hosts.indexOf(elementFind);
-                    if (event.obj) {
-                        // updated
-                        hosts[index] = event.obj as CompactHost;
-                    } else {
-                        // deleted
-                        hosts.splice(index, 1);
-                    }
+        events.forEach((event: HostEvent): void => {
+            const elementFind = hosts.find(host => host._id === event.id);
+            if (elementFind) {
+                const index = hosts.indexOf(elementFind);
+                if (event.obj) {
+                    // updated
+                    hosts[index] = event.obj as CompactHost;
                 } else {
-                    // new
-                    hosts.push(event.obj as CompactHost);
+                    // deleted
+                    hosts.splice(index, 1);
                 }
-            }),
-        )
-            .then(() => this.setState({ hosts }));
+            } else {
+                // new
+                hosts.push(event.obj as CompactHost);
+            }
+        });
+
+        this.setState({ hosts });
     };
 
-    repoChangeHandler = () => {
-        this.readRepoAndInstalledInfo(this.state.currentHost, null, true).then(() => console.log('Repo updated!'));
+    repoChangeHandler = (): void => {
+        void this.readRepoAndInstalledInfo(this.state.currentHost, null, true).then(() => console.log('Repo updated!'));
     };
 
-    adaptersChangeHandler = (events: AdapterEvent[]) => {
+    adaptersChangeHandler = (events: AdapterEvent[]): void => {
         // update installed
         //
         const installed: CompactInstalledInfo = JSON.parse(JSON.stringify(this.state.installed));
@@ -1313,8 +1333,13 @@ class App extends Router<AppProps, AppState> {
                 }
             } else if (installed[adapter]) {
                 Object.keys(installed[adapter]).forEach(attr => {
-                    if ((installed[adapter] as Record<string, any>)[attr] !== (event.obj.common as Record<string, any>)[attr]) {
-                        (installed[adapter] as Record<string, any>)[attr] = (event.obj.common as Record<string, any>)[attr];
+                    if (
+                        (installed[adapter] as Record<string, any>)[attr] !==
+                        (event.obj.common as Record<string, any>)[attr]
+                    ) {
+                        (installed[adapter] as Record<string, any>)[attr] = (event.obj.common as Record<string, any>)[
+                            attr
+                        ];
                         changed = true;
                     }
                 });
@@ -1329,7 +1354,7 @@ class App extends Router<AppProps, AppState> {
         }
     };
 
-    async findCurrentHost(newState: Partial<AppState>) {
+    async findCurrentHost(newState: Partial<AppState>): Promise<void> {
         newState.hosts = await this.socket.getCompactHosts();
 
         if (!this.state.currentHost) {
@@ -1370,7 +1395,7 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    updateExpireIn() {
+    updateExpireIn(): void {
         const now = Date.now();
         this.expireInSec = this.expireInSec > 0 ? this.expireInSec - (now - this.lastExecution) / 1_000 : 0;
 
@@ -1401,7 +1426,7 @@ class App extends Router<AppProps, AppState> {
     /**
      * Start interval to handle logout after the session expires, this also refreshes the session
      */
-    async makePingAuth() {
+    async makePingAuth(): Promise<void> {
         if (this.pingAuth) {
             clearTimeout(this.pingAuth);
             this.pingAuth = null;
@@ -1425,24 +1450,26 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    onDiscoveryAlive = (_name: string, value?: ioBroker.State | null) => {
+    onDiscoveryAlive = (_name: string, value?: ioBroker.State | null): void => {
         if (!!value?.val !== this.state.discoveryAlive) {
             this.setState({ discoveryAlive: !!value?.val });
         }
     };
 
-    getDiscoveryModal = () => <DiscoveryDialog
-        themeType={this.state.themeType}
-        themeName={this.state.themeName}
-        theme={this.state.theme}
-        socket={this.socket}
-        dateFormat={this.state.systemConfig.common.dateFormat}
-        currentHost={this.state.currentHost}
-        defaultLogLevel={this.state.systemConfig.common.defaultLogLevel}
-        repository={this.state.repository}
-        hosts={this.state.hosts}
-        onClose={() => Router.doNavigate(null)}
-    />;
+    getDiscoveryModal = (): JSX.Element => (
+        <DiscoveryDialog
+            themeType={this.state.themeType}
+            themeName={this.state.themeName}
+            theme={this.state.theme}
+            socket={this.socket}
+            dateFormat={this.state.systemConfig.common.dateFormat}
+            currentHost={this.state.currentHost}
+            defaultLogLevel={this.state.systemConfig.common.defaultLogLevel}
+            repository={this.state.repository}
+            hosts={this.state.hosts}
+            onClose={() => Router.doNavigate(null)}
+        />
+    );
 
     async findNewsInstance(): Promise<number> {
         const maxCount = 200;
@@ -1463,38 +1490,42 @@ class App extends Router<AppProps, AppState> {
     /**
      * Render the notification dialog
      */
-    renderNotificationsDialog() {
+    renderNotificationsDialog(): JSX.Element | null {
         if (!this.state.notificationsDialog) {
             return null;
         }
 
-        return <NotificationsDialog
-            notifications={this.state.notifications?.notifications || {}}
-            instances={this.state.notifications?.instances || {}}
-            onClose={() => this.setState({ notificationsDialog: false })}
-            ackCallback={(host, name) => this.socket.clearNotifications(host, name)}
-            dateFormat={this.state.systemConfig.common.dateFormat}
-            isFloatComma={this.state.systemConfig.common.isFloatComma}
-            themeType={this.state.themeType}
-            themeName={this.state.themeName}
-            theme={this.state.theme}
-            socket={this.socket}
-        />;
+        return (
+            <NotificationsDialog
+                notifications={this.state.notifications?.notifications || {}}
+                instances={this.state.notifications?.instances || {}}
+                onClose={() => this.setState({ notificationsDialog: false })}
+                ackCallback={(host, name) => this.socket.clearNotifications(host, name)}
+                dateFormat={this.state.systemConfig.common.dateFormat}
+                isFloatComma={this.state.systemConfig.common.isFloatComma}
+                themeType={this.state.themeType}
+                themeName={this.state.themeName}
+                theme={this.state.theme}
+                socket={this.socket}
+            />
+        );
     }
 
-    renderHostWarningDialog() {
+    renderHostWarningDialog(): JSX.Element | null {
         if (!this.state.showHostWarning) {
             return null;
         }
 
-        return <HostWarningDialog
-            instances={this.state.showHostWarning.instances}
-            messages={this.state.showHostWarning.result.system.categories}
-            dateFormat={this.state.systemConfig.common.dateFormat}
-            themeType={this.state.themeType}
-            ackCallback={name => this.socket.clearNotifications(this.state.showHostWarning.host, name)}
-            onClose={() => this.setState({ showHostWarning: null })}
-        />;
+        return (
+            <HostWarningDialog
+                instances={this.state.showHostWarning.instances}
+                messages={this.state.showHostWarning.result.system.categories}
+                dateFormat={this.state.systemConfig.common.dateFormat}
+                themeType={this.state.themeType}
+                ackCallback={name => this.socket.clearNotifications(this.state.showHostWarning.host, name)}
+                onClose={() => this.setState({ showHostWarning: null })}
+            />
+        );
     }
 
     /** Called when notifications detected, updates the notification indicator */
@@ -1506,7 +1537,7 @@ class App extends Router<AppProps, AppState> {
 
         // if host is offline it returns null
         if (!notifications) {
-            this.setState({ noNotifications, notifications: { } });
+            this.setState({ noNotifications, notifications: {} });
             return;
         }
 
@@ -1539,7 +1570,10 @@ class App extends Router<AppProps, AppState> {
      * @param notifications present notifications
      * @param host host to get notifications from
      */
-    showAdaptersWarning = async (notifications: Record<string, NotificationAnswer | null>, host: string) => {
+    showAdaptersWarning = async (
+        notifications: Record<string, NotificationAnswer | null>,
+        host: string,
+    ): Promise<void> => {
         if (!notifications || !notifications[host] || !notifications[host].result) {
             return;
         }
@@ -1547,9 +1581,15 @@ class App extends Router<AppProps, AppState> {
         const result = notifications[host].result;
 
         if (result?.system && Object.keys(result.system.categories).length) {
-            await this.instancesWorker.getInstances()
-                .then(instances =>
-                    this.setState({ showHostWarning: { host, instances: instances as Record<string, ioBroker.InstanceObject>, result } }));
+            await this.instancesWorker.getInstances().then(instances =>
+                this.setState({
+                    showHostWarning: {
+                        host,
+                        instances: instances as Record<string, ioBroker.InstanceObject>,
+                        result,
+                    },
+                }),
+            );
         }
     };
 
@@ -1573,13 +1613,9 @@ class App extends Router<AppProps, AppState> {
 
                 if (news?.length && news[0].id !== lastNewsId?.val) {
                     const uuid: string = await this.socket.getUuid();
-                    const info = await this.socket
-                        .getHostInfo(this.state.currentHost)
-                        .catch(() => null);
+                    const info = await this.socket.getHostInfo(this.state.currentHost).catch(() => null);
 
-                    const instances  = await this.socket
-                        .getCompactInstances()
-                        .catch(() => null);
+                    const instances = await this.socket.getCompactInstances().catch(() => null);
 
                     const objectsDbType = (await this.socket.getDiagData(this.state.currentHost, 'normal')).objectsType;
 
@@ -1615,46 +1651,50 @@ class App extends Router<AppProps, AppState> {
         }
     };
 
-    renderNewsDialog() {
+    renderNewsDialog(): JSX.Element | null {
         if (!this.state.showNews) {
             return null;
         }
-        return <NewsAdminDialog
-            newsArr={this.state.showNews.checkNews}
-            current={this.state.showNews.lastNewsId}
-            onSetLastNewsId={async id => {
-                if (id) {
-                    await this.socket.setState(`admin.${this.newsInstance}.info.newsLastId`, { val: id, ack: true });
-                }
-                this.setState({ showNews: null });
-            }}
-        />;
+        return (
+            <NewsAdminDialog
+                newsArr={this.state.showNews.checkNews}
+                current={this.state.showNews.lastNewsId}
+                onSetLastNewsId={async id => {
+                    if (id) {
+                        await this.socket.setState(`admin.${this.newsInstance}.info.newsLastId`, {
+                            val: id,
+                            ack: true,
+                        });
+                    }
+                    this.setState({ showNews: null });
+                }}
+            />
+        );
     }
 
-    renderSlowConnectionWarning() {
+    renderSlowConnectionWarning(): JSX.Element | null {
         if (!this.state.showSlowConnectionWarning) {
             return null;
         }
 
-        return <SlowConnectionWarningDialog
-            readTimeoutMs={this.state.readTimeoutMs}
-            t={I18n.t}
-            onClose={readTimeoutMs => {
-                if (readTimeoutMs) {
-                    this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () =>
-                        this.readRepoAndInstalledInfo(this.state.currentHost));
-                } else {
-                    this.setState({ showSlowConnectionWarning: false });
-                }
-            }}
-        />;
+        return (
+            <SlowConnectionWarningDialog
+                readTimeoutMs={this.state.readTimeoutMs}
+                t={I18n.t}
+                onClose={readTimeoutMs => {
+                    if (readTimeoutMs) {
+                        this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () =>
+                            this.readRepoAndInstalledInfo(this.state.currentHost),
+                        );
+                    } else {
+                        this.setState({ showSlowConnectionWarning: false });
+                    }
+                }}
+            />
+        );
     }
 
-    async readRepoAndInstalledInfo(
-        currentHost: string,
-        hosts?: (CompactHost[]) | null,
-        update?: boolean,
-    ) {
+    async readRepoAndInstalledInfo(currentHost: string, hosts?: CompactHost[] | null, update?: boolean): Promise<void> {
         hosts = hosts || this.state.hosts;
 
         const repository: CompactRepository = await this.socket
@@ -1667,7 +1707,8 @@ class App extends Router<AppProps, AppState> {
                 return {};
             });
 
-        const installed: CompactInstalledInfo = await this.socket.getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
+        const installed: CompactInstalledInfo = await this.socket
+            .getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
             .catch(e => {
                 window.alert(`Cannot getInstalled: ${e}`);
                 if (e.toString().includes('timeout')) {
@@ -1676,11 +1717,10 @@ class App extends Router<AppProps, AppState> {
                 return {};
             });
 
-        const adapters: Record<string, CompactAdapterInfo> = await this.socket.getCompactAdapters(update)
-            .catch(e => {
-                window.alert(`Cannot read adapters: ${e}`);
-                return {} as Record<string, CompactAdapterInfo>;
-            });
+        const adapters: Record<string, CompactAdapterInfo> = await this.socket.getCompactAdapters(update).catch(e => {
+            window.alert(`Cannot read adapters: ${e}`);
+            return {} as Record<string, CompactAdapterInfo>;
+        });
 
         if (installed && adapters) {
             Object.keys(adapters).forEach(id => {
@@ -1698,14 +1738,14 @@ class App extends Router<AppProps, AppState> {
         });
     }
 
-    logsWorkerChanged = (currentHost: string) => {
+    logsWorkerChanged = (currentHost: string): void => {
         this.logsWorker?.setCurrentHost(currentHost);
     };
 
     /**
      * Updates the current currentTab in the states
      */
-    onHashChanged = () => {
+    onHashChanged = (): void => {
         this.setState({ currentTab: Router.getLocation() }, () => this.setCurrentTabTitle());
     };
 
@@ -1783,241 +1823,275 @@ class App extends Router<AppProps, AppState> {
         );
     };
 
-    setCurrentTabTitle() {
+    setCurrentTabTitle(): void {
         this.setTitle(this.state.currentTab.tab.replace('tab-', ''));
     }
 
-    setTitle(title: string) {
+    setTitle(title: string): void {
         document.title = `${title} - ${this.state.currentHostName || 'ioBroker'}`;
     }
 
-    getCurrentTab() {
+    getCurrentTab(): JSX.Element | null {
         if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 const small = this.props.width === 'xs' || this.props.width === 'sm';
                 const opened = !small && this.state.drawerState === DrawerStates.opened;
                 const closed = small || this.state.drawerState === DrawerStates.closed;
 
-                return <Suspense fallback={<Connecting />}>
-                    <Adapters
-                        theme={this.state.theme}
-                        triggerUpdate={this.state.triggerAdapterUpdate}
-                        key="adapters"
-                        forceUpdateAdapters={this.state.forceUpdateAdapters}
-                        adaptersWorker={this.adaptersWorker}
-                        instancesWorker={this.instancesWorker}
-                        themeType={this.state.themeType}
-                        systemConfig={this.state.systemConfig}
-                        socket={this.socket}
-                        adminHost={this.state.ownHost}
-                        hostsWorker={this.hostsWorker}
-                        currentHost={this.state.currentHost}
-                        ready={this.state.ready}
-                        t={I18n.t}
-                        lang={I18n.getLanguage()}
-                        expertMode={this.state.expertMode}
-                        executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) => this.executeCommand(cmd, host, callback)}
-                        commandRunning={this.state.commandRunning}
-                        onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
-                        menuOpened={opened}
-                        menuClosed={closed}
-                        adminGuiConfig={this.adminGuiConfig}
-                        toggleTranslation={this.toggleTranslation}
-                        noTranslation={this.state.noTranslation}
-                        adminInstance={this.adminInstance}
-                        currentAdminVersion={this.state.versionAdmin}
-                        onUpdating={updating => this.setState({ updating })}
-                    />
-                </Suspense>;
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <Adapters
+                            theme={this.state.theme}
+                            triggerUpdate={this.state.triggerAdapterUpdate}
+                            key="adapters"
+                            forceUpdateAdapters={this.state.forceUpdateAdapters}
+                            adaptersWorker={this.adaptersWorker}
+                            instancesWorker={this.instancesWorker}
+                            themeType={this.state.themeType}
+                            systemConfig={this.state.systemConfig}
+                            socket={this.socket}
+                            adminHost={this.state.ownHost}
+                            hostsWorker={this.hostsWorker}
+                            currentHost={this.state.currentHost}
+                            ready={this.state.ready}
+                            t={I18n.t}
+                            lang={I18n.getLanguage()}
+                            expertMode={this.state.expertMode}
+                            executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
+                                this.executeCommand(cmd, host, callback)
+                            }
+                            commandRunning={this.state.commandRunning}
+                            onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
+                            menuOpened={opened}
+                            menuClosed={closed}
+                            adminGuiConfig={this.adminGuiConfig}
+                            toggleTranslation={this.toggleTranslation}
+                            noTranslation={this.state.noTranslation}
+                            adminInstance={this.adminInstance}
+                            currentAdminVersion={this.state.versionAdmin}
+                            onUpdating={updating => this.setState({ updating })}
+                        />
+                    </Suspense>
+                );
             }
             if (this.state.currentTab.tab === 'tab-instances') {
-                return <Suspense fallback={<Connecting />}>
-                    <Instances
-                        key="instances"
-                        menuPadding={
-                            this.state.drawerState === DrawerStates.closed
-                                ? 0
-                                : this.state.drawerState === DrawerStates.opened
-                                    ? (this.state.editMenuList ? DRAWER_EDIT_WIDTH : DRAWER_FULL_WIDTH)
-                                    : DRAWER_COMPACT_WIDTH
-                        }
-                        socket={this.socket}
-                        instancesWorker={this.instancesWorker}
-                        lang={I18n.getLanguage()}
-                        hostname={this.state.hostname}
-                        adminInstance={this.adminInstance}
-                        repository={this.state.repository}
-                        hosts={this.state.hosts}
-                        themeName={this.state.themeName}
-                        themeType={this.state.themeType}
-                        theme={this.state.theme}
-                        expertMode={this.state.expertMode}
-                        currentHost={this.state.currentHost}
-                        currentHostName={this.state.currentHostName}
-                        t={I18n.t}
-                        dateFormat={this.state.systemConfig.common.dateFormat}
-                        isFloatComma={this.state.systemConfig.common.isFloatComma}
-                        width={this.props.width}
-                        configStored={(value: boolean) => this.allStored(value)}
-                        executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) => this.executeCommand(cmd, host, callback)}
-                        inBackgroundCommand={this.state.commandError || this.state.performed}
-                        onRegisterIframeRef={(ref: HTMLIFrameElement) => (this.refConfigIframe = ref)}
-                        onUnregisterIframeRef={(ref: HTMLIFrameElement) => {
-                            if (this.refConfigIframe === ref) {
-                                this.refConfigIframe = null;
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <Instances
+                            key="instances"
+                            menuPadding={
+                                this.state.drawerState === DrawerStates.closed
+                                    ? 0
+                                    : this.state.drawerState === DrawerStates.opened
+                                      ? this.state.editMenuList
+                                          ? DRAWER_EDIT_WIDTH
+                                          : DRAWER_FULL_WIDTH
+                                      : DRAWER_COMPACT_WIDTH
                             }
-                        }}
-                    />
-                </Suspense>;
+                            socket={this.socket}
+                            instancesWorker={this.instancesWorker}
+                            lang={I18n.getLanguage()}
+                            hostname={this.state.hostname}
+                            adminInstance={this.adminInstance}
+                            repository={this.state.repository}
+                            hosts={this.state.hosts}
+                            themeName={this.state.themeName}
+                            themeType={this.state.themeType}
+                            theme={this.state.theme}
+                            expertMode={this.state.expertMode}
+                            currentHost={this.state.currentHost}
+                            currentHostName={this.state.currentHostName}
+                            t={I18n.t}
+                            dateFormat={this.state.systemConfig.common.dateFormat}
+                            isFloatComma={this.state.systemConfig.common.isFloatComma}
+                            width={this.props.width}
+                            configStored={(value: boolean) => this.allStored(value)}
+                            executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
+                                this.executeCommand(cmd, host, callback)
+                            }
+                            inBackgroundCommand={this.state.commandError || this.state.performed}
+                            onRegisterIframeRef={(ref: HTMLIFrameElement) => (this.refConfigIframe = ref)}
+                            onUnregisterIframeRef={(ref: HTMLIFrameElement) => {
+                                if (this.refConfigIframe === ref) {
+                                    this.refConfigIframe = null;
+                                }
+                            }}
+                        />
+                    </Suspense>
+                );
             }
             if (this.state.currentTab.tab === 'tab-intro') {
-                return <Suspense fallback={<Connecting />}>
-                    <Intro
-                        key="intro"
-                        hostname={this.state.hostname}
-                        adminInstance={this.adminInstance}
-                        instancesWorker={this.instancesWorker}
-                        hostsWorker={this.hostsWorker}
-                        showAlert={(message: string, type?: 'error' | 'warning' | 'info' | 'success') => this.showAlert(message, type)}
-                        socket={this.socket}
-                        t={I18n.t}
-                        lang={I18n.getLanguage()}
-                        theme={this.state.theme}
-                    />
-                </Suspense>;
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <Intro
+                            key="intro"
+                            hostname={this.state.hostname}
+                            adminInstance={this.adminInstance}
+                            instancesWorker={this.instancesWorker}
+                            hostsWorker={this.hostsWorker}
+                            showAlert={(message: string, type?: 'error' | 'warning' | 'info' | 'success') =>
+                                this.showAlert(message, type)
+                            }
+                            socket={this.socket}
+                            t={I18n.t}
+                            lang={I18n.getLanguage()}
+                            theme={this.state.theme}
+                        />
+                    </Suspense>
+                );
             }
             if (this.state.currentTab.tab === 'tab-logs') {
-                return <Suspense fallback={<Connecting />}>
-                    <Logs
-                        key="logs"
-                        t={I18n.t}
-                        width={this.props.width}
-                        lang={this.state.lang}
-                        socket={this.socket}
-                        themeType={this.state.themeType}
-                        theme={this.state.theme}
-                        ready={this.state.ready}
-                        logsWorker={this.logsWorker}
-                        expertMode={this.state.expertMode}
-                        currentHost={this.state.currentHost}
-                        hostsWorker={this.hostsWorker}
-                        clearErrors={() => this.clearLogErrors()}
-                    />
-                </Suspense>;
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <Logs
+                            key="logs"
+                            t={I18n.t}
+                            width={this.props.width}
+                            lang={this.state.lang}
+                            socket={this.socket}
+                            themeType={this.state.themeType}
+                            theme={this.state.theme}
+                            ready={this.state.ready}
+                            logsWorker={this.logsWorker}
+                            expertMode={this.state.expertMode}
+                            currentHost={this.state.currentHost}
+                            hostsWorker={this.hostsWorker}
+                            clearErrors={() => this.clearLogErrors()}
+                        />
+                    </Suspense>
+                );
             }
             if (this.state.currentTab.tab === 'tab-files') {
-                return <Suspense fallback={<Connecting />}>
-                    <Files
-                        key="files"
-                        ready={this.state.ready}
-                        t={I18n.t}
-                        expertMode={this.state.expertMode}
-                        lang={I18n.getLanguage()}
-                        socket={this.socket}
-                        themeType={this.state.themeType}
-                        theme={this.state.theme}
-                    />
-                </Suspense>;
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <Files
+                            key="files"
+                            ready={this.state.ready}
+                            t={I18n.t}
+                            expertMode={this.state.expertMode}
+                            lang={I18n.getLanguage()}
+                            socket={this.socket}
+                            themeType={this.state.themeType}
+                            theme={this.state.theme}
+                        />
+                    </Suspense>
+                );
             }
             if (this.state.currentTab.tab === 'tab-users') {
-                return <Suspense fallback={<Connecting />}>
-                    <Users
-                        key="users"
-                        ready={this.state.ready}
-                        t={I18n.t}
-                        expertMode={this.state.expertMode}
-                        lang={I18n.getLanguage()}
-                        socket={this.socket}
-                        themeType={this.state.themeType}
-                        theme={this.state.theme}
-                    />
-                </Suspense>;
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <Users
+                            key="users"
+                            ready={this.state.ready}
+                            t={I18n.t}
+                            expertMode={this.state.expertMode}
+                            lang={I18n.getLanguage()}
+                            socket={this.socket}
+                            themeType={this.state.themeType}
+                            theme={this.state.theme}
+                        />
+                    </Suspense>
+                );
             }
             if (this.state.currentTab.tab === 'tab-enums') {
-                return <Suspense fallback={<Connecting />}>
-                    <Enums
-                        key="enums"
-                        t={I18n.t}
-                        lang={I18n.getLanguage()}
-                        socket={this.socket}
-                        themeType={this.state.themeType}
-                        theme={this.state.theme}
-                    />
-                </Suspense>;
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <Enums
+                            key="enums"
+                            t={I18n.t}
+                            lang={I18n.getLanguage()}
+                            socket={this.socket}
+                            themeType={this.state.themeType}
+                            theme={this.state.theme}
+                        />
+                    </Suspense>
+                );
             }
             if (this.state.currentTab.tab === 'tab-objects') {
-                return <Suspense fallback={<Connecting />} key="objects">
-                    <Objects
-                        t={I18n.t}
-                        theme={this.state.theme}
-                        themeName={this.state.themeName}
-                        themeType={this.state.themeType}
-                        expertMode={this.state.expertMode}
-                        objectsWorker={this.objectsWorker}
-                        lang={I18n.getLanguage()}
-                        socket={this.socket}
-                        dateFormat={this.state.systemConfig.common.dateFormat}
-                        isFloatComma={this.state.systemConfig.common.isFloatComma}
-                    />
-                </Suspense>;
-            } if (this.state.currentTab.tab === 'tab-hosts') {
-                return <Suspense fallback={<Connecting />}>
-                    <Hosts
-                        socket={this.socket}
-                        lang={I18n.getLanguage()}
-                        hostsWorker={this.hostsWorker}
-                        toggleTranslation={this.toggleTranslation}
-                        noTranslation={this.state.noTranslation}
-                        themeType={this.state.themeType}
-                        theme={this.state.theme}
-                        expertMode={this.state.expertMode}
-                        t={I18n.t}
-                        navigate={Router.doNavigate}
-                        currentHost={this.state.currentHost}
-                        executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) => this.executeCommand(cmd, host, callback)}
-                        systemConfig={this.state.systemConfig}
-                        showAdaptersWarning={this.showAdaptersWarning}
-                        adminInstance={this.adminInstance}
-                        onUpdating={(updating: boolean) => this.setState({ updating })}
-                        instancesWorker={this.instancesWorker}
-                    />
-                </Suspense>;
+                return (
+                    <Suspense
+                        fallback={<Connecting />}
+                        key="objects"
+                    >
+                        <Objects
+                            t={I18n.t}
+                            theme={this.state.theme}
+                            themeName={this.state.themeName}
+                            themeType={this.state.themeType}
+                            expertMode={this.state.expertMode}
+                            objectsWorker={this.objectsWorker}
+                            lang={I18n.getLanguage()}
+                            socket={this.socket}
+                            dateFormat={this.state.systemConfig.common.dateFormat}
+                            isFloatComma={this.state.systemConfig.common.isFloatComma}
+                        />
+                    </Suspense>
+                );
+            }
+            if (this.state.currentTab.tab === 'tab-hosts') {
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <Hosts
+                            socket={this.socket}
+                            lang={I18n.getLanguage()}
+                            hostsWorker={this.hostsWorker}
+                            toggleTranslation={this.toggleTranslation}
+                            noTranslation={this.state.noTranslation}
+                            themeType={this.state.themeType}
+                            theme={this.state.theme}
+                            expertMode={this.state.expertMode}
+                            t={I18n.t}
+                            navigate={Router.doNavigate}
+                            currentHost={this.state.currentHost}
+                            executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
+                                this.executeCommand(cmd, host, callback)
+                            }
+                            systemConfig={this.state.systemConfig}
+                            showAdaptersWarning={this.showAdaptersWarning}
+                            adminInstance={this.adminInstance}
+                            onUpdating={(updating: boolean) => this.setState({ updating })}
+                            instancesWorker={this.instancesWorker}
+                        />
+                    </Suspense>
+                );
             }
             const m = this.state.currentTab.tab.match(/^tab-([-\w]+)(-\d+)?$/);
             if (m) {
                 // /adapter/javascript/tab.html
-                return <Suspense fallback={<Connecting />}>
-                    <CustomTab
-                        key={this.state.currentTab.tab}
-                        t={I18n.t}
-                        hostname={this.state.hostname}
-                        adminInstance={this.adminInstance}
-                        hosts={this.state.hosts}
-                        instancesWorker={this.instancesWorker}
-                        tab={this.state.currentTab.tab}
-                        themeName={this.state.themeName}
-                        expertMode={this.state.expertMode}
-                        lang={I18n.getLanguage()}
-                        onRegisterIframeRef={(ref: HTMLIFrameElement) => (this.refConfigIframe = ref)}
-                        onUnregisterIframeRef={(ref: HTMLIFrameElement) => {
-                            if (this.refConfigIframe === ref) {
-                                this.refConfigIframe = null;
-                            }
-                        }}
-                    />
-                </Suspense>;
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <CustomTab
+                            key={this.state.currentTab.tab}
+                            t={I18n.t}
+                            hostname={this.state.hostname}
+                            adminInstance={this.adminInstance}
+                            hosts={this.state.hosts}
+                            instancesWorker={this.instancesWorker}
+                            tab={this.state.currentTab.tab}
+                            themeName={this.state.themeName}
+                            expertMode={this.state.expertMode}
+                            lang={I18n.getLanguage()}
+                            onRegisterIframeRef={(ref: HTMLIFrameElement) => (this.refConfigIframe = ref)}
+                            onUnregisterIframeRef={(ref: HTMLIFrameElement) => {
+                                if (this.refConfigIframe === ref) {
+                                    this.refConfigIframe = null;
+                                }
+                            }}
+                        />
+                    </Suspense>
+                );
             }
         }
 
         return null;
     }
 
-    clearLogErrors() {
+    clearLogErrors(): void {
         this.logsWorker.resetErrors();
         this.logsWorker.resetWarnings();
     }
 
-    getCurrentDialog() {
+    getCurrentDialog(): JSX.Element | null {
         if (this.state && this.state.currentTab && this.state.currentTab.dialog) {
             if (this.state.currentTab.dialog === 'system') {
                 return this.getSystemSettingsDialog();
@@ -2030,40 +2104,42 @@ class App extends Router<AppProps, AppState> {
         return null;
     }
 
-    getSystemSettingsDialog() {
-        return <SystemSettingsDialog
-            adminGuiConfig={this.adminGuiConfig}
-            width={this.props.width}
-            currentHost={this.state.currentHost}
-            themeName={this.state.themeName}
-            themeType={this.state.themeType}
-            theme={this.state.theme}
-            key="systemSettings"
-            onClose={async (repoChanged?: boolean) => {
-                Router.doNavigate(null);
-                // read systemConfig anew
-                const systemConfig = await this.socket.getObject('system.config');
+    getSystemSettingsDialog(): JSX.Element {
+        return (
+            <SystemSettingsDialog
+                adminGuiConfig={this.adminGuiConfig}
+                width={this.props.width}
+                currentHost={this.state.currentHost}
+                themeName={this.state.themeName}
+                themeType={this.state.themeType}
+                theme={this.state.theme}
+                key="systemSettings"
+                onClose={async (repoChanged?: boolean) => {
+                    Router.doNavigate(null);
+                    // read systemConfig anew
+                    const systemConfig = await this.socket.getObject('system.config');
 
-                if (repoChanged) {
-                    this.setState({ triggerAdapterUpdate: this.state.triggerAdapterUpdate + 1, systemConfig });
-                } else {
-                    this.setState({ systemConfig });
-                }
-            }}
-            lang={this.state.lang}
-            socket={this.socket}
-            currentTab={this.state.currentTab}
-            expertModeFunc={(value: boolean) => {
-                (window._sessionStorage || window.sessionStorage).removeItem('App.expertMode');
-                const systemConfig = JSON.parse(JSON.stringify(this.state.systemConfig));
-                systemConfig.common.expertMode = value;
-                this.setState({ expertMode: value, systemConfig });
-            }}
-            t={I18n.t}
-        />;
+                    if (repoChanged) {
+                        this.setState({ triggerAdapterUpdate: this.state.triggerAdapterUpdate + 1, systemConfig });
+                    } else {
+                        this.setState({ systemConfig });
+                    }
+                }}
+                lang={this.state.lang}
+                socket={this.socket}
+                currentTab={this.state.currentTab}
+                expertModeFunc={(value: boolean) => {
+                    (window._sessionStorage || window.sessionStorage).removeItem('App.expertMode');
+                    const systemConfig = JSON.parse(JSON.stringify(this.state.systemConfig));
+                    systemConfig.common.expertMode = value;
+                    this.setState({ expertMode: value, systemConfig });
+                }}
+                t={I18n.t}
+            />
+        );
     }
 
-    handleAlertClose(event?: string, reason?: string) {
+    handleAlertClose(event?: string, reason?: string): void {
         if (reason === 'clickaway') {
             return;
         }
@@ -2071,7 +2147,7 @@ class App extends Router<AppProps, AppState> {
         this.setState({ alert: false });
     }
 
-    showAlert(alertMessage: string, alertType?: 'error' | 'warning' | 'info' | 'success') {
+    showAlert(alertMessage: string, alertType?: 'error' | 'warning' | 'info' | 'success'): void {
         if (alertType !== 'error' && alertType !== 'warning' && alertType !== 'info' && alertType !== 'success') {
             alertType = 'info';
         }
@@ -2083,14 +2159,14 @@ class App extends Router<AppProps, AppState> {
         });
     }
 
-    handleDrawerState(state: 0 | 1 | 2) {
+    handleDrawerState(state: 0 | 1 | 2): void {
         (window._localStorage || window.localStorage).setItem('App.drawerState', state.toString());
         this.setState({
             drawerState: state,
         });
     }
 
-    static logout() {
+    static logout(): void {
         if (window.location.port === '3000') {
             window.location.href = `${window.location.protocol}//${window.location.hostname}:8081/logout?dev`;
         } else {
@@ -2098,7 +2174,7 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    handleNavigation(tab: string) {
+    handleNavigation(tab: string): void {
         if (tab) {
             if (this.state.allStored) {
                 Router.doNavigate(tab);
@@ -2121,17 +2197,17 @@ class App extends Router<AppProps, AppState> {
         this.setTitle(tab.replace('tab-', ''));
     }
 
-    allStored(value: boolean) {
+    allStored(value: boolean): void {
         this.setState({
             allStored: value,
         });
     }
 
-    closeDataNotStoredDialog() {
+    closeDataNotStoredDialog(): void {
         this.setState({ dataNotStoredDialog: false });
     }
 
-    confirmDataNotStored() {
+    confirmDataNotStored(): void {
         this.setState(
             {
                 dataNotStoredDialog: false,
@@ -2176,7 +2252,7 @@ class App extends Router<AppProps, AppState> {
         });
     }
 
-    closeCmdDialog(cb?: () => void) {
+    closeCmdDialog(cb?: () => void): void {
         this.setState(
             {
                 cmd: null,
@@ -2190,142 +2266,166 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    renderWizardDialog() {
+    renderWizardDialog(): JSX.Element | null {
         if (this.state.wizard) {
-            return <WizardDialog
-                executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) => this.executeCommand(cmd, host, callback)}
-                host={this.state.currentHost}
-                socket={this.socket}
-                themeName={this.state.themeName}
-                themeType={this.state.themeType}
-                toggleTheme={this.toggleTheme}
-                lang={I18n.getLanguage()}
-                onClose={(redirect?: string) => {
-                    this.setState({ wizard: false, showRedirect: redirect, redirectCountDown: 10 }, () => {
-                        if (this.state.showRedirect) {
-                            setInterval(() => {
-                                if (this.state.redirectCountDown > 0) {
-                                    this.setState({ redirectCountDown: this.state.redirectCountDown - 1 });
-                                } else {
-                                    window.location.href = this.state.showRedirect;
-                                }
-                            }, 1_000);
-                        }
-                    });
-                }}
-            />;
+            return (
+                <WizardDialog
+                    executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
+                        this.executeCommand(cmd, host, callback)
+                    }
+                    host={this.state.currentHost}
+                    socket={this.socket}
+                    themeName={this.state.themeName}
+                    themeType={this.state.themeType}
+                    toggleTheme={this.toggleTheme}
+                    lang={I18n.getLanguage()}
+                    onClose={(redirect?: string) => {
+                        this.setState({ wizard: false, showRedirect: redirect, redirectCountDown: 10 }, () => {
+                            if (this.state.showRedirect) {
+                                setInterval(() => {
+                                    if (this.state.redirectCountDown > 0) {
+                                        this.setState({ redirectCountDown: this.state.redirectCountDown - 1 });
+                                    } else {
+                                        window.location.href = this.state.showRedirect;
+                                    }
+                                }, 1_000);
+                            }
+                        });
+                    }}
+                />
+            );
         }
         return null;
     }
 
-    showRedirectDialog() {
+    showRedirectDialog(): JSX.Element | null {
         if (this.state.showRedirect) {
-            return <Dialog
-                open={!0}
-                onClose={() => {
-                    // Ignore. It can be closed only by button
-                }}
-            >
-                <DialogTitle>{I18n.t('Waiting for admin restart...')}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {I18n.t('Redirect in %s second(s)', this.state.redirectCountDown)}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    {window.sidebar ||
-                    (window.opera && window.print) ||
-                    // @ts-expect-error ignore
-                    (window.document.all && window.external?.AddFavorite) ?
-                        <Button
-                            onClick={() => {
-                                if (window.sidebar) {
-                                // Firefox
-                                    window.sidebar.addPanel('ioBroker.admin', this.state.showRedirect, '');
-                                } else if (window.opera && window.print) {
-                                // Opera
-                                    const elem = document.createElement('a');
-                                    elem.setAttribute('href', this.state.showRedirect);
-                                    elem.setAttribute('title', 'ioBroker.admin');
-                                    elem.setAttribute('rel', 'sidebar');
-                                    elem.click(); // this.title=document.title;
-                                } else if (document.all) {
-                                    // ie
-                                    // @ts-expect-error ignore
-                                    window.external.AddFavorite(this.state.showRedirect, 'ioBroker.admin');
-                                }
+            return (
+                <Dialog
+                    open={!0}
+                    onClose={() => {
+                        // Ignore. It can be closed only by button
+                    }}
+                >
+                    <DialogTitle>{I18n.t('Waiting for admin restart...')}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {I18n.t('Redirect in %s second(s)', this.state.redirectCountDown)}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        {window.sidebar ||
+                        (window.opera && window.print) ||
+                        // @ts-expect-error ignore
+                        (window.document.all && window.external?.AddFavorite) ? (
+                            <Button
+                                onClick={() => {
+                                    if (window.sidebar) {
+                                        // Firefox
+                                        window.sidebar.addPanel('ioBroker.admin', this.state.showRedirect, '');
+                                    } else if (window.opera && window.print) {
+                                        // Opera
+                                        const elem = document.createElement('a');
+                                        elem.setAttribute('href', this.state.showRedirect);
+                                        elem.setAttribute('title', 'ioBroker.admin');
+                                        elem.setAttribute('rel', 'sidebar');
+                                        elem.click(); // this.title=document.title;
+                                    } else if (document.all) {
+                                        // ie
+                                        // @ts-expect-error ignore
+                                        window.external.AddFavorite(this.state.showRedirect, 'ioBroker.admin');
+                                    }
+                                }}
+                            >
+                                {I18n.t('Bookmark admin')}
+                            </Button>
+                        ) : null}
+                        {this.state.redirectCountDown ? (
+                            <Button
+                                variant="contained"
+                                onClick={() => (window.location.href = this.state.showRedirect)}
+                            >
+                                {I18n.t('Go to admin now')}
+                            </Button>
+                        ) : null}
+                    </DialogActions>
+                </Dialog>
+            );
+        }
+        return null;
+    }
+
+    renderCommandDialog(): JSX.Element | null {
+        return this.state.cmd ? (
+            <CommandDialog
+                onSetCommandRunning={(commandRunning: boolean) => this.setState({ commandRunning })}
+                onClose={() => this.closeCmdDialog(() => this.setState({ commandRunning: false }))}
+                visible={this.state.cmdDialog}
+                callback={this.state.callback}
+                onInBackground={() => this.setState({ cmdDialog: false })}
+                cmd={this.state.cmd}
+                errorFunc={() => this.setState({ commandError: true })}
+                performed={() => this.setState({ performed: true })}
+                inBackground={this.state.commandError || this.state.performed}
+                commandError={this.state.commandError}
+                socket={this.socket}
+                host={this.state.commandHost || this.state.currentHost}
+                ready={this.state.ready}
+                t={I18n.t}
+            />
+        ) : null;
+    }
+
+    renderLoggedUser(): JSX.Element | null {
+        if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
+            return (
+                <div>
+                    {/* @ts-expect-error fixed in js-controller */}
+                    {this.state.systemConfig.common.siteName ? (
+                        /* @ts-expect-error fixed in js-controller */
+                        <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>
+                    ) : null}
+
+                    <Box
+                        component="div"
+                        title={this.state.user.id}
+                        sx={{
+                            ...styles.userBadge,
+                            ...(this.state.user.invertBackground ? styles.userBackground : undefined),
+                        }}
+                        ref={this.refUser}
+                    >
+                        {this.state.user.icon ? (
+                            <Icon
+                                src={this.state.user.icon}
+                                style={styles.userIcon}
+                            />
+                        ) : (
+                            <UserIcon style={styles.userIcon} />
+                        )}
+                        <div
+                            ref={this.refUserDiv}
+                            style={{
+                                ...styles.userText,
+                                color: this.state.expireWarningMode ? '#F44' : this.state.user?.color || undefined,
                             }}
                         >
-                            {I18n.t('Bookmark admin')}
-                        </Button> : null}
-                    {this.state.redirectCountDown ? (
-                        <Button variant="contained" onClick={() => (window.location.href = this.state.showRedirect)}>
-                            {I18n.t('Go to admin now')}
-                        </Button>
-                    ) : null}
-                </DialogActions>
-            </Dialog>;
-        }
-        return null;
-    }
+                            {this.state.user.name}
+                        </div>
 
-    renderCommandDialog() {
-        return this.state.cmd ? <CommandDialog
-            onSetCommandRunning={(commandRunning: boolean) => this.setState({ commandRunning })}
-            onClose={() => this.closeCmdDialog(() => this.setState({ commandRunning: false }))}
-            visible={this.state.cmdDialog}
-            callback={this.state.callback}
-            onInBackground={() => this.setState({ cmdDialog: false })}
-            cmd={this.state.cmd}
-            errorFunc={() => this.setState({ commandError: true })}
-            performed={() => this.setState({ performed: true })}
-            inBackground={this.state.commandError || this.state.performed}
-            commandError={this.state.commandError}
-            socket={this.socket}
-            host={this.state.commandHost || this.state.currentHost}
-            ready={this.state.ready}
-            t={I18n.t}
-        /> : null;
-    }
-
-    renderLoggedUser() {
-        if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
-            return <div>
-                {/* @ts-expect-error fixed in js-controller */}
-                {this.state.systemConfig.common.siteName ?
-                    /* @ts-expect-error fixed in js-controller */
-                    <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div> : null}
-
-                <Box
-                    component="div"
-                    title={this.state.user.id}
-                    sx={{
-                        ...styles.userBadge,
-                        ...(this.state.user.invertBackground ? styles.userBackground : undefined),
-                    }}
-                    ref={this.refUser}
-                >
-                    {this.state.user.icon ?
-                        <Icon src={this.state.user.icon} style={styles.userIcon} />
-                        :
-                        <UserIcon style={styles.userIcon} />}
-                    <div
-                        ref={this.refUserDiv}
-                        style={{ ...styles.userText, color: this.state.expireWarningMode ? '#F44' : (this.state.user?.color || undefined) }}
-                    >
-                        {this.state.user.name}
-                    </div>
-
-                    {this.state.expireWarningMode ? <IconButton
-                        onClick={async () => {
-                            await this.socket.getCurrentSession();
-                            await this.makePingAuth();
-                        }}
-                    >
-                        <UpdateIcon />
-                    </IconButton> : null}
-                </Box>
-            </div>;
+                        {this.state.expireWarningMode ? (
+                            <IconButton
+                                onClick={async () => {
+                                    await this.socket.getCurrentSession();
+                                    await this.makePingAuth();
+                                }}
+                            >
+                                <UpdateIcon />
+                            </IconButton>
+                        ) : null}
+                    </Box>
+                </div>
+            );
         }
         // @ts-expect-error fixed in js-controller
         if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
@@ -2335,17 +2435,19 @@ class App extends Router<AppProps, AppState> {
         return null;
     }
 
-    renderAlertSnackbar() {
-        return <Snackbar
-            style={styles[`alert_${this.state.alertType}`]}
-            open={this.state.alert}
-            autoHideDuration={6000}
-            onClose={() => this.handleAlertClose()}
-            message={this.state.alertMessage}
-        />;
+    renderAlertSnackbar(): JSX.Element {
+        return (
+            <Snackbar
+                style={styles[`alert_${this.state.alertType}`]}
+                open={this.state.alert}
+                autoHideDuration={6000}
+                onClose={() => this.handleAlertClose()}
+                message={this.state.alertMessage}
+            />
+        );
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         /* return <ConfirmDialog
             onClose={() => this.closeDataNotStoredDialog()}
             open={this.state.dataNotStoredDialog}
@@ -2355,467 +2457,516 @@ class App extends Router<AppProps, AppState> {
         >
             {I18n.t('Some data are not stored. Discard?')}
         </ConfirmDialog>; */
-        return this.state.dataNotStoredDialog && <ConfirmDialog
-            title={I18n.t('Please confirm')}
-            text={I18n.t('Some data are not stored. Discard?')}
-            ok={I18n.t('Ok')}
-            cancel={I18n.t('Cancel')}
-            onClose={isYes => (isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog())}
-        />;
+        return this.state.dataNotStoredDialog ? (
+            <ConfirmDialog
+                title={I18n.t('Please confirm')}
+                text={I18n.t('Some data are not stored. Discard?')}
+                ok={I18n.t('Ok')}
+                cancel={I18n.t('Cancel')}
+                onClose={isYes => (isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog())}
+            />
+        ) : null;
     }
 
-    renderExpertDialog() {
+    renderExpertDialog(): JSX.Element | null {
         if (!this.state.expertModeDialog) {
             return null;
         }
-        return <ExpertModeDialog
-            onClose={result => {
-                if (result === 'openSettings') {
-                    Router.doNavigate(null, 'system');
-                } else if (result) {
-                    (window._sessionStorage || window.sessionStorage).setItem(
-                        'App.expertMode',
-                        this.state.expertMode ? 'false' : 'true',
-                    );
-                    this.refConfigIframe?.contentWindow?.postMessage(
-                        'updateExpertMode',
-                        '*',
-                    );
-                    this.setState({ expertModeDialog: false, expertMode: !this.state.expertMode });
-                } else if (this.state.expertModeDialog) {
-                    this.setState({ expertModeDialog: false });
-                }
-            }}
-            expertMode={this.state.expertMode}
-        />;
+        return (
+            <ExpertModeDialog
+                onClose={result => {
+                    if (result === 'openSettings') {
+                        Router.doNavigate(null, 'system');
+                    } else if (result) {
+                        (window._sessionStorage || window.sessionStorage).setItem(
+                            'App.expertMode',
+                            this.state.expertMode ? 'false' : 'true',
+                        );
+                        this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                        this.setState({ expertModeDialog: false, expertMode: !this.state.expertMode });
+                    } else if (this.state.expertModeDialog) {
+                        this.setState({ expertModeDialog: false });
+                    }
+                }}
+                expertMode={this.state.expertMode}
+            />
+        );
     }
 
-    renderShowGuiSettings() {
-        return this.state.showGuiSettings ? <Menu
-            anchorEl={this.state.showGuiSettings}
-            open={!0}
-            onClose={() => this.setState({ showGuiSettings: null })}
-        >
-            <MenuItem
-                onClick={() => {
-                    this.setState({ showGuiSettings: null });
-                    this.enableGuiSettings(true);
-                }}
+    renderShowGuiSettings(): JSX.Element | null {
+        return this.state.showGuiSettings ? (
+            <Menu
+                anchorEl={this.state.showGuiSettings}
+                open={!0}
+                onClose={() => this.setState({ showGuiSettings: null })}
             >
-                {I18n.t('Use settings of other browsers')}
-            </MenuItem>
-            <MenuItem
-                onClick={() => {
-                    this.setState({ showGuiSettings: null });
-                    this.enableGuiSettings(true, true);
-                }}
-            >
-                {I18n.t('Use settings of this browser')}
-            </MenuItem>
-            <MenuItem onClick={() => this.setState({ showGuiSettings: null })}>
-                <ListItemIcon>
-                    <CancelIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{I18n.t('Cancel')}</ListItemText>
-            </MenuItem>
-        </Menu> : null;
+                <MenuItem
+                    onClick={() => {
+                        this.setState({ showGuiSettings: null });
+                        this.enableGuiSettings(true);
+                    }}
+                >
+                    {I18n.t('Use settings of other browsers')}
+                </MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        this.setState({ showGuiSettings: null });
+                        this.enableGuiSettings(true, true);
+                    }}
+                >
+                    {I18n.t('Use settings of this browser')}
+                </MenuItem>
+                <MenuItem onClick={() => this.setState({ showGuiSettings: null })}>
+                    <ListItemIcon>
+                        <CancelIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>{I18n.t('Cancel')}</ListItemText>
+                </MenuItem>
+            </Menu>
+        ) : null;
     }
 
-    renderToolbar(small: boolean) {
+    renderToolbar(small: boolean): JSX.Element {
         const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem('App.expertMode');
         const expertModePermanent =
             !storedExpertMode || (storedExpertMode === 'true') === !!this.state.systemConfig.common.expertMode;
 
         const performedStyle = Utils.getStyle(this.state.theme, styles.performed);
+        const sumNotification = this.state.noNotifications.warning + this.state.noNotifications.other;
 
-        return <Toolbar>
-            <IconButton
-                size="large"
-                edge="start"
-                style={{
-                    ...styles.menuButton,
-                    ...(!small && this.state.drawerState !== DrawerStates.closed ? styles.hide : undefined),
-                }}
-                onClick={() => this.handleDrawerState(DrawerStates.opened as 0)}
-            >
-                <MenuIcon />
-            </IconButton>
-            <div style={styles.wrapperButtons}>
-                <Tooltip title={I18n.t('Notifications')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                    <IconButton
-                        size="large"
-                        disableRipple={!this.state.noNotifications}
-                        style={{ opacity: this.state.noNotifications ? 1 : 0.3 }}
-                        onClick={this.state.noNotifications ? () => this.setState({ notificationsDialog: true }) : null}
-                    >
-                        <Badge
-                            badgeContent={this.state.noNotifications.other + this.state.noNotifications.warning}
-                            color={this.state.noNotifications.warning > 0 ? 'error' : 'secondary'}
-                            max={99}
-                        >
-                            <NotificationsIcon />
-                        </Badge>
-                    </IconButton>
-                </Tooltip>
-                <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
-                    {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                        <IconButton
-                            size="large"
-                            onClick={() => Router.doNavigate(null, 'discovery')}
-                        >
-                            <VisibilityIcon />
-                        </IconButton>
-                    </Tooltip>}
-                </IsVisible>
-                <IsVisible name="admin.appBar.systemSettings" config={this.adminGuiConfig}>
-                    <Tooltip title={I18n.t('System settings')} slotProps={{ popper: { sx: styles.tooltip } }}>
-                        <IconButton
-                            size="large"
-                            onClick={() => Router.doNavigate(null, 'system')}
-                        >
-                            <BuildIcon />
-                        </IconButton>
-                    </Tooltip>
-                </IsVisible>
-                {this.toggleThemePossible ? <IsVisible name="admin.appBar.toggleTheme" config={this.adminGuiConfig}>
-                    <ToggleThemeMenu
-                        size="large"
-                        toggleTheme={this.toggleTheme}
-                        themeName={this.state.themeName as 'dark' | 'light' | 'colored' | 'blue'}
-                        t={I18n.t}
-                    />
-                </IsVisible> : null}
-                <IsVisible name="admin.appBar.expertMode" config={this.adminGuiConfig}>
+        return (
+            <Toolbar>
+                <IconButton
+                    size="large"
+                    edge="start"
+                    style={{
+                        ...styles.menuButton,
+                        ...(!small && this.state.drawerState !== DrawerStates.closed ? styles.hide : undefined),
+                    }}
+                    onClick={() => this.handleDrawerState(DrawerStates.opened as 0)}
+                >
+                    <MenuIcon />
+                </IconButton>
+                <div style={styles.wrapperButtons}>
                     <Tooltip
-                        title={`${I18n.t('Toggle expert mode')} ${
-                            expertModePermanent
-                                ? ''
-                                : ` (${I18n.t('only in this browser session')})`
-                        }`}
+                        title={I18n.t('Notifications')}
                         slotProps={{ popper: { sx: styles.tooltip } }}
                     >
-                        <Badge
-                            color="secondary"
-                            variant="dot"
-                            sx={{ '& .MuiBadge-badge': styles.expertBadge }}
-                            invisible={expertModePermanent}
+                        <IconButton
+                            size="large"
+                            disableRipple={!sumNotification}
+                            style={{ opacity: sumNotification ? 1 : 0.3 }}
+                            onClick={sumNotification ? () => this.setState({ notificationsDialog: true }) : null}
+                        >
+                            <Badge
+                                badgeContent={this.state.noNotifications.other + this.state.noNotifications.warning}
+                                color={this.state.noNotifications.warning > 0 ? 'error' : 'secondary'}
+                                max={99}
+                            >
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
+                    </Tooltip>
+                    <IsVisible
+                        name="admin.appBar.discovery"
+                        config={this.adminGuiConfig}
+                    >
+                        {this.state.discoveryAlive && (
+                            <Tooltip
+                                title={I18n.t('Discovery devices')}
+                                slotProps={{ popper: { sx: styles.tooltip } }}
+                            >
+                                <IconButton
+                                    size="large"
+                                    onClick={() => Router.doNavigate(null, 'discovery')}
+                                >
+                                    <VisibilityIcon />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                    </IsVisible>
+                    <IsVisible
+                        name="admin.appBar.systemSettings"
+                        config={this.adminGuiConfig}
+                    >
+                        <Tooltip
+                            title={I18n.t('System settings')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
                         >
                             <IconButton
                                 size="large"
-                                onClick={() => {
-                                    if (
-                                        !!this.state.systemConfig.common.expertMode ===
-                                        !this.state.expertMode
-                                    ) {
-                                        (
-                                            window._sessionStorage || window.sessionStorage
-                                        ).setItem('App.expertMode', this.state.expertMode ? 'false' : 'true');
-                                        this.setState({ expertMode: !this.state.expertMode });
-                                        this.refConfigIframe?.contentWindow?.postMessage(
-                                            'updateExpertMode',
-                                            '*',
-                                        );
-                                    } else if (
-                                        (window._sessionStorage || window.sessionStorage).getItem('App.doNotShowExpertDialog') === 'true'
-                                    ) {
-                                        (window._sessionStorage || window.sessionStorage).setItem('App.expertMode', this.state.expertMode ? 'false' : 'true');
-                                        this.setState({ expertMode: !this.state.expertMode });
-                                        this.refConfigIframe?.contentWindow?.postMessage(
-                                            'updateExpertMode',
-                                            '*',
-                                        );
-                                    } else {
-                                        this.setState({ expertModeDialog: true });
-                                    }
-                                }}
-                                style={{
-                                    color: this.state.expertMode
-                                        ? this.state.theme.palette.expert
-                                        : undefined,
-                                }}
-                                color="default"
+                                onClick={() => Router.doNavigate(null, 'system')}
                             >
-                                <IconExpert
-                                    // glowColor={this.state.theme.palette.secondary.main}
-                                    // active={this.state.expertMode}
-                                    style={{
-                                        ...styles.expertIcon,
-                                        ...(this.state.expertMode ? styles.expertIconActive : undefined),
-                                    }}
-                                />
+                                <BuildIcon />
                             </IconButton>
-                        </Badge>
-                    </Tooltip>
-                </IsVisible>
-                {this.state.expertMode ? <Tooltip
-                    title={I18n.t(
-                        'Synchronize admin settings between all opened browser windows',
-                    )}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <IconButton
-                        size="large"
-                        onClick={e =>
-                            (this.state.guiSettings
-                                ? this.enableGuiSettings(false)
-                                : this.setState({ showGuiSettings: e.target as HTMLButtonElement }))}
-                        style={{
-                            color: this.state.guiSettings
-                                ? this.state.theme.palette.expert
-                                : undefined,
-                        }}
+                        </Tooltip>
+                    </IsVisible>
+                    {this.toggleThemePossible ? (
+                        <IsVisible
+                            name="admin.appBar.toggleTheme"
+                            config={this.adminGuiConfig}
+                        >
+                            <ToggleThemeMenu
+                                size="large"
+                                toggleTheme={this.toggleTheme}
+                                themeName={this.state.themeName as 'dark' | 'light' | 'colored' | 'blue'}
+                                t={I18n.t}
+                            />
+                        </IsVisible>
+                    ) : null}
+                    <IsVisible
+                        name="admin.appBar.expertMode"
+                        config={this.adminGuiConfig}
                     >
-                        {this.state.guiSettings ? <SyncIcon /> : <SyncIconDisabled />}
-                    </IconButton>
-                </Tooltip> : null}
-                <IsVisible name="admin.appBar.hostSelector" config={this.adminGuiConfig}>
-                    <HostSelectors
-                        tooltip={
-                            this.state.currentTab.tab !== 'tab-instances' &&
-                            this.state.currentTab.tab !== 'tab-adapters' &&
-                            this.state.currentTab.tab !== 'tab-logs'
-                                ? I18n.t(
-                                    'You can change host on Instances, Adapters or Logs pages',
-                                )
-                                : undefined
-                        }
-                        themeType={this.state.themeType}
-                        expertMode={this.state.expertMode}
-                        socket={this.socket}
-                        hostsWorker={this.hostsWorker}
-                        currentHost={this.state.currentHost}
-                        setCurrentHost={(hostName, host) => {
-                            this.setState(
-                                {
-                                    currentHostName: hostName,
-                                    currentHost: host,
-                                },
-                                async () => {
-                                    this.logsWorkerChanged(host);
-                                    (window._localStorage || window.localStorage).setItem(
-                                        'App.currentHost',
-                                        host,
-                                    );
-
-                                    await this.readRepoAndInstalledInfo(host, this.state.hosts);
-                                    // read notifications from host
-                                    const notifications = await this.hostsWorker.getNotifications(host);
-                                    this.handleNewNotifications(notifications);
-                                },
-                            );
-                        }}
-                        disabled={
-                            this.state.currentTab.tab !== 'tab-instances' &&
-                            this.state.currentTab.tab !== 'tab-adapters' &&
-                            this.state.currentTab.tab !== 'tab-logs'
-                        }
-                    />
-                </IsVisible>
-                <div style={styles.flexGrow} />
-                {this.state.cmd && !this.state.cmdDialog &&
-                    <IconButton size="large" onClick={() => this.setState({ cmdDialog: true })}>
-                        <PictureInPictureAltIcon
-                            style={
-                                this.state.commandError
-                                    ? styles.errorCmd : (this.state.performed ? performedStyle : styles.cmd)
+                        <Tooltip
+                            title={`${I18n.t('Toggle expert mode')} ${
+                                expertModePermanent ? '' : ` (${I18n.t('only in this browser session')})`
+                            }`}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <Badge
+                                color="secondary"
+                                variant="dot"
+                                sx={{ '& .MuiBadge-badge': styles.expertBadge }}
+                                invisible={expertModePermanent}
+                            >
+                                <IconButton
+                                    size="large"
+                                    onClick={() => {
+                                        if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
+                                            (window._sessionStorage || window.sessionStorage).setItem(
+                                                'App.expertMode',
+                                                this.state.expertMode ? 'false' : 'true',
+                                            );
+                                            this.setState({ expertMode: !this.state.expertMode });
+                                            this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                        } else if (
+                                            (window._sessionStorage || window.sessionStorage).getItem(
+                                                'App.doNotShowExpertDialog',
+                                            ) === 'true'
+                                        ) {
+                                            (window._sessionStorage || window.sessionStorage).setItem(
+                                                'App.expertMode',
+                                                this.state.expertMode ? 'false' : 'true',
+                                            );
+                                            this.setState({ expertMode: !this.state.expertMode });
+                                            this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                        } else {
+                                            this.setState({ expertModeDialog: true });
+                                        }
+                                    }}
+                                    style={{
+                                        color: this.state.expertMode ? this.state.theme.palette.expert : undefined,
+                                    }}
+                                    color="default"
+                                >
+                                    <IconExpert
+                                        // glowColor={this.state.theme.palette.secondary.main}
+                                        // active={this.state.expertMode}
+                                        style={{
+                                            ...styles.expertIcon,
+                                            ...(this.state.expertMode ? styles.expertIconActive : undefined),
+                                        }}
+                                    />
+                                </IconButton>
+                            </Badge>
+                        </Tooltip>
+                    </IsVisible>
+                    {this.state.expertMode ? (
+                        <Tooltip
+                            title={I18n.t('Synchronize admin settings between all opened browser windows')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton
+                                size="large"
+                                onClick={e =>
+                                    this.state.guiSettings
+                                        ? this.enableGuiSettings(false)
+                                        : this.setState({ showGuiSettings: e.target as HTMLButtonElement })
+                                }
+                                style={{
+                                    color: this.state.guiSettings ? this.state.theme.palette.expert : undefined,
+                                }}
+                            >
+                                {this.state.guiSettings ? <SyncIcon /> : <SyncIconDisabled />}
+                            </IconButton>
+                        </Tooltip>
+                    ) : null}
+                    <IsVisible
+                        name="admin.appBar.hostSelector"
+                        config={this.adminGuiConfig}
+                    >
+                        <HostSelectors
+                            tooltip={
+                                this.state.currentTab.tab !== 'tab-instances' &&
+                                this.state.currentTab.tab !== 'tab-adapters' &&
+                                this.state.currentTab.tab !== 'tab-logs'
+                                    ? I18n.t('You can change host on Instances, Adapters or Logs pages')
+                                    : undefined
+                            }
+                            themeType={this.state.themeType}
+                            expertMode={this.state.expertMode}
+                            socket={this.socket}
+                            hostsWorker={this.hostsWorker}
+                            currentHost={this.state.currentHost}
+                            setCurrentHost={(hostName, host) => {
+                                this.setState(
+                                    {
+                                        currentHostName: hostName,
+                                        currentHost: host,
+                                    },
+                                    async () => {
+                                        this.logsWorkerChanged(host);
+                                        (window._localStorage || window.localStorage).setItem('App.currentHost', host);
+                                        await this.readRepoAndInstalledInfo(host, this.state.hosts);
+                                        // read notifications from host
+                                        const notifications = await this.hostsWorker.getNotifications(host);
+                                        this.handleNewNotifications(notifications);
+                                    },
+                                );
+                            }}
+                            disabled={
+                                this.state.currentTab.tab !== 'tab-instances' &&
+                                this.state.currentTab.tab !== 'tab-adapters' &&
+                                this.state.currentTab.tab !== 'tab-logs'
                             }
                         />
-                    </IconButton>}
-            </div>
-
-            {this.renderLoggedUser()}
-
-            {this.state.drawerState !== DrawerStates.opened &&
-                !this.state.expertMode &&
-                window.innerWidth > 400 &&
-                <Grid
-                    container
-                    style={{
-                        ...(this.state.drawerState !== DrawerStates.opened ? styles.avatarVisible : undefined),
-                        ...styles.avatarNotVisible,
-                    }}
-                    spacing={1}
-                    alignItems="center"
-                >
-                    {(!this.state.user ||
-                            this.props.width === 'xs' ||
-                            this.props.width === 'sm') &&
-                        <Box component="div" style={styles.wrapperName} sx={{ display: { md: 'inline-block', xs: 'none' } }}>
-                            <Typography>admin</Typography>
-                            {!this.adminGuiConfig.icon && this.state.versionAdmin && (
-                                <Typography
-                                    style={{ ...styles.styleVersion, color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080' }}
-                                >
-                                    v
-                                    {this.state.versionAdmin}
-                                </Typography>
-                            )}
-                        </Box>}
-                    <Grid>
-                        <a
-                            href="/#easy"
-                            onClick={event => event.preventDefault()}
-                            style={{ color: 'inherit', textDecoration: 'none' }}
+                    </IsVisible>
+                    <div style={styles.flexGrow} />
+                    {this.state.cmd && !this.state.cmdDialog && (
+                        <IconButton
+                            size="large"
+                            onClick={() => this.setState({ cmdDialog: true })}
                         >
-                            {this.adminGuiConfig.icon ? <div
-                                style={{
-                                    height: 50,
-                                    width: 102,
-                                    lineHeight: '50px',
-                                    background: 'white',
-                                    borderRadius: 5,
-                                    padding: 5,
-                                }}
-                            >
-                                <img
-                                    src={this.adminGuiConfig.icon}
-                                    alt="logo"
-                                    style={{ maxWidth: '100%', maxHeight: '100%' }}
-                                />
-                            </div>
-                                :
-                                <Avatar
-                                    onClick={() => this.handleNavigation('easy')}
-                                    style={(this.state.themeName === 'colored' || this.state.themeName === 'blue') ?
-                                        styles.logoWhite : undefined}
-                                    alt="ioBroker"
-                                    src="img/no-image.png"
-                                />}
-                        </a>
-                    </Grid>
-                </Grid>}
-        </Toolbar>;
+                            <PictureInPictureAltIcon
+                                style={
+                                    this.state.commandError
+                                        ? styles.errorCmd
+                                        : this.state.performed
+                                          ? performedStyle
+                                          : styles.cmd
+                                }
+                            />
+                        </IconButton>
+                    )}
+                </div>
+
+                {this.renderLoggedUser()}
+
+                {this.state.drawerState !== DrawerStates.opened &&
+                    !this.state.expertMode &&
+                    window.innerWidth > 400 && (
+                        <Grid
+                            container
+                            style={{
+                                ...(this.state.drawerState !== DrawerStates.opened ? styles.avatarVisible : undefined),
+                                ...styles.avatarNotVisible,
+                            }}
+                            spacing={1}
+                            alignItems="center"
+                        >
+                            {(!this.state.user || this.props.width === 'xs' || this.props.width === 'sm') && (
+                                <Box
+                                    component="div"
+                                    style={styles.wrapperName}
+                                    sx={{ display: { md: 'inline-block', xs: 'none' } }}
+                                >
+                                    <Typography>admin</Typography>
+                                    {!this.adminGuiConfig.icon && this.state.versionAdmin && (
+                                        <Typography
+                                            style={{
+                                                ...styles.styleVersion,
+                                                color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080',
+                                            }}
+                                        >
+                                            v{this.state.versionAdmin}
+                                        </Typography>
+                                    )}
+                                </Box>
+                            )}
+                            <Grid>
+                                <a
+                                    href="/#easy"
+                                    onClick={event => event.preventDefault()}
+                                    style={{ color: 'inherit', textDecoration: 'none' }}
+                                >
+                                    {this.adminGuiConfig.icon ? (
+                                        <div
+                                            style={{
+                                                height: 50,
+                                                width: 102,
+                                                lineHeight: '50px',
+                                                background: 'white',
+                                                borderRadius: 5,
+                                                padding: 5,
+                                            }}
+                                        >
+                                            <img
+                                                src={this.adminGuiConfig.icon}
+                                                alt="logo"
+                                                style={{ maxWidth: '100%', maxHeight: '100%' }}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <Avatar
+                                            onClick={() => this.handleNavigation('easy')}
+                                            style={
+                                                this.state.themeName === 'colored' || this.state.themeName === 'blue'
+                                                    ? styles.logoWhite
+                                                    : undefined
+                                            }
+                                            alt="ioBroker"
+                                            src="img/no-image.png"
+                                        />
+                                    )}
+                                </a>
+                            </Grid>
+                        </Grid>
+                    )}
+            </Toolbar>
+        );
     }
 
-    renderSampleError() {
+    renderSampleError(): JSX.Element {
         const message = this.state.hasGlobalError.message;
         const stack = this.state.hasGlobalError.stack;
 
-        return <div
-            style={{
-                textAlign: 'center',
-                fontSize: 22,
-                marginTop: 50,
-                height: 'calc(100% - 50px)',
-                overflow: 'auto',
-            }}
-        >
-            <h1 style={{ color: '#F00' }}>Error in GUI!</h1>
-            Please open the browser console (F12), copy error text from there and create the issue on
-            {' '}
-            <a href="https://github.com/ioBroker/ioBroker.admin/issues" target="_blank" rel="noreferrer">
-                github
-            </a>
-            <br />
-            Without this information it is not possible to analyse the error.
-            <br />
-            It should looks like
-            {' '}
-            <br />
-            <img src="img/browserError.png" alt="error" />
-            <br />
-            If in the second line you will see
-            {' '}
-            <code
+        return (
+            <div
                 style={{
-                    color: '#888',
-                    fontFamily: 'monospace',
-                    fontSize: 16,
+                    textAlign: 'center',
+                    fontSize: 22,
+                    marginTop: 50,
+                    height: 'calc(100% - 50px)',
+                    overflow: 'auto',
                 }}
             >
-                at :3000/static/js/main.chunk.js:36903
-            </code>
-            {' '}
-            and not the normal file name,
-            <br />
-            please try to reproduce an error with opened browser console. In this case the special &quot;map&quot; files
-            will be loaded and the developers can see the real name of functions and files.
-            <div style={{ color: '#F88', fontSize: 14, marginTop: 20 }}>{message}</div>
-            <pre
-                style={{
-                    color: '#F88',
-                    fontSize: 12,
-                    fontFamily: 'monospace',
-                    textAlign: 'left',
-                    marginTop: 20,
-                    padding: 20,
-                }}
-            >
-                {(stack || '').toString().split('\n')
-                    .map((line: string, i: number) => <div key={i}>
-                        {line}
-                        <br />
-                    </div>)}
-            </pre>
-        </div>;
+                <h1 style={{ color: '#F00' }}>Error in GUI!</h1>
+                Please open the browser console (F12), copy error text from there and create the issue on{' '}
+                <a
+                    href="https://github.com/ioBroker/ioBroker.admin/issues"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    github
+                </a>
+                <br />
+                Without this information it is not possible to analyse the error.
+                <br />
+                It should looks like <br />
+                <img
+                    src="img/browserError.png"
+                    alt="error"
+                />
+                <br />
+                If in the second line you will see{' '}
+                <code
+                    style={{
+                        color: '#888',
+                        fontFamily: 'monospace',
+                        fontSize: 16,
+                    }}
+                >
+                    at :3000/static/js/main.chunk.js:36903
+                </code>{' '}
+                and not the normal file name,
+                <br />
+                please try to reproduce an error with opened browser console. In this case the special &quot;map&quot;
+                files will be loaded and the developers can see the real name of functions and files.
+                <div style={{ color: '#F88', fontSize: 14, marginTop: 20 }}>{message}</div>
+                <pre
+                    style={{
+                        color: '#F88',
+                        fontSize: 12,
+                        fontFamily: 'monospace',
+                        textAlign: 'left',
+                        marginTop: 20,
+                        padding: 20,
+                    }}
+                >
+                    {(stack || '')
+                        .toString()
+                        .split('\n')
+                        .map((line: string, i: number) => (
+                            <div key={i}>
+                                {line}
+                                <br />
+                            </div>
+                        ))}
+                </pre>
+            </div>
+        );
     }
 
-    renderEasyMode() {
-        return <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={this.state.theme}>
-                <div style={{ height: '100%' }}>
-                    {!this.state.connected && <Connecting />}
-                    <Suspense fallback={<Connecting />}>
-                        <EasyMode
-                            navigate={Router.doNavigate}
-                            getLocation={Router.getLocation}
-                            location={this.state.currentTab}
-                            toggleTheme={this.toggleTheme}
-                            themeName={this.state.themeName}
-                            themeType={this.state.themeType}
-                            theme={this.state.theme}
-                            width={this.props.width}
-                            adminInstance={this.adminInstance}
-                            configs={this.state.easyModeConfigs}
-                            socket={this.socket}
-                            configStored={value => this.allStored(value)}
-                            isFloatComma={this.state.systemConfig?.common.isFloatComma}
-                            dateFormat={this.state.systemConfig?.common.dateFormat}
-                            t={I18n.t}
-                            lang={I18n.getLanguage()}
-                            onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
-                            onUnregisterIframeRef={ref => {
-                                if (this.refConfigIframe === ref) {
-                                    this.refConfigIframe = null;
-                                }
-                            }}
-                        />
-                    </Suspense>
-                </div>
-            </ThemeProvider>
-        </StyledEngineProvider>;
+    renderEasyMode(): JSX.Element {
+        return (
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.state.theme}>
+                    <div style={{ height: '100%' }}>
+                        {!this.state.connected && <Connecting />}
+                        <Suspense fallback={<Connecting />}>
+                            <EasyMode
+                                navigate={Router.doNavigate}
+                                getLocation={Router.getLocation}
+                                location={this.state.currentTab}
+                                toggleTheme={this.toggleTheme}
+                                themeName={this.state.themeName}
+                                themeType={this.state.themeType}
+                                theme={this.state.theme}
+                                width={this.props.width}
+                                adminInstance={this.adminInstance}
+                                configs={this.state.easyModeConfigs}
+                                socket={this.socket}
+                                configStored={value => this.allStored(value)}
+                                isFloatComma={this.state.systemConfig?.common.isFloatComma}
+                                dateFormat={this.state.systemConfig?.common.dateFormat}
+                                t={I18n.t}
+                                lang={I18n.getLanguage()}
+                                onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
+                                onUnregisterIframeRef={ref => {
+                                    if (this.refConfigIframe === ref) {
+                                        this.refConfigIframe = null;
+                                    }
+                                }}
+                            />
+                        </Suspense>
+                    </div>
+                </ThemeProvider>
+            </StyledEngineProvider>
+        );
     }
 
-    render() {
+    render(): JSX.Element {
         const small = this.props.width === 'xs' || this.props.width === 'sm';
 
         if (this.state.cloudNotConnected) {
-            return <StyledEngineProvider injectFirst>
-                <ThemeProvider theme={this.state.theme}>
-                    <div
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            textAlign: 'center',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: this.state.themeType === 'dark' ? '#1a1a1a' : '#fafafa',
-                            color: this.state.themeType === 'dark' ? '#fafafa' : '#1a1a1a',
-                        }}
-                    >
-                        <div style={{ width: 300, height: 100 }}>
-                            <CircularProgress />
-                            <div style={{ fontSize: 16 }}>
-                                {I18n.t('Waiting for connection of ioBroker...')}
-                                {' '}
-                                <span style={{ fontSize: 18 }}>{this.state.cloudReconnect}</span>
+            return (
+                <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={this.state.theme}>
+                        <div
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                textAlign: 'center',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: this.state.themeType === 'dark' ? '#1a1a1a' : '#fafafa',
+                                color: this.state.themeType === 'dark' ? '#fafafa' : '#1a1a1a',
+                            }}
+                        >
+                            <div style={{ width: 300, height: 100 }}>
+                                <CircularProgress />
+                                <div style={{ fontSize: 16 }}>
+                                    {I18n.t('Waiting for connection of ioBroker...')}{' '}
+                                    <span style={{ fontSize: 18 }}>{this.state.cloudReconnect}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    {this.renderAlertSnackbar()}
-                </ThemeProvider>
-            </StyledEngineProvider>;
+                        {this.renderAlertSnackbar()}
+                    </ThemeProvider>
+                </StyledEngineProvider>
+            );
         }
 
         if (this.state.hasGlobalError) {
@@ -2823,34 +2974,44 @@ class App extends Router<AppProps, AppState> {
         }
 
         if (this.state.login) {
-            return <StyledEngineProvider injectFirst>
-                <ThemeProvider theme={this.state.theme}>
-                    <Login t={I18n.t} />
-                    {this.renderAlertSnackbar()}
-                </ThemeProvider>
-            </StyledEngineProvider>;
+            return (
+                <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={this.state.theme}>
+                        <Login t={I18n.t} />
+                        {this.renderAlertSnackbar()}
+                    </ThemeProvider>
+                </StyledEngineProvider>
+            );
         }
         if (!this.state.ready && !this.state.updating) {
-            return <StyledEngineProvider injectFirst>
-                <ThemeProvider theme={this.state.theme}>
-                    {window.vendorPrefix === 'PT' ? <LoaderPT themeType={this.state.themeType} /> : null}
-                    {window.vendorPrefix === 'MV' ? <LoaderMV themeType={this.state.themeType} /> : null}
-                    {window.vendorPrefix &&
-                    window.vendorPrefix !== 'PT' && window.vendorPrefix !== 'MV' &&
-                    window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor themeType={this.state.themeType} /> : null}
-                    {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader themeType={this.state.themeType} /> : null}
-                    {this.renderAlertSnackbar()}
-                </ThemeProvider>
-            </StyledEngineProvider>;
+            return (
+                <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={this.state.theme}>
+                        {window.vendorPrefix === 'PT' ? <LoaderPT themeType={this.state.themeType} /> : null}
+                        {window.vendorPrefix === 'MV' ? <LoaderMV themeType={this.state.themeType} /> : null}
+                        {window.vendorPrefix &&
+                        window.vendorPrefix !== 'PT' &&
+                        window.vendorPrefix !== 'MV' &&
+                        window.vendorPrefix !== '@@vendorPrefix@@' ? (
+                            <LoaderVendor themeType={this.state.themeType} />
+                        ) : null}
+                        {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? (
+                            <Loader themeType={this.state.themeType} />
+                        ) : null}
+                        {this.renderAlertSnackbar()}
+                    </ThemeProvider>
+                </StyledEngineProvider>
+            );
         }
         if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
             return this.renderEasyMode();
         }
 
-        return <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={this.state.theme}>
-                <style>
-                    {`@keyframes myEffect2 {
+        return (
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.state.theme}>
+                    <style>
+                        {`@keyframes myEffect2 {
                         0% {
                             opacity: 1;
                             transform: translateX(0);
@@ -2871,85 +3032,102 @@ class App extends Router<AppProps, AppState> {
                         }
                     }
                     `}
-                </style>
-                <Paper elevation={0} style={styles.root}>
-                    <AppBar
-                        color="default"
-                        position="fixed"
-                        sx={Utils.getStyle(
-                            this.state.theme,
-                            styles.appBar,
-                            !small && this.state.drawerState === DrawerStates.opened && !this.state.editMenuList && styles.appBarShift,
-                            !small && this.state.drawerState === DrawerStates.opened && this.state.editMenuList && styles.appBarShiftEdit,
-                            !small && this.state.drawerState === DrawerStates.compact && styles.appBarShiftCompact,
-                        )}
-                    >
-                        {this.renderToolbar(small)}
-                    </AppBar>
-                    <DndProvider backend={!small ? HTML5Backend : TouchBackend}>
-                        <Drawer
-                            adminGuiConfig={this.adminGuiConfig}
-                            state={this.state.drawerState}
-                            editMenuList={this.state.editMenuList}
-                            setEditMenuList={(editMenuList: boolean) => this.setState({ editMenuList })}
-                            systemConfig={this.state.systemConfig}
-                            handleNavigation={(name: string) => this.handleNavigation(name)}
-                            onStateChange={(state: 0 | 1 | 2) => this.handleDrawerState(state)}
-                            onLogout={() => App.logout()}
-                            currentTab={this.state.currentTab && this.state.currentTab.tab}
-                            instancesWorker={this.instancesWorker}
-                            hostsWorker={this.hostsWorker}
-                            logsWorker={this.logsWorker}
-                            logoutTitle={I18n.t('Logout')}
-                            isSecure={this.socket.isSecure}
-                            versionAdmin={this.state.versionAdmin}
-                            t={I18n.t}
-                            lang={I18n.getLanguage()}
-                            socket={this.socket}
-                            expertMode={this.state.expertMode}
-                            ready={this.state.ready}
-                            themeName={this.state.themeName}
-                            themeType={this.state.themeType}
-                            hostname={this.state.hostname}
-                            adminInstance={this.adminInstance}
-                            hosts={this.state.hosts}
-                            repository={this.state.repository}
-                            installed={this.state.installed}
-                            theme={this.state.theme}
-                        />
-                    </DndProvider>
+                    </style>
                     <Paper
                         elevation={0}
-                        square
-                        id="app-paper"
-                        sx={Utils.getStyle(
-                            this.state.theme,
-                            styles.content,
-                            !small && this.state.drawerState !== DrawerStates.compact && !this.state.editMenuList && styles.contentMargin,
-                            !small && this.state.drawerState !== DrawerStates.compact && this.state.editMenuList && styles.contentMarginEdit,
-                            !small && this.state.drawerState !== DrawerStates.opened && styles.contentMarginCompact,
-                            !small && this.state.drawerState !== DrawerStates.closed && styles.contentShift,
-                        )}
+                        style={styles.root}
                     >
-                        {this.getCurrentTab()}
+                        <AppBar
+                            color="default"
+                            position="fixed"
+                            sx={Utils.getStyle(
+                                this.state.theme,
+                                styles.appBar,
+                                !small &&
+                                    this.state.drawerState === DrawerStates.opened &&
+                                    !this.state.editMenuList &&
+                                    styles.appBarShift,
+                                !small &&
+                                    this.state.drawerState === DrawerStates.opened &&
+                                    this.state.editMenuList &&
+                                    styles.appBarShiftEdit,
+                                !small && this.state.drawerState === DrawerStates.compact && styles.appBarShiftCompact,
+                            )}
+                        >
+                            {this.renderToolbar(small)}
+                        </AppBar>
+                        <DndProvider backend={!small ? HTML5Backend : TouchBackend}>
+                            <Drawer
+                                adminGuiConfig={this.adminGuiConfig}
+                                state={this.state.drawerState}
+                                editMenuList={this.state.editMenuList}
+                                setEditMenuList={(editMenuList: boolean) => this.setState({ editMenuList })}
+                                systemConfig={this.state.systemConfig}
+                                handleNavigation={(name: string) => this.handleNavigation(name)}
+                                onStateChange={(state: 0 | 1 | 2) => this.handleDrawerState(state)}
+                                onLogout={() => App.logout()}
+                                currentTab={this.state.currentTab && this.state.currentTab.tab}
+                                instancesWorker={this.instancesWorker}
+                                hostsWorker={this.hostsWorker}
+                                logsWorker={this.logsWorker}
+                                logoutTitle={I18n.t('Logout')}
+                                isSecure={this.socket.isSecure}
+                                versionAdmin={this.state.versionAdmin}
+                                t={I18n.t}
+                                lang={I18n.getLanguage()}
+                                socket={this.socket}
+                                expertMode={this.state.expertMode}
+                                ready={this.state.ready}
+                                themeName={this.state.themeName}
+                                themeType={this.state.themeType}
+                                hostname={this.state.hostname}
+                                adminInstance={this.adminInstance}
+                                hosts={this.state.hosts}
+                                repository={this.state.repository}
+                                installed={this.state.installed}
+                                theme={this.state.theme}
+                            />
+                        </DndProvider>
+                        <Paper
+                            elevation={0}
+                            square
+                            id="app-paper"
+                            sx={Utils.getStyle(
+                                this.state.theme,
+                                styles.content,
+                                !small &&
+                                    this.state.drawerState !== DrawerStates.compact &&
+                                    !this.state.editMenuList &&
+                                    styles.contentMargin,
+                                !small &&
+                                    this.state.drawerState !== DrawerStates.compact &&
+                                    this.state.editMenuList &&
+                                    styles.contentMarginEdit,
+                                !small && this.state.drawerState !== DrawerStates.opened && styles.contentMarginCompact,
+                                !small && this.state.drawerState !== DrawerStates.closed && styles.contentShift,
+                            )}
+                        >
+                            {this.getCurrentTab()}
+                        </Paper>
+                        {this.renderAlertSnackbar()}
                     </Paper>
-                    {this.renderAlertSnackbar()}
-                </Paper>
-                {this.renderExpertDialog()}
-                {this.getCurrentDialog()}
-                {this.renderConfirmDialog()}
-                {this.renderCommandDialog()}
-                {this.renderWizardDialog()}
-                {this.showRedirectDialog()}
-                {this.renderSlowConnectionWarning()}
-                {this.renderNewsDialog()}
-                {this.renderHostWarningDialog()}
-                {this.renderNotificationsDialog()}
-                {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ?
-                    <Connecting /> : null}
-                {this.renderShowGuiSettings()}
-            </ThemeProvider>
-        </StyledEngineProvider>;
+                    {this.renderExpertDialog()}
+                    {this.getCurrentDialog()}
+                    {this.renderConfirmDialog()}
+                    {this.renderCommandDialog()}
+                    {this.renderWizardDialog()}
+                    {this.showRedirectDialog()}
+                    {this.renderSlowConnectionWarning()}
+                    {this.renderNewsDialog()}
+                    {this.renderHostWarningDialog()}
+                    {this.renderNotificationsDialog()}
+                    {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
+                        <Connecting />
+                    ) : null}
+                    {this.renderShowGuiSettings()}
+                </ThemeProvider>
+            </StyledEngineProvider>
+        );
     }
 }
 
