@@ -650,7 +650,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderHostBaseEdit(): React.JSX.Element {
+    renderHostBaseEdit(): React.JSX.Element | null {
         return this.props.expertMode ? (
             <Tooltip
                 title={this.props.t('Host Base Settings')}
@@ -840,7 +840,7 @@ export default abstract class HostGeneric<
         this.readChangeLog();
     }
 
-    renderHostUpdateDialog(): React.JSX.Element {
+    renderHostUpdateDialog(): React.JSX.Element | null {
         if (!this.state.hostUpdateDialog) {
             return null;
         }
@@ -875,7 +875,7 @@ export default abstract class HostGeneric<
         );
     }
 
-    renderUpdateDialog(): React.JSX.Element {
+    renderUpdateDialog(): React.JSX.Element | null {
         if (this.state.updateAvailable && this.state.updateDialog) {
             return (
                 <JsControllerUpdater
@@ -962,7 +962,7 @@ export default abstract class HostGeneric<
         return news;
     }
 
-    baseSettingsSettingsDialog(): React.JSX.Element {
+    baseSettingsSettingsDialog(): React.JSX.Element | null {
         if (!this.state.baseSettingsDialog) {
             return null;
         }
@@ -981,7 +981,7 @@ export default abstract class HostGeneric<
         );
     }
 
-    renderEditObjectDialog(): React.JSX.Element {
+    renderEditObjectDialog(): React.JSX.Element | null {
         if (!this.state.editDialog) {
             return null;
         }
