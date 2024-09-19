@@ -34,6 +34,7 @@ import {
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';
 import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
+import { InfoBox } from '@foxriver76/iob-component-lib';
 import AdminUtils from '../../AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
@@ -544,7 +545,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                 <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
                 <Select
                     variant="standard"
-                    style={{ marginLeft: 8 }}
+                    sx={{ marginLeft: 1, marginBottom: 1 }}
                     value={policy}
                     onChange={e => {
                         const sysConfig = AdminUtils.clone(this.props.dataAux);
@@ -564,10 +565,14 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                 </Select>
             </div>
             <IsVisible value={!!(activatedRepos.beta || activatedRepos['Beta (latest)']) && policy !== 'none'}>
-                <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>{I18n.t('repo_update_hint').split('\n').map(line => <div>{line}</div>)}</Typography>
+                <InfoBox type="warning">
+                    {I18n.t('repo_update_hint')}
+                </InfoBox>
             </IsVisible>
             <IsVisible value={policy === 'major'}>
-                <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>{I18n.t('The current selected configuration will allow to automatically pull in incompatible changes of this adapter!')}</Typography>
+                <InfoBox type="warning">
+                    {I18n.t('The current selected configuration will allow to automatically pull in incompatible changes of this adapter!')}
+                </InfoBox>
             </IsVisible>
         </div>;
     }

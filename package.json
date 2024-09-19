@@ -31,6 +31,7 @@
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.9.1",
     "@fnando/sparkline": "^0.3.10",
+    "@foxriver76/iob-component-lib": "^0.1.5",
     "@honkhonk/vite-plugin-svgr": "^1.1.0",
     "@iobroker/adapter-react-v5": "^7.1.4",
     "@iobroker/admin-component-easy-access": "^1.0.1",
