@@ -510,6 +510,7 @@ adapter.on('message', obj => {
     -   `step` - Step value for control type slider or number
     -   `controlDelay` - delay in ms for slider or number
     -   `variant` - Variant of button: `contained`, `outlined`, `text`
+    -   `readOnly` - Defines if the control is read-only
 
 -   `deviceManager` - show device manager. For that, the adapter must support device manager protocol. See iobroker/dm-utils.
     Here is an example of how to show device manager in a tab:

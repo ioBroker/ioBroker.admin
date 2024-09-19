@@ -606,7 +606,7 @@ export interface ConfigItemSendTo extends Omit<ConfigItem, 'data'> {
 
 export interface ConfigItemState extends ConfigItem {
     type: 'state';
-    /** Which object ID should be taken for the controlling. The ID is without "adapter.X." prefix */
+    /** Describes, which object ID should be taken for the controlling. The ID is without "adapter.X." prefix */
     oid: string;
     /** If true, the state will be taken from system.adapter.XX.I. and not from XX.I */
     system?: boolean;
@@ -638,6 +638,8 @@ export interface ConfigItemState extends ConfigItem {
     controlDelay?: number;
     /** Variant of button */
     variant?: 'contained' | 'outlined' | 'text';
+    /** Defines if the control is read-only. Applied only to 'input', 'slider', 'select', 'button', 'switch', 'number' */
+    readOnly?: boolean;
 }
 
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {
