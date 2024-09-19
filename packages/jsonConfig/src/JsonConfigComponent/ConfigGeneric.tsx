@@ -1079,7 +1079,7 @@ export default class ConfigGeneric<
                 const item = (
                     <Grid2
                         size={{
-                            xs: schema.xs || undefined,
+                            xs: schema.xs || 12, // if xs is not defined, take the full width
                             sm: schema.sm || undefined,
                             md: schema.md || undefined,
                             lg: schema.lg || undefined,
@@ -1141,7 +1141,7 @@ export default class ConfigGeneric<
             <Grid2
                 title={this.getText(schema.tooltip)}
                 size={{
-                    xs: schema.xs || undefined,
+                    xs: schema.xs || 12, // if xs is not defined, take the full width
                     sm: schema.sm || undefined,
                     md: schema.md || undefined,
                     lg: schema.lg || undefined,
