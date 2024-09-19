@@ -43,6 +43,7 @@ import JsControllerDialog from '@/dialogs/JsControllerDialog';
 import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
 import { CONTROLLER_CHANGELOG_URL } from '@/helpers/utils';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
+import type { NotificationsCount } from '@/types';
 import AdminUtils from '../../AdminUtils';
 import HostEdit from './HostEdit';
 import CustomModal from '../CustomModal';
@@ -290,7 +291,7 @@ export interface HostGenericProps {
 export interface HostGenericState {
     logLevel: ioBroker.LogLevel | '';
     logLevelSelect: ioBroker.LogLevel | '';
-    errorHost: { notifications: NotificationAnswer | null; count: number };
+    hostNotifications: { notifications: NotificationAnswer | null } & NotificationsCount;
     openDialogLogLevel: boolean;
     hostUpdateDialog: boolean;
     updateAvailable: boolean;
@@ -342,7 +343,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         this.state = {
             logLevel: '',
             logLevelSelect: '',
-            errorHost: { notifications: null, count: 0 },
+            hostNotifications: { notifications: null, warning: 0, other: 0 },
             openDialogLogLevel: false,
             hostUpdateDialog: false,
             updateAvailable: false,
@@ -371,7 +372,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     notificationHandler = (notifications: Record<string, NotificationAnswer>) =>
         notifications &&
         notifications[this.props.hostId] &&
-        this.setState({ errorHost: { notifications: notifications[this.props.hostId], count: this.calculateWarning(notifications[this.props.hostId]) } });
+        this.setState({ hostNotifications: { notifications: notifications[this.props.hostId], ...this.calculateWarning(notifications[this.props.hostId]) } });
 
     readChangeLog() {
         if (!this.state.changeLog) {
@@ -486,18 +487,22 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
     };
 
-    calculateWarning(notifications: NotificationAnswer | null) {
+    calculateWarning(notifications: NotificationAnswer | null):  NotificationsCount {
+        const count = { warning: 0, other: 0 };
+
         if (!notifications) {
-            return 0;
+            return count;
         }
         const { result } = notifications;
-        let count = 0;
         if (!result || !result.system) {
             return count;
         }
         if (Object.keys(result.system.categories).length) {
             const obj = result.system.categories;
-            Object.keys(obj).forEach(nameTab => Object.keys(obj[nameTab].instances).forEach(() => count++));
+
+            for (const category of Object.values(obj)) {
+                Object.keys(category.instances).forEach(() => (category.severity === 'alert' ? count.warning++ : count.other++));
+            }
         }
         return count;
     }
@@ -747,12 +752,12 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                 padding: '0 4px',
             } : undefined}
             title={this.props.t('Hosts notifications')}
-            badgeContent={this.state.errorHost.count}
+            badgeContent={this.state.hostNotifications.warning + this.state.hostNotifications.other}
             style={genericStyles.badge}
-            color="error"
+            color={this.state.hostNotifications.warning > 0 ? 'error' : 'secondary'}
             onClick={e => {
                 e.stopPropagation();
-                this.props.showAdaptersWarning({ [this.props.hostId]: this.state.errorHost.notifications }, this.props.hostId);
+                this.props.showAdaptersWarning({ [this.props.hostId]: this.state.hostNotifications.notifications }, this.props.hostId);
             }}
         >
             {children}

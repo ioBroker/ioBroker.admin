@@ -76,7 +76,9 @@ import ukAR from '@iobroker/adapter-react-v5/i18n/uk.json';
 import zhCNAR from '@iobroker/adapter-react-v5/i18n/zh-cn.json';
 
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
-import type { AdminGuiConfig, CompactAdapterInfo, CompactHost } from '@/types';
+import type {
+    AdminGuiConfig, CompactAdapterInfo, CompactHost, NotificationsCount,
+} from '@/types';
 import type { InstanceConfig } from '@/tabs/EasyMode';
 
 import CommandDialog from './dialogs/CommandDialog';
@@ -380,13 +382,6 @@ type CompactInstalledInfo = Record<string, {
     version: string;
     ignoreVersion?: string;
 }>;
-
-interface NotificationsCount {
-    /** Number of present warnings */
-    warning: number;
-    /** Number of present notify and info notifications */
-    other: number;
-}
 
 interface AppState {
     connected: boolean;
