@@ -126,7 +126,7 @@
         "@nx/nx-darwin-arm64": "19.7.3",
         "@nx/nx-darwin-x64": "19.7.3",
         "@nx/nx-linux-x64-gnu": "19.7.3",
-        "@nx/nx-win32-x64-msvc": "19.7.3"
+        "@nx/nx-win32-x64-msvc": "19.7.4"
     },
     "overrides": {
         "react-sortable-hoc": {
