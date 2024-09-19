@@ -153,6 +153,7 @@
         "release-patch": "release-script patch --yes --no-update-lockfile --publishAll",
         "release-minor": "release-script minor --yes --no-update-lockfile --publishAll",
         "release-major": "release-script major --yes --no-update-lockfile --publishAll",
-        "update-packages": "ncu --upgrade && cd packages/admin && ncu --upgrade && cd src-admin && ncu --upgrade && cd ../../dm-gui-components && ncu --upgrade && cd ../jsonConfig && ncu --upgrade && cd ../.."
+        "prettier": "cd packages/admin && npm run prettier && cd src-admin && npm run prettier && cd ../../dm-gui-components && npm run prettier && cd ../jsonConfig && npm run prettier",
+        "update-packages": "ncu --upgrade && cd packages/admin && ncu --upgrade && cd src-admin && ncu --upgrade && cd ../../dm-gui-components && ncu --upgrade && cd ../jsonConfig && ncu --upgrade"
     }
 }

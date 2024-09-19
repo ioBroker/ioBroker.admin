@@ -18,10 +18,7 @@ export default [
                 },
                 tsconfigRootDir: import.meta.dirname,
                 project: './tsconfig.json',
-                projectService: true,
-                projectFolderIgnoreList: [
-                    "**dist**",
-                ],
+                // projectService: true,
             },
         },
     },

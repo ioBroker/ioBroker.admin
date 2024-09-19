@@ -24,6 +24,8 @@
         "useUnknownInCatchVariables": false,
         "target": "ES2022"
     },
-    "include": ["**/*.js", "**/*.ts", "**/*.d.ts"],
+    "include": ["**/*.js", "**/*.ts", "**/*.d.ts",
+        "eslint.config.mjs"
+    ],
     "exclude": ["node_modules/**", "adminWww/**"]
 }
