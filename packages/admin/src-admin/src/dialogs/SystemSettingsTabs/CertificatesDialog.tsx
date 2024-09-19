@@ -352,12 +352,14 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
     onAdd = (title?: string, data?: string): void => {
         const newData = AdminUtils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
+        const certText = this.props.t('certificate');
         if (!title) {
-            let i = 1;
-            while (array.find(item => item.title === `${this.props.t('certificate')}_${i}`)) {
-                i++;
+            for (let i = 1; ; i++) {
+                if (!array.find(item => item.title === `${certText}_${i}`)) {
+                    title = `${certText}_${i}`;
+                    break;
+                }
             }
-            title = `${this.props.t('certificate')}_${i}`;
         }
 
         array.push({

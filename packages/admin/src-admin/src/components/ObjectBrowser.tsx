@@ -7757,22 +7757,30 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     /**
      * Find the id from the root
+     *
+     * @param root The current root
+     * @param id The object id to find
      */
-    private static getItemFromRoot(
-        /** The current root */
-        root: TreeItem,
-        /** the object id to find */
-        id: string,
-    ): TreeItem | null {
+    private static getItemFromRoot(root: TreeItem, id: string): TreeItem | null {
         const idArr = id.split('.');
         let currId = '';
         let _root: TreeItem | null | undefined = root;
 
-        for (const idEntry of idArr) {
+        for (let i = 0; i < idArr.length; i++) {
+            const idEntry = idArr[i];
             currId = currId ? `${currId}.${idEntry}` : idEntry;
-            _root = _root.children?.find(item => item.data.id === currId);
-            if (!_root) {
-                break;
+            let found = false;
+            if (_root.children) {
+                for (let j = 0; j < _root.children.length; j++) {
+                    if (_root.children[j].data.id === currId) {
+                        _root = _root.children[j];
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                return null;
             }
         }
 

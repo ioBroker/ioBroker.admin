@@ -342,6 +342,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             data[attr] = items[attr].default === undefined ? null : items[attr].default;
         } else {
             try {
+                // eslint-disable-next-line no-new-func
                 const f = new Function(
                     'data',
                     'originalData',

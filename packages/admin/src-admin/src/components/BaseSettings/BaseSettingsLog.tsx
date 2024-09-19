@@ -916,11 +916,11 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
     }
 
     findFreeName(type: string): string {
-        let i = 1;
-        while (Object.keys(this.state.transport).find(id => id === type + i)) {
-            i++;
+        for (let i = 1; ; i++) {
+            if (!Object.keys(this.state.transport).find(id => id === type + i)) {
+                return type + i;
+            }
         }
-        return type + i;
     }
 
     add(type: string): void {

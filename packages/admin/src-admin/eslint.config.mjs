@@ -13,10 +13,9 @@ export default [
     ...reactConfig,
     {
         rules: {
-            'no-loop-func': 'off',
-            'no-new-func': 'off',
-            'no-extend-native': 'off',
-            'no-eval': 'off',
+            'no-new-func': 'warn',
+            'no-extend-native': 'warn',
+            'no-eval': 'warn',
         },
     },
     {

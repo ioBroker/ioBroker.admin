@@ -286,6 +286,7 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
             }
 
             if (showIt && message['number-of-objects']) {
+                // eslint-disable-next-line no-eval
                 showIt = eval(`${context.noObjects} ${message['number-of-objects']}`);
             }
 

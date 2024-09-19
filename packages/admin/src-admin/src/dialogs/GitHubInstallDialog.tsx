@@ -79,32 +79,16 @@ const styles: Record<string, any> = {
 };
 
 // some older browsers do not have `flat`
-if (!Array.prototype.flat) {
-    Object.defineProperty(Array.prototype, 'flat', {
-        configurable: true,
-        value: function flat() {
-            // eslint-disable-next-line
-            const depth = Number.isNaN(arguments[0]) ? 1 : Number(arguments[0]);
-
-            return depth
-                ? Array.prototype.reduce.call(
-                      this,
-                      (acc: any, cur: any) => {
-                          if (Array.isArray(cur)) {
-                              // eslint-disable-next-line prefer-spread
-                              acc.push.apply(acc, flat.call(cur, depth - 1));
-                          } else {
-                              acc.push(cur);
-                          }
-
-                          return acc;
-                      },
-                      [],
-                  )
-                : Array.prototype.slice.call(this);
-        },
-        writable: true,
-    });
+function arrayFlat(arr: (string[] | string)[]): string[] {
+    const result: string[] = [];
+    for (let i = 0; i < arr.length; i++) {
+        if (typeof arr[i] === 'object') {
+            (arr[i] as string[]).forEach((item: string) => result.push(item));
+        } else {
+            result.push(arr[i] as string);
+        }
+    }
+    return result;
 }
 
 interface GitHubInstallDialogProps {
@@ -420,10 +404,9 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
     }
 
     getList(): ({ value: string; name: string; icon: string; nogit: boolean; title: string } | null)[] {
-        const adapters = this.props.categories
-            .map(category => category.adapters)
-            .flat()
-            .sort();
+        const adaptersArrays: string[][] = this.props.categories.map(category => category.adapters);
+        const adapters: string[] = arrayFlat(adaptersArrays);
+        adapters.sort();
 
         return adapters
             .map((el, i) => {
