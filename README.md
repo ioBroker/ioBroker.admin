@@ -92,6 +92,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (@foxriver76) indicate `alert` warnings by the badge color on the notification button
 * (@foxriver76) allow to distinguish between alert notifications and others for host notifications
 * (@foxriver76) do not automatically open the notification dialog without user interaction
+* (@foxriver76) fixed host base settings dialog
 
 ### 7.1.1 (2024-09-15)
 * (bluefox) Showed the context menu under cursor position in the object browser
