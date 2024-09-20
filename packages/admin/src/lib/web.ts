@@ -75,7 +75,7 @@ const ONE_MONTH_SEC = 30 * 24 * 3_600;
 // copied from here: https://github.com/component/escape-html/blob/master/index.js
 const matchHtmlRegExp = /["'&<>]/;
 function escapeHtml(string: string): string {
-    const str = '' + string;
+    const str = `${string}`;
     const match = matchHtmlRegExp.exec(str);
 
     if (!match) {
@@ -670,9 +670,8 @@ class Web {
 
                                 if (isDev) {
                                     return res.redirect(`http://127.0.0.1:3000${redirect}`);
-                                } else {
-                                    return res.redirect(redirect);
                                 }
+                                return res.redirect(redirect);
                             });
                         })(req, res, next);
                     },
