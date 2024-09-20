@@ -86,7 +86,6 @@ export default class ObjectsWorker {
 
     // be careful with this object. Do not change them.
     getObjects(update?: boolean): Promise<void | Record<string, ioBroker.Object>> {
-        console.log(this.promise);
         if (!update && this.promise instanceof Promise) {
             return this.promise;
         }
