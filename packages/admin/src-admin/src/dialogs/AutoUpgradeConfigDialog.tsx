@@ -1,4 +1,4 @@
-import React, { type JSX } from 'react';
+import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Select, Typography } from '@mui/material';
 
 import { Close as CloseIcon } from '@mui/icons-material';
@@ -6,6 +6,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 import { type AdminConnection, I18n, IconCopy as SaveIcon } from '@iobroker/adapter-react-v5';
 import IsVisible from '@/components/IsVisible';
 import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
+import { InfoBox } from '@foxriver76/iob-component-lib';
 
 interface AutoUpgradeConfigDialogProps {
     /** Called when user closes dialog */
@@ -111,7 +112,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<
     /**
      * Render the element
      */
-    render(): JSX.Element {
+    render(): React.JSX.Element {
         return (
             <Dialog
                 open={!0}
@@ -134,32 +135,24 @@ export default class AutoUpgradeConfigDialog extends React.Component<
                             style={{
                                 marginTop: 20,
                                 minWidth: 150,
+                                marginBottom: 8,
                             }}
                             value={this.state.policy}
                             onChange={e => this.setState({ policy: e.target.value as ioBroker.AutoUpgradePolicy })}
                         >
                             {AUTO_UPGRADE_SETTINGS.map(option => (
-                                <MenuItem
-                                    key={option}
-                                    value={option}
-                                >
-                                    {AUTO_UPGRADE_OPTIONS_MAPPING[option]}
-                                </MenuItem>
+                                <MenuItem value={option}>{AUTO_UPGRADE_OPTIONS_MAPPING[option]}</MenuItem>
                             ))}
                         </Select>
                         <IsVisible value={this.state.repositories.includes('beta') && this.state.policy !== 'none'}>
-                            <Typography sx={{ color: 'red' }}>
-                                {I18n.t(
-                                    'You have configured to run automatic upgrades for the "beta" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!',
-                                )}
-                            </Typography>
+                            <InfoBox type="warning">{I18n.t('repo_update_hint')}</InfoBox>
                         </IsVisible>
                         <IsVisible value={this.state.policy === 'major'}>
-                            <Typography sx={{ color: 'red' }}>
+                            <InfoBox type="warning">
                                 {I18n.t(
                                     'The current selected configuration will allow to automatically pull in incompatible changes of this adapter!',
                                 )}
-                            </Typography>
+                            </InfoBox>
                         </IsVisible>
                     </IsVisible>
                 </DialogContent>

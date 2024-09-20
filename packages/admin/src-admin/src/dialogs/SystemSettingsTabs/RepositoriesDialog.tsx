@@ -1,4 +1,4 @@
-import React, { type JSX } from 'react';
+import React from 'react';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 
 import {
@@ -32,6 +32,7 @@ import { I18n, withWidth, Confirm as ConfirmDialog, type Translate, type ThemeTy
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';
 import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
+import { InfoBox } from '@foxriver76/iob-component-lib';
 import AdminUtils from '../../AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
@@ -99,7 +100,6 @@ const styles: Record<string, any> = {
     },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;
 
 type RepositoryArray = Array<{ title: string; link: string }>;
@@ -113,10 +113,10 @@ function repoToArray(repos: Repository): RepositoryArray {
 
 function arrayToRepo(array: RepositoryArray): Repository {
     const result: Repository = {};
-    array.forEach(item => {
+    for (const item of array) {
         // @ts-expect-error will be fixed in js-controller
         result[item.title] = { link: item.link };
-    });
+    }
 
     return result;
 }
@@ -259,7 +259,9 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
             }
         }
 
-        const newConfig = AdminUtils.clone(this.props.dataAux);
+        const newConfig: ioBrokerObject<Record<string, unknown>, { activeRepo: string | string[] }> = AdminUtils.clone(
+            this.props.dataAux,
+        );
         if (!this.props.multipleRepos) {
             newConfig.common.activeRepo = 'stable';
             this.props.onChange(newData, newConfig);
@@ -269,6 +271,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         newConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
 
         this.props.onChange(newData, newConfig);
+        return null;
     };
 
     getUpdateDefaultRepo = (
@@ -277,9 +280,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         oldTitle?: string,
         newTitle?: string,
     ): ioBrokerObject<object, { activeRepo: string | string[] }> => {
-        const newConfig: ioBrokerObject<object, { activeRepo: string | string[] }> = AdminUtils.clone(
-            this.props.dataAux,
-        );
+        const newConfig = AdminUtils.clone(this.props.dataAux);
         if (!this.props.multipleRepos) {
             newConfig.common.activeRepo = newRepo;
             return newConfig;
@@ -348,7 +349,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         }
     }
 
-    renderConfirmDialog(): JSX.Element | null {
+    renderConfirmDialog(): React.JSX.Element {
         if (this.state.confirm) {
             return (
                 <ConfirmDialog
@@ -367,7 +368,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         return null;
     }
 
-    renderSortableItem(item: RepositoryArray[number], index: number): JSX.Element {
+    renderSortableItem(item: RepositoryArray[number], index: number): React.JSX.Element {
         const result = (
             <TableRow className="float_row">
                 <TableCell
@@ -574,7 +575,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         );
     }
 
-    renderSortableList(items: RepositoryArray): JSX.Element {
+    renderSortableList(items: RepositoryArray): React.JSX.Element {
         const result = (
             <Table style={styles.table}>
                 <TableHead>
@@ -634,7 +635,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
     /**
      * Render the auto upgrade policy
      */
-    renderAutoUpgradePolicy(): JSX.Element {
+    renderAutoUpgradePolicy(): React.JSX.Element {
         const policy: ioBroker.AutoUpgradePolicy =
             this.props.dataAux.common.adapterAutoUpgrade?.defaultPolicy || 'none';
         const activatedRepos = this.props.dataAux.common.adapterAutoUpgrade?.repositories || {};
@@ -647,7 +648,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     </Typography>
                     <Select
                         variant="standard"
-                        style={{ marginLeft: 8 }}
+                        sx={{ marginLeft: 1, marginBottom: 1 }}
                         value={policy}
                         onChange={e => {
                             const sysConfig = AdminUtils.clone(this.props.dataAux);
@@ -663,8 +664,8 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     >
                         {AUTO_UPGRADE_SETTINGS.map(option => (
                             <MenuItem
-                                key={option}
                                 value={option}
+                                key={option}
                             >
                                 {AUTO_UPGRADE_OPTIONS_MAPPING[option]}
                             </MenuItem>
@@ -672,26 +673,20 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     </Select>
                 </div>
                 <IsVisible value={!!(activatedRepos.beta || activatedRepos['Beta (latest)']) && policy !== 'none'}>
-                    <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>
-                        {I18n.t('repo_update_hint')
-                            .split('\n')
-                            .map((line: string, i: number) => (
-                                <div key={i}>{line}</div>
-                            ))}
-                    </Typography>
+                    <InfoBox type="warning">{I18n.t('repo_update_hint')}</InfoBox>
                 </IsVisible>
                 <IsVisible value={policy === 'major'}>
-                    <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>
+                    <InfoBox type="warning">
                         {I18n.t(
                             'The current selected configuration will allow to automatically pull in incompatible changes of this adapter!',
                         )}
-                    </Typography>
+                    </InfoBox>
                 </IsVisible>
             </div>
         );
     }
 
-    render(): JSX.Element {
+    render(): React.JSX.Element {
         const items = repoToArray(this.props.data.native.repositories);
 
         return (

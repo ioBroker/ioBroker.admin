@@ -671,6 +671,7 @@ class Web {
                                 if (isDev) {
                                     return res.redirect(`http://127.0.0.1:3000${redirect}`);
                                 }
+
                                 return res.redirect(redirect);
                             });
                         })(req, res, next);

@@ -78,3 +78,10 @@ export type CompactHost = {
         };
     };
 };
+
+export interface NotificationsCount {
+    /** Number of present warnings */
+    warning: number;
+    /** Number of present notify and info notifications */
+    other: number;
+}
