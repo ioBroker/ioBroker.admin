@@ -86,8 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 7.1.3 (2024-09-20)
 * (@foxriver76) improve appearance and standardization of some warning messages
 * (@foxriver76) indicate `alert` warnings by the badge color on the notification button
 * (@foxriver76) allow to distinguish between alert notifications and others for host notifications
@@ -109,10 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.0.25 (2024-08-24)
 * (bluefox) Improvement for automatic tests
 * (bluefox) Added the possibility to style the response text for `textSendTo` in JSON Config
-
-### 7.0.24 (2024-08-16)
-* (bluefox) Showed min/max limits by controlling the values
-* (bluefox) Corrected style for tabs
 
 ## License
 The MIT License (MIT)

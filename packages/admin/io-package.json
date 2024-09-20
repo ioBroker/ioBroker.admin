@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.1.2",
+    "version": "7.1.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.1.3": {
+        "en": "improve appearance and standardization of some warning messages\nindicate `alert` warnings by the badge color on the notification button\nallow to distinguish between alert notifications and others for host notifications\ndo not automatically open the notification dialog without user interaction\nfixed logging as socket client is now throwing real errors",
+        "de": "verbesserung des aussehens und der standardisierung einiger warnmeldungen\n`alert` warnungen durch die abzeichenfarbe auf der benachrichtigungstaste anzeigen\nermöglichen, zwischen alarmmeldungen und anderen für host-benachrichtigungen zu unterscheiden\nnicht automatisch den benachrichtigungsdialog ohne benutzerinteraktion öffnen\nfeste protokollierung als buchsen-client ist jetzt werfen reale fehler",
+        "ru": "улучшить внешний вид и стандартизацию некоторых предупреждающих сообщений\nуведомление\nпозволяет проводить различие между уведомлениями о оповещении и другими уведомлениями о размещении\nне открывать автоматически диалог уведомления без взаимодействия пользователя\nфиксированная регистрация как клиент сокета теперь бросает реальные ошибки",
+        "pt": "melhorar a aparência e padronização de algumas mensagens de aviso\nindicar avisos `alert` pela cor do crachá no botão de notificação\npermitir distinguir entre notificações de alerta e outros para notificações de host\nnão abra automaticamente a caixa de diálogo de notificação sem interação do usuário\nlog fixo como cliente soquete está agora jogando erros reais",
+        "nl": "verbetering van het uiterlijk en de standaardisatie van sommige waarschuwingsberichten\nde waarschuwingen van de badge op de meldingsknop aangeven\nhet mogelijk maken onderscheid te maken tussen alarmmeldingen en andere meldingen van ontvangst\nhet meldingsvenster niet automatisch openen zonder gebruikersinteractie\nvaste logging als socket client gooit nu echte fouten",
+        "fr": "améliorer l'apparence et la normalisation de certains messages d'avertissement\nindiquer les avertissements `alerte` par la couleur du badge sur le bouton de notification\npermettre de distinguer les notifications d'alerte des autres notifications d'hôte\nn'ouvrez pas automatiquement la boîte de dialogue de notification sans interaction utilisateur\nlogage fixe en tant que client socket lance maintenant des erreurs réelles",
+        "it": "migliorare l'aspetto e la standardizzazione di alcuni messaggi di avviso\nindicare `allerta` avvisi dal colore del distintivo sul pulsante di notifica\nconsentire di distinguere tra le notifiche di avviso e altre per le notifiche host\nnon aprire automaticamente la finestra di dialogo di notifica senza interazione dell'utente\nregistrazione fissa come client socket sta ora lanciando errori reali",
+        "es": "mejorar la apariencia y estandarización de algunos mensajes de advertencia\nindicar advertencias por el color de la placa en el botón de notificación\npermitir distinguir entre las notificaciones de alerta y otras para las notificaciones de host\nno abrir automáticamente el diálogo de notificación sin interacción del usuario\nregistro fijo como cliente de socket está lanzando errores reales",
+        "pl": "poprawić wygląd i standaryzację niektórych komunikatów ostrzegawczych\nw przycisku powiadomienia należy wskazać ostrzeżenia \"alert\" za pomocą koloru odznaki\numożliwić rozróżnienie powiadomień o ostrzeżeniach od innych powiadomień o przyjmowaniu\nnie otwieraj automatycznie okna powiadomień bez interakcji z użytkownikiem\nstałe logowanie jako klient gniazda jest teraz rzucanie prawdziwych błędów",
+        "uk": "поліпшення зовнішнього вигляду та стандартизації деяких попереджувальних повідомлень\nвкажіть попередження `alert` за кольором значка на кнопках повідомлення\nдозволяє відрізнити повідомлення про оповіщення та інші повідомлення про хост\nне автоматично відкрийте діалогове вікно повідомлення без взаємодії користувача\nвиправлений вхід як клієнт розетки тепер кидає реальні помилки",
+        "zh-cn": "改进一些警告信息的外观和标准化\n以通知按钮上的徽章颜色表示“警告”\n允许区分提醒通知和主机通知的其他通知\n没有用户交互, 不自动打开通知对话框\n当套接字客户端现在丢出真实错误时, 固定记录"
+      },
       "7.1.2": {
         "en": "fixed host base settings dialog",
         "de": "feste host-basiseinstellungen dialog",
@@ -96,19 +109,6 @@
         "pl": "jeśli dostępne są ostrzeżenia, otwieraj automatycznie okno powiadomienia hosta\npoprawiony styl okna powiadomień hosta\nwyjaśnienie wyboru opcji auto upgrade\nPoprawiono link w przypadkach, np. dla vis-2\nPoprawiono informacje o połączeniach w zakładce instance",
         "uk": "тільки автоматично відкрийте діалогове вікно повідомлення про хост, якщо повідомлення доступні\nпокращений стиль діалогу повідомлення про хост\nвизначення параметрів автоматичного оновлення\nВиправлено посилання в екземплярах, наприклад, для vis-2\nВиправлено інформацію про підключення в вкладці екземпляра",
         "zh-cn": "只当警告可用时自动打开主机通知对话框\n改进主机通知对话框的样式\n澄清自动升级选项\n纠正了例如相对于2的链接\n更正实例标签中的连接信息"
-      },
-      "7.0.22": {
-        "en": "Corrected installation of adapter with the license unequal to MIT\nCorrected width of a side menu\nAllowed the pasting into object JSON editor",
-        "de": "Korrigierte Installation des Adapters mit der Lizenz ungleich MIT\nKorrigierte Breite eines Seitenmenüs\nErlaubt das Einfügen in Objekt JSON Editor",
-        "ru": "Корректированная установка адаптера с лицензией, не равной MIT\nИсправленная ширина бокового меню\nПозволил вставить в объектный редактор JSON",
-        "pt": "Instalação correta do adaptador com a licença desigual ao MIT\nLargura correta de um menu lateral\nPermitido o colar em objeto JSON editor",
-        "nl": "Gecorrigeerde installatie van adapter met de licentie ongelijk aan MIT\nGecorrigeerde breedte van een zijmenu\nPlakken in object JSON-editor toegestaan",
-        "fr": "Installation corrigée de l'adaptateur avec la licence inégale à MIT\nLargeur corrigée d'un menu latéral\nAutorisé le collage dans l'éditeur d'objet JSON",
-        "it": "Installazione corretta dell'adattatore con la licenza non uguale a MIT\nLarghezza corretta di un menu laterale\nConsentito il incollaggio in oggetto editor JSON",
-        "es": "Instalación corregida del adaptador con la licencia desigual al MIT\nAncho corregido de un menú lateral\nPermitió el pegado en el objeto JSON editor",
-        "pl": "Poprawiona instalacja adaptera z licencją nierówną MIT\nSkorygowana szerokość menu bocznego\nDozwolone wklejanie do edytora JSON obiektu",
-        "uk": "Виправлена установка адаптера з ліцензійним нерівномірним для MIT\nВиправлена ширина бічного меню\nДозволено перезапис у редактор JSON",
-        "zh-cn": "修正了适配器的安装,其许可与麻省理工学院不平等\n修正侧菜单的宽度\n允许粘贴到对象 JSON 编辑器"
       }
     },
     "desc": {

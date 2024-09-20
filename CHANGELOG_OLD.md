@@ -1,4 +1,8 @@
 # Older changes
+## 7.0.24 (2024-08-16)
+* (bluefox) Showed min/max limits by controlling the values
+* (bluefox) Corrected style for tabs
+
 ## 7.0.23 (2024-08-05)
 * (foxriver76) only automatically open the host notification dialog if warnings are available
 * (foxriver76) improved style of host notification dialog
