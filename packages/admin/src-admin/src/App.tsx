@@ -1153,7 +1153,7 @@ class App extends Router<AppProps, AppState> {
                         }
 
                         // create Workers
-                        this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
+                        this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1_000);
                         this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
                         this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
                         this.adaptersWorker = this.adaptersWorker || new AdaptersWorker(this.socket);
@@ -1169,8 +1169,8 @@ class App extends Router<AppProps, AppState> {
                             newState.wizard = !newState.systemConfig.common.licenseConfirmed;
                             await this.findCurrentHost(newState);
                             await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
-                        } catch (error) {
-                            console.log(error);
+                        } catch (e) {
+                            console.log(`Error reading repo in onReady: ${e.stack}`);
                         }
 
                         this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
@@ -1236,9 +1236,9 @@ class App extends Router<AppProps, AppState> {
                             const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
                             await this.handleNewNotifications(notifications);
                         }, 3_000);
-                    } catch (error) {
-                        console.error(error);
-                        this.showAlert(error, 'error');
+                    } catch (e) {
+                        console.error(`Error in onReady: ${e.stack}`);
+                        this.showAlert(`Error in onReady: ${e.stack}`, 'error');
                     }
                 },
                 onError: error => {
@@ -1479,9 +1479,9 @@ class App extends Router<AppProps, AppState> {
                 if (adminAlive?.val) {
                     return instance;
                 }
-            } catch (error) {
-                console.error(`Cannot find news instance: ${error}`);
-                this.showAlert(`Cannot find news instance: ${error}`, 'error');
+            } catch (e) {
+                console.error(`Cannot find news instance: ${e.stack}`);
+                this.showAlert(`Cannot find news instance: ${e.stack}`, 'error');
             }
         }
         return 0;
@@ -1645,9 +1645,9 @@ class App extends Router<AppProps, AppState> {
                     }
                 }
             }
-        } catch (error) {
-            console.error(error);
-            this.showAlert(error, 'error');
+        } catch (e) {
+            console.error(`Could not process news: ${e.stack}`);
+            this.showAlert(`Could not process news: ${e.stack}`, 'error');
         }
     };
 
