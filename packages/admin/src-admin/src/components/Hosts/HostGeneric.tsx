@@ -524,7 +524,7 @@ export default abstract class HostGeneric<
         return state.val + (unit ? ` ${unit}` : '');
     }
 
-    logLevelFunc = (id: string, state: ioBroker.State): void => {
+    logLevelFunc = (_id: string, state: ioBroker.State): void => {
         if (state) {
             this.setState({ logLevel: state.val as ioBroker.LogLevel, logLevelSelect: state.val as ioBroker.LogLevel });
         }

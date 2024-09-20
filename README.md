@@ -86,6 +86,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (@foxriver76) fixed host base settings dialog
+
 ### 7.1.1 (2024-09-15)
 * (bluefox) Showed the context menu under cursor position in the object browser
 * (bluefox) Added links to aliases in the object browser
