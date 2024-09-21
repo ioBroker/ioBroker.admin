@@ -1,27 +1,27 @@
 version: 2
 updates:
-  # Maintain dependencies for GitHub Actions
-  - package-ecosystem: github-actions
-    directory: "/"
-    schedule:
-      interval: monthly
-      time: "04:00"
-      timezone: Europe/Berlin
+    # Maintain dependencies for GitHub Actions
+    - package-ecosystem: github-actions
+      directory: '/'
+      schedule:
+          interval: monthly
+          time: '04:00'
+          timezone: Europe/Berlin
 
-  - package-ecosystem: npm
-    directory: "/"
-    schedule:
-      interval: monthly
-      time: "04:00"
-      timezone: Europe/Berlin
-    open-pull-requests-limit: 5
-    versioning-strategy: increase
+    - package-ecosystem: npm
+      directory: '/'
+      schedule:
+          interval: monthly
+          time: '04:00'
+          timezone: Europe/Berlin
+      open-pull-requests-limit: 5
+      versioning-strategy: increase
 
-  - package-ecosystem: npm
-    directory: "/src-rx"
-    schedule:
-      interval: monthly
-      time: "04:00"
-      timezone: Europe/Berlin
-    open-pull-requests-limit: 5
-    versioning-strategy: increase
+    - package-ecosystem: npm
+      directory: '/src-rx'
+      schedule:
+          interval: monthly
+          time: '04:00'
+          timezone: Europe/Berlin
+      open-pull-requests-limit: 5
+      versioning-strategy: increase

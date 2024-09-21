@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
@@ -11,22 +11,18 @@ import {
     Select,
     TextField,
     Autocomplete,
-    FormHelperText, InputAdornment, IconButton,
+    FormHelperText,
+    InputAdornment,
+    IconButton,
     type SelectChangeEvent,
 } from '@mui/material';
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
 import { Marker } from 'leaflet';
-import type {
-    DragEndEvent, LatLngTuple, Map,
-} from 'leaflet';
+import type { DragEndEvent, LatLngTuple, Map } from 'leaflet';
 
-import {
-    Confirm as ConfirmDialog,
-    withWidth, I18n,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { Confirm as ConfirmDialog, withWidth, I18n, type Translate } from '@iobroker/adapter-react-v5';
 import { type AdminGuiConfig } from '@/types';
 
 import AdminUtils from '../../AdminUtils';
@@ -241,69 +237,87 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
             {
                 id: 'defaultHistory',
                 title: 'Default History',
-                values: [{ id: '', title: this.props.t('None') }, ...this.props.histories.map(history => ({
-                    id: history,
-                    title: history,
-                }))],
+                values: [
+                    { id: '', title: this.props.t('None') },
+                    ...this.props.histories.map(history => ({
+                        id: history,
+                        title: history,
+                    })),
+                ],
             },
             {
                 id: 'activeRepo',
                 title: 'Default Repository',
                 translate: false,
-                values: AdminUtils.objectMap(this.props.dataAux.native.repositories, (_repo, name) =>
-                    ({
-                        id: name,
-                        title: name,
-                    })),
+                values: AdminUtils.objectMap(this.props.dataAux.native.repositories, (_repo, name) => ({
+                    id: name,
+                    title: name,
+                })),
             },
             {
                 id: 'expertMode',
                 title: 'Expert mode',
-                values: [{ id: true, title: 'on' }, { id: false, title: 'off (default)' }],
+                values: [
+                    { id: true, title: 'on' },
+                    { id: false, title: 'off (default)' },
+                ],
             },
             {
                 id: 'defaultLogLevel',
                 title: 'Default log level',
                 help: 'for new instances',
                 translate: false,
-                values: [{ id: 'debug', title: 'debug' }, { id: 'info', title: 'info' }, { id: 'warn', title: 'warn' }, { id: 'error', title: 'error' }],
+                values: [
+                    { id: 'debug', title: 'debug' },
+                    { id: 'info', title: 'info' },
+                    { id: 'warn', title: 'warn' },
+                    { id: 'error', title: 'error' },
+                ],
             },
             {
                 id: 'firstDayOfWeek',
                 title: 'First day of week',
                 translate: true,
-                values: [{ id: 'monday', title: 'Monday' }, { id: 'sunday', title: 'Sunday' }],
+                values: [
+                    { id: 'monday', title: 'Monday' },
+                    { id: 'sunday', title: 'Sunday' },
+                ],
             },
         ];
     }
 
-    onMap = (map: Map) => {
+    onMap = (map: Map): void => {
         if (this.props.saving) {
             return;
         }
         if (!this.map || this.map !== map) {
             this.map = map;
             const center: LatLngTuple = [
-                parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude as any as string  : '50') || 0,
-                parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude as any as string : '10') || 0,
+                parseFloat(
+                    this.props.data.common.latitude !== undefined
+                        ? (this.props.data.common.latitude as any as string)
+                        : '50',
+                ) || 0,
+                parseFloat(
+                    this.props.data.common.longitude !== undefined
+                        ? (this.props.data.common.longitude as any as string)
+                        : '10',
+                ) || 0,
             ];
 
-            this.marker = new Marker(
-                center,
-                {
-                    draggable: true,
-                    title: I18n.t('Resource location'),
-                    alt: I18n.t('Resource Location'),
-                    riseOnHover: true,
-                },
-            )
+            this.marker = new Marker(center, {
+                draggable: true,
+                title: I18n.t('Resource location'),
+                alt: I18n.t('Resource Location'),
+                riseOnHover: true,
+            })
                 .addTo(map)
                 .bindPopup('Popup for any custom information.')
                 .on({ dragend: (evt: DragEndEvent) => this.onMarkerDragend(evt) });
         }
     };
 
-    getSelect(e: Setting, i: number) {
+    getSelect(e: Setting, i: number): JSX.Element | null {
         let value = (this.props.data.common as Record<string, any>)[e.id];
 
         if (e.id === 'defaultLogLevel' && !value) {
@@ -320,47 +334,72 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         }
 
         if (e.autocomplete && e.values) {
-            return <Grid2 size={{ sm: 6, xs: 12 }} key={i}>
-                <Autocomplete<Setting['values'][0], false, false, true>
-                    // variant="standard"
-                    freeSolo
-                    disabled={this.props.saving}
-                    options={e.values}
-                    inputValue={value.toString()}
-                    onChange={(_evt, newValue) => {
-                        const id = this.getSettings()[i].id;
-                        if (typeof newValue === 'string') {
+            return (
+                <Grid2
+                    size={{ sm: 6, xs: 12 }}
+                    key={i}
+                >
+                    <Autocomplete<Setting['values'][0], false, false, true>
+                        // variant="standard"
+                        freeSolo
+                        disabled={this.props.saving}
+                        options={e.values}
+                        inputValue={value.toString()}
+                        onChange={(_evt, newValue) => {
+                            const id = this.getSettings()[i].id;
+                            if (typeof newValue === 'string') {
+                                this.doChange(id, newValue);
+                                return;
+                            }
+                            this.doChange(id, newValue ? newValue.id : '');
+                        }}
+                        onInputChange={(_event, newValue) => {
+                            const id = this.getSettings()[i].id;
                             this.doChange(id, newValue);
-                            return;
-                        }
-                        this.doChange(id, newValue ? newValue.id : '');
-                    }}
-                    onInputChange={(_event, newValue) => {
-                        const id = this.getSettings()[i].id;
-                        this.doChange(id, newValue);
-                    }}
-                    getOptionLabel={option => {
-                        if (typeof option === 'string') {
-                            return option;
-                        }
-                        if (e.translate) {
-                            return this.props.t(option.title || option.id.toString());
-                        }
-                        return option.title || option.id.toString();
-                    }}
-                    renderOption={(props, option) => <li {...props}>{e.translate ? this.props.t(option.title || option.id.toString()) : option.title || option.id}</li>}
-                    renderInput={params =>
-                        <TextField {...params} variant="standard" label={this.props.t(e.title)} />}
-                />
-            </Grid2>;
+                        }}
+                        getOptionLabel={option => {
+                            if (typeof option === 'string') {
+                                return option;
+                            }
+                            if (e.translate) {
+                                return this.props.t(option.title || option.id.toString());
+                            }
+                            return option.title || option.id.toString();
+                        }}
+                        renderOption={(props, option) => (
+                            <li {...props}>
+                                {e.translate
+                                    ? this.props.t(option.title || option.id.toString())
+                                    : option.title || option.id}
+                            </li>
+                        )}
+                        renderInput={params => (
+                            <TextField
+                                {...params}
+                                variant="standard"
+                                label={this.props.t(e.title)}
+                            />
+                        )}
+                    />
+                </Grid2>
+            );
         }
 
         // If value is not in known values, show text input
         if (e.allowText && value && !e.values.find(elem => elem.id === value)) {
             return (
-                <Grid2 size={{ sm: 6, xs: 12 }} key={i}>
-                    <FormControl style={styles.formControl} variant="standard">
-                        <InputLabel shrink id={`${e.id}-label`}>
+                <Grid2
+                    size={{ sm: 6, xs: 12 }}
+                    key={i}
+                >
+                    <FormControl
+                        style={styles.formControl}
+                        variant="standard"
+                    >
+                        <InputLabel
+                            shrink
+                            id={`${e.id}-label`}
+                        >
                             {this.props.t(e.title)}
                         </InputLabel>
                         <TextField
@@ -376,11 +415,16 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                                 },
                                 input: {
                                     readOnly: false,
-                                    endAdornment: value.toString() ? <InputAdornment position="end">
-                                        <IconButton size="small" onClick={() => this.handleChange({ target: { value: '' } }, i)}>
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment> : null,
+                                    endAdornment: value.toString() ? (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.handleChange({ target: { value: '' } }, i)}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ) : null,
                                 },
                             }}
                         />
@@ -389,79 +433,110 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
             );
         }
 
-        const items = e.values.map((elem, index) => <MenuItem value={elem.id as string} key={index}>
-            {e.translate ? this.props.t(elem.title || elem.id.toString()) : elem.title || elem.id}
-        </MenuItem>);
+        const items = e.values.map((elem, index) => (
+            <MenuItem
+                value={elem.id as string}
+                key={index}
+            >
+                {e.translate ? this.props.t(elem.title || elem.id.toString()) : elem.title || elem.id}
+            </MenuItem>
+        ));
 
-        return <Grid2 size={{ sm: 6, xs: 12 }} key={i}>
-            <FormControl style={styles.formControl} variant="standard">
-                <InputLabel shrink id={`${e.id}-label`}>
-                    {this.props.t(e.title)}
-                </InputLabel>
-                <Select
-                    disabled={this.props.saving}
-                    variant="standard"
+        return (
+            <Grid2
+                size={{ sm: 6, xs: 12 }}
+                key={i}
+            >
+                <FormControl
                     style={styles.formControl}
-                    id={e.id}
-                    value={value === undefined ? false : value}
-                    onChange={evt => this.handleChange(evt, i)}
-                    displayEmpty
+                    variant="standard"
                 >
-                    {items}
-                </Select>
-                {e.help ? <FormHelperText>{this.props.t(e.help)}</FormHelperText> : null}
-            </FormControl>
-        </Grid2>;
+                    <InputLabel
+                        shrink
+                        id={`${e.id}-label`}
+                    >
+                        {this.props.t(e.title)}
+                    </InputLabel>
+                    <Select
+                        disabled={this.props.saving}
+                        variant="standard"
+                        style={styles.formControl}
+                        id={e.id}
+                        value={value === undefined ? false : value}
+                        onChange={evt => this.handleChange(evt, i)}
+                        displayEmpty
+                    >
+                        {items}
+                    </Select>
+                    {e.help ? <FormHelperText>{this.props.t(e.help)}</FormHelperText> : null}
+                </FormControl>
+            </Grid2>
+        );
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (this.state.confirm) {
-            return <ConfirmDialog
-                text={this.props.t('confirm_change_repo')}
-                onClose={result => {
-                    const value = this.state.confirmValue;
-                    this.setState({ confirm: false, confirmValue: null }, () => {
-                        if (result) {
-                            this.doChange('activeRepo', value);
-                        }
-                    });
-                }}
-            />;
+            return (
+                <ConfirmDialog
+                    text={this.props.t('confirm_change_repo')}
+                    onClose={result => {
+                        const value = this.state.confirmValue;
+                        this.setState({ confirm: false, confirmValue: null }, () => {
+                            if (result) {
+                                this.doChange('activeRepo', value);
+                            }
+                        });
+                    }}
+                />
+            );
         }
 
         return null;
     }
 
-    getCounters = () => {
-        const items = countries.map((elem, index) => <MenuItem value={elem.name} key={index}>
-            {this.props.t(elem.name)}
-        </MenuItem>);
-
-        return <FormControl style={styles.formControl} variant="standard">
-            <InputLabel shrink id="country-label">
-                {this.props.t('Country:')}
-            </InputLabel>
-            <Select
-                disabled={this.props.saving}
-                variant="standard"
-                style={styles.formControl}
-                id="country"
-                value={this.props.data.common.country}
-                onChange={this.handleChangeCountry}
-                displayEmpty
+    getCounters = (): JSX.Element => {
+        const items = countries.map((elem, index) => (
+            <MenuItem
+                value={elem.name}
+                key={index}
             >
-                {items}
-            </Select>
-        </FormControl>;
+                {this.props.t(elem.name)}
+            </MenuItem>
+        ));
+
+        return (
+            <FormControl
+                style={styles.formControl}
+                variant="standard"
+            >
+                <InputLabel
+                    shrink
+                    id="country-label"
+                >
+                    {this.props.t('Country:')}
+                </InputLabel>
+                <Select
+                    disabled={this.props.saving}
+                    variant="standard"
+                    style={styles.formControl}
+                    id="country"
+                    value={this.props.data.common.country}
+                    onChange={this.handleChangeCountry}
+                    displayEmpty
+                >
+                    {items}
+                </Select>
+            </FormControl>
+        );
     };
 
-    handleChangeCountry = (evt: SelectChangeEvent<string>) => {
+    handleChangeCountry = (evt: SelectChangeEvent<string>): void => {
         const value = evt.target.value;
         const id = 'country';
         this.doChange(id, value);
     };
 
-    onChangeText = (evt: {target: { value: string } }, id: string) => {
+    onChangeText = (evt: { target: { value: string } }, id: string): void => {
         const value = evt.target.value;
         this.onChangeInput(value, id);
 
@@ -471,16 +546,21 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
             }
             this.latLongTimer = setTimeout(() => {
                 this.latLongTimer = null;
-                this.map.flyTo([parseFloat(this.props.data.common.latitude as any as string), parseFloat(this.props.data.common.longitude as any as string)]);
-                this.marker.setLatLng([parseFloat(this.props.data.common.latitude as any as string), parseFloat(this.props.data.common.longitude as any as string)]);
+                this.map.flyTo([
+                    parseFloat(this.props.data.common.latitude as any as string),
+                    parseFloat(this.props.data.common.longitude as any as string),
+                ]);
+                this.marker.setLatLng([
+                    parseFloat(this.props.data.common.latitude as any as string),
+                    parseFloat(this.props.data.common.longitude as any as string),
+                ]);
             }, 500);
         }
     };
 
-    onChangeInput = (value: any, id: string, cb?: () => void) =>
-        this.doChange(id, value, cb);
+    onChangeInput = (value: any, id: string, cb?: () => void): void => this.doChange(id, value, cb);
 
-    onChangeCity = (evt: {target: { value: string } }) => {
+    onChangeCity = (evt: { target: { value: string } }): void => {
         this.onChangeText(evt, 'city');
 
         if (this.cityTimer) {
@@ -491,191 +571,238 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
             this.cityTimer = null;
             const provider = new OpenStreetMapProvider();
 
-            provider.search({ query: evt.target.value })
-                .then(results => {
-                    if (results[0]) {
-                        setTimeout(() =>
+            void provider.search({ query: evt.target.value }).then(results => {
+                if (results[0]) {
+                    setTimeout(
+                        () =>
                             this.onChangeInput(results[0].y, 'latitude', () =>
                                 this.onChangeInput(results[0].x, 'longitude', () =>
                                     this.onChangeInput(23, 'zoom', () => {
                                         this.map.flyTo([results[0].y, results[0].x]);
                                         this.marker.setLatLng([results[0].y, results[0].x]);
-                                    }))), 1200);
-                    }
-                });
+                                    }),
+                                ),
+                            ),
+                        1200,
+                    );
+                }
+            });
         }, 500);
     };
 
-    handleChange = (evt: {target: {value: string}}, selectId: number) => {
+    handleChange = (evt: { target: { value: string } }, selectId: number): void => {
         const value = evt.target.value;
         const id = this.getSettings()[selectId].id;
 
-        if (id === 'activeRepo' && !value.toLowerCase().startsWith('stable') && !value.toLowerCase().includes('default')) {
+        if (
+            id === 'activeRepo' &&
+            !value.toLowerCase().startsWith('stable') &&
+            !value.toLowerCase().includes('default')
+        ) {
             this.setState({ confirm: true, confirmValue: value });
         } else {
             this.doChange(id, value);
         }
     };
 
-    doChange = (name: string, value: any, cb?: () => void) => {
+    doChange = (name: string, value: any, cb?: () => void): void => {
         const newData = AdminUtils.clone(this.props.data);
         (newData.common as Record<string, any>)[name] = value;
-        this.props.onChange(newData, null, () =>
-            cb && cb());
+        this.props.onChange(newData, null, () => cb && cb());
     };
 
-    onMarkerDragend = (evt: DragEndEvent) => {
+    onMarkerDragend = (evt: DragEndEvent): void => {
         const ll = JSON.parse(JSON.stringify(evt.target._latlng));
-        this.doChange('latitude',  ll.lat, () =>
-            this.doChange('longitude', ll.lng));
+        this.doChange('latitude', ll.lat, () => this.doChange('longitude', ll.lng));
     };
 
-    render() {
+    render(): JSX.Element {
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
         const center: LatLngTuple = [
-            parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude as any as string  : '50') || 0,
-            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude as any as string : '10') || 0,
+            parseFloat(
+                this.props.data.common.latitude !== undefined
+                    ? (this.props.data.common.latitude as any as string)
+                    : '50',
+            ) || 0,
+            parseFloat(
+                this.props.data.common.longitude !== undefined
+                    ? (this.props.data.common.longitude as any as string)
+                    : '10',
+            ) || 0,
         ];
 
         const { zoom } = this.state;
 
-        return <div style={styles.tabPanel}>
-            {this.renderConfirmDialog()}
-            <Grid2 container spacing={3}>
-                <Grid2 size={{ lg: 6, md: 12 }}>
-                    <Grid2 container spacing={3}>
-                        <Grid2 size={{ xs: 12 }}>
+        return (
+            <div style={styles.tabPanel}>
+                {this.renderConfirmDialog()}
+                <Grid2
+                    container
+                    spacing={3}
+                >
+                    <Grid2 size={{ lg: 6, md: 12 }}>
+                        <Grid2
+                            container
+                            spacing={3}
+                        >
+                            <Grid2 size={{ xs: 12 }}>
+                                <TextField
+                                    disabled={this.props.saving}
+                                    fullWidth
+                                    variant="standard"
+                                    id="siteName"
+                                    label={this.props.t('Site name')}
+                                    // @ts-expect-error will be fixed in js-controller
+                                    value={this.props.data.common.siteName || ''}
+                                    onChange={e => this.doChange('siteName', e.target.value)}
+                                    helperText={this.props.t(
+                                        "This name will be shown in admin's header. Just to identify the whole installation",
+                                    )}
+                                    slotProps={{
+                                        input: {
+                                            // @ts-expect-error will be fixed in js-controller
+                                            endAdornment: this.props.data.common.siteName ? (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => this.doChange('siteName', '')}
+                                                    >
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ) : null,
+                                        },
+                                    }}
+                                />
+                            </Grid2>
+                            {selectors}
+                        </Grid2>
+                    </Grid2>
+                    <Grid2 size={{ lg: 6, md: 12 }}>
+                        <MapContainer
+                            style={styles.map}
+                            center={center}
+                            zoom={zoom}
+                            maxZoom={18}
+                            attributionControl
+                            zoomControl
+                            doubleClickZoom
+                            scrollWheelZoom
+                            dragging
+                            // animate
+                            easeLinearity={0.35}
+                        >
+                            <TileLayer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />
+                            <MyMapComponent addMap={map => this.onMap(map)} />
+                        </MapContainer>
+                    </Grid2>
+                </Grid2>
+                <Grid2
+                    container
+                    spacing={6}
+                >
+                    <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>{this.getCounters()}</Grid2>
+                    <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
+                        <FormControl
+                            style={styles.formControl}
+                            variant="standard"
+                        >
+                            <InputLabel
+                                shrink
+                                id="city-label"
+                            >
+                                {this.props.t('City:')}
+                            </InputLabel>
                             <TextField
                                 disabled={this.props.saving}
-                                fullWidth
                                 variant="standard"
-                                id="siteName"
-                                label={this.props.t('Site name')}
-                                // @ts-expect-error will be fixed in js-controller
-                                value={this.props.data.common.siteName || ''}
-                                onChange={e => this.doChange('siteName', e.target.value)}
-                                helperText={this.props.t('This name will be shown in admin\'s header. Just to identify the whole installation')}
+                                id="city"
+                                label={this.props.t('City:')}
+                                value={this.props.data.common.city}
+                                onChange={evt => this.onChangeCity(evt)}
                                 slotProps={{
+                                    inputLabel: {
+                                        shrink: true,
+                                    },
                                     input: {
-                                        // @ts-expect-error will be fixed in js-controller
-                                        endAdornment: this.props.data.common.siteName ? <InputAdornment position="end">
-                                            <IconButton
-                                                size="small"
-                                                onClick={() => this.doChange('siteName', '')}
-                                            >
-                                                <CloseIcon />
-                                            </IconButton>
-                                        </InputAdornment> : null,
+                                        readOnly: false,
+                                        endAdornment: this.props.data.common.city ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => this.onChangeCity({ target: { value: '' } })}
+                                                >
+                                                    <CloseIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
                                     },
                                 }}
                             />
-                        </Grid2>
-                        {selectors}
+                        </FormControl>
+                    </Grid2>
+                    <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
+                        <FormControl
+                            style={styles.formControl}
+                            variant="standard"
+                        >
+                            <InputLabel
+                                shrink
+                                id="latitude-label"
+                            >
+                                {this.props.t('Latitude:')}
+                            </InputLabel>
+                            <TextField
+                                disabled={this.props.saving}
+                                variant="standard"
+                                id="latitude"
+                                label={this.props.t('Latitude:')}
+                                value={this.props.data.common.latitude || 0}
+                                slotProps={{
+                                    inputLabel: {
+                                        shrink: true,
+                                    },
+                                    input: {
+                                        readOnly: false,
+                                    },
+                                }}
+                                onChange={evt => this.onChangeText(evt, 'latitude')}
+                            />
+                        </FormControl>
+                    </Grid2>
+                    <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
+                        <FormControl
+                            style={styles.formControl}
+                            variant="standard"
+                        >
+                            <InputLabel
+                                shrink
+                                id="longitude-label"
+                            >
+                                {this.props.t('Longitude:')}
+                            </InputLabel>
+                            <TextField
+                                disabled={this.props.saving}
+                                variant="standard"
+                                id="longitude"
+                                label={this.props.t('Longitude:')}
+                                value={this.props.data.common.longitude || 0}
+                                slotProps={{
+                                    inputLabel: {
+                                        shrink: true,
+                                    },
+                                    input: {
+                                        readOnly: false,
+                                    },
+                                }}
+                                onChange={evt => this.onChangeText(evt, 'longitude')}
+                            />
+                        </FormControl>
                     </Grid2>
                 </Grid2>
-                <Grid2 size={{ lg: 6, md: 12 }} style={{ width: '100%' }}>
-                    <MapContainer
-                        style={styles.map}
-                        center={center}
-                        zoom={zoom}
-                        maxZoom={18}
-                        attributionControl
-                        zoomControl
-                        doubleClickZoom
-                        scrollWheelZoom
-                        dragging
-                        // animate
-                        easeLinearity={0.35}
-                    >
-                        <TileLayer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />
-                        <MyMapComponent addMap={map => this.onMap(map)} />
-                    </MapContainer>
-                </Grid2>
-            </Grid2>
-            <Grid2 container spacing={6}>
-                <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
-                    {this.getCounters()}
-                </Grid2>
-                <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
-                    <FormControl style={styles.formControl} variant="standard">
-                        <InputLabel shrink id="city-label">
-                            {this.props.t('City:')}
-                        </InputLabel>
-                        <TextField
-                            disabled={this.props.saving}
-                            variant="standard"
-                            id="city"
-                            label={this.props.t('City:')}
-                            value={this.props.data.common.city}
-                            onChange={evt => this.onChangeCity(evt)}
-                            slotProps={{
-                                inputLabel: {
-                                    shrink: true,
-                                },
-                                input: {
-                                    readOnly: false,
-                                    endAdornment: this.props.data.common.city ? <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => this.onChangeCity({ target: { value: '' } })}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment> : null,
-                                },
-                            }}
-                        />
-                    </FormControl>
-                </Grid2>
-                <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
-                    <FormControl style={styles.formControl} variant="standard">
-                        <InputLabel shrink id="latitude-label">
-                            {this.props.t('Latitude:')}
-                        </InputLabel>
-                        <TextField
-                            disabled={this.props.saving}
-                            variant="standard"
-                            id="latitude"
-                            label={this.props.t('Latitude:')}
-                            value={this.props.data.common.latitude || 0}
-                            slotProps={{
-                                inputLabel: {
-                                    shrink: true,
-                                },
-                                input: {
-                                    readOnly: false,
-                                },
-                            }}
-                            onChange={evt => this.onChangeText(evt, 'latitude')}
-                        />
-                    </FormControl>
-                </Grid2>
-                <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
-                    <FormControl style={styles.formControl} variant="standard">
-                        <InputLabel shrink id="longitude-label">
-                            {this.props.t('Longitude:')}
-                        </InputLabel>
-                        <TextField
-                            disabled={this.props.saving}
-                            variant="standard"
-                            id="longitude"
-                            label={this.props.t('Longitude:')}
-                            value={this.props.data.common.longitude || 0}
-                            slotProps={{
-                                inputLabel: {
-                                    shrink: true,
-                                },
-                                input: {
-                                    readOnly: false,
-                                },
-                            }}
-                            onChange={evt => this.onChangeText(evt, 'longitude')}
-                        />
-                    </FormControl>
-                </Grid2>
-            </Grid2>
-        </div>;
+            </div>
+        );
     }
 }
 

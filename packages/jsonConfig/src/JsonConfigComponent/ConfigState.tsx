@@ -1,13 +1,8 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import {
-    TextField,
-    IconButton, Button, Switch, Slider,
-} from '@mui/material';
+import { TextField, IconButton, Button, Switch, Slider } from '@mui/material';
 
-import {
-    I18n,
-} from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemState } from '#JC/types';
 import getIconByName from './Icons';
@@ -26,16 +21,21 @@ interface ConfigStateState extends ConfigGenericState {
 class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
     controlTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    delayedUpdate: { timer: ReturnType<typeof setTimeout> | null; value: string | boolean | number | null } = { timer: null, value: null };
+    delayedUpdate: { timer: ReturnType<typeof setTimeout> | null; value: string | boolean | number | null } = {
+        timer: null,
+        value: null,
+    };
 
-    getObjectID() {
+    getObjectID(): string {
         return `${this.props.schema.system ? 'system.adapter.' : ''}${this.props.adapterName}.${this.props.instance}.${this.props.schema.oid}`;
     }
 
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        const obj: ioBroker.StateObject = await this.props.socket.getObject(this.getObjectID()) as ioBroker.StateObject;
-        const controlType = this.props.schema.control || await this.detectType(obj);
+        const obj: ioBroker.StateObject = (await this.props.socket.getObject(
+            this.getObjectID(),
+        )) as ioBroker.StateObject;
+        const controlType = this.props.schema.control || this.detectType(obj);
 
         const state = await this.props.socket.getState(this.getObjectID());
 
@@ -44,7 +44,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         });
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         super.componentWillUnmount();
         this.props.socket.unsubscribeState(this.getObjectID(), this.onStateChanged);
         if (this.delayedUpdate.timer) {
@@ -55,16 +55,15 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         if (this.controlTimeout) {
             clearTimeout(this.controlTimeout);
             this.controlTimeout = null;
-            this.props.socket.setState(this.getObjectID(), this.state.stateValue, false)
+            this.props.socket
+                .setState(this.getObjectID(), this.state.stateValue, false)
                 .catch(e => console.error(`Cannot control value: ${e}`));
         }
     }
 
-    onStateChanged = (_id: string, state: ioBroker.State | null | undefined) => {
+    onStateChanged = (_id: string, state: ioBroker.State | null | undefined): void => {
         let val = state ? state.val : null;
-        if (this.state.controlType === 'button' ||
-            this.state.controlType === 'switch'
-        ) {
+        if (this.state.controlType === 'button' || this.state.controlType === 'switch') {
             val = !!val;
             if (this.state.stateValue !== val) {
                 this.setState({ stateValue: val });
@@ -90,7 +89,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         }
     };
 
-    async detectType(obj: ioBroker.StateObject) {
+    detectType(obj: ioBroker.StateObject): 'button' | 'switch' | 'slider' | 'input' | 'text' {
         obj = obj || ({} as ioBroker.StateObject);
         obj.common = obj.common || ({} as ioBroker.StateCommon);
 
@@ -125,243 +124,290 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         return 'text';
     }
 
-    renderItem(/* error, disabled, defaultValue */) {
+    renderItem(/* error, disabled, defaultValue */): JSX.Element {
         if (!this.state.obj) {
             return null;
         }
 
-        let content: React.JSX.Element;
+        let content: JSX.Element;
 
         if (this.state.controlType === 'button') {
-            let icon: React.JSX.Element | null = null;
+            let icon: JSX.Element | null = null;
             if (this.props.schema.falseImage) {
                 icon = getIconByName(this.props.schema.falseImage);
             }
 
-            const text = this.getText(this.props.schema.falseText, this.props.schema.noTranslation) || this.getText(this.props.schema.label, this.props.schema.noTranslation);
+            const text =
+                this.getText(this.props.schema.falseText, this.props.schema.noTranslation) ||
+                this.getText(this.props.schema.label, this.props.schema.noTranslation);
             if (!text && icon) {
-                content = <IconButton
-                    style={this.props.schema.falseTextStyle}
-                    onClick={async () => {
-                        if (this.props.schema.confirm) {
-                            this.setState({
-                                confirmDialog: true,
-                                confirmCallback: async (result: boolean) => {
-                                    if (result) {
-                                        await this.props.socket.setState(this.getObjectID(), true, false);
-                                    }
-                                },
-                            });
-                        } else {
-                            await this.props.socket.setState(this.getObjectID(), true, false);
-                        }
-                    }}
-                >
-                    {icon}
-                </IconButton>;
+                content = (
+                    <IconButton
+                        style={this.props.schema.falseTextStyle}
+                        onClick={async () => {
+                            if (this.props.schema.confirm) {
+                                this.setState({
+                                    confirmDialog: true,
+                                    confirmCallback: async (result: boolean) => {
+                                        if (result) {
+                                            await this.props.socket.setState(this.getObjectID(), true, false);
+                                        }
+                                    },
+                                });
+                            } else {
+                                await this.props.socket.setState(this.getObjectID(), true, false);
+                            }
+                        }}
+                    >
+                        {icon}
+                    </IconButton>
+                );
             } else {
-                content = <Button
-                    variant={this.props.schema.variant || 'contained'}
-                    startIcon={icon}
-                    style={this.props.schema.falseTextStyle}
-                    onClick={async () => {
-                        if (this.props.schema.confirm) {
-                            this.setState({
-                                confirmDialog: true,
-                                confirmCallback: async (result: boolean) => {
-                                    if (result) {
-                                        await this.props.socket.setState(this.getObjectID(), true, false);
-                                    }
-                                },
-                            });
-                        } else {
-                            await this.props.socket.setState(this.getObjectID(), true, false);
-                        }
-                    }}
-                >
-                    {text || this.getObjectID().split('.').pop()}
-                </Button>;
+                content = (
+                    <Button
+                        variant={this.props.schema.variant || 'contained'}
+                        startIcon={icon}
+                        style={this.props.schema.falseTextStyle}
+                        onClick={async () => {
+                            if (this.props.schema.confirm) {
+                                this.setState({
+                                    confirmDialog: true,
+                                    confirmCallback: async (result: boolean) => {
+                                        if (result) {
+                                            await this.props.socket.setState(this.getObjectID(), true, false);
+                                        }
+                                    },
+                                });
+                            } else {
+                                await this.props.socket.setState(this.getObjectID(), true, false);
+                            }
+                        }}
+                    >
+                        {text || this.getObjectID().split('.').pop()}
+                    </Button>
+                );
             }
         } else if (this.state.controlType === 'switch') {
-            let iconFalse: React.JSX.Element | null = null;
+            let iconFalse: JSX.Element | null = null;
             const textFalse = this.getText(this.props.schema.falseText, this.props.schema.noTranslation);
             if (this.props.schema.falseImage) {
                 iconFalse = getIconByName(this.props.schema.falseImage, textFalse ? { marginLeft: 8 } : undefined);
             }
-            let iconTrue: React.JSX.Element | null = null;
+            let iconTrue: JSX.Element | null = null;
             const textTrue = this.getText(this.props.schema.trueText, this.props.schema.noTranslation);
             if (this.props.schema.trueImage) {
                 iconTrue = getIconByName(this.props.schema.trueImage, textTrue ? { marginRight: 8 } : undefined);
             }
 
-            content = <Switch
-                checked={!!this.state.stateValue}
-                onChange={async () => {
-                    if (this.props.schema.confirm) {
-                        this.setState({
-                            confirmDialog: true,
-                            confirmCallback: async (result: boolean) => {
-                                if (result) {
-                                    await this.props.socket.setState(this.getObjectID(), !this.state.stateValue, false);
-                                }
-                            },
-                        });
-                    } else {
-                        await this.props.socket.setState(this.getObjectID(), !this.state.stateValue, false);
-                    }
-                }}
-            />;
+            content = (
+                <Switch
+                    checked={!!this.state.stateValue}
+                    onChange={async () => {
+                        if (this.props.schema.confirm) {
+                            this.setState({
+                                confirmDialog: true,
+                                confirmCallback: async (result: boolean) => {
+                                    if (result) {
+                                        await this.props.socket.setState(
+                                            this.getObjectID(),
+                                            !this.state.stateValue,
+                                            false,
+                                        );
+                                    }
+                                },
+                            });
+                        } else {
+                            await this.props.socket.setState(this.getObjectID(), !this.state.stateValue, false);
+                        }
+                    }}
+                />
+            );
 
-            if (textFalse ||
-                iconFalse ||
-                textTrue ||
-                iconTrue
-            ) {
-                content = <div style={{ display: 'flex', alignItems: 'center', fontSize: 14 }}>
-                    <span style={this.props.schema.falseTextStyle}>
-                        {textFalse}
-                        {iconFalse}
-                    </span>
-                    {content}
-                    <span style={this.props.schema.trueTextStyle}>
-                        {iconTrue}
-                        {textTrue}
-                    </span>
-                </div>;
+            if (textFalse || iconFalse || textTrue || iconTrue) {
+                content = (
+                    <div style={{ display: 'flex', alignItems: 'center', fontSize: 14 }}>
+                        <span style={this.props.schema.falseTextStyle}>
+                            {textFalse}
+                            {iconFalse}
+                        </span>
+                        {content}
+                        <span style={this.props.schema.trueTextStyle}>
+                            {iconTrue}
+                            {textTrue}
+                        </span>
+                    </div>
+                );
             }
 
             const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
             if (label) {
-                content = <div style={{ display: 'flex', alignItems: 'center', fontSize: '1rem' }}>
-                    <span style={{ marginRight: 8 }}>{label}</span>
-                    {content}
-                </div>;
+                content = (
+                    <div style={{ display: 'flex', alignItems: 'center', fontSize: '1rem' }}>
+                        <span style={{ marginRight: 8 }}>{label}</span>
+                        {content}
+                    </div>
+                );
             }
         } else if (this.state.controlType === 'slider') {
-            let iconFalse: React.JSX.Element | null = null;
+            let iconFalse: JSX.Element | null = null;
             const textFalse = this.getText(this.props.schema.falseText, this.props.schema.noTranslation);
             if (this.props.schema.falseImage) {
                 iconFalse = getIconByName(this.props.schema.falseImage, textFalse ? { marginLeft: 8 } : undefined);
             }
-            let iconTrue: React.JSX.Element | null = null;
+            let iconTrue: JSX.Element | null = null;
             const textTrue = this.getText(this.props.schema.trueText, this.props.schema.noTranslation);
             if (this.props.schema.trueImage) {
                 iconTrue = getIconByName(this.props.schema.trueImage, textTrue ? { marginRight: 8 } : undefined);
             }
 
             const min = this.props.schema.min === undefined ? this.state.obj.common.min || 0 : this.props.schema.min;
-            const max = this.props.schema.max === undefined ? (this.state.obj.common.max === undefined ? 100 : this.state.obj.common.max) : this.props.schema.max;
-            const step = this.props.schema.step === undefined ? this.state.obj.common.step || 1 : this.props.schema.step;
+            const max =
+                this.props.schema.max === undefined
+                    ? this.state.obj.common.max === undefined
+                        ? 100
+                        : this.state.obj.common.max
+                    : this.props.schema.max;
+            const step =
+                this.props.schema.step === undefined ? this.state.obj.common.step || 1 : this.props.schema.step;
 
-            content = <Slider
-                style={{ width: '100%', flexGrow: 1 }}
-                min={min}
-                max={max}
-                step={step}
-                value={this.state.stateValue as number}
-                valueLabelDisplay="auto"
-                valueLabelFormat={(value: number) => `${value}${this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || ''}`}
-                onChange={(_e: Event, value: number) => {
-                    this.setState({ stateValue: value }, async () => {
-                        if (this.controlTimeout) {
-                            clearTimeout(this.controlTimeout);
-                        }
-                        this.controlTimeout = setTimeout(async () => {
-                            console.log(`${Date.now()} Send new value: ${this.state.stateValue}`);
-                            this.controlTimeout = null;
-                            await this.props.socket.setState(this.getObjectID(), this.state.stateValue, false);
-                        }, this.props.schema.controlDelay || 0);
-                    });
-                }}
-            />;
-
-            if (textFalse ||
-                iconFalse ||
-                textTrue ||
-                iconTrue
-            ) {
-                content = <div
-                    style={{
-                        display: 'flex',
-                        width: '100%',
-                        flexGrow: 1,
-                        alignItems: 'center',
+            content = (
+                <Slider
+                    style={{ width: '100%', flexGrow: 1 }}
+                    min={min}
+                    max={max}
+                    step={step}
+                    value={this.state.stateValue as number}
+                    valueLabelDisplay="auto"
+                    valueLabelFormat={(value: number) =>
+                        `${value}${this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || ''}`
+                    }
+                    onChange={(_e: Event, value: number) => {
+                        this.setState({ stateValue: value }, (): void => {
+                            if (this.controlTimeout) {
+                                clearTimeout(this.controlTimeout);
+                            }
+                            this.controlTimeout = setTimeout(async () => {
+                                console.log(`${Date.now()} Send new value: ${this.state.stateValue}`);
+                                this.controlTimeout = null;
+                                await this.props.socket.setState(this.getObjectID(), this.state.stateValue, false);
+                            }, this.props.schema.controlDelay || 0);
+                        });
                     }}
-                >
-                    <span style={{ marginRight: 16, ...this.props.schema.falseTextStyle }}>
-                        {textFalse}
-                        {iconFalse}
-                    </span>
-                    {content}
-                    <span style={{ marginLeft: 16, ...this.props.schema.trueTextStyle }}>
-                        {iconTrue}
-                        {textTrue}
-                    </span>
-                </div>;
+                />
+            );
+
+            if (textFalse || iconFalse || textTrue || iconTrue) {
+                content = (
+                    <div
+                        style={{
+                            display: 'flex',
+                            width: '100%',
+                            flexGrow: 1,
+                            alignItems: 'center',
+                        }}
+                    >
+                        <span style={{ marginRight: 16, ...this.props.schema.falseTextStyle }}>
+                            {textFalse}
+                            {iconFalse}
+                        </span>
+                        {content}
+                        <span style={{ marginLeft: 16, ...this.props.schema.trueTextStyle }}>
+                            {iconTrue}
+                            {textTrue}
+                        </span>
+                    </div>
+                );
             }
             const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
             if (label) {
-                content = <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
-                    <span style={{ whiteSpace: 'nowrap', marginRight: 8, fontSize: '1rem' }}>{label}</span>
-                    {content}
-                </div>;
+                content = (
+                    <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+                        <span style={{ whiteSpace: 'nowrap', marginRight: 8, fontSize: '1rem' }}>{label}</span>
+                        {content}
+                    </div>
+                );
             }
         } else if (this.state.controlType === 'input') {
-            content = <TextField
-                style={{ width: '100%' }}
-                value={this.state.stateValue}
-                variant="standard"
-                InputProps={{
-                    endAdornment: this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || undefined,
-                }}
-                onChange={e => {
-                    this.setState({ stateValue: e.target.value }, async () => {
-                        if (this.controlTimeout) {
-                            clearTimeout(this.controlTimeout);
-                        }
-                        this.controlTimeout = setTimeout(async () => {
-                            this.controlTimeout = null;
-                            await this.props.socket.setState(this.getObjectID(), this.state.stateValue, false);
-                        }, this.props.schema.controlDelay || 0);
-                    });
-                }}
-                label={this.getText(this.props.schema.label)}
-                helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-            />;
+            content = (
+                <TextField
+                    style={{ width: '100%' }}
+                    value={this.state.stateValue}
+                    variant="standard"
+                    slotProps={{
+                        input: {
+                            endAdornment:
+                                this.getText(this.props.schema.unit, this.props.schema.noTranslation) ||
+                                this.state.obj.common.unit ||
+                                undefined,
+                        },
+                    }}
+                    onChange={e => {
+                        this.setState({ stateValue: e.target.value }, (): void => {
+                            if (this.controlTimeout) {
+                                clearTimeout(this.controlTimeout);
+                            }
+                            this.controlTimeout = setTimeout(async () => {
+                                this.controlTimeout = null;
+                                await this.props.socket.setState(this.getObjectID(), this.state.stateValue, false);
+                            }, this.props.schema.controlDelay || 0);
+                        });
+                    }}
+                    label={this.getText(this.props.schema.label)}
+                    helperText={this.renderHelp(
+                        this.props.schema.help,
+                        this.props.schema.helpLink,
+                        this.props.schema.noTranslation,
+                    )}
+                />
+            );
         } else if (this.state.obj.common.type === 'number') {
             const min = this.props.schema.min === undefined ? this.state.obj.common.min || 0 : this.props.schema.min;
-            const max = this.props.schema.max === undefined ? (this.state.obj.common.max === undefined ? 100 : this.state.obj.common.max) : this.props.schema.max;
-            const step = this.props.schema.step === undefined ? this.state.obj.common.step || 1 : this.props.schema.step;
+            const max =
+                this.props.schema.max === undefined
+                    ? this.state.obj.common.max === undefined
+                        ? 100
+                        : this.state.obj.common.max
+                    : this.props.schema.max;
+            const step =
+                this.props.schema.step === undefined ? this.state.obj.common.step || 1 : this.props.schema.step;
 
-            content = <TextField
-                variant="standard"
-                style={{ width: '100%' }}
-                value={this.state.stateValue}
-                type="number"
-                slotProps={{
-                    htmlInput: { min, max, step },
-                    input: {
-                        endAdornment: this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || undefined,
-                    },
-                }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                onChange={e => {
-                    this.setState({ stateValue: e.target.value }, async () => {
-                        if (this.controlTimeout) {
-                            clearTimeout(this.controlTimeout);
-                        }
-                        this.controlTimeout = setTimeout(async () => {
-                            this.controlTimeout = null;
-                            const val = parseFloat(this.state.stateValue as unknown as string);
-                            await this.props.socket.setState(this.getObjectID(), val, false);
-                        }, this.props.schema.controlDelay || 0);
-                    });
-                }}
-                label={this.getText(this.props.schema.label)}
-                helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-            />;
+            content = (
+                <TextField
+                    variant="standard"
+                    style={{ width: '100%' }}
+                    value={this.state.stateValue}
+                    type="number"
+                    slotProps={{
+                        htmlInput: { min, max, step },
+                        input: {
+                            endAdornment:
+                                this.getText(this.props.schema.unit, this.props.schema.noTranslation) ||
+                                this.state.obj.common.unit ||
+                                undefined,
+                        },
+                    }}
+                    onChange={e => {
+                        this.setState({ stateValue: e.target.value }, (): void => {
+                            if (this.controlTimeout) {
+                                clearTimeout(this.controlTimeout);
+                            }
+                            this.controlTimeout = setTimeout(async () => {
+                                this.controlTimeout = null;
+                                const val = parseFloat(this.state.stateValue as unknown as string);
+                                await this.props.socket.setState(this.getObjectID(), val, false);
+                            }, this.props.schema.controlDelay || 0);
+                        });
+                    }}
+                    label={this.getText(this.props.schema.label)}
+                    helperText={this.renderHelp(
+                        this.props.schema.help,
+                        this.props.schema.helpLink,
+                        this.props.schema.noTranslation,
+                    )}
+                />
+            );
         } else if (this.state.obj.common.type === 'boolean') {
-            let icon: React.JSX.Element | null = null;
+            let icon: JSX.Element | null = null;
             let text: string;
             let style: React.CSSProperties | undefined;
             if (!this.state.stateValue) {
@@ -378,19 +424,21 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 style = this.props.schema.trueTextStyle;
             }
             const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
-            content = <div style={{ fontSize: '1rem', ...style }}>
-                {label}
-                {label ? <span style={{ marginRight: 8 }}>:</span> : null}
-                {icon}
-                {text || (this.state.stateValue ? I18n.t('ra_true') : I18n.t('ra_false'))}
-            </div>;
+            content = (
+                <div style={{ fontSize: '1rem', ...style }}>
+                    {label}
+                    {label ? <span style={{ marginRight: 8 }}>:</span> : null}
+                    {icon}
+                    {text || (this.state.stateValue ? I18n.t('ra_true') : I18n.t('ra_false'))}
+                </div>
+            );
         } else {
-            // text or html
+            // text or HTML
             const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
-            const unit = this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit;
+            const unit =
+                this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit;
             let value;
             if (this.state.controlType === 'html') {
-                // eslint-disable-next-line react/no-danger
                 value = <span dangerouslySetInnerHTML={{ __html: this.state.stateValue as string }} />;
             } else if (this.state.stateValue === null) {
                 value = 'null';
@@ -400,12 +448,14 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 value = this.state.stateValue;
             }
 
-            content = <div style={{ fontSize: '1rem' }}>
-                {label}
-                {label ? <span style={{ marginRight: 8 }}>:</span> : null}
-                {value}
-                {unit ? <span style={{ opacity: 0.7 }}>{unit}</span> : null}
-            </div>;
+            content = (
+                <div style={{ fontSize: '1rem' }}>
+                    {label}
+                    {label ? <span style={{ marginRight: 8 }}>:</span> : null}
+                    {value}
+                    {unit ? <span style={{ opacity: 0.7 }}>{unit}</span> : null}
+                </div>
+            );
         }
 
         return content;

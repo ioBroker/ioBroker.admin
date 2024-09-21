@@ -1,15 +1,14 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Button, CircularProgress } from '@mui/material';
 
-import {
-    Warning as IconWarning,
-    Error as IconError,
-    Info as IconInfo,
-} from '@mui/icons-material';
+import { Warning as IconWarning, Error as IconError, Info as IconInfo } from '@mui/icons-material';
 
 import {
-    Confirm as DialogConfirm, Error  as DialogError, Message  as DialogMessage, I18n,
+    Confirm as DialogConfirm,
+    Error as DialogError,
+    Message as DialogMessage,
+    I18n,
 } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemSendTo } from '#JC/types';
@@ -21,13 +20,12 @@ const styles: Record<string, React.CSSProperties> = {
     },
 };
 
-function ip2int(ip: string) {
-    // eslint-disable-next-line no-bitwise
+function ip2int(ip: string): number {
     return ip.split('.').reduce((ipInt, octet) => (ipInt << 8) + parseInt(octet, 10), 0) >>> 0;
 }
 
 // copied from iobroker.admin/src-rx/src/Utils.js
-function findNetworkAddressOfHost(obj: Record<string, any>, localIp: string) {
+function findNetworkAddressOfHost(obj: Record<string, any>, localIp: string): string {
     const networkInterfaces = obj?.native?.hardware?.networkInterfaces;
     if (!networkInterfaces) {
         return null;
@@ -48,18 +46,26 @@ function findNetworkAddressOfHost(obj: Record<string, any>, localIp: string) {
                 return;
             }
             // if ip4 and not docker or wsl
-            if (ip.family === 'IPv4' && !ip.address.startsWith('172') && (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/))) { // if DNS name
+            if (
+                ip.family === 'IPv4' &&
+                !ip.address.startsWith('172') &&
+                (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/))
+            ) {
+                // if DNS name
                 hostIp = ip.address;
             } else if (!hostIp) {
-                if (ip.family === 'IPv4' && localIp.includes('.') &&
-                    // eslint-disable-next-line no-bitwise
-                    (ip2int(localIp) & ip2int(ip.netmask)) === (ip2int(ip.address) & ip2int(ip.netmask))) {
+                if (
+                    ip.family === 'IPv4' &&
+                    localIp.includes('.') &&
+                    (ip2int(localIp) & ip2int(ip.netmask)) === (ip2int(ip.address) & ip2int(ip.netmask))
+                ) {
                     hostIp = ip.address;
                 } else {
                     hostIp = ip.address;
                 }
             }
-        }));
+        }),
+    );
 
     // check ipv6 addresses
     if (!hostIp) {
@@ -67,23 +73,32 @@ function findNetworkAddressOfHost(obj: Record<string, any>, localIp: string) {
             networkInterfaces[inter].forEach((ip: Record<string, any>) => {
                 if (ip.internal) {
                     return;
-                } if (localIp.includes(':') && ip.family !== 'IPv6') {
-                    return;
-                } if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                }
+                if (localIp.includes(':') && ip.family !== 'IPv6') {
                     return;
                 }
-                if (ip.family === 'IPv6' && (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/))) { // if DNS name
+                if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                    return;
+                }
+                if (
+                    ip.family === 'IPv6' &&
+                    (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/))
+                ) {
+                    // if DNS name
                     hostIp = ip.address;
                 } else if (!hostIp) {
-                    if (ip.family === 'IPv4' && localIp.includes('.') &&
-                        // eslint-disable-next-line no-bitwise
-                        (ip2int(localIp) & ip2int(ip.netmask)) === (ip2int(ip.address) & ip2int(ip.netmask))) {
+                    if (
+                        ip.family === 'IPv4' &&
+                        localIp.includes('.') &&
+                        (ip2int(localIp) & ip2int(ip.netmask)) === (ip2int(ip.address) & ip2int(ip.netmask))
+                    ) {
                         hostIp = ip.address;
                     } else {
                         hostIp = ip.address;
                     }
                 }
-            }));
+            }),
+        );
     }
 
     if (!hostIp) {
@@ -91,12 +106,15 @@ function findNetworkAddressOfHost(obj: Record<string, any>, localIp: string) {
             networkInterfaces[inter].forEach((ip: Record<string, any>) => {
                 if (ip.internal) {
                     return;
-                } if (localIp.includes(':') && ip.family !== 'IPv6') {
-                    return;
-                } if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                }
+                if (localIp.includes(':') && ip.family !== 'IPv6') {
                     return;
                 }
-                if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
+                if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                    return;
+                }
+                if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) {
+                    // if DNS name
                     hostIp = ip.address;
                 } else {
                     hostIp = ip.address;
@@ -131,14 +149,16 @@ interface ConfigSendToState extends ConfigGenericState {
 }
 
 class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
         let hostname = window.location.hostname;
         if (this.props.schema.openUrl) {
             // read admin host
             const adminInstance = await this.props.socket.getCurrentInstance();
-            const instanceObj = await this.props.socket.getObject(`system.adapter.${adminInstance}` as ioBroker.ObjectIDs.Instance);
+            const instanceObj = await this.props.socket.getObject(
+                `system.adapter.${adminInstance}` as ioBroker.ObjectIDs.Instance,
+            );
 
             if (instanceObj) {
                 const hostObj = await this.props.socket.getObject(`system.host.${instanceObj?.common?.host}`);
@@ -147,35 +167,49 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                     if (ip) {
                         hostname = `${ip}:${window.location.port}`;
                     } else {
-                        console.warn(`Cannot find suitable IP in host ${instanceObj.common.host} for ${instanceObj._id}`);
+                        console.warn(
+                            `Cannot find suitable IP in host ${instanceObj.common.host} for ${instanceObj._id}`,
+                        );
                         return;
                     }
                 }
             }
         }
 
-        await new Promise<void>(resolve => { this.setState({ _error: '', _message: '', hostname }, resolve); });
+        await new Promise<void>(resolve => {
+            this.setState({ _error: '', _message: '', hostname }, resolve);
+        });
 
         if (this.props.schema.onLoaded) {
             this._onClick();
         }
     }
 
-    renderErrorDialog() {
+    renderErrorDialog(): JSX.Element | null {
         if (this.state._error) {
-            return <DialogError text={this.state._error} onClose={() => this.setState({ _error: '' })} />;
+            return (
+                <DialogError
+                    text={this.state._error}
+                    onClose={() => this.setState({ _error: '' })}
+                />
+            );
         }
         return null;
     }
 
-    renderMessageDialog() {
+    renderMessageDialog(): JSX.Element | null {
         if (this.state._message) {
-            return <DialogMessage text={this.state._message} onClose={() => this.setState({ _message: '' })} />;
+            return (
+                <DialogMessage
+                    text={this.state._message}
+                    onClose={() => this.setState({ _message: '' })}
+                />
+            );
         }
         return null;
     }
 
-    _onClick() {
+    _onClick(): void {
         this.props.onCommandRunning(true);
         this.setState({ running: true });
 
@@ -207,17 +241,17 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
         }
         let timeout: ReturnType<typeof setTimeout> | undefined;
         if (this.props.schema.timeout) {
-            timeout = setTimeout(() => {
-                this.props.onCommandRunning(false);
-                this.setState({ _error: I18n.t('ra_Request timed out'), running: false });
-            }, parseInt(this.props.schema.timeout as any as string, 10) || 10000);
+            timeout = setTimeout(
+                () => {
+                    this.props.onCommandRunning(false);
+                    this.setState({ _error: I18n.t('ra_Request timed out'), running: false });
+                },
+                parseInt(this.props.schema.timeout as any as string, 10) || 10000,
+            );
         }
 
-        this.props.socket.sendTo(
-            `${this.props.adapterName}.${this.props.instance}`,
-            this.props.schema.command || 'send',
-            data,
-        )
+        void this.props.socket
+            .sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
             .then(async (response: Record<string, any>) => {
                 if (timeout) {
                     clearTimeout(timeout);
@@ -227,7 +261,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                     if (this.props.schema.error && this.props.schema.error[response.error]) {
                         let error = this.getText(this.props.schema.error[response.error]);
                         if (response.args) {
-                            response.args.forEach((arg: string) => error = error.replace('%s', arg));
+                            response.args.forEach((arg: string) => (error = error.replace('%s', arg)));
                         }
                         this.setState({ _error: error });
                     } else {
@@ -245,10 +279,14 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                         window.location.reload();
                     } else if (response?.openUrl && this.props.schema.openUrl) {
                         window.open(response.openUrl, response.window || this.props.schema.window || '_blank');
-                    } else if (response?.result && this.props.schema.result && this.props.schema.result[response.result]) {
+                    } else if (
+                        response?.result &&
+                        this.props.schema.result &&
+                        this.props.schema.result[response.result]
+                    ) {
                         let text = this.getText(this.props.schema.result[response.result]);
                         if (response.args) {
-                            response.args.forEach((arg: string) => text = text.replace('%s', arg));
+                            response.args.forEach((arg: string) => (text = text.replace('%s', arg)));
                         }
                         window.alert(text);
                     }
@@ -260,7 +298,9 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
 
                         setTimeout(() => this.props.forceUpdate(Object.keys(response.native), this.props.data), 300);
                     } else if (response?.result) {
-                        window.alert(typeof response.result === 'object' ? JSON.stringify(response.result) : response.result);
+                        window.alert(
+                            typeof response.result === 'object' ? JSON.stringify(response.result) : response.result,
+                        );
                     } else {
                         window.alert(I18n.t('ra_Ok'));
                     }
@@ -283,7 +323,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
             });
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }
@@ -297,43 +337,54 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
             icon = <IconInfo />;
         }
 
-        return <DialogConfirm
-            title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
-            text={this.getText(confirm.text)}
-            ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
-            cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
-            icon={icon || undefined}
-            onClose={isOk =>
-                this.setState({ confirmDialog: false }, () =>
-                    isOk && this._onClick())}
-        />;
+        return (
+            <DialogConfirm
+                title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
+                text={this.getText(confirm.text)}
+                ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
+                cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
+                icon={icon || undefined}
+                onClose={isOk => this.setState({ confirmDialog: false }, () => isOk && this._onClick())}
+            />
+        );
     }
 
-    renderItem(error: Error | undefined, disabled: boolean) {
+    renderItem(error: Error | undefined, disabled: boolean): JSX.Element {
         const icon = this.getIcon();
 
-        return <div style={styles.fullWidth}>
-            <Button
-                variant={this.props.schema.variant || undefined}
-                color={this.props.schema.color || 'grey'}
-                style={{ ...styles.fullWidth, ...(this.props.schema.controlStyle || undefined) }}
-                disabled={disabled || !this.props.alive}
-                startIcon={icon}
-                title={this.props.alive ? this.getText(this.props.schema.title) || '' : I18n.t('ra_Instance is not alive')}
-                onClick={() => {
-                    if (this.props.schema.confirm) {
-                        this.setState({ confirmDialog: true });
-                    } else {
-                        this._onClick();
+        return (
+            <div style={styles.fullWidth}>
+                <Button
+                    variant={this.props.schema.variant || undefined}
+                    color={this.props.schema.color || 'grey'}
+                    style={{ ...styles.fullWidth, ...(this.props.schema.controlStyle || undefined) }}
+                    disabled={disabled || !this.props.alive}
+                    startIcon={icon}
+                    title={
+                        this.props.alive
+                            ? this.getText(this.props.schema.title) || ''
+                            : I18n.t('ra_Instance is not alive')
                     }
-                }}
-            >
-                {this.props.schema.showProcess && this.state.running ? <CircularProgress size={20} style={{ marginRight: 8 }} /> : null}
-                {this.getText(this.props.schema.label, this.props.schema.noTranslation)}
-            </Button>
-            {this.renderErrorDialog()}
-            {this.renderMessageDialog()}
-        </div>;
+                    onClick={() => {
+                        if (this.props.schema.confirm) {
+                            this.setState({ confirmDialog: true });
+                        } else {
+                            this._onClick();
+                        }
+                    }}
+                >
+                    {this.props.schema.showProcess && this.state.running ? (
+                        <CircularProgress
+                            size={20}
+                            style={{ marginRight: 8 }}
+                        />
+                    ) : null}
+                    {this.getText(this.props.schema.label, this.props.schema.noTranslation)}
+                </Button>
+                {this.renderErrorDialog()}
+                {this.renderMessageDialog()}
+            </div>
+        );
     }
 }
 

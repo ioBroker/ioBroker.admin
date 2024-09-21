@@ -21,57 +21,45 @@ window.adapterName = 'admin';
 
 console.log(`iobroker.${window.adapterName}@${version.version}`);
 
-function build() {
-    const container = document.getElementById('root');
-    const root = createRoot(container);
-
-    return root.render(<LocalizationProvider dateAdapter={AdapterDateFns}>
-        <ContextWrapperProvider>
-            <App />
-        </ContextWrapperProvider>
-    </LocalizationProvider>);
-}
-
 const versionChanged = [
     'ChunkLoadError', // version was changed
-    'removeChild',    // version was changed
-    'DOMException',   // version was changed
+    'removeChild', // version was changed
+    'DOMException', // version was changed
 ];
 
 const ignoreErrors = [
-    'removeChild',                         // ignore errors that happen by changing the version
-    'Loading chunk',                       // ignore errors that happen by changing the version
-    'getWidth',                            // echarts error
-    'safari-extension',                    // ignore safari extension errors
-    'this.animation',                      // echarts error
-    'No connection',                       // Ignore no connection errors
-    'notConnectedError',                   // Ignore no connection errors
-    'has no target',                       // Alias has no target
-    'ResizeObserver',                      // echarts error
-    'WorkerGlobalScope',                   // worker error
-    'generateKey',                         // ignore safari extension errors
-    'The operation is insecure.',          // http => https access
-    'SyntaxError: An invalid or illegal string was specified',   // No stack and no possibility to detect
-    'Can\'t find variable: servConn',      // Error from info adapter
-    'LPContentScriptFeatures',             // ignore safari extension errors
-    'window.webkit.messageHandlers',       // ignore safari extension errors
-    'has no target',                       // ignore alias errors
+    'removeChild', // ignore errors that happen by changing the version
+    'Loading chunk', // ignore errors that happen by changing the version
+    'getWidth', // echarts error
+    'safari-extension', // ignore safari extension errors
+    'this.animation', // echarts error
+    'No connection', // Ignore no connection errors
+    'notConnectedError', // Ignore no connection errors
+    'has no target', // Alias has no target
+    'ResizeObserver', // echarts error
+    'WorkerGlobalScope', // worker error
+    'generateKey', // ignore safari extension errors
+    'The operation is insecure.', // http => https access
+    'SyntaxError: An invalid or illegal string was specified', // No stack and no possibility to detect
+    "Can't find variable: servConn", // Error from info adapter
+    'LPContentScriptFeatures', // ignore safari extension errors
+    'window.webkit.messageHandlers', // ignore safari extension errors
+    'has no target', // ignore alias errors
 ];
 
-if ((!window.disableDataReporting || window.disableDataReporting === '@@disableDataReporting@@') && window.location.port !== '3000') {
+if (
+    (!window.disableDataReporting || window.disableDataReporting === '@@disableDataReporting@@') &&
+    window.location.port !== '3000'
+) {
     Sentry.init({
         dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
         release: `iobroker.${window.adapterName}@${version.version}`,
-        integrations: [
-            Sentry.dedupeIntegration(),
-        ],
+        integrations: [Sentry.dedupeIntegration()],
         beforeSend(event: Sentry.ErrorEvent) {
             // Modify the event here
-            if (event?.message &&
-                versionChanged.find(error => event.message.includes(error))) {
+            if (event?.message && versionChanged.find(error => event.message.includes(error))) {
                 window.location.reload();
-            } else if (event?.message &&
-                ignoreErrors.find(error => event.message.includes(error))) {
+            } else if (event?.message && ignoreErrors.find(error => event.message.includes(error))) {
                 return null;
             }
             return event;
@@ -92,14 +80,29 @@ if ((!window.disableDataReporting || window.disableDataReporting === '@@disableD
         throw error;
     };
     window.onunhandledrejection = (event: PromiseRejectionEvent) => {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         const errText = event.toString();
         if (typeof event === 'object' && errText && versionChanged.find(e => errText.includes(e))) {
             console.error(`Try to detect admin version change: ${event.reason}`);
             window.location.reload();
             return;
         }
-        throw event;
+        if (event instanceof Error) {
+            throw event;
+        } else {
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            throw new Error(event.toString());
+        }
     };
 }
 
-build();
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <ContextWrapperProvider>
+            <App />
+        </ContextWrapperProvider>
+    </LocalizationProvider>,
+);

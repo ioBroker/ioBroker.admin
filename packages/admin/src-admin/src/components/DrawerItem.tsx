@@ -1,14 +1,6 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import {
-    Badge,
-    Grid,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Tooltip,
-    Checkbox,
-} from '@mui/material';
+import { Badge, Grid2, ListItemButton, ListItemIcon, ListItemText, Tooltip, Checkbox } from '@mui/material';
 import { DragHandle } from '@mui/icons-material';
 
 import { amber } from '@mui/material/colors';
@@ -24,7 +16,8 @@ const styles: Record<string, any> = {
             background: theme.palette.primary.main,
             color: theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
             '& $selectedIcon': {
-                color: theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
+                color:
+                    theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
             },
         },
     }),
@@ -44,10 +37,10 @@ const styles: Record<string, any> = {
 };
 
 interface DrawerItemProps {
-    badgeColor?:  'error' | 'warn' | 'primary' | '';
+    badgeColor?: 'error' | 'warn' | 'primary' | '';
     badgeContent?: number;
     compact?: boolean;
-    icon: React.JSX.Element;
+    icon: JSX.Element;
     onClick?: (e?: React.MouseEvent) => void;
     selected?: boolean;
     text: string;
@@ -56,12 +49,12 @@ interface DrawerItemProps {
     color?: string;
     editListFunc?: (visible: boolean, color?: string | null) => void;
     badgeAdditionalContent?: number;
-    badgeAdditionalColor?:  'error' | '' | 'warn';
+    badgeAdditionalColor?: 'error' | '' | 'warn' | 'secondary';
     style?: Record<string, any>;
     theme: IobTheme;
 }
 
-const DrawerItem = (props: DrawerItemProps) => {
+const DrawerItem = (props: DrawerItemProps): JSX.Element => {
     const {
         badgeColor,
         badgeContent,
@@ -87,48 +80,75 @@ const DrawerItem = (props: DrawerItemProps) => {
         content = 'Text→Cmd';
     }
 
-    return <div style={({ display: 'flex', alignItems: 'center', ...style || {} })}>
-        {!!editMenuList && <DragHandle />}
-        {!!editMenuList && <Checkbox checked={visible} onClick={() => editListFunc(true)} />}
-        {!!editMenuList && <ColorPicker value={color} noInputField onChange={value => editListFunc(false, value || null)} />}
-        <ListItemButton
-            sx={Utils.getStyle(props.theme, selected && styles.selected, compact && styles.compactBadge)}
-            onClick={onClick}
-        >
-            <Tooltip title={compact ? content : ''} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-                <Grid
-                    container
-                    spacing={1}
-                    alignItems="center"
-                    style={styles.noWrap}
+    return (
+        <div style={{ display: 'flex', alignItems: 'center', ...(style || {}) }}>
+            {!!editMenuList && <DragHandle />}
+            {!!editMenuList && (
+                <Checkbox
+                    checked={visible}
+                    onClick={() => editListFunc(true)}
+                />
+            )}
+            {!!editMenuList && (
+                <ColorPicker
+                    value={color}
+                    noInputField
+                    onChange={value => editListFunc(false, value || null)}
+                />
+            )}
+            <ListItemButton
+                sx={Utils.getStyle(props.theme, selected && styles.selected, compact && styles.compactBadge)}
+                onClick={onClick}
+            >
+                <Tooltip
+                    title={compact ? content : ''}
+                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                 >
-                    <Grid item>
-                        <ListItemIcon style={{ minWidth: 0, color }} sx={selected ? styles.selectedIcon : undefined}>
-                            <Badge
-                                badgeContent={badgeContent || 0}
-                                color={(badgeColor === 'warn' ? 'default' : badgeColor) || 'primary'}
-                                sx={badgeColor === 'warn' ? { '& .MuiBadge-badge': styles.warn } : undefined}
+                    <Grid2
+                        container
+                        spacing={1}
+                        alignItems="center"
+                        style={styles.noWrap}
+                    >
+                        <Grid2>
+                            <ListItemIcon
+                                style={{ minWidth: 0, color }}
+                                sx={selected ? styles.selectedIcon : undefined}
                             >
-                                {icon}
-                            </Badge>
-                        </ListItemIcon>
-                    </Grid>
-                    {!compact &&
-                        <Grid item>
-                            <ListItemText style={{ color }}>
                                 <Badge
-                                    badgeContent={badgeAdditionalContent || 0}
-                                    color={(badgeAdditionalColor === 'warn' ? 'default' : badgeAdditionalColor) || 'primary'}
-                                    sx={badgeAdditionalColor === 'warn' ? {  '& .MuiBadge-badge': styles.warn } : undefined}
+                                    badgeContent={badgeContent || 0}
+                                    color={(badgeColor === 'warn' ? 'default' : badgeColor) || 'primary'}
+                                    sx={badgeColor === 'warn' ? { '& .MuiBadge-badge': styles.warn } : undefined}
                                 >
-                                    {content}
+                                    {icon}
                                 </Badge>
-                            </ListItemText>
-                        </Grid>}
-                </Grid>
-            </Tooltip>
-        </ListItemButton>
-    </div>;
+                            </ListItemIcon>
+                        </Grid2>
+                        {!compact && (
+                            <Grid2>
+                                <ListItemText style={{ color }}>
+                                    <Badge
+                                        badgeContent={badgeAdditionalContent || 0}
+                                        color={
+                                            (badgeAdditionalColor === 'warn' ? 'default' : badgeAdditionalColor) ||
+                                            'primary'
+                                        }
+                                        sx={
+                                            badgeAdditionalColor === 'warn'
+                                                ? { '& .MuiBadge-badge': styles.warn }
+                                                : undefined
+                                        }
+                                    >
+                                        {content}
+                                    </Badge>
+                                </ListItemText>
+                            </Grid2>
+                        )}
+                    </Grid2>
+                </Tooltip>
+            </ListItemButton>
+        </div>
+    );
 };
 
 export default DrawerItem;

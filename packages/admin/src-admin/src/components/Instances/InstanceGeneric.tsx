@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import cronstrue from 'cronstrue';
 import parser from 'cron-parser';
 
@@ -15,13 +15,17 @@ import 'cronstrue/locales/uk';
 import 'cronstrue/locales/zh_CN';
 
 import {
-    Button, CardMedia,
+    Button,
+    CardMedia,
     Checkbox,
-    Dialog, DialogActions,
+    Dialog,
+    DialogActions,
     DialogContent,
     DialogTitle,
     FormControl,
-    FormControlLabel, FormHelperText, IconButton,
+    FormControlLabel,
+    FormHelperText,
+    IconButton,
     InputLabel,
     MenuItem,
     Select,
@@ -43,23 +47,24 @@ import {
     Edit as EditIcon,
     ImportExport as ImportExportIcon,
     ViewCompact as ViewCompactIcon,
-    LowPriority as LowPriorityIcon, Storage as HostIcon,
+    LowPriority as LowPriorityIcon,
+    Storage as HostIcon,
 } from '@mui/icons-material';
 
 import {
     Confirm as ConfirmDialog,
     SelectWithIcon,
     ComplexCronDialog as ComplexCron,
-    type AdminConnection, TextWithIcon, Router,
+    type AdminConnection,
+    TextWithIcon,
+    Router,
     type IobTheme,
     type ThemeType,
     type Translate,
 } from '@iobroker/adapter-react-v5';
-import {
-    amber, blue, green,
-    grey, orange, red,
-} from '@mui/material/colors';
+import { amber, blue, green, grey, orange, red } from '@mui/material/colors';
 
+import { isTouchDevice } from '@/helpers/utils';
 import State from '@/components/State';
 import InstanceInfo from '@/components/Instances/InstanceInfo';
 import sentry from '@/assets/sentry.svg';
@@ -189,27 +194,33 @@ export const styles: Record<string, any> = {
     instanceStateAliveAndConnected2: {
         backgroundColor: 'rgba(0, 255, 0, 0.15)',
     },
-    statusIcon_green: { // square
+    statusIcon_green: {
+        // square
         border: '2px solid grey',
         borderRadius: 2,
     },
-    statusIcon_red: { // circle
+    statusIcon_red: {
+        // circle
         border: '2px solid grey',
         borderRadius: 20,
     },
-    statusIcon_orange: { // triangle
+    statusIcon_orange: {
+        // triangle
         border: 0,
         borderRadius: 0,
     },
-    statusIcon_orangeDevice: { // triangle
+    statusIcon_orangeDevice: {
+        // triangle
         border: 0,
         borderRadius: 0,
     },
-    statusIcon_blue: { // watch
+    statusIcon_blue: {
+        // watch
         border: '2px solid grey',
         borderRadius: 20,
     },
-    statusIcon_grey: { // circle ?
+    statusIcon_grey: {
+        // circle ?
         border: '2px solid grey',
         borderRadius: 20,
     },
@@ -259,9 +270,7 @@ export const styles: Record<string, any> = {
         color: 'transparent',
         backgroundColor: 'transparent',
     },
-    silly: {
-
-    },
+    silly: {},
     debug: {
         backgroundColor: grey[700],
     },
@@ -299,6 +308,22 @@ export const styles: Record<string, any> = {
         borderRadius: 2,
         margin: 1,
         backgroundColor: '#66bb6a',
+    },
+    editButton: {
+        minHeight: 32,
+        '& .admin-edit-button': isTouchDevice()
+            ? undefined
+            : {
+                  display: 'none',
+                  maxHeight: 32,
+              },
+        '&:hover': isTouchDevice()
+            ? undefined
+            : {
+                  '& .admin-edit-button': {
+                      display: 'block',
+                  },
+              },
     },
 };
 
@@ -344,7 +369,7 @@ export interface InstanceItem {
         stateInput: number;
         stateOutput: number;
     };
-    loglevelIcon: React.JSX.Element;
+    loglevelIcon: JSX.Element;
     logLevelObject: ioBroker.LogLevel;
     modeSchedule: boolean;
     checkCompact: boolean;
@@ -423,15 +448,15 @@ export default abstract class InstanceGeneric<
 > extends Component<TProps, TState> {
     protected abstract styles: Record<string, any>;
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.context.onRegisterClose(this.props.id, this.commandClose);
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.props.context.onRegisterClose(this.props.id, null);
     }
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
+    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
     getDefaultState(props: TProps): InstanceGenericState {
         return {
             openDialog: false,
@@ -497,13 +522,13 @@ export default abstract class InstanceGeneric<
 
     async setCommonValue(id: string, common: Partial<ioBroker.InstanceCommon>): Promise<void> {
         try {
-            this.props.context.socket.extendObject(id, { common });
+            await this.props.context.socket.extendObject(id, { common });
         } catch (error) {
             window.alert(error);
         }
     }
 
-    commandClose = () => this.setState({ expanded: false });
+    commandClose = (): void => this.setState({ expanded: false });
 
     toggleSentry(): void {
         const sentryEnabled = !this.isSentry();
@@ -513,24 +538,24 @@ export default abstract class InstanceGeneric<
     }
 
     setTier(instance: InstanceEntry, tier: 1 | 2 | 3): void {
-        this.setCommonValue(`system.adapter.${instance.id}`, { tier });
+        void this.setCommonValue(`system.adapter.${instance.id}`, { tier });
     }
 
-    setName(instance: InstanceEntry, value: string) {
-        this.setCommonValue(`system.adapter.${instance.id}`, { titleLang: value });
+    setName(instance: InstanceEntry, value: string): void {
+        void this.setCommonValue(`system.adapter.${instance.id}`, { titleLang: value });
     }
 
     setLogLevel(instance: InstanceEntry, loglevel: ioBroker.LogLevel, logOnTheFlyValue: boolean): void {
         if (logOnTheFlyValue) {
-            this.props.context.socket.setState(`system.adapter.${instance.id}.logLevel`, loglevel);
+            void this.props.context.socket.setState(`system.adapter.${instance.id}.logLevel`, loglevel);
         } else {
-            this.setCommonValue(`system.adapter.${instance.id}`, { loglevel });
+            void this.setCommonValue(`system.adapter.${instance.id}`, { loglevel });
         }
     }
 
     setSchedule(instance: InstanceEntry, schedule: string | null): void {
         if (schedule) {
-            this.setCommonValue(`system.adapter.${instance.id}`, { schedule });
+            void this.setCommonValue(`system.adapter.${instance.id}`, { schedule });
         } else {
             this.props.context.socket
                 .getObject(`system.adapter.${instance.id}`)
@@ -546,38 +571,38 @@ export default abstract class InstanceGeneric<
         }
     }
 
-    setMemoryLimitMB(instance: InstanceEntry, memoryLimitMB: number) {
-        this.setCommonValue(`system.adapter.${instance.id}`, { memoryLimitMB });
+    setMemoryLimitMB(instance: InstanceEntry, memoryLimitMB: number): void {
+        void this.setCommonValue(`system.adapter.${instance.id}`, { memoryLimitMB });
     }
 
-    toggleCompactMode() {
-        this.setCommonValue(`system.adapter.${this.props.instance.id}`, {
+    toggleCompactMode(): void {
+        void this.setCommonValue(`system.adapter.${this.props.instance.id}`, {
             runAsCompactMode: !InstanceGeneric.isCompact(this.props.instance.obj),
         });
     }
 
-    setRestartSchedule(instance: InstanceEntry, restartSchedule: string) {
+    setRestartSchedule(instance: InstanceEntry, restartSchedule: string): void {
         if (restartSchedule) {
-            this.setCommonValue(`system.adapter.${instance.id}`, { restartSchedule });
+            void this.setCommonValue(`system.adapter.${instance.id}`, { restartSchedule });
         } else {
-            this.props.context.socket.getObject(`system.adapter.${instance.id}`).then(obj => {
+            void this.props.context.socket.getObject(`system.adapter.${instance.id}`).then(obj => {
                 if (obj.common.restartSchedule !== '') {
                     obj.common.restartSchedule = '';
-                    this.props.context.socket.setObject(obj._id, obj);
+                    void this.props.context.socket.setObject(obj._id, obj);
                 }
             });
         }
     }
 
-    setHost(instance: InstanceEntry, host: string) {
-        this.setCommonValue(`system.adapter.${instance.id}`, { host });
+    setHost(instance: InstanceEntry, host: string): void {
+        void this.setCommonValue(`system.adapter.${instance.id}`, { host });
     }
 
-    setCompactGroup(instance: InstanceEntry, compactGroup: string | number) {
+    setCompactGroup(instance: InstanceEntry, compactGroup: string | number): void {
         compactGroup =
             compactGroup === 'controller' ? 0 : compactGroup === 'default' ? 1 : parseInt(compactGroup as string, 10);
 
-        this.setCommonValue(`system.adapter.${instance.id}`, { compactGroup });
+        void this.setCommonValue(`system.adapter.${instance.id}`, { compactGroup });
         if (this.props.context.maxCompactGroupNumber < compactGroup) {
             this.props.context.setMaxCompactGroupNumber(compactGroup);
         }
@@ -588,323 +613,378 @@ export default abstract class InstanceGeneric<
         return (state?.val as number) || 0;
     }
 
-    renderDeleteDialog() {
-        return <Dialog onClose={() => this.setState({ openDialogDelete: false, openDialog: false })} open={!0}>
-            <DialogTitle>{this.props.context.t('Please confirm')}</DialogTitle>
-            <DialogContent>
-                {this.state.openDialogDelete === 1
-                    ? this.props.context.t(
-                        'Are you sure you want to delete the instance "%s" or whole adapter "%s"?',
-                        this.props.instance.id,
-                        this.props.instance.id.split('.')[0],
-                    )
-                    : this.props.context.t(
-                        'Are you sure you want to delete the instance %s?',
-                        this.props.instance.id,
+    renderDeleteDialog(): JSX.Element {
+        return (
+            <Dialog
+                onClose={() => this.setState({ openDialogDelete: false, openDialog: false })}
+                open={!0}
+            >
+                <DialogTitle>{this.props.context.t('Please confirm')}</DialogTitle>
+                <DialogContent>
+                    {this.state.openDialogDelete === 1
+                        ? this.props.context.t(
+                              'Are you sure you want to delete the instance "%s" or whole adapter "%s"?',
+                              this.props.instance.id,
+                              this.props.instance.id.split('.')[0],
+                          )
+                        : this.props.context.t(
+                              'Are you sure you want to delete the instance %s?',
+                              this.props.instance.id,
+                          )}
+                    {this.props.context.deleteCustomSupported && this.props.instance.obj.common.supportCustoms && (
+                        <br />
                     )}
-                {this.props.context.deleteCustomSupported && this.props.instance.obj.common.supportCustoms && <br />}
-                {this.props.context.deleteCustomSupported && this.props.instance.obj.common.supportCustoms && <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.deleteCustom}
-                            onChange={e => this.setState({ deleteCustom: e.target.checked })}
+                    {this.props.context.deleteCustomSupported && this.props.instance.obj.common.supportCustoms && (
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={this.state.deleteCustom}
+                                    onChange={e => this.setState({ deleteCustom: e.target.checked })}
+                                />
+                            }
+                            label={this.props.context.t('Delete all custom object settings of this adapter too')}
                         />
-                    }
-                    label={this.props.context.t('Delete all custom object settings of this adapter too')}
-                />}
-            </DialogContent>
-            <DialogActions>
-                {this.state.openDialogDelete === 1 ? <Button
-                    startIcon={<DeleteIcon />}
-                    onClick={() => {
-                        this.props.context.onDeleteInstance(this.props.instance, this.state.deleteCustom, true);
-                        this.setState({ deleteCustom: false, openDialogDelete: false, openDialog: false });
-                    }}
-                    variant="contained"
-                    style={{ background: 'red', color: 'white' }}
-                >
-                    {this.props.context.t('Delete adapter')}
-                </Button> : null}
-                <Button
-                    startIcon={<DeleteIcon />}
-                    onClick={() => {
-                        this.props.context.onDeleteInstance(this.props.instance, this.state.deleteCustom);
-                        this.setState({ deleteCustom: false, openDialogDelete: false, openDialog: false });
-                    }}
-                    variant="contained"
-                    color="primary"
-                >
-                    {this.props.context.t('Delete instance')}
-                </Button>
-                <Button
-                    color="grey"
-                    onClick={() => this.setState({ openDialogDelete: false, openDialog: false })}
-                    variant="contained"
-                    startIcon={<CloseIcon />}
-                >
-                    {this.props.context.t('Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
-    }
-
-    renderEditNameDialog() {
-        return <CustomModal
-            theme={this.props.context.theme}
-            title={this.props.context.t('Enter title for %s', this.props.instance.id)}
-            disableApplyIfNotChanged
-            textInput
-            defaultValue={AdminUtils.getText(this.props.item.name, this.props.context.lang)}
-            onApply={value => {
-                this.setName(this.props.instance, value.toString());
-                this.setState({ openDialogName: false, openDialog: false });
-            }}
-            onClose={() => this.setState({ openDialogName: false, openDialog: false })}
-        />;
-    }
-
-    renderEditLogLevelDialog() {
-        return <CustomModal
-            theme={this.props.context.theme}
-            title={this.props.context.t('Edit log level rule for %s', this.props.instance.id)}
-            onApply={() => {
-                this.setLogLevel(this.props.instance, this.state.logLevel, this.state.logOnTheFly);
-                this.setState({ openDialogLogLevel: false, openDialog: false });
-            }}
-            disableApply={this.state.logLevel === this.props.item.logLevel}
-            onClose={() =>
-                this.setState({ openDialogLogLevel: false, logLevel: this.props.item.logLevel, openDialog: false })}
-        >
-            <FormControl style={this.styles.logLevel} variant="standard">
-                <InputLabel>{this.props.context.t('log level')}</InputLabel>
-                <Select
-                    variant="standard"
-                    value={this.state.logLevel}
-                    fullWidth
-                    onChange={el => this.setState({ logLevel: el.target.value as ioBroker.LogLevel })}
-                >
-                    {arrayLogLevel.map(el => (
-                        <MenuItem key={el} value={el}>
-                            {this.props.context.t(el)}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            <FormControl variant="outlined">
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.logOnTheFly}
-                            onChange={e => this.setState({ logOnTheFly: e.target.checked })}
-                        />
-                    }
-                    label={this.props.context.t('Without restart')}
-                />
-                <FormHelperText>
-                    {this.state.logOnTheFly
-                        ? this.props.context.t('Will be reset to the saved log level after restart of adapter')
-                        : this.props.context.t('Log level will be saved permanently')}
-                </FormHelperText>
-            </FormControl>
-        </CustomModal>;
-    }
-
-    renderEditMemoryLimitDialog() {
-        return <CustomModal
-            theme={this.props.context.theme}
-            title={this.props.context.t('Edit memory limit rule for %s', this.props.instance.id)}
-            onApply={value => {
-                this.setMemoryLimitMB(this.props.instance, parseFloat(value.toString()) || 0);
-                this.setState({ openDialogMemoryLimit: false, openDialog: false });
-            }}
-            disableApplyIfNotChanged
-            textInput
-            defaultValue={this.props.item.memoryLimitMB}
-            help={this.props.context.t(
-                'Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)',
-            )}
-            onClose={() => this.setState({ openDialogMemoryLimit: false, openDialog: false })}
-        />;
-    }
-
-    renderEditHostDialog() {
-        return <CustomModal
-            theme={this.props.context.theme}
-            title={this.props.context.t('Edit host for %s', this.props.instance.id)}
-            onApply={() => {
-                this.setHost(this.props.instance, this.state.host);
-                this.setState({ openDialogHost: false, openDialog: false });
-            }}
-            disableApply={this.state.host === this.props.instance.host}
-            onClose={() =>
-                this.setState({ openDialogHost: false, host: this.props.instance.host, openDialog: false })}
-        >
-            <SelectWithIcon
-                themeType={this.props.context.themeType}
-                value={this.state.host}
-                list={this.props.context.hosts}
-                removePrefix="system.host."
-                fullWidth
-                style={this.styles.hostInfo}
-                onChange={(host: string) => this.setState({ host })}
-                lang={this.props.context.lang}
-                t={this.props.context.t}
-            />
-        </CustomModal>;
-    }
-
-    renderEditCompactGroupDialog() {
-        return <CustomModal
-            theme={this.props.context.theme}
-            title={this.props.context.t('Edit compact groups for %s', this.props.instance.id)}
-            onApply={() => {
-                this.setCompactGroup(this.props.instance, parseInt(this.state.compactGroup.toString(), 10) || 0);
-                this.setState({ openDialogCompact: false, openDialog: false });
-            }}
-            disableApply={this.state.compactGroup === this.props.item.compactGroup}
-            onClose={() => this.setState({
-                openDialogCompact: false,
-                openDialog: false,
-                compactGroup: this.props.item.compactGroup,
-                maxCompactGroupNumber: this.props.context.maxCompactGroupNumber,
-            })}
-        >
-            <FormControl style={this.styles.addCompact} variant="standard">
-                <InputLabel>{this.props.context.t('compact groups')}</InputLabel>
-                <Select
-                    variant="standard"
-                    autoWidth
-                    onClose={() => this.setState({ openSelectCompactGroup: false })}
-                    onOpen={() => this.setState({ openSelectCompactGroup: true })}
-                    open={this.state.openSelectCompactGroup}
-                    value={
-                        (this.state.compactGroup === 1
-                            ? 'default'
-                            : (this.state.compactGroup || '').toString() === '0'
-                                ? 'controller'
-                                : !this.state.compactGroup
-                                    ? 'default'
-                                    : this.state.compactGroup) || 'default'
-                    }
-                    onChange={el => this.setState({ compactGroup: parseInt(el.target.value as string, 10) })}
-                >
-                    <div
-                        onClick={e => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }}
-                        style={this.styles.selectStyle}
-                    >
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    {this.state.openDialogDelete === 1 ? (
                         <Button
-                            color="grey"
-                            onClick={() => this.setState({
-                                openSelectCompactGroup: false,
-                                compactGroup: this.state.maxCompactGroupNumber + 1,
-                                maxCompactGroupNumber: this.state.maxCompactGroupNumber + 1,
-                            })}
-                            variant="outlined"
+                            startIcon={<DeleteIcon />}
+                            onClick={() => {
+                                this.props.context.onDeleteInstance(this.props.instance, this.state.deleteCustom, true);
+                                this.setState({ deleteCustom: false, openDialogDelete: false, openDialog: false });
+                            }}
+                            variant="contained"
+                            style={{ background: 'red', color: 'white' }}
                         >
-                            {this.props.context.t('Add compact group')}
+                            {this.props.context.t('Delete adapter')}
                         </Button>
-                    </div>
-                    <MenuItem value="controller">{this.props.context.t('with js-controller')}</MenuItem>
-                    <MenuItem value="default">{this.props.context.t('default group')}</MenuItem>
-                    {Array(this.state.maxCompactGroupNumber - 1)
-                        .fill(0)
-                        .map((_, idx) => (
-                            <MenuItem key={idx} value={(idx + 2).toString()}>
-                                {idx + 2}
+                    ) : null}
+                    <Button
+                        startIcon={<DeleteIcon />}
+                        onClick={() => {
+                            this.props.context.onDeleteInstance(this.props.instance, this.state.deleteCustom);
+                            this.setState({ deleteCustom: false, openDialogDelete: false, openDialog: false });
+                        }}
+                        variant="contained"
+                        color="primary"
+                    >
+                        {this.props.context.t('Delete instance')}
+                    </Button>
+                    <Button
+                        color="grey"
+                        onClick={() => this.setState({ openDialogDelete: false, openDialog: false })}
+                        variant="contained"
+                        startIcon={<CloseIcon />}
+                    >
+                        {this.props.context.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+
+    renderEditNameDialog(): JSX.Element {
+        return (
+            <CustomModal
+                theme={this.props.context.theme}
+                title={this.props.context.t('Enter title for %s', this.props.instance.id)}
+                disableApplyIfNotChanged
+                textInput
+                defaultValue={AdminUtils.getText(this.props.item.name, this.props.context.lang)}
+                onApply={value => {
+                    this.setName(this.props.instance, value.toString());
+                    this.setState({ openDialogName: false, openDialog: false });
+                }}
+                onClose={() => this.setState({ openDialogName: false, openDialog: false })}
+            />
+        );
+    }
+
+    renderEditLogLevelDialog(): JSX.Element {
+        return (
+            <CustomModal
+                theme={this.props.context.theme}
+                title={this.props.context.t('Edit log level rule for %s', this.props.instance.id)}
+                onApply={() => {
+                    this.setLogLevel(this.props.instance, this.state.logLevel, this.state.logOnTheFly);
+                    this.setState({ openDialogLogLevel: false, openDialog: false });
+                }}
+                disableApply={this.state.logLevel === this.props.item.logLevel}
+                onClose={() =>
+                    this.setState({ openDialogLogLevel: false, logLevel: this.props.item.logLevel, openDialog: false })
+                }
+            >
+                <FormControl
+                    style={this.styles.logLevel}
+                    variant="standard"
+                >
+                    <InputLabel>{this.props.context.t('log level')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={this.state.logLevel}
+                        fullWidth
+                        onChange={el => this.setState({ logLevel: el.target.value as ioBroker.LogLevel })}
+                    >
+                        {arrayLogLevel.map(el => (
+                            <MenuItem
+                                key={el}
+                                value={el}
+                            >
+                                {this.props.context.t(el)}
                             </MenuItem>
                         ))}
-                </Select>
-            </FormControl>
-        </CustomModal>;
+                    </Select>
+                </FormControl>
+                <FormControl variant="outlined">
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={this.state.logOnTheFly}
+                                onChange={e => this.setState({ logOnTheFly: e.target.checked })}
+                            />
+                        }
+                        label={this.props.context.t('Without restart')}
+                    />
+                    <FormHelperText>
+                        {this.state.logOnTheFly
+                            ? this.props.context.t('Will be reset to the saved log level after restart of adapter')
+                            : this.props.context.t('Log level will be saved permanently')}
+                    </FormHelperText>
+                </FormControl>
+            </CustomModal>
+        );
     }
 
-    renderEditTierDialog() {
-        return <CustomModal
-            theme={this.props.context.theme}
-            title={this.props.context.t('Set tier for %s', this.props.instance.id)}
-            onApply={() => {
-                this.setTier(this.props.instance, this.state.tier);
-                this.setState({ openDialogTier: false, openDialog: false });
-            }}
-            help={this.props.context.t('Tiers define the order of adapters when the system starts.')}
-            disableApply={this.state.tier === this.props.item.tier}
-            onClose={() => this.setState({ openDialogTier: false, tier: this.props.item.tier, openDialog: false })}
-        >
-            <FormControl style={this.styles.logLevel} variant="standard">
-                <InputLabel>{this.props.context.t('Tiers')}</InputLabel>
-                <Select
-                    variant="standard"
-                    value={this.state.tier}
+    renderEditMemoryLimitDialog(): JSX.Element {
+        return (
+            <CustomModal
+                theme={this.props.context.theme}
+                title={this.props.context.t('Edit memory limit rule for %s', this.props.instance.id)}
+                onApply={value => {
+                    this.setMemoryLimitMB(this.props.instance, parseFloat(value.toString()) || 0);
+                    this.setState({ openDialogMemoryLimit: false, openDialog: false });
+                }}
+                disableApplyIfNotChanged
+                textInput
+                defaultValue={this.props.item.memoryLimitMB}
+                help={this.props.context.t(
+                    'Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)',
+                )}
+                onClose={() => this.setState({ openDialogMemoryLimit: false, openDialog: false })}
+            />
+        );
+    }
+
+    renderEditHostDialog(): JSX.Element {
+        return (
+            <CustomModal
+                theme={this.props.context.theme}
+                title={this.props.context.t('Edit host for %s', this.props.instance.id)}
+                onApply={() => {
+                    this.setHost(this.props.instance, this.state.host);
+                    this.setState({ openDialogHost: false, openDialog: false });
+                }}
+                disableApply={this.state.host === this.props.instance.host}
+                onClose={() =>
+                    this.setState({ openDialogHost: false, host: this.props.instance.host, openDialog: false })
+                }
+            >
+                <SelectWithIcon
+                    themeType={this.props.context.themeType}
+                    value={this.state.host}
+                    list={this.props.context.hosts}
+                    removePrefix="system.host."
                     fullWidth
-                    onChange={el => this.setState({ tier: parseInt(el.target.value as string, 10) as 1 | 2 | 3 })}
-                >
-                    {arrayTier.map(el => (
-                        <MenuItem key={el.value} value={el.value}>
-                            {this.props.context.t(el.desc)}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-        </CustomModal>;
+                    style={this.styles.hostInfo}
+                    onChange={(host: string) => this.setState({ host })}
+                    lang={this.props.context.lang}
+                    t={this.props.context.t}
+                />
+            </CustomModal>
+        );
     }
 
-    renderStopAdminDialog() {
+    renderEditCompactGroupDialog(): JSX.Element {
+        return (
+            <CustomModal
+                theme={this.props.context.theme}
+                title={this.props.context.t('Edit compact groups for %s', this.props.instance.id)}
+                onApply={() => {
+                    this.setCompactGroup(this.props.instance, parseInt(this.state.compactGroup.toString(), 10) || 0);
+                    this.setState({ openDialogCompact: false, openDialog: false });
+                }}
+                disableApply={this.state.compactGroup === this.props.item.compactGroup}
+                onClose={() =>
+                    this.setState({
+                        openDialogCompact: false,
+                        openDialog: false,
+                        compactGroup: this.props.item.compactGroup,
+                        maxCompactGroupNumber: this.props.context.maxCompactGroupNumber,
+                    })
+                }
+            >
+                <FormControl
+                    style={this.styles.addCompact}
+                    variant="standard"
+                >
+                    <InputLabel>{this.props.context.t('compact groups')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        autoWidth
+                        onClose={() => this.setState({ openSelectCompactGroup: false })}
+                        onOpen={() => this.setState({ openSelectCompactGroup: true })}
+                        open={this.state.openSelectCompactGroup}
+                        value={
+                            (this.state.compactGroup === 1
+                                ? 'default'
+                                : (this.state.compactGroup || '').toString() === '0'
+                                  ? 'controller'
+                                  : !this.state.compactGroup
+                                    ? 'default'
+                                    : this.state.compactGroup) || 'default'
+                        }
+                        onChange={el => this.setState({ compactGroup: parseInt(el.target.value as string, 10) })}
+                    >
+                        <div
+                            onClick={e => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            style={this.styles.selectStyle}
+                        >
+                            <Button
+                                color="grey"
+                                onClick={() =>
+                                    this.setState({
+                                        openSelectCompactGroup: false,
+                                        compactGroup: this.state.maxCompactGroupNumber + 1,
+                                        maxCompactGroupNumber: this.state.maxCompactGroupNumber + 1,
+                                    })
+                                }
+                                variant="outlined"
+                            >
+                                {this.props.context.t('Add compact group')}
+                            </Button>
+                        </div>
+                        <MenuItem value="controller">{this.props.context.t('with js-controller')}</MenuItem>
+                        <MenuItem value="default">{this.props.context.t('default group')}</MenuItem>
+                        {Array(this.state.maxCompactGroupNumber - 1)
+                            .fill(0)
+                            .map((_, idx) => (
+                                <MenuItem
+                                    key={idx}
+                                    value={(idx + 2).toString()}
+                                >
+                                    {idx + 2}
+                                </MenuItem>
+                            ))}
+                    </Select>
+                </FormControl>
+            </CustomModal>
+        );
+    }
+
+    renderEditTierDialog(): JSX.Element {
+        return (
+            <CustomModal
+                theme={this.props.context.theme}
+                title={this.props.context.t('Set tier for %s', this.props.instance.id)}
+                onApply={() => {
+                    this.setTier(this.props.instance, this.state.tier);
+                    this.setState({ openDialogTier: false, openDialog: false });
+                }}
+                help={this.props.context.t('Tiers define the order of adapters when the system starts.')}
+                disableApply={this.state.tier === this.props.item.tier}
+                onClose={() => this.setState({ openDialogTier: false, tier: this.props.item.tier, openDialog: false })}
+            >
+                <FormControl
+                    style={this.styles.logLevel}
+                    variant="standard"
+                >
+                    <InputLabel>{this.props.context.t('Tiers')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={this.state.tier}
+                        fullWidth
+                        onChange={el => this.setState({ tier: parseInt(el.target.value as string, 10) as 1 | 2 | 3 })}
+                    >
+                        {arrayTier.map(el => (
+                            <MenuItem
+                                key={el.value}
+                                value={el.value}
+                            >
+                                {this.props.context.t(el.desc)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </CustomModal>
+        );
+    }
+
+    renderStopAdminDialog(): JSX.Element | null {
         if (!this.state.showStopAdminDialog) {
             return null;
         }
 
-        return <ConfirmDialog
-            title={this.props.context.t('Please confirm')}
-            text={this.props.context.t('stop_admin', this.props.context.adminInstance)}
-            ok={this.props.context.t('Stop admin')}
-            onClose={result => {
-                if (result) {
-                    this.setCommonValue(this.state.showStopAdminDialog as string, { enabled: false });
-                }
-                this.setState({ showStopAdminDialog: false });
-            }}
-        />;
+        return (
+            <ConfirmDialog
+                title={this.props.context.t('Please confirm')}
+                text={this.props.context.t('stop_admin', this.props.context.adminInstance)}
+                ok={this.props.context.t('Stop admin')}
+                onClose={result => {
+                    if (result) {
+                        void this.setCommonValue(this.state.showStopAdminDialog as string, { enabled: false });
+                    }
+                    this.setState({ showStopAdminDialog: false });
+                }}
+            />
+        );
     }
 
-    renderLinksDialog() {
+    renderLinksDialog(): JSX.Element | null {
         if (!this.state.showLinks) {
             return null;
         }
-        return <LinksDialog
-            image={this.props.instance.image}
-            instanceId={this.props.instance.id}
-            links={this.props.instance.links}
-            onClose={() => this.setState({ showLinks: false, openDialog: false })}
-            t={this.props.context.t}
-            themeType={this.props.context.themeType}
-        />;
+        return (
+            <LinksDialog
+                image={this.props.instance.image}
+                instanceId={this.props.instance.id}
+                links={this.props.instance.links}
+                onClose={() => this.setState({ showLinks: false, openDialog: false })}
+                t={this.props.context.t}
+                themeType={this.props.context.themeType}
+            />
+        );
     }
 
-    renderCronDialog() {
-        return <ComplexCron
-            title={this.props.context.t('Edit restart rule for %s', this.props.instance.id)}
-            clearButton
-            cron={InstanceGeneric.getRestartSchedule(this.props.instance.obj)}
-            onOk={(cron: string) => this.setRestartSchedule(this.props.instance, cron)}
-            onClose={() => this.setState({ openDialogCron: false, openDialog: false })}
-        />;
+    renderCronDialog(): JSX.Element {
+        return (
+            <ComplexCron
+                title={this.props.context.t('Edit restart rule for %s', this.props.instance.id)}
+                clearButton
+                cron={InstanceGeneric.getRestartSchedule(this.props.instance.obj)}
+                onOk={(cron: string) => this.setRestartSchedule(this.props.instance, cron)}
+                onClose={() => this.setState({ openDialogCron: false, openDialog: false })}
+            />
+        );
     }
 
-    renderScheduleDialog() {
-        return <ComplexCron
-            title={this.props.context.t('Edit schedule rule for %s', this.props.instance.id)}
-            clearButton
-            cron={InstanceGeneric.getSchedule(this.props.instance.obj)}
-            onOk={(cron: string) => this.setSchedule(this.props.instance, cron)}
-            onClose={() => this.setState({ openDialogSchedule: false, openDialog: false })}
-        />;
+    renderScheduleDialog(): JSX.Element {
+        return (
+            <ComplexCron
+                title={this.props.context.t('Edit schedule rule for %s', this.props.instance.id)}
+                clearButton
+                cron={InstanceGeneric.getSchedule(this.props.instance.obj)}
+                onOk={(cron: string) => this.setSchedule(this.props.instance, cron)}
+                onClose={() => this.setState({ openDialogSchedule: false, openDialog: false })}
+            />
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderDialogs() {
+    renderDialogs(): JSX.Element | null {
         if (!this.state.openDialog) {
             return null;
         }
@@ -945,26 +1025,28 @@ export default abstract class InstanceGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderModeIcon(status: InstanceStatusType) {
-        return <div
-            style={{
-                ...this.styles.smallAvatar,
-                ...this.styles.statusIndicator,
-                ...(this.props.instance.mode === 'daemon' || this.props.instance.mode === 'schedule'
-                    ? this.styles[status]
-                    : this.styles.transparent),
-                ...(this.props.item.connectedToHost && this.props.item.alive && this.props.item.connected === false
-                    ? this.styles.orangeDevice
-                    : undefined),
-            }}
-        >
-            {this.getModeIcon(
-                this.props.instance.mode,
-                status,
-                this.styles[`statusIcon_${status}`],
-                this.props.item.stoppedWhenWebExtension,
-            )}
-        </div>;
+    renderModeIcon(status: InstanceStatusType): JSX.Element {
+        return (
+            <div
+                style={{
+                    ...this.styles.smallAvatar,
+                    ...this.styles.statusIndicator,
+                    ...(this.props.instance.mode === 'daemon' || this.props.instance.mode === 'schedule'
+                        ? this.styles[status]
+                        : this.styles.transparent),
+                    ...(this.props.item.connectedToHost && this.props.item.alive && this.props.item.connected === false
+                        ? this.styles.orangeDevice
+                        : undefined),
+                }}
+            >
+                {this.getModeIcon(
+                    this.props.instance.mode,
+                    status,
+                    this.styles[`statusIcon_${status}`],
+                    this.props.item.stoppedWhenWebExtension,
+                )}
+            </div>
+        );
     }
 
     getModeIcon(
@@ -972,20 +1054,24 @@ export default abstract class InstanceGeneric<
         status: InstanceStatusType,
         style: React.CSSProperties,
         stoppedWhenWebExtension: boolean | undefined,
-    ): React.JSX.Element | null {
+    ): JSX.Element | null {
         if (mode === 'daemon') {
             if (stoppedWhenWebExtension) {
-                return <div style={{ ...style, ...this.styles.okSymbol }}>
-                    <div style={this.styles.okSymbolInner} />
-                </div>;
+                return (
+                    <div style={{ ...style, ...this.styles.okSymbol }}>
+                        <div style={this.styles.okSymbolInner} />
+                    </div>
+                );
             }
             if (status === 'orange') {
                 return <WarningIcon style={style} />;
             }
             if (status === 'green') {
-                return <div style={{ ...style, ...this.styles.okSymbol }}>
-                    <div style={this.styles.okSymbolInner} />
-                </div>;
+                return (
+                    <div style={{ ...style, ...this.styles.okSymbol }}>
+                        <div style={this.styles.okSymbolInner} />
+                    </div>
+                );
             }
             return <SettingsIcon style={style} />;
         }
@@ -996,7 +1082,7 @@ export default abstract class InstanceGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderTooltip() {
+    renderTooltip(): (JSX.Element | string | null)[] {
         const { instance, item } = this.props;
         let next;
         let prev;
@@ -1021,484 +1107,326 @@ export default abstract class InstanceGeneric<
         }
 
         return [
-            item.stoppedWhenWebExtension !== undefined ? <State key={1} state>
-                {this.props.context.t('Runs as web-extension')}
-            </State> : '',
-            instance.mode === 'daemon' && this.props.item.stoppedWhenWebExtension === undefined ? <State key={2} state={item.connectedToHost}>
-                {this.props.context.t('Connected to host')}
-            </State> : '',
-            instance.mode === 'daemon' && this.props.item.stoppedWhenWebExtension === undefined ? <State key={3} state={item.alive}>
-                {this.props.context.t('Heartbeat')}
-            </State> : '',
-            this.props.item.connected !== null && this.props.item.stoppedWhenWebExtension === undefined ? <State key={4} state={!!item.connected}>
-                {typeof item.connected === 'string'
-                    ? `${this.props.context.t('Connected:')} ${item.connected || '-'}`
-                    : this.props.context.t('Connected to device or service')}
-            </State> : '',
-            cronText ? <State key={5} state={instance.enabled}>
-                CRON:
-                {cronText}
-            </State> : null,
-            next ? <State key={6} state>
-                {this.props.context.t(
-                    'Next start: %s',
-                    `${next.toLocaleDateString(this.props.context.lang)} ${next.toLocaleTimeString(this.props.context.lang)}`,
-                )}
-            </State> : null,
-            prev ? <State key={7} state>
-                {this.props.context.t(
-                    'Last start: %s',
-                    `${prev.toLocaleDateString(this.props.context.lang)} ${prev.toLocaleTimeString(this.props.context.lang)}`,
-                )}
-            </State> : null,
+            item.stoppedWhenWebExtension !== undefined ? (
+                <State
+                    key={1}
+                    state
+                >
+                    {this.props.context.t('Runs as web-extension')}
+                </State>
+            ) : (
+                ''
+            ),
+            instance.mode === 'daemon' && this.props.item.stoppedWhenWebExtension === undefined ? (
+                <State
+                    key={2}
+                    state={item.connectedToHost}
+                >
+                    {this.props.context.t('Connected to host')}
+                </State>
+            ) : (
+                ''
+            ),
+            instance.mode === 'daemon' && this.props.item.stoppedWhenWebExtension === undefined ? (
+                <State
+                    key={3}
+                    state={item.alive}
+                >
+                    {this.props.context.t('Heartbeat')}
+                </State>
+            ) : (
+                ''
+            ),
+            this.props.item.connected !== null && this.props.item.stoppedWhenWebExtension === undefined ? (
+                <State
+                    key={4}
+                    state={!!item.connected}
+                >
+                    {typeof item.connected === 'string'
+                        ? `${this.props.context.t('Connected:')} ${item.connected || '-'}`
+                        : this.props.context.t('Connected to device or service')}
+                </State>
+            ) : (
+                ''
+            ),
+            cronText ? (
+                <State
+                    key={5}
+                    state={instance.enabled}
+                >
+                    CRON:
+                    {cronText}
+                </State>
+            ) : null,
+            next ? (
+                <State
+                    key={6}
+                    state
+                >
+                    {this.props.context.t(
+                        'Next start: %s',
+                        `${next.toLocaleDateString(this.props.context.lang)} ${next.toLocaleTimeString(this.props.context.lang)}`,
+                    )}
+                </State>
+            ) : null,
+            prev ? (
+                <State
+                    key={7}
+                    state
+                >
+                    {this.props.context.t(
+                        'Last start: %s',
+                        `${prev.toLocaleDateString(this.props.context.lang)} ${prev.toLocaleTimeString(this.props.context.lang)}`,
+                    )}
+                </State>
+            ) : null,
         ].filter(el => el);
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderMemoryUsage() {
-        return this.props.item.running && <InstanceInfo icon={<MemoryIcon />} tooltip={this.props.context.t('RAM usage')}>
-            {`${this.props.instance.mode === 'daemon' && !InstanceGeneric.isCompact(this.props.instance.obj) ? this.getMemory() : '-.--'} MB`}
-        </InstanceInfo>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderPlayPause() {
-        return <Tooltip
-            title={this.props.context.t('Start/stop')}
-            slotProps={{ popper: { sx: this.styles.tooltip } }}
-        >
-            <div>
-                <IconButton
-                    size="small"
-                    onClick={event => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        if (
-                            this.props.item.running &&
-                            this.props.instance.id === this.props.context.adminInstance
-                        ) {
-                            this.setState({ showStopAdminDialog: `system.adapter.${this.props.instance.id}` });
-                        } else {
-                            this.setCommonValue(`system.adapter.${this.props.instance.id}`, {
-                                enabled: !this.props.item.running,
-                            });
-                        }
-                    }}
-                    onFocus={event => event.stopPropagation()}
-                    sx={{
-                        ...this.styles.button,
-                        ...(this.props.instance.canStart
-                            ? this.props.item.running
-                                ? this.styles.enabled
-                                : this.styles.disabled
-                            : this.styles.hide),
-                    }}
+    renderMemoryUsage(): JSX.Element {
+        return (
+            this.props.item.running && (
+                <InstanceInfo
+                    icon={<MemoryIcon />}
+                    tooltip={this.props.context.t('RAM usage')}
                 >
-                    {this.props.item.running ? <PauseIcon /> : <PlayArrowIcon />}
-                </IconButton>
-            </div>
-        </Tooltip>;
+                    {`${this.props.instance.mode === 'daemon' && !InstanceGeneric.isCompact(this.props.instance.obj) ? this.getMemory() : '-.--'} MB`}
+                </InstanceInfo>
+            )
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderSettingsButton() {
-        return <Tooltip
-            title={this.props.instance.config ? this.props.context.t('Settings') : ''}
-            slotProps={{ popper: { sx: this.styles.tooltip } }}
-        >
-            <div>
+    renderPlayPause(): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.context.t('Start/stop')}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
+            >
+                <div>
+                    <IconButton
+                        size="small"
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            if (
+                                this.props.item.running &&
+                                this.props.instance.id === this.props.context.adminInstance
+                            ) {
+                                this.setState({ showStopAdminDialog: `system.adapter.${this.props.instance.id}` });
+                            } else {
+                                void this.setCommonValue(`system.adapter.${this.props.instance.id}`, {
+                                    enabled: !this.props.item.running,
+                                });
+                            }
+                        }}
+                        onFocus={event => event.stopPropagation()}
+                        sx={{
+                            ...this.styles.button,
+                            ...(this.props.instance.canStart
+                                ? this.props.item.running
+                                    ? this.styles.enabled
+                                    : this.styles.disabled
+                                : this.styles.hide),
+                        }}
+                    >
+                        {this.props.item.running ? <PauseIcon /> : <PlayArrowIcon />}
+                    </IconButton>
+                </div>
+            </Tooltip>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderSettingsButton(): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.instance.config ? this.props.context.t('Settings') : ''}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
+            >
+                <div>
+                    <IconButton
+                        disabled={!this.props.instance.config}
+                        size="small"
+                        style={{
+                            ...this.styles.button,
+                            ...(!this.props.instance.config ? this.styles.hiddenOpacity : undefined),
+                        }}
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            Router.doNavigate('tab-instances', 'config', this.props.id);
+                        }}
+                    >
+                        <BuildIcon />
+                    </IconButton>
+                </div>
+            </Tooltip>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderRestartButton(): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.context.t('Restart')}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
+            >
+                <div>
+                    <IconButton
+                        size="small"
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            void this.props.context.socket.extendObject(`system.adapter.${this.props.instance.id}`, {});
+                        }}
+                        onFocus={event => event.stopPropagation()}
+                        style={{
+                            ...this.styles.button,
+                            ...(!this.props.instance.canStart ? this.styles.hide : undefined),
+                        }}
+                        disabled={!this.props.item.running}
+                    >
+                        <RefreshIcon />
+                    </IconButton>
+                </div>
+            </Tooltip>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderLink(): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.context.t('Instance link %s', this.props.instance.id)}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
+            >
+                <div>
+                    <IconButton
+                        size="small"
+                        style={{
+                            ...this.styles.button,
+                            ...(!this.props.instance.links || !this.props.instance.links[0]
+                                ? this.styles.hide
+                                : undefined),
+                        }}
+                        disabled={!this.props.item.running}
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            if (this.props.instance.links.length === 1) {
+                                // replace http://fe80::ed18:8dyy:f65:cexx:8087/get/ with http://[fe80::ed18:8dyy:f65:cexx]:8087/get/
+                                let url = this.props.instance.links[0].link;
+                                url = url.replace(
+                                    /\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i,
+                                    '//$1$2/',
+                                );
+                                window.open(url, this.props.instance.id);
+                            } else {
+                                this.setState({ showLinks: true, openDialog: true });
+                            }
+                        }}
+                        onFocus={event => event.stopPropagation()}
+                    >
+                        <InputIcon />
+                    </IconButton>
+                </div>
+            </Tooltip>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderEditNameButton(): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.context.t('Edit')}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
+            >
                 <IconButton
-                    disabled={!this.props.instance.config}
                     size="small"
+                    className="admin-edit-button"
                     style={{
                         ...this.styles.button,
-                        ...(!this.props.instance.config ? this.styles.hiddenOpacity : undefined),
+                        ...(!this.state.visibleEdit ? this.styles.hiddenOpacity : undefined),
                     }}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
-                        Router.doNavigate('tab-instances', 'config', this.props.id);
-                    }}
-                >
-                    <BuildIcon />
-                </IconButton>
-            </div>
-        </Tooltip>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderRestartButton() {
-        return <Tooltip title={this.props.context.t('Restart')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
-            <div>
-                <IconButton
-                    size="small"
-                    onClick={event => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        this.props.context.socket.extendObject(`system.adapter.${this.props.instance.id}`, {});
-                    }}
-                    onFocus={event => event.stopPropagation()}
-                    style={{
-                        ...this.styles.button,
-                        ...(!this.props.instance.canStart ? this.styles.hide : undefined),
-                    }}
-                    disabled={!this.props.item.running}
-                >
-                    <RefreshIcon />
-                </IconButton>
-            </div>
-        </Tooltip>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderLink() {
-        return <Tooltip
-            title={this.props.context.t('Instance link %s', this.props.instance.id)}
-            slotProps={{ popper: { sx: this.styles.tooltip } }}
-        >
-            <div>
-                <IconButton
-                    size="small"
-                    style={{
-                        ...this.styles.button,
-                        ...(!this.props.instance.links || !this.props.instance.links[0]
-                            ? this.styles.hide
-                            : undefined),
-                    }}
-                    disabled={!this.props.item.running}
-                    onClick={event => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        if (this.props.instance.links.length === 1) {
-                            // replace http://fe80::ed18:8dyy:f65:cexx:8087/get/ with http://[fe80::ed18:8dyy:f65:cexx]:8087/get/
-                            let url = this.props.instance.links[0].link;
-                            url = url.replace(
-                                /\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i,
-                                '//$1$2/',
-                            );
-                            window.open(url, this.props.instance.id);
-                        } else {
-                            this.setState({ showLinks: true, openDialog: true });
-                        }
-                    }}
-                    onFocus={event => event.stopPropagation()}
-                >
-                    <InputIcon />
-                </IconButton>
-            </div>
-        </Tooltip>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderEditNameButton() {
-        return <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
-            <IconButton
-                size="small"
-                style={{
-                    ...this.styles.button,
-                    ...(!this.state.visibleEdit ? this.styles.hiddenOpacity : undefined),
-                }}
-                onClick={event => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    this.setState({ openDialogName: true, openDialog: true });
-                }}
-            >
-                <EditIcon />
-            </IconButton>
-        </Tooltip>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderInputOutput() {
-        return <InstanceInfo icon={<ImportExportIcon />} tooltip={this.props.context.t('events')}>
-            <div style={this.styles.displayFlex}>
-                <Tooltip
-                    title={this.props.context.t('input events')}
-                    slotProps={{ popper: { sx: this.styles.tooltip } }}
-                >
-                    <div style={this.styles.marginRight5}>
-                        ⇥
-                        {this.props.item.inputOutput.stateInput}
-                    </div>
-                </Tooltip>
-                /
-                <Tooltip
-                    title={this.props.context.t('output events')}
-                    slotProps={{ popper: { sx: this.styles.tooltip } }}
-                >
-                    <div style={this.styles.marginLeft5}>
-                        ↦
-                        {this.props.item.inputOutput.stateOutput}
-                    </div>
-                </Tooltip>
-            </div>
-        </InstanceInfo>;
-    }
-
-    renderHost() {
-        return <TextWithIcon
-            value={this.props.instance.host}
-            list={this.props.context.hosts}
-            removePrefix="system.host."
-            themeType={this.props.context.themeType}
-            lang={this.props.context.lang}
-        />;
-    }
-
-    renderEditHostButton() {
-        return <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
-            <IconButton
-                size="small"
-                style={this.styles.button}
-                onClick={event => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    this.setState({ openDialogHost: true, openDialog: true });
-                }}
-            >
-                <EditIcon />
-            </IconButton>
-        </Tooltip>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderSentry() {
-        return <Tooltip title="sentry" slotProps={{ popper: { sx: this.styles.tooltip } }}>
-            <IconButton
-                size="small"
-                style={this.styles.button}
-                onClick={event => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    this.toggleSentry();
-                }}
-            >
-                <CardMedia
-                    style={{
-                        ...this.styles.sentry,
-                        ...(!this.props.item.sentry ? this.styles.contrast0 : undefined),
-                    }}
-                    component="img"
-                    image={this.props.item.sentry ? sentry : noSentry}
-                />
-            </IconButton>
-        </Tooltip>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderCompactGroupEnabled() {
-        return <Tooltip
-            title={this.props.context.t('compact groups')}
-            slotProps={{ popper: { sx: this.styles.tooltip } }}
-        >
-            <IconButton
-                size="small"
-                style={{
-                    ...this.styles.button,
-                    ...(this.props.context.expertMode && this.props.item.checkCompact
-                        ? undefined
-                        : this.styles.hide),
-                }}
-                onClick={event => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    this.toggleCompactMode();
-                }}
-            >
-                <ViewCompactIcon color={this.props.item.compact ? 'primary' : 'inherit'} />
-            </IconButton>
-        </Tooltip>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderVersion() {
-        return <InstanceInfo tooltip={this.props.context.t('Installed')}>
-            v
-            {this.props.instance.version}
-        </InstanceInfo>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderInfo(hideName?: boolean) {
-        return <>
-            {!hideName ? <span style={this.styles.instanceName}>{this.props.instance.id}</span> : undefined}
-            {this.props.item.stoppedWhenWebExtension !== undefined &&
-                <State state={this.props.item.stoppedWhenWebExtension}>
-                    {this.props.context.t('Runs as web-extension')}
-                </State>}
-            {this.props.item.running &&
-                this.props.instance.mode === 'daemon' &&
-                this.props.item.stoppedWhenWebExtension === undefined &&
-                    <State state={this.props.item.connectedToHost}>
-                        {this.props.context.t('Connected to host')}
-                    </State>}
-            {this.props.item.running &&
-                this.props.instance.mode === 'daemon' &&
-                this.props.item.stoppedWhenWebExtension === undefined &&
-                    <State state={this.props.item.alive}>{this.props.context.t('Heartbeat')}</State>}
-            {this.props.item.running &&
-                this.props.item.connected !== null &&
-                this.props.item.stoppedWhenWebExtension === undefined &&
-                    <State state={!!this.props.item.connected}>
-                        {typeof this.props.item.connected === 'string'
-                            ? `${this.props.context.t('Connected:')} ${this.props.item.connected || '-'}`
-                            : this.props.context.t('Connected to device or service')}
-                    </State>}
-        </>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderLogLevel() {
-        return <>
-            <InstanceInfo
-                icon={this.props.item.loglevelIcon}
-                tooltip={
-                    this.props.item.logLevelObject === this.props.item.logLevel
-                        ? `${this.props.context.t('loglevel')} ${this.props.item.logLevel}`
-                        : `${this.props.context.t('saved:')} ${this.props.item.logLevelObject} / ${this.props.context.t('actual:')} ${this.props.item.logLevel}`
-                }
-                // className={this.props.classes[ this.props.item.logLevel]}
-            >
-                {this.props.item.logLevelObject === this.props.item.logLevel
-                    ? this.props.item.logLevel
-                    : `${this.props.item.logLevelObject} / ${this.props.item.logLevel}`}
-            </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
-                <IconButton
-                    size="small"
-                    style={this.styles.button}
-                    onClick={event => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        this.setState({ openDialogLogLevel: true, openDialog: true });
+                        this.setState({ openDialogName: true, openDialog: true });
                     }}
                 >
                     <EditIcon />
                 </IconButton>
             </Tooltip>
-        </>;
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderSchedule() {
-        return <>
-            <InstanceInfo icon={<ScheduleIcon />} tooltip={this.props.context.t('schedule_group')}>
-                {InstanceGeneric.getSchedule(this.props.instance.obj) || '-'}
+    renderInputOutput(): JSX.Element {
+        return (
+            <InstanceInfo
+                icon={<ImportExportIcon />}
+                tooltip={this.props.context.t('events')}
+            >
+                <div style={this.styles.displayFlex}>
+                    <Tooltip
+                        title={this.props.context.t('input events')}
+                        slotProps={{ popper: { sx: this.styles.tooltip } }}
+                    >
+                        <div style={this.styles.marginRight5}>⇥{this.props.item.inputOutput.stateInput}</div>
+                    </Tooltip>
+                    /
+                    <Tooltip
+                        title={this.props.context.t('output events')}
+                        slotProps={{ popper: { sx: this.styles.tooltip } }}
+                    >
+                        <div style={this.styles.marginLeft5}>↦{this.props.item.inputOutput.stateOutput}</div>
+                    </Tooltip>
+                </div>
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
+        );
+    }
+
+    renderHost(): JSX.Element {
+        return (
+            <TextWithIcon
+                value={this.props.instance.host}
+                list={this.props.context.hosts}
+                removePrefix="system.host."
+                themeType={this.props.context.themeType}
+                lang={this.props.context.lang}
+            />
+        );
+    }
+
+    renderEditHostButton(): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.context.t('Edit')}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
+            >
                 <IconButton
                     size="small"
                     style={this.styles.button}
+                    className="admin-edit-button"
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
-                        this.setState({ openDialogSchedule: true, openDialog: true });
+                        this.setState({ openDialogHost: true, openDialog: true });
                     }}
                 >
                     <EditIcon />
                 </IconButton>
             </Tooltip>
-        </>;
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderRestartSchedule() {
-        return <>
-            <InstanceInfo
-                icon={<ScheduleIcon style={this.styles.scheduleIcon} />}
-                tooltip={this.props.context.t('restart')}
-            >
-                {InstanceGeneric.getRestartSchedule(this.props.instance.obj) || '-'}
-            </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
-                <IconButton
-                    size="small"
-                    style={this.styles.button}
-                    onClick={event => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        this.setState({ openDialogCron: true, openDialog: true });
-                    }}
-                >
-                    <EditIcon />
-                </IconButton>
-            </Tooltip>
-        </>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderRamLimit() {
-        return <>
-            <InstanceInfo
-                icon={<MemoryIcon style={this.styles.memoryIcon} />}
-                tooltip={this.props.context.t('RAM limit')}
-            >
-                {`${this.props.item.memoryLimitMB ? this.props.item.memoryLimitMB : '-.--'} MB`}
-            </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
-                <IconButton
-                    size="small"
-                    style={this.styles.button}
-                    onClick={event => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        this.setState({ openDialogMemoryLimit: true, openDialog: true });
-                    }}
-                >
-                    <EditIcon />
-                </IconButton>
-            </Tooltip>
-        </>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderCompactGroup() {
-        return <>
-            <InstanceInfo
-                icon={<ViewCompactIcon style={this.styles.marginRight5} color="inherit" />}
-                tooltip={this.props.context.t('compact groups')}
-            >
-                {(this.props.item.compactGroup === 1
-                    ? 'default'
-                    : (this.props.item.compactGroup || '').toString() === '0'
-                        ? 'controller'
-                        : !this.props.item.compactGroup
-                            ? 'default'
-                            : this.props.item.compactGroup
-                ).toString() || 'default'}
-            </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
-                <IconButton
-                    size="small"
-                    style={this.styles.button}
-                    onClick={event => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        this.setState({ openDialogCompact: true, openDialog: true });
-                    }}
-                >
-                    <EditIcon />
-                </IconButton>
-            </Tooltip>
-        </>;
-    }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    renderTier() {
-        return <>
-            <InstanceInfo
-                icon={<LowPriorityIcon style={this.styles.marginRight5} color="inherit" />}
-                tooltip={this.props.context.t('Start order (tier)')}
-            >
-                {this.props.instance.adapter === 'admin'
-                    ? this.props.context.t('Always first')
-                    : this.props.context.t(
-                        arrayTier.find(el => el.value === this.props.item.tier)?.desc || arrayTier[2].desc,
-                    )}
-            </InstanceInfo>
-            {this.props.instance.adapter !== 'admin' ? <Tooltip
-                title={this.props.context.t('Edit start order (tier)')}
+    renderSentry(): JSX.Element {
+        return (
+            <Tooltip
+                title="sentry"
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <IconButton
@@ -1507,50 +1435,347 @@ export default abstract class InstanceGeneric<
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
-                        this.setState({ openDialogTier: true, openDialog: true });
+                        this.toggleSentry();
                     }}
                 >
-                    <EditIcon />
+                    <CardMedia
+                        style={{
+                            ...this.styles.sentry,
+                            ...(!this.props.item.sentry ? this.styles.contrast0 : undefined),
+                        }}
+                        component="img"
+                        image={this.props.item.sentry ? sentry : noSentry}
+                    />
                 </IconButton>
-            </Tooltip> : null}
-        </>;
+            </Tooltip>
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderHostWithButton() {
-        return <>
-            <InstanceInfo
-                icon={<HostIcon style={this.styles.marginRight5} />}
-                tooltip={this.props.context.t('Host for this instance')}
+    renderCompactGroupEnabled(): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.context.t('compact groups')}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
-                {this.renderHost()}
-            </InstanceInfo>
-            {this.renderEditHostButton()}
-        </>;
+                <IconButton
+                    size="small"
+                    style={{
+                        ...this.styles.button,
+                        ...(this.props.context.expertMode && this.props.item.checkCompact
+                            ? undefined
+                            : this.styles.hide),
+                    }}
+                    onClick={event => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        this.toggleCompactMode();
+                    }}
+                >
+                    <ViewCompactIcon color={this.props.item.compact ? 'primary' : 'inherit'} />
+                </IconButton>
+            </Tooltip>
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderDeleteButton() {
-        return <Tooltip title={this.props.context.t('Delete')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
-            <IconButton
-                size="small"
-                style={this.styles.button}
-                onClick={async event => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    // Count the number of instances
-                    const instances = await this.props.context.socket.getAdapterInstances(
-                        this.props.instance.id.split('.')[0],
-                    );
-                    this.setState({ openDialogDelete: instances.length || true, openDialog: true });
-                }}
-            >
-                <DeleteIcon />
-            </IconButton>
-        </Tooltip>;
+    renderVersion(): JSX.Element {
+        return <InstanceInfo tooltip={this.props.context.t('Installed')}>v{this.props.instance.version}</InstanceInfo>;
     }
 
-    render() {
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderInfo(hideName?: boolean): JSX.Element {
+        return (
+            <>
+                {!hideName ? <span style={this.styles.instanceName}>{this.props.instance.id}</span> : undefined}
+                {this.props.item.stoppedWhenWebExtension !== undefined && (
+                    <State state={this.props.item.stoppedWhenWebExtension}>
+                        {this.props.context.t('Runs as web-extension')}
+                    </State>
+                )}
+                {this.props.item.running &&
+                    this.props.instance.mode === 'daemon' &&
+                    this.props.item.stoppedWhenWebExtension === undefined && (
+                        <State state={this.props.item.connectedToHost}>
+                            {this.props.context.t('Connected to host')}
+                        </State>
+                    )}
+                {this.props.item.running &&
+                    this.props.instance.mode === 'daemon' &&
+                    this.props.item.stoppedWhenWebExtension === undefined && (
+                        <State state={this.props.item.alive}>{this.props.context.t('Heartbeat')}</State>
+                    )}
+                {this.props.item.running &&
+                    this.props.item.connected !== null &&
+                    this.props.item.stoppedWhenWebExtension === undefined && (
+                        <State state={!!this.props.item.connected}>
+                            {typeof this.props.item.connected === 'string'
+                                ? `${this.props.context.t('Connected:')} ${this.props.item.connected || '-'}`
+                                : this.props.context.t('Connected to device or service')}
+                        </State>
+                    )}
+            </>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderLogLevel(): JSX.Element {
+        return (
+            <>
+                <InstanceInfo
+                    icon={this.props.item.loglevelIcon}
+                    tooltip={
+                        this.props.item.logLevelObject === this.props.item.logLevel
+                            ? `${this.props.context.t('loglevel')} ${this.props.item.logLevel}`
+                            : `${this.props.context.t('saved:')} ${this.props.item.logLevelObject} / ${this.props.context.t('actual:')} ${this.props.item.logLevel}`
+                    }
+                    // className={this.props.classes[ this.props.item.logLevel]}
+                >
+                    {this.props.item.logLevelObject === this.props.item.logLevel
+                        ? this.props.item.logLevel
+                        : `${this.props.item.logLevelObject} / ${this.props.item.logLevel}`}
+                </InstanceInfo>
+                <Tooltip
+                    title={this.props.context.t('Edit')}
+                    slotProps={{ popper: { sx: this.styles.tooltip } }}
+                >
+                    <IconButton
+                        size="small"
+                        className="admin-edit-button"
+                        style={this.styles.button}
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            this.setState({ openDialogLogLevel: true, openDialog: true });
+                        }}
+                    >
+                        <EditIcon />
+                    </IconButton>
+                </Tooltip>
+            </>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderSchedule(): JSX.Element {
+        return (
+            <>
+                <InstanceInfo
+                    icon={<ScheduleIcon />}
+                    tooltip={this.props.context.t('schedule_group')}
+                >
+                    {InstanceGeneric.getSchedule(this.props.instance.obj) || '-'}
+                </InstanceInfo>
+                <Tooltip
+                    title={this.props.context.t('Edit')}
+                    slotProps={{ popper: { sx: this.styles.tooltip } }}
+                >
+                    <IconButton
+                        size="small"
+                        className="admin-edit-button"
+                        style={this.styles.button}
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            this.setState({ openDialogSchedule: true, openDialog: true });
+                        }}
+                    >
+                        <EditIcon />
+                    </IconButton>
+                </Tooltip>
+            </>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderRestartSchedule(): JSX.Element {
+        return (
+            <>
+                <InstanceInfo
+                    icon={<ScheduleIcon style={this.styles.scheduleIcon} />}
+                    tooltip={this.props.context.t('restart')}
+                >
+                    {InstanceGeneric.getRestartSchedule(this.props.instance.obj) || '-'}
+                </InstanceInfo>
+                <Tooltip
+                    title={this.props.context.t('Edit')}
+                    slotProps={{ popper: { sx: this.styles.tooltip } }}
+                >
+                    <IconButton
+                        size="small"
+                        className="admin-edit-button"
+                        style={this.styles.button}
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            this.setState({ openDialogCron: true, openDialog: true });
+                        }}
+                    >
+                        <EditIcon />
+                    </IconButton>
+                </Tooltip>
+            </>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderRamLimit(): JSX.Element {
+        return (
+            <>
+                <InstanceInfo
+                    icon={<MemoryIcon style={this.styles.memoryIcon} />}
+                    tooltip={this.props.context.t('RAM limit')}
+                >
+                    {`${this.props.item.memoryLimitMB ? this.props.item.memoryLimitMB : '-.--'} MB`}
+                </InstanceInfo>
+                <Tooltip
+                    title={this.props.context.t('Edit')}
+                    slotProps={{ popper: { sx: this.styles.tooltip } }}
+                >
+                    <IconButton
+                        size="small"
+                        className="admin-edit-button"
+                        style={this.styles.button}
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            this.setState({ openDialogMemoryLimit: true, openDialog: true });
+                        }}
+                    >
+                        <EditIcon />
+                    </IconButton>
+                </Tooltip>
+            </>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderCompactGroup(): JSX.Element {
+        return (
+            <>
+                <InstanceInfo
+                    icon={
+                        <ViewCompactIcon
+                            style={this.styles.marginRight5}
+                            color="inherit"
+                        />
+                    }
+                    tooltip={this.props.context.t('compact groups')}
+                >
+                    {(this.props.item.compactGroup === 1
+                        ? 'default'
+                        : (this.props.item.compactGroup || '').toString() === '0'
+                          ? 'controller'
+                          : !this.props.item.compactGroup
+                            ? 'default'
+                            : this.props.item.compactGroup
+                    ).toString() || 'default'}
+                </InstanceInfo>
+                <Tooltip
+                    title={this.props.context.t('Edit')}
+                    slotProps={{ popper: { sx: this.styles.tooltip } }}
+                >
+                    <IconButton
+                        size="small"
+                        className="admin-edit-button"
+                        style={this.styles.button}
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            this.setState({ openDialogCompact: true, openDialog: true });
+                        }}
+                    >
+                        <EditIcon />
+                    </IconButton>
+                </Tooltip>
+            </>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderTier(): JSX.Element {
+        return (
+            <>
+                <InstanceInfo
+                    icon={
+                        <LowPriorityIcon
+                            style={this.styles.marginRight5}
+                            color="inherit"
+                        />
+                    }
+                    tooltip={this.props.context.t('Start order (tier)')}
+                >
+                    {this.props.instance.adapter === 'admin'
+                        ? this.props.context.t('Always first')
+                        : this.props.context.t(
+                              arrayTier.find(el => el.value === this.props.item.tier)?.desc || arrayTier[2].desc,
+                          )}
+                </InstanceInfo>
+                {this.props.instance.adapter !== 'admin' ? (
+                    <Tooltip
+                        title={this.props.context.t('Edit start order (tier)')}
+                        slotProps={{ popper: { sx: this.styles.tooltip } }}
+                    >
+                        <IconButton
+                            size="small"
+                            className="admin-edit-button"
+                            style={this.styles.button}
+                            onClick={event => {
+                                event.stopPropagation();
+                                event.preventDefault();
+                                this.setState({ openDialogTier: true, openDialog: true });
+                            }}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </Tooltip>
+                ) : null}
+            </>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderHostWithButton(): JSX.Element {
+        return (
+            <>
+                <InstanceInfo
+                    icon={<HostIcon style={this.styles.marginRight5} />}
+                    tooltip={this.props.context.t('Host for this instance')}
+                >
+                    {this.renderHost()}
+                </InstanceInfo>
+                {this.renderEditHostButton()}
+            </>
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderDeleteButton(): JSX.Element {
+        return (
+            <Tooltip
+                title={this.props.context.t('Delete')}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
+            >
+                <IconButton
+                    size="small"
+                    style={this.styles.button}
+                    onClick={async event => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        // Count the number of instances
+                        const instances = await this.props.context.socket.getAdapterInstances(
+                            this.props.instance.id.split('.')[0],
+                        );
+                        this.setState({ openDialogDelete: instances.length || true, openDialog: true });
+                    }}
+                >
+                    <DeleteIcon />
+                </IconButton>
+            </Tooltip>
+        );
+    }
+
+    render(): JSX.Element {
         // this method will be overwritten by the generated class
         return <div>{this.state.expanded}</div>;
     }

@@ -1,11 +1,8 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import { Grid, Typography } from '@mui/material';
+import { Grid2, Typography } from '@mui/material';
 
-import {
-    CheckCircle as CheckCircleIcon,
-    Cancel as CancelIcon,
-} from '@mui/icons-material';
+import { CheckCircle as CheckCircleIcon, Cancel as CancelIcon } from '@mui/icons-material';
 
 import { green, red } from '@mui/material/colors';
 
@@ -16,7 +13,7 @@ const styles: Record<string, any> = {
     cancelIcon: {
         color: red[700],
     },
-    wrapperContent:{
+    wrapperContent: {
         display: 'flex',
         flexFlow: 'nowrap',
         alignItems: 'inherit',
@@ -25,26 +22,26 @@ const styles: Record<string, any> = {
 
 interface StateProps {
     state: boolean;
-    children: React.JSX.Element | React.JSX.Element[] | string | string [];
+    children: JSX.Element | JSX.Element[] | string | string[];
 }
 
-function State(props: StateProps) {
-    return <Grid
-        item
-        container
-        style={styles.wrapperContent}
-        alignItems="center"
-        direction="row"
-        spacing={1}
-    >
-        <Grid item>
-            {props.state ? <CheckCircleIcon style={styles.checkIcon} /> :
-                <CancelIcon style={styles.cancelIcon} />}
-        </Grid>
-        <Grid item>
-            <Typography>{props.children}</Typography>
-        </Grid>
-    </Grid>;
+function State(props: StateProps): JSX.Element {
+    return (
+        <Grid2
+            container
+            style={styles.wrapperContent}
+            alignItems="center"
+            direction="row"
+            spacing={1}
+        >
+            <Grid2>
+                {props.state ? <CheckCircleIcon style={styles.checkIcon} /> : <CancelIcon style={styles.cancelIcon} />}
+            </Grid2>
+            <Grid2>
+                <Typography>{props.children}</Typography>
+            </Grid2>
+        </Grid2>
+    );
 }
 
 export default State;

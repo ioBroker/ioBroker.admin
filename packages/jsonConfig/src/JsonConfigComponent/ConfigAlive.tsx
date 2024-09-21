@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemAlive } from '#JC/types';
@@ -23,17 +23,18 @@ interface ConfigAliveState extends ConfigGenericState {
 }
 
 class ConfigAlive extends ConfigGeneric<ConfigAliveProps, ConfigAliveState> {
-    componentDidMount() {
+    componentDidMount(): void {
         super.componentDidMount();
 
         const instance = this.getInstance();
 
-        this.props.socket.getState(`${instance}.alive`)
+        void this.props.socket
+            .getState(`${instance}.alive`)
             .then(state => this.setState({ alive: !!(state && state.val), instance }));
     }
 
-    getInstance() {
-        let instance = this.props.schema.instance || (`${this.props.adapterName}.${this.props.instance}`);
+    getInstance(): string {
+        let instance = this.props.schema.instance || `${this.props.adapterName}.${this.props.instance}`;
         if (instance.includes('${')) {
             instance = this.getPattern(instance);
         }
@@ -43,12 +44,13 @@ class ConfigAlive extends ConfigGeneric<ConfigAliveProps, ConfigAliveState> {
         return instance;
     }
 
-    renderItem() {
+    renderItem(): JSX.Element | null {
         if (this.getInstance() !== this.state.instance) {
             setTimeout(() => {
                 const instance = this.getInstance();
                 if (instance) {
-                    this.props.socket.getState(`${instance}.alive`)
+                    void this.props.socket
+                        .getState(`${instance}.alive`)
                         .then(state => this.setState({ alive: !!(state && state.val), instance }));
                 } else {
                     this.setState({ alive: null, instance });
@@ -61,12 +63,21 @@ class ConfigAlive extends ConfigGeneric<ConfigAliveProps, ConfigAliveState> {
         }
 
         const instance = this.state.instance.replace(/^system.adapter./, '');
-        return <div style={{ ...styles.root, ...(!this.state.alive ? styles.notAlive : undefined) }}>
-            {this.state.alive ?
-                this.props.schema.textAlive !== undefined ? (this.props.schema.textAlive ? I18n.t(this.props.schema.textAlive, instance) : '') : I18n.t('ra_Instance %s is alive', instance)
-                :
-                this.props.schema.textNotAlive !== undefined ? (this.props.schema.textNotAlive ? I18n.t(this.props.schema.textNotAlive, instance) : '') : I18n.t('ra_Instance %s is not alive', instance)}
-        </div>;
+        return (
+            <div style={{ ...styles.root, ...(!this.state.alive ? styles.notAlive : undefined) }}>
+                {this.state.alive
+                    ? this.props.schema.textAlive !== undefined
+                        ? this.props.schema.textAlive
+                            ? I18n.t(this.props.schema.textAlive, instance)
+                            : ''
+                        : I18n.t('ra_Instance %s is alive', instance)
+                    : this.props.schema.textNotAlive !== undefined
+                      ? this.props.schema.textNotAlive
+                          ? I18n.t(this.props.schema.textNotAlive, instance)
+                          : ''
+                      : I18n.t('ra_Instance %s is not alive', instance)}
+            </div>
+        );
     }
 }
 

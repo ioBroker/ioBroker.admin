@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { TextField } from '@mui/material';
 
@@ -21,7 +21,7 @@ interface ConfigTopicProps extends ConfigGenericProps {
 }
 
 class ConfigTopic extends ConfigGeneric<ConfigTopicProps, ConfigGenericState> {
-    componentDidMount() {
+    componentDidMount(): void {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         if (!value && this.props.customObj?._id) {
@@ -32,27 +32,32 @@ class ConfigTopic extends ConfigGeneric<ConfigTopicProps, ConfigGenericState> {
         }
     }
 
-    renderItem(error: string, disabled: boolean /* , defaultValue */) {
-        return <TextField
-            variant="standard"
-            fullWidth
-            slotProps={{
-                htmlInput: {
-                    maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                },
-            }}
-            value={this.state.value}
-            error={!!error}
-            disabled={disabled}
-            placeholder={this.getText(this.props.schema.placeholder)}
-            label={this.getText(this.props.schema.label)}
-            helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-            onChange={e => {
-                const value = e.target.value;
-                this.setState({ value }, () =>
-                    this.onChange(this.props.attr, value));
-            }}
-        />;
+    renderItem(error: string, disabled: boolean /* , defaultValue */): JSX.Element {
+        return (
+            <TextField
+                variant="standard"
+                fullWidth
+                slotProps={{
+                    htmlInput: {
+                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                    },
+                }}
+                value={this.state.value}
+                error={!!error}
+                disabled={disabled}
+                placeholder={this.getText(this.props.schema.placeholder)}
+                label={this.getText(this.props.schema.label)}
+                helperText={this.renderHelp(
+                    this.props.schema.help,
+                    this.props.schema.helpLink,
+                    this.props.schema.noTranslation,
+                )}
+                onChange={e => {
+                    const value = e.target.value;
+                    this.setState({ value }, () => this.onChange(this.props.attr, value));
+                }}
+            />
+        );
     }
 }
 

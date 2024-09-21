@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Dialog,
@@ -18,14 +18,11 @@ import {
     MenuItem,
     FormControl,
     Select,
-    Typography, Box,
+    Typography,
+    Box,
 } from '@mui/material';
 
-import {
-    HowToVote as VoteIcon,
-    Close as CloseIcon,
-    Info as InfoIcon,
-} from '@mui/icons-material';
+import { HowToVote as VoteIcon, Close as CloseIcon, Info as InfoIcon } from '@mui/icons-material';
 
 import type { IobTheme, Translate } from '@iobroker/adapter-react-v5';
 
@@ -44,7 +41,8 @@ const styles: Record<string, any> = {
         // maxHeight: 200,
     },
     listOwn: (theme: IobTheme) => ({
-        backgroundColor: theme.name === 'colored' || theme.name === 'light' ? '#16516e2e' : theme.palette.secondary.dark,
+        backgroundColor:
+            theme.name === 'colored' || theme.name === 'light' ? '#16516e2e' : theme.palette.secondary.dark,
     }),
     listTitle: (theme: IobTheme) => ({
         backgroundColor: theme.palette.primary.dark,
@@ -189,23 +187,31 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
             ratingComment: '',
             votings: null,
             ratingLang: this.props.lang,
-            filterLang: ((window as any)._localStorage as Storage || window.localStorage).getItem('app.commentLang') || this.props.lang,
+            filterLang:
+                (((window as any)._localStorage as Storage) || window.localStorage).getItem('app.commentLang') ||
+                this.props.lang,
             commentsByLanguage: {},
         };
     }
 
-    componentDidMount() {
-        fetch(`https://rating.iobroker.net/adapter/${this.props.adapter}?uuid=${this.props.uuid}`)
+    componentDidMount(): void {
+        void fetch(`https://rating.iobroker.net/adapter/${this.props.adapter}?uuid=${this.props.uuid}`)
             .then(res => res.json())
             .then((votings: RatingDialogVotings) => {
                 votings = votings || {};
                 votings.rating = votings.rating || {};
                 const versions = Object.keys(votings.rating);
-                versions.sort((a, b) => (votings.rating[a].ts > votings.rating[b].ts ? -1 : (votings.rating[a].ts < votings.rating[b].ts ? 1 : 0)));
+                versions.sort((a, b) =>
+                    votings.rating[a].ts > votings.rating[b].ts
+                        ? -1
+                        : votings.rating[a].ts < votings.rating[b].ts
+                          ? 1
+                          : 0,
+                );
                 const commentsByLanguage: Record<string, number> = {};
 
                 if (votings.comments) {
-                    votings.comments.sort((a, b) => (a.ts > b.ts ? -1 : (a.ts < b.ts ? 1 : 0)));
+                    votings.comments.sort((a, b) => (a.ts > b.ts ? -1 : a.ts < b.ts ? 1 : 0));
 
                     votings.comments.forEach(comment => {
                         commentsByLanguage[comment.lang] = commentsByLanguage[comment.lang] || 0;
@@ -257,173 +263,247 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
     /**
      * Renders the info text component, which explains the rating section
      */
-    renderInfoText(): React.JSX.Element {
-        return <div style={styles.infoTextContainer}>
-            <InfoIcon />
-            <Typography style={styles.infoText}>{this.props.t('use GitHub for issues')}</Typography>
-        </div>;
+    renderInfoText(): JSX.Element {
+        return (
+            <div style={styles.infoTextContainer}>
+                <InfoIcon />
+                <Typography style={styles.infoText}>{this.props.t('use GitHub for issues')}</Typography>
+            </div>
+        );
     }
 
-    renderComments() {
+    renderComments(): JSX.Element {
         if (this.state.votings?.comments && this.state.votings.comments.length) {
-            const found = this.state.votings.comments.find(comment =>
-                !(this.state.filterLang && this.state.filterLang !== '_' && comment.lang !== this.state.filterLang));
+            const found = this.state.votings.comments.find(
+                comment =>
+                    !(this.state.filterLang && this.state.filterLang !== '_' && comment.lang !== this.state.filterLang),
+            );
 
-            return <div style={{ width: '100%', textAlign: 'left' }}>
-                <Box component="h3" sx={styles.listTitle}>{this.props.t('Comments')}</Box>
-                <FormControl variant="standard" style={styles.languageFilter}>
-                    <InputLabel>{this.props.t('Show comments in language')}</InputLabel>
-                    <Select
-                        variant="standard"
-                        value={this.state.filterLang}
-                        onChange={e => {
-                            ((window as any)._localStorage as Storage || window.localStorage).setItem('app.commentLang', e.target.value);
-                            this.setState({ filterLang: e.target.value });
-                        }}
+            return (
+                <div style={{ width: '100%', textAlign: 'left' }}>
+                    <Box
+                        component="h3"
+                        sx={styles.listTitle}
                     >
-                        <MenuItem value="_">
-                            {this.props.t('All')}
-                            {' '}
-                            <span style={styles.commentCount}>{this.state.votings.comments.length}</span>
-                        </MenuItem>
-                        {LANGUAGES.map(item => <MenuItem
-                            key={item.id}
-                            value={item.id}
+                        {this.props.t('Comments')}
+                    </Box>
+                    <FormControl
+                        variant="standard"
+                        style={styles.languageFilter}
+                    >
+                        <InputLabel>{this.props.t('Show comments in language')}</InputLabel>
+                        <Select
+                            variant="standard"
+                            value={this.state.filterLang}
+                            onChange={e => {
+                                (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+                                    'app.commentLang',
+                                    e.target.value,
+                                );
+                                this.setState({ filterLang: e.target.value });
+                            }}
                         >
-                            {item.title}
-                            {' '}
-                            {this.state.commentsByLanguage[item.id] ? <span style={styles.commentCount}>{this.state.commentsByLanguage[item.id]}</span> : null}
-                        </MenuItem>)}
-                    </Select>
-                </FormControl>
-                <List style={styles.list} dense disablePadding>
-                    {found && this.state.votings.comments.map((comment, i) => {
-                        if (this.state.filterLang && this.state.filterLang !== '_' && comment.lang !== this.state.filterLang) {
-                            return null;
-                        }
-                        return comment ? <ListItem
-                            key={i}
-                            title={comment.uuid ? this.props.t('Your comment') : ''}
-                            sx={{ '&.MuiListItem-root': comment.uuid ? styles.listOwn : undefined }}
-                            dense
-                        >
-                            <ListItemAvatar style={styles.listRating}>
-                                <Rating readOnly defaultValue={comment.rating} size="small" />
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={comment.comment}
-                                secondary={`${new Date(comment.ts).toLocaleString()} / v${comment.version}`}
-                                sx={{ '& .MuiListItemText-secondary': styles.listTime }}
-                            />
-                        </ListItem> : null;
-                    })}
-                    {!found && <div style={styles.noComments}>{this.props.t('No comments in selected language')}</div>}
-                </List>
-            </div>;
+                            <MenuItem value="_">
+                                {this.props.t('All')}{' '}
+                                <span style={styles.commentCount}>{this.state.votings.comments.length}</span>
+                            </MenuItem>
+                            {LANGUAGES.map(item => (
+                                <MenuItem
+                                    key={item.id}
+                                    value={item.id}
+                                >
+                                    {item.title}{' '}
+                                    {this.state.commentsByLanguage[item.id] ? (
+                                        <span style={styles.commentCount}>
+                                            {this.state.commentsByLanguage[item.id]}
+                                        </span>
+                                    ) : null}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <List
+                        style={styles.list}
+                        dense
+                        disablePadding
+                    >
+                        {found &&
+                            this.state.votings.comments.map((comment, i) => {
+                                if (
+                                    this.state.filterLang &&
+                                    this.state.filterLang !== '_' &&
+                                    comment.lang !== this.state.filterLang
+                                ) {
+                                    return null;
+                                }
+                                return comment ? (
+                                    <ListItem
+                                        key={i}
+                                        title={comment.uuid ? this.props.t('Your comment') : ''}
+                                        sx={{ '&.MuiListItem-root': comment.uuid ? styles.listOwn : undefined }}
+                                        dense
+                                    >
+                                        <ListItemAvatar style={styles.listRating}>
+                                            <Rating
+                                                readOnly
+                                                defaultValue={comment.rating}
+                                                size="small"
+                                            />
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={comment.comment}
+                                            secondary={`${new Date(comment.ts).toLocaleString()} / v${comment.version}`}
+                                            sx={{ '& .MuiListItemText-secondary': styles.listTime }}
+                                        />
+                                    </ListItem>
+                                ) : null;
+                            })}
+                        {!found && (
+                            <div style={styles.noComments}>{this.props.t('No comments in selected language')}</div>
+                        )}
+                    </List>
+                </div>
+            );
         }
         return null;
     }
 
-    render() {
+    render(): JSX.Element {
         let item: { r: number; ts: number };
         let versions: string[];
         if (this.state.votings) {
             const votings = this.state.votings.rating;
             versions = Object.keys(votings);
-            versions.sort((a, b) => (votings[a].ts > votings[b].ts ? -1 : (votings[a].ts < votings[b].ts ? 1 : 0)));
+            versions.sort((a, b) => (votings[a].ts > votings[b].ts ? -1 : votings[a].ts < votings[b].ts ? 1 : 0));
             if (versions.length) {
                 item = votings[versions[0]];
             }
         }
 
-        return <Dialog
-            open={!0}
-            onClose={() => this.props.onClose()}
-        >
-            <DialogTitle>{`${this.props.t('Review')} ${this.props.adapter}${this.props.version ? `@${this.props.version}` : ''}`}</DialogTitle>
-            <DialogContent style={{ textAlign: 'center' }} title={this.props.currentRating?.title || ''}>
-                {this.renderInfoText()}
-                <Rating
-                    style={styles.rating}
-                    name={this.props.adapter}
-                    value={this.props.version ? this.state.ratingNumber : this.props.currentRating?.rating?.r}
-                    size="large"
-                    readOnly={!this.props.version}
-                    onChange={(_event, newValue) =>
-                        this.setState({ ratingNumber: newValue })}
-                />
-                {this.props.version ? <div style={{ width: '100%', textAlign: 'left' }}>
-                    <TextField
-                        variant="standard"
-                        style={styles.ratingTextControl}
-                        value={this.state.ratingComment}
-                        label={this.props.t('Comment to version')}
-                        helperText={this.props.t('Max length %s characters', 200)}
-                        onChange={e =>
-                            this.setState({ ratingComment: e.target.value })}
-                        slotProps={{
-                            input: {
-                                endAdornment: this.state.ratingComment ? <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => this.setState({ ratingComment: '' })}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment> : null,
-                            },
-                            htmlInput: {
-                                maxLength: 200,
-                            },
-                        }}
+        return (
+            <Dialog
+                open={!0}
+                onClose={() => this.props.onClose()}
+            >
+                <DialogTitle>{`${this.props.t('Review')} ${this.props.adapter}${this.props.version ? `@${this.props.version}` : ''}`}</DialogTitle>
+                <DialogContent
+                    style={{ textAlign: 'center' }}
+                    title={this.props.currentRating?.title || ''}
+                >
+                    {this.renderInfoText()}
+                    <Rating
+                        style={styles.rating}
+                        name={this.props.adapter}
+                        value={this.props.version ? this.state.ratingNumber : this.props.currentRating?.rating?.r}
+                        size="large"
+                        readOnly={!this.props.version}
+                        onChange={(_event, newValue) => this.setState({ ratingNumber: newValue })}
                     />
-                    <FormControl variant="standard" style={styles.ratingLanguageControl}>
-                        <InputLabel>{this.props.t('Language')}</InputLabel>
-                        <Select
-                            variant="standard"
-                            value={this.state.ratingLang}
-                            onChange={e => this.setState({ ratingLang: e.target.value })}
-                        >
-                            {LANGUAGES.map(it => <MenuItem key={it.id} value={it.id}>{it.title}</MenuItem>)}
-                        </Select>
-                    </FormControl>
-                </div> : null}
-                {this.props.version ?
-                    <div style={{ paddingTop: 20, paddingBottom: 16 }}>{this.props.t('Rate how good this version of the adapter works on your system. You can vote for every new version.')}</div>
-                    : null}
+                    {this.props.version ? (
+                        <div style={{ width: '100%', textAlign: 'left' }}>
+                            <TextField
+                                variant="standard"
+                                style={styles.ratingTextControl}
+                                value={this.state.ratingComment}
+                                label={this.props.t('Comment to version')}
+                                helperText={this.props.t('Max length %s characters', 200)}
+                                onChange={e => this.setState({ ratingComment: e.target.value })}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: this.state.ratingComment ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => this.setState({ ratingComment: '' })}
+                                                >
+                                                    <CloseIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                    },
+                                    htmlInput: {
+                                        maxLength: 200,
+                                    },
+                                }}
+                            />
+                            <FormControl
+                                variant="standard"
+                                style={styles.ratingLanguageControl}
+                            >
+                                <InputLabel>{this.props.t('Language')}</InputLabel>
+                                <Select
+                                    variant="standard"
+                                    value={this.state.ratingLang}
+                                    onChange={e => this.setState({ ratingLang: e.target.value })}
+                                >
+                                    {LANGUAGES.map(it => (
+                                        <MenuItem
+                                            key={it.id}
+                                            value={it.id}
+                                        >
+                                            {it.title}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </div>
+                    ) : null}
+                    {this.props.version ? (
+                        <div style={{ paddingTop: 20, paddingBottom: 16 }}>
+                            {this.props.t(
+                                'Rate how good this version of the adapter works on your system. You can vote for every new version.',
+                            )}
+                        </div>
+                    ) : null}
 
-                {versions && item ? <div>{this.props.t('You voted for %s on %s', versions[0], new Date(item.ts).toLocaleDateString())}</div> : null}
-                {this.renderComments()}
-            </DialogContent>
-            <DialogActions>
-                {this.props.version && <Button
-                    variant="contained"
-                    autoFocus
-                    color="primary"
-                    disabled={!this.state.ratingNumber || this.state.votings === null}
-                    onClick={() => {
-                        if (this.state.ratingNumber !== item?.r || this.state.ratingComment) {
-                            this.setAdapterRating(this.props.adapter, this.props.version, this.state.ratingNumber, this.state.ratingComment, this.state.ratingLang)
-                                .then(update => this.props.onClose(update));
-                        } else {
-                            this.props.onClose();
-                        }
-                    }}
-                    startIcon={<VoteIcon />}
-                >
-                    {this.props.t('Rate')}
-                </Button>}
-                <Button
-                    autoFocus={!this.props.version}
-                    variant="contained"
-                    onClick={() => this.props.onClose()}
-                    color="grey"
-                    startIcon={<CloseIcon />}
-                >
-                    {this.props.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                    {versions && item ? (
+                        <div>
+                            {this.props.t(
+                                'You voted for %s on %s',
+                                versions[0],
+                                new Date(item.ts).toLocaleDateString(),
+                            )}
+                        </div>
+                    ) : null}
+                    {this.renderComments()}
+                </DialogContent>
+                <DialogActions>
+                    {this.props.version && (
+                        <Button
+                            variant="contained"
+                            autoFocus
+                            color="primary"
+                            disabled={!this.state.ratingNumber || this.state.votings === null}
+                            onClick={() => {
+                                if (this.state.ratingNumber !== item?.r || this.state.ratingComment) {
+                                    void this.setAdapterRating(
+                                        this.props.adapter,
+                                        this.props.version,
+                                        this.state.ratingNumber,
+                                        this.state.ratingComment,
+                                        this.state.ratingLang,
+                                    ).then(update => this.props.onClose(update));
+                                } else {
+                                    this.props.onClose();
+                                }
+                            }}
+                            startIcon={<VoteIcon />}
+                        >
+                            {this.props.t('Rate')}
+                        </Button>
+                    )}
+                    <Button
+                        autoFocus={!this.props.version}
+                        variant="contained"
+                        onClick={() => this.props.onClose()}
+                        color="grey"
+                        startIcon={<CloseIcon />}
+                    >
+                        {this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

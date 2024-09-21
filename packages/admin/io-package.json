@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.1.0",
+    "version": "7.1.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -12,12 +12,52 @@
       "nl": "Admin",
       "it": "Admin",
       "es": "Admin",
+      "uk": "Admin",
       "zh-cn": "Admin"
     },
     "title": "Admin",
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.1.3": {
+        "en": "improve appearance and standardization of some warning messages\nindicate `alert` warnings by the badge color on the notification button\nallow to distinguish between alert notifications and others for host notifications\ndo not automatically open the notification dialog without user interaction\nfixed logging as socket client is now throwing real errors",
+        "de": "verbesserung des aussehens und der standardisierung einiger warnmeldungen\n`alert` warnungen durch die abzeichenfarbe auf der benachrichtigungstaste anzeigen\nermöglichen, zwischen alarmmeldungen und anderen für host-benachrichtigungen zu unterscheiden\nnicht automatisch den benachrichtigungsdialog ohne benutzerinteraktion öffnen\nfeste protokollierung als buchsen-client ist jetzt werfen reale fehler",
+        "ru": "улучшить внешний вид и стандартизацию некоторых предупреждающих сообщений\nуведомление\nпозволяет проводить различие между уведомлениями о оповещении и другими уведомлениями о размещении\nне открывать автоматически диалог уведомления без взаимодействия пользователя\nфиксированная регистрация как клиент сокета теперь бросает реальные ошибки",
+        "pt": "melhorar a aparência e padronização de algumas mensagens de aviso\nindicar avisos `alert` pela cor do crachá no botão de notificação\npermitir distinguir entre notificações de alerta e outros para notificações de host\nnão abra automaticamente a caixa de diálogo de notificação sem interação do usuário\nlog fixo como cliente soquete está agora jogando erros reais",
+        "nl": "verbetering van het uiterlijk en de standaardisatie van sommige waarschuwingsberichten\nde waarschuwingen van de badge op de meldingsknop aangeven\nhet mogelijk maken onderscheid te maken tussen alarmmeldingen en andere meldingen van ontvangst\nhet meldingsvenster niet automatisch openen zonder gebruikersinteractie\nvaste logging als socket client gooit nu echte fouten",
+        "fr": "améliorer l'apparence et la normalisation de certains messages d'avertissement\nindiquer les avertissements `alerte` par la couleur du badge sur le bouton de notification\npermettre de distinguer les notifications d'alerte des autres notifications d'hôte\nn'ouvrez pas automatiquement la boîte de dialogue de notification sans interaction utilisateur\nlogage fixe en tant que client socket lance maintenant des erreurs réelles",
+        "it": "migliorare l'aspetto e la standardizzazione di alcuni messaggi di avviso\nindicare `allerta` avvisi dal colore del distintivo sul pulsante di notifica\nconsentire di distinguere tra le notifiche di avviso e altre per le notifiche host\nnon aprire automaticamente la finestra di dialogo di notifica senza interazione dell'utente\nregistrazione fissa come client socket sta ora lanciando errori reali",
+        "es": "mejorar la apariencia y estandarización de algunos mensajes de advertencia\nindicar advertencias por el color de la placa en el botón de notificación\npermitir distinguir entre las notificaciones de alerta y otras para las notificaciones de host\nno abrir automáticamente el diálogo de notificación sin interacción del usuario\nregistro fijo como cliente de socket está lanzando errores reales",
+        "pl": "poprawić wygląd i standaryzację niektórych komunikatów ostrzegawczych\nw przycisku powiadomienia należy wskazać ostrzeżenia \"alert\" za pomocą koloru odznaki\numożliwić rozróżnienie powiadomień o ostrzeżeniach od innych powiadomień o przyjmowaniu\nnie otwieraj automatycznie okna powiadomień bez interakcji z użytkownikiem\nstałe logowanie jako klient gniazda jest teraz rzucanie prawdziwych błędów",
+        "uk": "поліпшення зовнішнього вигляду та стандартизації деяких попереджувальних повідомлень\nвкажіть попередження `alert` за кольором значка на кнопках повідомлення\nдозволяє відрізнити повідомлення про оповіщення та інші повідомлення про хост\nне автоматично відкрийте діалогове вікно повідомлення без взаємодії користувача\nвиправлений вхід як клієнт розетки тепер кидає реальні помилки",
+        "zh-cn": "改进一些警告信息的外观和标准化\n以通知按钮上的徽章颜色表示“警告”\n允许区分提醒通知和主机通知的其他通知\n没有用户交互, 不自动打开通知对话框\n当套接字客户端现在丢出真实错误时, 固定记录"
+      },
+      "7.1.2": {
+        "en": "fixed host base settings dialog",
+        "de": "feste host-basiseinstellungen dialog",
+        "ru": "диалог параметров базы фиксированного хоста",
+        "pt": "diálogo de configurações de base do host fixo",
+        "nl": "dialoogvenster met vaste basis-hostinstellingen",
+        "fr": "boîte de dialogue des paramètres de base de l'hôte fixe",
+        "it": "finestra di dialogo impostazioni base host fisso",
+        "es": "diálogo de configuración de base de host fijo",
+        "pl": "stałe okno ustawień bazy hosta",
+        "uk": "виправлені налаштування бази хост діалог",
+        "zh-cn": "固定主机基础设置对话框"
+      },
+      "7.1.1": {
+        "en": "Showed the context menu under cursor position in the object browser\nAdded links to aliases in the object browser\nAdded confirmation for CRON dialog if set to triggering every minute",
+        "de": "Das Kontextmenü unter Cursorposition im Objektbrowser angezeigt\nLinks zu Aliases im Objektbrowser hinzugefügt\nBestätigung für CRON-Dialog hinzugefügt, wenn Sie jede Minute auslösen",
+        "ru": "Показать контекстное меню в позиции курсора в браузере объекта\nДобавлены ссылки на псевдонимы в объектном браузере\nДобавлено подтверждение для диалога CRON, если он настроен на запуск каждую минуту",
+        "pt": "Mostrou o menu de contexto na posição do cursor no navegador objeto\nAdicionados links para aliases no navegador objeto\nAdicionado confirmação para CRON diálogo se definido para acionar cada minuto",
+        "nl": "Het contextmenu getoond onder cursorpositie in de objectbrowser\nLinks naar aliassen toegevoegd in de objectbrowser\nBevestiging voor CRON-dialoog toegevoegd indien ingesteld om elke minuut te activeren",
+        "fr": "Affiche le menu contextuel sous la position du curseur dans le navigateur objet\nAjout de liens vers des alias dans le navigateur objet\nAjout de la confirmation pour la boîte de dialogue CRON si elle est configurée pour déclencher chaque minute",
+        "it": "Mostrato il menu contestuale sotto posizione cursore nel browser oggetto\nAggiunto link a alias nel browser oggetto\nAggiunto la conferma per CRON finestra di dialogo se impostato per attivare ogni minuto",
+        "es": "Muestra el menú contextual bajo la posición del cursor en el navegador objeto\nAñadidos a alias en el navegador objeto\nConfirmación agregada para el diálogo CRON si se establece para activar cada minuto",
+        "pl": "Pokazane menu kontekstowe w pozycji kursora w przeglądarce obiektu\nDodano linki do pseudonimów w przeglądarce obiektu\nDodano potwierdzenie dla okna CRON, jeśli ustawiono na uruchamianie co minutę",
+        "uk": "Показати контекстне меню під назвою курсора в браузері об'єкта\nДодано посилання на псевдоніми в браузері об'єкта\nДодано підтвердження для діалогу CRON, якщо встановити, щоб викликати кожну хвилину",
+        "zh-cn": "在对象浏览器中光标位置下显示上下文菜单\n在对象浏览器中添加的链接\n如果设定为每分钟触发 CRON 对话框, 则添加确认"
+      },
       "7.1.0": {
         "en": "Added the possibility to show button in notifications\nRemoved gulp from the build process",
         "de": "Zusätzlich die Möglichkeit, Schaltfläche in Benachrichtigungen anzeigen\nAus dem Build-Prozess entfernt",
@@ -69,45 +109,6 @@
         "pl": "jeśli dostępne są ostrzeżenia, otwieraj automatycznie okno powiadomienia hosta\npoprawiony styl okna powiadomień hosta\nwyjaśnienie wyboru opcji auto upgrade\nPoprawiono link w przypadkach, np. dla vis-2\nPoprawiono informacje o połączeniach w zakładce instance",
         "uk": "тільки автоматично відкрийте діалогове вікно повідомлення про хост, якщо повідомлення доступні\nпокращений стиль діалогу повідомлення про хост\nвизначення параметрів автоматичного оновлення\nВиправлено посилання в екземплярах, наприклад, для vis-2\nВиправлено інформацію про підключення в вкладці екземпляра",
         "zh-cn": "只当警告可用时自动打开主机通知对话框\n改进主机通知对话框的样式\n澄清自动升级选项\n纠正了例如相对于2的链接\n更正实例标签中的连接信息"
-      },
-      "7.0.22": {
-        "en": "Corrected installation of adapter with the license unequal to MIT\nCorrected width of a side menu\nAllowed the pasting into object JSON editor",
-        "de": "Korrigierte Installation des Adapters mit der Lizenz ungleich MIT\nKorrigierte Breite eines Seitenmenüs\nErlaubt das Einfügen in Objekt JSON Editor",
-        "ru": "Корректированная установка адаптера с лицензией, не равной MIT\nИсправленная ширина бокового меню\nПозволил вставить в объектный редактор JSON",
-        "pt": "Instalação correta do adaptador com a licença desigual ao MIT\nLargura correta de um menu lateral\nPermitido o colar em objeto JSON editor",
-        "nl": "Gecorrigeerde installatie van adapter met de licentie ongelijk aan MIT\nGecorrigeerde breedte van een zijmenu\nPlakken in object JSON-editor toegestaan",
-        "fr": "Installation corrigée de l'adaptateur avec la licence inégale à MIT\nLargeur corrigée d'un menu latéral\nAutorisé le collage dans l'éditeur d'objet JSON",
-        "it": "Installazione corretta dell'adattatore con la licenza non uguale a MIT\nLarghezza corretta di un menu laterale\nConsentito il incollaggio in oggetto editor JSON",
-        "es": "Instalación corregida del adaptador con la licencia desigual al MIT\nAncho corregido de un menú lateral\nPermitió el pegado en el objeto JSON editor",
-        "pl": "Poprawiona instalacja adaptera z licencją nierówną MIT\nSkorygowana szerokość menu bocznego\nDozwolone wklejanie do edytora JSON obiektu",
-        "uk": "Виправлена установка адаптера з ліцензійним нерівномірним для MIT\nВиправлена ширина бічного меню\nДозволено перезапис у редактор JSON",
-        "zh-cn": "修正了适配器的安装,其许可与麻省理工学院不平等\n修正侧菜单的宽度\n允许粘贴到对象 JSON 编辑器"
-      },
-      "7.0.18": {
-        "en": "Corrected export from JSON table\nadded `qrCode` component to JSON config\nCorrected adding of adapters with licenses (other than MIT)\nImproved license dialog",
-        "de": "Berichtigte Ausfuhr aus JSON-Tabelle\n`qrCode`-Komponente zu JSON config hinzugefügt\nKorrigiertes Hinzufügen von Adaptern mit Lizenzen (außer MIT)\nVerbesserter Lizenzdialog",
-        "ru": "Исправленный экспорт из таблицы JSON\nдобавлен компонент \"qrCode\" в конфигурацию JSON\nИсправленное добавление адаптеров с лицензиями (кроме MIT)\nУлучшенный диалог лицензии",
-        "pt": "Exportação correta da tabela JSON\nadicionado componente `qrCode` para JSON config\nAdição correta de adaptadores com licenças (excepto MIT)\nMelhor diálogo de licença",
-        "nl": "Gecorrigeerde uitvoer uit JSON tabel\ntoegevoegd aan JSON config\nGecorrigeerde toevoeging van adapters met licenties (andere dan MIT)\nVerbeterde licentiedialoog",
-        "fr": "Exportation corrigée à partir du tableau JSON\najouté un composant `qrCode` à la configuration JSON\nAjout corrigé d'adaptateurs avec licences (autres que MIT)\nBoîte de dialogue de licence améliorée",
-        "it": "Esportazione corretta dalla tabella JSON\naggiunto componente `qrCode` a JSON config\nCorretto l'aggiunta di adattatori con licenze (diverse da MIT)\nDialogo di licenza migliorata",
-        "es": "Exportación corregida del cuadro JSON\nagregado `qrCode` componente a JSON config\nAgregado corregido de adaptadores con licencias (excepto MIT)\nDiálogo de licencia mejorado",
-        "pl": "Skorygowany wywóz z tabeli JSON\ndodany komponent 'qrCode' do konfiguracji JSON\nPoprawione dodawanie adapterów z licencjami (innych niż MIT)\nUlepszone okno licencji",
-        "uk": "Корисний експорт з таблиці JSON\nдодано компонент `qrCode` до JSON config\nВиправлено додавання адаптерів з ліцензіями (понад MIT)\nПокращено діалогове вікно ліцензії",
-        "zh-cn": "从 JSON 表校正的导出\n在JSON配置中添加“qrCode”组件\n修正了增加持有许可证的适配器(除麻省理工学院外)\n改进许可证对话框"
-      },
-      "7.0.17": {
-        "en": "Corrected the CRON description\nCorrected the Device Manager Component",
-        "de": "Korrektur der CRON-Beschreibung\nDie Gerätemanager-Komponente wurde korrigiert",
-        "ru": "Исправлено описание Крон\nИсправлен компонент диспетчера устройств",
-        "pt": "Corrigido a descrição CRON\nCorrected the Device Manager Component",
-        "nl": "Gewijzigde CRON-beschrijving\nDe component Apparaatbeheer corrigeren",
-        "fr": "Correction de la description du CRON\nCorrection du composant Gestionnaire de périphériques",
-        "it": "Corretto la descrizione CRON\nCorretto il componente Gestione dispositivi",
-        "es": "Corregido la descripción CRON\nCorregido el componente del administrador de dispositivos",
-        "pl": "Poprawiono opis CRON\nNaprawiono element menedżera urządzeń",
-        "uk": "Виправлено опис CRON\nВиправлено компонент диспетчера пристроїв",
-        "zh-cn": "更正了CRON描述\n纠正了设备管理器组件"
       }
     },
     "desc": {
@@ -118,6 +119,9 @@
       "fr": "La configuration de ioBroker via Web-Interface",
       "nl": "De configuratie van ioBroker via de webinterface",
       "it": "La configurazione di ioBroker tramite interfaccia Web",
+      "es": "La configuración de ioBroker a través de la interfaz web",
+      "pl": "Konfiguracja ioBroker za pomocą interfejsu WWW",
+      "uk": "Конфігурація ioBroker через веб-інтерфейс",
       "zh-cn": "配置ioBroker的Web界面"
     },
     "docs": {
@@ -149,10 +153,10 @@
     "mode": "daemon",
     "platform": "Javascript/Node.js",
     "loglevel": "info",
-    "icon": "admin.png",
+    "icon": "admin.svg",
     "messagebox": true,
     "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.png",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.svg",
     "keywords": [
       "setup",
       "config",
@@ -182,14 +186,13 @@
     },
     "logTransporter": true,
     "stopBeforeUpdate": true,
-    "wwwDontUpload": true,
     "eraseOnUpload": true,
     "nogit": true,
     "welcomeScreenPro": [
       {
         "link": "admin/index.html",
         "name": "Admin",
-        "img": "admin/img/admin.png",
+        "img": "admin/img/admin.svg",
         "color": "pink",
         "order": 5,
         "localLinks": "_default",
@@ -204,7 +207,7 @@
           "ru": "Админ"
         },
         "pro": "admin/index.html",
-        "icon": "admin/img/admin.png",
+        "icon": "admin/img/admin.svg",
         "color": "pink",
         "order": 5,
         "intro": true

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 export const MOBILE_WIDTH = 800;
 
@@ -11,11 +11,11 @@ class MobileDialog<TProps, TState extends MobileDialogState = MobileDialogState>
 
     private _timerOnResize: ReturnType<typeof setTimeout> = null;
 
-    static isMobile() {
+    static isMobile(): boolean {
         return window.innerWidth < MOBILE_WIDTH;
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (this.state.mobile !== MobileDialog.isMobile()) {
             this.setState({ mobile: MobileDialog.isMobile() });
         }
@@ -25,7 +25,7 @@ class MobileDialog<TProps, TState extends MobileDialogState = MobileDialogState>
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this._timerOnResize) {
             clearTimeout(this._timerOnResize);
             this._timerOnResize = null;
@@ -35,7 +35,7 @@ class MobileDialog<TProps, TState extends MobileDialogState = MobileDialogState>
         }
     }
 
-    __onResize = () => {
+    __onResize = (): void => {
         if (this._timerOnResize) {
             clearTimeout(this._timerOnResize);
         }
@@ -48,28 +48,24 @@ class MobileDialog<TProps, TState extends MobileDialogState = MobileDialogState>
     };
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    getButtonTitle(
-        icon: React.JSX.Element,
-        text: string,
-        moreMobileIcon?: React.JSX.Element,
-    ): string | React.JSX.Element | null {
+    getButtonTitle(icon: JSX.Element, text: string, moreMobileIcon?: JSX.Element): string | JSX.Element | null {
         if (icon && text) {
             if (this.state.mobile) {
                 if (moreMobileIcon) {
-                    return <>
-                        {icon}
-                        {' '}
-&
-                        {' '}
-                        {moreMobileIcon}
-                    </>;
+                    return (
+                        <>
+                            {icon} & {moreMobileIcon}
+                        </>
+                    );
                 }
                 return icon;
             }
-            return <>
-                {icon}
-                <span style={{ marginLeft: 4 }}>{text}</span>
-            </>;
+            return (
+                <>
+                    {icon}
+                    <span style={{ marginLeft: 4 }}>{text}</span>
+                </>
+            );
         }
         if (icon) {
             return icon;

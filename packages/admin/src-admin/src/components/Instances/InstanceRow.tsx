@@ -1,15 +1,8 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import {
-    Accordion, AccordionDetails, AccordionSummary, Avatar,
-    Grid2,
-    Tooltip, Typography,
-    Box,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Grid2, Tooltip, Typography, Box } from '@mui/material';
 
-import {
-    ExpandMore as ExpandMoreIcon,
-} from '@mui/icons-material';
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 import AdminUtils from '@/AdminUtils';
 import InstanceInfo from './InstanceInfo';
@@ -204,87 +197,173 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
         this.state = this.getDefaultState(props);
     }
 
-    renderDetails() {
+    renderDetails(): JSX.Element {
         const { instance, item } = this.props;
 
-        return <AccordionDetails>
-            <Grid2 container direction="row">
-                <Grid2 container direction="row" size={{ xs: 10 }}>
-                    <Grid2 container direction="column" size={{ xs: 12, sm: 6, md: 4 }}>
-                        {this.renderInfo(true)}
-                    </Grid2>
-                    <Grid2 container direction="column" size={{ xs: 12, sm: 6, md: 4 }}>
-                        {this.renderVersion()}
-                    </Grid2>
-                    <Grid2 container direction="column" size={{ xs: 12, sm: 6, md: 4 }} style={styles.paddingRight200}>
-                        {this.props.context.expertMode && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
-                            {this.renderLogLevel()}
-                        </Box>}
-                        {item.running && this.props.context.expertMode &&
-                            <Box component="div" sx={styles.visible1250}>
-                                {this.renderInputOutput()}
-                            </Box>}
-                        <Grid2 sx={styles.visible1050}>
-                            {this.renderMemoryUsage()}
+        return (
+            <AccordionDetails>
+                <Grid2
+                    container
+                    direction="row"
+                >
+                    <Grid2
+                        container
+                        direction="row"
+                        size={{ xs: 10 }}
+                    >
+                        <Grid2
+                            container
+                            direction="column"
+                            size={{ xs: 12, sm: 6, md: 4 }}
+                        >
+                            {this.renderInfo(true)}
                         </Grid2>
-                        {item.modeSchedule && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
-                            {this.renderSchedule()}
-                        </Box>}
-                        {this.props.context.expertMode && (instance.mode === 'daemon') &&
-                            <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
-                                {this.renderRestartSchedule()}
-                            </Box>}
-                        {this.props.context.expertMode &&
-                            <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
-                                {this.renderRamLimit()}
-                            </Box>}
-                        {this.props.context.expertMode && item.checkCompact && item.compact && item.supportCompact &&
-                            <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
-                                {this.renderCompactGroup()}
-                            </Box>}
-                        {this.props.context.expertMode && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
-                            {this.renderTier()}
-                        </Box>}
-                        <Box component="div" sx={{ ...styles.maxWidth300, ...styles.visible800 }}>
-                            <InstanceInfo>
-                                {AdminUtils.getText(item.name, this.props.context.lang)}
-                            </InstanceInfo>
-                            {this.renderEditNameButton()}
-                        </Box>
-                        {this.props.context.hosts.length > 1 || (this.props.context.hosts.length && this.props.context.hosts[0].common?.name !== instance.host) ? <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
-                            {this.renderHostWithButton()}
-                        </Box> : null}
+                        <Grid2
+                            container
+                            direction="column"
+                            size={{ xs: 12, sm: 6, md: 4 }}
+                        >
+                            {this.renderVersion()}
+                        </Grid2>
+                        <Grid2
+                            container
+                            direction="column"
+                            size={{ xs: 12, sm: 6, md: 4 }}
+                            style={styles.paddingRight200}
+                        >
+                            {this.props.context.expertMode && (
+                                <Box
+                                    component="div"
+                                    sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}
+                                >
+                                    {this.renderLogLevel()}
+                                </Box>
+                            )}
+                            {item.running && this.props.context.expertMode && (
+                                <Box
+                                    component="div"
+                                    sx={styles.visible1250}
+                                >
+                                    {this.renderInputOutput()}
+                                </Box>
+                            )}
+                            <Grid2 sx={styles.visible1050}>{this.renderMemoryUsage()}</Grid2>
+                            {item.modeSchedule && (
+                                <Box
+                                    component="div"
+                                    sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}
+                                >
+                                    {this.renderSchedule()}
+                                </Box>
+                            )}
+                            {this.props.context.expertMode && instance.mode === 'daemon' && (
+                                <Box
+                                    component="div"
+                                    sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}
+                                >
+                                    {this.renderRestartSchedule()}
+                                </Box>
+                            )}
+                            {this.props.context.expertMode && (
+                                <Box
+                                    component="div"
+                                    sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}
+                                >
+                                    {this.renderRamLimit()}
+                                </Box>
+                            )}
+                            {this.props.context.expertMode &&
+                                item.checkCompact &&
+                                item.compact &&
+                                item.supportCompact && (
+                                    <Box
+                                        component="div"
+                                        sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}
+                                    >
+                                        {this.renderCompactGroup()}
+                                    </Box>
+                                )}
+                            {this.props.context.expertMode && (
+                                <Box
+                                    component="div"
+                                    sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}
+                                >
+                                    {this.renderTier()}
+                                </Box>
+                            )}
+                            <Box
+                                component="div"
+                                sx={{ ...styles.maxWidth300, ...styles.visible800, ...styles.editButton }}
+                            >
+                                <InstanceInfo>{AdminUtils.getText(item.name, this.props.context.lang)}</InstanceInfo>
+                                {this.renderEditNameButton()}
+                            </Box>
+                            {this.props.context.hosts.length > 1 ||
+                            (this.props.context.hosts.length &&
+                                this.props.context.hosts[0].common?.name !== instance.host) ? (
+                                <Box
+                                    component="div"
+                                    sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}
+                                >
+                                    {this.renderHostWithButton()}
+                                </Box>
+                            ) : null}
+                        </Grid2>
                     </Grid2>
+                    <div style={styles.displayFlex}>
+                        <IsVisible
+                            config={item}
+                            name="allowInstanceDelete"
+                        >
+                            <Box
+                                component="div"
+                                sx={{ display: { xs: 'inline-block', md: 'none' } }}
+                            >
+                                {this.renderSettingsButton()}
+                            </Box>
+                        </IsVisible>
+                        <Box
+                            component="div"
+                            sx={{ display: { md: 'none', xs: 'inline-block' } }}
+                        >
+                            {this.renderRestartButton()}
+                        </Box>
+                        <IsVisible
+                            config={item}
+                            name="allowInstanceLink"
+                        >
+                            <Box
+                                component="div"
+                                sx={{ display: { md: 'none', xs: 'inline-block' } }}
+                            >
+                                {this.renderLink()}
+                            </Box>
+                        </IsVisible>
+                        <IsVisible
+                            config={item}
+                            name="allowInstanceDelete"
+                        >
+                            {this.renderDeleteButton()}
+                        </IsVisible>
+                        <Box
+                            component="div"
+                            sx={styles.visible570}
+                        >
+                            {this.renderSentry()}
+                        </Box>
+                        <Box
+                            component="div"
+                            sx={styles.visible570}
+                        >
+                            {this.renderCompactGroupEnabled()}
+                        </Box>
+                    </div>
                 </Grid2>
-                <div style={styles.displayFlex}>
-                    <IsVisible config={item} name="allowInstanceDelete">
-                        <Box component="div" sx={{ display: { xs: 'inline-block', md: 'none' } }}>
-                            {this.renderSettingsButton()}
-                        </Box>
-                    </IsVisible>
-                    <Box component="div" sx={{ display: { md: 'none', xs: 'inline-block' } }}>
-                        {this.renderRestartButton()}
-                    </Box>
-                    <IsVisible config={item} name="allowInstanceLink">
-                        <Box component="div" sx={{ display: { md: 'none', xs: 'inline-block' } }}>
-                            {this.renderLink()}
-                        </Box>
-                    </IsVisible>
-                    <IsVisible config={item} name="allowInstanceDelete">
-                        {this.renderDeleteButton()}
-                    </IsVisible>
-                    <Box component="div" sx={styles.visible570}>
-                        {this.renderSentry()}
-                    </Box>
-                    <Box component="div" sx={styles.visible570}>
-                        {this.renderCompactGroupEnabled()}
-                    </Box>
-                </div>
-            </Grid2>
-        </AccordionDetails>;
+            </AccordionDetails>
+        );
     }
 
-    render() {
+    render(): JSX.Element {
         const { instance, item } = this.props;
         const status = this.props.context.getInstanceStatus(instance.obj);
 
@@ -292,121 +371,201 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
 
         const rootStyle = {
             ...styles.row,
-            ...(!item.running || instance.mode !== 'daemon' || item.stoppedWhenWebExtension !== undefined) && (this.props.idx % 2 === 0 ? styles.instanceStateNotEnabled1 : styles.instanceStateNotEnabled2),
-            ...(item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && (!item.connectedToHost || !item.alive) ? (this.props.idx % 2 === 0 ? styles.instanceStateNotAlive1 : styles.instanceStateNotAlive2) : undefined),
-            ...(item.running && item.connectedToHost && item.alive && item.connected === false ? (this.props.idx % 2 === 0 ? styles.instanceStateAliveNotConnected1 : styles.instanceStateAliveNotConnected2) : undefined),
-            ...(item.running && item.connectedToHost && item.alive && item.connected !== false ? (this.props.idx % 2 === 0 ? styles.instanceStateAliveAndConnected1 : styles.instanceStateAliveAndConnected2) : undefined),
+            ...((!item.running || instance.mode !== 'daemon' || item.stoppedWhenWebExtension !== undefined) &&
+                (this.props.idx % 2 === 0 ? styles.instanceStateNotEnabled1 : styles.instanceStateNotEnabled2)),
+            ...(item.running &&
+            instance.mode === 'daemon' &&
+            item.stoppedWhenWebExtension === undefined &&
+            (!item.connectedToHost || !item.alive)
+                ? this.props.idx % 2 === 0
+                    ? styles.instanceStateNotAlive1
+                    : styles.instanceStateNotAlive2
+                : undefined),
+            ...(item.running && item.connectedToHost && item.alive && item.connected === false
+                ? this.props.idx % 2 === 0
+                    ? styles.instanceStateAliveNotConnected1
+                    : styles.instanceStateAliveNotConnected2
+                : undefined),
+            ...(item.running && item.connectedToHost && item.alive && item.connected !== false
+                ? this.props.idx % 2 === 0
+                    ? styles.instanceStateAliveAndConnected1
+                    : styles.instanceStateAliveAndConnected2
+                : undefined),
             ...(this.desktop ? styles.desktopRow : undefined),
             ...(this.state.expanded && !this.props.deleting ? styles.expanded : undefined),
         };
 
-        return <Accordion
-            square
-            sx={{
-                '&.MuiAccordion-root': {
-                    ...(this.props.deleting ? styles.deleting : undefined),
-                    ...(this.props.hidden ? styles.hidden : undefined),
-                },
-            }}
-            expanded={this.state.expanded && !this.props.deleting}
-            onChange={() => {
-                if (this.state.openDialog) {
-                    return;
-                }
-                this.setState({ expanded: !this.state.expanded }, () =>
-                    this.props.context.onToggleExpanded(this.props.id, this.state.expanded));
-            }}
-        >
-            <AccordionSummary
+        return (
+            <Accordion
+                square
                 sx={{
-                    '&.MuiAccordionSummary-root': rootStyle,
-                    '& .MuiAccordionSummary-content':  this.desktop ? styles.desktopRowContent : undefined,
+                    '&.MuiAccordion-root': {
+                        ...(this.props.deleting ? styles.deleting : undefined),
+                        ...(this.props.hidden ? styles.hidden : undefined),
+                    },
                 }}
-                expandIcon={<ExpandMoreIcon style={this.desktop ? styles.desktopButton : undefined} />}
+                expanded={this.state.expanded && !this.props.deleting}
+                onChange={() => {
+                    if (this.state.openDialog) {
+                        return;
+                    }
+                    this.setState({ expanded: !this.state.expanded }, () =>
+                        this.props.context.onToggleExpanded(this.props.id, this.state.expanded),
+                    );
+                }}
             >
-                {this.renderDialogs()}
-                <Grid2 container spacing={1} alignItems="center" direction="row" wrap="nowrap" style={styles.rowGridLine}>
-                    <Box component="div" style={styles.gridStyle}>
-                        {stateTooltip.length ?
-                            <Tooltip
-                                slotProps={{ popper: { sx: styles.tooltip } }}
-                                title={<span style={{ display: 'flex', flexDirection: 'column' }}>
-                                    {stateTooltip}
-                                </span>}
-                            >
-                                {this.renderModeIcon(status)}
-                            </Tooltip>
-                            : this.renderModeIcon(status)}
-                        <Avatar
-                            variant="square"
-                            alt={instance.id}
-                            src={instance.image}
-                            sx={{ ...styles.instanceIcon, ...(this.desktop ? styles.desktopIcon : undefined) }}
-                        />
-                        <Box component="div" sx={styles.instanceId}>{instance.id}</Box>
-                    </Box>
-
-                    {this.renderPlayPause()}
-
-                    <IsVisible config={item} name="allowInstanceSettings">
-                        <Box component="div" sx={{ display: { md: 'inline-block', xs: 'none' } }}>
-                            {this.renderSettingsButton()}
-                        </Box>
-                    </IsVisible>
-
-                    <Box component="div" sx={{ display: { md: 'inline-block', xs: 'none' } }}>
-                        {this.renderRestartButton()}
-                    </Box>
-
-                    <IsVisible config={item} name="allowInstanceLink">
-                        <Box component="div" sx={{ display: { md: 'inline-block', xs: 'none' } }}>
-                            {this.renderLink()}
-                        </Box>
-                    </IsVisible>
-
-                    <Typography sx={{ ...styles.secondaryHeading, ...styles.hidden800 }} component="div">
-                        <div
-                            // onMouseMove={() => this.setState({ visibleEdit: true })}
-                            onMouseEnter={() => this.setState({ visibleEdit: true })}
-                            onMouseLeave={() => this.setState({ visibleEdit: false })}
-                            style={styles.secondaryHeadingDiv}
-                        >
-                            <div style={styles.secondaryHeadingDivDiv}>{AdminUtils.getText(item.name, this.props.context.lang)}</div>
-                            {this.renderEditNameButton()}
-                        </div>
-                    </Typography>
-                    {this.props.context.expertMode &&
-                        <Box component="div" sx={{ ...styles.hidden1250, ...(instance.mode !== 'daemon' || !item.running) ? styles.invisible : undefined }}>
-                            {this.renderInputOutput()}
-                        </Box>}
-                    {this.props.context.expertMode &&
-                        <Tooltip
-                            title={item.logLevelObject === item.logLevel ? `${this.props.context.t('loglevel')} ${item.logLevel}` : `${this.props.context.t('saved:')} ${item.logLevelObject} / ${this.props.context.t('actual:')} ${item.logLevel}`}
-                            slotProps={{ popper: { sx: styles.tooltip } }}
-                        >
-                            <Avatar sx={{ ...styles.smallAvatar, ...styles.hidden380, ...styles[item.logLevel] }}>
-                                {item.loglevelIcon}
-                            </Avatar>
-                        </Tooltip>}
-                    <Grid2 sx={{ ...styles.hidden1050, ...styles.width150, ...((instance.mode !== 'daemon' || !item.running) ? styles.invisible : undefined) }}>
-                        {this.renderMemoryUsage()}
-                    </Grid2>
-                    {this.props.context.hosts.length > 1 || (this.props.context.hosts.length && this.props.context.hosts[0].common?.name !== instance.host) ? <Grid2
-                        sx={styles.hidden1230}
+                <AccordionSummary
+                    sx={{
+                        '&.MuiAccordionSummary-root': rootStyle,
+                        '& .MuiAccordionSummary-content': this.desktop ? styles.desktopRowContent : undefined,
+                    }}
+                    expandIcon={<ExpandMoreIcon style={this.desktop ? styles.desktopButton : undefined} />}
+                >
+                    {this.renderDialogs()}
+                    <Grid2
+                        container
+                        spacing={1}
+                        alignItems="center"
+                        direction="row"
+                        wrap="nowrap"
+                        style={styles.rowGridLine}
                     >
-                        {this.renderHost()}
-                    </Grid2> : null}
-                </Grid2>
-                <Box component="div" sx={styles.hidden570}>
-                    {this.renderSentry()}
-                </Box>
-                <Box component="div" sx={styles.hidden570}>
-                    {this.renderCompactGroupEnabled()}
-                </Box>
-            </AccordionSummary>
-            {this.state.expanded ? this.renderDetails() : null}
-            {this.renderDialogs()}
-        </Accordion>;
+                        <Box
+                            component="div"
+                            style={styles.gridStyle}
+                        >
+                            {stateTooltip.length ? (
+                                <Tooltip
+                                    slotProps={{ popper: { sx: styles.tooltip } }}
+                                    title={
+                                        <span style={{ display: 'flex', flexDirection: 'column' }}>{stateTooltip}</span>
+                                    }
+                                >
+                                    {this.renderModeIcon(status)}
+                                </Tooltip>
+                            ) : (
+                                this.renderModeIcon(status)
+                            )}
+                            <Avatar
+                                variant="square"
+                                alt={instance.id}
+                                src={instance.image}
+                                sx={{ ...styles.instanceIcon, ...(this.desktop ? styles.desktopIcon : undefined) }}
+                            />
+                            <Box
+                                component="div"
+                                sx={styles.instanceId}
+                            >
+                                {instance.id}
+                            </Box>
+                        </Box>
+
+                        {this.renderPlayPause()}
+
+                        <IsVisible
+                            config={item}
+                            name="allowInstanceSettings"
+                        >
+                            <Box
+                                component="div"
+                                sx={{ display: { md: 'inline-block', xs: 'none' } }}
+                            >
+                                {this.renderSettingsButton()}
+                            </Box>
+                        </IsVisible>
+
+                        <Box
+                            component="div"
+                            sx={{ display: { md: 'inline-block', xs: 'none' } }}
+                        >
+                            {this.renderRestartButton()}
+                        </Box>
+
+                        <IsVisible
+                            config={item}
+                            name="allowInstanceLink"
+                        >
+                            <Box
+                                component="div"
+                                sx={{ display: { md: 'inline-block', xs: 'none' } }}
+                            >
+                                {this.renderLink()}
+                            </Box>
+                        </IsVisible>
+
+                        <Typography
+                            sx={{ ...styles.secondaryHeading, ...styles.hidden800 }}
+                            component="div"
+                        >
+                            <div
+                                // onMouseMove={() => this.setState({ visibleEdit: true })}
+                                onMouseEnter={() => this.setState({ visibleEdit: true })}
+                                onMouseLeave={() => this.setState({ visibleEdit: false })}
+                                style={styles.secondaryHeadingDiv}
+                            >
+                                <div style={styles.secondaryHeadingDivDiv}>
+                                    {AdminUtils.getText(item.name, this.props.context.lang)}
+                                </div>
+                                {this.renderEditNameButton()}
+                            </div>
+                        </Typography>
+                        {this.props.context.expertMode && (
+                            <Box
+                                component="div"
+                                sx={{
+                                    ...styles.hidden1250,
+                                    ...(instance.mode !== 'daemon' || !item.running ? styles.invisible : undefined),
+                                }}
+                            >
+                                {this.renderInputOutput()}
+                            </Box>
+                        )}
+                        {this.props.context.expertMode && (
+                            <Tooltip
+                                title={
+                                    item.logLevelObject === item.logLevel
+                                        ? `${this.props.context.t('loglevel')} ${item.logLevel}`
+                                        : `${this.props.context.t('saved:')} ${item.logLevelObject} / ${this.props.context.t('actual:')} ${item.logLevel}`
+                                }
+                                slotProps={{ popper: { sx: styles.tooltip } }}
+                            >
+                                <Avatar sx={{ ...styles.smallAvatar, ...styles.hidden380, ...styles[item.logLevel] }}>
+                                    {item.loglevelIcon}
+                                </Avatar>
+                            </Tooltip>
+                        )}
+                        <Grid2
+                            sx={{
+                                ...styles.hidden1050,
+                                ...styles.width150,
+                                ...(instance.mode !== 'daemon' || !item.running ? styles.invisible : undefined),
+                            }}
+                        >
+                            {this.renderMemoryUsage()}
+                        </Grid2>
+                        {this.props.context.hosts.length > 1 ||
+                        (this.props.context.hosts.length &&
+                            this.props.context.hosts[0].common?.name !== instance.host) ? (
+                            <Grid2 sx={styles.hidden1230}>{this.renderHost()}</Grid2>
+                        ) : null}
+                    </Grid2>
+                    <Box
+                        component="div"
+                        sx={styles.hidden570}
+                    >
+                        {this.renderSentry()}
+                    </Box>
+                    <Box
+                        component="div"
+                        sx={styles.hidden570}
+                    >
+                        {this.renderCompactGroupEnabled()}
+                    </Box>
+                </AccordionSummary>
+                {this.state.expanded ? this.renderDetails() : null}
+                {this.renderDialogs()}
+            </Accordion>
+        );
     }
 }
 

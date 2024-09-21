@@ -1,8 +1,5 @@
-import React from 'react';
-import {
-    IconButton, InputAdornment, TextField,
-    Toolbar, Tooltip, LinearProgress,
-} from '@mui/material';
+import React, { type JSX } from 'react';
+import { IconButton, InputAdornment, TextField, Toolbar, Tooltip, LinearProgress } from '@mui/material';
 
 import { Clear, Refresh } from '@mui/icons-material';
 
@@ -99,19 +96,26 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
         this.language = I18n.getLanguage();
     }
 
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         let alive = false;
         if (this.state.alive === null) {
             try {
                 // check if instance is alive
-                const stateAlive = await this.props.socket.getState(`system.adapter.${this.props.selectedInstance}.alive`);
+                const stateAlive = await this.props.socket.getState(
+                    `system.adapter.${this.props.selectedInstance}.alive`,
+                );
                 if (stateAlive?.val) {
                     alive = true;
                 }
             } catch (error) {
                 console.error(error);
             }
-            this.setState({ alive }, () => this.props.socket.subscribeState(`system.adapter.${this.props.selectedInstance}.alive`, this.aliveHandler));
+            this.setState({ alive }, () =>
+                this.props.socket.subscribeState(
+                    `system.adapter.${this.props.selectedInstance}.alive`,
+                    this.aliveHandler,
+                ),
+            );
             if (!alive) {
                 return;
             }
@@ -132,11 +136,11 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.props.socket.unsubscribeState(`system.adapter.${this.props.selectedInstance}.alive`, this.aliveHandler);
     }
 
-    aliveHandler: ioBroker.StateChangeHandler = (id: string, state: ioBroker.State | null | undefined) => {
+    aliveHandler: ioBroker.StateChangeHandler = (id: string, state: ioBroker.State | null | undefined): void => {
         if (id === `system.adapter.${this.props.selectedInstance}.alive`) {
             const alive = !!state?.val;
             if (alive !== this.state.alive) {
@@ -150,12 +154,12 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
     };
 
     /**
-    * Load devices
-    */
+     * Load devices
+     */
     override loadData(): void {
         this.setState({ loading: true }, async () => {
             console.log(`Loading devices for ${this.props.selectedInstance}...`);
-            let devices;
+            let devices: DeviceInfo[] = [];
             try {
                 devices = await this.loadDevices();
 
@@ -172,8 +176,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
                 devices = [];
             }
 
-            this.setState({ devices, loading: false }, () =>
-                this.applyFilter());
+            this.setState({ devices, loading: false }, () => this.applyFilter());
         });
     }
 
@@ -185,20 +188,21 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
         return text;
     }
 
-    applyFilter() {
+    applyFilter(): void {
         const filter = this.props.embedded ? this.props.filter : this.state.filter;
 
         // filter devices name
         if (filter) {
             const filteredDevices = this.state.devices.filter(device =>
-                this.getText(device.name).toLowerCase().includes(filter.toLowerCase()));
+                this.getText(device.name).toLowerCase().includes(filter.toLowerCase()),
+            );
             this.setState({ filteredDevices });
         } else {
             this.setState({ filteredDevices: this.state.devices });
         }
     }
 
-    handleFilterChange(filter: string) {
+    handleFilterChange(filter: string): void {
         this.setState({ filter }, () => {
             if (this.filterTimeout) {
                 clearTimeout(this.filterTimeout);
@@ -210,7 +214,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
         });
     }
 
-    renderContent(): React.JSX.Element | React.JSX.Element[] | null {
+    renderContent(): JSX.Element | JSX.Element[] | null {
         const emptyStyle: React.CSSProperties = {
             padding: 25,
         };
@@ -226,113 +230,140 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
 
         let list;
         if (!this.props.embedded && !this.state.alive) {
-            list = <div style={emptyStyle}>
-                <span>{getTranslation('instanceNotAlive')}</span>
-            </div>;
+            list = (
+                <div style={emptyStyle}>
+                    <span>{getTranslation('instanceNotAlive')}</span>
+                </div>
+            );
         } else if (!this.state.devices.length && this.props.selectedInstance) {
-            list = <div style={emptyStyle}>
-                <span>{getTranslation('noDevicesFoundText')}</span>
-            </div>;
+            list = (
+                <div style={emptyStyle}>
+                    <span>{getTranslation('noDevicesFoundText')}</span>
+                </div>
+            );
         } else if (this.state.devices.length && !this.state.filteredDevices.length) {
-            list = <div style={emptyStyle}>
-                <span>{getTranslation('allDevicesFilteredOut')}</span>
-            </div>;
+            list = (
+                <div style={emptyStyle}>
+                    <span>{getTranslation('allDevicesFilteredOut')}</span>
+                </div>
+            );
         } else {
-            list = this.state.filteredDevices.map(device => <DeviceCard
-                alive={!!this.state.alive}
-                key={device.id}
-                id={device.id}
-                title={this.getText(device.name)}
-                device={device}
-                instanceId={this.props.selectedInstance}
-                uploadImagesToInstance={this.props.uploadImagesToInstance}
-                deviceHandler={this.deviceHandler}
-                controlHandler={this.controlHandler}
-                controlStateHandler={this.controlStateHandler}
-                socket={this.props.socket}
-                themeName={this.props.themeName}
-                themeType={this.props.themeType}
-                theme={this.props.theme}
-                isFloatComma={this.props.isFloatComma}
-                dateFormat={this.props.dateFormat}
-            />);
+            list = this.state.filteredDevices.map(device => (
+                <DeviceCard
+                    alive={!!this.state.alive}
+                    key={device.id}
+                    id={device.id}
+                    title={this.getText(device.name)}
+                    device={device}
+                    instanceId={this.props.selectedInstance}
+                    uploadImagesToInstance={this.props.uploadImagesToInstance}
+                    deviceHandler={this.deviceHandler}
+                    controlHandler={this.controlHandler}
+                    controlStateHandler={this.controlStateHandler}
+                    socket={this.props.socket}
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                    theme={this.props.theme}
+                    isFloatComma={this.props.isFloatComma}
+                    dateFormat={this.props.dateFormat}
+                />
+            ));
         }
 
         if (this.props.embedded) {
-            return <>
-                {this.state.loading ? <LinearProgress style={{ width: '100%' }} /> : null}
-                {list}
-            </>;
+            return (
+                <>
+                    {this.state.loading ? <LinearProgress style={{ width: '100%' }} /> : null}
+                    {list}
+                </>
+            );
         }
 
-        return <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-            <Toolbar variant="dense" style={{ backgroundColor: '#777', display: 'flex' }}>
-                {this.props.title}
-                {this.props.selectedInstance ? <Tooltip title={getTranslation('refreshTooltip')} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-                    <span>
-                        <IconButton
-                            onClick={() => this.loadData()}
-                            disabled={!this.state.alive}
-                            size="small"
+        return (
+            <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+                <Toolbar
+                    variant="dense"
+                    style={{ backgroundColor: '#777', display: 'flex' }}
+                >
+                    {this.props.title}
+                    {this.props.selectedInstance ? (
+                        <Tooltip
+                            title={getTranslation('refreshTooltip')}
+                            slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                         >
-                            <Refresh />
-                        </IconButton>
-                    </span>
-                </Tooltip> : null}
-                {this.state.alive && this.state.instanceInfo?.actions?.length ? <div style={{ marginLeft: 20 }}>
-                    {this.state.instanceInfo.actions.map(action =>
-                        <InstanceActionButton
-                            key={action.id}
-                            action={action}
-                            instanceHandler={this.instanceHandler}
-                        />)}
-                </div> : null}
-
-                <div style={{ flexGrow: 1 }} />
-
-                {this.state.alive ? <TextField
-                    variant="standard"
-                    style={{ width: 200 }}
-                    size="small"
-                    label={getTranslation('filterLabelText')}
-                    onChange={e => this.handleFilterChange(e.target.value)}
-                    value={this.state.filter}
-                    autoComplete="off"
-                    slotProps={{
-                        input: {
-                            autoComplete: 'new-password',
-                            endAdornment: this.state.filter ? <InputAdornment position="end">
+                            <span>
                                 <IconButton
-                                    onClick={() => this.handleFilterChange('')}
-                                    edge="end"
+                                    onClick={() => this.loadData()}
+                                    disabled={!this.state.alive}
+                                    size="small"
                                 >
-                                    <Clear />
+                                    <Refresh />
                                 </IconButton>
-                            </InputAdornment> : null,
-                        },
-                        htmlInput: {
-                            autoComplete: 'off',
-                        },
+                            </span>
+                        </Tooltip>
+                    ) : null}
+                    {this.state.alive && this.state.instanceInfo?.actions?.length ? (
+                        <div style={{ marginLeft: 20 }}>
+                            {this.state.instanceInfo.actions.map(action => (
+                                <InstanceActionButton
+                                    key={action.id}
+                                    action={action}
+                                    instanceHandler={this.instanceHandler}
+                                />
+                            ))}
+                        </div>
+                    ) : null}
+
+                    <div style={{ flexGrow: 1 }} />
+
+                    {this.state.alive ? (
+                        <TextField
+                            variant="standard"
+                            style={{ width: 200 }}
+                            size="small"
+                            label={getTranslation('filterLabelText')}
+                            onChange={e => this.handleFilterChange(e.target.value)}
+                            value={this.state.filter}
+                            autoComplete="off"
+                            slotProps={{
+                                input: {
+                                    autoComplete: 'new-password',
+                                    endAdornment: this.state.filter ? (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => this.handleFilterChange('')}
+                                                edge="end"
+                                            >
+                                                <Clear />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ) : null,
+                                },
+                                htmlInput: {
+                                    autoComplete: 'off',
+                                },
+                            }}
+                        />
+                    ) : null}
+                </Toolbar>
+                <div
+                    style={{
+                        width: '100%',
+                        height: 'calc(100% - 56px)',
+                        marginTop: 8,
+                        overflow: 'auto',
+                        // justifyContent: 'center',
+                        // alignItems: 'stretch',
+                        // display: 'grid',
+                        // columnGap: 8,
+                        // rowGap: 8,
+                        ...this.props.style,
                     }}
-                /> : null}
-            </Toolbar>
-            <div
-                style={{
-                    width: '100%',
-                    height: 'calc(100% - 56px)',
-                    marginTop: 8,
-                    overflow: 'auto',
-                    // justifyContent: 'center',
-                    // alignItems: 'stretch',
-                    // display: 'grid',
-                    // columnGap: 8,
-                    // rowGap: 8,
-                    ...this.props.style,
-                }}
-            >
-                {this.state.loading ? <LinearProgress style={{ width: '100%' }} /> : null}
-                {list}
+                >
+                    {this.state.loading ? <LinearProgress style={{ width: '100%' }} /> : null}
+                    {list}
+                </div>
             </div>
-        </div>;
+        );
     }
 }

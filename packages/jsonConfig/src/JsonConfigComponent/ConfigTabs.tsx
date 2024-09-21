@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Tabs, Tab } from '@mui/material';
 
@@ -58,7 +58,10 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
         }
 
         if (tab === undefined) {
-            tab = ((window as any)._localStorage as Storage || window.localStorage).getItem(`${this.props.dialogName || 'App'}.${this.props.adapterName}`) || Object.keys(this.props.schema.items)[0];
+            tab =
+                (((window as any)._localStorage as Storage) || window.localStorage).getItem(
+                    `${this.props.dialogName || 'App'}.${this.props.adapterName}`,
+                ) || Object.keys(this.props.schema.items)[0];
             if (!Object.keys(this.props.schema.items).includes(tab)) {
                 tab = Object.keys(this.props.schema.items)[0];
             }
@@ -67,12 +70,12 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
         Object.assign(this.state, { tab });
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         window.removeEventListener('hashchange', this.onHashTabsChanged, false);
         super.componentWillUnmount();
     }
 
-    onHashTabsChanged = () => {
+    onHashTabsChanged = (): void => {
         const hash = (window.location.hash || '').replace(/^#/, '').split('/');
         if (hash.length > 3 && hash[1] === 'config') {
             const tabS = hash[3];
@@ -86,136 +89,146 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 tab = tabS;
             }
             if (tab !== undefined && tab !== this.state.tab) {
-                ((window as any)._localStorage as Storage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.${this.props.adapterName}`, tab);
+                (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+                    `${this.props.dialogName || 'App'}.${this.props.adapterName}`,
+                    tab,
+                );
                 this.setState({ tab });
             }
         }
     };
 
-    render() {
+    render(): JSX.Element {
         const items = this.props.schema.items;
         let withIcons = false;
 
-        return <div style={styles.tabs}>
-            <Tabs
-                variant="scrollable"
-                scrollButtons="auto"
-                style={this.props.schema.tabsStyle}
-                value={this.state.tab}
-                onChange={(e, tab) => {
-                    ((window as any)._localStorage as Storage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.${this.props.adapterName}`, tab);
-                    this.setState({ tab }, () => {
-                        if (this.props.root) {
-                            const hash = (window.location.hash || '').split('/');
-                            if (hash.length >= 3 && hash[1] === 'config') {
-                                hash[3] = this.state.tab;
-                                window.location.hash = hash.join('/');
-                            }
-                        }
-                    });
-                }}
-            >
-                {Object.keys(items).map(name => {
-                    let disabled: boolean;
-                    if (this.props.custom) {
-                        const hidden = this.executeCustom(
-                            items[name].hidden,
-                            this.props.data,
-                            this.props.customObj,
-                            this.props.instanceObj,
-                            this.props.index,
-                            this.props.globalData,
+        return (
+            <div style={styles.tabs}>
+                <Tabs
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    style={this.props.schema.tabsStyle}
+                    value={this.state.tab}
+                    onChange={(e, tab) => {
+                        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+                            `${this.props.dialogName || 'App'}.${this.props.adapterName}`,
+                            tab,
                         );
-                        if (hidden) {
-                            return null;
+                        this.setState({ tab }, () => {
+                            if (this.props.root) {
+                                const hash = (window.location.hash || '').split('/');
+                                if (hash.length >= 3 && hash[1] === 'config') {
+                                    hash[3] = this.state.tab;
+                                    window.location.hash = hash.join('/');
+                                }
+                            }
+                        });
+                    }}
+                >
+                    {Object.keys(items).map(name => {
+                        let disabled: boolean;
+                        if (this.props.custom) {
+                            const hidden = this.executeCustom(
+                                items[name].hidden,
+                                this.props.data,
+                                this.props.customObj,
+                                this.props.instanceObj,
+                                this.props.index,
+                                this.props.globalData,
+                            );
+                            if (hidden) {
+                                return null;
+                            }
+                            disabled = this.executeCustom(
+                                items[name].disabled,
+                                this.props.data,
+                                this.props.customObj,
+                                this.props.instanceObj,
+                                this.props.index,
+                                this.props.globalData,
+                            ) as boolean;
+                        } else {
+                            const hidden: boolean = this.execute(
+                                items[name].hidden,
+                                false,
+                                this.props.data,
+                                this.props.index,
+                                this.props.globalData,
+                            ) as boolean;
+                            if (hidden) {
+                                return null;
+                            }
+                            disabled = this.execute(
+                                items[name].disabled,
+                                false,
+                                this.props.data,
+                                this.props.index,
+                                this.props.globalData,
+                            ) as boolean;
                         }
-                        disabled = this.executeCustom(
-                            items[name].disabled,
-                            this.props.data,
-                            this.props.customObj,
-                            this.props.instanceObj,
-                            this.props.index,
-                            this.props.globalData,
-                        ) as boolean;
-                    } else {
-                        const hidden: boolean = this.execute(
-                            items[name].hidden,
-                            false,
-                            this.props.data,
-                            this.props.index,
-                            this.props.globalData,
-                        ) as boolean;
-                        if (hidden) {
-                            return null;
-                        }
-                        disabled = this.execute(
-                            items[name].disabled,
-                            false,
-                            this.props.data,
-                            this.props.index,
-                            this.props.globalData,
-                        ) as boolean;
-                    }
-                    const icon = this.getIcon(items[name].icon);
-                    withIcons = withIcons || !!icon;
+                        const icon = this.getIcon(items[name].icon);
+                        withIcons = withIcons || !!icon;
 
-                    return <Tab
-                        id={name}
-                        wrapped
-                        disabled={disabled}
-                        key={name}
-                        value={name}
-                        iconPosition={this.props.schema.iconPosition || 'start'}
-                        icon={icon}
-                        label={this.getText(items[name].label)}
-                    />;
-                })}
-            </Tabs>
-            <ConfigPanel
-                isParentTab
-                changed={this.props.changed}
-                key={this.state.tab}
-                index={1001}
-                arrayIndex={this.props.arrayIndex}
-                globalData={this.props.globalData}
-                onCommandRunning={this.props.onCommandRunning}
-                commandRunning={this.props.commandRunning}
-                style={{
-                    ...styles.panel,
-                    ...(withIcons ? styles.panelWithIcons : styles.panelWithoutIcons),
-                }}
-                socket={this.props.socket}
-                adapterName={this.props.adapterName}
-                instance={this.props.instance}
-                common={this.props.common}
-                customs={this.props.customs}
-                alive={this.props.alive}
-                themeType={this.props.themeType}
-                themeName={this.props.themeName}
-                data={this.props.data}
-                originalData={this.props.originalData}
-                systemConfig={this.props.systemConfig}
-                onChange={this.props.onChange}
-                onError={this.props.onError}
-                onBackEndCommand={this.props.onBackEndCommand}
-                multiEdit={this.props.multiEdit}
-                dateFormat={this.props.dateFormat}
-                isFloatComma={this.props.isFloatComma}
-                // disabled={disabled}
-                imagePrefix={this.props.imagePrefix}
-                changeLanguage={this.props.changeLanguage}
-                forceUpdate={this.props.forceUpdate}
-                registerOnForceUpdate={this.props.registerOnForceUpdate}
-                customObj={this.props.customObj}
-                instanceObj={this.props.instanceObj}
-                custom={this.props.custom}
-                schema={items[this.state.tab]}
-                table={this.props.table}
-                theme={this.props.theme}
-                DeviceManager={this.props.DeviceManager}
-                withIcons={withIcons}
-            />
-        </div>;
+                        return (
+                            <Tab
+                                id={name}
+                                wrapped
+                                disabled={disabled}
+                                key={name}
+                                value={name}
+                                iconPosition={this.props.schema.iconPosition || 'start'}
+                                icon={icon}
+                                label={this.getText(items[name].label)}
+                            />
+                        );
+                    })}
+                </Tabs>
+                <ConfigPanel
+                    isParentTab
+                    changed={this.props.changed}
+                    key={this.state.tab}
+                    index={1001}
+                    arrayIndex={this.props.arrayIndex}
+                    globalData={this.props.globalData}
+                    onCommandRunning={this.props.onCommandRunning}
+                    commandRunning={this.props.commandRunning}
+                    style={{
+                        ...styles.panel,
+                        ...(withIcons ? styles.panelWithIcons : styles.panelWithoutIcons),
+                    }}
+                    socket={this.props.socket}
+                    adapterName={this.props.adapterName}
+                    instance={this.props.instance}
+                    common={this.props.common}
+                    customs={this.props.customs}
+                    alive={this.props.alive}
+                    themeType={this.props.themeType}
+                    themeName={this.props.themeName}
+                    data={this.props.data}
+                    originalData={this.props.originalData}
+                    systemConfig={this.props.systemConfig}
+                    onChange={this.props.onChange}
+                    onError={this.props.onError}
+                    onBackEndCommand={this.props.onBackEndCommand}
+                    multiEdit={this.props.multiEdit}
+                    dateFormat={this.props.dateFormat}
+                    isFloatComma={this.props.isFloatComma}
+                    // disabled={disabled}
+                    imagePrefix={this.props.imagePrefix}
+                    changeLanguage={this.props.changeLanguage}
+                    forceUpdate={this.props.forceUpdate}
+                    registerOnForceUpdate={this.props.registerOnForceUpdate}
+                    customObj={this.props.customObj}
+                    instanceObj={this.props.instanceObj}
+                    custom={this.props.custom}
+                    schema={items[this.state.tab]}
+                    table={this.props.table}
+                    theme={this.props.theme}
+                    DeviceManager={this.props.DeviceManager}
+                    withIcons={withIcons}
+                />
+            </div>
+        );
     }
 }
 

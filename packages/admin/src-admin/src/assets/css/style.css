@@ -2,7 +2,8 @@
     background: #fff;
 }
 
-#tabs-system, #diagSample {
+#tabs-system,
+#diagSample {
     overflow: auto;
 }
 
@@ -18,7 +19,7 @@
     left: 0;
     border: 5px dashed transparent;
     margin-top: 5px;
-    height: calc(100% - 10px)
+    height: calc(100% - 10px);
 }
 
 .drop-container:focus {
@@ -26,8 +27,8 @@
 }
 
 .drop-dop {
-    background-color: #FFFFFF40;
-    border: 5px dashed #000000A0;
+    background-color: #ffffff40;
+    border: 5px dashed #000000a0;
     z-index: 100;
 }
 
@@ -65,7 +66,7 @@
     display: flex !important;
 }
 
-tbody > .float_row:nth-of-type(2n+1) {
+tbody > .float_row:nth-of-type(2n + 1) {
     background-color: #00000008;
 }
 
@@ -140,7 +141,7 @@ tbody > .float_row:nth-of-type(2n+1) {
     }
 
     .dialogName {
-        font-size: .7rem !important;
+        font-size: 0.7rem !important;
     }
 
     .float_row {
@@ -179,7 +180,7 @@ tbody > .float_row:nth-of-type(2n+1) {
     }
 
     .dialogName {
-        font-size: .7rem !important;
+        font-size: 0.7rem !important;
     }
 
     .float_row {

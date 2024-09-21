@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, type JSX } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { findCard, moveCard } from '@/helpers/cardSort';
@@ -10,7 +10,7 @@ const styles: React.CSSProperties = {
 interface DragWrapperProps {
     canDrag: boolean;
     setEndDrag: () => void;
-    iconJSX: React.JSX.Element;
+    iconJSX: JSX.Element;
     selected: boolean;
     compact: boolean;
     badgeContent: number;
@@ -24,8 +24,20 @@ interface DragWrapperProps {
 }
 
 const DragWrapper = ({
-    canDrag, setEndDrag, iconJSX, selected, compact, badgeContent, badgeColor, tab, tabs, setTabs, _id, children, name,
-}: DragWrapperProps) => {
+    canDrag,
+    setEndDrag,
+    iconJSX,
+    selected,
+    compact,
+    badgeContent,
+    badgeColor,
+    tab,
+    tabs,
+    setTabs,
+    _id,
+    children,
+    name,
+}: DragWrapperProps): JSX.Element => {
     const ref = useRef(null);
     const [{ handlerId }, drop] = useDrop({
         accept: 'box',
@@ -44,14 +56,7 @@ const DragWrapper = ({
             const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
             const clientOffset = monitor.getClientOffset();
             const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-            moveCard(
-                draggedId,
-                overIndexActions,
-                tabs,
-                setTabs,
-                hoverClientY,
-                hoverMiddleY,
-            );
+            moveCard(draggedId, overIndexActions, tabs, setTabs, hoverClientY, hoverMiddleY);
         },
     });
 
@@ -78,22 +83,28 @@ const DragWrapper = ({
     const opacity = isDragging ? 0 : 1;
     drag(drop(ref));
 
-    return <div ref={ref} style={{ ...styles, opacity }} data-handler-id={handlerId}>
-        <a
-            type="box"
+    return (
+        <div
+            ref={ref}
+            style={{ ...styles, opacity }}
             data-handler-id={handlerId}
-            onClick={event => event.preventDefault()}
-            href={`/#${name}`}
-            style={{
-                ...styles,
-                opacity,
-                color: 'inherit',
-                textDecoration: 'none',
-            }}
         >
-            {children}
-        </a>
-    </div>;
+            <a
+                type="box"
+                data-handler-id={handlerId}
+                onClick={event => event.preventDefault()}
+                href={`/#${name}`}
+                style={{
+                    ...styles,
+                    opacity,
+                    color: 'inherit',
+                    textDecoration: 'none',
+                }}
+            >
+                {children}
+            </a>
+        </div>
+    );
 };
 
 export default DragWrapper;

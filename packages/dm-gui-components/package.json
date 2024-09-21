@@ -1,53 +1,54 @@
 {
-  "name": "@iobroker/dm-gui-components",
-  "version": "7.1.0",
-  "description": "ReactJS components to develop admin interface for ioBroker device manager.",
-  "author": {
-    "name": "Jey Cee",
-    "email": "iobroker@all-smart.net"
-  },
-  "contributors": [
-    {
-      "name": "UncleSamSwiss"
+    "name": "@iobroker/dm-gui-components",
+    "version": "7.1.3",
+    "description": "ReactJS components to develop admin interface for ioBroker device manager.",
+    "author": {
+        "name": "Jey Cee",
+        "email": "iobroker@all-smart.net"
     },
-    {
-      "name": "bluefox",
-      "email": "dogafox@gmail.com"
+    "contributors": [
+        {
+            "name": "UncleSamSwiss"
+        },
+        {
+            "name": "bluefox",
+            "email": "dogafox@gmail.com"
+        }
+    ],
+    "scripts": {
+        "prepublishOnly": "npm run build",
+        "clean": "rimraf build",
+        "build": "tsc && tsc-alias",
+        "check-ts": "tsc --noEmit --checkJS false",
+        "lint": "eslint -c eslint.config.mjs src",
+        "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ioBroker/dm-gui-components.git"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "build/",
+        "LICENSE",
+        "README.md"
+    ],
+    "module": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "keywords": [
+        "iobroker",
+        "adapter",
+        "iot"
+    ],
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ioBroker/dm-gui-components/issues"
+    },
+    "homepage": "https://github.com/ioBroker/dm-gui-components#readme",
+    "dependencies": {
+        "@iobroker/adapter-react-v5": "^7.1.4",
+        "@iobroker/json-config": "file:../jsonConfig"
     }
-  ],
-  "scripts": {
-    "prepublishOnly": "npm run build",
-    "clean": "rimraf build",
-    "build": "tsc && tsc-alias",
-    "check-ts": "tsc --noEmit --checkJS false",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ioBroker/dm-gui-components.git"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "files": [
-    "build/",
-    "LICENSE",
-    "README.md"
-  ],
-  "module": "./build/index.js",
-  "types": "./build/index.d.ts",
-  "keywords": [
-    "iobroker",
-    "adapter",
-    "iot"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ioBroker/dm-gui-components/issues"
-  },
-  "homepage": "https://github.com/ioBroker/dm-gui-components#readme",
-  "dependencies": {
-    "@iobroker/adapter-react-v5": "^7.0.1",
-    "@iobroker/json-config": "file:../jsonConfig"
-  }
 }

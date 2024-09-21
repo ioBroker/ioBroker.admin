@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const less = require('less');
 const path = require('node:path');
-const { deleteFoldersRecursive, buildCraco, patchHtmlFile, npmInstall, copyFiles } = require('@iobroker/build-tools');
+const { deleteFoldersRecursive, buildReact, patchHtmlFile, npmInstall, copyFiles } = require('@iobroker/build-tools');
 
 const srcRx = 'src-admin/';
 const src = `${__dirname}/${srcRx}`;
@@ -11,25 +11,25 @@ const dest = 'adminWww/';
 function build() {
     fs.writeFileSync(
         `${src}public/lib/js/sparkline.js`,
-        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js`)
+        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js`),
     );
     fs.writeFileSync(
         `${src}public/lib/js/sparkline.js.map`,
-        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js.map`)
+        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js.map`),
     );
 
     const ace = `${rootFolder}/node_modules/ace-builds/src-min-noconflict/`;
     fs.writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, fs.readFileSync(`${ace}worker-json.js`));
     fs.writeFileSync(
         `${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`,
-        fs.readFileSync(`${ace}ext-searchbox.js`)
+        fs.readFileSync(`${ace}ext-searchbox.js`),
     );
 
-    return buildCraco(src, { rootDir: __dirname, ramSize: 7000 });
+    return buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true });
 }
 
 function copyAllFiles() {
-    deleteFoldersRecursive(`${__dirname}/dest`);
+    deleteFoldersRecursive(`${__dirname}/build`);
     deleteFoldersRecursive(`${__dirname}/admin/custom`);
     deleteFoldersRecursive(`${__dirname}/${srcRx}public/lib/js/crypto-js`);
     deleteFoldersRecursive(`${__dirname}/../dm-gui-components/build/src`);
@@ -39,16 +39,16 @@ function copyAllFiles() {
     readme = readme.replaceAll('packages/admin/', '');
     fs.writeFileSync(`${__dirname}/README.md`, readme);
 
-    copyFiles([`${srcRx}build/**/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
+    copyFiles([`${srcRx}build/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
 
     // copy source files of jsonConfig
-    copyFiles(`${__dirname}/../jsonConfig/src/**/*`, `${__dirname}/../jsonConfig/build/src`);
+    copyFiles(`${__dirname}/../jsonConfig/src/*`, `${__dirname}/../jsonConfig/build/src`);
 
     // copy source files of dm-gui-components
-    copyFiles(`${__dirname}/../dm-gui-components/src/**/*`, `${__dirname}/../dm-gui-components/build/src`);
+    copyFiles(`${__dirname}/../dm-gui-components/src/*`, `${__dirname}/../dm-gui-components/build/src`);
 
     // copy custom plugin
-    copyFiles(`${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
+    copyFiles(`${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/*`, `admin/`);
 
     // copy crypto-js
     copyFiles(
@@ -57,7 +57,7 @@ function copyAllFiles() {
             `!${rootFolder}/node_modules/crypto-js/CONTRIBUTING.md`,
             `!${rootFolder}/node_modules/crypto-js/README.md`,
         ],
-        `${dest}lib/js/crypto-js`
+        `${dest}lib/js/crypto-js`,
     );
     copyFiles(`${srcRx}build/index.html`, dest, {
         replace: [
@@ -65,7 +65,7 @@ function copyAllFiles() {
             { find: 'src="/', text: 'src="' },
         ],
     });
-    copyFiles(`${srcRx}build/static/js/*.js`, `${dest}static/js/`, {
+    copyFiles(`${srcRx}build/static/js/*.js`, `${dest}static/js`, {
         replace: [{ find: 's.p+"static/media', text: '"./static/media' }],
     });
 }
@@ -87,7 +87,7 @@ async function configCSS() {
             filename: 'materializeCorrect.less',
             compress: true,
             paths: [`./${srcRx}less`],
-        }
+        },
     );
 
     fs.writeFileSync(`./${srcRx}public/css/adapter.css`, selectID.css + adapterLess.css + materializeCorrect.css);
@@ -110,7 +110,7 @@ async function treeTableCSS() {
             filename: 'selectID.less',
             compress: true,
             paths: [`./${srcRx}less`],
-        }
+        },
     );
     fs.writeFileSync(`./${srcRx}public/lib/css/jquery.treetable.theme.css`, treeTable.css);
 }

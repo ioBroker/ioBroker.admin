@@ -1,5 +1,6 @@
 const license: Record<ioBroker.Languages, string> = {
-    en: 'The MIT License (MIT)\n' +
+    en:
+        'The MIT License (MIT)\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +
@@ -7,7 +8,8 @@ const license: Record<ioBroker.Languages, string> = {
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n' +
         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n',
 
-    de: 'MIT-Lizenz (MIT)\n' +
+    de:
+        'MIT-Lizenz (MIT)\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +
@@ -15,7 +17,8 @@ const license: Record<ioBroker.Languages, string> = {
         'Der obige Urheberrechtsvermerk und dieser Erlaubnisvermerk sind in allen Kopien oder Teilkopien der Software beizulegen.\n' +
         'DIE SOFTWARE WIRD OHNE JEDE AUSDRÜCKLICHE ODER IMPLIZIERTE GARANTIE BEREITGESTELLT, EINSCHLIESSLICH DER GARANTIE ZUR BENUTZUNG FÜR DEN VORGESEHENEN ODER EINEM BESTIMMTEN ZWECK SOWIE JEGLICHER RECHTSVERLETZUNG, JEDOCH NICHT DARAUF BESCHRÄNKT. IN KEINEM FALL SIND DIE AUTOREN ODER COPYRIGHTINHABER FÜR JEGLICHEN SCHADEN ODER SONSTIGE ANSPRÜCHE HAFTBAR ZU MACHEN, OB INFOLGE DER ERFÜLLUNG EINES VERTRAGES, EINES DELIKTES ODER ANDERS IM ZUSAMMENHANG MIT DER SOFTWARE ODER SONSTIGER VERWENDUNG DER SOFTWARE ENTSTANDEN.',
 
-    ru: 'Лицензия MIT\n' +
+    ru:
+        'Лицензия MIT\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +
@@ -23,15 +26,17 @@ const license: Record<ioBroker.Languages, string> = {
         'Указанное выше уведомление об авторском праве и данные условия должны быть включены во все копии или значимые части данного Программного Обеспечения.\n' +
         'ДАННОЕ ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ «КАК ЕСТЬ», БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ, ЯВНО ВЫРАЖЕННЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ, ВКЛЮЧАЯ, НО НЕ ОГРАНИЧИВАЯСЬ ГАРАНТИЯМИ ТОВАРНОЙ ПРИГОДНОСТИ, СООТВЕТСТВИЯ ПО ЕГО КОНКРЕТНОМУ НАЗНАЧЕНИЮ И ОТСУТСТВИЯ НАРУШЕНИЙ ПРАВ. НИ В КАКОМ СЛУЧАЕ АВТОРЫ ИЛИ ПРАВООБЛАДАТЕЛИ НЕ НЕСУТ ОТВЕТСТВЕННОСТИ ПО ИСКАМ О ВОЗМЕЩЕНИИ УЩЕРБА, УБЫТКОВ ИЛИ ДРУГИХ ТРЕБОВАНИЙ ПО ДЕЙСТВУЮЩИМ КОНТРАКТАМ, ДЕЛИКТАМ ИЛИ ИНОМУ, ВОЗНИКШИМ ИЗ, ИМЕЮЩИМ ПРИЧИНОЙ ИЛИ СВЯЗАННЫМ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ ИЛИ ИСПОЛЬЗОВАНИЕМ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ ИЛИ ИНЫМИ ДЕЙСТВИЯМИ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ.',
 
-    it: 'Licenza MIT\n' +
+    it:
+        'Licenza MIT\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +
         'Si concede gratuitamente l\'autorizzazione, a chiunque ottenga una copia di questo software e dei file di documentazione associati (il "Software"), di dare opera al Software senza restrizioni, compresi senza limitazione i diritti di utilizzare, copiare, modificare, unire, pubblicare, distribuire, concedere in sublicenza ovvero vendere copie del Software, e di consentire alle persone a cui il Software è fornito di fare altrettanto, posto che siano rispettate le seguenti condizioni:\n' +
-        'l\'avviso di copyright unitamente a questo avviso di licenza devono essere sempre inclusi in tutte le copie o parti sostanziali del Software.\n' +
+        "l'avviso di copyright unitamente a questo avviso di licenza devono essere sempre inclusi in tutte le copie o parti sostanziali del Software.\n" +
         'IL SOFTWARE VIENE FORNITO "COSÌ COM\'È" SENZA GARANZIE DI ALCUN TIPO, ESPLICITE O IMPLICITE, COMPRESE, MA NON SOLO, LE GARANZIE DI COMMERCIABILITÀ, IDONEITÀ AD UN PARTICOLARE SCOPO E NON VIOLAZIONE DI DIRITTI ALTRUI. IN NESSUN CASO GLI AUTORI DEL SOFTWARE O I TITOLARI DEL COPYRIGHT POTRANNO ESSERE RITENUTI RESPONSABILI DI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, DERIVANTI DA O COLLEGATI A CONTRATTO, ILLECITO CIVILE O IN ALTRA RELAZIONE CON IL SOFTWARE O CON IL SUO UTILIZZO O CON ALTRE OPERAZIONI DEL SOFTWARE.',
 
-    fr: 'Licence MIT\n' +
+    fr:
+        'Licence MIT\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +
@@ -39,7 +44,8 @@ const license: Record<ioBroker.Languages, string> = {
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n' +
         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n',
 
-    pt: 'Licença MIT\n' +
+    pt:
+        'Licença MIT\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +
@@ -47,7 +53,8 @@ const license: Record<ioBroker.Languages, string> = {
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n' +
         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n',
 
-    nl: 'MIT-licentie\n' +
+    nl:
+        'MIT-licentie\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +
@@ -55,7 +62,8 @@ const license: Record<ioBroker.Languages, string> = {
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n' +
         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n',
 
-    es: 'Licencia MIT\n' +
+    es:
+        'Licencia MIT\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +
@@ -63,7 +71,8 @@ const license: Record<ioBroker.Languages, string> = {
         'El aviso de copyright anterior y este aviso de permiso se incluirán en todas las copias o partes sustanciales del Software.\n' +
         'EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A GARANTÍAS DE COMERCIALIZACIÓN, IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO LOS AUTORES O TITULARES DEL COPYRIGHT SERÁN RESPONSABLES DE NINGUNA RECLAMACIÓN, DAÑOS U OTRAS RESPONSABILIDADES, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O CUALQUIER OTRO MOTIVO, QUE SURJA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTRO TIPO DE ACCIONES EN EL SOFTWARE.',
 
-    pl: 'Licencja MIT\n' +
+    pl:
+        'Licencja MIT\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +
@@ -71,7 +80,8 @@ const license: Record<ioBroker.Languages, string> = {
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n' +
         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n',
 
-    uk: 'Ліцензія MIT\n' +
+    uk:
+        'Ліцензія MIT\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +
@@ -79,7 +89,8 @@ const license: Record<ioBroker.Languages, string> = {
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n' +
         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n',
 
-    'zh-cn': 'MIT许可证\n' +
+    'zh-cn':
+        'MIT许可证\n' +
         '\n' +
         'Copyright © 2014-2024 Denis Haev, 2014 hobbyquaker\n' +
         '\n' +

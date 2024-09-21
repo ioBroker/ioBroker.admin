@@ -1,5 +1,6 @@
 /**
  * Tests whether the given variable is a real object and not an Array
+ *
  * @param it The variable to test
  * @returns true if it is Record<string, any>
  */
@@ -10,6 +11,10 @@ export function isObject(it: any): it is Record<string, any> {
     // [] instanceof Object === true
     return Object.prototype.toString.call(it) === '[object Object]'; // this code is 25% faster than below one
     // return it && typeof it === 'object' && !(it instanceof Array);
+}
+
+export function isTouchDevice(): boolean {
+    return 'ontouchstart' in window || window.navigator.maxTouchPoints > 0 || window.navigator.msMaxTouchPoints > 0;
 }
 
 /** Url where controller changelog is reachable */

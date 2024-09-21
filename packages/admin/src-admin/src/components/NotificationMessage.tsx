@@ -1,18 +1,19 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
-import {
-    Box, LinearProgress, Typography,
-} from '@mui/material';
+import { Box, LinearProgress, Typography } from '@mui/material';
 
 import {
     type AdminConnection,
-    I18n, type IobTheme,
-    type ThemeName, type ThemeType,
+    I18n,
+    type IobTheme,
+    type ThemeName,
+    type ThemeType,
     Utils,
 } from '@iobroker/adapter-react-v5';
 import {
     type BackEndCommandGeneric,
-    type BackEndCommandOpenLink, type ConfigItemPanel,
+    type BackEndCommandOpenLink,
+    type ConfigItemPanel,
     JsonConfigComponent,
 } from '@iobroker/json-config';
 
@@ -87,6 +88,7 @@ export interface Message {
         /** Button text. Default is "open" */
         text?: ioBroker.Translated;
         /** Target */
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
         target?: '_blank' | '_self' | string;
         /** base64 icon */
         icon?: string;
@@ -108,10 +110,10 @@ interface NotificationAction {
 }
 
 interface NotificationMessageProps {
-    entry: Message;
+    // entry: Message;
     instanceId: string;
-    message: { message: string; ts: number; actionData?: NotificationAction };
-    onClose: () => void;
+    message: { message: string; ts: number; contextData?: NotificationAction };
+    // onClose: () => void;
     onLink: (linkCommand: BackEndCommandOpenLink) => void;
     dateFormat: string;
     socket: AdminConnection;
@@ -143,8 +145,8 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
         };
     }
 
-    async componentDidMount() {
-        if (this.props.message.actionData) {
+    async componentDidMount(): Promise<void> {
+        if (this.props.message.contextData) {
             // request GUI for this notification
             const alive = await this.props.socket.getState(`${this.props.instanceId}.alive`);
             this.lastAlive = alive?.val ? Date.now() : 0;
@@ -153,19 +155,20 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
         }
     }
 
-    getGui() {
-        if (this.state.alive && this.props.message.actionData) {
-            const actionData = JSON.parse(JSON.stringify(this.props.message.actionData));
-            /** remove offline message from actionData */
-            if (actionData.offlineMessage) {
-                delete actionData.offlineMessage;
+    getGui(): void {
+        if (this.state.alive && this.props.message.contextData) {
+            const contextData = JSON.parse(JSON.stringify(this.props.message.contextData));
+            /** remove the offline message from contextData */
+            if (contextData.offlineMessage) {
+                delete contextData.offlineMessage;
             }
             // request GUI for this notification
-            this.props.socket.sendTo(
-                this.props.instanceId.replace('system.adapter.', ''),
-                'getNotificationSchema',
-                actionData,
-            )
+            void this.props.socket
+                .sendTo(
+                    this.props.instanceId.replace('system.adapter.', ''),
+                    'admin:getNotificationSchema',
+                    contextData,
+                )
                 .then((result: { data: Record<string, any> | null; schema: ConfigItemPanel | null }) => {
                     if (result) {
                         this.setState({
@@ -178,8 +181,8 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
         }
     }
 
-    onAliveChanged = (id: string, state: ioBroker.State) => {
-        if (id === `${this.props.instanceId}.alive` && state && this.state.alive !== (!!state.val)) {
+    onAliveChanged = (id: string, state: ioBroker.State): void => {
+        if (id === `${this.props.instanceId}.alive` && state && this.state.alive !== !!state.val) {
             if (state.val) {
                 if (this.lastAlive && Date.now() - this.lastAlive < 500) {
                     // ignore too fast changes
@@ -191,19 +194,18 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
         }
     };
 
-    renderCustomGui() {
+    renderCustomGui(): JSX.Element | null {
         if (!this.state.schema || !this.state.data || !this.state.alive) {
-            if (this.props.message.actionData) {
+            if (this.props.message.contextData) {
                 if (!this.state.alive) {
-                    if (this.props.message.actionData.offlineMessage) {
-                        const text = typeof this.props.message.actionData.offlineMessage === 'string' ?
-                            this.props.message.actionData.offlineMessage :
-                            this.props.message.actionData.offlineMessage[this.props.socket.systemLang] ||
-                            this.props.message.actionData.offlineMessage.en;
+                    if (this.props.message.contextData.offlineMessage) {
+                        const text =
+                            typeof this.props.message.contextData.offlineMessage === 'string'
+                                ? this.props.message.contextData.offlineMessage
+                                : this.props.message.contextData.offlineMessage[this.props.socket.systemLang] ||
+                                  this.props.message.contextData.offlineMessage.en;
 
-                        return <Box sx={styles.offline}>
-                            {Utils.renderTextWithA(text)}
-                        </Box>;
+                        return <Box sx={styles.offline}>{Utils.renderTextWithA(text)}</Box>;
                     }
                     return <Typography>{I18n.t('Instance is not alive')}</Typography>;
                 }
@@ -215,59 +217,61 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
 
         const [, , adapterName, instance] = this.props.instanceId.split('.');
 
-        return <>
-            {this.state.error && <div style={{ color: 'red' }}>{this.state.error}</div>}
-            <JsonConfigComponent
-                style={{ width: '100%' }}
-                updateData={this.state.updateData}
-                socket={this.props.socket}
-                adapterName={adapterName}
-                instance={parseInt(instance, 10)}
-                schema={this.state.schema}
-                data={this.state.data}
-                onError={(error?: boolean) => this.setState({ error })}
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                onChange={(_data: Record<string, any>) => {
-                    // ignore for now
-                }}
-                onBackEndCommand={(command?: BackEndCommandGeneric) => {
-                    if (command.schema) {
-                        this.setState({ schema: command.schema, data: command.data || this.state.data });
-                    }
+        return (
+            <>
+                {this.state.error && <div style={{ color: 'red' }}>{this.state.error}</div>}
+                <JsonConfigComponent
+                    style={{ width: '100%' }}
+                    updateData={this.state.updateData}
+                    socket={this.props.socket}
+                    adapterName={adapterName}
+                    instance={parseInt(instance, 10)}
+                    schema={this.state.schema}
+                    data={this.state.data}
+                    onError={(error?: boolean) => this.setState({ error })}
+                    onChange={(_data: Record<string, any>) => {
+                        // ignore for now
+                    }}
+                    onBackEndCommand={(command?: BackEndCommandGeneric) => {
+                        if (command.schema) {
+                            this.setState({ schema: command.schema, data: command.data || this.state.data });
+                        }
 
-                    if (command.command === 'refresh' || command.refresh) {
-                        this.getGui();
-                    }
-                    if (command.command === 'link') {
-                        this.props.onLink(command as BackEndCommandOpenLink);
-                    }
-                }}
-                embedded
-                themeName={this.props.themeName}
-                themeType={this.props.themeType}
-                theme={this.props.theme}
-                isFloatComma={this.props.isFloatComma}
-                dateFormat={this.props.dateFormat}
-            />
-        </>;
+                        if (command.command === 'refresh' || command.refresh) {
+                            this.getGui();
+                        }
+                        if (command.command === 'link') {
+                            this.props.onLink(command as BackEndCommandOpenLink);
+                        }
+                    }}
+                    embedded
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                    theme={this.props.theme}
+                    isFloatComma={this.props.isFloatComma}
+                    dateFormat={this.props.dateFormat}
+                />
+            </>
+        );
     }
 
-    renderSimpleMessage() {
-        return this.props.message.message ? <Box
-            sx={styles.simpleMessage}
-        >
-            {Utils.renderTextWithA(this.props.message.message)}
-        </Box> : null;
+    renderSimpleMessage(): JSX.Element | null {
+        return this.props.message.message ? (
+            <Box sx={styles.simpleMessage}>{Utils.renderTextWithA(this.props.message.message)}</Box>
+        ) : null;
     }
 
-    render() {
-        return <Typography component="div" sx={styles.message}>
-            <Box sx={styles.timestamp}>
-                {new Date(this.props.message.ts).toLocaleString()}
-            </Box>
-            {this.renderSimpleMessage()}
-            {this.renderCustomGui()}
-        </Typography>;
+    render(): JSX.Element {
+        return (
+            <Typography
+                component="div"
+                sx={styles.message}
+            >
+                <Box sx={styles.timestamp}>{new Date(this.props.message.ts).toLocaleString()}</Box>
+                {this.renderSimpleMessage()}
+                {this.renderCustomGui()}
+            </Typography>
+        );
     }
 }
 

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
     Dialog,
@@ -13,17 +13,15 @@ import {
     Box,
 } from '@mui/material';
 
-import {
-    Check as CheckIcon,
-    Close as CloseIcon,
-} from '@mui/icons-material';
+import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
 import {
     type AdminConnection,
     Confirm as ConfirmDialog,
     withWidth,
     type ThemeType,
-    type IobTheme, type Translate,
+    type IobTheme,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import BaseSettingsSystem, { type SystemSettings } from '../components/BaseSettings/BaseSettingsSystem';
@@ -32,6 +30,7 @@ import BaseSettingsObjects, { type SettingsObjects } from '../components/BaseSet
 import BaseSettingsStates, { type SettingsStates } from '../components/BaseSettings/BaseSettingsStates';
 import BaseSettingsLog, { type SettingsLog } from '../components/BaseSettings/BaseSettingsLog';
 import BaseSettingsPlugins, { type PluginsSettings } from '../components/BaseSettings/BaseSettingsPlugins';
+import AdminUtils from '@/AdminUtils';
 
 // icons
 
@@ -72,6 +71,8 @@ interface BaseSettingsDialogState {
     states: SettingsStates;
     log: SettingsLog;
     plugins: PluginsSettings;
+    dnsResolution: 'verbatim' | 'ipv4first';
+    dataDir: string;
     saving: boolean;
 }
 
@@ -94,66 +95,91 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
             states: null,
             log: null,
             plugins: null,
+            dnsResolution: 'ipv4first',
+            dataDir: '',
             saving: false,
         };
     }
 
-    componentDidMount() {
-        this.getSettings(this.state.currentHost);
+    async componentDidMount(): Promise<void> {
+        await this.getSettings(this.state.currentHost);
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (this.state.confirmExit) {
-            return <ConfirmDialog
-                text={this.props.t('Discard unsaved changes?')}
-                onClose={result =>
-                    this.setState({ confirmExit: false }, () =>
-                        result && this.props.onClose())}
-            />;
+            return (
+                <ConfirmDialog
+                    text={this.props.t('Discard unsaved changes?')}
+                    onClose={result => this.setState({ confirmExit: false }, () => result && this.props.onClose())}
+                />
+            );
         }
         return null;
     }
 
-    renderRestartDialog() {
+    renderRestartDialog(): JSX.Element | null {
         if (this.state.showRestart) {
-            return <ConfirmDialog
-                title={this.props.t('Please confirm')}
-                text={<>
-                    <div>{this.props.t('Restart works only if controller started as system service.')}</div>
-                    <div>{this.props.t('Would you like to restart the controller for your changes to take effect?')}</div>
-                </>}
-                ok={this.props.t('Restart')}
-                cancel={this.props.t('No restart')}
-                onClose={result =>
-                    this.setState({ showRestart: false }, () => {
-                        if (result) {
-                            this.props.socket.restartController(this.props.currentHost)
-                                .then(() =>
-                                    setTimeout(() =>  // reload admin
-                                        window.location.reload(), 500))
-                                .catch(e => window.alert(`Cannot restart: ${e}`));
-                        }
+            return (
+                <ConfirmDialog
+                    title={this.props.t('Please confirm')}
+                    text={
+                        <>
+                            <div>{this.props.t('Restart works only if controller started as system service.')}</div>
+                            <div>
+                                {this.props.t(
+                                    'Would you like to restart the controller for your changes to take effect?',
+                                )}
+                            </div>
+                        </>
+                    }
+                    ok={this.props.t('Restart')}
+                    cancel={this.props.t('No restart')}
+                    onClose={result =>
+                        this.setState({ showRestart: false }, () => {
+                            if (result) {
+                                this.props.socket
+                                    .restartController(this.props.currentHost)
+                                    .then(() =>
+                                        setTimeout(
+                                            () =>
+                                                // reload admin
+                                                window.location.reload(),
+                                            500,
+                                        ),
+                                    )
+                                    .catch(e => window.alert(`Cannot restart: ${e}`));
+                            }
 
-                        this.props.onClose();
-                    })}
-            />;
+                            this.props.onClose();
+                        })
+                    }
+                />
+            );
         }
         return null;
     }
 
-    getSettings(host: string) {
-        this.props.socket.readBaseSettings(host || this.state.currentHost)
-            .then((settings: any) => {
-                if (settings && settings.config) {
-                    delete settings.config.dataDirComment;
-                    this.originalSettings = JSON.parse(JSON.stringify(settings.config));
-                    settings.config.loading = false;
-                    this.setState(settings.config);
-                }
+    async getSettings(host: string): Promise<void> {
+        const settings = await this.props.socket.readBaseSettings(host || this.state.currentHost);
+        const answer = settings as { config?: ioBroker.IoBrokerJson; isActive?: boolean };
+
+        if (answer?.config) {
+            this.originalSettings = AdminUtils.clone(answer.config);
+            this.setState({
+                loading: false,
+                system: answer.config.system,
+                multihostService: answer.config.multihostService,
+                objects: answer.config.objects,
+                states: answer.config.states,
+                log: answer.config.log,
+                plugins: answer.config.plugins,
+                dnsResolution: answer.config.dnsResolution || 'ipv4first',
+                dataDir: answer.config.dataDir,
             });
+        }
     }
 
-    onSave(host?: string) {
+    onSave(host?: string): void {
         const settings = {
             system: this.state.system,
             multihostService: this.state.multihostService,
@@ -167,7 +193,8 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         const newSettings = { ...this.originalSettings, ...settings };
 
         this.setState({ saving: true }, () => {
-            this.props.socket.writeBaseSettings(host || this.state.currentHost, newSettings)
+            this.props.socket
+                .writeBaseSettings(host || this.state.currentHost, newSettings)
                 .then(() => {
                     this.originalSettings = JSON.parse(JSON.stringify(settings));
                     // ask about restart
@@ -180,7 +207,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         });
     }
 
-    updateSettings(name: keyof BaseSettingsDialogState, settings: any) {
+    updateSettings(name: keyof BaseSettingsDialogState, settings: any): void {
         const hasChanges = [...this.state.hasChanges];
         const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
 
@@ -194,149 +221,217 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         this.setState({ [name]: settings, hasChanges } as any);
     }
 
-    renderSystem() {
+    renderSystem(): JSX.Element {
         const name = 'system';
-        return <BaseSettingsSystem
-            settings={this.state[name]}
-            t={this.props.t}
-            currentHost={this.props.currentHost}
-            onChange={(settings: any) =>
-                this.updateSettings(name, settings)}
-        />;
+        return (
+            <BaseSettingsSystem
+                settings={this.state[name]}
+                t={this.props.t}
+                currentHost={this.props.currentHost}
+                onChange={(settings: any) => this.updateSettings(name, settings)}
+            />
+        );
     }
 
-    renderMultihost() {
+    renderMultihost(): JSX.Element {
         const name = 'multihostService';
-        return <BaseSettingsMultihost
-            settings={this.state[name]}
-            t={this.props.t}
-            socket={this.props.socket}
-            currentHost={this.props.currentHost}
-            onChange={(settings: any) =>
-                this.updateSettings(name, settings)}
-        />;
+        return (
+            <BaseSettingsMultihost
+                settings={this.state[name]}
+                t={this.props.t}
+                socket={this.props.socket}
+                currentHost={this.props.currentHost}
+                onChange={(settings: any) => this.updateSettings(name, settings)}
+            />
+        );
     }
 
-    renderObjects() {
+    renderObjects(): JSX.Element {
         const name = 'objects';
-        return <BaseSettingsObjects
-            settings={this.state[name]}
-            t={this.props.t}
-            socket={this.props.socket}
-            currentHost={this.props.currentHost}
-            onChange={(settings: any) =>
-                this.updateSettings(name, settings)}
-        />;
+        return (
+            <BaseSettingsObjects
+                settings={this.state[name]}
+                t={this.props.t}
+                socket={this.props.socket}
+                currentHost={this.props.currentHost}
+                onChange={(settings: any) => this.updateSettings(name, settings)}
+            />
+        );
     }
 
-    renderStates() {
+    renderStates(): JSX.Element {
         const name = 'states';
-        return <BaseSettingsStates
-            settings={this.state[name]}
-            t={this.props.t}
-            socket={this.props.socket}
-            currentHost={this.props.currentHost}
-            onChange={(settings: any) =>
-                this.updateSettings(name, settings)}
-        />;
+        return (
+            <BaseSettingsStates
+                settings={this.state[name]}
+                t={this.props.t}
+                socket={this.props.socket}
+                currentHost={this.props.currentHost}
+                onChange={(settings: any) => this.updateSettings(name, settings)}
+            />
+        );
     }
 
-    renderLog() {
+    renderLog(): JSX.Element {
         const name = 'log';
-        return <BaseSettingsLog
-            settings={this.state[name]}
-            t={this.props.t}
-            socket={this.props.socket}
-            currentHost={this.props.currentHost}
-            onChange={(settings: any) =>
-                this.updateSettings(name, settings)}
-        />;
+        return (
+            <BaseSettingsLog
+                settings={this.state[name]}
+                t={this.props.t}
+                socket={this.props.socket}
+                currentHost={this.props.currentHost}
+                onChange={(settings: any) => this.updateSettings(name, settings)}
+            />
+        );
     }
 
-    renderPlugins() {
+    renderPlugins(): JSX.Element {
         const name = 'plugins';
-        return <BaseSettingsPlugins
-            settings={this.state[name]}
-            t={this.props.t}
-            themeType={this.props.themeType}
-            onChange={(settings: any) =>
-                this.updateSettings(name, settings)}
-        />;
+        return (
+            <BaseSettingsPlugins
+                settings={this.state[name]}
+                t={this.props.t}
+                themeType={this.props.themeType}
+                onChange={(settings: any) => this.updateSettings(name, settings)}
+            />
+        );
     }
 
-    render() {
-        return <Dialog
-            style={styles.dialog}
-            open={!0}
-            onClose={() => false}
-            fullWidth
-            maxWidth="xl"
-            aria-labelledby="base-settings-dialog-title"
-        >
-            <DialogTitle id="base-settings-dialog-title">
-                {this.props.t('Host Base Settings')}
-:
-                {' '}
-                {this.props.currentHostName || this.props.currentHost}
-            </DialogTitle>
-            <DialogContent style={styles.content}>
-                <AppBar position="static">
-                    <Tabs
-                        value={this.state.currentTab}
-                        onChange={(event, newTab) => this.setState({ currentTab: newTab })}
-                        aria-label="system tabs"
-                        indicatorColor="secondary"
+    render(): JSX.Element {
+        return (
+            <Dialog
+                style={styles.dialog}
+                open={!0}
+                onClose={() => false}
+                fullWidth
+                maxWidth="xl"
+                aria-labelledby="base-settings-dialog-title"
+            >
+                <DialogTitle id="base-settings-dialog-title">
+                    {this.props.t('Host Base Settings')}: {this.props.currentHostName || this.props.currentHost}
+                </DialogTitle>
+                <DialogContent style={styles.content}>
+                    <AppBar position="static">
+                        <Tabs
+                            value={this.state.currentTab}
+                            onChange={(_event, newTab) => this.setState({ currentTab: newTab })}
+                            aria-label="system tabs"
+                            indicatorColor="secondary"
+                        >
+                            <Tab
+                                label={this.props.t('System')}
+                                id="system-tab"
+                                aria-controls="simple-tabpanel-0"
+                                sx={{ '&.Mui-selected': styles.selected }}
+                            />
+                            <Tab
+                                label={this.props.t('Multi-host')}
+                                id="multihost-tab"
+                                sx={{ '&.Mui-selected': styles.selected }}
+                                aria-controls="simple-tabpanel-1"
+                            />
+                            <Tab
+                                label={this.props.t('Objects')}
+                                id="objects-tab"
+                                aria-controls="simple-tabpanel-3"
+                                sx={{ '&.Mui-selected': styles.selected }}
+                            />
+                            <Tab
+                                label={this.props.t('States')}
+                                id="states-tab"
+                                aria-controls="simple-tabpanel-4"
+                                sx={{ '&.Mui-selected': styles.selected }}
+                            />
+                            <Tab
+                                label={this.props.t('Log')}
+                                id="log-tab"
+                                aria-controls="simple-tabpanel-5"
+                                sx={{ '&.Mui-selected': styles.selected }}
+                            />
+                            <Tab
+                                label={this.props.t('Plugins')}
+                                id="plugins-tab"
+                                aria-controls="simple-tabpanel-6"
+                                sx={{ '&.Mui-selected': styles.selected }}
+                            />
+                        </Tabs>
+                    </AppBar>
+                    {this.state.loading ? <LinearProgress /> : null}
+                    {!this.state.loading && this.state.currentTab === 0 ? (
+                        <Box
+                            component="div"
+                            sx={styles.tabPanel}
+                        >
+                            {this.renderSystem()}
+                        </Box>
+                    ) : null}
+                    {!this.state.loading && this.state.currentTab === 1 ? (
+                        <Box
+                            component="div"
+                            sx={styles.tabPanel}
+                        >
+                            {this.renderMultihost()}
+                        </Box>
+                    ) : null}
+                    {!this.state.loading && this.state.currentTab === 2 ? (
+                        <Box
+                            component="div"
+                            sx={styles.tabPanel}
+                        >
+                            {this.renderObjects()}
+                        </Box>
+                    ) : null}
+                    {!this.state.loading && this.state.currentTab === 3 ? (
+                        <Box
+                            component="div"
+                            sx={styles.tabPanel}
+                        >
+                            {this.renderStates()}
+                        </Box>
+                    ) : null}
+                    {!this.state.loading && this.state.currentTab === 4 ? (
+                        <Box
+                            component="div"
+                            sx={styles.tabPanel}
+                        >
+                            {this.renderLog()}
+                        </Box>
+                    ) : null}
+                    {!this.state.loading && this.state.currentTab === 5 ? (
+                        <Box
+                            component="div"
+                            sx={styles.tabPanel}
+                        >
+                            {this.renderPlugins()}
+                        </Box>
+                    ) : null}
+                    {this.renderConfirmDialog()}
+                    {this.renderRestartDialog()}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        disabled={!this.state.hasChanges.length || this.state.saving}
+                        onClick={() => this.onSave()}
+                        color="primary"
+                        startIcon={<CheckIcon />}
                     >
-                        <Tab label={this.props.t('System')} id="system-tab" aria-controls="simple-tabpanel-0" sx={{ '&.Mui-selected': styles.selected }} />
-                        <Tab
-                            label={this.props.t('Multi-host')}
-                            id="multihost-tab"
-                            sx={{ '&.Mui-selected': styles.selected }}
-                            aria-controls="simple-tabpanel-1"
-                        />
-                        <Tab label={this.props.t('Objects')} id="objects-tab" aria-controls="simple-tabpanel-3" sx={{ '&.Mui-selected': styles.selected }} />
-                        <Tab label={this.props.t('States')} id="states-tab" aria-controls="simple-tabpanel-4" sx={{ '&.Mui-selected': styles.selected }} />
-                        <Tab label={this.props.t('Log')} id="log-tab" aria-controls="simple-tabpanel-5" sx={{ '&.Mui-selected': styles.selected }} />
-                        <Tab label={this.props.t('Plugins')} id="plugins-tab" aria-controls="simple-tabpanel-6" sx={{ '&.Mui-selected': styles.selected }} />
-                    </Tabs>
-                </AppBar>
-                {this.state.loading ? <LinearProgress /> : null}
-                {!this.state.loading && this.state.currentTab === 0 ?
-                    <Box component="div" sx={styles.tabPanel}>{this.renderSystem()}</Box> : null}
-                {!this.state.loading && this.state.currentTab === 1 ?
-                    <Box component="div" sx={styles.tabPanel}>{this.renderMultihost()}</Box> : null}
-                {!this.state.loading && this.state.currentTab === 2 ?
-                    <Box component="div" sx={styles.tabPanel}>{this.renderObjects()}</Box> : null}
-                {!this.state.loading && this.state.currentTab === 3 ?
-                    <Box component="div" sx={styles.tabPanel}>{this.renderStates()}</Box> : null}
-                {!this.state.loading && this.state.currentTab === 4 ?
-                    <Box component="div" sx={styles.tabPanel}>{this.renderLog()}</Box> : null}
-                {!this.state.loading && this.state.currentTab === 5 ?
-                    <Box component="div" sx={styles.tabPanel}>{this.renderPlugins()}</Box> : null}
-                {this.renderConfirmDialog()}
-                {this.renderRestartDialog()}
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    disabled={!this.state.hasChanges.length || this.state.saving}
-                    onClick={() => this.onSave()}
-                    color="primary"
-                    startIcon={<CheckIcon />}
-                >
-                    {this.props.t('Save & Close')}
-                </Button>
-                <Button
-                    variant="contained"
-                    color="grey"
-                    disabled={this.state.saving}
-                    onClick={() => (this.state.hasChanges.length ? this.setState({ confirmExit: true }) : this.props.onClose())}
-                    startIcon={<CloseIcon />}
-                >
-                    {this.state.hasChanges.length ? this.props.t('Cancel') : this.props.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                        {this.props.t('Save & Close')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="grey"
+                        disabled={this.state.saving}
+                        onClick={() =>
+                            this.state.hasChanges.length ? this.setState({ confirmExit: true }) : this.props.onClose()
+                        }
+                        startIcon={<CloseIcon />}
+                    >
+                        {this.state.hasChanges.length ? this.props.t('Cancel') : this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

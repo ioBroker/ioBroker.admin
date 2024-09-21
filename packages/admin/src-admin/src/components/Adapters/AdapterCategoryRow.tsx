@@ -1,22 +1,10 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import {
-    Grid2 as Grid,
-    IconButton,
-    TableCell,
-    TableRow,
-    Typography,
-} from '@mui/material';
+import { Grid2 as Grid, IconButton, TableCell, TableRow, Typography } from '@mui/material';
 
-import {
-    blue,
-    green,
-} from '@mui/material/colors';
+import { blue, green } from '@mui/material/colors';
 
-import {
-    ChevronRight as ChevronRightIcon,
-    ExpandMore as ExpandMoreIcon,
-} from '@mui/icons-material';
+import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 import { type Translate } from '@iobroker/adapter-react-v5';
 
@@ -64,46 +52,60 @@ interface AdapterCategoryRowProps {
     t: Translate;
 }
 
-function AdapterCategoryRow(props: AdapterCategoryRowProps) {
-    const {
-        installedCount,
-        name,
-        categoryName,
-    } = props;
+function AdapterCategoryRow(props: AdapterCategoryRowProps): JSX.Element {
+    const { installedCount, name, categoryName } = props;
 
-    return <TableRow
-        hover={false}
-        sx={styles.category}
-    >
-        <TableCell>
-            <Grid container spacing={1} alignItems="center" style={styles.name}>
-                <Grid component="div">
-                    <IconButton
-                        size="small"
-                        onClick={props.onToggle}
-                    >
-                        {props.expanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
-                    </IconButton>
+    return (
+        <TableRow
+            hover={false}
+            sx={styles.category}
+        >
+            <TableCell>
+                <Grid
+                    container
+                    spacing={1}
+                    alignItems="center"
+                    style={styles.name}
+                >
+                    <Grid component="div">
+                        <IconButton
+                            size="small"
+                            onClick={props.onToggle}
+                        >
+                            {props.expanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
+                        </IconButton>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </TableCell>
-        <TableCell onClick={props.onToggle}>
-            <div style={{ ...styles.nameDiv, ...styles.categoryName }}>
-                <MaterialDynamicIcon objIconBool iconName={categoryName} style={styles.marginRight5} />
-                {name}
-            </div>
-        </TableCell>
-        <TableCell colSpan={props.descHidden ? 5 : 6}>
-            <Typography component="span" variant="body2" style={styles.green}>
-                {installedCount}
-            </Typography>
-            {` ${props.t('of')} `}
-            <Typography component="span" variant="body2" style={styles.blue}>
-                {props.count}
-            </Typography>
-            {` ${props.t('Adapters from this Group installed')}`}
-        </TableCell>
-    </TableRow>;
+            </TableCell>
+            <TableCell onClick={props.onToggle}>
+                <div style={{ ...styles.nameDiv, ...styles.categoryName }}>
+                    <MaterialDynamicIcon
+                        iconName={categoryName}
+                        style={styles.marginRight5}
+                    />
+                    {name}
+                </div>
+            </TableCell>
+            <TableCell colSpan={props.descHidden ? 5 : 6}>
+                <Typography
+                    component="span"
+                    variant="body2"
+                    style={styles.green}
+                >
+                    {installedCount}
+                </Typography>
+                {` ${props.t('of')} `}
+                <Typography
+                    component="span"
+                    variant="body2"
+                    style={styles.blue}
+                >
+                    {props.count}
+                </Typography>
+                {` ${props.t('Adapters from this Group installed')}`}
+            </TableCell>
+        </TableRow>
+    );
 }
 
 export default AdapterCategoryRow;

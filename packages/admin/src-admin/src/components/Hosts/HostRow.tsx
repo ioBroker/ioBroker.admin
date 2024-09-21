@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import {
-    Box,
-    CardContent,
-    CardMedia, Skeleton,
-    Typography,
-} from '@mui/material';
+import { Box, CardContent, CardMedia, Skeleton, Typography } from '@mui/material';
 
 import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '@/AdminUtils';
 import HostGeneric, {
-    boxShadow, boxShadowHover, genericStyles,
-    type HostGenericProps, type HostGenericState,
+    boxShadow,
+    boxShadowHover,
+    genericStyles,
+    type HostGenericProps,
+    type HostGenericState,
 } from './HostGeneric';
 
 const styles: Record<string, any> = {
@@ -215,21 +213,24 @@ interface HostRowState extends HostGenericState {
 }
 
 class HostRow extends HostGeneric<HostRowProps, HostRowState> {
-    renderValue(value: string) {
+    renderValue(value: string): JSX.Element | null {
         if (typeof this.props.hostData !== 'object') {
             return null;
         }
-        return <div style={styles.wrapperBlockItem} key={value}>
-            <span style={{ ...styles.bold, ...styles.nowrap }}>
-                {this.props.t(value)}
-                :
-                {' '}
-            </span>
-            {(HostGeneric.formatInfo[value] ? HostGeneric.formatInfo[value](this.props.hostData[value], this.props.t) : this.props.hostData[value] || '--')}
-        </div>;
+        return (
+            <div
+                style={styles.wrapperBlockItem}
+                key={value}
+            >
+                <span style={{ ...styles.bold, ...styles.nowrap }}>{this.props.t(value)}: </span>
+                {HostGeneric.formatInfo[value]
+                    ? HostGeneric.formatInfo[value](this.props.hostData[value], this.props.t)
+                    : this.props.hostData[value] || '--'}
+            </div>
+        );
     }
 
-    getHostDescriptionAll() {
+    getHostDescriptionAll(): JSX.Element | string {
         if (!this.props.hostData) {
             return <Skeleton />;
         }
@@ -238,148 +239,181 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
             return this.props.hostData;
         }
 
-        return <div style={styles.wrapperInfo}>
-            <div style={styles.marginRight}>
-                {this.props.hostData && typeof this.props.hostData === 'object' ?
-                    Object.keys(this.props.hostData).map((value, idx) => idx < 5 && this.renderValue(value)) : <Skeleton />}
+        return (
+            <div style={styles.wrapperInfo}>
+                <div style={styles.marginRight}>
+                    {this.props.hostData && typeof this.props.hostData === 'object' ? (
+                        Object.keys(this.props.hostData).map((value, idx) => idx < 5 && this.renderValue(value))
+                    ) : (
+                        <Skeleton />
+                    )}
+                </div>
+                <div style={styles.marginRight}>
+                    {this.props.hostData && typeof this.props.hostData === 'object' ? (
+                        Object.keys(this.props.hostData).map(
+                            (value, idx) => idx > 4 && idx < 10 && this.renderValue(value),
+                        )
+                    ) : (
+                        <Skeleton />
+                    )}
+                </div>
+                <div style={styles.marginRight}>
+                    {this.props.hostData &&
+                        typeof this.props.hostData === 'object' &&
+                        Object.keys(this.props.hostData).map((value, idx) => idx > 10 && this.renderValue(value))}
+                </div>
             </div>
-            <div style={styles.marginRight}>
-                {this.props.hostData && typeof this.props.hostData === 'object' ? Object.keys(this.props.hostData).map((value, idx) => idx > 4 && idx < 10 &&
-                    this.renderValue(value)) : <Skeleton />}
-            </div>
-            <div style={styles.marginRight}>
-                {this.props.hostData && typeof this.props.hostData === 'object' && Object.keys(this.props.hostData).map((value, idx) => idx > 10 &&
-                    this.renderValue(value))}
-            </div>
-        </div>;
+        );
     }
 
-    render() {
-        const upgradeAvailable = (this.props.isCurrentHost || this.props.alive) && AdminUtils.updateAvailable(this.props.host.common.installedVersion, this.props.available);
+    render(): JSX.Element {
+        const upgradeAvailable =
+            (this.props.isCurrentHost || this.props.alive) &&
+            AdminUtils.updateAvailable(this.props.host.common.installedVersion, this.props.available);
         const description = this.getHostDescriptionAll();
 
-        return <Box
-            component="div"
-            sx={Utils.getStyle(
-                this.props.theme,
-                styles.root,
-                this.props.hidden && styles.hidden,
-                {
-                    border: `2px solid ${this.props.host.common.color || 'inherit'}`,
-                    borderRadius: '5px',
-                },
-            )}
-            key={this.props.hostId}
-        >
-            {this.renderDialogs()}
+        return (
             <Box
                 component="div"
-                sx={{ ...styles.wrapperFlex, ...(!this.props.alive ? styles.cursorNoDrop : undefined) }}
-                onClick={this.state.openDialogLogLevel ? null : () => this.setState({ openCollapse: !this.state.openCollapse })}
+                sx={Utils.getStyle(this.props.theme, styles.root, this.props.hidden && styles.hidden, {
+                    border: `2px solid ${this.props.host.common.color || 'inherit'}`,
+                    borderRadius: '5px',
+                })}
+                key={this.props.hostId}
             >
-                <div style={styles.wrapperColor}>
-                    <div style={{ ...styles.onOff, ...(this.props.alive ? styles.green : styles.red) }} />
-                    {this.props.alive && <div style={styles.dotLine} />}
-                </div>
-                <div
-                    ref={this.refWarning}
-                    style={{ ...styles.imageBlock, background: this.props.host.common.color || 'inherit' }}
+                {this.renderDialogs()}
+                <Box
+                    component="div"
+                    sx={{ ...styles.wrapperFlex, ...(!this.props.alive ? styles.cursorNoDrop : undefined) }}
+                    onClick={
+                        this.state.openDialogLogLevel
+                            ? null
+                            : () => this.setState({ openCollapse: !this.state.openCollapse })
+                    }
                 >
-                    {this.renderNotificationsBadge(<CardMedia
-                        sx={styles.img}
-                        component="img"
-                        image={this.props.host.common.icon || 'img/no-image.png'}
-                    />, true)}
-                    <div
-                        style={Utils.getStyle(
-                            this.props.theme,
-                            styles.host,
-                            { color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' },
-                        )}
-                    >
-                        {this.props.host.common.name}
+                    <div style={styles.wrapperColor}>
+                        <div style={{ ...styles.onOff, ...(this.props.alive ? styles.green : styles.red) }} />
+                        {this.props.alive && <div style={styles.dotLine} />}
                     </div>
-                </div>
-                <CardContent sx={{ '&.MuiCardContent-root': styles.cardContentH5 }}>
-                    <Typography
-                        sx={{ ...styles.flex, ...styles.hidden800, ...styles.cell }}
-                        variant="body2"
-                        color="textSecondary"
-                        component="div"
+                    <div
+                        ref={this.refWarning}
+                        style={{ ...styles.imageBlock, background: this.props.host.common.color || 'inherit' }}
                     >
-                        <div ref={this.refCpu}>- %</div>
-                    </Typography>
-                    <Typography
-                        sx={{ ...styles.flex, ...styles.hidden800, ...styles.cell }}
-                        variant="body2"
-                        color="textSecondary"
-                        component="div"
+                        {this.renderNotificationsBadge(
+                            <CardMedia
+                                sx={styles.img}
+                                component="img"
+                                image={this.props.host.common.icon || 'img/no-image.png'}
+                            />,
+                            true,
+                        )}
+                        <div
+                            style={Utils.getStyle(this.props.theme, styles.host, {
+                                color:
+                                    (this.props.host.common.color &&
+                                        Utils.invertColor(this.props.host.common.color, true)) ||
+                                    'inherit',
+                            })}
+                        >
+                            {this.props.host.common.name}
+                        </div>
+                    </div>
+                    <CardContent sx={{ '&.MuiCardContent-root': styles.cardContentH5 }}>
+                        <Typography
+                            sx={{ ...styles.flex, ...styles.hidden800, ...styles.cell }}
+                            variant="body2"
+                            color="textSecondary"
+                            component="div"
+                        >
+                            <div ref={this.refCpu}>- %</div>
+                        </Typography>
+                        <Typography
+                            sx={{ ...styles.flex, ...styles.hidden800, ...styles.cell }}
+                            variant="body2"
+                            color="textSecondary"
+                            component="div"
+                        >
+                            <div ref={this.refMem}>- %</div>
+                        </Typography>
+                        <Typography
+                            sx={{ ...styles.flex, ...styles.hidden800, ...styles.cell }}
+                            variant="body2"
+                            color="textSecondary"
+                            component="div"
+                        >
+                            <div ref={this.refUptime}>-/-</div>
+                        </Typography>
+                        <Typography
+                            sx={{ ...styles.flex, ...styles.hidden1100 }}
+                            variant="body2"
+                            color="textSecondary"
+                            component="p"
+                        >
+                            {this.props.host.common.installedVersion}
+                        </Typography>
+                        <Typography
+                            sx={{ ...styles.flex, ...styles.hidden1100, ...styles.cell }}
+                            variant="body2"
+                            color="textSecondary"
+                            component="div"
+                        >
+                            <Box
+                                component="div"
+                                sx={{
+                                    ...(upgradeAvailable ? styles.greenText : undefined),
+                                    ...styles.curdContentFlexCenter,
+                                }}
+                            >
+                                {this.renderUpdateButton(upgradeAvailable)}
+                            </Box>
+                        </Typography>
+                        <Typography
+                            sx={{ ...styles.flex, ...styles.hidden600, ...styles.cell }}
+                            variant="body2"
+                            color="textSecondary"
+                            component="div"
+                        >
+                            <div ref={this.refEvents}>- / -</div>
+                        </Typography>
+                        <div style={styles.marginTop10}>
+                            <Typography
+                                component="span"
+                                style={styles.enableButton}
+                            >
+                                {this.renderEditButton()}
+                                {this.renderHostBaseEdit()}
+                                {this.renderRestartButton()}
+                                {this.props.expertMode && this.state.logLevel ? (
+                                    this.renderLogLevel()
+                                ) : (
+                                    <div style={styles.emptyButton} />
+                                )}
+                                {this.renderRemoveButton()}
+                                {this.renderExtendButton(this.state.openCollapse)}
+                            </Typography>
+                        </div>
+                    </CardContent>
+                </Box>
+                {typeof description === 'object' && (
+                    <div
+                        style={{
+                            ...styles.collapse,
+                            ...(!this.state.openCollapse ? styles.collapseOff : styles.collapseOn),
+                        }}
+                        onClick={event => event.stopPropagation()}
                     >
-                        <div ref={this.refMem}>- %</div>
-                    </Typography>
-                    <Typography
-                        sx={{ ...styles.flex, ...styles.hidden800, ...styles.cell }}
-                        variant="body2"
-                        color="textSecondary"
-                        component="div"
-                    >
-                        <div ref={this.refUptime}>-/-</div>
-                    </Typography>
-                    <Typography
-                        sx={{ ...styles.flex, ...styles.hidden1100 }}
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                    >
-                        {this.props.host.common.installedVersion}
-                    </Typography>
-                    <Typography
-                        sx={{ ...styles.flex, ...styles.hidden1100, ...styles.cell }}
-                        variant="body2"
-                        color="textSecondary"
-                        component="div"
-                    >
+                        <CardContent style={styles.cardContentInfo}>
+                            {description}
+                            {this.renderCopyButton({ height: 44, width: 44 })}
+                        </CardContent>
                         <Box
                             component="div"
-                            sx={{ ...(upgradeAvailable ? styles.greenText : undefined), ...styles.curdContentFlexCenter }}
-                        >
-                            {this.renderUpdateButton(upgradeAvailable)}
-                        </Box>
-                    </Typography>
-                    <Typography
-                        sx={{ ...styles.flex, ...styles.hidden600, ...styles.cell }}
-                        variant="body2"
-                        color="textSecondary"
-                        component="div"
-                    >
-                        <div ref={this.refEvents}>- / -</div>
-                    </Typography>
-                    <div style={styles.marginTop10}>
-                        <Typography component="span" style={styles.enableButton}>
-                            {this.renderEditButton()}
-                            {this.renderHostBaseEdit()}
-                            {this.renderRestartButton()}
-                            {this.props.expertMode && this.state.logLevel ? this.renderLogLevel() : <div style={styles.emptyButton} />}
-                            {this.renderRemoveButton()}
-                            {this.renderExtendButton(this.state.openCollapse)}
-                        </Typography>
+                            sx={styles.footerBlock}
+                        />
                     </div>
-                </CardContent>
+                )}
             </Box>
-            {typeof description === 'object' && <div
-                style={{
-                    ...styles.collapse,
-                    ...(!this.state.openCollapse ? styles.collapseOff : styles.collapseOn),
-                }}
-                onClick={event => event.stopPropagation()}
-            >
-                <CardContent style={styles.cardContentInfo}>
-                    {description}
-                    {this.renderCopyButton({ height: 44, width: 44 })}
-                </CardContent>
-                <Box component="div" sx={styles.footerBlock} />
-            </div>}
-        </Box>;
+        );
     }
 }
 

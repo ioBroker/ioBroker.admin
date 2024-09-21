@@ -1,15 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { type JSX, useEffect, useState } from 'react';
 
-import {
-    Dialog, DialogActions, DialogContent,
-    DialogTitle, IconButton, TextField, Button,
-} from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Button } from '@mui/material';
 
-import {
-    Check as CheckIcon,
-    Close as CloseIcon,
-    Language as LanguageIcon,
-} from '@mui/icons-material';
+import { Check as CheckIcon, Close as CloseIcon, Language as LanguageIcon } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -50,7 +43,7 @@ interface CustomModalProps {
     applyDisabled?: boolean;
     applyButton?: boolean;
     onClose: () => void;
-    children: React.JSX.Element | React.JSX.Element[] | string | string[] | undefined | null;
+    children: JSX.Element | JSX.Element[] | string | string[] | undefined | null;
     titleButtonApply?: string;
     titleButtonClose?: string;
     onApply: (value: string) => void;
@@ -60,8 +53,25 @@ interface CustomModalProps {
 }
 
 const CustomModal = ({
-    toggleTranslation, noTranslation, title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden,
-}: CustomModalProps) => {
+    toggleTranslation,
+    noTranslation,
+    title,
+    fullWidth,
+    help,
+    maxWidth,
+    progress,
+    icon,
+    applyDisabled,
+    applyButton,
+    onClose,
+    children,
+    titleButtonApply,
+    titleButtonClose,
+    onApply,
+    textInput,
+    defaultValue,
+    overflowHidden,
+}: CustomModalProps): JSX.Element => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
         setValue(defaultValue);
@@ -73,64 +83,77 @@ const CustomModal = ({
         Icon = icon;
     }
 
-    return <Dialog
-        open={!0}
-        maxWidth={maxWidth || 'md'}
-        fullWidth={!!fullWidth}
-        disableEscapeKeyDown={false}
-        onClose={onClose}
-        sx={{ '& .MuiPaper-root': styles.modalDialog /* paper: classes.background */ }}
-    >
-        {title && <DialogTitle>
-            {icon ? <Icon style={styles.titleIcon} /> : null}
-            {title}
-            {I18n.getLanguage() !== 'en' && toggleTranslation ? <IconButton
-                size="large"
-                style={{ ...styles.languageButton, ...(noTranslation ? styles.languageButtonActive : {}) }}
-                onClick={() => toggleTranslation()}
-                title={I18n.t('Disable/Enable translation')}
+    return (
+        <Dialog
+            open={!0}
+            maxWidth={maxWidth || 'md'}
+            fullWidth={!!fullWidth}
+            disableEscapeKeyDown={false}
+            onClose={onClose}
+            sx={{ '& .MuiPaper-root': styles.modalDialog /* paper: classes.background */ }}
+        >
+            {title && (
+                <DialogTitle>
+                    {icon ? <Icon style={styles.titleIcon} /> : null}
+                    {title}
+                    {I18n.getLanguage() !== 'en' && toggleTranslation ? (
+                        <IconButton
+                            size="large"
+                            style={{ ...styles.languageButton, ...(noTranslation ? styles.languageButtonActive : {}) }}
+                            onClick={() => toggleTranslation()}
+                            title={I18n.t('Disable/Enable translation')}
+                        >
+                            <LanguageIcon />
+                        </IconButton>
+                    ) : null}
+                </DialogTitle>
+            )}
+            <DialogContent
+                sx={{ ...(overflowHidden ? styles.overflowHidden : {}), ...styles.content }}
+                style={{ paddingTop: 8 }}
             >
-                <LanguageIcon />
-            </IconButton> : null}
-        </DialogTitle>}
-        <DialogContent sx={{ ...(overflowHidden ? styles.overflowHidden : {}), ...styles.content }} style={{ paddingTop: 8 }}>
-            {textInput && <TextField
-                // className={className}
-                autoComplete="off"
-                fullWidth
-                autoFocus
-                variant="outlined"
-                size="medium"
-                // rows={10}
-                multiline
-                value={value}
-                onChange={e => setValue(e.target.value)}
-                // customValue
-            />}
-            {children}
-            {help ? <div>{help}</div> : null}
-        </DialogContent>
-        <DialogActions>
-            {applyButton !== false && <Button
-                startIcon={<CheckIcon />}
-                disabled={progress || (applyDisabled && defaultValue === value)}
-                onClick={() => onApply && onApply(textInput ? value : '')}
-                variant="contained"
-                color="primary"
-            >
-                {I18n.t(titleButtonApply || 'Ok')}
-            </Button>}
-            <Button
-                color="grey"
-                onClick={() => onClose && onClose()}
-                disabled={progress}
-                variant="contained"
-                startIcon={<CloseIcon />}
-            >
-                {I18n.t(titleButtonClose || 'Cancel')}
-            </Button>
-        </DialogActions>
-    </Dialog>;
+                {textInput && (
+                    <TextField
+                        // className={className}
+                        autoComplete="off"
+                        fullWidth
+                        autoFocus
+                        variant="outlined"
+                        size="medium"
+                        // rows={10}
+                        multiline
+                        value={value}
+                        onChange={e => setValue(e.target.value)}
+                        // customValue
+                    />
+                )}
+                {children}
+                {help ? <div>{help}</div> : null}
+            </DialogContent>
+            <DialogActions>
+                {applyButton !== false && (
+                    <Button
+                        startIcon={<CheckIcon />}
+                        disabled={progress || (applyDisabled && defaultValue === value)}
+                        onClick={() => onApply && onApply(textInput ? value : '')}
+                        variant="contained"
+                        color="primary"
+                    >
+                        {I18n.t(titleButtonApply || 'Ok')}
+                    </Button>
+                )}
+                <Button
+                    color="grey"
+                    onClick={() => onClose && onClose()}
+                    disabled={progress}
+                    variant="contained"
+                    startIcon={<CloseIcon />}
+                >
+                    {I18n.t(titleButtonClose || 'Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 };
 
 export default CustomModal;

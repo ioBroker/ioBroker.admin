@@ -1,12 +1,8 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { Button } from '@mui/material';
 
-import {
-    Warning as IconWarning,
-    Error as IconError,
-    Info as IconInfo,
-} from '@mui/icons-material';
+import { Warning as IconWarning, Error as IconError, Info as IconInfo } from '@mui/icons-material';
 
 import { Confirm as ConfirmDialog, Icon, I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemSetState } from '#JC/types';
@@ -28,14 +24,15 @@ interface ConfigInstanceSelectProps extends ConfigGenericProps {
 }
 
 class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGenericState> {
-    async _onClick() {
+    async _onClick(): Promise<void> {
         let val = this.props.schema.val;
         if (typeof val === 'string' && val.includes('${')) {
             val = this.getPattern(val);
             const obj = await this.props.socket.getObject(this.props.schema.id);
             if (obj?.common?.type === 'number') {
-                val = parseFloat(val as string);
+                val = parseFloat(val);
             } else if (obj?.common?.type === 'boolean') {
+                // @ts-expect-error val could be anything
                 val = val === 'true' || val === true || val === '1' || val === 1;
             }
         }
@@ -56,7 +53,7 @@ class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGene
         }
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }
@@ -70,35 +67,42 @@ class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGene
             icon = <IconInfo />;
         }
 
-        return <ConfirmDialog
-            title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
-            text={this.getText(confirm.text)}
-            ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
-            cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
-            icon={icon}
-            onClose={isOk =>
-                this.setState({ confirmDialog: false }, () =>
-                    isOk && this._onClick())}
-        />;
+        return (
+            <ConfirmDialog
+                title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
+                text={this.getText(confirm.text)}
+                ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
+                cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
+                icon={icon}
+                onClose={isOk => this.setState({ confirmDialog: false }, () => isOk && this._onClick())}
+            />
+        );
     }
 
-    renderItem(_error: string, disabled: boolean /* , defaultValue */) {
-        return <Button
-            variant={this.props.schema.variant || undefined}
-            color={this.props.schema.color || 'grey'}
-            style={styles.fullWidth}
-            disabled={disabled}
-            onClick={async () => {
-                if (this.props.schema.confirm) {
-                    this.setState({ confirmDialog: true });
-                } else {
-                    await this._onClick();
-                }
-            }}
-        >
-            {this.props.schema.icon ? <Icon src={this.props.schema.icon} style={styles.icon} /> : null}
-            {this.getText(this.props.schema.label, this.props.schema.noTranslation)}
-        </Button>;
+    renderItem(_error: string, disabled: boolean /* , defaultValue */): JSX.Element | null {
+        return (
+            <Button
+                variant={this.props.schema.variant || undefined}
+                color={this.props.schema.color || 'grey'}
+                style={styles.fullWidth}
+                disabled={disabled}
+                onClick={async () => {
+                    if (this.props.schema.confirm) {
+                        this.setState({ confirmDialog: true });
+                    } else {
+                        await this._onClick();
+                    }
+                }}
+            >
+                {this.props.schema.icon ? (
+                    <Icon
+                        src={this.props.schema.icon}
+                        style={styles.icon}
+                    />
+                ) : null}
+                {this.getText(this.props.schema.label, this.props.schema.noTranslation)}
+            </Button>
+        );
     }
 }
 

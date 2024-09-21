@@ -1,10 +1,6 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import {
-    InputLabel,
-    FormHelperText,
-    FormControl,
-} from '@mui/material';
+import { InputLabel, FormHelperText, FormControl } from '@mui/material';
 
 import { UploadImage } from '@iobroker/adapter-react-v5';
 
@@ -28,19 +24,20 @@ class ConfigImageUpload extends ConfigGeneric<ConfigImageUploadProps, ConfigImag
         this.index = Date.now();
     }
 
-    async componentDidMount() {
+    componentDidMount(): void {
         super.componentDidMount();
 
         if (this.props.schema.base64) {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
             this.setState({ value });
         } else {
-            this.props.socket.fileExists(`${this.props.adapterName}.${this.props.instance}`, this.props.attr)
+            void this.props.socket
+                .fileExists(`${this.props.adapterName}.${this.props.instance}`, this.props.attr)
                 .then(exist => exist && this.loadImage());
         }
     }
 
-    _getUrl(update?: boolean) {
+    _getUrl(update?: boolean): string {
         if (update) {
             this.index = Date.now();
         }
@@ -52,8 +49,8 @@ class ConfigImageUpload extends ConfigGeneric<ConfigImageUploadProps, ConfigImag
         return url;
     }
 
-    loadImage() {
-        fetch(this._getUrl())
+    loadImage(): void {
+        void fetch(this._getUrl())
             .then(res => res.blob())
             .then(blob => {
                 const reader = new FileReader();
@@ -65,36 +62,69 @@ class ConfigImageUpload extends ConfigGeneric<ConfigImageUploadProps, ConfigImag
             .catch(e => console.error(e));
     }
 
-    renderItem(error: string, disabled: boolean /* , defaultValue */) {
-        return <FormControl fullWidth variant="standard">
-            {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null}
-            <UploadImage
-                error={!!error}
-                disabled={disabled}
-                accept={this.props.schema.accept}
-                crop={this.props.schema.crop}
-                maxSize={this.props.schema.maxSize || 256 * 1024}
-                icon={this.state.value || undefined}
-                removeIconFunc={() => this.setState({ value: null }, () => {
-                    if (this.props.schema.base64) {
-                        this.onChange(this.props.attr, this.state.value);
-                    } else {
-                        // delete file to /instance/attr
-                        this.props.socket.deleteFile(`${this.props.adapterName}.${this.props.instance}`, this.props.attr);
+    renderItem(error: string, disabled: boolean /* , defaultValue */): JSX.Element {
+        return (
+            <FormControl
+                fullWidth
+                variant="standard"
+            >
+                {this.props.schema.label ? (
+                    <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
+                ) : null}
+                <UploadImage
+                    error={!!error}
+                    disabled={disabled}
+                    accept={this.props.schema.accept}
+                    crop={this.props.schema.crop}
+                    maxSize={this.props.schema.maxSize || 256 * 1024}
+                    icon={this.state.value || undefined}
+                    removeIconFunc={() =>
+                        this.setState({ value: null }, () => {
+                            if (this.props.schema.base64) {
+                                const mayBePromise = this.onChange(this.props.attr, this.state.value);
+                                if (mayBePromise instanceof Promise) {
+                                    void mayBePromise.catch(e => console.error(`Cannot set value: ${e}`));
+                                }
+                            } else {
+                                // delete file to /instance/attr
+                                void this.props.socket
+                                    .deleteFile(`${this.props.adapterName}.${this.props.instance}`, this.props.attr)
+                                    .catch(e => console.error(e));
+                            }
+                        })
                     }
-                })}
-                onChange={base64 => this.setState({ value: base64 }, () => {
-                    if (this.props.schema.base64) {
-                        this.onChange(this.props.attr, this.state.value);
-                    } else if (base64.startsWith('data')) {
-                        base64 = base64.split(',')[1];
+                    onChange={base64 =>
+                        this.setState({ value: base64 }, () => {
+                            if (this.props.schema.base64) {
+                                const mayBePromise = this.onChange(this.props.attr, this.state.value);
+                                if (mayBePromise instanceof Promise) {
+                                    void mayBePromise.catch(e => console.error(`Cannot set value: ${e}`));
+                                }
+                            } else if (base64.startsWith('data')) {
+                                base64 = base64.split(',')[1];
+                            }
+                            // upload file to /instance/attr
+                            this.props.socket
+                                .writeFile64(
+                                    `${this.props.adapterName}.${this.props.instance}`,
+                                    this.props.attr,
+                                    base64,
+                                )
+                                .catch(e => console.error(e));
+                        })
                     }
-                    // upload file to /instance/attr
-                    this.props.socket.writeFile64(`${this.props.adapterName}.${this.props.instance}`, this.props.attr, base64);
-                })}
-            />
-            {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
-        </FormControl>;
+                />
+                {this.props.schema.help ? (
+                    <FormHelperText>
+                        {this.renderHelp(
+                            this.props.schema.help,
+                            this.props.schema.helpLink,
+                            this.props.schema.noTranslation,
+                        )}
+                    </FormHelperText>
+                ) : null}
+            </FormControl>
+        );
     }
 }
 

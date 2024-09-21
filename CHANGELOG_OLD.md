@@ -1,4 +1,20 @@
 # Older changes
+## 7.0.24 (2024-08-16)
+* (bluefox) Showed min/max limits by controlling the values
+* (bluefox) Corrected style for tabs
+
+## 7.0.23 (2024-08-05)
+* (foxriver76) only automatically open the host notification dialog if warnings are available
+* (foxriver76) improved style of host notification dialog
+* (foxriver76) clarified auto upgrade options selection
+* (bluefox) Corrected the link in instances, e.g., for vis-2
+* (bluefox) Corrected the connection information in the instance tab
+
+## 7.0.22 (2024-07-29)
+* (bluefox) Corrected installation of adapter with the license unequal to MIT
+* (bluefox) Corrected width of a side menu
+* (bluefox) Allowed the pasting into object JSON editor
+
 ## 7.0.18 (2024-07-22)
 * (bluefox) Corrected export from JSON table
 * (foxriver76) added `qrCode` component to JSON config

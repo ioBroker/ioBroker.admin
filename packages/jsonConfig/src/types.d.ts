@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import type { ObjectBrowserCustomFilter, ObjectBrowserType } from '@iobroker/adapter-react-v5';
 
 declare module '@mui/material/Button' {
@@ -9,14 +9,100 @@ declare module '@mui/material/Button' {
 
 type CustomCSSProperties = React.CSSProperties;
 
-export type ConfigItemType = 'tabs' | 'panel' | 'text' | 'number' | 'color' | 'checkbox' | 'slider' | 'ip' | 'user' | 'room' | 'func' | 'select' |
-    'autocomplete' | 'image' | 'objectId' | 'password' | 'instance' | 'chips' | 'alive' | 'pattern' | 'sendto' | 'setState' |
-    'staticText' | 'staticLink' | 'staticImage' | 'table' | 'accordion' | 'jsonEditor' | 'language' | 'certificate' |
-    'certificates' | 'certCollection' | 'custom' | 'datePicker' | 'timePicker' | 'divider' | 'header' | 'cron' |
-    'fileSelector' | 'file' | 'imageSendTo' | 'selectSendTo' | 'autocompleteSendTo' | 'textSendTo' | 'coordinates' | 'interface' | 'license' |
-    'checkLicense' | 'uuid' | 'port' | 'deviceManager' | 'topic' | 'qrCode' | 'state';
+export type ConfigItemType =
+    | 'tabs'
+    | 'panel'
+    | 'text'
+    | 'number'
+    | 'color'
+    | 'checkbox'
+    | 'slider'
+    | 'ip'
+    | 'user'
+    | 'room'
+    | 'func'
+    | 'select'
+    | 'autocomplete'
+    | 'image'
+    | 'objectId'
+    | 'password'
+    | 'instance'
+    | 'chips'
+    | 'alive'
+    | 'pattern'
+    | 'sendto'
+    | 'setState'
+    | 'staticText'
+    | 'staticLink'
+    | 'staticImage'
+    | 'table'
+    | 'accordion'
+    | 'jsonEditor'
+    | 'language'
+    | 'certificate'
+    | 'certificates'
+    | 'certCollection'
+    | 'custom'
+    | 'datePicker'
+    | 'timePicker'
+    | 'divider'
+    | 'header'
+    | 'cron'
+    | 'fileSelector'
+    | 'file'
+    | 'imageSendTo'
+    | 'selectSendTo'
+    | 'autocompleteSendTo'
+    | 'textSendTo'
+    | 'coordinates'
+    | 'interface'
+    | 'license'
+    | 'checkLicense'
+    | 'uuid'
+    | 'port'
+    | 'deviceManager'
+    | 'topic'
+    | 'qrCode'
+    | 'state';
 
-type ConfigIconType = 'edit' | 'auth' | 'send' | 'web' | 'warning' | 'error' | 'info' | 'search' | 'book' | 'help' | 'upload' | 'user' | 'group' | 'delete' | 'refresh' | 'add' | 'unpair' | 'pair' | string;
+type ConfigIconType =
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'edit'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'auth'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'send'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'web'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'warning'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'error'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'info'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'search'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'book'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'help'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'upload'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'user'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'group'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'delete'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'refresh'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'add'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'unpair'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'pair'
+    | string;
 
 export interface ConfigItemConfirmData {
     condition: string;
@@ -87,15 +173,10 @@ export interface ConfigItem {
     width?: string | number;
 
     // generated from alsoDependsOn
-    // eslint-disable-next-line no-use-before-define
     confirmDependsOn?: ConfigItemIndexed[];
-    // eslint-disable-next-line no-use-before-define
     onChangeDependsOn?: ConfigItemIndexed[];
-    // eslint-disable-next-line no-use-before-define
     hiddenDependsOn?: ConfigItemIndexed[];
-    // eslint-disable-next-line no-use-before-define
     labelDependsOn?: ConfigItemIndexed[];
-    // eslint-disable-next-line no-use-before-define
     helpDependsOn?: ConfigItemIndexed[];
 }
 
@@ -133,10 +214,10 @@ export interface ConfigItemSelectOption {
 }
 
 export interface ConfigItemPanel extends ConfigItem {
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     type: 'panel' | never;
     /** Label of tab */
     label?: ioBroker.StringOrTranslated;
-    // eslint-disable-next-line no-use-before-define
     items: Record<string, ConfigItemAny>;
     /** only possible as not part of tabs */
     collapsable?: boolean;
@@ -249,10 +330,12 @@ export interface ConfigItemPassword extends ConfigItem {
 export interface ConfigItemObjectId extends ConfigItem {
     type: 'objectId';
     /** Desired type: `channel`, `device`, ... (has only `state` by default). It is plural, because `type` is already occupied. */
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     types?: ObjectBrowserType | ObjectBrowserType[];
     /** Show only this root object and its children */
     root?: string;
-    /** Cannot be used together with `type` settings. It is an object and not a JSON string. Examples
+    /**
+     * Cannot be used together with `type` settings. It is an object and not a JSON string. Examples
      *  - `{common: {custom: true}}` - show only objects with some custom settings
      *  - `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
      *  - `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb` or `sql` or `history`
@@ -312,6 +395,7 @@ export interface ConfigItemUser extends ConfigItem {
 
 export interface ConfigItemStaticDivider extends ConfigItem {
     type: 'divider';
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     color?: 'primary' | 'secondary' | string;
     height?: string | number;
 }
@@ -369,15 +453,19 @@ export interface ConfigItemFunc extends ConfigItem {
 
 export interface ConfigItemSelect extends ConfigItem {
     type: 'select';
-    /** `[{label: {en: "option 1"}, value: 1}, ...]` or
-     `[{"items": [{"label": "Val1", "value": 1}, {"label": "Val2", value: "2}], "name": "group1"}, {"items": [{"label": "Val3", "value": 3}, {"label": "Val4", value: "4}], "name": "group2"}, {"label": "Val5", "value": 5}]`
-    */
-     options: (ConfigItemSelectOption | {
-        items: ConfigItemSelectOption[];
-        label: ioBroker.StringOrTranslated;
-        value?: number | string;
-        hidden?: string | boolean;
-    })[];
+    /**
+     * `[{label: {en: "option 1"}, value: 1}, ...]` or
+     * `[{"items": [{"label": "Val1", "value": 1}, {"label": "Val2", value: "2}], "name": "group1"}, {"items": [{"label": "Val3", "value": 3}, {"label": "Val4", value: "4}], "name": "group2"}, {"label": "Val5", "value": 5}]`
+     */
+    options: (
+        | ConfigItemSelectOption
+        | {
+              items: ConfigItemSelectOption[];
+              label: ioBroker.StringOrTranslated;
+              value?: number | string;
+              hidden?: string | boolean;
+          }
+    )[];
     attr?: string;
 }
 
@@ -431,6 +519,7 @@ export interface ConfigItemAccordion extends ConfigItem {
 
 export interface ConfigItemDivider extends ConfigItem {
     type: 'divider';
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     color?: 'primary' | 'secondary' | string;
     height?: string | number;
 }
@@ -558,13 +647,13 @@ export interface ConfigItemState extends ConfigItem {
     min?: number;
     /** Maximum value for control type slider or number */
     max?: number;
-   /** Step value for control type slider or number */
+    /** Step value for control type slider or number */
     step?: number;
     /** delay in ms for slider or number */
     controlDelay?: number;
     /** Variant of button */
     variant?: 'contained' | 'outlined' | 'text';
- }
+}
 
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {
     type: 'textSendTo';
@@ -796,22 +885,62 @@ export interface ConfigItemFileSelector extends ConfigItem {
     noSize?: boolean;
 }
 
-export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete |
-    ConfigItemAutocompleteSendTo | ConfigItemPanel |
-    ConfigItemTabs | ConfigItemText |
-    ConfigItemNumber | ConfigItemColor | ConfigItemCheckbox |
-    ConfigItemSlider | ConfigItemIP | ConfigItemUser | ConfigItemRoom | ConfigItemFunc |
-    ConfigItemSelect | ConfigItemAccordion | ConfigItemCoordinates |
-    ConfigItemDivider | ConfigItemHeader | ConfigItemCustom | ConfigItemDatePicker |
-    ConfigItemDeviceManager | ConfigItemLanguage | ConfigItemPort | ConfigItemSendTo | ConfigItemState |
-    ConfigItemTable | ConfigItemTimePicker | ConfigItemTextSendTo | ConfigItemSelectSendTo |
-    ConfigItemCertCollection | ConfigItemCertificateSelect | ConfigItemCertificates | ConfigItemUUID |
-    ConfigItemCheckLicense | ConfigItemPattern | ConfigItemChip | ConfigItemCRON | ConfigItemFile |
-    ConfigItemFileSelector | ConfigItemImageSendTo | ConfigItemInstanceSelect | ConfigItemImageUpload |
-    ConfigItemInterface | ConfigItemJsonEditor | ConfigItemLicense | ConfigItemPassword |
-    ConfigItemSetState | ConfigItemStaticDivider | ConfigItemStaticHeader |
-    ConfigItemStaticImage | ConfigItemStaticText | ConfigItemTopic |
-    ConfigItemObjectId | ConfigItemQrCode;
+export type ConfigItemAny =
+    | ConfigItemAlive
+    | ConfigItemAutocomplete
+    | ConfigItemAutocompleteSendTo
+    | ConfigItemPanel
+    | ConfigItemTabs
+    | ConfigItemText
+    | ConfigItemNumber
+    | ConfigItemColor
+    | ConfigItemCheckbox
+    | ConfigItemSlider
+    | ConfigItemIP
+    | ConfigItemUser
+    | ConfigItemRoom
+    | ConfigItemFunc
+    | ConfigItemSelect
+    | ConfigItemAccordion
+    | ConfigItemCoordinates
+    | ConfigItemDivider
+    | ConfigItemHeader
+    | ConfigItemCustom
+    | ConfigItemDatePicker
+    | ConfigItemDeviceManager
+    | ConfigItemLanguage
+    | ConfigItemPort
+    | ConfigItemSendTo
+    | ConfigItemState
+    | ConfigItemTable
+    | ConfigItemTimePicker
+    | ConfigItemTextSendTo
+    | ConfigItemSelectSendTo
+    | ConfigItemCertCollection
+    | ConfigItemCertificateSelect
+    | ConfigItemCertificates
+    | ConfigItemUUID
+    | ConfigItemCheckLicense
+    | ConfigItemPattern
+    | ConfigItemChip
+    | ConfigItemCRON
+    | ConfigItemFile
+    | ConfigItemFileSelector
+    | ConfigItemImageSendTo
+    | ConfigItemInstanceSelect
+    | ConfigItemImageUpload
+    | ConfigItemInterface
+    | ConfigItemJsonEditor
+    | ConfigItemLicense
+    | ConfigItemPassword
+    | ConfigItemSetState
+    | ConfigItemStaticDivider
+    | ConfigItemStaticHeader
+    | ConfigItemStaticImage
+    | ConfigItemStaticText
+    | ConfigItemTopic
+    | ConfigItemObjectId
+    | ConfigItemQrCode;
 
 // Notification GUI
 
@@ -841,6 +970,7 @@ export interface BackEndCommandOpenLink extends BackEndCommandGeneric {
     /** Link url. Could be relative ('#blabla') or absolute ('https://blabla') */
     url: string;
     /** Target of the link. Default is `_self` for relative and '_blank' for absolute links */
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     target?: '_self' | '_blank' | string;
     /** If GUI should be closed after the link was opened (Only for target='_self') */
     close?: boolean;

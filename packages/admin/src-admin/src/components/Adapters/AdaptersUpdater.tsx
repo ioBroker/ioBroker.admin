@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 import semver from 'semver';
 
 import {
@@ -7,21 +7,20 @@ import {
     ListItemIcon,
     ListItemText,
     Checkbox,
-    Avatar, Button,
+    Avatar,
+    Button,
     CircularProgress,
-    Dialog, DialogActions,
+    Dialog,
+    DialogActions,
     DialogContent,
     DialogTitle,
     Grid2,
     IconButton,
-    Typography, Box,
+    Typography,
+    Box,
 } from '@mui/material';
 
-import {
-    Close as CloseIcon,
-    Language as LanguageIcon,
-    Info as InfoIcon,
-} from '@mui/icons-material';
+import { Close as CloseIcon, Language as LanguageIcon, Info as InfoIcon } from '@mui/icons-material';
 
 import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
@@ -60,8 +59,7 @@ const styles: Record<string, any> = {
             minWidth: 32,
         },
     },
-    wrapperButton: {
-    },
+    wrapperButton: {},
     typography: {
         paddingRight: 30,
     },
@@ -137,7 +135,9 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
 
         this.updateAvailable = this.detectUpdates();
         this.initialVersions = {};
-        this.updateAvailable.forEach(adapter => this.initialVersions[adapter] = this.props.installed[adapter].version);
+        this.updateAvailable.forEach(
+            adapter => (this.initialVersions[adapter] = this.props.installed[adapter].version),
+        );
 
         this.state = {
             showNews: null,
@@ -149,7 +149,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         this.props.onUpdateSelected([...this.updateAvailable], this.updateAvailable);
     }
 
-    static isUpdateAvailable(options: UpdateAvailableCheckOptions) {
+    static isUpdateAvailable(options: UpdateAvailableCheckOptions): boolean {
         const { oldVersion, newVersion, name } = options;
 
         try {
@@ -174,16 +174,28 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
             if (adapter === 'js-controller' || adapter === 'admin') {
                 return;
             }
-            if (_installed &&
+            if (
+                _installed &&
                 this.props.repository[adapter].version &&
                 _installed.ignoreVersion !== this.props.repository[adapter].version &&
-                AdaptersUpdater.isUpdateAvailable({ oldVersion: _installed.version, newVersion: this.props.repository[adapter].version, name: adapter })
+                AdaptersUpdater.isUpdateAvailable({
+                    oldVersion: _installed.version,
+                    newVersion: this.props.repository[adapter].version,
+                    name: adapter,
+                })
             ) {
-                // @ts-expect-error should be ok wait for ts port
-                if (!checkCondition(this.props.repository[adapter].messages, _installed.version, this.props.repository[adapter].version)) {
+                if (
+                    !checkCondition(
+                        this.props.repository[adapter].messages,
+                        _installed.version,
+                        this.props.repository[adapter].version,
+                    )
+                ) {
                     updateAvailable.push(adapter);
                 } else {
-                    console.log(`Adapter ${adapter} is filtered out from update all functionality, because it has messages which need to be read before update`);
+                    console.log(
+                        `Adapter ${adapter} is filtered out from update all functionality, because it has messages which need to be read before update`,
+                    );
                 }
             }
         });
@@ -195,7 +207,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
 
     getNews(adapter: string): GetNewsResultEntry[] {
         const adapterObj = this.props.repository[adapter];
-        const installed  = this.props.installed[adapter];
+        const installed = this.props.installed[adapter];
         const news: GetNewsResultEntry[] = [];
 
         if (installed && adapterObj?.news) {
@@ -204,7 +216,9 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                     if (semver.gt(version, installed.version)) {
                         news.push({
                             version,
-                            news: this.props.noTranslation ? adapterObj.news[version].en : (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en),
+                            news: this.props.noTranslation
+                                ? adapterObj.news[version].en
+                                : adapterObj.news[version][this.props.lang] || adapterObj.news[version].en,
                         });
                     }
                 } catch {
@@ -217,7 +231,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         return news;
     }
 
-    renderOneAdapter(adapter: string): React.JSX.Element | null {
+    renderOneAdapter(adapter: string): JSX.Element | null {
         const checked = this.props.selected.includes(adapter);
         if ((this.props.finished || this.props.inProcess) && !checked) {
             return null;
@@ -228,100 +242,131 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         }
         const image = `.${this.props.installed[adapter].localIcon}`;
 
-        return <ListItem
-            key={adapter}
-            dense
-            sx={{
-                '&.MuiListItem-root': Utils.getStyle(this.props.theme, styles.listItem, this.props.updated.includes(adapter) && styles.updateDone),
-            }}
-            ref={this.props.current === adapter ? this.currentRef : null}
-            secondaryAction={!this.props.finished && !this.props.inProcess ? <Checkbox
-                edge="end"
-                checked={checked}
-                tabIndex={-1}
-                disableRipple
-                disabled={this.props.inProcess}
-                onClick={() => {
-                    const selected = [...this.props.selected];
-                    const pos = selected.indexOf(adapter);
-                    if (pos !== -1) {
-                        selected.splice(pos, 1);
-                    } else {
-                        selected.push(adapter);
-                        selected.sort();
-                    }
-                    this.props.onUpdateSelected(selected);
+        return (
+            <ListItem
+                key={adapter}
+                dense
+                sx={{
+                    '&.MuiListItem-root': Utils.getStyle(
+                        this.props.theme,
+                        styles.listItem,
+                        this.props.updated.includes(adapter) && styles.updateDone,
+                    ),
                 }}
-            /> : (this.props.current === adapter && !this.props.stopped && !this.props.finished && <CircularProgress />)}
-        >
-            <ListItemIcon sx={styles.minWidthCss}>
-                <Avatar
-                    variant="square"
-                    alt={adapter}
-                    src={image}
-                    style={styles.smallAvatar}
+                ref={this.props.current === adapter ? this.currentRef : null}
+                secondaryAction={
+                    !this.props.finished && !this.props.inProcess ? (
+                        <Checkbox
+                            edge="end"
+                            checked={checked}
+                            tabIndex={-1}
+                            disableRipple
+                            disabled={this.props.inProcess}
+                            onClick={() => {
+                                const selected = [...this.props.selected];
+                                const pos = selected.indexOf(adapter);
+                                if (pos !== -1) {
+                                    selected.splice(pos, 1);
+                                } else {
+                                    selected.push(adapter);
+                                    selected.sort();
+                                }
+                                this.props.onUpdateSelected(selected);
+                            }}
+                        />
+                    ) : (
+                        this.props.current === adapter &&
+                        !this.props.stopped &&
+                        !this.props.finished && <CircularProgress />
+                    )
+                }
+            >
+                <ListItemIcon sx={styles.minWidthCss}>
+                    <Avatar
+                        variant="square"
+                        alt={adapter}
+                        src={image}
+                        style={styles.smallAvatar}
+                    />
+                </ListItemIcon>
+                <ListItemText
+                    primary={adapter}
+                    title={this.getNews(adapter)
+                        .map(item => `${item.version}: ${item.news}`)
+                        .join('\n')}
+                    secondary={
+                        <span>
+                            <div style={styles.versions}>
+                                {this.initialVersions[adapter]} →
+                                <Box
+                                    component="span"
+                                    sx={styles.toVersion}
+                                >
+                                    {this.props.repository[adapter].version}
+                                </Box>
+                            </div>
+                            <IconButton
+                                title={I18n.t('Show change log')}
+                                onClick={() =>
+                                    this.setState({
+                                        showNews: {
+                                            adapter,
+                                            version: this.props.repository[adapter].version,
+                                            fromVersion: this.initialVersions[adapter],
+                                        },
+                                    })
+                                }
+                                size="small"
+                            >
+                                <InfoIcon />
+                            </IconButton>
+                        </span>
+                    }
                 />
-            </ListItemIcon>
-            <ListItemText
-                primary={adapter}
-                title={this.getNews(adapter).map(item => `${item.version}: ${item.news}`).join('\n')}
-                secondary={<span>
-                    <div style={styles.versions}>
-                        {this.initialVersions[adapter]}
-                        {' '}
-                        →
-                        <Box component="span" sx={styles.toVersion}>{this.props.repository[adapter].version}</Box>
-                    </div>
-                    <IconButton
-                        title={I18n.t('Show change log')}
-                        onClick={() =>
-                            this.setState({
-                                showNews: {
-                                    adapter,
-                                    version: this.props.repository[adapter].version,
-                                    fromVersion: this.initialVersions[adapter],
-                                },
-                            })}
-                        size="small"
-                    >
-                        <InfoIcon />
-                    </IconButton>
-                </span>}
-            />
-        </ListItem>;
+            </ListItem>
+        );
     }
 
-    getReactNews(adapter: string, fromVersion: string): React.JSX.Element[] {
+    getReactNews(adapter: string, fromVersion: string): JSX.Element[] {
         const adapterObj = this.props.repository[adapter];
-        const installed  = this.props.installed[adapter];
+        const installed = this.props.installed[adapter];
         fromVersion = fromVersion || installed.version;
-        const result: React.JSX.Element[] = [];
+        const result: JSX.Element[] = [];
 
         if (installed && adapterObj?.news) {
             Object.keys(adapterObj.news).forEach(version => {
                 try {
                     if (semver.gt(version, fromVersion) && adapterObj.news[version]) {
-                        const newsText: string = this.props.noTranslation ?
-                            (adapterObj.news[version].en || '') :
-                            (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en || '');
+                        const newsText: string = this.props.noTranslation
+                            ? adapterObj.news[version].en || ''
+                            : adapterObj.news[version][this.props.lang] || adapterObj.news[version].en || '';
 
-                        const news = newsText.split('\n')
-                            .map(line => line
-                                .trim()
-                                .replace(/^\*\s?/, '')
-                                .replace(/<!--[^>]*->/, '')
-                                .replace(/<! -[^>]*->/, '')
-                                .trim())
+                        const news = newsText
+                            .split('\n')
+                            .map(line =>
+                                line
+                                    .trim()
+                                    .replace(/^\*\s?/, '')
+                                    .replace(/<!--[^>]*->/g, '')
+                                    .replace(/<! -[^>]*->/g, '')
+                                    .trim(),
+                            )
                             .filter(line => !!line);
 
-                        result.push(<Grid2 key={version}>
-                            <Typography sx={styles.versionHeader}>
-                                {version}
-                            </Typography>
-                            {news.map((value, index) => <Typography key={`${version}-${index}`} component="div" variant="body2">
-                                {`• ${value}`}
-                            </Typography>)}
-                        </Grid2>);
+                        result.push(
+                            <Grid2 key={version}>
+                                <Typography sx={styles.versionHeader}>{version}</Typography>
+                                {news.map((value, index) => (
+                                    <Typography
+                                        key={`${version}-${index}`}
+                                        component="div"
+                                        variant="body2"
+                                    >
+                                        {`• ${value}`}
+                                    </Typography>
+                                ))}
+                            </Grid2>,
+                        );
                     }
                 } catch {
                     // ignore it
@@ -333,7 +378,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         return result;
     }
 
-    renderShowNews() {
+    renderShowNews(): JSX.Element | null {
         if (this.state.showNews) {
             const news = this.getReactNews(this.state.showNews.adapter, this.state.showNews.fromVersion);
 
@@ -341,71 +386,99 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
 
             const languageButtonActive = Utils.getStyle(this.props.theme, styles.languageButtonActive);
 
-            return <Dialog
-                onClose={() => this.setState({ showNews: null })}
-                open={!0}
-            >
-                <DialogTitle>
-                    <Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>
-                        <div style={{ width: 'calc(100% - 60px)' }}>{I18n.t('Update "%s" to v%s', this.state.showNews.adapter, this.state.showNews.version)}</div>
-                        <IconButton size="large" style={closeButton} onClick={() => this.setState({ showNews: null })}>
-                            <CloseIcon />
-                        </IconButton>
-                        {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
-                            size="large"
-                            style={{ ...styles.languageButton, ...(this.props.noTranslation ? languageButtonActive : undefined) }}
-                            onClick={this.props.toggleTranslation}
-                            title={I18n.t('Disable/Enable translation')}
+            return (
+                <Dialog
+                    onClose={() => this.setState({ showNews: null })}
+                    open={!0}
+                >
+                    <DialogTitle>
+                        <Typography
+                            component="h2"
+                            variant="h6"
+                            sx={{ '&.MuiTypography-root': styles.typography }}
                         >
-                            <LanguageIcon />
-                        </IconButton> : null}
-                    </Typography>
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Grid2
-                        container
-                        direction="column"
-                        spacing={2}
-                        wrap="nowrap"
-                    >
-                        {news.length ? <Grid2>
-                            <Typography variant="h6" gutterBottom>{I18n.t('Change log')}</Typography>
-                            <Grid2
-                                container
-                                spacing={2}
-                                direction="column"
-                                wrap="nowrap"
+                            <div style={{ width: 'calc(100% - 60px)' }}>
+                                {I18n.t('Update "%s" to v%s', this.state.showNews.adapter, this.state.showNews.version)}
+                            </div>
+                            <IconButton
+                                size="large"
+                                style={closeButton}
+                                onClick={() => this.setState({ showNews: null })}
                             >
-                                {news}
-                            </Grid2>
-                        </Grid2> : I18n.t('No change log available')}
-                    </Grid2>
-                </DialogContent>
-                <DialogActions style={styles.wrapperButton}>
-                    <Button
-                        variant="contained"
-                        onClick={() => this.setState({ showNews: null })}
-                        color="grey"
-                        startIcon={<CloseIcon />}
-                    >
-                        {I18n.t('Close')}
-                    </Button>
-                </DialogActions>
-            </Dialog>;
+                                <CloseIcon />
+                            </IconButton>
+                            {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? (
+                                <IconButton
+                                    size="large"
+                                    style={{
+                                        ...styles.languageButton,
+                                        ...(this.props.noTranslation ? languageButtonActive : undefined),
+                                    }}
+                                    onClick={this.props.toggleTranslation}
+                                    title={I18n.t('Disable/Enable translation')}
+                                >
+                                    <LanguageIcon />
+                                </IconButton>
+                            ) : null}
+                        </Typography>
+                    </DialogTitle>
+                    <DialogContent dividers>
+                        <Grid2
+                            container
+                            direction="column"
+                            spacing={2}
+                            wrap="nowrap"
+                        >
+                            {news.length ? (
+                                <Grid2>
+                                    <Typography
+                                        variant="h6"
+                                        gutterBottom
+                                    >
+                                        {I18n.t('Change log')}
+                                    </Typography>
+                                    <Grid2
+                                        container
+                                        spacing={2}
+                                        direction="column"
+                                        wrap="nowrap"
+                                    >
+                                        {news}
+                                    </Grid2>
+                                </Grid2>
+                            ) : (
+                                I18n.t('No change log available')
+                            )}
+                        </Grid2>
+                    </DialogContent>
+                    <DialogActions style={styles.wrapperButton}>
+                        <Button
+                            variant="contained"
+                            onClick={() => this.setState({ showNews: null })}
+                            color="grey"
+                            startIcon={<CloseIcon />}
+                        >
+                            {I18n.t('Close')}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            );
         }
         return null;
     }
 
-    render() {
+    render(): JSX.Element {
         if (this.current !== this.props.current) {
             this.current = this.props.current;
             setTimeout(() => this.currentRef.current?.scrollIntoView(), 200);
         }
 
-        return <List style={styles.root}>
-            {this.updateAvailable.map(adapter => this.renderOneAdapter(adapter))}
-            {this.renderShowNews()}
-        </List>;
+        return (
+            <List style={styles.root}>
+                {this.updateAvailable.map(adapter => this.renderOneAdapter(adapter))}
+                {this.renderShowNews()}
+            </List>
+        );
     }
 }
 

@@ -1,10 +1,19 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
 import {
-    Button, Card, CardActions, CardContent,
-    CardMedia, Collapse, Divider,
-    Grid2, IconButton, Link, Typography,
-    Tooltip, Box,
+    Button,
+    Card,
+    CardActions,
+    CardContent,
+    CardMedia,
+    Collapse,
+    Divider,
+    Grid2,
+    IconButton,
+    Link,
+    Typography,
+    Tooltip,
+    Box,
 } from '@mui/material';
 
 import {
@@ -17,12 +26,7 @@ import {
 
 import { blue, grey, red } from '@mui/material/colors';
 
-import {
-    Utils,
-    IconCopy as SaveIcon,
-    type IobTheme,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { Utils, IconCopy as SaveIcon, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '../../AdminUtils';
 
@@ -209,10 +213,10 @@ export interface IntroCardProps {
     };
     color: string;
     image: string;
-    children?: React.JSX.Element | React.JSX.Element[] | string | string[] | null | undefined;
-    title: string | React.JSX.Element;
+    children?: JSX.Element | JSX.Element[] | string | string[] | null | undefined;
+    title: string | JSX.Element;
     showInfo?: boolean;
-    getHostDescriptionAll?: () => { el: React.JSX.Element; text: string };
+    getHostDescriptionAll?: () => { el: JSX.Element; text: string };
     openSnackBarFunc?: () => void;
     style?: React.CSSProperties;
     theme: IobTheme;
@@ -238,174 +242,211 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
         return null;
     }
 
-    handleExpandClick() {
+    handleExpandClick(): void {
         this.setState({ expanded: !this.state.expanded });
     }
 
-    renderContent(): React.JSX.Element | React.JSX.Element[] | string | string[] | null | undefined {
+    renderContent(): JSX.Element | JSX.Element[] | string | string[] | null | undefined {
         return this.props.children;
     }
 
+    // eslint-disable-next-line class-methods-use-this
     openDialog(): void {
         // do nothing
     }
 
-    renderDialogs(): React.JSX.Element | null {
+    // eslint-disable-next-line class-methods-use-this
+    renderDialogs(): JSX.Element | null {
         return null;
     }
 
-    render() {
+    render(): JSX.Element {
         const editClass = this.props.edit ? styles.edit : undefined;
 
         let buttonTitle: ioBroker.StringOrTranslated = this.props.action.text || this.props.t('Link');
         if (typeof buttonTitle === 'object') {
-            buttonTitle = (buttonTitle as ioBroker.Translated)[this.props.lang] || (buttonTitle as ioBroker.Translated).en;
+            buttonTitle = buttonTitle[this.props.lang] || buttonTitle.en;
         }
 
-        return <Grid2
-            size={{
-                xs: 12,
-                sm: 6,
-                md: 4,
-                lg: 3,
-            }}
-            sx={Utils.getStyle(this.props.theme, styles.root, this.props.style)}
-        >
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link
-                href={!this.props.edit && this.props.action && this.props.action.link ? this.props.action.link : null}
-                underline="none"
-                target="_blank"
-                rel="noopener noreferrer"
+        return (
+            <Grid2
+                size={{
+                    xs: 12,
+                    sm: 6,
+                    md: 4,
+                    lg: 3,
+                }}
+                sx={Utils.getStyle(this.props.theme, styles.root, this.props.style)}
             >
-                <Card
-                    sx={styles.card}
-                    onClick={e => {
-                        e.stopPropagation();
-                        this.openDialog();
-                    }}
+                <Link
+                    href={
+                        !this.props.edit && this.props.action && this.props.action.link ? this.props.action.link : null
+                    }
+                    underline="none"
+                    target="_blank"
+                    rel="noopener noreferrer"
                 >
-                    {this.props.showInfo && !this.props.offline &&
-                        <Button
-                            style={{ ...styles.expand, ...editClass }}
-                            variant="contained"
-                            size="small"
-                            disabled={this.props.disabled}
-                            onClick={() => this.handleExpandClick()}
-                            color="primary"
-                        >
-                            {this.props.t('Info')}
-                        </Button>}
-                    <Box
-                        component="div"
-                        sx={Utils.getStyle(
-                            this.props.theme,
-                            styles.media,
-                            editClass,
-                            this.props.color && { backgroundColor: this.props.color },
-                            { display: 'flex', flexDirection: 'column' },
-                        )}
-                    >
-                        <CardMedia
-                            style={styles.img}
-                            component="img"
-                            image={this.props.image}
-                        >
-                        </CardMedia>
-                        <div style={{
-                            flex: 1, display: 'flex', paddingBottom: '5px', paddingLeft: '5px',
+                    <Card
+                        sx={styles.card}
+                        onClick={e => {
+                            e.stopPropagation();
+                            this.openDialog();
                         }}
-                        >
-                            {this.props.warning ? <Tooltip title={this.props.warning} slotProps={{ popper: { sx: styles.tooltip } }}>
-                                <WarningIcon style={{
-                                    alignSelf: 'end',
-                                    fontSize: 36,
-                                }}
-                                />
-                            </Tooltip> : null}
-                        </div>
-                    </Box>
-                    <div style={{ ...styles.contentContainer, ...editClass }}>
-                        <CardContent style={styles.content}>
-                            <Grid2
-                                container
-                                direction="column"
-                                wrap="nowrap"
-                                style={styles.contentGrid}
+                    >
+                        {this.props.showInfo && !this.props.offline && (
+                            <Button
+                                style={{ ...styles.expand, ...editClass }}
+                                variant="contained"
+                                size="small"
+                                disabled={this.props.disabled}
+                                onClick={() => this.handleExpandClick()}
+                                color="primary"
                             >
-                                <Typography gutterBottom variant="h5" component="h5">
-                                    {this.props.title}
-                                </Typography>
-                                {this.renderContent()}
-                            </Grid2>
-                        </CardContent>
-                        {this.props.action && this.props.action.link && <Divider />}
-                        {this.props.action && this.props.action.link && <CardActions style={styles.action}>
-                            <div style={styles.colorOrange}>
-                                {AdminUtils.getText(buttonTitle, this.props.lang)}
-                            </div>
-                        </CardActions>}
-                    </div>
-                    {this.props.showInfo && <Collapse
-                        style={styles.collapse}
-                        in={this.state.expanded}
-                        timeout="auto"
-                        unmountOnExit
-                    >
-                        <Card sx={styles.cardInfo}>
-                            <Box component="div" sx={styles.cardInfoHead}>
-                                <Typography gutterBottom variant="h5" component="h5">
-                                    {this.props.t('Info')}
-                                </Typography>
-                                <div>
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => {
-                                            if (this.props.getHostDescriptionAll) {
-                                                Utils.copyToClipboard(this.props.getHostDescriptionAll().text);
-                                            }
-                                            if (this.props.openSnackBarFunc) {
-                                                this.props.openSnackBarFunc();
-                                            }
-                                        }}
+                                {this.props.t('Info')}
+                            </Button>
+                        )}
+                        <Box
+                            component="div"
+                            sx={Utils.getStyle(
+                                this.props.theme,
+                                styles.media,
+                                editClass,
+                                this.props.color && { backgroundColor: this.props.color },
+                                { display: 'flex', flexDirection: 'column' },
+                            )}
+                        >
+                            <CardMedia
+                                style={styles.img}
+                                component="img"
+                                image={this.props.image}
+                            ></CardMedia>
+                            <div
+                                style={{
+                                    flex: 1,
+                                    display: 'flex',
+                                    paddingBottom: '5px',
+                                    paddingLeft: '5px',
+                                }}
+                            >
+                                {this.props.warning ? (
+                                    <Tooltip
+                                        title={this.props.warning}
+                                        slotProps={{ popper: { sx: styles.tooltip } }}
                                     >
-                                        <SaveIcon />
-                                    </IconButton>
-                                    <IconButton size="small" onClick={() => this.handleExpandClick()}>
-                                        <CloseIcon />
-                                    </IconButton>
-                                </div>
-                            </Box>
-                            <CardContent>
-                                {this.props.getHostDescriptionAll().el}
+                                        <WarningIcon
+                                            style={{
+                                                alignSelf: 'end',
+                                                fontSize: 36,
+                                            }}
+                                        />
+                                    </Tooltip>
+                                ) : null}
+                            </div>
+                        </Box>
+                        <div style={{ ...styles.contentContainer, ...editClass }}>
+                            <CardContent style={styles.content}>
+                                <Grid2
+                                    container
+                                    direction="column"
+                                    wrap="nowrap"
+                                    style={styles.contentGrid}
+                                >
+                                    <Typography
+                                        gutterBottom
+                                        variant="h5"
+                                        component="h5"
+                                    >
+                                        {this.props.title}
+                                    </Typography>
+                                    {this.renderContent()}
+                                </Grid2>
                             </CardContent>
-                        </Card>
-                    </Collapse>}
-                    {this.props.edit && this.props.toggleActivation && <IconButton
-                        size="large"
-                        sx={this.props.enabled ? styles.enabled : styles.disabled}
-                        onClick={() => this.props.toggleActivation()}
-                    >
-                        <CheckIcon />
-                    </IconButton>}
-                    {this.props.edit && this.props.onEdit && <IconButton
-                        size="large"
-                        sx={styles.editButton}
-                        onClick={() => this.props.onEdit()}
-                    >
-                        <EditIcon />
-                    </IconButton>}
-                    {this.props.edit && this.props.onRemove && <IconButton
-                        size="large"
-                        sx={styles.deleteButton}
-                        onClick={() => this.props.onRemove()}
-                    >
-                        <DeleteIcon />
-                    </IconButton>}
-                    {this.renderDialogs()}
-                </Card>
-            </Link>
-        </Grid2>;
+                            {this.props.action?.link && <Divider />}
+                            {this.props.action?.link && (
+                                <CardActions style={styles.action}>
+                                    <div style={styles.colorOrange}>
+                                        {AdminUtils.getText(buttonTitle, this.props.lang)}
+                                    </div>
+                                </CardActions>
+                            )}
+                        </div>
+                        {this.props.showInfo && (
+                            <Collapse
+                                style={styles.collapse}
+                                in={this.state.expanded}
+                                timeout="auto"
+                                unmountOnExit
+                            >
+                                <Card sx={styles.cardInfo}>
+                                    <Box
+                                        component="div"
+                                        sx={styles.cardInfoHead}
+                                    >
+                                        <Typography
+                                            gutterBottom
+                                            variant="h5"
+                                            component="h5"
+                                        >
+                                            {this.props.t('Info')}
+                                        </Typography>
+                                        <div>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => {
+                                                    if (this.props.getHostDescriptionAll) {
+                                                        Utils.copyToClipboard(this.props.getHostDescriptionAll().text);
+                                                    }
+                                                    if (this.props.openSnackBarFunc) {
+                                                        this.props.openSnackBarFunc();
+                                                    }
+                                                }}
+                                            >
+                                                <SaveIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.handleExpandClick()}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </div>
+                                    </Box>
+                                    <CardContent>{this.props.getHostDescriptionAll().el}</CardContent>
+                                </Card>
+                            </Collapse>
+                        )}
+                        {this.props.edit && this.props.toggleActivation && (
+                            <IconButton
+                                size="large"
+                                sx={this.props.enabled ? styles.enabled : styles.disabled}
+                                onClick={() => this.props.toggleActivation()}
+                            >
+                                <CheckIcon />
+                            </IconButton>
+                        )}
+                        {this.props.edit && this.props.onEdit && (
+                            <IconButton
+                                size="large"
+                                sx={styles.editButton}
+                                onClick={() => this.props.onEdit()}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        )}
+                        {this.props.edit && this.props.onRemove && (
+                            <IconButton
+                                size="large"
+                                sx={styles.deleteButton}
+                                onClick={() => this.props.onRemove()}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        )}
+                        {this.renderDialogs()}
+                    </Card>
+                </Link>
+            </Grid2>
+        );
     }
 }
 

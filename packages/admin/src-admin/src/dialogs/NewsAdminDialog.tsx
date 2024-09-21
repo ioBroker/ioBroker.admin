@@ -1,15 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, type JSX } from 'react';
 import semver from 'semver';
 
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    CardMedia,
-    Typography, Box,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, CardMedia, Typography, Box } from '@mui/material';
 
 import {
     Info as InfoIcon,
@@ -97,42 +89,67 @@ const styles: Record<string, any> = {
     },
 };
 
-const Status = ({ name }: { name: string }) => {
+const Status = ({ name }: { name: string }): JSX.Element => {
     switch (name) {
         case 'warning':
-            return <WarningIcon className="news-admin-dialog-img" style={{ color: '#ffca00' }} />;
+            return (
+                <WarningIcon
+                    className="news-admin-dialog-img"
+                    style={{ color: '#ffca00' }}
+                />
+            );
         case 'info':
-            return <InfoIcon className="news-admin-dialog-img" style={{ color: '#007cff' }} />;
+            return (
+                <InfoIcon
+                    className="news-admin-dialog-img"
+                    style={{ color: '#007cff' }}
+                />
+            );
         case 'danger':
-            return <CancelIcon className="news-admin-dialog-img" style={{ color: '#ff2f2f' }} />;
+            return (
+                <CancelIcon
+                    className="news-admin-dialog-img"
+                    style={{ color: '#ff2f2f' }}
+                />
+            );
         default:
-            return <InfoIcon className="news-admin-dialog-img" style={{ color: '#007cff' }} />;
+            return (
+                <InfoIcon
+                    className="news-admin-dialog-img"
+                    style={{ color: '#007cff' }}
+                />
+            );
     }
 };
 
 function checkActive(adapterName: string, instances: Record<string, any>): boolean {
-    return !!Object.keys(instances).filter(id => id.startsWith(`adapter.system.${adapterName}.`)).find(id => instances[id].enabled);
+    return !!Object.keys(instances)
+        .filter(id => id.startsWith(`adapter.system.${adapterName}.`))
+        .find(id => instances[id].enabled);
 }
 
 function checkConditions(condition: string, installedVersion: string): boolean {
     if (condition.startsWith('equals')) {
         const vers = condition.substring(7, condition.length - 1).trim();
         return installedVersion === vers;
-    } if (condition.startsWith('bigger') || condition.startsWith('greater')) {
+    }
+    if (condition.startsWith('bigger') || condition.startsWith('greater')) {
         const vers = condition.substring(7, condition.length - 1).trim();
         try {
             return semver.gt(vers, installedVersion);
         } catch {
             return false;
         }
-    } else if (condition.startsWith('smaller')) {
+    }
+    if (condition.startsWith('smaller')) {
         const vers = condition.substring(8, condition.length - 1).trim();
         try {
             return semver.lt(installedVersion, vers);
         } catch {
             return false;
         }
-    } else if (condition.startsWith('between')) {
+    }
+    if (condition.startsWith('between')) {
         const vers1 = condition.substring(8, condition.indexOf(',')).trim();
         const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
         try {
@@ -140,12 +157,11 @@ function checkConditions(condition: string, installedVersion: string): boolean {
         } catch {
             return false;
         }
-    } else {
-        return true;
     }
+    return true;
 }
 
-type DbType = 'file' | 'jsonl' | 'redis'
+type DbType = 'file' | 'jsonl' | 'redis';
 
 interface Context {
     adapters: Record<string, CompactAdapterInfo>;
@@ -189,7 +205,7 @@ interface Message {
     /** e.g. >= 15000 to address installations with more than 15k objects */
     'number-of-objects'?: string;
     /** All object db types which this message is valid for */
-    'objects-db-type'?: (DbType)[];
+    'objects-db-type'?: DbType[];
 }
 
 export interface ShowMessage {
@@ -289,7 +305,10 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
                     icon: message.icon,
                     created: message.created,
                     link: message.link,
-                    linkTitle: typeof message.linkTitle === 'object' ? message.linkTitle[context.lang] || message.linkTitle.en : message.linkTitle as string,
+                    linkTitle:
+                        typeof message.linkTitle === 'object'
+                            ? message.linkTitle[context.lang] || message.linkTitle.en
+                            : message.linkTitle,
                     img: message.img,
                 });
             }
@@ -301,9 +320,15 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
     return messagesToShow;
 };
 
-const NewsAdminDialog = ({
-    newsArr, current, onSetLastNewsId,
-}: { newsArr: ShowMessage[]; current: string; onSetLastNewsId: (id?: string) => void }) => {
+function NewsAdminDialog({
+    newsArr,
+    current,
+    onSetLastNewsId,
+}: {
+    newsArr: ShowMessage[];
+    current: string;
+    onSetLastNewsId: (id?: string) => void;
+}): JSX.Element {
     const [id, setId] = useState(current);
     const [last, setLast] = useState(false);
     const [indexArr, setIndexArr] = useState(0);
@@ -324,9 +349,10 @@ const NewsAdminDialog = ({
         } else {
             setId(newsArr[0].id);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [last]);
 
-    const onClose = () => {
+    const onClose = (): void => {
         // setOpen(false);
         setLast(!last);
         onSetLastNewsId(id);
@@ -338,65 +364,87 @@ const NewsAdminDialog = ({
 
     const link = newsArr[indexArr].link;
     const linkTitle = newsArr[indexArr].linkTitle;
-    return <Dialog
-        onClose={onClose}
-        open={!0}
-        sx={{ '& .MuiDialog-paper': styles.paper }}
-    >
-        <Box component="div" sx={{ ...styles.blockInfo, ...styles.img }}>
-            {new Date(newsArr[indexArr].created).toLocaleDateString(lang)}
-            <Status name={newsArr[indexArr].class} />
-        </Box>
-        <DialogTitle>{I18n.t('You have unread news!')}</DialogTitle>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogContent style={styles.overflowHidden} dividers>
-            <Box component="div" sx={styles.root}>
-                <Box component="div" sx={styles.pre}>
-                    {newsArr[indexArr]?.img &&
-                        <CardMedia sx={styles.img2} component="img" image={newsArr[indexArr].img} />}
-                    <Typography
-                        variant="body2"
-                        component="p"
-                    >
-                        {Utils.renderTextWithA(content.replace(/\n/g, '<br />'))}
-                    </Typography>
-                    {newsArr[indexArr]?.link &&
-                        <Button
-                            variant="contained"
-                            style={styles.link}
-                            onClick={() => window.open(newsArr[indexArr].link, '_blank')}
-                            color="primary"
-                        >
-                            {linkTitle || I18n.t('Link')}
-                        </Button>}
-                </Box>
+    return (
+        <Dialog
+            onClose={onClose}
+            open={!0}
+            sx={{ '& .MuiDialog-paper': styles.paper }}
+        >
+            <Box
+                component="div"
+                sx={{ ...styles.blockInfo, ...styles.img }}
+            >
+                {new Date(newsArr[indexArr].created).toLocaleDateString(lang)}
+                <Status name={newsArr[indexArr].class} />
             </Box>
-        </DialogContent>
-        <DialogActions>
-            {link ? <Button
-                id="news-admin-dialog-more-info"
-                variant="contained"
-                onClick={() => {
-                    const frame = window.open(link, '_blank');
-                    frame?.focus();
-                }}
-                color="secondary"
-                startIcon={<WorldIcon />}
+            <DialogTitle>{I18n.t('You have unread news!')}</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent
+                style={styles.overflowHidden}
+                dividers
             >
-                {linkTitle || I18n.t('Show more info')}
-            </Button> : null}
-            <Button
-                id="news-admin-dialog-acknowledge"
-                variant="contained"
-                autoFocus
-                onClick={onClose}
-                color="primary"
-                startIcon={<CheckIcon />}
-            >
-                {I18n.t('Acknowledge')}
-            </Button>
-        </DialogActions>
-    </Dialog>;
-};
+                <Box
+                    component="div"
+                    sx={styles.root}
+                >
+                    <Box
+                        component="div"
+                        sx={styles.pre}
+                    >
+                        {newsArr[indexArr]?.img && (
+                            <CardMedia
+                                sx={styles.img2}
+                                component="img"
+                                image={newsArr[indexArr].img}
+                            />
+                        )}
+                        <Typography
+                            variant="body2"
+                            component="p"
+                        >
+                            {Utils.renderTextWithA(content.replace(/\n/g, '<br />'))}
+                        </Typography>
+                        {newsArr[indexArr]?.link && (
+                            <Button
+                                variant="contained"
+                                style={styles.link}
+                                onClick={() => window.open(newsArr[indexArr].link, '_blank')}
+                                color="primary"
+                            >
+                                {linkTitle || I18n.t('Link')}
+                            </Button>
+                        )}
+                    </Box>
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                {link ? (
+                    <Button
+                        id="news-admin-dialog-more-info"
+                        variant="contained"
+                        onClick={() => {
+                            const frame = window.open(link, '_blank');
+                            frame?.focus();
+                        }}
+                        color="secondary"
+                        startIcon={<WorldIcon />}
+                    >
+                        {linkTitle || I18n.t('Show more info')}
+                    </Button>
+                ) : null}
+                <Button
+                    id="news-admin-dialog-acknowledge"
+                    variant="contained"
+                    autoFocus
+                    onClick={onClose}
+                    color="primary"
+                    startIcon={<CheckIcon />}
+                >
+                    {I18n.t('Acknowledge')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
 
 export default NewsAdminDialog;
