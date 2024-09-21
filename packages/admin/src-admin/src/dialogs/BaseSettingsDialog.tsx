@@ -30,6 +30,7 @@ import BaseSettingsObjects, { type SettingsObjects } from '../components/BaseSet
 import BaseSettingsStates, { type SettingsStates } from '../components/BaseSettings/BaseSettingsStates';
 import BaseSettingsLog, { type SettingsLog } from '../components/BaseSettings/BaseSettingsLog';
 import BaseSettingsPlugins, { type PluginsSettings } from '../components/BaseSettings/BaseSettingsPlugins';
+import AdminUtils from '@/AdminUtils';
 
 // icons
 
@@ -100,8 +101,8 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         };
     }
 
-    componentDidMount(): void {
-        this.getSettings(this.state.currentHost);
+    async componentDidMount(): Promise<void> {
+        await this.getSettings(this.state.currentHost);
     }
 
     renderConfirmDialog(): JSX.Element | null {
@@ -158,23 +159,24 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         return null;
     }
 
-    getSettings(host: string): void {
-        void this.props.socket.readBaseSettings(host || this.state.currentHost).then(settings => {
-            const answer = settings as { config?: ioBroker.IoBrokerJson; isActive?: boolean };
-            if (answer?.config) {
-                this.originalSettings = JSON.parse(JSON.stringify(answer.config));
-                this.setState({
-                    system: answer.config.system,
-                    multihostService: answer.config.multihostService,
-                    objects: answer.config.objects,
-                    states: answer.config.states,
-                    log: answer.config.log,
-                    plugins: answer.config.plugins,
-                    dnsResolution: answer.config.dnsResolution || 'ipv4first',
-                    dataDir: answer.config.dataDir,
-                });
-            }
-        });
+    async getSettings(host: string): Promise<void> {
+        const settings = await this.props.socket.readBaseSettings(host || this.state.currentHost);
+        const answer = settings as { config?: ioBroker.IoBrokerJson; isActive?: boolean };
+
+        if (answer?.config) {
+            this.originalSettings = AdminUtils.clone(answer.config);
+            this.setState({
+                loading: false,
+                system: answer.config.system,
+                multihostService: answer.config.multihostService,
+                objects: answer.config.objects,
+                states: answer.config.states,
+                log: answer.config.log,
+                plugins: answer.config.plugins,
+                dnsResolution: answer.config.dnsResolution || 'ipv4first',
+                dataDir: answer.config.dataDir,
+            });
+        }
     }
 
     onSave(host?: string): void {
@@ -312,7 +314,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
                     <AppBar position="static">
                         <Tabs
                             value={this.state.currentTab}
-                            onChange={(event, newTab) => this.setState({ currentTab: newTab })}
+                            onChange={(_event, newTab) => this.setState({ currentTab: newTab })}
                             aria-label="system tabs"
                             indicatorColor="secondary"
                         >

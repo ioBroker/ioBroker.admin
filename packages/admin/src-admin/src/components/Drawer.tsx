@@ -37,6 +37,7 @@ import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type NotificationAnswer } from '@/Workers/HostsWorker';
 import type LogsWorker from '@/Workers/LogsWorker';
+import type { NotificationsCount } from '@/types';
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
@@ -214,7 +215,7 @@ interface DrawerState {
     tabs: AdminTab[];
     logErrors: number;
     logWarnings: number;
-    hostError: number;
+    hostNotifications: NotificationsCount;
     hostsUpdate: number;
     adaptersUpdate: number;
 }
@@ -231,7 +232,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             tabs: [],
             logErrors: 0,
             logWarnings: 0,
-            hostError: 0,
+            hostNotifications: { other: 0, warning: 0 },
             hostsUpdate: Drawer.calculateHostUpdates(this.props.hosts, this.props.repository),
             adaptersUpdate: Drawer.calculateAdapterUpdates(this.props.installed, this.props.repository),
         };
@@ -331,7 +332,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             return;
         }
 
-        let count = 0;
+        const count: NotificationsCount = { warning: 0, other: 0 };
 
         Object.keys(notifications).forEach(host => {
             if (!notifications[host]?.result?.system) {
@@ -341,11 +342,15 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             if (Object.keys(notifications[host].result.system.categories).length) {
                 const obj = notifications[host].result.system.categories;
 
-                Object.keys(obj).forEach(nameTab => Object.keys(obj[nameTab].instances).forEach(() => count++));
+                for (const category of Object.values(obj)) {
+                    Object.keys(category.instances).forEach(() =>
+                        category.severity === 'alert' ? count.warning++ : count.other++,
+                    );
+                }
             }
         });
 
-        this.setState({ hostError: count });
+        this.setState({ hostNotifications: count });
     };
 
     componentWillUnmount(): void {
@@ -742,7 +747,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         content: number;
         color: 'error' | 'warn' | 'primary' | '';
         additionalContent?: number;
-        additionalColor?: 'error' | '';
+        additionalColor?: 'error' | 'secondary' | '';
     } => {
         switch (tab.name) {
             case 'tab-logs': {
@@ -757,8 +762,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 return {
                     content: this.state.hostsUpdate || 0,
                     color: 'primary',
-                    additionalContent: this.state.hostError,
-                    additionalColor: 'error',
+                    additionalContent: this.state.hostNotifications.warning + this.state.hostNotifications.other,
+                    additionalColor: this.state.hostNotifications.warning > 0 ? 'error' : 'secondary',
                 };
 
             default:

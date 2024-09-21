@@ -49,7 +49,7 @@ interface DrawerItemProps {
     color?: string;
     editListFunc?: (visible: boolean, color?: string | null) => void;
     badgeAdditionalContent?: number;
-    badgeAdditionalColor?: 'error' | '' | 'warn';
+    badgeAdditionalColor?: 'error' | '' | 'warn' | 'secondary';
     style?: Record<string, any>;
     theme: IobTheme;
 }
