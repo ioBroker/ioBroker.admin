@@ -91,7 +91,9 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
                         endAdornment:
                             this.state.value &&
                             this.state.value !== PASSWORD_PLACEHOLDER &&
-                            (this.props.schema.visible || this.props.schema.readOnly) ? (
+                            this.props.schema.visible &&
+                            !disabled &&  
+                            !this.props.schema.readOnly ? (
                                 <InputAdornment position="end">
                                     <IconButton
                                         size="large"
@@ -143,7 +145,7 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
                             endAdornment:
                                 this.state._repeat &&
                                 this.state._repeat !== PASSWORD_PLACEHOLDER &&
-                                this.props.schema.visible ? (
+                                this.props.schema.visible && !disabled ? (
                                     <InputAdornment position="end">
                                         <IconButton
                                             size="large"

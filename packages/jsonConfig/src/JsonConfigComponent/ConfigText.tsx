@@ -248,7 +248,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                     },
                     input: {
                         endAdornment:
-                            this.state.value && !this.props.schema.noClearButton ? (
+                            !this.props.schema.readOnly && !disabled && this.state.value && !this.props.schema.noClearButton ? (
                                 <InputAdornment position="end">
                                     <IconButton
                                         size="small"

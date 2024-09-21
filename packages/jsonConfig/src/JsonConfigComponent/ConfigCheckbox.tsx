@@ -48,7 +48,7 @@ class ConfigCheckbox extends ConfigGeneric<ConfigCheckboxProps, ConfigGenericSta
                                     void mayBePromise.catch(e => console.error(`Cannot set value: ${e}`));
                                 }
                             }}
-                            disabled={disabled}
+                            disabled={disabled || this.props.schema.readOnly}
                         />
                     }
                     label={this.getText(this.props.schema.label)}
