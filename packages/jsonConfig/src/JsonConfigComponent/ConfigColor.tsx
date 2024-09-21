@@ -77,7 +77,7 @@ class ConfigColor extends ConfigGeneric<ConfigColorProps, ConfigColorState> {
                         },
                         input: {
                             endAdornment:
-                                value && !this.props.schema.noClearButton ? (
+                                !this.props.schema.readOnly && value && !this.props.schema.noClearButton ? (
                                     <IconButton
                                         size="small"
                                         onClick={e => {
