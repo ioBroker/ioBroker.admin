@@ -309,8 +309,6 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
     }
 
     render(): JSX.Element {
-        // const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
-
         return (
             <Dialog
                 sx={{ '& .MuiDialog-paper': styles.dialog }}

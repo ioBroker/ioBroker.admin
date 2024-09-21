@@ -86,6 +86,16 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### 7.1.3 (2024-09-20)
+* (@foxriver76) improve appearance and standardization of some warning messages
+* (@foxriver76) indicate `alert` warnings by the badge color on the notification button
+* (@foxriver76) allow to distinguish between alert notifications and others for host notifications
+* (@foxriver76) do not automatically open the notification dialog without user interaction
+* (@foxriver76) fixed logging as socket client is now throwing real errors
+
+### 7.1.2 (2024-09-20)
+* (@foxriver76) fixed host base settings dialog
+
 ### 7.1.1 (2024-09-15)
 * (bluefox) Showed the context menu under cursor position in the object browser
 * (bluefox) Added links to aliases in the object browser
@@ -98,17 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.0.25 (2024-08-24)
 * (bluefox) Improvement for automatic tests
 * (bluefox) Added the possibility to style the response text for `textSendTo` in JSON Config
-
-### 7.0.24 (2024-08-16)
-* (bluefox) Showed min/max limits by controlling the values
-* (bluefox) Corrected style for tabs
-
-### 7.0.23 (2024-08-05)
-* (foxriver76) only automatically open the host notification dialog if warnings are available
-* (foxriver76) improved style of host notification dialog
-* (foxriver76) clarified auto upgrade options selection
-* (bluefox) Corrected the link in instances, e.g., for vis-2
-* (bluefox) Corrected the connection information in the instance tab
 
 ## License
 The MIT License (MIT)

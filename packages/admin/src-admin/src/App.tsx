@@ -79,7 +79,7 @@ import ukAR from '@iobroker/adapter-react-v5/i18n/uk.json';
 import zhCNAR from '@iobroker/adapter-react-v5/i18n/zh-cn.json';
 
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
-import type { AdminGuiConfig, CompactAdapterInfo, CompactHost } from '@/types';
+import type { AdminGuiConfig, CompactAdapterInfo, CompactHost, NotificationsCount } from '@/types';
 import type { InstanceConfig } from '@/tabs/EasyMode';
 
 import CommandDialog from './dialogs/CommandDialog';
@@ -474,7 +474,8 @@ interface AppState {
     updating: boolean;
     notificationsDialog: boolean;
     notifications: Record<string, any>;
-    noNotifications: number;
+    /** Number of active notifications */
+    noNotifications: NotificationsCount;
     configNotSaved: boolean;
     login: boolean;
     hostname: string;
@@ -716,7 +717,10 @@ class App extends Router<AppProps, AppState> {
                 /** Notifications, excluding the system ones */
                 notifications: {},
                 /** Number of new notifications */
-                noNotifications: 0,
+                noNotifications: {
+                    warning: 0,
+                    other: 0,
+                },
 
                 configNotSaved: false,
                 login: false,
@@ -1149,7 +1153,7 @@ class App extends Router<AppProps, AppState> {
                         }
 
                         // create Workers
-                        this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
+                        this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1_000);
                         this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
                         this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
                         this.adaptersWorker = this.adaptersWorker || new AdaptersWorker(this.socket);
@@ -1165,8 +1169,8 @@ class App extends Router<AppProps, AppState> {
                             newState.wizard = !newState.systemConfig.common.licenseConfirmed;
                             await this.findCurrentHost(newState);
                             await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
-                        } catch (error) {
-                            console.log(error);
+                        } catch (e) {
+                            console.log(`Error reading repo in onReady: ${e.stack}`);
                         }
 
                         this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
@@ -1230,32 +1234,11 @@ class App extends Router<AppProps, AppState> {
 
                         setTimeout(async () => {
                             const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
-
-                            let isWarningAvailable = false;
-
-                            for (const hostNotifications of Object.values(notifications)) {
-                                if (!('system' in hostNotifications.result)) {
-                                    continue;
-                                }
-
-                                for (const category of Object.values(hostNotifications.result.system.categories)) {
-                                    if (category.severity === 'alert') {
-                                        isWarningAvailable = true;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            // on mount, we only show the dialog if there are warnings available
-                            if (isWarningAvailable) {
-                                void this.showAdaptersWarning(notifications, newState.currentHost);
-                            }
-
-                            void void this.handleNewNotifications(notifications);
+                            await this.handleNewNotifications(notifications);
                         }, 3_000);
-                    } catch (error) {
-                        console.error(error);
-                        this.showAlert(error, 'error');
+                    } catch (e) {
+                        console.error(`Error in onReady: ${e.stack}`);
+                        this.showAlert(`Error in onReady: ${e.stack}`, 'error');
                     }
                 },
                 onError: error => {
@@ -1496,9 +1479,9 @@ class App extends Router<AppProps, AppState> {
                 if (adminAlive?.val) {
                     return instance;
                 }
-            } catch (error) {
-                console.error(`Cannot find news instance: ${error}`);
-                this.showAlert(`Cannot find news instance: ${error}`, 'error');
+            } catch (e) {
+                console.error(`Cannot find news instance: ${e.stack}`);
+                this.showAlert(`Cannot find news instance: ${e.stack}`, 'error');
             }
         }
         return 0;
@@ -1547,8 +1530,10 @@ class App extends Router<AppProps, AppState> {
 
     /** Called when notifications detected, updates the notification indicator */
     handleNewNotifications = async (notifications: Record<string, NotificationAnswer>): Promise<void> => {
-        // console.log(`new notifications: ${JSON.stringify(notifications)}`);
-        let noNotifications = 0;
+        const noNotifications: NotificationsCount = {
+            warning: 0,
+            other: 0,
+        };
 
         // if host is offline it returns null
         if (!notifications) {
@@ -1567,7 +1552,8 @@ class App extends Router<AppProps, AppState> {
 
                 for (const categoryDetails of Object.values(scopeDetails.categories)) {
                     for (const instanceDetails of Object.values(categoryDetails.instances)) {
-                        noNotifications += instanceDetails.messages.length;
+                        const isWarning = categoryDetails.severity === 'alert';
+                        noNotifications[isWarning ? 'warning' : 'other'] += instanceDetails.messages.length;
                     }
                 }
             }
@@ -1578,6 +1564,12 @@ class App extends Router<AppProps, AppState> {
         this.setState({ noNotifications, notifications: { notifications, instances } });
     };
 
+    /**
+     * Shows notifications to the user
+     *
+     * @param notifications present notifications
+     * @param host host to get notifications from
+     */
     showAdaptersWarning = async (
         notifications: Record<string, NotificationAnswer | null>,
         host: string,
@@ -1653,9 +1645,9 @@ class App extends Router<AppProps, AppState> {
                     }
                 }
             }
-        } catch (error) {
-            console.error(error);
-            this.showAlert(error, 'error');
+        } catch (e) {
+            console.error(`Could not process news: ${e.stack}`);
+            this.showAlert(`Could not process news: ${e.stack}`, 'error');
         }
     };
 
@@ -2540,6 +2532,7 @@ class App extends Router<AppProps, AppState> {
             !storedExpertMode || (storedExpertMode === 'true') === !!this.state.systemConfig.common.expertMode;
 
         const performedStyle = Utils.getStyle(this.state.theme, styles.performed);
+        const sumNotification = this.state.noNotifications.warning + this.state.noNotifications.other;
 
         return (
             <Toolbar>
@@ -2561,15 +2554,14 @@ class App extends Router<AppProps, AppState> {
                     >
                         <IconButton
                             size="large"
-                            disableRipple={!this.state.noNotifications}
-                            style={{ opacity: this.state.noNotifications ? 1 : 0.3 }}
-                            onClick={
-                                this.state.noNotifications ? () => this.setState({ notificationsDialog: true }) : null
-                            }
+                            disableRipple={!sumNotification}
+                            style={{ opacity: sumNotification ? 1 : 0.3 }}
+                            onClick={sumNotification ? () => this.setState({ notificationsDialog: true }) : null}
                         >
                             <Badge
-                                badgeContent={this.state.noNotifications}
-                                color="secondary"
+                                badgeContent={this.state.noNotifications.other + this.state.noNotifications.warning}
+                                color={this.state.noNotifications.warning > 0 ? 'error' : 'secondary'}
+                                max={99}
                             >
                                 <NotificationsIcon />
                             </Badge>
@@ -2726,11 +2718,10 @@ class App extends Router<AppProps, AppState> {
                                     async () => {
                                         this.logsWorkerChanged(host);
                                         (window._localStorage || window.localStorage).setItem('App.currentHost', host);
-
                                         await this.readRepoAndInstalledInfo(host, this.state.hosts);
                                         // read notifications from host
                                         const notifications = await this.hostsWorker.getNotifications(host);
-                                        void this.showAdaptersWarning(notifications, host);
+                                        this.handleNewNotifications(notifications);
                                     },
                                 );
                             }}

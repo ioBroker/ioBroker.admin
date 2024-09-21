@@ -1,4 +1,4 @@
-import React, { Component, type JSX } from 'react';
+import React, { Component } from 'react';
 import semver from 'semver';
 
 import {
@@ -47,6 +47,7 @@ import JsControllerDialog from '@/dialogs/JsControllerDialog';
 import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
 import { CONTROLLER_CHANGELOG_URL } from '@/helpers/utils';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
+import type { NotificationsCount } from '@/types';
 import AdminUtils from '../../AdminUtils';
 import HostEdit from './HostEdit';
 import CustomModal from '../CustomModal';
@@ -252,7 +253,7 @@ function toggleClassName(el: HTMLElement, name: string): void {
     setTimeout(_classNames => (el.className = _classNames), 100, classNames.join(' '));
 }
 
-function getLogLevelIcon(level: ioBroker.LogLevel | ''): JSX.Element | null {
+function getLogLevelIcon(level: ioBroker.LogLevel | ''): React.JSX.Element | null {
     if (level === 'debug') {
         return <BugReportIcon />;
     }
@@ -295,7 +296,7 @@ export interface HostGenericProps {
 export interface HostGenericState {
     logLevel: ioBroker.LogLevel | '';
     logLevelSelect: ioBroker.LogLevel | '';
-    errorHost: { notifications: NotificationAnswer | null; count: number };
+    hostNotifications: { notifications: NotificationAnswer | null } & NotificationsCount;
     openDialogLogLevel: boolean;
     hostUpdateDialog: boolean;
     updateAvailable: boolean;
@@ -350,7 +351,7 @@ export default abstract class HostGeneric<
         this.state = {
             logLevel: '',
             logLevelSelect: '',
-            errorHost: { notifications: null, count: 0 },
+            hostNotifications: { notifications: null, warning: 0, other: 0 },
             openDialogLogLevel: false,
             hostUpdateDialog: false,
             updateAvailable: false,
@@ -380,9 +381,9 @@ export default abstract class HostGeneric<
         notifications &&
         notifications[this.props.hostId] &&
         this.setState({
-            errorHost: {
+            hostNotifications: {
                 notifications: notifications[this.props.hostId],
-                count: HostGeneric.calculateWarning(notifications[this.props.hostId]),
+                ...HostGeneric.calculateWarning(notifications[this.props.hostId]),
             },
         });
 
@@ -498,18 +499,24 @@ export default abstract class HostGeneric<
         }
     };
 
-    static calculateWarning(notifications: NotificationAnswer | null): number {
+    static calculateWarning(notifications: NotificationAnswer | null): NotificationsCount {
+        const count = { warning: 0, other: 0 };
+
         if (!notifications) {
-            return 0;
+            return count;
         }
         const { result } = notifications;
-        let count = 0;
         if (!result || !result.system) {
             return count;
         }
         if (Object.keys(result.system.categories).length) {
             const obj = result.system.categories;
-            Object.keys(obj).forEach(nameTab => Object.keys(obj[nameTab].instances).forEach(() => count++));
+
+            for (const category of Object.values(obj)) {
+                Object.keys(category.instances).forEach(() =>
+                    category.severity === 'alert' ? count.warning++ : count.other++,
+                );
+            }
         }
         return count;
     }
@@ -524,13 +531,13 @@ export default abstract class HostGeneric<
         return state.val + (unit ? ` ${unit}` : '');
     }
 
-    logLevelFunc = (id: string, state: ioBroker.State): void => {
+    logLevelFunc = (_id: string, state: ioBroker.State): void => {
         if (state) {
             this.setState({ logLevel: state.val as ioBroker.LogLevel, logLevelSelect: state.val as ioBroker.LogLevel });
         }
     };
 
-    renderDialogLogLevel(): JSX.Element | null {
+    renderDialogLogLevel(): React.JSX.Element {
         if (!this.state.openDialogLogLevel) {
             return null;
         }
@@ -614,7 +621,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties): JSX.Element {
+    renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties): React.JSX.Element {
         return upgradeAvailable ? (
             <Tooltip
                 title={this.props.t('Update')}
@@ -624,7 +631,7 @@ export default abstract class HostGeneric<
                     component="div"
                     onClick={event => {
                         event.stopPropagation();
-                        void this.openHostUpdateDialog();
+                        return this.openHostUpdateDialog();
                     }}
                     sx={genericStyles.buttonUpdate}
                 >
@@ -643,7 +650,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderHostBaseEdit(): JSX.Element | null {
+    renderHostBaseEdit(): React.JSX.Element | null {
         return this.props.expertMode ? (
             <Tooltip
                 title={this.props.t('Host Base Settings')}
@@ -673,7 +680,7 @@ export default abstract class HostGeneric<
     renderExtendButton(
         /** if host is expanded */
         open: boolean,
-    ): JSX.Element {
+    ): React.JSX.Element {
         return (
             <Tooltip
                 title={this.props.t(open ? 'collapse' : 'Expand')}
@@ -687,7 +694,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderRestartButton(): JSX.Element {
+    renderRestartButton(): React.JSX.Element {
         return (
             <Tooltip
                 title={this.props.t('Restart host')}
@@ -712,7 +719,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderEditButton(): JSX.Element {
+    renderEditButton(): React.JSX.Element {
         return (
             <IconButton
                 size="large"
@@ -727,7 +734,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderRemoveButton(): JSX.Element {
+    renderRemoveButton(): React.JSX.Element {
         return !this.props.alive && !this.props.isCurrentHost ? (
             <Tooltip
                 title={
@@ -753,7 +760,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderCopyButton(style?: React.CSSProperties): JSX.Element {
+    renderCopyButton(style?: React.CSSProperties): React.JSX.Element {
         return (
             <Tooltip
                 title={this.props.t('Copy')}
@@ -771,7 +778,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderLogLevel(): JSX.Element {
+    renderLogLevel(): React.JSX.Element {
         return (
             <Tooltip
                 title={`${this.props.t('loglevel')} ${this.state.logLevel}`}
@@ -793,7 +800,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderNotificationsBadge(children?: React.ReactNode, styled?: boolean): JSX.Element {
+    renderNotificationsBadge(children?: React.ReactNode, styled?: boolean): React.JSX.Element {
         return (
             <Badge
                 sx={
@@ -806,13 +813,13 @@ export default abstract class HostGeneric<
                         : undefined
                 }
                 title={this.props.t('Hosts notifications')}
-                badgeContent={this.state.errorHost.count}
+                badgeContent={this.state.hostNotifications.warning + this.state.hostNotifications.other}
                 style={genericStyles.badge}
-                color="error"
+                color={this.state.hostNotifications.warning > 0 ? 'error' : 'secondary'}
                 onClick={e => {
                     e.stopPropagation();
                     this.props.showAdaptersWarning(
-                        { [this.props.hostId]: this.state.errorHost.notifications },
+                        { [this.props.hostId]: this.state.hostNotifications.notifications },
                         this.props.hostId,
                     );
                 }}
@@ -833,7 +840,7 @@ export default abstract class HostGeneric<
         this.readChangeLog();
     }
 
-    renderHostUpdateDialog(): JSX.Element | null {
+    renderHostUpdateDialog(): React.JSX.Element | null {
         if (!this.state.hostUpdateDialog) {
             return null;
         }
@@ -851,7 +858,7 @@ export default abstract class HostGeneric<
                 news={this.getNews()}
                 toggleTranslation={this.props.toggleTranslation}
                 noTranslation={this.props.noTranslation}
-                onUpdate={(): void => {
+                onUpdate={() => {
                     if (this.state.updateAvailable) {
                         this.setState({ hostUpdateDialog: false, updateDialog: true });
                     } else {
@@ -868,7 +875,7 @@ export default abstract class HostGeneric<
         );
     }
 
-    renderUpdateDialog(): JSX.Element | null {
+    renderUpdateDialog(): React.JSX.Element | null {
         if (this.state.updateAvailable && this.state.updateDialog) {
             return (
                 <JsControllerUpdater
@@ -955,7 +962,7 @@ export default abstract class HostGeneric<
         return news;
     }
 
-    baseSettingsSettingsDialog(): JSX.Element | null {
+    baseSettingsSettingsDialog(): React.JSX.Element | null {
         if (!this.state.baseSettingsDialog) {
             return null;
         }
@@ -974,7 +981,7 @@ export default abstract class HostGeneric<
         );
     }
 
-    renderEditObjectDialog(): JSX.Element | null {
+    renderEditObjectDialog(): React.JSX.Element | null {
         if (!this.state.editDialog) {
             return null;
         }
@@ -998,7 +1005,7 @@ export default abstract class HostGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderDialogs(): JSX.Element {
+    renderDialogs(): React.JSX.Element {
         return (
             <>
                 {this.renderDialogLogLevel()}
