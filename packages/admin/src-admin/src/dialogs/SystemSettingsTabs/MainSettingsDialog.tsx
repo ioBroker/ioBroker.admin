@@ -612,8 +612,11 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
     };
 
     onMarkerDragend = (evt: DragEndEvent): void => {
-        const ll = JSON.parse(JSON.stringify(evt.target._latlng));
-        this.doChange('latitude', ll.lat, () => this.doChange('longitude', ll.lng));
+        // ignore changes during saving
+        if (!this.props.saving) {
+            const ll = JSON.parse(JSON.stringify(evt.target._latlng));
+            this.doChange('latitude', ll.lat, () => this.doChange('longitude', ll.lng));
+        }
     };
 
     render(): JSX.Element {
@@ -685,11 +688,11 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                             center={center}
                             zoom={zoom}
                             maxZoom={18}
-                            attributionControl
-                            zoomControl
-                            doubleClickZoom
-                            scrollWheelZoom
-                            dragging
+                            attributionControl={!this.props.saving}
+                            zoomControl={!this.props.saving}
+                            doubleClickZoom={!this.props.saving}
+                            scrollWheelZoom={!this.props.saving}
+                            dragging={!this.props.saving}
                             // animate
                             easeLinearity={0.35}
                         >
