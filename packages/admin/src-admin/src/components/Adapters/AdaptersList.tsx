@@ -12,7 +12,7 @@ import {
     Typography,
 } from '@mui/material';
 
-import { TabContent, type IobTheme } from '@iobroker/adapter-react-v5';
+import { TabContent } from '@iobroker/adapter-react-v5';
 
 import type { AdaptersContext } from '@/components/Adapters/AdapterInstallDialog';
 import AdapterCategoryRow from '@/components/Adapters/AdapterCategoryRow';
