@@ -28,6 +28,7 @@ import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import { blinkClasses } from '@/components/Hosts/HostGeneric';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
+import { InfoBox } from '@foxriver76/iob-component-lib';
 
 const styles: Record<string, any> = {
     grow: {
@@ -75,13 +76,6 @@ const styles: Record<string, any> = {
     marginRight: {
         marginRight: 'auto',
     },
-    notStableRepo: (theme: IobTheme) => ({
-        background: theme.palette.mode === 'dark' ? '#8a7e00' : '#fdee20',
-        color: '#000',
-        fontSize: 14,
-        padding: '2px 8px',
-        borderRadius: '5px',
-    }),
     hidden1100: {
         '@media screen and (max-width: 1100px)': {
             display: 'none !important',
@@ -525,11 +519,10 @@ class Hosts extends Component<HostsProps, HostsState> {
                 </TabHeader>
                 <TabContent overflow="auto">
                     {!Utils.isStableRepository(this.props.systemConfig.common.activeRepo) ? (
-                        <Box
-                            component="div"
-                            sx={styles.notStableRepo}
-                        >
-                            {this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}
+                        <Box sx={{ marginX: 2, width: 'fit-content', alignSelf: 'center' }}>
+                            <InfoBox type={'warning'}>
+                                {this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}
+                            </InfoBox>
                         </Box>
                     ) : null}
                     <div style={this.state.viewMode ? styles.cards : undefined}>

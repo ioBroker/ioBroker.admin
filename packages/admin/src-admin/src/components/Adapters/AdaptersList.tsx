@@ -19,6 +19,7 @@ import AdapterCategoryRow from '@/components/Adapters/AdapterCategoryRow';
 import AdapterTile from '@/components/Adapters/AdapterTile';
 import AdapterRow from '@/components/Adapters/AdapterRow';
 import type { AdapterCacheEntry } from '@/components/Adapters/AdapterGeneric';
+import { InfoBox } from '@foxriver76/iob-component-lib';
 
 const BUTTONS_WIDTH = 34 * 7 + 8;
 export const WIDTHS: Record<string, number> = {
@@ -99,13 +100,6 @@ const styles: Record<string, any> = {
     install: {
         width: WIDTHS.install,
     },
-    notStableRepo: (theme: IobTheme) => ({
-        background: theme.palette.mode === 'dark' ? '#8a7e00' : '#fdee20',
-        color: '#000',
-        fontSize: 14,
-        padding: '2px 8px',
-        borderRadius: '5px',
-    }),
     viewModeDiv: {
         display: 'flex',
         flexFlow: 'wrap',
@@ -370,11 +364,8 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return (
             <>
                 {!stableRepo ? (
-                    <Box
-                        component="div"
-                        sx={styles.notStableRepo}
-                    >
-                        {this.props.context.t('Active repo is "%s"', repoName)}
+                    <Box sx={{ marginX: 2, marginTop: 1, width: 'fit-content' }}>
+                        <InfoBox type={'warning'}>{this.props.context.t('Active repo is "%s"', repoName)}</InfoBox>
                     </Box>
                 ) : null}
                 <div style={styles.viewModeDiv}>{this.getTiles(context)}</div>
@@ -386,11 +377,8 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return (
             <TabContent>
                 {!stableRepo ? (
-                    <Box
-                        component="div"
-                        sx={styles.notStableRepo}
-                    >
-                        {this.props.context.t('Active repo is "%s"', repoName)}
+                    <Box sx={{ marginX: 2, marginTop: 1, width: 'fit-content' }}>
+                        <InfoBox type={'warning'}>{this.props.context.t('Active repo is "%s"', repoName)}</InfoBox>
                     </Box>
                 ) : null}
                 <TableContainer
