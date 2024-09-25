@@ -2721,7 +2721,7 @@ class App extends Router<AppProps, AppState> {
                                         await this.readRepoAndInstalledInfo(host, this.state.hosts);
                                         // read notifications from host
                                         const notifications = await this.hostsWorker.getNotifications(host);
-                                        this.handleNewNotifications(notifications);
+                                        await this.handleNewNotifications(notifications);
                                     },
                                 );
                             }}

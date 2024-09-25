@@ -144,6 +144,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 content = (
                     <IconButton
                         style={this.props.schema.falseTextStyle}
+                        disabled={!!this.props.schema.readOnly}
                         onClick={async () => {
                             if (this.props.schema.confirm) {
                                 this.setState({
@@ -168,6 +169,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         variant={this.props.schema.variant || 'contained'}
                         startIcon={icon}
                         style={this.props.schema.falseTextStyle}
+                        disabled={!!this.props.schema.readOnly}
                         onClick={async () => {
                             if (this.props.schema.confirm) {
                                 this.setState({
@@ -202,6 +204,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             content = (
                 <Switch
                     checked={!!this.state.stateValue}
+                    disabled={!!this.props.schema.readOnly}
                     onChange={async () => {
                         if (this.props.schema.confirm) {
                             this.setState({
@@ -275,6 +278,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                     style={{ width: '100%', flexGrow: 1 }}
                     min={min}
                     max={max}
+                    disabled={!!this.props.schema.readOnly}
                     step={step}
                     value={this.state.stateValue as number}
                     valueLabelDisplay="auto"
@@ -340,6 +344,9 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                                 this.state.obj.common.unit ||
                                 undefined,
                         },
+                        htmlInput: {
+                            readOnly: !!this.props.schema.readOnly,
+                        },
                     }}
                     onChange={e => {
                         this.setState({ stateValue: e.target.value }, (): void => {
@@ -378,7 +385,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                     value={this.state.stateValue}
                     type="number"
                     slotProps={{
-                        htmlInput: { min, max, step },
+                        htmlInput: { min, max, step, readOnly: !!this.props.schema.readOnly },
                         input: {
                             endAdornment:
                                 this.getText(this.props.schema.unit, this.props.schema.noTranslation) ||
