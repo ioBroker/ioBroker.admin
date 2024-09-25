@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.1.3",
+    "version": "7.1.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.1.4": {
+        "en": "Added the read-only flag to the `state` JSON Config component",
+        "de": "Die Nur-Lese-Flagge zur \"state\" hinzugefügt JSON Config Komponente",
+        "ru": "Добавить флаг только для чтения в \"государство\" Компонент JSON Config",
+        "pt": "Adicionado a bandeira somente leitura para o `state` Componente JSON Config",
+        "nl": "De alleen-lezen vlag toegevoegd aan de staat JSON Config component",
+        "fr": "Ajout du drapeau en lecture seule à l'état Composant JSON Config",
+        "it": "Aggiunto la bandiera di sola lettura al `state` Componente JSON Config",
+        "es": "Se agregó la bandera de sólo lectura al estado Componente de Config JSON",
+        "pl": "Dodano flagę read- only do 'stanu' Składnik konfiguracyjny JSON",
+        "uk": "Додано прапор `state` JSON Конфіг компонент",
+        "zh-cn": "将只读的旗帜添加到“国家”中 JSON 配置组件"
+      },
       "7.1.3": {
         "en": "improve appearance and standardization of some warning messages\nindicate `alert` warnings by the badge color on the notification button\nallow to distinguish between alert notifications and others for host notifications\ndo not automatically open the notification dialog without user interaction\nfixed logging as socket client is now throwing real errors",
         "de": "verbesserung des aussehens und der standardisierung einiger warnmeldungen\n`alert` warnungen durch die abzeichenfarbe auf der benachrichtigungstaste anzeigen\nermöglichen, zwischen alarmmeldungen und anderen für host-benachrichtigungen zu unterscheiden\nnicht automatisch den benachrichtigungsdialog ohne benutzerinteraktion öffnen\nfeste protokollierung als buchsen-client ist jetzt werfen reale fehler",
@@ -96,19 +109,6 @@
         "pl": "Pokazane wartości graniczne min / max poprzez kontrolę wartości\nPoprawiony styl dla zakładek",
         "uk": "Виявлені ліміти хв/максів, які контролюють значення\nПравильний стиль для вкладок",
         "zh-cn": "通过控制值来显示分钟/最大限制\n校正标签样式"
-      },
-      "7.0.23": {
-        "en": "only automatically open the host notification dialog if warnings are available\nimproved style of host notification dialog\nclarified auto upgrade options selection\nCorrected the link in instances, e.g., for vis-2\nCorrected the connection information in the instance tab",
-        "de": "nur automatisch den host-benachrichtigungsdialog öffnen, wenn warnungen verfügbar sind\nverbesserte art der host-benachrichtigung dialog\nclarified auto upgrade optionen auswahl\nKorrigierte den Link in Fällen, z.B. für vis-2\nKorrektur der Verbindungsinformationen in der Registerkarte",
-        "ru": "только автоматически открыть диалог уведомления хоста, если предупреждения доступны\nулучшенный стиль диалога уведомления хоста\nуточненный выбор вариантов автомодернизации\nИсправлена ссылка в случаях, например, для vis-2\nИсправлена информация о подключении на вкладке",
-        "pt": "somente abra automaticamente a caixa de diálogo de notificação do host se os avisos estiverem disponíveis\nmelhorado estilo de caixa de diálogo de notificação do host\nseleção de opções de atualização automática clarificada\nCorrigido o link em instâncias, por exemplo, para vis-2\nCorrigido as informações de conexão na aba da instância",
-        "nl": "alleen automatisch het dialoogvenster host notificatie openen als er waarschuwingen beschikbaar zijn\nverbeterde stijl van host notificatie dialoog\nverduidelijkte selectie van auto-upgradeopties\nCorrectie van de koppeling in gevallen, bijvoorbeeld voor vis-2\nDe verbindingsinformatie in het instantietabblad gecorrigeerd",
-        "fr": "ouvrir automatiquement la boîte de dialogue de notification de l'hôte seulement si des avertissements sont disponibles\namélioration du style de la boîte de dialogue de notification de l'hôte\nsélection d'options de mise à jour automatique clarifiée\nCorrigé le lien dans les cas, p.ex. pour vis-2\nCorrection des informations de connexion dans l'onglet instance",
-        "it": "solo aprire automaticamente la finestra di dialogo di notifica dell'host se sono disponibili avvisi\nstile migliorato della finestra di dialogo di notifica host\nselezione delle opzioni di aggiornamento automatico\nCorretto il collegamento in casi, ad esempio, per vis-2\nCorretto le informazioni di connessione nella scheda di istanza",
-        "es": "sólo abrir automáticamente el diálogo de notificación del host si las advertencias están disponibles\nmejor estilo de diálogo de notificación de host\nopciones de actualización automática aclaradas\nCorregido el enlace en casos, por ejemplo, en relación con-2\nCorregido la información de conexión en la pestaña de instancia",
-        "pl": "jeśli dostępne są ostrzeżenia, otwieraj automatycznie okno powiadomienia hosta\npoprawiony styl okna powiadomień hosta\nwyjaśnienie wyboru opcji auto upgrade\nPoprawiono link w przypadkach, np. dla vis-2\nPoprawiono informacje o połączeniach w zakładce instance",
-        "uk": "тільки автоматично відкрийте діалогове вікно повідомлення про хост, якщо повідомлення доступні\nпокращений стиль діалогу повідомлення про хост\nвизначення параметрів автоматичного оновлення\nВиправлено посилання в екземплярах, наприклад, для vis-2\nВиправлено інформацію про підключення в вкладці екземпляра",
-        "zh-cn": "只当警告可用时自动打开主机通知对话框\n改进主机通知对话框的样式\n澄清自动升级选项\n纠正了例如相对于2的链接\n更正实例标签中的连接信息"
       }
     },
     "desc": {

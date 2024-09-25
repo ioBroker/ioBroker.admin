@@ -86,9 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 7.1.4 (2024-09-25)
 * (bluefox) Added the read-only flag to the `state` JSON Config component
+
 ### 7.1.3 (2024-09-20)
 * (@foxriver76) improve appearance and standardization of some warning messages
 * (@foxriver76) indicate `alert` warnings by the badge color on the notification button
@@ -107,10 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.1.0 (2024-09-02)
 * (bluefox) Added the possibility to show button in notifications
 * (bluefox) Removed gulp from the build process
-
-### 7.0.25 (2024-08-24)
-* (bluefox) Improvement for automatic tests
-* (bluefox) Added the possibility to style the response text for `textSendTo` in JSON Config
 
 ## License
 The MIT License (MIT)
