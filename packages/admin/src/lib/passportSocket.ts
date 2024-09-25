@@ -1,21 +1,25 @@
 // Originally taken from here: https://github.com/jfromaniello/passport.socketio/blob/master/lib/index.js
 // Copyright Licensed under the MIT-License. 2012-2013 José F. Romaniello.
 
+interface AuthRequest {
+    signedCookies?: Record<string, string>;
+    cookies?: Record<string, string>;
+    headers: {
+        cookie: string;
+    };
+}
+
 function parseCookie(
     auth: {
-        cookieParser: (secret: string) => (req: any, options: Record<string, any>, cb: (err: string) => void) => void;
+        cookieParser: (
+            secret: string,
+        ) => (req: AuthRequest, options: Record<string, any>, cb: (err: string) => void) => void;
         secret: string;
     },
     cookieHeader: string,
 ): Record<string, string> {
     const cookieParser = auth.cookieParser(auth.secret);
-    const req: {
-        signedCookies?: Record<string, string>;
-        cookies?: Record<string, string>;
-        headers: {
-            cookie: string;
-        };
-    } = {
+    const req: AuthRequest = {
         headers: {
             cookie: cookieHeader,
         },
@@ -46,7 +50,9 @@ function getQuery(url: string): Record<string, string> {
 
 function authorize(options: {
     passport: { _key: string };
-    cookieParser: (secret: string) => (req: any, options: Record<string, any>, cb: (err: string) => void) => void;
+    cookieParser: (
+        secret: string,
+    ) => (req: AuthRequest, options: Record<string, any>, cb: (err: string) => void) => void;
     checkUser?: (user: string, pass: string, cb: (error: Error | null, result: Record<string, any>) => void) => void;
     fail: (data: any, message: string, critical: boolean, accept: (err: Error | null) => void) => void;
     success: (data: any, accept: (err: Error | null) => void) => void;

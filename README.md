@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (bluefox) Added the read-only flag to the `state` JSON Config component
 ### 7.1.3 (2024-09-20)
 * (@foxriver76) improve appearance and standardization of some warning messages
 * (@foxriver76) indicate `alert` warnings by the badge color on the notification button

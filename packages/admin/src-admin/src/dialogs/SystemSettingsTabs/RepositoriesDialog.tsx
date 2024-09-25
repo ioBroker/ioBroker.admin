@@ -28,11 +28,11 @@ import {
 } from '@mui/icons-material';
 
 import { I18n, withWidth, Confirm as ConfirmDialog, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
+import { InfoBox } from '@foxriver76/iob-component-lib';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';
 import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
-import { InfoBox } from '@foxriver76/iob-component-lib';
 import AdminUtils from '../../AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
@@ -100,6 +100,7 @@ const styles: Record<string, any> = {
     },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;
 
 type RepositoryArray = Array<{ title: string; link: string }>;

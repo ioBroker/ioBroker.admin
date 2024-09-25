@@ -4,9 +4,9 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Se
 import { Close as CloseIcon } from '@mui/icons-material';
 
 import { type AdminConnection, I18n, IconCopy as SaveIcon } from '@iobroker/adapter-react-v5';
+import { InfoBox } from '@foxriver76/iob-component-lib';
 import IsVisible from '@/components/IsVisible';
 import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
-import { InfoBox } from '@foxriver76/iob-component-lib';
 
 interface AutoUpgradeConfigDialogProps {
     /** Called when user closes dialog */
@@ -141,7 +141,12 @@ export default class AutoUpgradeConfigDialog extends React.Component<
                             onChange={e => this.setState({ policy: e.target.value as ioBroker.AutoUpgradePolicy })}
                         >
                             {AUTO_UPGRADE_SETTINGS.map(option => (
-                                <MenuItem value={option}>{AUTO_UPGRADE_OPTIONS_MAPPING[option]}</MenuItem>
+                                <MenuItem
+                                    key={option}
+                                    value={option}
+                                >
+                                    {AUTO_UPGRADE_OPTIONS_MAPPING[option]}
+                                </MenuItem>
                             ))}
                         </Select>
                         <IsVisible value={this.state.repositories.includes('beta') && this.state.policy !== 'none'}>
