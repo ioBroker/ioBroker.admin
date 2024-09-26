@@ -86,15 +86,18 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Added the history for the installation from URL
+
 ### 7.1.5 (2024-09-26)
 * (bluefox) Added the read-only flag to the `state` JSON Config component
 
 ### 7.1.3 (2024-09-20)
 * (@foxriver76) improve appearance and standardization of some warning messages
 * (@foxriver76) indicate `alert` warnings by the badge color on the notification button
-* (@foxriver76) allow to distinguish between alert notifications and others for host notifications
+* (@foxriver76) allow distinguishing between alert notifications and others for host notifications
 * (@foxriver76) do not automatically open the notification dialog without user interaction
-* (@foxriver76) fixed logging as socket client is now throwing real errors
+* (@foxriver76) fixed logging as a socket client is now throwing real errors
 
 ### 7.1.2 (2024-09-20)
 * (@foxriver76) fixed host base settings dialog

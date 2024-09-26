@@ -364,7 +364,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return (
             <>
                 {!stableRepo ? (
-                    <Box sx={{ marginX: 2, marginTop: 1, width: 'fit-content' }}>
+                    <Box sx={{ marginX: 2, marginTop: 1, width: 'calc(100% - 32px)' }}>
                         <InfoBox type={'warning'}>{this.props.context.t('Active repo is "%s"', repoName)}</InfoBox>
                     </Box>
                 ) : null}
@@ -377,7 +377,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return (
             <TabContent>
                 {!stableRepo ? (
-                    <Box sx={{ marginX: 2, marginTop: 1, width: 'fit-content' }}>
+                    <Box sx={{ marginX: 2, marginTop: 1, width: 'calc(100% - 32px)' }}>
                         <InfoBox type={'warning'}>{this.props.context.t('Active repo is "%s"', repoName)}</InfoBox>
                     </Box>
                 ) : null}

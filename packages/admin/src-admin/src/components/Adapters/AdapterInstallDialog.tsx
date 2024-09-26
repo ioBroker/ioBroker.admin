@@ -1,7 +1,7 @@
 import React, { Component, type JSX } from 'react';
 import semver from 'semver';
 
-import { type Translate, type AdminConnection, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
+import { type Translate, type AdminConnection, type ThemeType, type IobTheme, I18n } from "@iobroker/adapter-react-v5";
 
 import { checkCondition, type CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
 
@@ -176,16 +176,20 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
 
         const host = (this.state.addInstanceHostName || options.context.currentHost).replace(/^system\.host\./, '');
 
-        await new Promise<void>((resolve, reject) => {
-            options.context.executeCommand(
-                `${options.customUrl ? 'url' : 'add'} ${options.adapterName} ${options.instance ? `${options.instance} ` : ''}--host ${host} ${
-                    options.debug || options.context.expertMode ? '--debug' : ''
-                }`,
-                host,
-                exitCode =>
-                    !exitCode ? resolve() : reject(new Error(`The process returned an exit code of ${exitCode}`)),
-            );
-        });
+        try {
+            await new Promise<void>((resolve, reject) => {
+                options.context.executeCommand(
+                    `${options.customUrl ? 'url' : 'add'} ${options.adapterName} ${options.instance ? `${options.instance} ` : ''}--host ${host} ${
+                        options.debug || options.context.expertMode ? '--debug' : ''
+                    }`,
+                    host,
+                    exitCode =>
+                        !exitCode ? resolve() : reject(new Error(`The process returned an exit code of ${exitCode}`)),
+                );
+            });
+        } catch (e) {
+            window.alert(`${I18n.t('Cannot install')}: ${e}`);
+        }
     }
 
     static getDependencies(adapterName: string, context: AdaptersContext): AdapterDependencies[] {
@@ -321,11 +325,15 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
                         },
                         () => {
                             if (addInstanceDialog) {
-                                void this.addInstance({
-                                    adapterName: addInstanceDialog,
-                                    instance: addInstanceId,
-                                    context,
-                                });
+                                try {
+                                    void this.addInstance({
+                                        adapterName: addInstanceDialog,
+                                        instance: addInstanceId,
+                                        context,
+                                    });
+                                } catch (e) {
+                                    window.alert(`Cannot add instance: ${e}`);
+                                }
                             }
                         },
                     );
