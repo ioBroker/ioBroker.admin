@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.1.5 (2024-09-26)
 * (bluefox) Added the read-only flag to the `state` JSON Config component
 
 ### 7.1.3 (2024-09-20)
