@@ -1211,8 +1211,8 @@ class App extends Router<AppProps, AppState> {
                                     void this.makePingAuth();
                                 }
                             } catch (e) {
-                                console.error(`Could not determine user to show: ${e}`);
-                                this.showAlert(e, 'error');
+                                console.error(`Could not determine user to show: ${e.toString()}, ${e.stack}`);
+                                this.showAlert(e.toString(), 'error');
                             }
                         }
 
@@ -1241,12 +1241,17 @@ class App extends Router<AppProps, AppState> {
                         this.showAlert(`Error in onReady: ${e.stack}`, 'error');
                     }
                 },
-                onError: error => {
+                onError: (error: string | Error) => {
                     console.error(error);
-                    error = error.message || error.toString();
-                    if (error === 'ioBroker is not connected') {
+                    let errorStr: string;
+                    if (error instanceof Error) {
+                        errorStr = error.message || error.toString();
+                    } else {
+                        errorStr = error.toString();
+                    }
+                    if (errorStr === 'ioBroker is not connected') {
                         if (!this.state.cloudNotConnected) {
-                            this.showAlert(I18n.t(error), 'error');
+                            this.showAlert(I18n.t(errorStr), 'error');
                             setInterval(() => {
                                 if (this.state.cloudReconnect > 0) {
                                     this.setState({ cloudReconnect: this.state.cloudReconnect - 1 });
@@ -1261,7 +1266,7 @@ class App extends Router<AppProps, AppState> {
                             });
                         }
                     } else {
-                        this.showAlert(error, 'error');
+                        this.showAlert(errorStr, 'error');
                     }
                 },
             });
@@ -2147,15 +2152,27 @@ class App extends Router<AppProps, AppState> {
         this.setState({ alert: false });
     }
 
-    showAlert(alertMessage: string, alertType?: 'error' | 'warning' | 'info' | 'success'): void {
+    showAlert(alertMessage: string | Error, alertType?: 'error' | 'warning' | 'info' | 'success'): void {
         if (alertType !== 'error' && alertType !== 'warning' && alertType !== 'info' && alertType !== 'success') {
             alertType = 'info';
+        }
+        let alertMessageStr: string;
+        if (typeof alertMessage !== 'string') {
+            if (alertMessage instanceof Error) {
+                alertMessageStr = alertMessage.message || alertMessage.toString();
+            } else if (alertMessage === null || alertMessage === undefined) {
+                alertMessageStr = 'null';
+            } else {
+                alertMessageStr = (alertMessage as Error).toString();
+            }
+        } else {
+            alertMessageStr = alertMessage;
         }
 
         this.setState({
             alert: true,
             alertType,
-            alertMessage,
+            alertMessage: alertMessageStr,
         });
     }
 

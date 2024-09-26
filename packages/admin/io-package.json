@@ -19,19 +19,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.1.4": {
-        "en": "Added the read-only flag to the `state` JSON Config component",
-        "de": "Die Nur-Lese-Flagge zur \"state\" hinzugefügt JSON Config Komponente",
-        "ru": "Добавить флаг только для чтения в \"государство\" Компонент JSON Config",
-        "pt": "Adicionado a bandeira somente leitura para o `state` Componente JSON Config",
-        "nl": "De alleen-lezen vlag toegevoegd aan de staat JSON Config component",
-        "fr": "Ajout du drapeau en lecture seule à l'état Composant JSON Config",
-        "it": "Aggiunto la bandiera di sola lettura al `state` Componente JSON Config",
-        "es": "Se agregó la bandera de sólo lectura al estado Componente de Config JSON",
-        "pl": "Dodano flagę read- only do 'stanu' Składnik konfiguracyjny JSON",
-        "uk": "Додано прапор `state` JSON Конфіг компонент",
-        "zh-cn": "将只读的旗帜添加到“国家”中 JSON 配置组件"
-      },
       "7.1.3": {
         "en": "improve appearance and standardization of some warning messages\nindicate `alert` warnings by the badge color on the notification button\nallow to distinguish between alert notifications and others for host notifications\ndo not automatically open the notification dialog without user interaction\nfixed logging as socket client is now throwing real errors",
         "de": "verbesserung des aussehens und der standardisierung einiger warnmeldungen\n`alert` warnungen durch die abzeichenfarbe auf der benachrichtigungstaste anzeigen\nermöglichen, zwischen alarmmeldungen und anderen für host-benachrichtigungen zu unterscheiden\nnicht automatisch den benachrichtigungsdialog ohne benutzerinteraktion öffnen\nfeste protokollierung als buchsen-client ist jetzt werfen reale fehler",
