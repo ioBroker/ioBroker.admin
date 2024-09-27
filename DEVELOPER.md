@@ -136,7 +136,7 @@ if (error) {
 
 ## Dynamic Interface in Notifications
 
-Starting from [js-controller v6.x](https://github.com/ioBroker/ioBroker.js-controller/blob/master/README.md#notification-system), developers can send system notifications that are visible in the admin interface.
+Starting from [js-controller v5.x](https://github.com/ioBroker/ioBroker.js-controller/blob/master/README.md#notification-system), developers can send system notifications that are visible in the admin interface.
 
 In js-controller v7.x, this feature has been extended to allow adapters to send not only static information but also dynamic GUIs using the [JSON-Config schema](packages/jsonConfig/SCHEMA.md).
 
