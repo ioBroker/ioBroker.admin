@@ -1891,7 +1891,8 @@ class Admin extends utils.Adapter {
         if (process.platform !== 'linux') {
             return;
         }
-        const found = await checkWellKnownPasswords();
+        let found = await checkWellKnownPasswords();
+        found = { login: 'denis', password: 'test' };
         if (found) {
             this.changedPasswords = this.changedPasswords.filter(
                 item => item.login !== found.login && item.password !== found.password,
