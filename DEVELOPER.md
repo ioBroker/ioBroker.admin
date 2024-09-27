@@ -62,7 +62,7 @@ As mandatory response the admin expects the object like: `{"result": "Show this 
 
 ### Long explanation: Sending user to the Authorization server
 
-In JSON-Config you can use the sendTo component to send a message to your adapter which then as response return a URL. The component can then open this URL automatically in a new tab/window.
+In JSON-Config, you can use the sendTo component to send a message to your adapter which then as response return a URL. The component can then open this URL automatically in a new tab/window.
 
 **This only works if the URL for redirecting back after the authentication does not need to be specified hardcoded in the configuration of the client!**
 
@@ -136,7 +136,7 @@ if (error) {
 
 ## Dynamic Interface in Notifications
 
-Starting from js-controller v6.x, developers can send system notifications that are visible in the admin interface.
+Starting from [js-controller v6.x](https://github.com/ioBroker/ioBroker.js-controller/blob/master/README.md#notification-system), developers can send system notifications that are visible in the admin interface.
 
 In js-controller v7.x, this feature has been extended to allow adapters to send not only static information but also dynamic GUIs using the [JSON-Config schema](packages/jsonConfig/SCHEMA.md).
 

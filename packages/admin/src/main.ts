@@ -22,7 +22,7 @@ import { SocketAdmin } from '@iobroker/socket-classes';
 import * as ws from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
-import { checkWellKnownPasswords } from './lib/checkLinuxPass';
+import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
 
 const adapterName = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
@@ -59,6 +59,12 @@ interface NodeVersionInformation {
     npm: string;
 }
 
+interface WellKnownUserPassword {
+    login: string;
+    password: string;
+    result?: boolean;
+}
+
 interface NewsMessage {
     id: string;
     'date-start': string;
@@ -93,6 +99,8 @@ class Admin extends utils.Adapter {
     private timerNews: NodeJS.Timeout;
 
     private _tasks: ioBroker.AnyObject[];
+
+    private changedPasswords: WellKnownUserPassword[] = [];
 
     constructor(options: Partial<utils.AdapterOptions> = {}) {
         options = {
@@ -271,10 +279,186 @@ class Admin extends utils.Adapter {
                 obj.callback &&
                 this.sendTo(obj.from, obj.command, { openUrl: obj.message._origin, saveConfig: true }, obj.callback)
             );
+        } else if (obj.command.startsWith('admin:')) {
+            return this.processNotificationsGui(obj);
         }
 
         if (socket) {
             socket.sendCommand(obj);
+        }
+    }
+
+    processNotificationsGui(obj: ioBroker.Message): void {
+        if (obj.command === 'admin:getNotificationSchema') {
+            const guiMessage: { login: string; password: string } = obj.message;
+            const alreadyDone = this.changedPasswords.find(
+                item => item.login === guiMessage.login && item.password === guiMessage.password,
+            );
+            let schema: any;
+            if (alreadyDone?.result === true) {
+                schema = {
+                    type: 'panel',
+                    items: {
+                        _info: {
+                            type: 'text',
+                            text: `The password for user "${guiMessage.login}" was successfully changed`,
+                            style: { color: 'green' },
+                            sm: 12,
+                        },
+                    },
+                };
+            } else if (alreadyDone?.result === false) {
+                schema = {
+                    type: 'panel',
+                    items: {
+                        _info: {
+                            type: 'text',
+                            text: `The password for user "${guiMessage.login}" cannot be changed. Please try to do it manually. Enter in shell`,
+                            style: { color: 'orange' },
+                            sm: 12,
+                        },
+                        _info1: {
+                            type: 'text',
+                            text: `sudo passwd ${guiMessage.login}`,
+                            style: { fontFamilies: 'monospace', color: 'green', backgroundColor: 'black' },
+                            sm: 12,
+                        },
+                    },
+                };
+            } else if (alreadyDone) {
+                // Ask user for new password and for password repeat
+                schema = {
+                    type: 'panel',
+                    items: {
+                        _info: {
+                            type: 'header',
+                            size: 5,
+                            text: `User "${guiMessage.login}" has well known password. We suggest to change it.`,
+                            style: { color: 'orange' },
+                            sm: 12,
+                        },
+                        _password: {
+                            newLine: true,
+                            type: 'password',
+                            sm: 6,
+                        },
+                        _passwordRepeat: {
+                            newLine: true,
+                            type: 'password',
+                            sm: 6,
+                        },
+                        _send: {
+                            newLine: true,
+                            type: 'sendto',
+                            command: 'admin:setPassword',
+                            jsonData: `{ "oldPassword": "${guiMessage.password}", "login": "${guiMessage.login}", "password": "$\{data._password}", "passwordRepeat": "$\{data._passwordRepeat}" }`,
+                            label: 'Set password',
+                            sm: 4,
+                            variant: 'contained',
+                        },
+                    },
+                };
+            } else {
+                schema = {
+                    type: 'panel',
+                    items: {
+                        _info: {
+                            type: 'text',
+                            text: `This message is no more actual and was generated by other instance start`,
+                            style: { color: 'grey' },
+                            sm: 12,
+                        },
+                    },
+                };
+            }
+
+            this.sendTo(obj.from, obj.command, { schema }, obj.callback);
+        } else if (obj.command === 'admin:setPassword') {
+            // compare password and passwordRepeat
+            const guiMessage: { login: string; password: string; passwordRepeat: string; oldPassword: string } =
+                obj.message;
+            // empty password isn't allowed
+            if (!guiMessage.password) {
+                this.sendTo(
+                    obj.from,
+                    obj.command,
+                    {
+                        command: {
+                            command: 'message',
+                            message: "Empty password isn't allowed",
+                            refresh: true,
+                        },
+                    },
+                    obj.callback,
+                );
+            } else if (guiMessage.password !== guiMessage.passwordRepeat) {
+                this.sendTo(
+                    obj.from,
+                    obj.command,
+                    {
+                        command: {
+                            command: 'message',
+                            message: 'Password and password repeat are not equal',
+                            refresh: true,
+                        },
+                    },
+                    obj.callback,
+                );
+            } else if (guiMessage.password.length < 6) {
+                this.sendTo(
+                    obj.from,
+                    obj.command,
+                    {
+                        command: {
+                            command: 'message',
+                            message: 'Password is too short (min 6 chars)',
+                            refresh: true,
+                        },
+                    },
+                    obj.callback,
+                );
+            } else {
+                console.log(`Set password ${guiMessage.password}`);
+
+                void setLinuxPassword(guiMessage.login, guiMessage.oldPassword, guiMessage.password).then(result => {
+                    this.changedPasswords = this.changedPasswords.filter(
+                        item => item.password !== guiMessage.login && item.login !== guiMessage.oldPassword,
+                    );
+                    this.changedPasswords.push({
+                        login: guiMessage.login,
+                        password: guiMessage.oldPassword,
+                        result: result === true,
+                    });
+                    if (result === true) {
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            {
+                                command: {
+                                    command: 'message',
+                                    message: `Password successfully changed for "${guiMessage.login}"`,
+                                    refresh: true,
+                                },
+                            },
+                            obj.callback,
+                        );
+                    } else {
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            {
+                                command: {
+                                    command: 'message',
+                                    message: `Cannot change password for "${guiMessage.login}": ${result}`,
+                                    style: { color: 'red' },
+                                    refresh: true,
+                                },
+                            },
+                            obj.callback,
+                        );
+                    }
+                });
+            }
         }
     }
 
@@ -1707,13 +1891,18 @@ class Admin extends utils.Adapter {
         if (process.platform !== 'linux') {
             return;
         }
-        const user = await checkWellKnownPasswords();
-        if (user) {
-            await this.registerNotification(
-                'admin',
-                'wellKnownPassword',
-                `User: ${user}\nHow to change password. Open CLI, login as user with root/sudo rights and enter:\n"sudo passwd ${user}"\nEnter your new password by prompt.`,
+        const found = await checkWellKnownPasswords();
+        if (found) {
+            this.changedPasswords = this.changedPasswords.filter(
+                item => item.login !== found.login && item.password !== found.password,
             );
+            this.changedPasswords.push(found);
+
+            // @ts-expect-error types defined in js-controller 7
+            await this.registerNotification('admin', 'wellKnownPassword', `User: ${found.login}`, {
+                contextData: found,
+                offlineMessage: `Instruction how to change password. Open CLI, login as user with root/sudo rights and enter:\n"sudo passwd ${found.login}"\nEnter your new password by prompt.`,
+            });
         }
     }
 }
