@@ -1906,16 +1906,15 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             if (this.props.systemConfig.common.activeRepo) {
                 if (Array.isArray(this.props.systemConfig.common.activeRepo)) {
                     // if any active repo is not stable, show warning
-                    stableRepo = !this.props.systemConfig.common.activeRepo.find(
-                        repo =>
-                            !repo.toLowerCase().startsWith('stable') && !repositories[repo]?.json?._repoInfo?.stable,
+                    stableRepo = this.props.systemConfig.common.activeRepo.every(
+                        repo => repo.toLowerCase().startsWith('stable') || repositories[repo]?.json?._repoInfo?.stable,
                     );
                 } else if (typeof this.props.systemConfig.common.activeRepo === 'string') {
                     // if active repo is not stable, show warning
                     stableRepo =
                         // @ts-expect-error deprecated, but could still come
-                        !this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable') &&
-                        !repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo?.stable;
+                        this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable') ||
+                        repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo?.stable;
                 }
             }
         }
