@@ -22,6 +22,7 @@ import { SocketAdmin } from '@iobroker/socket-classes';
 import * as ws from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
+import { checkWellKnownPasswords } from './lib/checkLinuxPass';
 
 const adapterName = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
@@ -1670,6 +1671,7 @@ class Admin extends utils.Adapter {
         void this.updateNews().catch(e => this.log.error(`Cannot update news: ${e}`));
         this.updateIcons();
         void this.validateUserData0().catch(e => this.log.error(`Cannot validate 0_userdata: ${e}`));
+        void this.checkWellKnownPasswords().catch(e => this.log.error(`Cannot check well known passwords: ${e}`));
     }
 
     /**
@@ -1698,6 +1700,20 @@ class Admin extends utils.Adapter {
             } catch (e) {
                 this.log.error(`Cannot read ${utils.controllerDir}/io-package.json: ${e}`);
             }
+        }
+    }
+
+    async checkWellKnownPasswords(): Promise<void> {
+        if (process.platform !== 'linux') {
+            return;
+        }
+        const user = await checkWellKnownPasswords();
+        if (user) {
+            await this.registerNotification(
+                'admin',
+                'wellKnownPassword',
+                `User: ${user}\nHow to change password. Open CLI, login as user with root/sudo rights and enter:\n"sudo passwd ${user}"\nEnter your new password by prompt.`,
+            );
         }
     }
 }

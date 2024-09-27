@@ -70,12 +70,6 @@ You can add the following lines into Reverse Proxy tab to let Intro tab run behi
 
 So all links of instances that use web server, like `eventlist`, `vis`, `material` and so on will use `https://iobroker.mydomain.com/ioBrokerWeb/` path
 
-## OAuth2.0 Authentication flow
-There is a possibility to use OAuth2.0 authentication for other services. Admin has an endpoint `oauth2_callbacks`. 
-
-The calls like `http(s)://ip:port/oauth2_callbacks/adapterName.X/?state=ABC&code=123&param=true&param2` will be processed and the special message `oauth2Callback` will be sent to `adapterName.X` instance with query parameters `{"state": "ABC", "code": 123, "param": true, "param2": true}`.
-
-As mandatory response the admin expects the object like: `{"result": "Show this text to user by success", "error": "ERROR: Result will be ignored"}`. The result or error will be shown to the user. Please send already translated messages.
 
 ## Used icons
 This project uses icons from [Flaticon](https://www.flaticon.com/).
@@ -86,6 +80,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Added the check of well-known passwords for the linux systems
+
 ### 7.1.5 (2024-09-26)
 * (bluefox) Added the read-only flag to the `state` JSON Config component
 
