@@ -13,5 +13,6 @@
   "Password is too short (min 6 chars)": "Password is too short (min 6 chars)",
   "Password successfully changed for \"%s\"": "Password successfully changed for \"%s\"",
   "Cannot change password for \"%s\": %s": "Cannot change password for \"%s\": %s",
-  "Minimal length is 6 chars": "Minimal length is 6 chars"
+  "Minimal length is 6 chars": "Minimal length is 6 chars",
+  "User: %s": "User: %s"
 }
