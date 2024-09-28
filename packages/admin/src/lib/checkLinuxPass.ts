@@ -7,6 +7,7 @@ const WELL_KNOWN_CREDENTIALS = [
     ['root', 'default'],
     ['iob', '2024=smart!'],
     ['pi', 'pi'],
+    ['pi', '12345'],
     ['pi', 'raspberry'],
     ['pi', 'default'],
     ['pi', 'pi12345'],

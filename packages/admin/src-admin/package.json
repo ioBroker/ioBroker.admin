@@ -4,7 +4,6 @@
     "homepage": ".",
     "scripts": {
         "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && craco start",
-        "old-start": "react-scripts start",
         "lint": "eslint -c eslint.config.mjs src",
         "build": "craco build",
         "test": "react-scripts test",

@@ -3,7 +3,7 @@
   "The password for user \"%s\" was successfully changed": "The password for user \"%s\" was successfully changed",
   "Cannot change password for %s:": "The password for user \"%s\" cannot be changed. Please try to do it manually.\nOpen CLI, login as user with root/sudo rights and enter:",
   "Enter your new password by prompt.": "Enter your new password by prompt.",
-  "User \"%s\" has well known password. We suggest to change it.": "User \"%s\" has well known password. We suggest to change it.",
+  "User \"%s\" has well known password. We suggest to change it.": "System user \"%s\" has well known password. We suggest to change it.",
   "New password": "New password",
   "Password repeat": "Password repeat",
   "Set password": "Set password",
