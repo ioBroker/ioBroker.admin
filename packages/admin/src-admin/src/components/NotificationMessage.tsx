@@ -229,9 +229,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                     schema={this.state.schema}
                     data={this.state.data}
                     onError={(error?: boolean) => this.setState({ error })}
-                    onChange={(_data: Record<string, any>) => {
-                        // ignore for now
-                    }}
+                    onChange={(data: Record<string, any>) => this.setState({ data })}
                     onBackEndCommand={(command?: BackEndCommandGeneric) => {
                         if (command.schema) {
                             this.setState({ schema: command.schema, data: command.data || this.state.data });

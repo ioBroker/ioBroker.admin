@@ -26,45 +26,50 @@ function checkLinuxPassword(login: string, password: string): Promise<boolean> {
     }
     console.log(`\n[LOG] -------- Check ${login}/${password}`);
 
-    return new Promise(resolve => {
-        const su = spawn('su', [login]);
-        let result = false;
-        let responseTimeout = setTimeout(() => {
-            responseTimeout = null;
-            su.kill();
-        }, 3000);
+    return new Promise((resolve, reject) => {
+        try {
+            const su = spawn('su', [login]);
+            let result = false;
+            let responseTimeout = setTimeout(() => {
+                responseTimeout = null;
+                su.kill();
+            }, 3000);
 
-        function _checkPassword(data: string): void {
-            data = data.replace(/\r/g, ' ').replace(/\n/g, ' ').trim();
-            console.log(`[STDX] "${data}"`);
-            if (data.endsWith(':')) {
-                su.stdin.write(`${password}\n`);
-                setTimeout(() => {
-                    console.log(`[LOG] write whoami`);
-                    su.stdin.write(`whoami\n`);
-                }, 50);
-            } else if (data === login) {
-                result = true;
-                su.kill();
-                // todo: add ru, uk, pt,....
-            } else if (data.toLowerCase().includes('failure') || data.toLowerCase().includes('fehler')) {
-                su.kill();
+            function _checkPassword(data: string): void {
+                data = data.replace(/\r/g, ' ').replace(/\n/g, ' ').trim();
+                console.log(`[STDX] "${data}"`);
+                if (data.endsWith(':')) {
+                    su.stdin.write(`${password}\n`);
+                    setTimeout(() => {
+                        console.log(`[LOG] write whoami`);
+                        su.stdin.write(`whoami\n`);
+                    }, 50);
+                } else if (data === login) {
+                    result = true;
+                    su.kill();
+                    // todo: add ru, uk, pt,....
+                } else if (data.toLowerCase().includes('failure') || data.toLowerCase().includes('fehler')) {
+                    su.kill();
+                }
             }
+
+            // Listen for data on stdout
+            su.stdout.on('data', data => _checkPassword(data.toString()));
+
+            // Listen for data on stderr
+            su.stderr.on('data', data => _checkPassword(data.toString()));
+
+            // Listen for the close event
+            su.on('close', () => {
+                console.log(`[LOG] -------- closed with result: ${result}\n`);
+                responseTimeout && clearTimeout(responseTimeout);
+                responseTimeout = null;
+                resolve(result);
+            });
+        } catch (e: any) {
+            console.error(`[LOG] -------- Error by execution: ${e.message}\n`);
+            reject(new Error(e));
         }
-
-        // Listen for data on stdout
-        su.stdout.on('data', data => _checkPassword(data.toString()));
-
-        // Listen for data on stderr
-        su.stderr.on('data', data => _checkPassword(data.toString()));
-
-        // Listen for the close event
-        su.on('close', () => {
-            console.log(`[LOG] -------- closed with result: ${result}\n`);
-            responseTimeout && clearTimeout(responseTimeout);
-            responseTimeout = null;
-            resolve(result);
-        });
     });
 }
 
@@ -136,80 +141,84 @@ export function setLinuxPassword(login: string, oldPassword: string, newPassword
             resolve('New password is well-known too');
             return;
         }
+        try {
+            const su = spawn('su', [login]);
+            let result: true | string = 'Cannot change password';
+            let responseTimeout = setTimeout(() => {
+                responseTimeout = null;
+                result = 'Timeout';
+                su.kill();
+            }, 3000);
 
-        const su = spawn('su', [login]);
-        let result: true | string = 'Cannot change password';
-        let responseTimeout = setTimeout(() => {
-            responseTimeout = null;
-            result = 'Timeout';
-            su.kill();
-        }, 3000);
+            let state = STATES.S_0_SU_WAIT_PROMPT;
 
-        let state = STATES.S_0_SU_WAIT_PROMPT;
-
-        function _checkPassword(data: string): void {
-            data = data.replace(/\r/g, ' ').replace(/\n/g, ' ').trim();
-            console.log(`[STDX]: ${data}`);
-            if (state === STATES.S_0_SU_WAIT_PROMPT) {
-                // Password: [OLD PASSWORD]\n
-                if (data.endsWith(':')) {
-                    console.log(`[LOG]: received request to enter old password`);
-                    su.stdin.write(`${oldPassword}\n`);
-                    setTimeout(() => {
-                        state = STATES.S_1_PASSWD_WAIT_PROMPT_CURRENT_PASSWORD;
-                        su.stdin.write(`passwd\n`);
-                    }, 50);
+            function _checkPassword(data: string): void {
+                data = data.replace(/\r/g, ' ').replace(/\n/g, ' ').trim();
+                console.log(`[STDX]: ${data}`);
+                if (state === STATES.S_0_SU_WAIT_PROMPT) {
+                    // Password: [OLD PASSWORD]\n
+                    if (data.endsWith(':')) {
+                        console.log(`[LOG]: received request to enter old password`);
+                        su.stdin.write(`${oldPassword}\n`);
+                        setTimeout(() => {
+                            state = STATES.S_1_PASSWD_WAIT_PROMPT_CURRENT_PASSWORD;
+                            su.stdin.write(`passwd\n`);
+                        }, 50);
+                        // todo: add ru, uk, pt,....
+                    } else if (data.toLowerCase().includes('failure') || data.toLowerCase().includes('fehler')) {
+                        console.log(`[LOG]: received failure message`);
+                        result = 'Old password not accepted';
+                        su.kill();
+                    }
+                } else if (state === STATES.S_1_PASSWD_WAIT_PROMPT_CURRENT_PASSWORD) {
+                    // Changing password for pi.
+                    // Current password: [OLD PASSWORD]\n
+                    if (data.endsWith(':')) {
+                        console.log(`[LOG]: received request to enter new password`);
+                        state = STATES.S_2_PASSWD_WAIT_PROMPT_NEW_PASSWORD;
+                        su.stdin.write(`${oldPassword}\n`);
+                    }
+                } else if (state === STATES.S_2_PASSWD_WAIT_PROMPT_NEW_PASSWORD) {
+                    // New password: [NEW PASSWORD]\n
+                    if (data.endsWith(':')) {
+                        console.log(`[LOG]: received request to enter new password`);
+                        state = STATES.S_3_PASSWD_WAIT_PROMPT_RETYPE_NEW_PASSWORD;
+                        su.stdin.write(`${newPassword}\n`);
+                    }
+                } else if (state === STATES.S_3_PASSWD_WAIT_PROMPT_RETYPE_NEW_PASSWORD) {
+                    // Retype new password: [NEW PASSWORD]\n
+                    if (data.endsWith(':')) {
+                        console.log(`[LOG]: received request to repeat new password`);
+                        state = STATES.S_4_PASSWD_WAIT_RESPONSE;
+                        su.stdin.write(`${newPassword}\n`);
+                    }
+                } else if (state === STATES.S_4_PASSWD_WAIT_RESPONSE) {
                     // todo: add ru, uk, pt,....
-                } else if (data.toLowerCase().includes('failure') || data.toLowerCase().includes('fehler')) {
-                    console.log(`[LOG]: received failure message`);
-                    result = 'Old password not accepted';
+                    if (data.toLowerCase().includes('successfully') || data.toLowerCase().includes('erfolgreich')) {
+                        result = true;
+                    } else {
+                        // failure
+                        result = data;
+                    }
                     su.kill();
                 }
-            } else if (state === STATES.S_1_PASSWD_WAIT_PROMPT_CURRENT_PASSWORD) {
-                // Changing password for pi.
-                // Current password: [OLD PASSWORD]\n
-                if (data.endsWith(':')) {
-                    console.log(`[LOG]: received request to enter new password`);
-                    state = STATES.S_2_PASSWD_WAIT_PROMPT_NEW_PASSWORD;
-                    su.stdin.write(`${oldPassword}\n`);
-                }
-            } else if (state === STATES.S_2_PASSWD_WAIT_PROMPT_NEW_PASSWORD) {
-                // New password: [NEW PASSWORD]\n
-                if (data.endsWith(':')) {
-                    console.log(`[LOG]: received request to enter new password`);
-                    state = STATES.S_3_PASSWD_WAIT_PROMPT_RETYPE_NEW_PASSWORD;
-                    su.stdin.write(`${newPassword}\n`);
-                }
-            } else if (state === STATES.S_3_PASSWD_WAIT_PROMPT_RETYPE_NEW_PASSWORD) {
-                // Retype new password: [NEW PASSWORD]\n
-                if (data.endsWith(':')) {
-                    console.log(`[LOG]: received request to repeat new password`);
-                    state = STATES.S_4_PASSWD_WAIT_RESPONSE;
-                    su.stdin.write(`${newPassword}\n`);
-                }
-            } else if (state === STATES.S_4_PASSWD_WAIT_RESPONSE) {
-                // todo: add ru, uk, pt,....
-                if (data.toLowerCase().includes('successfully') || data.toLowerCase().includes('erfolgreich')) {
-                    result = true;
-                } else {
-                    // failure
-                    result = data;
-                }
-                su.kill();
             }
+
+            // Listen for data on stdout
+            su.stdout.on('data', data => _checkPassword(data.toString()));
+
+            // Listen for data on stderr
+            su.stderr.on('data', data => _checkPassword(data.toString()));
+
+            // Listen for the close event
+            su.on('close', () => {
+                responseTimeout && clearTimeout(responseTimeout);
+                responseTimeout = null;
+                resolve(result);
+            });
+        } catch (e) {
+            console.error(`Cannot change password: ${e.toString()}`);
+            throw new Error(e);
         }
-
-        // Listen for data on stdout
-        su.stdout.on('data', data => _checkPassword(data.toString()));
-
-        // Listen for data on stderr
-        su.stderr.on('data', data => _checkPassword(data.toString()));
-
-        // Listen for the close event
-        su.on('close', () => {
-            responseTimeout && clearTimeout(responseTimeout);
-            responseTimeout = null;
-            resolve(result);
-        });
     });
 }

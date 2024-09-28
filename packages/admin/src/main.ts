@@ -339,13 +339,17 @@ class Admin extends utils.Adapter {
                         },
                         _password: {
                             newLine: true,
+                            label: 'New password',
                             type: 'password',
-                            sm: 6,
+                            sm: 12,
+                            md: 6,
                         },
                         _passwordRepeat: {
                             newLine: true,
+                            label: 'Password repeat',
                             type: 'password',
-                            sm: 6,
+                            sm: 12,
+                            md: 6,
                         },
                         _send: {
                             newLine: true,
@@ -353,7 +357,10 @@ class Admin extends utils.Adapter {
                             command: 'admin:setPassword',
                             jsonData: `{ "oldPassword": "${guiMessage.password}", "login": "${guiMessage.login}", "password": "$\{data._password}", "passwordRepeat": "$\{data._passwordRepeat}" }`,
                             label: 'Set password',
-                            sm: 4,
+                            disabled:
+                                '!data._password || !data._passwordRepeat || data._password.length < 6|| data._password !== data._passwordRepeat',
+                            sm: 6,
+                            md: 3,
                             variant: 'contained',
                         },
                     },
