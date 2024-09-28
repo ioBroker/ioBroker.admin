@@ -152,14 +152,18 @@ await adapter.registerNotification(
     {
         // contextData indicates that your adapter supports dynamic GUI
         contextData: {
-            offlineMessage: I18n.getTranslatedObject('Instance is offline'),
-            specificUserData,
+            admin: {
+                notification: {
+                    offlineMessage: I18n.getTranslatedObject('Instance is offline'),
+                    specificUserData,
+                },
+            },
         },
     },
 );
 ```
 
-The structure of `contextData` is adapter-specific.
+The structure of `contextData.admin.notification` is adapter-specific.
 The only attribute that the admin can understand from the context data is `offlineMessage`. This message will be shown in the notification dialog if the instance is not alive.
 
 Developers should store the information in the context required for generating the GUI.
@@ -243,9 +247,7 @@ The entire GUI can be generated using only two JSON-Config components:
 -   `staticText` - to display information with the desired style. You can use multiple instances to show different parts of the text in different styles.
 -   `sendto` - to interact with the backend.
 
-Use the prefix `_` for attribute names of a component; otherwise, the admin will try to save the information (untested behavior).
-
-For backend translations, use the new [adapter-core@3.2.0](https://github.com/ioBroker/adapter-core?tab=readme-ov-file#i18n) feature.
+For backend translations, use the new [adapter-core@3.2.1](https://github.com/ioBroker/adapter-core?tab=readme-ov-file#i18n) feature.
 
 Import the `I18n` like this:
 
