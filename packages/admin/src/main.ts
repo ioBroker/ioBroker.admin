@@ -10,12 +10,12 @@
 
 import * as semver from 'semver';
 import axios from 'axios';
-import * as fs from 'node:fs';
-import * as os from 'node:os';
-import * as path from 'node:path';
-import * as crypto from 'node:crypto';
+import { readFileSync, existsSync } from 'node:fs';
+import { platform } from 'node:os';
+import { join } from 'node:path';
+import { randomBytes } from 'node:crypto';
 
-import * as utils from '@iobroker/adapter-core';
+import { I18n, Adapter, type AdapterOptions, commonTools, controllerDir } from '@iobroker/adapter-core';
 // @ts-expect-error it not TS
 import { SocketAdmin } from '@iobroker/socket-classes';
 // @ts-expect-error it not TS
@@ -24,11 +24,11 @@ import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
 
-const adapterName = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
+const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
     .pop();
 
-const { getInstalledInfo } = utils.commonTools;
+const { getInstalledInfo } = commonTools;
 
 const ONE_HOUR_MS = 3_600_000;
 const ERROR_PERMISSION = 'permissionError';
@@ -83,7 +83,7 @@ interface NewsMessage {
     content: ioBroker.Translated;
 }
 
-class Admin extends utils.Adapter {
+class Admin extends Adapter {
     public declare config: AdminAdapterConfig;
 
     /** secret used for the socket connection */
@@ -102,7 +102,7 @@ class Admin extends utils.Adapter {
 
     private changedPasswords: WellKnownUserPassword[] = [];
 
-    constructor(options: Partial<utils.AdapterOptions> = {}) {
+    constructor(options: Partial<AdapterOptions> = {}) {
         options = {
             ...options,
             name: adapterName, // adapter name
@@ -111,7 +111,7 @@ class Admin extends utils.Adapter {
             install: () => void null,
         };
 
-        super(options as utils.AdapterOptions);
+        super(options as AdapterOptions);
 
         this.on('objectChange', this.onObjectChange.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
@@ -191,9 +191,10 @@ class Admin extends utils.Adapter {
             } else if (systemConfig.common?.language) {
                 systemLanguage = systemConfig.common.language;
             }
+            I18n.init(__dirname, systemLanguage).catch(e => this.log.error(`Cannot init i18n: ${e}`));
 
             if (!systemConfig.native.secret) {
-                crypto.randomBytes(24, (_ex, buf) => {
+                randomBytes(24, (_ex, buf) => {
                     this.secret = buf.toString('hex');
                     this.extendForeignObject('system.config', { native: { secret: this.secret } });
                     this.init();
@@ -226,7 +227,7 @@ class Admin extends utils.Adapter {
                 try {
                     return (
                         obj.callback &&
-                        this.sendTo(obj.from, obj.command, { result: fs.existsSync(obj.message) }, obj.callback)
+                        this.sendTo(obj.from, obj.command, { result: existsSync(obj.message) }, obj.callback)
                     );
                 } catch (e) {
                     return obj.callback && this.sendTo(obj.from, obj.command, { error: e.message }, obj.callback);
@@ -235,7 +236,7 @@ class Admin extends utils.Adapter {
                 const result: Record<string, boolean> = {};
                 for (let f = 0; f < obj.message.length; f++) {
                     try {
-                        result[obj.message[f]] = fs.existsSync(obj.message[f]);
+                        result[obj.message[f]] = existsSync(obj.message[f]);
                     } catch (e) {
                         result[obj.message[f]] = e.message;
                     }
@@ -301,7 +302,10 @@ class Admin extends utils.Adapter {
                     items: {
                         _info: {
                             type: 'text',
-                            text: `The password for user "${guiMessage.login}" was successfully changed`,
+                            text: I18n.getTranslatedObject(
+                                'The password for user "%s" was successfully changed',
+                                guiMessage.login,
+                            ),
                             style: { color: 'green' },
                             sm: 12,
                         },
@@ -313,13 +317,21 @@ class Admin extends utils.Adapter {
                     items: {
                         _info: {
                             type: 'text',
-                            text: `The password for user "${guiMessage.login}" cannot be changed. Please try to do it manually. Enter in shell`,
+                            text: I18n.getTranslatedObject('Cannot change password for %s:', guiMessage.login),
                             style: { color: 'orange' },
                             sm: 12,
                         },
                         _info1: {
+                            newLine: true,
                             type: 'text',
                             text: `sudo passwd ${guiMessage.login}`,
+                            style: { fontFamilies: 'monospace', color: 'green', backgroundColor: 'black' },
+                            sm: 12,
+                        },
+                        _info3: {
+                            newLine: true,
+                            type: 'text',
+                            text: I18n.getTranslatedObject('Enter your new password by prompt.'),
                             style: { fontFamilies: 'monospace', color: 'green', backgroundColor: 'black' },
                             sm: 12,
                         },
@@ -333,20 +345,24 @@ class Admin extends utils.Adapter {
                         _info: {
                             type: 'header',
                             size: 5,
-                            text: `User "${guiMessage.login}" has well known password. We suggest to change it.`,
+                            text: I18n.getTranslatedObject(
+                                `User "%s" has well known password. We suggest to change it.`,
+                                guiMessage.login,
+                            ),
                             style: { color: 'orange' },
                             sm: 12,
                         },
-                        _password: {
+                        password: {
                             newLine: true,
-                            label: 'New password',
+                            label: I18n.getTranslatedObject('New password'),
                             type: 'password',
+                            helpText: I18n.getTranslatedObject('Minimal length is 6 chars'),
                             sm: 12,
                             md: 6,
                         },
-                        _passwordRepeat: {
+                        passwordRepeat: {
                             newLine: true,
-                            label: 'Password repeat',
+                            label: I18n.getTranslatedObject('Password repeat'),
                             type: 'password',
                             sm: 12,
                             md: 6,
@@ -355,10 +371,10 @@ class Admin extends utils.Adapter {
                             newLine: true,
                             type: 'sendto',
                             command: 'admin:setPassword',
-                            jsonData: `{ "oldPassword": "${guiMessage.password}", "login": "${guiMessage.login}", "password": "$\{data._password}", "passwordRepeat": "$\{data._passwordRepeat}" }`,
-                            label: 'Set password',
+                            jsonData: `{ "oldPassword": "${guiMessage.password}", "login": "${guiMessage.login}", "password": "$\{data.password}", "passwordRepeat": "$\{data.passwordRepeat}" }`,
+                            label: I18n.getTranslatedObject('Set password'),
                             disabled:
-                                '!data._password || !data._passwordRepeat || data._password.length < 6|| data._password !== data._passwordRepeat',
+                                '!data.password || !data.passwordRepeat || data.password.length < 6 || data.password !== data.passwordRepeat',
                             sm: 6,
                             md: 3,
                             variant: 'contained',
@@ -371,7 +387,9 @@ class Admin extends utils.Adapter {
                     items: {
                         _info: {
                             type: 'text',
-                            text: `This message is no more actual and was generated by other instance start`,
+                            text: I18n.getTranslatedObject(
+                                'This message is no more actual and was generated by other instance start',
+                            ),
                             style: { color: 'grey' },
                             sm: 12,
                         },
@@ -392,7 +410,7 @@ class Admin extends utils.Adapter {
                     {
                         command: {
                             command: 'message',
-                            message: "Empty password isn't allowed",
+                            message: I18n.getTranslatedObject("Empty password isn't allowed"),
                             refresh: true,
                         },
                     },
@@ -405,7 +423,7 @@ class Admin extends utils.Adapter {
                     {
                         command: {
                             command: 'message',
-                            message: 'Password and password repeat are not equal',
+                            message: I18n.getTranslatedObject('Password and password repeat are not equal'),
                             refresh: true,
                         },
                     },
@@ -418,15 +436,13 @@ class Admin extends utils.Adapter {
                     {
                         command: {
                             command: 'message',
-                            message: 'Password is too short (min 6 chars)',
+                            message: I18n.getTranslatedObject('Password is too short (min 6 chars)'),
                             refresh: true,
                         },
                     },
                     obj.callback,
                 );
             } else {
-                console.log(`Set password ${guiMessage.password}`);
-
                 void setLinuxPassword(guiMessage.login, guiMessage.oldPassword, guiMessage.password).then(result => {
                     this.changedPasswords = this.changedPasswords.filter(
                         item => item.password !== guiMessage.login && item.login !== guiMessage.oldPassword,
@@ -443,7 +459,10 @@ class Admin extends utils.Adapter {
                             {
                                 command: {
                                     command: 'message',
-                                    message: `Password successfully changed for "${guiMessage.login}"`,
+                                    message: I18n.getTranslatedObject(
+                                        'Password successfully changed for "%s"',
+                                        guiMessage.login,
+                                    ),
                                     refresh: true,
                                 },
                             },
@@ -456,7 +475,11 @@ class Admin extends utils.Adapter {
                             {
                                 command: {
                                     command: 'message',
-                                    message: `Cannot change password for "${guiMessage.login}": ${result}`,
+                                    message: I18n.getTranslatedObject(
+                                        `Cannot change password for "%s": %s`,
+                                        guiMessage.login,
+                                        result,
+                                    ),
                                     style: { color: 'red' },
                                     refresh: true,
                                 },
@@ -1041,7 +1064,7 @@ class Admin extends utils.Adapter {
             endkey: 'system.adapter.\u9999',
         });
 
-        const operatingSystem = os.platform();
+        const operatingSystem = platform();
 
         const instances = await this.getObjectViewAsync('system', 'instance', {
             startkey: 'system.adapter.\u0000',
@@ -1564,9 +1587,9 @@ class Admin extends utils.Adapter {
 
     // update icons by all known default objects. Remove this function after 2 years (BF: 2021.04.20)
     updateIcons(): void {
-        if (fs.existsSync(`${utils.controllerDir}/io-package.json`)) {
+        if (existsSync(`${controllerDir}/io-package.json`)) {
             const ioPackage = JSON.parse(
-                fs.readFileSync(path.join(utils.controllerDir, 'io-package.json'), {
+                readFileSync(join(controllerDir, 'io-package.json'), {
                     encoding: 'utf-8',
                 }),
             );
@@ -1740,8 +1763,8 @@ class Admin extends utils.Adapter {
         try {
             const dir = require.resolve('iobroker.js-controller/io-package.json').replace(/\\/g, '/');
             // dir is something like ./node_modules/iobroker.js-controller/build/cjs/main.js
-            if (fs.existsSync(dir)) {
-                const data = JSON.parse(fs.readFileSync(dir).toString());
+            if (existsSync(dir)) {
+                const data = JSON.parse(readFileSync(dir).toString());
                 if (data.objects) {
                     objects = data.objects;
                 }
@@ -1847,7 +1870,7 @@ class Admin extends utils.Adapter {
         // check info.connected
         void this.getObjectAsync('info.connected').then(obj => {
             if (!obj) {
-                const packageJson = JSON.parse(fs.readFileSync(`${__dirname}/../io-package.json`).toString('utf8'));
+                const packageJson = JSON.parse(readFileSync(`${__dirname}/../io-package.json`).toString('utf8'));
                 const obj = packageJson.instanceObjects.find((o: ioBroker.AnyObject) => o._id === 'info.connected');
                 if (obj) {
                     return this.setObjectAsync(obj._id, obj);
@@ -1877,7 +1900,7 @@ class Admin extends utils.Adapter {
         }
         if (!obj) {
             try {
-                const ioContent = fs.readFileSync(`${utils.controllerDir}/io-package.json`).toString('utf8');
+                const ioContent = readFileSync(`${controllerDir}/io-package.json`).toString('utf8');
                 const io = JSON.parse(ioContent);
                 if (io.objects) {
                     const userData: ioBroker.MetaObject | null = io.objects.find(
@@ -1889,7 +1912,7 @@ class Admin extends utils.Adapter {
                     }
                 }
             } catch (e) {
-                this.log.error(`Cannot read ${utils.controllerDir}/io-package.json: ${e}`);
+                this.log.error(`Cannot read ${controllerDir}/io-package.json: ${e}`);
             }
         }
     }
@@ -1908,8 +1931,14 @@ class Admin extends utils.Adapter {
 
             // @ts-expect-error types defined in js-controller 7
             await this.registerNotification('admin', 'wellKnownPassword', `User: ${found.login}`, {
-                contextData: found,
-                offlineMessage: `Instruction how to change password. Open CLI, login as user with root/sudo rights and enter:\n"sudo passwd ${found.login}"\nEnter your new password by prompt.`,
+                contextData: {
+                    admin: {
+                        notification: {
+                            found,
+                            offlineMessage: I18n.getTranslatedObject('Offline message', found.login),
+                        },
+                    },
+                },
             });
         }
     }
@@ -1917,7 +1946,7 @@ class Admin extends utils.Adapter {
 
 if (require.main !== module) {
     // Export the constructor in compact mode
-    module.exports = (options: Partial<utils.AdapterOptions> | undefined) => new Admin(options);
+    module.exports = (options: Partial<AdapterOptions> | undefined) => new Admin(options);
 } else {
     // otherwise start the instance directly
     (() => new Admin())();

@@ -23,7 +23,7 @@
         "setup"
     ],
     "dependencies": {
-        "@iobroker/adapter-core": "^3.1.6",
+        "@iobroker/adapter-core": "^3.2.1",
         "@iobroker/socket-classes": "^1.5.6",
         "@iobroker/webserver": "^1.0.6",
         "@iobroker/ws-server": "^2.1.2",
@@ -71,7 +71,7 @@
         "test:gui": "mocha test/*.gui.js --exit",
         "prepublishOnly": "npm run build",
         "build": "npm run build:frontend && npm run build:backend",
-        "build:backend": "tsc -p tsconfig.build.json",
+        "build:backend": "tsc -p tsconfig.build.json && node tasks --backend-i18n",
         "clean": "rimraf src-admin/build",
         "lint-backend": "eslint -c eslint.config.mjs src",
         "react-0-configCSS": "node tasks --react-0-configCSS",

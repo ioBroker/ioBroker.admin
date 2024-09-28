@@ -120,7 +120,9 @@ function clean() {
     deleteFoldersRecursive(`${__dirname}/${srcRx}/build`);
 }
 
-if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-configCSS')) {
+if (process.argv.includes('--backend-i18n')) {
+    copyFiles(['src/i18n/*'], 'build-backend/i18n');
+} else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-configCSS')) {
     configCSS().catch(e => {
         console.error(e);
         process.exit(1);
