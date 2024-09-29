@@ -1,6 +1,7 @@
 import * as utils from '@iobroker/adapter-core';
 import * as IoBWebServer from '@iobroker/webserver';
 import * as express from 'express';
+import { type RequestHandler } from 'express';
 import * as fs from 'node:fs';
 import * as util from 'util';
 import * as path from 'node:path';
@@ -20,7 +21,6 @@ import type { Store } from 'express-session';
 import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
-import { type RequestHandler } from 'express';
 
 interface IConnectFlashOptions {
     unsafe?: boolean | undefined;
@@ -896,7 +896,7 @@ class Web {
 
                             if (filename.startsWith(logFolder) && fs.existsSync(filename)) {
                                 const stat = fs.lstatSync(filename);
-                                // if file is archive
+                                // if a file is an archive
                                 if (filename.toLowerCase().endsWith('.gz')) {
                                     // try to not process to big files
                                     if (stat.size > 1024 * 1024 /* || !fs.existsSync('/dev/null')*/) {
@@ -1152,7 +1152,19 @@ class Web {
                     if (await this.adapter.fileExists(adapterName, url)) {
                         const { mimeType, file } = await this.adapter.readFileAsync(adapterName, url);
 
-                        res.contentType(mimeType || 'text/javascript');
+                        // special case for svg stored into logo.png
+                        if (url.endsWith('.png') && file.length < 30000) {
+                            const str = file.toString('utf8');
+                            if (str.startsWith('<svg') || str.startsWith('<xml') || str.startsWith('<?xml')) {
+                                // it is svg
+                                res.contentType('image/svg+xml');
+                                res.send(str);
+                                return;
+                            }
+                            res.contentType('image/png');
+                        } else {
+                            res.contentType(mimeType || 'text/javascript');
+                        }
 
                         if (adapterName === this.adapter.namespace && url.startsWith('zip/')) {
                             // special files, that can be read-only one time

@@ -28,12 +28,27 @@ function build() {
     return buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true });
 }
 
+function syncUtils() {
+    const stat1 = fs.statSync(`${__dirname}/src-admin/src/helpers/utils.ts`);
+    const stat2 = fs.statSync(`${__dirname}/src/lib/utils.ts`);
+    const data1 = fs.readFileSync(`${__dirname}/src-admin/src/helpers/utils.ts`).toString();
+    const data2 = fs.readFileSync(`${__dirname}/src/lib/utils.ts`).toString();
+    if (data1 !== data2) {
+        if (stat1.mtimeMs > stat2.mtimeMs) {
+            fs.writeFileSync(`${__dirname}/src/lib/utils.ts`, data1);
+        } else {
+            fs.writeFileSync(`${__dirname}/src-admin/src/helpers/utils.ts`, data2);
+        }
+    }
+}
+
 function copyAllFiles() {
     deleteFoldersRecursive(`${__dirname}/build`);
     deleteFoldersRecursive(`${__dirname}/admin/custom`);
     deleteFoldersRecursive(`${__dirname}/${srcRx}public/lib/js/crypto-js`);
     deleteFoldersRecursive(`${__dirname}/../dm-gui-components/build/src`);
     deleteFoldersRecursive(`${__dirname}/../jsonConfig/build/src`);
+    syncUtils();
 
     let readme = fs.readFileSync(`${__dirname}/../../README.md`).toString('utf8');
     readme = readme.replaceAll('packages/admin/', '');
@@ -122,7 +137,9 @@ function clean() {
 
 if (process.argv.includes('--backend-i18n')) {
     copyFiles(['src/i18n/*'], 'build-backend/i18n');
+    syncUtils();
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-configCSS')) {
+    syncUtils();
     configCSS().catch(e => {
         console.error(e);
         process.exit(1);
@@ -138,6 +155,7 @@ if (process.argv.includes('--backend-i18n')) {
         process.exit(1);
     });
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-1-clean')) {
+    syncUtils();
     clean();
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-2-npm')) {
     if (!fs.existsSync(`${src}node_modules`)) {
@@ -159,6 +177,7 @@ if (process.argv.includes('--backend-i18n')) {
         process.exit(1);
     });
 } else {
+    syncUtils();
     configCSS()
         .then(async () => {
             clean();

@@ -11,7 +11,7 @@ import { PersonAdd as PersonAddIcon, GroupAdd as GroupAddIcon } from '@mui/icons
 
 import { Utils, type AdminConnection, type Translate, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
 
-import { isTouchDevice } from '@/helpers/utils';
+import AdminUtils from '@/helpers/AdminUtils';
 import UserBlock from './UserBlock';
 import GroupBlock from './GroupBlock';
 import UserEditDialog from './UserEditDialog';
@@ -502,7 +502,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         }
 
         return (
-            <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
+            <DndProvider backend={AdminUtils.isTouchDevice() ? TouchBackend : HTML5Backend}>
                 <DndPreview />
                 <Box
                     component="div"

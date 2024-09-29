@@ -18,7 +18,7 @@ import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { withWidth, Error as DialogError, Confirm as ConfirmDialog, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import { ConfigGeneric, JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
 import type { BasicComponentProps } from '@/types';
 
 const styles: Record<string, React.CSSProperties> = {

@@ -29,7 +29,7 @@ import {
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
-import { isTouchDevice } from '@/helpers/utils';
+import AdminUtils from '@/helpers/AdminUtils';
 import { type DragItem } from './DragObjectBrowser';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
@@ -664,7 +664,7 @@ const EnumBlockDrag = (props: EnumBlockDragProps): JSX.Element => {
         );
     }
 
-    return isTouchDevice() ? (
+    return AdminUtils.isTouchDevice() ? (
         <div
             ref={drop}
             style={{ opacity: canDrop && isOver ? 0.5 : 1 }}

@@ -12,7 +12,7 @@ import InstanceGeneric, {
     type InstanceGenericState,
 } from './InstanceGeneric';
 import IsVisible from '../IsVisible';
-import AdminUtils from '../../AdminUtils';
+import AdminUtils from '../../helpers/AdminUtils';
 
 const styles: Record<string, any> = {
     ...genericStyles,

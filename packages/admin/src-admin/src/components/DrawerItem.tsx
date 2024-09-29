@@ -6,7 +6,7 @@ import { DragHandle } from '@mui/icons-material';
 import { amber } from '@mui/material/colors';
 
 import { Utils, ColorPicker, type IobTheme } from '@iobroker/adapter-react-v5';
-import AdminUtils from '../AdminUtils';
+import AdminUtils from '../helpers/AdminUtils';
 
 const styles: Record<string, any> = {
     selected: (theme: IobTheme) => ({

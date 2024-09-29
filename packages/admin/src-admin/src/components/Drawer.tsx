@@ -32,7 +32,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import { getHref } from '@/tabs/CustomTab';
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type NotificationAnswer } from '@/Workers/HostsWorker';

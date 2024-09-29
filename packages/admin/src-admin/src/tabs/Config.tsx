@@ -46,7 +46,7 @@ import {
 import { type DeviceManagerPropsProps, JsonConfig } from '@iobroker/json-config';
 import DeviceManager from '@iobroker/dm-gui-components';
 
-import AdminUtils from '../AdminUtils';
+import AdminUtils from '../helpers/AdminUtils';
 
 const arrayLogLevel: ioBroker.LogLevel[] = ['silly', 'debug', 'info', 'warn', 'error'];
 

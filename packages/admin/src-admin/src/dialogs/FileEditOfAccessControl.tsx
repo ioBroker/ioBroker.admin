@@ -12,7 +12,7 @@ import {
 
 import type { FolderOrFileItem, Folders, MetaACL, MetaObject } from '@/components/FileBrowser';
 
-import AdminUtils from '../AdminUtils';
+import AdminUtils from '../helpers/AdminUtils';
 import CustomModal from '../components/CustomModal';
 
 const readWriteArray: Record<string, { name: 'read' | 'write'; valueNum: number; title: string }[]>[] = [

@@ -33,7 +33,8 @@ import {
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
+import { replaceLink } from '@/helpers/utils';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type { InstanceLink } from '@/components/Instances/LinksDialog';
 import Config from './Config';
@@ -419,7 +420,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 }
 
                 const urls =
-                    AdminUtils.replaceLink(link.link, common.name, instanceId, {
+                    replaceLink(link.link, common.name, instanceId, {
                         instances: instancesFromWorker,
                         hostname: this.props.hostname,
                         hosts,
