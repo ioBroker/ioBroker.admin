@@ -1,0 +1,47 @@
+{
+    "name": "src-rx",
+    "private": true,
+    "homepage": ".",
+    "scripts": {
+        "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && craco start",
+        "old-start": "react-scripts start",
+        "lint": "eslint -c eslint.config.mjs src",
+        "build": "craco build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
+        "check-ts": "tsc --noEmit --checkJS false",
+        "tsc": "tsc --project tsconfig.json",
+        "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not op_mini all"
+    ],
+    "dependencies": {
+        "@iobroker/json-config": "file:../../jsonConfig",
+        "@iobroker/dm-gui-components": "file:../../dm-gui-components"
+    },
+    "devDependencies": {
+        "http-proxy-middleware": "^3.0.2"
+    },
+    "proxya": "http://127.0.0.1:8081",
+    "plugins": [
+        [
+            "@babel/plugin-proposal-decorators",
+            {
+                "legacy": true
+            }
+        ],
+        [
+            "@babel/plugin-proposal-class-properties",
+            {
+                "loose": true
+            }
+        ]
+    ],
+    "version": "7.1.5"
+}

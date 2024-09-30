@@ -1,31 +1,30 @@
 import React from 'react';
 
+import type { ActionBase, DeviceAction } from '@iobroker/dm-utils';
 import TooltipButton from './TooltipButton';
-import { renderIcon, getTranslation } from './Utils';
-import type { ActionBase } from '@iobroker/dm-utils/build/types/base';
+import { renderActionIcon, getTranslation } from './Utils';
 
 interface DeviceActionButtonProps {
     deviceId: string;
-    action: any;
+    action: DeviceAction;
     refresh: () => void;
-    deviceHandler: (deviceId: string, action: ActionBase<'api'>, refresh: () => void) => () => void;
+    deviceHandler: (deviceId: string, action: ActionBase, refresh: () => void) => () => void;
     disabled?: boolean;
 }
 
 export default function DeviceActionButton(props: DeviceActionButtonProps): React.JSX.Element {
-    const {
-        deviceId, action, refresh, deviceHandler, disabled,
-    } = props;
+    const { deviceId, action, refresh, deviceHandler, disabled } = props;
 
-    const tooltip = getTranslation(action.description);
+    const icon = renderActionIcon(action);
 
-    const icon = renderIcon(action);
+    const tooltip = getTranslation(action.description ?? '') || (icon ? null : action.id);
 
-    return <TooltipButton
-        label={action.label || (icon ? null : action.id)}
-        tooltip={tooltip}
-        disabled={disabled || action.disabled}
-        Icon={icon}
-        onClick={deviceHandler(deviceId, action, refresh)}
-    />;
+    return (
+        <TooltipButton
+            tooltip={tooltip || undefined}
+            disabled={disabled || action.disabled}
+            Icon={icon}
+            onClick={deviceHandler(deviceId, action, refresh)}
+        />
+    );
 }

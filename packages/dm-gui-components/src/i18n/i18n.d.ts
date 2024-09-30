@@ -8,19 +8,21 @@
  */
 
 /*
- * DO NOT add any imports or exports in this file or it will stop working!
+ * DO NOT add any imports or exports in this file, or it will stop working!
  */
 
 /**
  * Available words in `i18n/en.json`.
  */
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 declare type AdminWord = keyof typeof import('./en.json');
 
 declare module '@iobroker/adapter-react/i18n' {
-	/**
-	 * Translate the given string to the selected language.
-	 * @param word The (key) word to look up the string. Has to be defined at least in `i18n/en.json`.
-	 * @param args Optional arguments which will replace the first (second, third, ...) occurence of %s
-	 */
-	function t(word: AdminWord, ...args: string[]): string;
+    /**
+     * Translate the given string to the selected language.
+     *
+     * @param word The (key) word to look up the string. It Has to be defined at least in `i18n/en.json`.
+     * @param args Optional arguments which will replace the first (second, third, ...) occurrence of %s
+     */
+    function t(word: AdminWord, ...args: string[]): string;
 }

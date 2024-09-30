@@ -1,28 +1,28 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 import MD5 from 'crypto-js/md5';
 
-import LinearProgress from '@mui/material/LinearProgress';
-import Tooltip from '@mui/material/Tooltip';
-import Fab from '@mui/material/Fab';
-import PublishIcon from '@mui/icons-material/Publish';
+import { Fab, Tooltip, LinearProgress } from '@mui/material';
+import { Publish as PublishIcon } from '@mui/icons-material';
 
 import {
     I18n,
     Router,
     SaveCloseButtons,
-    Theme as theme,
-    Confirm as ConfirmDialog, AdminConnection,
+    Theme,
+    Confirm as ConfirmDialog,
+    type AdminConnection,
+    type IobTheme,
+    type ThemeName,
+    type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
-import type { Theme } from '@iobroker/adapter-react-v5/types';
-import type { SystemConfig } from '@iobroker/socket-client';
+import type { ConfigItemAny, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
 import Utils from '#JC/Utils';
-import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
+import ConfigGeneric, { type DeviceManagerPropsProps } from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
     root: {
         width: '100%',
         height: '100%',
@@ -30,7 +30,7 @@ const styles = {
         position: 'relative',
     },
     scroll: {
-        height: 'calc(100% - 48px - 48px)',
+        height: 'calc(100% - 48px)',
         overflowY: 'auto',
     },
     exportImportButtons: {
@@ -40,19 +40,22 @@ const styles = {
         zIndex: 3,
     },
     button: {
-        marginRight: 5,
+        marginRight: '5px',
     },
-} satisfies Styles<any, any>;
+    tooltip: {
+        pointerEvents: 'none',
+    },
+};
 
 /**
  * Decrypt the password/value with given key
+ *
  * @param key - Secret key
  * @param value - value to decrypt
  */
 function decryptLegacy(key: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
-        // eslint-disable-next-line no-bitwise
         result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -60,13 +63,13 @@ function decryptLegacy(key: string, value: string): string {
 
 /**
  * Encrypt the password/value with given key
+ *
  * @param key - Secret key
  * @param value - value to encrypt
  */
 function encryptLegacy(key: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
-        // eslint-disable-next-line no-bitwise
         result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -85,6 +88,7 @@ function encryptLegacy(key: string, value: string): string {
  *          // ...
  *     }
  *  ```
+ *
  * @param key - Secret key
  * @param value - value to decrypt
  */
@@ -104,7 +108,9 @@ function decrypt(key: string, value: string): string {
     const _key = window.CryptoJS.enc.Hex.parse(key);
     const iv = window.CryptoJS.enc.Hex.parse(textParts[1]);
 
-    const cipherParams = window.CryptoJS.lib.CipherParams.create({ ciphertext: window.CryptoJS.enc.Hex.parse(textParts[2]) });
+    const cipherParams = window.CryptoJS.lib.CipherParams.create({
+        ciphertext: window.CryptoJS.enc.Hex.parse(textParts[2]),
+    });
 
     const decryptedBinary = window.CryptoJS.AES.decrypt(cipherParams, _key, { iv });
 
@@ -125,6 +131,7 @@ function decrypt(key: string, value: string): string {
  *          ...
  *    }
  *  ```
+ *
  * @param key - Secret key
  * @param value - value to encrypt
  * @param _iv - optional initial vector for tests
@@ -152,12 +159,12 @@ function encrypt(key: string, value: string, _iv?: string): string {
     return `$/aes-192-cbc:${window.CryptoJS.enc.Hex.stringify(iv)}:${encrypted}`;
 }
 
-function loadScript(src: string, id: string) {
+function loadScript(src: string, id: string): ((this: GlobalEventHandlers, ev: Event) => any) | null | Promise<void> {
     if (!id || !document.getElementById(id)) {
         return new Promise(resolve => {
             const script = document.createElement('script');
             script.setAttribute('id', id);
-            script.onload = resolve;
+            script.onload = resolve as unknown as (this: GlobalEventHandlers, ev: Event) => any;
             script.src = src;
             document.getElementsByTagName('head')[0].appendChild(script);
         });
@@ -170,55 +177,43 @@ interface BufferObject {
     data: Buffer;
 }
 
-interface Schema {
-    type: string;
-    items: Schema[];
-    max?: number;
-    min?: number;
-    trim?: boolean;
-    attr?: string;
-    doNotSave?: boolean;
-}
-
 interface JsonConfigProps {
-    menuPadding: number;
     adapterName: string;
     instance: number;
     isFloatComma: boolean;
     dateFormat: string;
-    secret: string;
+    secret?: string;
     socket: AdminConnection;
-    theme: Record<string, any>;
-    themeName: string;
-    themeType: string;
-    /** CSS classes */
-    classes: Record<string, any>;
+    theme: IobTheme;
+    themeName: ThemeName;
+    themeType: ThemeType;
     /** Translate method */
     t: typeof I18n.t;
     configStored: (notChanged: boolean) => void;
-    width: 'xs' | 'sm' | 'md';
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    DeviceManager?: React.FC<DeviceManagerPropsProps>;
 }
 
 interface JsonConfigState {
-    schema?: Schema;
+    schema?: ConfigItemPanel | ConfigItemTabs;
     data?: Record<string, unknown>;
     originalData?: Record<string, unknown>;
     updateData: number;
     common?: ioBroker.InstanceCommon;
     changed: boolean;
     confirmDialog: boolean;
-    theme: Theme;
+    theme: IobTheme;
     saveConfigDialog: boolean;
     hash: string;
-    error?: string;
+    error?: boolean;
 }
 
 class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
-    private fileSubscribed = '';
+    private fileSubscribed: string[] = [];
 
     private fileLangSubscribed = '';
 
-    private secret = '';
+    private secret: string;
 
     constructor(props: JsonConfigProps) {
         super(props);
@@ -227,61 +222,73 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             updateData: 0,
             changed: false,
             confirmDialog: false,
-            theme: theme(props.themeName), // buttons require special theme
+            theme: Theme(props.themeName), // buttons require special theme
             saveConfigDialog: false,
             hash: '_',
         };
 
-        this.getInstanceObject()
-            .then(obj => this.getConfigFile()
-                .then(schema =>
-                    // load language
-                // @ts-expect-error it has the static method
-                    JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName)
-                        .then((langFileName: string) => {
-                            if (langFileName) {
-                                // subscribe on changes
-                                if (!this.fileLangSubscribed) {
-                                    this.fileLangSubscribed = langFileName;
-                                    this.props.socket.subscribeFiles(`${this.props.adapterName}.admin`, this.fileLangSubscribed, this.onFileChange);
-                                }
-                            }
+        this.secret = props.secret || '';
 
-                            if (obj) {
-                                this.setState({
-                                    schema,
-                                    data: obj.native,
-                                    common: obj.common,
-                                    // @ts-expect-error really no string?
-                                    hash: MD5(JSON.stringify(schema)),
-                                });
-                            } else {
-                                window.alert(`Instance system.adapter.${this.props.adapterName}.${this.props.instance} not found!`);
+        void this.getInstanceObject().then(obj =>
+            this.getConfigFile().then(schema =>
+                // load language
+                JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName).then(
+                    (langFileName: string) => {
+                        if (langFileName) {
+                            // subscribe on changes
+                            if (!this.fileLangSubscribed) {
+                                this.fileLangSubscribed = langFileName;
+                                void this.props.socket.subscribeFiles(
+                                    `${this.props.adapterName}.admin`,
+                                    this.fileLangSubscribed,
+                                    this.onFileChange,
+                                );
                             }
-                        })));
+                        }
+
+                        if (obj) {
+                            this.setState({
+                                schema,
+                                data: obj.native,
+                                common: obj.common,
+                                hash: MD5(JSON.stringify(schema)).toString(),
+                            });
+                        } else {
+                            window.alert(
+                                `Instance system.adapter.${this.props.adapterName}.${this.props.instance} not found!`,
+                            );
+                        }
+                    },
+                ),
+            ),
+        );
     }
 
     componentWillUnmount(): void {
         super.componentWillUnmount();
-        if (this.fileSubscribed) {
-            this.props.socket.unsubscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
-            this.fileSubscribed = '';
+        if (this.fileSubscribed.length) {
+            this.props.socket.unsubscribeFiles(
+                `${this.props.adapterName}.admin`,
+                this.fileSubscribed,
+                this.onFileChange,
+            );
+            this.fileSubscribed = [];
         }
         if (this.fileLangSubscribed) {
-            this.props.socket.unsubscribeFiles(`${this.props.adapterName}.admin`, this.fileLangSubscribed, this.onFileChange);
+            this.props.socket.unsubscribeFiles(
+                `${this.props.adapterName}.admin`,
+                this.fileLangSubscribed,
+                this.onFileChange,
+            );
             this.fileLangSubscribed = '';
         }
     }
 
-    /**
-     * @private
-     * @param evt
-     */
-    handleFileSelect = (evt: Record<string, any>): void => {
+    private handleFileSelect = (evt: Record<string, any>): void => {
         const f = evt.target.files[0];
         if (f) {
             const r = new FileReader();
-            r.onload = async e => {
+            r.onload = (e: ProgressEvent<FileReader>): void => {
                 if (!e.target) {
                     return;
                 }
@@ -290,7 +297,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 try {
                     const data = JSON.parse(contents);
                     this.setState({ data, changed: JSON.stringify(data) !== JSON.stringify(this.state.originalData) });
-                } catch (err) {
+                } catch {
                     window.alert(I18n.t('[JsonConfig] Failed to parse JSON file'));
                 }
             };
@@ -300,58 +307,71 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         }
     };
 
-    getExportImportButtons(): React.JSX.Element {
-        return <div className={this.props.classes.exportImportButtons}>
-            <Tooltip title={this.props.t('Import settings from JSON file')}>
-                <Fab
-                    size="small"
-                    classes={{ root: this.props.classes.button }}
-                    onClick={() => {
-                        const input = document.createElement('input');
-                        input.setAttribute('type', 'file');
-                        input.setAttribute('id', 'files');
-                        // @ts-expect-error check
-                        input.setAttribute('opacity', 0);
-                        input.addEventListener('change', e => this.handleFileSelect(e), false);
-                        input.click();
-                    }}
+    getExportImportButtons(): JSX.Element {
+        return (
+            <div style={styles.exportImportButtons}>
+                <Tooltip
+                    title={this.props.t('Import settings from JSON file')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
-                    <PublishIcon />
-                </Fab>
-            </Tooltip>
-            <Tooltip title={this.props.t('Export setting to JSON file')}>
-                <Fab
-                    size="small"
-                    classes={{ root: this.props.classes.button }}
-                    onClick={() => {
-                        if (!this.state.data) {
-                            return;
-                        }
+                    <Fab
+                        size="small"
+                        sx={{ '&.MuiFab-root': styles.button }}
+                        onClick={() => {
+                            const input = document.createElement('input');
+                            input.setAttribute('type', 'file');
+                            input.setAttribute('id', 'files');
+                            // @ts-expect-error check
+                            input.setAttribute('opacity', 0);
+                            input.addEventListener('change', e => this.handleFileSelect(e), false);
+                            input.click();
+                        }}
+                    >
+                        <PublishIcon />
+                    </Fab>
+                </Tooltip>
+                <Tooltip
+                    title={this.props.t('Export setting to JSON file')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <Fab
+                        size="small"
+                        sx={{ '&.MuiFab-root': styles.button }}
+                        onClick={() => {
+                            if (!this.state.data) {
+                                return;
+                            }
 
-                        Utils.generateFile(`${this.props.adapterName}.${this.props.instance}.json`, this.state.data);
-                    }}
-                >
-                    <PublishIcon style={{ transform: 'rotate(180deg)' }} />
-                </Fab>
-            </Tooltip>
-        </div>;
+                            Utils.generateFile(
+                                `${this.props.adapterName}.${this.props.instance}.json`,
+                                this.state.data,
+                            );
+                        }}
+                    >
+                        <PublishIcon style={{ transform: 'rotate(180deg)' }} />
+                    </Fab>
+                </Tooltip>
+            </div>
+        );
     }
 
     onFileChange = async (id: string, fileName: string, size: number): Promise<void> => {
         if (id === `${this.props.adapterName}.admin` && size) {
-            if (fileName === this.fileLangSubscribed)  {
+            if (fileName === this.fileLangSubscribed) {
                 try {
-                    // @ts-expect-error needs types
-                    await JsonConfigComponent.loadI18n(this.props.socket, this.state.schema?.i18n, this.props.adapterName);
+                    await JsonConfigComponent.loadI18n(
+                        this.props.socket,
+                        this.state.schema?.i18n,
+                        this.props.adapterName,
+                    );
                     this.setState({ hash: `${this.state.hash}1` });
                 } catch {
                     // ignore errors
                 }
-            } else if (fileName === this.fileSubscribed) {
+            } else if (this.fileSubscribed.includes(fileName)) {
                 try {
-                    const schema = await this.getConfigFile(this.fileSubscribed);
-                    // @ts-expect-error really no string?
-                    this.setState({ schema, hash: MD5(JSON.stringify(schema)) });
+                    const schema = await this.getConfigFile(this.fileSubscribed[0]);
+                    this.setState({ schema, hash: MD5(JSON.stringify(schema)).toString() });
                 } catch {
                     // ignore errors
                 }
@@ -359,113 +379,157 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         }
     };
 
-    getInstanceObject(): Promise<ioBroker.InstanceObject | void> {
-        return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
-            .then((obj: ioBroker.InstanceObject) => {
-                // decode all native attributes listed in obj.encryptedNative
-                if (Array.isArray(obj.encryptedNative)) {
-                    return this.props.socket.getSystemConfig()
-                        .then(async (systemConfig: SystemConfig) => {
-                            await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
-                            this.secret = systemConfig.native.secret;
-                            obj.encryptedNative?.forEach(attr => {
-                                if (obj.native[attr]) {
-                                    obj.native[attr] = decrypt(this.secret, obj.native[attr]);
-                                }
-                            });
-                            return obj;
-                        });
+    async getInstanceObject(): Promise<ioBroker.InstanceObject | null> {
+        try {
+            const obj = await this.props.socket.getObject(
+                `system.adapter.${this.props.adapterName}.${this.props.instance}`,
+            );
+            // decode all native attributes listed in obj.encryptedNative
+            if (Array.isArray(obj.encryptedNative)) {
+                if (!this.secret) {
+                    const systemConfig = await this.props.socket.getSystemConfig();
+                    await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
+                    this.secret = systemConfig.native.secret;
                 }
+                obj.encryptedNative?.forEach(attr => {
+                    if (obj.native[attr]) {
+                        obj.native[attr] = decrypt(this.secret, obj.native[attr]);
+                    }
+                });
                 return obj;
-            })
-            .catch((e: any) => window.alert(`[JsonConfig] Cannot read instance object: ${e}`));
+            }
+            return obj;
+        } catch (e) {
+            window.alert(`[JsonConfig] Cannot read instance object: ${e}`);
+        }
+        return null;
     }
 
-    renderConfirmDialog(): React.JSX.Element | null {
+    renderConfirmDialog(): JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }
-        return <ConfirmDialog
-            title={I18n.t('ra_Please confirm')}
-            text={I18n.t('ra_Some data are not stored. Discard?')}
-            ok={I18n.t('ra_Discard')}
-            cancel={I18n.t('ra_Cancel')}
-            onClose={isYes =>
-                this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate(null))}
-        />;
+        return (
+            <ConfirmDialog
+                title={I18n.t('ra_Please confirm')}
+                text={I18n.t('ra_Some data are not stored. Discard?')}
+                ok={I18n.t('ra_Discard')}
+                cancel={I18n.t('ra_Cancel')}
+                onClose={isYes => this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate(null))}
+            />
+        );
     }
 
-    getConfigFile(fileName?: string): Promise<Schema> {
+    async scanForInclude(json: Record<string, any>, filePaths: string[]): Promise<Record<string, any>> {
+        if (typeof json['#include'] === 'string') {
+            // load file
+            const data = await this._getConfigFile(json['#include'], [...filePaths]);
+            delete json['#include'];
+            if (data) {
+                // merge data
+                json = { ...json, ...data };
+            }
+            return json;
+        }
+        const keys = Object.keys(json);
+        for (let k = 0; k < keys.length; k++) {
+            if (json[keys[k]] && typeof json[keys[k]] === 'object') {
+                json[keys[k]] = await this.scanForInclude(json[keys[k]], filePaths);
+            }
+        }
+        return json;
+    }
+
+    async getConfigFile(fileName?: string): Promise<ConfigItemPanel | ConfigItemTabs> {
+        return this._getConfigFile(fileName);
+    }
+
+    async _getConfigFile(fileName?: string, _filePaths?: string[]): Promise<ConfigItemPanel | ConfigItemTabs> {
         fileName = fileName || 'jsonConfig.json5';
+        _filePaths = _filePaths || [];
 
-        return this.props.socket.fileExists(`${this.props.adapterName}.admin`, fileName)
-            .then((exist: boolean) => {
-                if (!exist) {
-                    fileName = 'jsonConfig.json';
-                }
-                return this.props.socket.readFile(`${this.props.adapterName}.admin`, fileName);
-            })
-            .then(data => {
-                let content = '';
-                let file: string | BufferObject = '';
+        if (_filePaths.includes(fileName)) {
+            window.alert(`[JsonConfig] Circular reference in file: ${fileName} => ${_filePaths.join(' => ')}`);
+            return null;
+        }
+        _filePaths.push(fileName);
 
-                if (data.file !== undefined) {
-                    file = data.file;
-                }
+        try {
+            const exist = await this.props.socket.fileExists(`${this.props.adapterName}.admin`, fileName);
+            if (!exist) {
+                fileName = 'jsonConfig.json';
+            }
+            const data: {
+                file: string;
+                mimeType: string;
+            } = await this.props.socket.readFile(`${this.props.adapterName}.admin`, fileName);
+            let content = '';
+            let file: string | BufferObject = '';
 
-                if (typeof file === 'string') {
-                    content = file;
-                    // @ts-expect-error revisit
-                } else if (file.type === 'Buffer') {
-                    let binary = '';
-                    // @ts-expect-error revisit
-                    const bytes = new Uint8Array(file.data);
-                    const len = bytes.byteLength;
-                    for (let i = 0; i < len; i++) {
-                        binary += String.fromCharCode(bytes[i]);
-                    }
-                    content = binary;
-                }
+            if (data.file !== undefined) {
+                file = data.file;
+            }
 
-                // subscribe on changes
-                if (!this.fileSubscribed) {
-                    this.fileSubscribed = fileName ?? '';
-                    this.props.socket.subscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
+            if (typeof file === 'string') {
+                content = file;
+                // @ts-expect-error revisit
+            } else if (file.type === 'Buffer') {
+                let binary = '';
+                // @ts-expect-error revisit
+                const bytes = new Uint8Array(file.data);
+                const len = bytes.byteLength;
+                for (let i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
                 }
+                content = binary;
+            }
 
-                try {
-                    return JSON5.parse(content);
-                } catch (e) {
-                    window.alert('[JsonConfig] Cannot parse json5 config!');
-                    console.log(e);
-                    return null;
-                }
-            })
-            .catch((e: any) => !this.state.schema && window.alert(`[JsonConfig] Cannot read file: ${e}`));
+            // subscribe on changes
+            if (!this.fileSubscribed.includes(fileName)) {
+                this.fileSubscribed.push(fileName);
+                await this.props.socket.subscribeFiles(`${this.props.adapterName}.admin`, fileName, this.onFileChange);
+            }
+
+            try {
+                // detect #include attr
+                return (await this.scanForInclude(JSON5.parse(content), _filePaths)) as
+                    | ConfigItemPanel
+                    | ConfigItemTabs;
+            } catch (e) {
+                window.alert('[JsonConfig] Cannot parse json5 config!');
+                console.log(e);
+            }
+        } catch (e1) {
+            if (!this.state.schema) {
+                window.alert(`[JsonConfig] Cannot read file "${fileName}: ${e1}`);
+            }
+        }
+        return null;
     }
 
-    renderSaveConfigDialog(): React.JSX.Element | null {
+    renderSaveConfigDialog(): JSX.Element | null {
         if (!this.state.saveConfigDialog) {
             return null;
         }
-        return <ConfirmDialog
-            title={I18n.t('ra_Please confirm')}
-            text={I18n.t('Save configuration?')}
-            ok={I18n.t('ra_Save')}
-            cancel={I18n.t('ra_Cancel')}
-            onClose={isYes =>
-                this.setState({ saveConfigDialog: false }, () => isYes && this.onSave(true))}
-        />;
+        return (
+            <ConfirmDialog
+                title={I18n.t('ra_Please confirm')}
+                text={I18n.t('Save configuration?')}
+                ok={I18n.t('ra_Save')}
+                cancel={I18n.t('ra_Cancel')}
+                onClose={isYes => this.setState({ saveConfigDialog: false }, () => isYes && this.onSave(true))}
+            />
+        );
     }
 
-    findAttr(attr: string, schema?: Schema): Schema | null {
+    findAttr(attr: string, schema?: ConfigItemPanel | ConfigItemTabs): ConfigItemAny | null {
         schema = schema || this.state.schema;
         if (schema?.items) {
             if (attr in schema.items) {
-                return schema.items[attr as any];
+                return schema.items[attr];
             }
             for (const _item of Object.values(schema.items)) {
-                const item = this.findAttr(attr, _item);
+                const item = this.findAttr(attr, _item as ConfigItemPanel | ConfigItemTabs);
                 if (item) {
                     return item;
                 }
@@ -476,7 +540,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
     }
 
     // this function is called recursively and trims all text fields, that must be trimmed
-    postProcessing(data: Record<string, unknown>, attr: string, schema: Schema): void {
+    postProcessing(data: Record<string, unknown>, attr: string, schema: ConfigItemAny): void {
         schema = schema || this.state.schema;
         if (!data) {
             // should not happen
@@ -486,7 +550,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
         const dataAttr = data[attr];
 
-        if (schema.items) {
+        if ((schema as ConfigItemTabs).items) {
             if (schema.type === 'table') {
                 const table = dataAttr;
 
@@ -496,12 +560,16 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
                 for (const entry of table) {
                     for (const tItem of schema.items) {
-                        this.postProcessing(entry, tItem.attr as string, tItem);
+                        this.postProcessing(entry, tItem.attr, tItem as ConfigItemAny);
                     }
                 }
             } else {
-                for (const [_attr, item] of Object.entries(schema.items)) {
-                    if (item.type === 'panel' || item.type === 'tabs' || item.type === 'accordion') {
+                for (const [_attr, item] of Object.entries((schema as ConfigItemTabs).items)) {
+                    if (
+                        (item as any).type === 'panel' ||
+                        (item as any).type === 'tabs' ||
+                        (item as any).type === 'accordion'
+                    ) {
                         return;
                     }
                     this.postProcessing(data, _attr, item);
@@ -535,14 +603,19 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 }
                 if (data[attr] !== 0 && dataVal < 20) {
                     data[attr] = 20;
-                } else if (dataVal > 0xFFFF) {
-                    data[attr] = 0xFFFF;
+                } else if (dataVal > 0xffff) {
+                    data[attr] = 0xffff;
                 } else {
                     data[attr] = dataVal;
                 }
             } else if (schema.type === 'checkbox') {
                 // should not happen
-                data[attr] = data[attr] === true || data[attr] === 'true' || data[attr] === 'on' || data[attr] === 1 || data[attr] === '1';
+                data[attr] =
+                    data[attr] === true ||
+                    data[attr] === 'true' ||
+                    data[attr] === 'on' ||
+                    data[attr] === 1 ||
+                    data[attr] === '1';
             }
         }
     }
@@ -565,7 +638,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
             for (const attr of Object.keys(this.state.data)) {
                 const item = this.findAttr(attr);
-                if ((!item || !item.doNotSave) && !attr.startsWith('_')) {
+                if ((!item || !item.doNotSave || item.type === 'state') && !attr.startsWith('_')) {
                     ConfigGeneric.setValue(obj.native, attr, this.state.data[attr]);
                 } else {
                     ConfigGeneric.setValue(obj.native, attr, null);
@@ -595,13 +668,15 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             const nativeWithNonSaved = { ...obj.native, ...doNotSaveAttributes };
             console.log(nativeWithNonSaved);
 
-            this.setState({
-                changed: false,
-                data: nativeWithNonSaved,
-                updateData: this.state.updateData + 1,
-                originalData: nativeWithNonSaved,
-            }, () =>
-                close && Router.doNavigate(null));
+            this.setState(
+                {
+                    changed: false,
+                    data: nativeWithNonSaved,
+                    updateData: this.state.updateData + 1,
+                    originalData: nativeWithNonSaved,
+                },
+                () => close && Router.doNavigate(null),
+            );
         } else if (this.state.changed) {
             this.setState({ confirmDialog: true });
         } else {
@@ -618,68 +693,71 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
     /**
      * Validate the JSON config once on mount
      */
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         const link = `${window.location.protocol}//${window.location.host}${window.location.pathname}validate_config/${this.props.adapterName}`;
         console.log(`fetch ${link}`);
         await fetch(link);
     }
 
-    render(): React.JSX.Element {
-        const { classes } = this.props;
+    render(): JSX.Element {
         if (!this.state.data || !this.state.schema) {
             return <LinearProgress />;
         }
 
-        return <div className={this.props.classes.root}>
-            {this.renderConfirmDialog()}
-            {this.getExportImportButtons()}
-            {this.renderSaveConfigDialog()}
-            <JsonConfigComponent
-                key={this.state.hash as string}
-                // @ts-expect-error types not correct yet
-                className={classes.scroll}
-                socket={this.props.socket}
-                theme={this.props.theme}
-                themeName={this.props.themeName}
-                themeType={this.props.themeType}
-                adapterName={this.props.adapterName}
-                instance={this.props.instance}
-                isFloatComma={this.props.isFloatComma}
-                dateFormat={this.props.dateFormat}
-                schema={this.state.schema}
-                common={this.state.common}
-                data={this.state.data}
-                updateData={this.state.updateData}
-                onError={error => this.setState({ error })}
-                onChange={(data, changed, saveConfigDialog) => {
-                    if (saveConfigDialog && this.state.error) {
-                        window.alert(I18n.t('Cannot save configuration because of error in configuration'));
-                        saveConfigDialog = false;
+        return (
+            <div style={styles.root}>
+                {this.renderConfirmDialog()}
+                {this.getExportImportButtons()}
+                {this.renderSaveConfigDialog()}
+                <JsonConfigComponent
+                    key={this.state.hash}
+                    style={styles.scroll}
+                    socket={this.props.socket}
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                    adapterName={this.props.adapterName}
+                    instance={this.props.instance}
+                    isFloatComma={this.props.isFloatComma}
+                    dateFormat={this.props.dateFormat}
+                    schema={this.state.schema}
+                    common={this.state.common}
+                    data={this.state.data}
+                    updateData={this.state.updateData}
+                    onError={error => this.setState({ error })}
+                    onChange={(data, changed, saveConfigDialog) => {
+                        if (saveConfigDialog && this.state.error) {
+                            window.alert(I18n.t('Cannot save configuration because of error in configuration'));
+                            saveConfigDialog = false;
+                        }
+                        if (saveConfigDialog && !this.state.changed && !changed) {
+                            saveConfigDialog = false;
+                        }
+                        if (data) {
+                            this.setState({ data, changed, saveConfigDialog });
+                        } else if (saveConfigDialog !== undefined) {
+                            this.setState({ saveConfigDialog });
+                        }
+                    }}
+                    DeviceManager={this.props.DeviceManager}
+                    theme={this.state.theme}
+                />
+                <SaveCloseButtons
+                    isIFrame={false}
+                    dense
+                    paddingLeft={0}
+                    newReact
+                    theme={this.state.theme}
+                    noTextOnButtons={
+                        this.props.width === 'xs' || this.props.width === 'sm' || this.props.width === 'md'
                     }
-                    if (saveConfigDialog && !this.state.changed && !changed) {
-                        saveConfigDialog = false;
-                    }
-                    if (data) {
-                        this.setState({ data, changed, saveConfigDialog });
-                    } else if (saveConfigDialog !== undefined) {
-                        this.setState({ saveConfigDialog });
-                    }
-                }}
-            />
-            <SaveCloseButtons
-                isIFrame={false}
-                dense
-                paddingLeft={0}
-                newReact
-                theme={this.state.theme}
-                noTextOnButtons={this.props.width === 'xs' || this.props.width === 'sm' || this.props.width === 'md'}
-                changed={!!(this.state.error || this.state.changed)}
-                error={!!this.state.error}
-                onSave={(close: any) => this.onSave(true, close)}
-                onClose={() => this.onSave(false)}
-            />
-        </div>;
+                    changed={!!(this.state.error || this.state.changed)}
+                    error={!!this.state.error}
+                    onSave={(close: boolean) => this.onSave(true, close)}
+                    onClose={() => this.onSave(false)}
+                />
+            </div>
+        );
     }
 }
 
-export default withStyles(styles)(JsonConfig);
+export default JsonConfig;

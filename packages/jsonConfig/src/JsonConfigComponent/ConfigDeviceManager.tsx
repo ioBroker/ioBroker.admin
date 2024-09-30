@@ -1,22 +1,37 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
-import DeviceManager from '@iobroker/dm-gui-components';
+import type { ConfigItemDeviceManager } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-class ConfigDeviceManager extends ConfigGeneric<ConfigGenericProps, ConfigGenericState> {
-    renderItem(): React.JSX.Element | null {
+interface ConfigDeviceManagerProps extends ConfigGenericProps {
+    schema: ConfigItemDeviceManager;
+}
+
+class ConfigDeviceManager extends ConfigGeneric<ConfigDeviceManagerProps, ConfigGenericState> {
+    renderItem(): JSX.Element | null {
         const schema = this.props.schema;
 
         if (!schema) {
             return null;
         }
 
-        return <DeviceManager
-            uploadImagesToInstance={`${this.props.adapterName}.${this.props.instance}`}
-            title={this.props.schema.label}
-            socket={this.props.socket}
-            selectedInstance={`${this.props.adapterName}.${this.props.instance}`}
-        />;
+        if (this.props.DeviceManager) {
+            const DeviceManager = this.props.DeviceManager;
+            return (
+                <DeviceManager
+                    uploadImagesToInstance={`${this.props.adapterName}.${this.props.instance}`}
+                    title={this.getText(this.props.schema.label)}
+                    socket={this.props.socket}
+                    selectedInstance={`${this.props.adapterName}.${this.props.instance}`}
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                    isFloatComma={this.props.isFloatComma}
+                    dateFormat={this.props.dateFormat}
+                />
+            );
+        }
+
+        return <div>DeviceManager not found</div>;
     }
 }
 

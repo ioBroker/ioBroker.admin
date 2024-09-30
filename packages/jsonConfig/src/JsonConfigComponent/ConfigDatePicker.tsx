@@ -1,39 +1,49 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { DatePicker } from '@mui/x-date-pickers';
 
-import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
+import type { ConfigItemDatePicker } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps } from './ConfigGeneric';
 
-export default class ConfigDatePicker extends ConfigGeneric<ConfigGenericProps, ConfigGenericState> {
-    componentDidMount() {
+interface ConfigDatePickerProps extends ConfigGenericProps {
+    schema: ConfigItemDatePicker;
+}
+
+export default class ConfigDatePicker extends ConfigGeneric<ConfigDatePickerProps> {
+    componentDidMount(): void {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         this.setState({ value });
     }
 
-    renderItem(error: unknown, disabled: boolean /* , defaultValue */): React.JSX.Element {
-        return <DatePicker
-            /** @ts-expect-error check this later on */
-            fullWidth
-            margin="normal"
-            format={this.props.systemConfig.dateFormat.toLowerCase().replace('mm', 'MM')}
-            error={!!error}
-            disabled={!!disabled}
-            value={this.state.value}
-            KeyboardButtonProps={{
-                'aria-label': 'change date',
-            }}
-            inputProps={{ maxLength: this.props.schema.maxLength || this.props.schema.max || undefined }}
-            onChange={value => {
-                this.setState({ value }, () =>
-                    this.onChange(this.props.attr, value));
-            }}
-            InputLabelProps={{
-                shrink: true,
-            }}
-            placeholder={this.getText(this.props.schema.placeholder)}
-            label={this.getText(this.props.schema.label)}
-            helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-        />;
+    renderItem(_error: unknown, disabled: boolean /* , defaultValue */): JSX.Element {
+        return (
+            <DatePicker
+                sx={theme => ({
+                    width: '100%',
+                    borderBottom: `1px solid ${theme.palette.text.primary}`,
+                    '& fieldset': {
+                        display: 'none',
+                    },
+                    '& input': {
+                        padding: `${theme.spacing(1.5)} 0 4px 0`,
+                    },
+                    '& .MuiInputAdornment-root': {
+                        marginLeft: 0,
+                        marginTop: 1, // it is already in spaces
+                    },
+                    '& label': {
+                        transform: 'translate(0px, -9px) scale(0.75)',
+                    },
+                })}
+                format={this.props.systemConfig.dateFormat.toLowerCase().replace('mm', 'MM')}
+                disabled={!!disabled}
+                value={this.state.value as never}
+                onChange={value => {
+                    this.setState({ value }, () => this.onChange(this.props.attr, this.state.value));
+                }}
+                label={this.getText(this.props.schema.label)}
+            />
+        );
     }
 }

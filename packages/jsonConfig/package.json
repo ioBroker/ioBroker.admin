@@ -1,25 +1,27 @@
 {
-  "name": "@iobroker/json-config",
-  "description": "This package contains the ioBroker JSON config UI components",
-  "version": "6.14.1",
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
-  "scripts": {
-    "build": "tsc && tsc-alias",
-    "clean": "rimraf build",
-    "prepublishOnly": "npm run build"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@iobroker/adapter-react-v5": "^4.9.10",
-    "@iobroker/dm-gui-components": "file:../dm-gui-components",
-    "crypto-js": "^4.2.0",
-    "react-ace": "^10.1.0"
-  },
-  "files": [
-    "build/",
-    "LICENSE"
-  ]
+    "name": "@iobroker/json-config",
+    "description": "This package contains the ioBroker JSON config UI components",
+    "version": "7.1.5",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "scripts": {
+        "build": "tsc && tsc-alias && node after_build",
+        "clean": "rimraf build",
+        "prepublishOnly": "npm run build",
+        "build:ts": "tsc -p tsconfig.json",
+        "lint": "eslint -c eslint.config.mjs src",
+        "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@iobroker/adapter-react-v5": "^7.1.4",
+        "crypto-js": "^4.2.0",
+        "react-ace": "^12.0.0"
+    },
+    "files": [
+        "build/",
+        "LICENSE"
+    ]
 }

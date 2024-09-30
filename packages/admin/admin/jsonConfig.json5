@@ -7,12 +7,12 @@
       "type": "panel",
       "label": "Main settings",
       "items": {
-
         "bind": {
           "newLine": true,
           "type": "ip",
           "listenOnAllPorts": true,
           "label": "IP",
+          "xs": 12,
           "sm": 12,
           "md": 8,
           "lg": 5
@@ -22,6 +22,7 @@
           "min": 1,
           "max": 65565,
           "label": "Port",
+          "xs": 12,
           "sm": 12,
           "md": 4,
           "lg": 3
@@ -30,6 +31,7 @@
           "newLine": true,
           "type": "checkbox",
           "label": "Secure(HTTPS)",
+          "xs": 12,
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -38,6 +40,7 @@
           "type": "certificates",
           "newLine": true,
           "hidden": "!data.secure",
+          "xs": 12,
           "sm": 12
         },
         "auth": {
@@ -55,6 +58,7 @@
             ]
           },
           "label": "Authentication",
+          "xs": 12,
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -63,6 +67,7 @@
           "hidden": "!!data.auth",
           "type": "user",
           "label": "Run as",
+          "xs": 12,
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -72,6 +77,7 @@
           "type": "number",
           "label": "Login timeout",
           "help": "sec",
+          "xs": 12,
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -110,6 +116,7 @@
               "value": 336
             }
           ],
+          "xs": 12,
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -118,6 +125,7 @@
           "type": "number",
           "min": 50,
           "label": "Events threshold value",
+          "xs": 12,
           "sm": 12,
           "md": 4,
           "lg": 2
@@ -127,6 +135,7 @@
           "label": "Language for only this instance",
           "system": true,
           "type": "language",
+          "xs": 12,
           "sm": 12,
           "md": 4,
           "lg": 2
@@ -135,6 +144,7 @@
           "newLine": true,
           "label": "Do not check if this instance is available from internet",
           "type": "checkbox",
+          "xs": 12,
           "sm": 12,
           "md": 4,
           "lg": 4,
@@ -148,6 +158,7 @@
       "items": {
         "loadingBackgroundColor": {
           "type": "color",
+          "xs": 12,
           "sm": 12,
           "md": 8,
           "lg": 4,
@@ -155,6 +166,7 @@
         },
         "loadingHideLogo": {
           "newLine": true,
+          "xs": 12,
           "sm": 12,
           "md": 8,
           "lg": 4,
@@ -163,6 +175,7 @@
         },
         "loadingBackgroundImage": {
           "newLine": true,
+          "xs": 12,
           "sm": 12,
           "md": 8,
           "lg": 4,
@@ -173,6 +186,7 @@
           "newLine": true,
           "type": "image",
           "hidden": "!data.loadingBackgroundImage",
+          "xs": 12,
           "sm": 12,
           "md": 8,
           "lg": 4,
@@ -210,6 +224,7 @@
       "items": {
         "loginBackgroundColor": {
           "type": "color",
+          "xs": 12,
           "sm": 12,
           "md": 8,
           "lg": 4,
@@ -217,6 +232,7 @@
         },
         "loginHideLogo": {
           "newLine": true,
+          "xs": 12,
           "sm": 12,
           "md": 8,
           "lg": 4,
@@ -225,6 +241,7 @@
         },
         "loginMotto": {
           "newLine": true,
+          "xs": 12,
           "sm": 12,
           "md": 8,
           "lg": 4,
@@ -233,6 +250,7 @@
         },
         "loginBackgroundImage": {
           "newLine": true,
+          "xs": 12,
           "sm": 12,
           "md": 8,
           "lg": 4,
@@ -243,6 +261,7 @@
           "newLine": true,
           "type": "image",
           "hidden": "!data.loginBackgroundImage",
+          "xs": 12,
           "sm": 12,
           "md": 8,
           "lg": 4,
@@ -289,6 +308,7 @@
           "text": "You can use admin behind a reverse proxy."
         },
         "reverseProxy": {
+          "xs": 12,
           "sm": 12,
           "newLine": true,
           "type": "table",

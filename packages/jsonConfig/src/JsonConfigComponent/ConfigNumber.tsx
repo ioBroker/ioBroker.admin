@@ -1,13 +1,13 @@
-import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
+import React, { type JSX } from 'react';
 
 import { Autocomplete, TextField, FormControl } from '@mui/material';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/adapter-react-v5';
 
+import type { ConfigItemNumber } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, React.CSSProperties> = {
     indeterminate: {
         opacity: 0.5,
     },
@@ -15,19 +15,10 @@ const styles = () => ({
         flexDirection: 'row',
         width: '100%',
     },
-}) satisfies Styles<any, any>;
+};
 
 interface ConfigNumberProps extends ConfigGenericProps {
-    socket: AdminConnection;
-    themeType: string;
-    themeName: string;
-    style: Record<string, any>;
-    className: string;
-    data: Record<string, any>;
-    schema: Record<string, any>;
-    onError: () => void;
-    onChange: () => void;
-    classes: Record<string, any>;
+    schema: ConfigItemNumber;
 }
 
 interface ConfigNumberState extends ConfigGenericState {
@@ -38,7 +29,7 @@ interface ConfigNumberState extends ConfigGenericState {
 class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
     private updateTimeout?: ReturnType<typeof setTimeout>;
 
-    componentDidMount() {
+    componentDidMount(): void {
         super.componentDidMount();
         let _value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
@@ -55,7 +46,10 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
         this.setState({ _value: _value.toString(), oldValue: _value.toString() });
     }
 
-    static getDerivedStateFromProps(props: ConfigNumberProps, state: ConfigNumberState) {
+    static getDerivedStateFromProps(
+        props: ConfigNumberProps,
+        state: ConfigNumberState,
+    ): Partial<ConfigNumberState> | null {
         if (
             (props.schema.min !== undefined && props.schema.min < 0) ||
             (props.schema.max !== undefined && props.schema.max < 0)
@@ -65,7 +59,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
         const _value = ConfigGeneric.getValue(props.data, props.attr);
 
         if (props.multiEdit && state._value === ConfigGeneric.DIFFERENT_VALUE) {
-            return ConfigGeneric.DIFFERENT_VALUE;
+            return { _value: ConfigGeneric.DIFFERENT_VALUE };
         }
 
         if (
@@ -93,7 +87,6 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
             return 'ra_Not a number';
         }
 
-        // eslint-disable-next-line no-restricted-properties
         if (value !== '' && window.isFinite(f)) {
             if (this.props.schema.min !== undefined && f < this.props.schema.min) {
                 return 'ra_Too small';
@@ -111,11 +104,13 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
         return 'ra_Not a number';
     }
 
-    renderItem(error: unknown, disabled: boolean) {
+    renderItem(error: unknown, disabled: boolean): JSX.Element | null {
         const isIndeterminate = Array.isArray(this.state._value) || this.state._value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
-            this.updateTimeout && clearTimeout(this.updateTimeout);
+            if (this.updateTimeout) {
+                clearTimeout(this.updateTimeout);
+            }
             this.updateTimeout = setTimeout(() => {
                 this.updateTimeout = undefined;
                 this.setState({ oldValue: null });
@@ -127,41 +122,54 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
 
         if (isIndeterminate) {
             const autoCompleteOptions = ConfigGeneric.getValue(this.props.data, this.props.attr);
-            const arr = [...autoCompleteOptions].map(item => ({ label: item.toString(), value: item }));
+            const arr =
+                autoCompleteOptions
+                    ?.filter((a: number | null | undefined) => a || a === 0)
+                    .map((item: number) => ({ label: item.toString(), value: item })) || [];
 
             arr.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
 
-            return <Autocomplete
-                className={this.props.classes.indeterminate}
-                fullWidth
-                freeSolo
-                value={arr[0]}
-                // @ts-expect-error needs investigation if this really has no effect
-                getOptionSelected={(option, value) => option.label === value.label}
-                onChange={(_, value: typeof arr[number]) => {
-                    this.onChange(this.props.attr, value?.value, () => {
-                        this.setState({ _value: value?.value, oldValue: this.state._value });
-                    });
-                }}
-                options={arr}
-                getOptionLabel={(option: typeof arr[number]) => option.label}
-                renderInput={params => (
-                    <TextField
-                        {...params}
-                        label={this.getText(this.props.schema.label)}
-                        variant="standard"
-                        inputProps={{ ...params.inputProps, readOnly: this.props.schema.readOnly || false }}
-                        error={!!error}
-                        placeholder={this.getText(this.props.schema.placeholder)}
-                        helperText={this.renderHelp(
-                            this.props.schema.help,
-                            this.props.schema.helpLink,
-                            this.props.schema.noTranslation,
-                        )}
-                        disabled={!!disabled}
-                    />
-                )}
-            />;
+            return (
+                <Autocomplete
+                    style={styles.indeterminate}
+                    fullWidth
+                    freeSolo
+                    value={arr[0]}
+                    // @ts-expect-error needs investigation if this really has no effect
+                    getOptionSelected={(option, value) => option.label === value.label}
+                    onChange={(_, value: (typeof arr)[number]) => {
+                        const mayBePromise = this.onChange(this.props.attr, value?.value, () => {
+                            this.setState({ _value: value?.value, oldValue: this.state._value });
+                        });
+                        if (mayBePromise instanceof Promise) {
+                            mayBePromise.catch(e => console.error(e));
+                        }
+                    }}
+                    options={arr}
+                    getOptionLabel={(option: (typeof arr)[number]) => option.label}
+                    renderInput={params => (
+                        <TextField
+                            {...params}
+                            label={this.getText(this.props.schema.label)}
+                            variant="standard"
+                            slotProps={{
+                                htmlInput: {
+                                    ...params.inputProps,
+                                    readOnly: this.props.schema.readOnly || false,
+                                },
+                            }}
+                            error={!!error}
+                            placeholder={this.getText(this.props.schema.placeholder)}
+                            helperText={this.renderHelp(
+                                this.props.schema.help,
+                                this.props.schema.helpLink,
+                                this.props.schema.noTranslation,
+                            )}
+                            disabled={!!disabled}
+                        />
+                    )}
+                />
+            );
         }
         if (!error && this.state._value !== null && this.state._value !== undefined && this.state._value) {
             error = this.checkValue(this.state._value);
@@ -170,46 +178,54 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
             }
         }
 
-        return <FormControl variant="standard" className={this.props.classes.control}>
-            <TextField
+        return (
+            <FormControl
                 variant="standard"
-                type="number"
-                fullWidth
-                inputProps={{
-                    min: this.props.schema.min,
-                    max: this.props.schema.max,
-                    step: this.props.schema.step,
-                    readOnly: this.props.schema.readOnly || false,
-                }}
-                value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
-                error={!!error}
-                disabled={!!disabled}
-                onChange={e => {
-                    const _value = e.target.value; // value is always a string and it is validly formatted
-                    const _error = this.checkValue(_value);
-                    if (_error) {
-                        this.onError(this.props.attr, I18n.t(_error));
-                    } else {
-                        this.onError(this.props.attr); // clear error
-                    }
+                style={styles.control}
+            >
+                <TextField
+                    variant="standard"
+                    type="number"
+                    fullWidth
+                    slotProps={{
+                        htmlInput: {
+                            min: this.props.schema.min,
+                            max: this.props.schema.max,
+                            step: this.props.schema.step,
+                            readOnly: this.props.schema.readOnly || false,
+                        },
+                    }}
+                    value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
+                    error={!!error}
+                    disabled={!!disabled}
+                    onChange={e => {
+                        const _value = e.target.value; // value is always a string and it is validly formatted
+                        const _error = this.checkValue(_value);
+                        if (_error) {
+                            this.onError(this.props.attr, I18n.t(_error));
+                        } else {
+                            this.onError(this.props.attr); // clear error
+                        }
 
-                    this.setState({ _value, oldValue: this.state._value }, () =>
-                        this.onChange(this.props.attr, parseFloat(_value)));
-                }}
-                placeholder={this.getText(this.props.schema.placeholder)}
-                label={this.getText(this.props.schema.label)}
-                helperText={
-                    error && typeof error === 'string'
-                        ? error
-                        : this.renderHelp(
-                            this.props.schema.help,
-                            this.props.schema.helpLink,
-                            this.props.schema.noTranslation,
-                        )
-                }
-            />
-        </FormControl>;
+                        this.setState({ _value, oldValue: this.state._value }, () =>
+                            this.onChange(this.props.attr, parseFloat(_value)),
+                        );
+                    }}
+                    placeholder={this.getText(this.props.schema.placeholder)}
+                    label={this.getText(this.props.schema.label)}
+                    helperText={
+                        error && typeof error === 'string'
+                            ? error
+                            : this.renderHelp(
+                                  this.props.schema.help,
+                                  this.props.schema.helpLink,
+                                  this.props.schema.noTranslation,
+                              )
+                    }
+                />
+            </FormControl>
+        );
     }
 }
 
-export default withStyles(styles)(ConfigNumber);
+export default ConfigNumber;

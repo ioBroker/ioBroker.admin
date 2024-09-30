@@ -11,11 +11,9 @@ interface DeviceImageUploadProps {
 }
 
 function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | null {
-    const {
-        socket, manufacturer, model, deviceId, onImageSelect, uploadImagesToInstance,
-    } = params;
+    const { socket, manufacturer, model, deviceId, onImageSelect, uploadImagesToInstance } = params;
 
-    const handleImageUpload: ChangeEventHandler<HTMLInputElement> = async (event: ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload: ChangeEventHandler<HTMLInputElement> = (event: ChangeEvent<HTMLInputElement>): void => {
         const target = event.target as HTMLInputElement;
         const files: FileList | null = target.files;
         if (!files || files.length === 0) {
@@ -27,7 +25,7 @@ function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | 
         if (file) {
             const reader = new FileReader();
 
-            reader.onload = async e => {
+            reader.onload = (e: ProgressEvent<FileReader>): void => {
                 if (!e.target || !e.target.result) {
                     return;
                 }
@@ -66,7 +64,9 @@ function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | 
                         const response = await socket.writeFile64(uploadImagesToInstance, fileName, base64Data);
                         console.log(`saveImage response: ${JSON.stringify(response)}`);
 
-                        onImageSelect && onImageSelect(resizedImage);
+                        if (onImageSelect) {
+                            onImageSelect(resizedImage);
+                        }
                     }
                 };
             };
@@ -84,9 +84,16 @@ function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | 
         zIndex: 3,
     };
 
-    return <div>
-        <input style={imageUploadButtonStyle} type="file" accept="image/*" onChange={handleImageUpload} />
-    </div>;
+    return (
+        <div>
+            <input
+                style={imageUploadButtonStyle}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+            />
+        </div>
+    );
 }
 
 export default DeviceImageUpload;

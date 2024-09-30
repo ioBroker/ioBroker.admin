@@ -1,10 +1,13 @@
 import React from 'react';
+
+import type { ActionBase, InstanceAction } from '@iobroker/dm-utils';
+
 import TooltipButton from './TooltipButton';
-import { renderIcon, getTranslation } from './Utils';
+import { getTranslation, renderActionIcon } from './Utils';
 
 interface InstanceActionButtonProps {
-    action: any;
-    instanceHandler: (action: any) => () => void;
+    action: InstanceAction;
+    instanceHandler: (action: ActionBase) => () => void;
 }
 
 export default function InstanceActionButton(params: InstanceActionButtonProps): React.JSX.Element | null {
@@ -13,13 +16,15 @@ export default function InstanceActionButton(params: InstanceActionButtonProps):
     const tooltip = getTranslation(action?.description ? action.description : '');
     const title = getTranslation(action?.title ? action.title : '');
 
-    const icon = renderIcon(action);
+    const icon = renderActionIcon(action);
 
-    return <TooltipButton
-        tooltip={tooltip}
-        label={title}
-        disabled={action.disabled}
-        Icon={icon}
-        onClick={instanceHandler(action)}
-    />;
+    return (
+        <TooltipButton
+            tooltip={tooltip}
+            label={title}
+            disabled={action.disabled}
+            Icon={icon}
+            onClick={instanceHandler(action)}
+        />
+    );
 }

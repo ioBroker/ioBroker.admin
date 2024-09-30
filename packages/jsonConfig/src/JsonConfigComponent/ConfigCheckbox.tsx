@@ -1,71 +1,77 @@
-import React from 'react';
-import { withStyles } from '@mui/styles';
+import React, { type JSX } from 'react';
 
-import {
-    FormControlLabel,
-    Checkbox,
-    FormHelperText,
-    FormControl,
-} from '@mui/material';
+import { FormControlLabel, Checkbox, FormHelperText, FormControl } from '@mui/material';
 
-import  { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/adapter-react-v5';
+
+import type { ConfigItemCheckbox } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    error: {
-        color: 'red',
-    },
-});
-
-interface ConfigCheckboxProps extends ConfigGenericProps{
-    socket: AdminConnection;
-    themeType: string;
-    themeName: string;
-    style: Record<string, any>;
-    className: string;
-    data: Record<string, any>;
-    schema: Record<string, any>;
-    classes: Record<string, any>;
+interface ConfigCheckboxProps extends ConfigGenericProps {
+    schema: ConfigItemCheckbox;
 }
 
 class ConfigCheckbox extends ConfigGeneric<ConfigCheckboxProps, ConfigGenericState> {
-    renderItem(error: unknown, disabled: boolean): React.JSX.Element {
+    renderItem(error: unknown, disabled: boolean): JSX.Element {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const isIndeterminate = Array.isArray(value);
 
-        return <FormControl className={this.props.classes.fullWidth} variant="standard">
-            <FormControlLabel
-                onClick={e => {
-                    e.preventDefault();
-                    e.stopPropagation();
+        return (
+            <FormControl
+                style={{ width: '100%' }}
+                variant="standard"
+            >
+                <FormControlLabel
+                    onClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
 
-                    if (!disabled) {
-                        this.onChange(this.props.attr, !value);
-                    }
-                }}
-                control={<Checkbox
-                    indeterminate={isIndeterminate}
-                    checked={!!value}
-                    onChange={e => {
-                        if (isIndeterminate) {
-                            this.onChange(this.props.attr, true);
-                        } else {
-                            this.onChange(this.props.attr, e.target.checked);
+                        if (!disabled) {
+                            const mayByPromise = this.onChange(this.props.attr, !value);
+                            if (mayByPromise instanceof Promise) {
+                                void mayByPromise.catch(e => console.error(`Cannot set value: ${e}`));
+                            }
                         }
                     }}
-                    disabled={disabled}
-                />}
-                label={this.getText(this.props.schema.label)}
-            />
-            <FormHelperText className={this.props.classes.error}>
-                {
-                    error ? (this.props.schema.validatorErrorText ? I18n.t(this.props.schema.validatorErrorText) : I18n.t('ra_Error')) :
-                        null
-                }
-            </FormHelperText>
-            {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
-        </FormControl>;
+                    control={
+                        <Checkbox
+                            indeterminate={isIndeterminate}
+                            checked={!!value}
+                            onChange={e => {
+                                let mayBePromise: void | Promise<void>;
+                                if (isIndeterminate) {
+                                    mayBePromise = this.onChange(this.props.attr, true);
+                                } else {
+                                    mayBePromise = this.onChange(this.props.attr, e.target.checked);
+                                }
+                                if (mayBePromise instanceof Promise) {
+                                    void mayBePromise.catch(e => console.error(`Cannot set value: ${e}`));
+                                }
+                            }}
+                            disabled={disabled || this.props.schema.readOnly}
+                        />
+                    }
+                    label={this.getText(this.props.schema.label)}
+                />
+                <FormHelperText style={{ color: 'red' }}>
+                    {error
+                        ? this.props.schema.validatorErrorText
+                            ? I18n.t(this.props.schema.validatorErrorText)
+                            : I18n.t('ra_Error')
+                        : null}
+                </FormHelperText>
+                {this.props.schema.help ? (
+                    <FormHelperText>
+                        {this.renderHelp(
+                            this.props.schema.help,
+                            this.props.schema.helpLink,
+                            this.props.schema.noTranslation,
+                        )}
+                    </FormHelperText>
+                ) : null}
+            </FormControl>
+        );
     }
 }
 
-export default withStyles(styles)(ConfigCheckbox);
+export default ConfigCheckbox;

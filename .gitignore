@@ -18,8 +18,9 @@ admin/words.js
 /lib/socketCommandsAdmin.js
 /lib/passportSocket.js
 **/build
-package-lock.json
-**/src-admin/package-lock.json
+packages/admin/src-admin/package-lock.json
+packages/admin/package-lock.json
+packages/admin/src/package-lock.json
 **/src/public_aes
 **/src/public/js/adapter-settings-aes.js
 testSentry.bat
@@ -32,3 +33,5 @@ testSentry.bat
 lerna-debug.log
 
 packages/admin/build-backend
+/packages/admin/admin/custom/
+packages/admin/README.md

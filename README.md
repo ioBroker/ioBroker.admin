@@ -1,4 +1,5 @@
-![Logo](packages/admin/admin/admin.png)
+<img src="packages/admin/admin/admin.svg" width="100" height="100" />
+
 # ioBroker.admin
 
 ![Number of Installations](http://iobroker.live/badges/admin-installed.svg)
@@ -33,7 +34,7 @@ To activate scheduled restart, just define CRON condition when to restart adapte
 It is suggested to restart in the night, when no one use the adapter, e.g. `0 3 * * *` - at 3:00 every day.
 
 ## Let's Encrypt Certificates
-To manage and update let's encrypt certificates you need to use [`iobroker.acme`](https://github.com/iobroker-community-adapters/ioBroker.acme) adapter.
+To manage and update, let's encrypt certificates you need to use [`iobroker.acme`](https://github.com/iobroker-community-adapters/ioBroker.acme) adapter.
 
 You will have so-called "collections" of certificates. Each collection has its own domains.
 You can select in configuration of admin adapter if and which collection to use.
@@ -82,32 +83,36 @@ This project uses icons from [Flaticon](https://www.flaticon.com/).
 ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
-## Todo
-- Add to wizard (very first page): how your statistics will be processed.
-- Add colors to menu item with the possibility to change turn it off or only icon
 <!--
 	### **WORK IN PROGRESS**
 -->
-## Changelog
+
 ### **WORK IN PROGRESS**
-* (foxriver76) the new `licenseInformation` icon now changes color correctly with the theme
 
-### 6.14.1 (2024-02-20)
-* (foxriver76) align items better when adapters tab is used in row mode
+* (@GermanBluefox) Added the history for the installation from URL
+* (@foxriver76) fixed wrongly displayed repository warning
 
-### 6.14.0 (2024-02-19)
-* (foxriver76) adapters tab is now showing information from `licenseInformation`
-* (foxriver76) show important notifications above changelog, so user reads them on update dialog
+### 7.1.5 (2024-09-26)
+* (bluefox) Added the read-only flag to the `state` JSON Config component
 
-### 6.13.21 (2024-02-15)
-* (foxriver76) do not crash when using the dropdown on multi edit custom settings
+### 7.1.3 (2024-09-20)
+* (@foxriver76) improve appearance and standardization of some warning messages
+* (@foxriver76) indicate `alert` warnings by the badge color on the notification button
+* (@foxriver76) allow distinguishing between alert notifications and others for host notifications
+* (@foxriver76) do not automatically open the notification dialog without user interaction
+* (@foxriver76) fixed logging as a socket client is now throwing real errors
 
-### 6.13.20 (2024-02-14)
-* (foxriver76) after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally
-* (foxriver76) fixed problem with saving on multi edit custom settings
+### 7.1.2 (2024-09-20)
+* (@foxriver76) fixed host base settings dialog
 
-### 6.13.19 (2024-02-12)
-* (foxriver76) generate notification if new adapter updates are available
+### 7.1.1 (2024-09-15)
+* (bluefox) Showed the context menu under cursor position in the object browser
+* (bluefox) Added links to aliases in the object browser
+* (bluefox) Added confirmation for CRON dialog if set to triggering every minute
+
+### 7.1.0 (2024-09-02)
+* (bluefox) Added the possibility to show button in notifications
+* (bluefox) Removed gulp from the build process
 
 ## License
 The MIT License (MIT)
