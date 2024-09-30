@@ -260,15 +260,15 @@ h4 {
     .tabs {
         background-color: #272727;
         .tab a {
-            color: #fff;
+            color: #fff !important;
             opacity: 0.7;
             .active {
-                color: #fff;
+                color: #fff !important;
                 opacity: 1;
             }
         }
         .active {
-            border-bottom-color: #436a93;
+            border-bottom-color: #436a9 !important;
         }
     }
     .card-panel {
@@ -389,15 +389,15 @@ h4 {
     .tabs {
         background-color: #2a3135;
         .tab a {
-            color: #fff;
+            color: #fff !important;
             opacity: 0.7;
             .active {
-                color: #fff;
+                color: #fff !important;
                 opacity: 1;
             }
         }
         .active {
-            border-bottom-color: #436a93;
+            border-bottom-color: #436a93 !important;
         }
     }
     .card-panel {
@@ -494,4 +494,52 @@ h4 {
     .switch label .lever:after {
         background-color: #436a93;
     }
+}
+
+/* Design Fix simatec */
+.m .col:has(.tabs) {
+    padding: 0 !important;
+}
+
+.m nav {
+    background-color: rgb(51, 153, 204) !important;
+}
+
+.m .btn,
+.m .btn-large,
+.m .btn-small {
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px, rgba(0, 0, 0, 0.12) 0px 1px 18px 0px !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    background-color: rgb(224, 224, 224) !important;
+}
+
+.m .btn-large:hover,
+.m .btn-small:hover,
+.m .btn:hover {
+    background-color: rgb(245, 245, 245) !important;
+    text-decoration: none !important;
+}
+
+.m .btn-floating i {
+    color: rgba(0, 0, 0, 0.87) !important;
+    font-size: 1.6rem !important;
+    line-height: 40px !important;
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.m .btn-floating.btn-small {
+    width: 40px !important;
+    height: 40px !important;
+}
+
+.m .tabs .tab a.active {
+    color: rgb(51, 153, 204) !important;
+}
+
+.m .tabs .tab a {
+    color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.m .tabs .active {
+    border-bottom: 2px solid rgb(51, 153, 204) !important;
 }
