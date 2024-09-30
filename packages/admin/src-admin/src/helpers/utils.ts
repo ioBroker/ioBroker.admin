@@ -199,7 +199,8 @@ function _replaceLink(
  * `%protocol%` - `native.protocol` or `native.secure` of this adapter. The result is 'http' or 'https'.
  * `%s%` - `native.protocol` or `native.secure` of this adapter. The result is '' or 's'. The idea is to use the pattern like "http%s%://..."
  * `%instance%` - instance number
- * `%common.attr%` - instance number
+ * `%adapterName_nativeAttr%` - Takes the native value `nativeAttr` of all instances of adapterName. This generates many links if more than one instance installed
+ * `%adapterName.x_nativeAttr%` - Takes the native value `nativeAttr` of adapterName.x instance
  *
  * @param link pattern for link
  * @param adapter adapter name
