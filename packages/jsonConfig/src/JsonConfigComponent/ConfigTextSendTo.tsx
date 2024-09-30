@@ -117,18 +117,20 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
                 <TextField
                     variant="standard"
                     fullWidth
-                    InputProps={{
-                        endAdornment: this.props.schema.copyToClipboard ? (
-                            <IconButton
-                                size="small"
-                                onClick={() => {
-                                    Utils.copyToClipboard(this.state.text);
-                                    window.alert('Copied');
-                                }}
-                            >
-                                <IconCopy />
-                            </IconButton>
-                        ) : undefined,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.props.schema.copyToClipboard ? (
+                                <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                        Utils.copyToClipboard(this.state.text);
+                                        window.alert('Copied');
+                                    }}
+                                >
+                                    <IconCopy />
+                                </IconButton>
+                            ) : undefined,
+                        },
                     }}
                     value={this.state.text}
                     label={this.getText(this.props.schema.label)}
