@@ -24,7 +24,7 @@ export function extractUrlLink(adapterRepo: RepoAdapterObject): string {
         if (!url) {
             url = adapterRepo.readme;
             if (!url) {
-                console.error(`No extIcon for ${adapterRepo.name}`);
+                console.error(`No extIcon for ${adapterRepo.name || JSON.stringify(adapterRepo)}`);
                 return '';
             }
             url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');

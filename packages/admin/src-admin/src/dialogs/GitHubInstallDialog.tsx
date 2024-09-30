@@ -19,7 +19,13 @@ import {
 } from '@mui/material';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
-import { Language as UrlIcon, Sms as SmsIcon, Close as CloseIcon, Check as CheckIcon } from '@mui/icons-material';
+import {
+    Language as UrlIcon,
+    Sms as SmsIcon,
+    Close as CloseIcon,
+    Check as CheckIcon,
+    Delete,
+} from '@mui/icons-material';
 
 import { I18n, Icon, type IobTheme } from '@iobroker/adapter-react-v5';
 
@@ -125,18 +131,32 @@ interface GitHubInstallDialogState {
     url: string;
     /** Name of the current tab */
     currentTab: string;
+    /** History of custom commands */
+    customHistory: string[];
 }
+
+const MAX_HISTORY_LENGTH = 10;
 
 class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitHubInstallDialogState> {
     constructor(props: GitHubInstallDialogProps) {
         super(props);
 
+        let customHistory = [];
+        const customHistoryStr = ((window as any)._localstorage || window.localStorage).getItem('App.npmHistory');
+        if (customHistoryStr) {
+            try {
+                customHistory = JSON.parse(customHistoryStr);
+            } catch {
+                // ignore
+            }
+        }
         this.state = {
             autoCompleteValue:
                 ((window as any)._localstorage || window.localStorage).getItem('App.autocomplete') || null,
             debug: ((window as any)._localstorage || window.localStorage).getItem('App.gitDebug') === 'true',
             url: ((window as any)._localstorage || window.localStorage).getItem('App.userUrl') || '',
             currentTab: ((window as any)._localstorage || window.localStorage).getItem('App.gitTab') || 'npm',
+            customHistory,
         };
     }
 
@@ -346,46 +366,82 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                     />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <TextField
-                        variant="standard"
+                    <Autocomplete
                         fullWidth
-                        label={this.props.t('URL')}
-                        helperText={this.props.t('URL or file path')}
-                        value={this.state.url}
-                        onChange={event => {
+                        value={this.state.url || ''}
+                        onInputChange={(_, newValue) => {
                             ((window as any)._localstorage || window.localStorage).setItem(
                                 'App.userUrl',
-                                event.target.value,
+                                newValue || '',
                             );
-                            this.setState({ url: event.target.value });
+                            this.setState({ url: newValue });
                         }}
-                        onKeyUp={event => {
-                            if (event.key === 'Enter' && this.state.url) {
-                                if (!this.state.url.includes('.')) {
-                                    void this.props.installFromUrl(
-                                        `iobroker.${this.state.url}`,
-                                        this.state.debug,
-                                        true,
-                                    );
-                                } else {
-                                    void this.props.installFromUrl(this.state.url, this.state.debug, true);
-                                }
-                            }
+                        onChange={(_, newValue) => {
+                            ((window as any)._localstorage || window.localStorage).setItem(
+                                'App.userUrl',
+                                newValue || '',
+                            );
+                            this.setState({ url: newValue });
                         }}
-                        slotProps={{
-                            input: {
-                                endAdornment: this.state.url ? (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => this.setState({ url: '' })}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment>
-                                ) : null,
-                            },
-                        }}
+                        renderOption={(props, option) => (
+                            <Box
+                                component="li"
+                                {...props}
+                                style={{ display: 'flex', alignItems: 'left' }}
+                            >
+                                {option}
+                                <div style={{ flexGrow: 1 }} />
+                                <IconButton
+                                    size="small"
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        const customHistory = this.state.customHistory.filter(it => it !== option);
+                                        ((window as any)._localstorage || window.localStorage).setItem(
+                                            'App.npmHistory',
+                                            JSON.stringify(customHistory),
+                                        );
+                                        this.setState({ customHistory });
+                                    }}
+                                >
+                                    <Delete />
+                                </IconButton>
+                            </Box>
+                        )}
+                        freeSolo
+                        options={this.state.customHistory}
+                        renderInput={params => (
+                            <TextField
+                                variant="standard"
+                                {...params}
+                                onKeyUp={event => {
+                                    if (event.key === 'Enter' && this.state.url) {
+                                        const customHistory = [...this.state.customHistory];
+                                        customHistory.unshift(this.state.url);
+                                        if (customHistory.length > MAX_HISTORY_LENGTH) {
+                                            customHistory.pop();
+                                        }
+                                        ((window as any)._localstorage || window.localStorage).setItem(
+                                            'App.npmHistory',
+                                            JSON.stringify(customHistory),
+                                        );
+
+                                        if (!this.state.url.includes('.')) {
+                                            void this.props.installFromUrl(
+                                                `iobroker.${this.state.url}`,
+                                                this.state.debug,
+                                                true,
+                                            );
+                                        } else {
+                                            void this.props.installFromUrl(this.state.url, this.state.debug, true);
+                                        }
+                                        this.setState({ autoCompleteValue: null, url: '' });
+                                        this.props.onClose();
+                                    }
+                                }}
+                                helperText={this.props.t('URL or file path')}
+                                label={this.props.t('URL')}
+                            />
+                        )}
                     />
                 </div>
                 <div
@@ -550,6 +606,16 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 const _url = `${parts[1]}/ioBroker.${parts[0]}`;
                                 void this.props.installFromUrl(_url, this.state.debug, true);
                             } else if (this.state.currentTab === 'URL') {
+                                const customHistory = [...this.state.customHistory];
+                                customHistory.unshift(this.state.url);
+                                if (customHistory.length > MAX_HISTORY_LENGTH) {
+                                    customHistory.pop();
+                                }
+                                ((window as any)._localstorage || window.localStorage).setItem(
+                                    'App.npmHistory',
+                                    JSON.stringify(customHistory),
+                                );
+
                                 if (!this.state.url.includes('.')) {
                                     void this.props.installFromUrl(
                                         `iobroker.${this.state.url}`,
