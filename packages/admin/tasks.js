@@ -1,46 +1,93 @@
-const fs = require('node:fs');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { statSync, existsSync, writeFileSync, readFileSync } = require('node:fs');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const less = require('less');
-const path = require('node:path');
-const { deleteFoldersRecursive, buildReact, patchHtmlFile, npmInstall, copyFiles } = require('@iobroker/build-tools');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { join } = require('node:path');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { exec } = require('node:child_process');
+const {
+    deleteFoldersRecursive,
+    /*  buildReact, */ patchHtmlFile,
+    npmInstall,
+    copyFiles,
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+} = require('@iobroker/build-tools');
 
 const srcRx = 'src-admin/';
 const src = `${__dirname}/${srcRx}`;
-const rootFolder = path.join(__dirname, '..', '..');
+const rootFolder = join(__dirname, '..', '..');
 const dest = 'adminWww/';
 
+function buildCraco() {
+    return new Promise((resolve, reject) => {
+        const options = {
+            stdio: 'pipe',
+            cwd: src,
+        };
+
+        console.log(options.cwd);
+
+        let script = `${rootFolder}/node_modules/@craco/craco/dist/bin/craco.js`;
+        if (!existsSync(script)) {
+            script = `${rootFolder}/node_modules/@craco/craco/dist/bin/craco.js`;
+        }
+
+        if (!existsSync(script)) {
+            console.error(`Cannot find execution file: ${script}`);
+            reject(`Cannot find execution file: ${script}`);
+        } else {
+            const cmd = `node ${script} --max-old-space-size=7000 build`;
+            const child = exec(cmd, { cwd: src });
+
+            child.stderr.pipe(process.stderr);
+            child.stdout.pipe(process.stdout);
+
+            child.on('exit', (code /* , signal */) => {
+                // code 1 is a strange error that cannot be explained. Everything is installed but error :(
+                if (code && code !== 1) {
+                    reject(`Cannot install: ${code}`);
+                } else {
+                    console.log(`"${cmd} in ${src} finished.`);
+                    // command succeeded
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
 async function build() {
-    fs.writeFileSync(
+    writeFileSync(
         `${src}public/lib/js/sparkline.js`,
-        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js`),
+        readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js`),
     );
-    fs.writeFileSync(
+    writeFileSync(
         `${src}public/lib/js/sparkline.js.map`,
-        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js.map`),
+        readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js.map`),
     );
 
     const ace = `${rootFolder}/node_modules/ace-builds/src-min-noconflict/`;
-    fs.writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, fs.readFileSync(`${ace}worker-json.js`));
-    fs.writeFileSync(
-        `${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`,
-        fs.readFileSync(`${ace}ext-searchbox.js`),
-    );
+    writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, readFileSync(`${ace}worker-json.js`));
+    writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`, readFileSync(`${ace}ext-searchbox.js`));
 
-    await buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true });
-    if (fs.existsSync(`${__dirname}/adminWww/index.html`)) {
+    await buildCraco();
+    // await buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true });
+    if (existsSync(`${__dirname}/adminWww/index.html`)) {
         throw new Error('Front-end was not build to end!');
     }
 }
 
 function syncUtils() {
-    const stat1 = fs.statSync(`${__dirname}/src-admin/src/helpers/utils.ts`);
-    const stat2 = fs.statSync(`${__dirname}/src/lib/utils.ts`);
-    const data1 = fs.readFileSync(`${__dirname}/src-admin/src/helpers/utils.ts`).toString();
-    const data2 = fs.readFileSync(`${__dirname}/src/lib/utils.ts`).toString();
+    const stat1 = statSync(`${__dirname}/src-admin/src/helpers/utils.ts`);
+    const stat2 = statSync(`${__dirname}/src/lib/utils.ts`);
+    const data1 = readFileSync(`${__dirname}/src-admin/src/helpers/utils.ts`).toString();
+    const data2 = readFileSync(`${__dirname}/src/lib/utils.ts`).toString();
     if (data1 !== data2) {
         if (stat1.mtimeMs > stat2.mtimeMs) {
-            fs.writeFileSync(`${__dirname}/src/lib/utils.ts`, data1);
+            writeFileSync(`${__dirname}/src/lib/utils.ts`, data1);
         } else {
-            fs.writeFileSync(`${__dirname}/src-admin/src/helpers/utils.ts`, data2);
+            writeFileSync(`${__dirname}/src-admin/src/helpers/utils.ts`, data2);
         }
     }
 }
@@ -53,9 +100,9 @@ function copyAllFiles() {
     deleteFoldersRecursive(`${__dirname}/../jsonConfig/build/src`);
     syncUtils();
 
-    let readme = fs.readFileSync(`${__dirname}/../../README.md`).toString('utf8');
+    let readme = readFileSync(`${__dirname}/../../README.md`).toString('utf8');
     readme = readme.replaceAll('packages/admin/', '');
-    fs.writeFileSync(`${__dirname}/README.md`, readme);
+    writeFileSync(`${__dirname}/README.md`, readme);
 
     copyFiles([`${srcRx}build/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
 
@@ -89,18 +136,18 @@ function copyAllFiles() {
 }
 
 async function configCSS() {
-    const selectID = await less.render(fs.readFileSync(`./${srcRx}less/selectID.less`).toString('utf8'), {
+    const selectID = await less.render(readFileSync(`./${srcRx}less/selectID.less`).toString('utf8'), {
         filename: 'selectID.less',
         compress: true,
         paths: [`./${srcRx}less`],
     });
-    const adapterLess = await less.render(fs.readFileSync(`./${srcRx}less/adapter.less`).toString('utf8'), {
+    const adapterLess = await less.render(readFileSync(`./${srcRx}less/adapter.less`).toString('utf8'), {
         filename: 'adapter.less',
         compress: true,
         paths: [`./${srcRx}less`],
     });
     const materializeCorrect = await less.render(
-        fs.readFileSync(`./${srcRx}less/materializeCorrect.less`).toString('utf8'),
+        readFileSync(`./${srcRx}less/materializeCorrect.less`).toString('utf8'),
         {
             filename: 'materializeCorrect.less',
             compress: true,
@@ -108,29 +155,26 @@ async function configCSS() {
         },
     );
 
-    fs.writeFileSync(`./${srcRx}public/css/adapter.css`, selectID.css + adapterLess.css + materializeCorrect.css);
+    writeFileSync(`./${srcRx}public/css/adapter.css`, selectID.css + adapterLess.css + materializeCorrect.css);
 }
 
 async function iobCSS() {
-    const selectID = await less.render(fs.readFileSync(`./${srcRx}less/selectID.less`).toString('utf8'), {
+    const selectID = await less.render(readFileSync(`./${srcRx}less/selectID.less`).toString('utf8'), {
         filename: 'selectID.less',
         compress: true,
         paths: [`./${srcRx}less`],
     });
 
-    fs.writeFileSync(`./${srcRx}public/lib/css/iob/selectID.css`, selectID.css);
+    writeFileSync(`./${srcRx}public/lib/css/iob/selectID.css`, selectID.css);
 }
 
 async function treeTableCSS() {
-    const treeTable = await less.render(
-        fs.readFileSync(`./${srcRx}less/jquery.treetable.theme.less`).toString('utf8'),
-        {
-            filename: 'selectID.less',
-            compress: true,
-            paths: [`./${srcRx}less`],
-        },
-    );
-    fs.writeFileSync(`./${srcRx}public/lib/css/jquery.treetable.theme.css`, treeTable.css);
+    const treeTable = await less.render(readFileSync(`./${srcRx}less/jquery.treetable.theme.less`).toString('utf8'), {
+        filename: 'selectID.less',
+        compress: true,
+        paths: [`./${srcRx}less`],
+    });
+    writeFileSync(`./${srcRx}public/lib/css/jquery.treetable.theme.css`, treeTable.css);
 }
 
 function clean() {
@@ -161,7 +205,7 @@ if (process.argv.includes('--backend-i18n')) {
     syncUtils();
     clean();
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-2-npm')) {
-    if (!fs.existsSync(`${src}node_modules`)) {
+    if (!existsSync(`${src}node_modules`)) {
         npmInstall(src).catch(e => {
             console.error(e);
             process.exit(1);
@@ -184,7 +228,7 @@ if (process.argv.includes('--backend-i18n')) {
     configCSS()
         .then(async () => {
             clean();
-            if (!fs.existsSync(`${src}node_modules`)) {
+            if (!existsSync(`${src}node_modules`)) {
                 await npmInstall(src);
             }
             await configCSS();

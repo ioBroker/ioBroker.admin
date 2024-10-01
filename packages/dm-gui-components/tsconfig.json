@@ -11,6 +11,7 @@
         "declaration": true,
         "outDir": "./build",
         "sourceMap": true,
+        "inlineSources": true,
         "sourceRoot": "./src",
         "noImplicitAny": true,
         "skipLibCheck": true,
