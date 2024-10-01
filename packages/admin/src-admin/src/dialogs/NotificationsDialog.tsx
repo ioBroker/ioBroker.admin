@@ -1,4 +1,4 @@
-import React, { useState, type JSX } from 'react';
+import React, { useState, type JSX, useEffect } from 'react';
 
 import {
     Button,
@@ -279,29 +279,11 @@ const NotificationsDialog = ({
     isFloatComma,
     socket,
 }: NotificationDialogOptions): JSX.Element => {
-    const notificationManagerInstalled = !!Object.values(instances).find(
-        instance => instance.common.name === 'notification-manager',
-    );
-
-    const messages: MessagesPerScope = {};
-
-    for (const [host, hostDetails] of Object.entries(notifications)) {
-        for (const [scope, scopeDetails] of Object.entries(hostDetails.result)) {
-            if (scope === 'system') {
-                continue;
-            }
-
-            for (const [category, categoryDetails] of Object.entries(scopeDetails.categories)) {
-                messages[scope] = messages[scope] || {};
-                messages[scope][category] = { ...categoryDetails, host };
-            }
-        }
-    }
-
     const [panel, setPanel] = useState('');
     const [disabled, setDisabled] = useState<string[]>([]);
     const [expanded, setExpanded] = useState('');
     const [autoCollapse, setAutoCollapse] = useState(true);
+    const [messages, setMessages] = useState<MessagesPerScope>({});
 
     const handleChange = (_event: React.SyntheticEvent, newValue: string): void => {
         setAutoCollapse(true);
@@ -314,28 +296,54 @@ const NotificationsDialog = ({
 
     const black = themeType === 'dark';
 
-    let firstKey = '';
-    Object.keys(messages).map(scope =>
-        Object.keys(messages[scope]).map(name => (firstKey = firstKey || `${scope}--${name}`)),
+    const notificationManagerInstalled = !!Object.values(instances).find(
+        instance => instance.common.name === 'notification-manager',
     );
-    // if a panel does not exist, set it to the first one
-    if (panel) {
-        const [scope, name] = panel.split('--');
-        if (!messages[scope]) {
-            setPanel(firstKey);
-        } else if (!messages[scope][name]) {
-            // find the first message in this scope
-            let found = false;
-            for (const key in messages[scope]) {
-                found = true;
-                setPanel(`${scope}--${key}`);
-                break;
-            }
-            if (!found) {
-                setPanel(firstKey);
+
+    useEffect(() => {
+        const _messages: MessagesPerScope = {};
+        let firstKey = '';
+
+        for (const [host, hostDetails] of Object.entries(notifications)) {
+            for (const [scope, scopeDetails] of Object.entries(hostDetails.result)) {
+                if (scope === 'system') {
+                    continue;
+                }
+
+                for (const [category, categoryDetails] of Object.entries(scopeDetails.categories)) {
+                    _messages[scope] = _messages[scope] || {};
+                    _messages[scope][category] = { ...categoryDetails, host };
+                }
             }
         }
-    }
+
+        Object.keys(_messages).map(scope =>
+            Object.keys(_messages[scope]).map(name => (firstKey = firstKey || `${scope}--${name}`)),
+        );
+
+        // if a panel does not exist, set it to the first one
+        if (panel) {
+            const [scope, name] = panel.split('--');
+            if (!_messages[scope]) {
+                setPanel(firstKey);
+            } else if (!_messages[scope][name]) {
+                // take the first message in this scope
+                const key = Object.keys(_messages[scope])[0];
+                if (key) {
+                    setPanel(`${scope}--${key}`);
+                } else {
+                    setPanel(firstKey);
+                }
+            }
+        } else {
+            setPanel(firstKey);
+        }
+        setMessages(_messages);
+    }, [instances, notifications, panel]);
+
+    const [currentScope, currentName] = panel.split('--');
+    const entry: (Message & { host: string }) | null =
+        currentScope && currentName ? messages[currentScope][currentName] : null;
 
     return (
         <Dialog
@@ -379,7 +387,7 @@ const NotificationsDialog = ({
                         color="default"
                     >
                         <Tabs
-                            value={panel || firstKey}
+                            value={panel}
                             onChange={handleChange}
                             variant="scrollable"
                             scrollButtons
@@ -410,160 +418,140 @@ const NotificationsDialog = ({
                             )}
                         </Tabs>
                     </AppBar>
-                    {Object.keys(messages).map(scope =>
-                        Object.keys(messages[scope]).map(name => {
-                            const key = `${scope}--${name}`;
-                            if (panel === key || (!panel && key === firstKey)) {
-                                const entry = messages[scope][name];
-                                console.log(`Active panel: ${panel}`, `Key: ${key}`);
-                                return (
-                                    <TabPanel
-                                        sxBox={styles.classNameBox}
-                                        key={`tabPanel-${name}`}
-                                        style={{ ...styles.overflowAuto, color: black ? 'black' : undefined }}
-                                        index={key}
-                                    >
-                                        <Box
-                                            component="div"
-                                            sx={styles.headerText}
-                                            style={{ fontWeight: 'bold' }}
-                                        >
-                                            {entry.name[I18n.getLanguage()]}
-                                        </Box>
-                                        <Box
-                                            component="div"
-                                            sx={styles.descriptionHeaderText}
-                                        >
-                                            {entry.description[I18n.getLanguage()]}
-                                        </Box>
-                                        <div>
-                                            {entry.instances
-                                                ? Object.keys(entry.instances).map(nameInst => {
-                                                      const accKey = `${key}--${nameInst}`;
-                                                      if (autoCollapse) {
-                                                          handleChangeAccordion(accKey)('', true);
-                                                          setAutoCollapse(false);
-                                                      }
+                    {entry ? (
+                        <TabPanel
+                            sxBox={styles.classNameBox}
+                            key={`tabPanel-${currentName}`}
+                            style={{ ...styles.overflowAuto, color: black ? 'black' : undefined }}
+                            index={panel}
+                        >
+                            <Box
+                                component="div"
+                                sx={styles.headerText}
+                                style={{ fontWeight: 'bold' }}
+                            >
+                                {entry.name[I18n.getLanguage()]}
+                            </Box>
+                            <Box
+                                component="div"
+                                sx={styles.descriptionHeaderText}
+                            >
+                                {entry.description[I18n.getLanguage()]}
+                            </Box>
+                            <div>
+                                {entry.instances
+                                    ? Object.keys(entry.instances).map(nameInst => {
+                                          const accKey = `${panel}--${nameInst}`;
+                                          if (autoCollapse) {
+                                              handleChangeAccordion(accKey)('', true);
+                                              setAutoCollapse(false);
+                                          }
 
-                                                      const currentInstance = instances && instances[nameInst];
-                                                      let icon = 'img/no-image.png';
-                                                      if (
-                                                          currentInstance?.common?.icon &&
-                                                          currentInstance?.common?.name
-                                                      ) {
-                                                          icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
-                                                      }
+                                          const currentInstance = instances && instances[nameInst];
+                                          let icon = 'img/no-image.png';
+                                          if (currentInstance?.common?.icon && currentInstance?.common?.name) {
+                                              icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
+                                          }
 
-                                                      return (
-                                                          <Accordion
-                                                              style={
-                                                                  black ? undefined : { backgroundColor: '#c0c0c052' }
-                                                              }
-                                                              key={accKey}
-                                                              expanded={expanded === accKey}
-                                                              onChange={handleChangeAccordion(accKey)}
+                                          return (
+                                              <Accordion
+                                                  style={black ? undefined : { backgroundColor: '#c0c0c052' }}
+                                                  key={accKey}
+                                                  expanded={expanded === accKey}
+                                                  onChange={handleChangeAccordion(accKey)}
+                                              >
+                                                  <AccordionSummary
+                                                      expandIcon={<ExpandMoreIcon />}
+                                                      sx={{
+                                                          '& .MuiAccordionSummary-content': styles.content,
+                                                      }}
+                                                      aria-controls="panel1bh-content"
+                                                      id="panel1bh-header"
+                                                  >
+                                                      <Typography style={styles.heading}>
+                                                          <CardMedia
+                                                              sx={styles.img2}
+                                                              component="img"
+                                                              image={icon}
+                                                          />
+                                                          <Box
+                                                              component="div"
+                                                              sx={styles.textStyle}
                                                           >
-                                                              <AccordionSummary
-                                                                  expandIcon={<ExpandMoreIcon />}
-                                                                  sx={{
-                                                                      '& .MuiAccordionSummary-content': styles.content,
-                                                                  }}
-                                                                  aria-controls="panel1bh-content"
-                                                                  id="panel1bh-header"
-                                                              >
-                                                                  <Typography style={styles.heading}>
-                                                                      <CardMedia
-                                                                          sx={styles.img2}
-                                                                          component="img"
-                                                                          image={icon}
-                                                                      />
-                                                                      <Box
-                                                                          component="div"
-                                                                          sx={styles.textStyle}
-                                                                      >
-                                                                          {nameInst.replace(/^system\.adapter\./, '')}
-                                                                      </Box>
-                                                                  </Typography>
-                                                              </AccordionSummary>
-                                                              <AccordionDetails style={styles.column}>
-                                                                  {entry.instances[nameInst].messages.map((msg, i) => (
-                                                                      <NotificationMessage
-                                                                          key={i}
-                                                                          message={msg}
-                                                                          dateFormat={dateFormat}
-                                                                          // entry={entry}
-                                                                          instanceId={nameInst}
-                                                                          socket={socket}
-                                                                          themeType={themeType}
-                                                                          themeName={themeName}
-                                                                          theme={theme}
-                                                                          isFloatComma={isFloatComma}
-                                                                          // onClose={onClose}
-                                                                          onLink={(
-                                                                              linkCommand: BackEndCommandOpenLink,
-                                                                          ) => onLink(linkCommand, nameInst, onClose)}
-                                                                      />
-                                                                  ))}
-                                                              </AccordionDetails>
-                                                          </Accordion>
-                                                      );
-                                                  })
-                                                : null}
-                                        </div>
-                                        <div style={styles.button}>
-                                            <Button
-                                                variant="contained"
-                                                autoFocus={Object.keys(messages[scope]).length !== 1}
-                                                disabled={disabled.includes(name)}
-                                                style={
-                                                    disabled.includes(name) ? { backgroundColor: 'silver' } : undefined
-                                                }
-                                                sx={styles.buttonStyle}
-                                                onClick={() => {
-                                                    ackCallback(entry.host, name);
-                                                    setDisabled([...disabled, name]);
-                                                }}
-                                                color={Object.keys(messages[scope]).length !== 1 ? 'primary' : 'grey'}
-                                                startIcon={<CheckIcon />}
-                                            >
-                                                {I18n.t('Acknowledge')}
-                                            </Button>
-                                            {Object.keys(messages[scope]).length === 1 && (
-                                                <Button
-                                                    variant="contained"
-                                                    disabled={disabled.includes(name)}
-                                                    sx={styles.buttonStyle}
-                                                    style={
-                                                        disabled.includes(name)
-                                                            ? { backgroundColor: 'silver' }
-                                                            : undefined
-                                                    }
-                                                    onClick={() => {
-                                                        setDisabled([...disabled, name]);
-                                                        ackCallback(entry.host, name);
-                                                        onClose();
-                                                    }}
-                                                    startIcon={
-                                                        <>
-                                                            <CheckIcon />
-                                                            <CloseIcon />
-                                                        </>
-                                                    }
-                                                    color="primary"
-                                                >
-                                                    {I18n.t('Acknowledge & close')}
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </TabPanel>
-                                );
-                            }
-                            return null;
-                        }),
-                    )}
+                                                              {nameInst.replace(/^system\.adapter\./, '')}
+                                                          </Box>
+                                                      </Typography>
+                                                  </AccordionSummary>
+                                                  <AccordionDetails style={styles.column}>
+                                                      {entry.instances[nameInst].messages.map((msg, i) => (
+                                                          <NotificationMessage
+                                                              key={i}
+                                                              message={msg}
+                                                              dateFormat={dateFormat}
+                                                              // entry={entry}
+                                                              instanceId={nameInst}
+                                                              socket={socket}
+                                                              themeType={themeType}
+                                                              themeName={themeName}
+                                                              theme={theme}
+                                                              isFloatComma={isFloatComma}
+                                                              // onClose={onClose}
+                                                              onLink={(linkCommand: BackEndCommandOpenLink) =>
+                                                                  onLink(linkCommand, nameInst, onClose)
+                                                              }
+                                                          />
+                                                      ))}
+                                                  </AccordionDetails>
+                                              </Accordion>
+                                          );
+                                      })
+                                    : null}
+                            </div>
+                        </TabPanel>
+                    ) : null}
                 </Box>
             </DialogContent>
             <DialogActions>
+                {currentScope && currentName ? (
+                    <Button
+                        variant="contained"
+                        autoFocus={Object.keys(messages[currentScope]).length !== 1}
+                        disabled={disabled.includes(currentName)}
+                        style={disabled.includes(currentName) ? { backgroundColor: 'silver' } : undefined}
+                        sx={styles.buttonStyle}
+                        onClick={() => {
+                            ackCallback(messages[currentScope][currentName].host, currentName);
+                            setDisabled([...disabled, currentName]);
+                        }}
+                        color={Object.keys(messages[currentScope]).length !== 1 ? 'primary' : 'grey'}
+                        startIcon={<CheckIcon />}
+                    >
+                        {I18n.t('Acknowledge')}
+                    </Button>
+                ) : null}
+                {currentScope && currentName && Object.keys(messages[currentScope]).length === 1 && (
+                    <Button
+                        variant="contained"
+                        disabled={disabled.includes(currentName)}
+                        sx={styles.buttonStyle}
+                        style={disabled.includes(currentName) ? { backgroundColor: 'silver' } : undefined}
+                        onClick={() => {
+                            setDisabled([...disabled, currentName]);
+                            ackCallback(messages[currentScope][currentName].host, currentName);
+                            onClose();
+                        }}
+                        startIcon={
+                            <>
+                                <CheckIcon />
+                                <CloseIcon />
+                            </>
+                        }
+                        color="primary"
+                    >
+                        {I18n.t('Acknowledge & close')}
+                    </Button>
+                )}
+                <div style={{ flexGrow: 1 }} />
                 <Button
                     id="notifications-dialog-close"
                     variant="contained"
@@ -571,7 +559,7 @@ const NotificationsDialog = ({
                     startIcon={<CloseIcon />}
                     color="grey"
                 >
-                    {I18n.t('Ok')}
+                    {I18n.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>

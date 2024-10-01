@@ -4,7 +4,7 @@ import { List, ListItemButton, ListItemText, DialogTitle, Dialog, ListItemAvatar
 
 import { I18n, type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
 
-import AdminUtils from '../../AdminUtils';
+import AdminUtils from '../../helpers/AdminUtils';
 
 const styles: Record<string, React.CSSProperties> = {
     img: {

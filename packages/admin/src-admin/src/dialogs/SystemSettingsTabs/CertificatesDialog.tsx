@@ -20,7 +20,7 @@ import { Add as AddIcon, Delete as DeleteIcon, Close as CloseIcon } from '@mui/i
 import { withWidth, I18n, type Translate } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
-import AdminUtils from '../../AdminUtils';
+import AdminUtils from '../../helpers/AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 // icons

@@ -15,19 +15,20 @@ import { platform } from 'node:os';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
 
-import * as utils from '@iobroker/adapter-core';
+import { I18n, Adapter, type AdapterOptions, commonTools, controllerDir } from '@iobroker/adapter-core';
 // @ts-expect-error it not TS
 import { SocketAdmin } from '@iobroker/socket-classes';
 // @ts-expect-error it not TS
 import * as ws from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
+import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
 
 const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
     .pop();
 
-const { getInstalledInfo } = utils.commonTools;
+const { getInstalledInfo } = commonTools;
 
 const ONE_HOUR_MS = 3_600_000;
 const ERROR_PERMISSION = 'permissionError';
@@ -58,6 +59,12 @@ interface NodeVersionInformation {
     npm: string;
 }
 
+interface WellKnownUserPassword {
+    login: string;
+    password: string;
+    result?: boolean;
+}
+
 interface NewsMessage {
     id: string;
     'date-start': string;
@@ -76,7 +83,7 @@ interface NewsMessage {
     content: ioBroker.Translated;
 }
 
-class Admin extends utils.Adapter {
+class Admin extends Adapter {
     public declare config: AdminAdapterConfig;
 
     /** secret used for the socket connection */
@@ -93,7 +100,9 @@ class Admin extends utils.Adapter {
 
     private _tasks: ioBroker.AnyObject[];
 
-    constructor(options: Partial<utils.AdapterOptions> = {}) {
+    private changedPasswords: WellKnownUserPassword[] = [];
+
+    constructor(options: Partial<AdapterOptions> = {}) {
         options = {
             ...options,
             name: adapterName, // adapter name
@@ -102,7 +111,7 @@ class Admin extends utils.Adapter {
             install: () => void null,
         };
 
-        super(options as utils.AdapterOptions);
+        super(options as AdapterOptions);
 
         this.on('objectChange', this.onObjectChange.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
@@ -182,6 +191,7 @@ class Admin extends utils.Adapter {
             } else if (systemConfig.common?.language) {
                 systemLanguage = systemConfig.common.language;
             }
+            I18n.init(__dirname, systemLanguage).catch(e => this.log.error(`Cannot init i18n: ${e}`));
 
             if (!systemConfig.native.secret) {
                 randomBytes(24, (_ex, buf) => {
@@ -270,10 +280,216 @@ class Admin extends utils.Adapter {
                 obj.callback &&
                 this.sendTo(obj.from, obj.command, { openUrl: obj.message._origin, saveConfig: true }, obj.callback)
             );
+        } else if (obj.command.startsWith('admin:')) {
+            return this.processNotificationsGui(obj);
         }
 
         if (socket) {
             socket.sendCommand(obj);
+        }
+    }
+
+    processNotificationsGui(obj: ioBroker.Message): void {
+        if (obj.command === 'admin:getNotificationSchema') {
+            const guiMessage: { login: string; password: string } = obj.message;
+            const alreadyDone = this.changedPasswords.find(
+                item => item.login === guiMessage.login && item.password === guiMessage.password,
+            );
+            let schema: any;
+            if (alreadyDone?.result === true) {
+                schema = {
+                    type: 'panel',
+                    items: {
+                        _info: {
+                            type: 'staticText',
+                            text: I18n.getTranslatedObject(
+                                'The password for user "%s" was successfully changed',
+                                guiMessage.login,
+                            ),
+                            style: { color: 'green' },
+                            sm: 12,
+                        },
+                    },
+                };
+            } else if (alreadyDone?.result === false) {
+                schema = {
+                    type: 'panel',
+                    items: {
+                        _info: {
+                            type: 'staticText',
+                            text: I18n.getTranslatedObject('Cannot change password for %s:', guiMessage.login),
+                            style: { color: 'orange' },
+                            sm: 12,
+                        },
+                        _info1: {
+                            newLine: true,
+                            type: 'staticText',
+                            text: `sudo passwd ${guiMessage.login}`,
+                            style: { fontFamilies: 'monospace', color: 'green', backgroundColor: 'black' },
+                            sm: 12,
+                        },
+                        _info3: {
+                            newLine: true,
+                            type: 'staticText',
+                            text: I18n.getTranslatedObject('Enter your new password by prompt.'),
+                            style: { fontFamilies: 'monospace', color: 'green', backgroundColor: 'black' },
+                            sm: 12,
+                        },
+                    },
+                };
+            } else if (alreadyDone) {
+                // Ask user for new password and for password repeat
+                schema = {
+                    type: 'panel',
+                    items: {
+                        _info: {
+                            type: 'header',
+                            size: 5,
+                            text: I18n.getTranslatedObject(
+                                `User "%s" has well known password. We suggest to change it.`,
+                                guiMessage.login,
+                            ),
+                            style: { color: 'orange' },
+                            sm: 12,
+                        },
+                        password: {
+                            newLine: true,
+                            label: I18n.getTranslatedObject('New password'),
+                            type: 'password',
+                            help: I18n.getTranslatedObject('Minimal length is 6 chars'),
+                            visible: true,
+                            sm: 12,
+                            md: 6,
+                        },
+                        passwordRepeat: {
+                            label: I18n.getTranslatedObject('Password repeat'),
+                            type: 'password',
+                            visible: true,
+                            sm: 12,
+                            md: 6,
+                        },
+                        _send: {
+                            newLine: true,
+                            type: 'sendto',
+                            command: 'admin:setPassword',
+                            jsonData: `{ "oldPassword": "${guiMessage.password}", "login": "${guiMessage.login}", "password": "$\{data.password}", "passwordRepeat": "$\{data.passwordRepeat}" }`,
+                            label: I18n.getTranslatedObject('Set password'),
+                            disabled:
+                                '!data.password || !data.passwordRepeat || data.password.length < 6 || data.password !== data.passwordRepeat',
+                            sm: 6,
+                            md: 3,
+                            variant: 'contained',
+                        },
+                    },
+                };
+            } else {
+                schema = {
+                    type: 'panel',
+                    items: {
+                        _info: {
+                            type: 'staticText',
+                            text: I18n.getTranslatedObject(
+                                'This message is no more actual and was generated by other instance start',
+                            ),
+                            style: { color: 'grey' },
+                            sm: 12,
+                        },
+                    },
+                };
+            }
+
+            this.sendTo(obj.from, obj.command, { schema }, obj.callback);
+        } else if (obj.command === 'admin:setPassword') {
+            // compare password and passwordRepeat
+            const guiMessage: { login: string; password: string; passwordRepeat: string; oldPassword: string } =
+                obj.message;
+            // empty password isn't allowed
+            if (!guiMessage.password) {
+                this.sendTo(
+                    obj.from,
+                    obj.command,
+                    {
+                        command: {
+                            command: 'message',
+                            message: I18n.getTranslatedObject("Empty password isn't allowed"),
+                            refresh: true,
+                        },
+                    },
+                    obj.callback,
+                );
+            } else if (guiMessage.password !== guiMessage.passwordRepeat) {
+                this.sendTo(
+                    obj.from,
+                    obj.command,
+                    {
+                        command: {
+                            command: 'message',
+                            message: I18n.getTranslatedObject('Password and password repeat are not equal'),
+                            refresh: true,
+                        },
+                    },
+                    obj.callback,
+                );
+            } else if (guiMessage.password.length < 6) {
+                this.sendTo(
+                    obj.from,
+                    obj.command,
+                    {
+                        command: {
+                            command: 'message',
+                            message: I18n.getTranslatedObject('Password is too short (min 6 chars)'),
+                            refresh: true,
+                        },
+                    },
+                    obj.callback,
+                );
+            } else {
+                void setLinuxPassword(guiMessage.login, guiMessage.oldPassword, guiMessage.password).then(result => {
+                    this.changedPasswords = this.changedPasswords.filter(
+                        item => item.password !== guiMessage.login && item.login !== guiMessage.oldPassword,
+                    );
+                    this.changedPasswords.push({
+                        login: guiMessage.login,
+                        password: guiMessage.oldPassword,
+                        result: result === true,
+                    });
+                    if (result === true) {
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            {
+                                command: {
+                                    command: 'message',
+                                    message: I18n.getTranslatedObject(
+                                        'Password successfully changed for "%s"',
+                                        guiMessage.login,
+                                    ),
+                                    refresh: true,
+                                },
+                            },
+                            obj.callback,
+                        );
+                    } else {
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            {
+                                command: {
+                                    command: 'message',
+                                    message: I18n.getTranslatedObject(
+                                        `Cannot change password for "%s": %s`,
+                                        guiMessage.login,
+                                        result,
+                                    ),
+                                    style: { color: 'red' },
+                                    refresh: true,
+                                },
+                            },
+                            obj.callback,
+                        );
+                    }
+                });
+            }
         }
     }
 
@@ -1004,16 +1220,24 @@ class Admin extends utils.Adapter {
     /**
      * Get the objects db type
      */
-    async getObjectsDbType(): Promise<string> {
+    async getObjectsDbType(): Promise<'jsonl' | 'file' | 'redis'> {
+        const hostAlive = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
+        if (!hostAlive?.val) {
+            return 'jsonl';
+        }
         const diagData = await this.sendToHostAsync(this.host, 'getDiagData', 'normal');
         // @ts-expect-error messages are special and cannot be typed easily
-        return diagData.objectsType;
+        return diagData.objectsType as 'jsonl' | 'file' | 'redis';
     }
 
     /**
      * Get current npm version from controller
      */
     async getNpmVersion(): Promise<string> {
+        const hostAlive = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
+        if (!hostAlive?.val) {
+            throw new Error('Host is offline');
+        }
         const hostInfo = await this.sendToHostAsync(this.host, 'getHostInfo', {});
         // @ts-expect-error messages are special and cannot be typed easily
         return hostInfo.NPM;
@@ -1339,12 +1563,21 @@ class Admin extends utils.Adapter {
                                                         '',
                                                     )} was disabled because blocked. Please update ${_adapter} to newer or available version`,
                                                 );
-                                                this.sendToHost(obj.common.host, 'addNotification', {
-                                                    scope: 'system',
-                                                    category: 'accessErrors', // change to 'blocked' when js-controller 4.1. released
-                                                    instance: obj._id,
-                                                    message: `Instance version was blocked. Please check for updates and update before restarting the instance`,
-                                                });
+                                                const hostAlive = await this.getForeignStateAsync(
+                                                    `system.host.${obj.common.host}.alive`,
+                                                );
+                                                if (hostAlive?.val) {
+                                                    this.sendToHost(obj.common.host, 'addNotification', {
+                                                        scope: 'system',
+                                                        category: 'accessErrors', // change to 'blocked' when js-controller 4.1. released
+                                                        instance: obj._id,
+                                                        message: `Instance version was blocked. Please check for updates and update before restarting the instance`,
+                                                    });
+                                                } else {
+                                                    this.log.warn(
+                                                        `Cannot add notification to ${obj.common.host} as it is offline`,
+                                                    );
+                                                }
                                             }
                                         }
                                     }
@@ -1372,9 +1605,9 @@ class Admin extends utils.Adapter {
 
     // update icons by all known default objects. Remove this function after 2 years (BF: 2021.04.20)
     updateIcons(): void {
-        if (existsSync(`${utils.controllerDir}/io-package.json`)) {
+        if (existsSync(`${controllerDir}/io-package.json`)) {
             const ioPackage = JSON.parse(
-                readFileSync(join(utils.controllerDir, 'io-package.json'), {
+                readFileSync(join(controllerDir, 'io-package.json'), {
                     encoding: 'utf-8',
                 }),
             );
@@ -1414,31 +1647,35 @@ class Admin extends utils.Adapter {
         }
     }
 
-    getRecommendedVersions(): Promise<{ node: number; npm: number }> {
-        return new Promise(resolve =>
-            this.sendToHost(this.host, 'getRepository', {}, repository => {
-                const repoInfo: {
-                    repoTime: string;
-                    recommendedVersions: {
-                        nodeJsRecommended: number;
-                        npmRecommended: number;
-                    };
-                    // @ts-expect-error fix later
-                } = (repository as unknown)?._repoInfo;
+    async getRecommendedVersions(): Promise<{ node: number; npm: number }> {
+        // Check if the host running
+        const hostAlive = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
+        if (!hostAlive?.val) {
+            return {
+                node: CURRENT_MAX_MAJOR_NODEJS,
+                npm: CURRENT_MAX_MAJOR_NPM,
+            };
+        }
+        const repository = await this.sendToHostAsync(this.host, 'getRepository', {});
+        const repoInfo: {
+            repoTime: string;
+            recommendedVersions: {
+                nodeJsRecommended: number;
+                npmRecommended: number;
+            };
+            // @ts-expect-error fix later
+        } = (repository as unknown)?._repoInfo;
 
-                if (repoInfo?.recommendedVersions) {
-                    resolve({
-                        node: repoInfo.recommendedVersions?.nodeJsRecommended,
-                        npm: repoInfo.recommendedVersions?.npmRecommended,
-                    });
-                } else {
-                    resolve({
-                        node: CURRENT_MAX_MAJOR_NODEJS,
-                        npm: CURRENT_MAX_MAJOR_NPM,
-                    });
-                }
-            }),
-        );
+        if (repoInfo?.recommendedVersions) {
+            return {
+                node: repoInfo.recommendedVersions?.nodeJsRecommended,
+                npm: repoInfo.recommendedVersions?.npmRecommended,
+            };
+        }
+        return {
+            node: CURRENT_MAX_MAJOR_NODEJS,
+            npm: CURRENT_MAX_MAJOR_NPM,
+        };
     }
 
     /**
@@ -1486,7 +1723,7 @@ class Admin extends utils.Adapter {
                         this.log.info('Request actual repository...');
                         // first check if the host is running
                         const aliveState = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
-                        if (!aliveState || !aliveState.val) {
+                        if (!aliveState?.val) {
                             this.log.error('Host is not alive');
                             // start the next cycle
                             this.restartRepoUpdate();
@@ -1670,6 +1907,7 @@ class Admin extends utils.Adapter {
         void this.updateNews().catch(e => this.log.error(`Cannot update news: ${e}`));
         this.updateIcons();
         void this.validateUserData0().catch(e => this.log.error(`Cannot validate 0_userdata: ${e}`));
+        void this.checkWellKnownPasswords().catch(e => this.log.error(`Cannot check well known passwords: ${e}`));
     }
 
     /**
@@ -1684,7 +1922,7 @@ class Admin extends utils.Adapter {
         }
         if (!obj) {
             try {
-                const ioContent = readFileSync(`${utils.controllerDir}/io-package.json`).toString('utf8');
+                const ioContent = readFileSync(`${controllerDir}/io-package.json`).toString('utf8');
                 const io = JSON.parse(ioContent);
                 if (io.objects) {
                     const userData: ioBroker.MetaObject | null = io.objects.find(
@@ -1696,15 +1934,41 @@ class Admin extends utils.Adapter {
                     }
                 }
             } catch (e) {
-                this.log.error(`Cannot read ${utils.controllerDir}/io-package.json: ${e}`);
+                this.log.error(`Cannot read ${controllerDir}/io-package.json: ${e}`);
             }
+        }
+    }
+
+    async checkWellKnownPasswords(): Promise<void> {
+        if (process.platform !== 'linux') {
+            return;
+        }
+        const found = await checkWellKnownPasswords();
+        if (found) {
+            this.changedPasswords = this.changedPasswords.filter(
+                item => item.login !== found.login && item.password !== found.password,
+            );
+            this.changedPasswords.push(found);
+
+            // @ts-expect-error types defined in js-controller 7
+            await this.registerNotification('admin', 'wellKnownPassword', I18n.translate('User: %s', found.login), {
+                contextData: {
+                    admin: {
+                        notification: {
+                            login: found.login,
+                            password: found.password,
+                            offlineMessage: I18n.getTranslatedObject('Offline message', found.login),
+                        },
+                    },
+                },
+            });
         }
     }
 }
 
 if (require.main !== module) {
     // Export the constructor in compact mode
-    module.exports = (options: Partial<utils.AdapterOptions> | undefined) => new Admin(options);
+    module.exports = (options: Partial<AdapterOptions> | undefined) => new Admin(options);
 } else {
     // otherwise start the instance directly
     (() => new Admin())();

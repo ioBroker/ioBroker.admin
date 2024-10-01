@@ -19,7 +19,7 @@ import {
 import { I18n, withWidth, type Translate } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Record<string, React.CSSProperties> = {
