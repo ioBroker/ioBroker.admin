@@ -39,7 +39,7 @@
         "@iobroker/legacy-testing": "^1.0.13",
         "@iobroker/socket-client": "^3.1.0",
         "@iobroker/testing": "^5.0.0",
-        "@iobroker/types": "^7.0.0-alpha.0-20240926-91f9b082f",
+        "@iobroker/types": "^7.0.0-alpha.1-20241001-61327866b",
         "@mui/icons-material": "^6.1.1",
         "@mui/material": "^6.1.1",
         "@mui/x-data-grid": "^7.18.0",
