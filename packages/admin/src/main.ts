@@ -10,10 +10,10 @@
 
 import * as semver from 'semver';
 import axios from 'axios';
-import * as fs from 'node:fs';
-import * as os from 'node:os';
-import * as path from 'node:path';
-import * as crypto from 'node:crypto';
+import { readFileSync, existsSync } from 'node:fs';
+import { platform } from 'node:os';
+import { join } from 'node:path';
+import { randomBytes } from 'node:crypto';
 
 import * as utils from '@iobroker/adapter-core';
 // @ts-expect-error it not TS
@@ -23,7 +23,7 @@ import * as ws from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
 
-const adapterName = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
+const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
     .pop();
 
@@ -184,7 +184,7 @@ class Admin extends utils.Adapter {
             }
 
             if (!systemConfig.native.secret) {
-                crypto.randomBytes(24, (_ex, buf) => {
+                randomBytes(24, (_ex, buf) => {
                     this.secret = buf.toString('hex');
                     this.extendForeignObject('system.config', { native: { secret: this.secret } });
                     this.init();
@@ -217,7 +217,7 @@ class Admin extends utils.Adapter {
                 try {
                     return (
                         obj.callback &&
-                        this.sendTo(obj.from, obj.command, { result: fs.existsSync(obj.message) }, obj.callback)
+                        this.sendTo(obj.from, obj.command, { result: existsSync(obj.message) }, obj.callback)
                     );
                 } catch (e) {
                     return obj.callback && this.sendTo(obj.from, obj.command, { error: e.message }, obj.callback);
@@ -226,7 +226,7 @@ class Admin extends utils.Adapter {
                 const result: Record<string, boolean> = {};
                 for (let f = 0; f < obj.message.length; f++) {
                     try {
-                        result[obj.message[f]] = fs.existsSync(obj.message[f]);
+                        result[obj.message[f]] = existsSync(obj.message[f]);
                     } catch (e) {
                         result[obj.message[f]] = e.message;
                     }
@@ -849,7 +849,7 @@ class Admin extends utils.Adapter {
             endkey: 'system.adapter.\u9999',
         });
 
-        const operatingSystem = os.platform();
+        const operatingSystem = platform();
 
         const instances = await this.getObjectViewAsync('system', 'instance', {
             startkey: 'system.adapter.\u0000',
@@ -1372,9 +1372,9 @@ class Admin extends utils.Adapter {
 
     // update icons by all known default objects. Remove this function after 2 years (BF: 2021.04.20)
     updateIcons(): void {
-        if (fs.existsSync(`${utils.controllerDir}/io-package.json`)) {
+        if (existsSync(`${utils.controllerDir}/io-package.json`)) {
             const ioPackage = JSON.parse(
-                fs.readFileSync(path.join(utils.controllerDir, 'io-package.json'), {
+                readFileSync(join(utils.controllerDir, 'io-package.json'), {
                     encoding: 'utf-8',
                 }),
             );
@@ -1548,8 +1548,8 @@ class Admin extends utils.Adapter {
         try {
             const dir = require.resolve('iobroker.js-controller/io-package.json').replace(/\\/g, '/');
             // dir is something like ./node_modules/iobroker.js-controller/build/cjs/main.js
-            if (fs.existsSync(dir)) {
-                const data = JSON.parse(fs.readFileSync(dir).toString());
+            if (existsSync(dir)) {
+                const data = JSON.parse(readFileSync(dir).toString());
                 if (data.objects) {
                     objects = data.objects;
                 }
@@ -1655,7 +1655,7 @@ class Admin extends utils.Adapter {
         // check info.connected
         void this.getObjectAsync('info.connected').then(obj => {
             if (!obj) {
-                const packageJson = JSON.parse(fs.readFileSync(`${__dirname}/../io-package.json`).toString('utf8'));
+                const packageJson = JSON.parse(readFileSync(`${__dirname}/../io-package.json`).toString('utf8'));
                 const obj = packageJson.instanceObjects.find((o: ioBroker.AnyObject) => o._id === 'info.connected');
                 if (obj) {
                     return this.setObjectAsync(obj._id, obj);
@@ -1684,7 +1684,7 @@ class Admin extends utils.Adapter {
         }
         if (!obj) {
             try {
-                const ioContent = fs.readFileSync(`${utils.controllerDir}/io-package.json`).toString('utf8');
+                const ioContent = readFileSync(`${utils.controllerDir}/io-package.json`).toString('utf8');
                 const io = JSON.parse(ioContent);
                 if (io.objects) {
                     const userData: ioBroker.MetaObject | null = io.objects.find(
