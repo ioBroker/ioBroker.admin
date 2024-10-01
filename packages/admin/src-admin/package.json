@@ -6,8 +6,6 @@
         "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && craco start",
         "lint": "eslint -c eslint.config.mjs src",
         "build": "craco build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject",
         "check-ts": "tsc --noEmit --checkJS false",
         "tsc": "tsc --project tsconfig.json",
         "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"

@@ -8,7 +8,7 @@ const src = `${__dirname}/${srcRx}`;
 const rootFolder = path.join(__dirname, '..', '..');
 const dest = 'adminWww/';
 
-function build() {
+async function build() {
     fs.writeFileSync(
         `${src}public/lib/js/sparkline.js`,
         fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js`),
@@ -25,7 +25,10 @@ function build() {
         fs.readFileSync(`${ace}ext-searchbox.js`),
     );
 
-    return buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true });
+    await buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true });
+    if (fs.existsSync(`${__dirname}/adminWww/index.html`)) {
+        throw new Error('Front-end was not build to end!');
+    }
 }
 
 function syncUtils() {
