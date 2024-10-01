@@ -1,4 +1,8 @@
 # Older changes
+## 7.1.0 (2024-09-02)
+
+-   (bluefox) Added the possibility to show button in notifications
+-   (bluefox) Removed gulp from the build process
 
 ## 7.0.25 (2024-08-24)
 
