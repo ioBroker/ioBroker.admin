@@ -164,6 +164,7 @@ await adapter.registerNotification(
 ```
 
 The structure of `contextData.admin.notification` is adapter-specific.
+
 The only attribute that the admin can understand from the context data is `offlineMessage`. This message will be shown in the notification dialog if the instance is not alive.
 
 Developers should store the information in the context required for generating the GUI.

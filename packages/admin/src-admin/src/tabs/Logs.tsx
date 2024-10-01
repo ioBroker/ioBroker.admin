@@ -61,7 +61,7 @@ import type LogsWorker from '@/Workers/LogsWorker';
 import type { LogLineSaved } from '@/Workers/LogsWorker';
 import type { CompactAdapterInfo, CompactHost } from '@/types';
 
-import AdminUtils from '../AdminUtils';
+import AdminUtils from '../helpers/AdminUtils';
 
 const MAX_LOGS = 3000;
 

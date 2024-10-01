@@ -4,7 +4,8 @@ import { LinearProgress } from '@mui/material';
 import { withWidth, type ThemeType, Router } from '@iobroker/adapter-react-v5';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
-import AdminUtils from '../AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
+import { replaceLink } from '@/helpers/utils';
 
 const styles: Record<string, React.CSSProperties> = {
     root: {
@@ -77,7 +78,7 @@ export async function getHref(
         }
 
         // replace
-        const hrefs = AdminUtils.replaceLink(href, adapter, _instNum, {
+        const hrefs = replaceLink(href, adapter, _instNum, {
             hostname,
             // it cannot be void
             instances: instances as Record<string, ioBroker.InstanceObject>,

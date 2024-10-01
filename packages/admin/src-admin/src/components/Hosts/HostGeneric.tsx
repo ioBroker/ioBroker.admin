@@ -48,7 +48,7 @@ import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
 import { CONTROLLER_CHANGELOG_URL } from '@/helpers/utils';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import type { NotificationsCount } from '@/types';
-import AdminUtils from '../../AdminUtils';
+import AdminUtils from '../../helpers/AdminUtils';
 import HostEdit from './HostEdit';
 import CustomModal from '../CustomModal';
 

@@ -17,14 +17,13 @@ import { FaRegFolder as IconCollapsed, FaRegFolderOpen as IconExpanded } from 'r
 
 import { type AdminConnection, type IobTheme, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
 
-import { isTouchDevice } from '@/helpers/utils';
 import EnumBlock from './EnumBlock';
 import CategoryLabel from './CategoryLabel';
 import EnumEditDialog from './EnumEditDialog';
 import EnumTemplateDialog from './EnumTemplateDialog';
 import EnumDeleteDialog from './EnumDeleteDialog';
 import DragObjectBrowser from './DragObjectBrowser';
-import AdminUtils from '../../AdminUtils';
+import AdminUtils from '../../helpers/AdminUtils';
 
 const styles: Record<string, any> = {
     mainGridCont: {
@@ -877,7 +876,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
 
         return (
             <>
-                <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
+                <DndProvider backend={AdminUtils.isTouchDevice() ? TouchBackend : HTML5Backend}>
                     <DndPreview />
                     <ReactSplit
                         direction={SplitDirection.Horizontal}

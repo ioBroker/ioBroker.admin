@@ -64,14 +64,13 @@ import {
 } from '@iobroker/adapter-react-v5';
 import { amber, blue, green, grey, orange, red } from '@mui/material/colors';
 
-import { isTouchDevice } from '@/helpers/utils';
 import State from '@/components/State';
 import InstanceInfo from '@/components/Instances/InstanceInfo';
 import sentry from '@/assets/sentry.svg';
 import noSentry from '@/assets/sentryNo.svg';
 import CustomModal from '../CustomModal';
 import LinksDialog, { type InstanceLink } from './LinksDialog';
-import AdminUtils from '../../AdminUtils';
+import AdminUtils from '../../helpers/AdminUtils';
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 export const arrayTier = [
@@ -311,13 +310,13 @@ export const styles: Record<string, any> = {
     },
     editButton: {
         minHeight: 32,
-        '& .admin-edit-button': isTouchDevice()
+        '& .admin-edit-button': AdminUtils.isTouchDevice()
             ? undefined
             : {
                   display: 'none',
                   maxHeight: 32,
               },
-        '&:hover': isTouchDevice()
+        '&:hover': AdminUtils.isTouchDevice()
             ? undefined
             : {
                   '& .admin-edit-button': {
