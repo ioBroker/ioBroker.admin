@@ -136,7 +136,7 @@ if (error) {
 
 ## Dynamic Interface in Notifications
 
-Starting from [js-controller v6.x](https://github.com/ioBroker/ioBroker.js-controller/blob/master/README.md#notification-system), developers can send system notifications that are visible in the admin interface.
+Starting from [js-controller v5.x](https://github.com/ioBroker/ioBroker.js-controller/blob/master/README.md#notification-system), developers can send system notifications that are visible in the admin interface.
 
 In js-controller v7.x, this feature has been extended to allow adapters to send not only static information but also dynamic GUIs using the [JSON-Config schema](packages/jsonConfig/SCHEMA.md).
 
@@ -152,14 +152,19 @@ await adapter.registerNotification(
     {
         // contextData indicates that your adapter supports dynamic GUI
         contextData: {
-            offlineMessage: I18n.getTranslatedObject('Instance is offline'),
-            specificUserData,
+            admin: {
+                notification: {
+                    offlineMessage: I18n.getTranslatedObject('Instance is offline'),
+                    specificUserData,
+                },
+            },
         },
     },
 );
 ```
 
-The structure of `contextData` is adapter-specific.
+The structure of `contextData.admin.notification` is adapter-specific.
+
 The only attribute that the admin can understand from the context data is `offlineMessage`. This message will be shown in the notification dialog if the instance is not alive.
 
 Developers should store the information in the context required for generating the GUI.
@@ -243,9 +248,7 @@ The entire GUI can be generated using only two JSON-Config components:
 -   `staticText` - to display information with the desired style. You can use multiple instances to show different parts of the text in different styles.
 -   `sendto` - to interact with the backend.
 
-Use the prefix `_` for attribute names of a component; otherwise, the admin will try to save the information (untested behavior).
-
-For backend translations, use the new [adapter-core@3.2.0](https://github.com/ioBroker/adapter-core?tab=readme-ov-file#i18n) feature.
+For backend translations, use the new [adapter-core@3.2.1](https://github.com/ioBroker/adapter-core?tab=readme-ov-file#i18n) feature.
 
 Import the `I18n` like this:
 
