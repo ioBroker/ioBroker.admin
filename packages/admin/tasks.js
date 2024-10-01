@@ -5,7 +5,7 @@ const less = require('less');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { join } = require('node:path');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { exec } = require('node:child_process');
+const { execFile } = require('node:child_process');
 const {
     deleteFoldersRecursive,
     /*  buildReact, */ patchHtmlFile,
@@ -37,8 +37,9 @@ function buildCraco() {
             console.error(`Cannot find execution file: ${script}`);
             reject(`Cannot find execution file: ${script}`);
         } else {
-            const cmd = `node ${script} --max-old-space-size=7000 build`;
-            const child = exec(cmd, { cwd: src });
+            const cmd = 'node';
+            const args = [script, '--max-old-space-size=7000', 'build'];
+            const child = execFile(cmd, args, { cwd: src });
 
             child.stderr.pipe(process.stderr);
             child.stdout.pipe(process.stdout);
