@@ -15,7 +15,8 @@ import { platform } from 'node:os';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
 
-import { I18n, Adapter, type AdapterOptions, commonTools, controllerDir } from '@iobroker/adapter-core';
+import { Adapter, type AdapterOptions, commonTools, controllerDir } from '@iobroker/adapter-core';
+import I18n from '@iobroker/i18n';
 // @ts-expect-error it not TS
 import { SocketAdmin } from '@iobroker/socket-classes';
 // @ts-expect-error it not TS
