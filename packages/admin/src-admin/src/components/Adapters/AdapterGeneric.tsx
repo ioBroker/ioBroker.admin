@@ -45,7 +45,7 @@ import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
 import CustomModal from '@/components/CustomModal';
 import RatingDialog, { type RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdapterDeletionDialog from '@/dialogs/AdapterDeletionDialog';
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
 import AdapterInstallDialog, {
     type AdapterInstallDialogState,
     type AdapterRating,

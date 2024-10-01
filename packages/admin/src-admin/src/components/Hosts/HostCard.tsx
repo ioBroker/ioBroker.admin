@@ -6,7 +6,7 @@ import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 
 import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
 
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
 import HostGeneric, {
     boxShadow,
     boxShadowHover,

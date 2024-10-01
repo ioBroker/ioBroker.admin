@@ -4,7 +4,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Avatar, Grid2, Tooltip, 
 
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
 import InstanceInfo from './InstanceInfo';
 import IsVisible from '../IsVisible';
 import InstanceGeneric, {

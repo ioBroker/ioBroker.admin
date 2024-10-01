@@ -30,7 +30,7 @@ import BaseSettingsObjects, { type SettingsObjects } from '../components/BaseSet
 import BaseSettingsStates, { type SettingsStates } from '../components/BaseSettings/BaseSettingsStates';
 import BaseSettingsLog, { type SettingsLog } from '../components/BaseSettings/BaseSettingsLog';
 import BaseSettingsPlugins, { type PluginsSettings } from '../components/BaseSettings/BaseSettingsPlugins';
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
 
 // icons
 

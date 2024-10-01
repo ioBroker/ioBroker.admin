@@ -28,7 +28,7 @@ import { blue, grey, red } from '@mui/material/colors';
 
 import { Utils, IconCopy as SaveIcon, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
-import AdminUtils from '../../AdminUtils';
+import AdminUtils from '../../helpers/AdminUtils';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
