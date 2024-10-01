@@ -1220,16 +1220,24 @@ class Admin extends Adapter {
     /**
      * Get the objects db type
      */
-    async getObjectsDbType(): Promise<string> {
+    async getObjectsDbType(): Promise<'jsonl' | 'file' | 'redis'> {
+        const hostAlive = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
+        if (!hostAlive?.val) {
+            return 'jsonl';
+        }
         const diagData = await this.sendToHostAsync(this.host, 'getDiagData', 'normal');
         // @ts-expect-error messages are special and cannot be typed easily
-        return diagData.objectsType;
+        return diagData.objectsType as 'jsonl' | 'file' | 'redis';
     }
 
     /**
      * Get current npm version from controller
      */
     async getNpmVersion(): Promise<string> {
+        const hostAlive = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
+        if (!hostAlive?.val) {
+            throw new Error('Host is offline');
+        }
         const hostInfo = await this.sendToHostAsync(this.host, 'getHostInfo', {});
         // @ts-expect-error messages are special and cannot be typed easily
         return hostInfo.NPM;
@@ -1555,12 +1563,21 @@ class Admin extends Adapter {
                                                         '',
                                                     )} was disabled because blocked. Please update ${_adapter} to newer or available version`,
                                                 );
-                                                this.sendToHost(obj.common.host, 'addNotification', {
-                                                    scope: 'system',
-                                                    category: 'accessErrors', // change to 'blocked' when js-controller 4.1. released
-                                                    instance: obj._id,
-                                                    message: `Instance version was blocked. Please check for updates and update before restarting the instance`,
-                                                });
+                                                const hostAlive = await this.getForeignStateAsync(
+                                                    `system.host.${obj.common.host}.alive`,
+                                                );
+                                                if (hostAlive?.val) {
+                                                    this.sendToHost(obj.common.host, 'addNotification', {
+                                                        scope: 'system',
+                                                        category: 'accessErrors', // change to 'blocked' when js-controller 4.1. released
+                                                        instance: obj._id,
+                                                        message: `Instance version was blocked. Please check for updates and update before restarting the instance`,
+                                                    });
+                                                } else {
+                                                    this.log.warn(
+                                                        `Cannot add notification to ${obj.common.host} as it is offline`,
+                                                    );
+                                                }
                                             }
                                         }
                                     }
@@ -1630,31 +1647,35 @@ class Admin extends Adapter {
         }
     }
 
-    getRecommendedVersions(): Promise<{ node: number; npm: number }> {
-        return new Promise(resolve =>
-            this.sendToHost(this.host, 'getRepository', {}, repository => {
-                const repoInfo: {
-                    repoTime: string;
-                    recommendedVersions: {
-                        nodeJsRecommended: number;
-                        npmRecommended: number;
-                    };
-                    // @ts-expect-error fix later
-                } = (repository as unknown)?._repoInfo;
+    async getRecommendedVersions(): Promise<{ node: number; npm: number }> {
+        // Check if the host running
+        const hostAlive = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
+        if (!hostAlive?.val) {
+            return {
+                node: CURRENT_MAX_MAJOR_NODEJS,
+                npm: CURRENT_MAX_MAJOR_NPM,
+            };
+        }
+        const repository = await this.sendToHostAsync(this.host, 'getRepository', {});
+        const repoInfo: {
+            repoTime: string;
+            recommendedVersions: {
+                nodeJsRecommended: number;
+                npmRecommended: number;
+            };
+            // @ts-expect-error fix later
+        } = (repository as unknown)?._repoInfo;
 
-                if (repoInfo?.recommendedVersions) {
-                    resolve({
-                        node: repoInfo.recommendedVersions?.nodeJsRecommended,
-                        npm: repoInfo.recommendedVersions?.npmRecommended,
-                    });
-                } else {
-                    resolve({
-                        node: CURRENT_MAX_MAJOR_NODEJS,
-                        npm: CURRENT_MAX_MAJOR_NPM,
-                    });
-                }
-            }),
-        );
+        if (repoInfo?.recommendedVersions) {
+            return {
+                node: repoInfo.recommendedVersions?.nodeJsRecommended,
+                npm: repoInfo.recommendedVersions?.npmRecommended,
+            };
+        }
+        return {
+            node: CURRENT_MAX_MAJOR_NODEJS,
+            npm: CURRENT_MAX_MAJOR_NPM,
+        };
     }
 
     /**
@@ -1702,7 +1723,7 @@ class Admin extends Adapter {
                         this.log.info('Request actual repository...');
                         // first check if the host is running
                         const aliveState = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
-                        if (!aliveState || !aliveState.val) {
+                        if (!aliveState?.val) {
                             this.log.error('Host is not alive');
                             // start the next cycle
                             this.restartRepoUpdate();
