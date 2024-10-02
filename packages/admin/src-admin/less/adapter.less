@@ -544,6 +544,14 @@ h4 {
     border-bottom: 2px solid rgb(51, 153, 204) !important;
 }
 
+.m .dropdown-toggle {
+    display: none;
+}
+
+.m .dropdown-menu {
+    display: none;
+}
+
 /* Styling for small Screen (Responsive) */
 @media screen and (max-width: 768px) {
 
@@ -645,21 +653,26 @@ h4 {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px, rgba(0, 0, 0, 0.12) 0px 1px 18px 0px !important;
         color: rgba(0, 0, 0, 0.87) !important;
         background-color: rgb(224, 224, 224) !important;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 90px;
         z-index: 1000;
+    }
+
+    .m .dropdown-toggle:hover {
+        background-color: rgb(245, 245, 245) !important;
+        text-decoration: none !important;
     }
 
     .m .dropdown-toggle i,
     .m.react-blue.dropdown-toggle i,
     .m.react-dark .dropdown-toggle i {
         color: rgba(0, 0, 0, 0.87) !important;
-        font-size: 30px;
+        font-size: 24px;
     }
 
     .m .dropdown-menu {
@@ -701,6 +714,6 @@ h4 {
     }
 
     .m .dropdown-menu a:hover {
-        background-color: #ddd;
+        background-color: rgb(245, 245, 245);
     }
 }

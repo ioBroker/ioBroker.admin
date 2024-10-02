@@ -13,21 +13,21 @@ if (location.pathname.match(/^\/admin\//)) {
 
 var systemConfig;
 var socket = io.connect('/', { path: parts.join('/') + '/socket.io' });
-var query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
-var args = {};
-var theme = null;
+var query  = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
+var args   = {};
+var theme  = null;
 
 // parse parameters
 query.trim().split('&').filter(function (t) { return t.trim(); }).forEach(function (b, i) {
     const parts = b.split('=');
     if (!i && parts.length === 1 && !isNaN(parseInt(b, 10))) {
-        args.instance = parseInt(b, 10);
+        args.instance = parseInt(b,  10);
     }
     var name = parts[0];
     args[name] = parts.length === 2 ? parts[1] : true;
 
     if (name === 'instance') {
-        args.instance = parseInt(args.instance, 10) || 0;
+        args.instance = parseInt(args.instance,  10) || 0;
     }
 
     if (args[name] === 'true') {
@@ -37,18 +37,18 @@ query.trim().split('&').filter(function (t) { return t.trim(); }).forEach(functi
     }
 });
 
-var isTab = !!window.location.pathname.match(/tab(_m)?\.html/);
+var isTab    = !!window.location.pathname.match(/tab(_m)?\.html/);
 var instance = args.instance;
 var noFooter = args.noFooter;
-var common = null; // common information of adapter
-var host = null; // host object on which the adapter runs
-var changed = false;
-var certs = [];
-var adapter = '';
+var common   = null; // common information of adapter
+var host     = null; // host object on which the adapter runs
+var changed  = false;
+var certs    = [];
+var adapter  = '';
 var onChangeSupported = false;
 var isMaterialize = false;
-var ___onChange = null;
-var systemSecret = 'Zgfr56gFe87jJOM';
+var ___onChange   = null;
+var systemSecret  = 'Zgfr56gFe87jJOM';
 var supportedFeatures = [
     'ADAPTER_AUTO_DECRYPT_NATIVE', // all native attributes, that are listed in an array `encryptedNative` in io-pack will be automatically decrypted and encrypted. Since js-controller 3.0
 ];
@@ -63,58 +63,58 @@ function preInit() {
         systemDictionary = {};
     }
 
-    systemDictionary.save = {
-        en: 'Save', fr: 'Sauvegarder', nl: 'Opslaan', es: 'Salvar', pt: 'Salve', it: 'Salvare', de: 'Speichern', pl: 'Zapisać', ru: 'Сохранить', 'zh-cn': '保存',
+    systemDictionary.save =           {
+        en: 'Save',           fr: 'Sauvegarder',                     nl: 'Opslaan',             es: 'Salvar',                      pt: 'Salve',                   it: 'Salvare',                     de: 'Speichern',                pl: 'Zapisać',                      ru: 'Сохранить',           'zh-cn': '保存',
     };
-    systemDictionary.saveclose = {
-        en: 'Save and close', fr: 'Sauver et fermer', nl: 'Opslaan en afsluiten', es: 'Guardar y cerrar', pt: 'Salvar e fechar', it: 'Salva e chiudi', de: 'Speichern und schließen', pl: 'Zapisz i zamknij', ru: 'Сохранить и выйти', 'zh-cn': '保存并关闭',
+    systemDictionary.saveclose =      {
+        en: 'Save and close', fr: 'Sauver et fermer',                nl: 'Opslaan en afsluiten', es: 'Guardar y cerrar',            pt: 'Salvar e fechar',         it: 'Salva e chiudi',              de: 'Speichern und schließen',  pl: 'Zapisz i zamknij',             ru: 'Сохранить и выйти',   'zh-cn': '保存并关闭',
     };
-    systemDictionary.none = {
-        en: 'none', fr: 'aucun', nl: 'geen', es: 'ninguna', pt: 'Nenhum', it: 'nessuna', de: 'keins', pl: 'Żaden', ru: 'ничего', 'zh-cn': '无',
+    systemDictionary.none =           {
+        en: 'none',           fr: 'aucun',                           nl: 'geen',                es: 'ninguna',                     pt: 'Nenhum',                  it: 'nessuna',                     de: 'keins',                    pl: 'Żaden',                        ru: 'ничего',              'zh-cn': '无',
     };
-    systemDictionary.nonerooms = {
-        en: '', fr: '', nl: '', es: '', pt: '', it: '', de: '', pl: '', ru: '', 'zh-cn': '',
+    systemDictionary.nonerooms =      {
+        en: '',               fr: '',                                nl: '',                    es: '',                            pt: '',                        it: '',                            de: '',                         pl: '',                             ru: '',                    'zh-cn': '',
     };
-    systemDictionary.nonefunctions = {
-        en: '', fr: '', nl: '', es: '', pt: '', it: '', de: '', pl: '', ru: '', 'zh-cn': '',
+    systemDictionary.nonefunctions =  {
+        en: '',               fr: '',                                nl: '',                    es: '',                            pt: '',                        it: '',                            de: '',                         pl: '',                             ru: '',                    'zh-cn': '',
     };
-    systemDictionary.all = {
-        en: 'all', fr: 'tout', nl: 'alle', es: 'todas', pt: 'todos', it: 'tutti', de: 'alle', pl: 'wszystko', ru: 'все', 'zh-cn': '所有',
+    systemDictionary.all =            {
+        en: 'all',            fr: 'tout',                            nl: 'alle',                es: 'todas',                       pt: 'todos',                   it: 'tutti',                       de: 'alle',                     pl: 'wszystko',                     ru: 'все',                 'zh-cn': '所有',
     };
     systemDictionary['Device list'] = {
-        en: 'Device list', fr: 'Liste des périphériques', nl: 'Lijst met apparaten', es: 'Lista de dispositivos', pt: 'Lista de dispositivos', it: 'Elenco dispositivi', de: 'Geräteliste', pl: 'Lista urządzeń', ru: 'Список устройств', 'zh-cn': '设备清单',
+        en: 'Device list',    fr: 'Liste des périphériques',         nl: 'Lijst met apparaten', es: 'Lista de dispositivos',       pt: 'Lista de dispositivos',   it: 'Elenco dispositivi',          de: 'Geräteliste',              pl: 'Lista urządzeń',               ru: 'Список устройств',    'zh-cn': '设备清单',
     };
-    systemDictionary['new device'] = {
-        en: 'new device', fr: 'nouvel appareil', nl: 'nieuw apparaat', es: 'Nuevo dispositivo', pt: 'Novo dispositivo', it: 'nuovo dispositivo', de: 'Neues Gerät', pl: 'nowe urządzenie', ru: 'Новое устройство', 'zh-cn': '新设备',
+    systemDictionary['new device'] =  {
+        en: 'new device',     fr: 'nouvel appareil',                 nl: 'nieuw apparaat',      es: 'Nuevo dispositivo',           pt: 'Novo dispositivo',        it: 'nuovo dispositivo',           de: 'Neues Gerät',              pl: 'nowe urządzenie',              ru: 'Новое устройство',    'zh-cn': '新设备',
     };
-    systemDictionary.edit = {
-        en: 'edit', fr: 'modifier', nl: 'Bewerk', es: 'editar', pt: 'editar', it: 'modificare', de: 'Ändern', pl: 'edytować', ru: 'Изменить', 'zh-cn': '编辑',
+    systemDictionary.edit =           {
+        en: 'edit',           fr: 'modifier',                        nl: 'Bewerk',              es: 'editar',                      pt: 'editar',                  it: 'modificare',                  de: 'Ändern',                   pl: 'edytować',                     ru: 'Изменить',            'zh-cn': '编辑',
     };
-    systemDictionary.delete = {
-        en: 'delete', fr: 'effacer', nl: 'Delete', es: 'borrar', pt: 'excluir', it: 'Elimina', de: 'Löschen', pl: 'kasować', ru: 'Удалить', 'zh-cn': '删除',
+    systemDictionary.delete =         {
+        en: 'delete',         fr: 'effacer',                         nl: 'Delete',              es: 'borrar',                      pt: 'excluir',                 it: 'Elimina',                     de: 'Löschen',                  pl: 'kasować',                      ru: 'Удалить',             'zh-cn': '删除',
     };
-    systemDictionary.pair = {
-        en: 'pair', fr: 'paire', nl: 'paar', es: 'par', pt: 'par', it: 'paio', de: 'Verbinden', pl: 'para', ru: 'Связать', 'zh-cn': '配对',
+    systemDictionary.pair =           {
+        en: 'pair',           fr: 'paire',                           nl: 'paar',                es: 'par',                         pt: 'par',                     it: 'paio',                        de: 'Verbinden',                pl: 'para',                         ru: 'Связать',             'zh-cn': '配对',
     };
-    systemDictionary.unpair = {
-        en: 'unpair', fr: 'unpair', nl: 'Unpair', es: 'desvincular', pt: 'unpair', it: 'Disaccoppia', de: 'Trennen', pl: 'unpair', ru: 'Разорвать связь', 'zh-cn': '取消配对',
+    systemDictionary.unpair =         {
+        en: 'unpair',         fr: 'unpair',                          nl: 'Unpair',              es: 'desvincular',                 pt: 'unpair',                  it: 'Disaccoppia',                 de: 'Trennen',                  pl: 'unpair',                       ru: 'Разорвать связь',     'zh-cn': '取消配对',
     };
-    systemDictionary.ok = {
-        en: 'Ok', fr: "D'accord", nl: 'OK', es: 'De acuerdo', pt: 'Está bem', it: 'Ok', de: 'Ok', pl: 'Ok', ru: 'Ok', 'zh-cn': '确认',
+    systemDictionary.ok =             {
+        en: 'Ok',             fr: "D'accord",                        nl: 'OK',                  es: 'De acuerdo',                  pt: 'Está bem',                it: 'Ok',                          de: 'Ok',                       pl: 'Ok',                           ru: 'Ok',                  'zh-cn': '确认',
     };
-    systemDictionary.cancel = {
-        en: 'Cancel', fr: 'Annuler', nl: 'Annuleer', es: 'Cancelar', pt: 'Cancelar', it: 'Annulla', de: 'Abbrechen', pl: 'Anuluj', ru: 'Отмена', 'zh-cn': '取消',
+    systemDictionary.cancel =         {
+        en: 'Cancel',         fr: 'Annuler',                         nl: 'Annuleer',            es: 'Cancelar',                    pt: 'Cancelar',                it: 'Annulla',                     de: 'Abbrechen',                pl: 'Anuluj',                       ru: 'Отмена',              'zh-cn': '取消',
     };
-    systemDictionary.Message = {
-        en: 'Message', fr: 'Message', nl: 'Bericht', es: 'Mensaje', pt: 'Mensagem', it: 'Messaggio', de: 'Mitteilung', pl: 'Wiadomość', ru: 'Сообщение', 'zh-cn': '信息',
+    systemDictionary.Message =        {
+        en: 'Message',        fr: 'Message',                         nl: 'Bericht',             es: 'Mensaje',                     pt: 'Mensagem',                it: 'Messaggio',                   de: 'Mitteilung',               pl: 'Wiadomość',                    ru: 'Сообщение',           'zh-cn': '信息',
     };
-    systemDictionary.close = {
-        en: 'Close', fr: 'Fermer', nl: 'Dichtbij', es: 'Cerca', pt: 'Fechar', it: 'Vicino', de: 'Schließen', pl: 'Blisko', ru: 'Закрыть', 'zh-cn': '关闭',
+    systemDictionary.close =          {
+        en: 'Close',          fr: 'Fermer',                          nl: 'Dichtbij',            es: 'Cerca',                       pt: 'Fechar',                  it: 'Vicino',                      de: 'Schließen',                pl: 'Blisko',                       ru: 'Закрыть',             'zh-cn': '关闭',
     };
-    systemDictionary.htooltip = {
-        en: 'Click for help', fr: "Cliquez pour obtenir de l'aide", nl: 'Klik voor hulp', es: 'Haz clic para obtener ayuda', pt: 'Clique para ajuda', it: 'Fai clic per chiedere aiuto', de: 'Anklicken', pl: 'Kliknij, aby uzyskać pomoc', ru: 'Перейти по ссылке', 'zh-cn': '单击获取帮助',
+    systemDictionary.htooltip =       {
+        en: 'Click for help', fr: "Cliquez pour obtenir de l'aide",  nl: 'Klik voor hulp',      es: 'Haz clic para obtener ayuda', pt: 'Clique para ajuda',       it: 'Fai clic per chiedere aiuto', de: 'Anklicken',                pl: 'Kliknij, aby uzyskać pomoc',   ru: 'Перейти по ссылке',   'zh-cn': '单击获取帮助',
     };
-    systemDictionary.saveConfig = {
+    systemDictionary.saveConfig =     {
         en: 'Save configuration to file',
         de: 'Speichern Sie die Konfiguration in der Datei',
         ru: 'Сохранить конфигурацию в файл',
@@ -126,7 +126,7 @@ function preInit() {
         pl: 'Zapisz konfigurację do pliku',
         'zh-cn': '将配置保存到文件',
     };
-    systemDictionary.loadConfig = {
+    systemDictionary.loadConfig =     {
         en: 'Load configuration from file',
         de: 'Laden Sie die Konfiguration aus der Datei',
         ru: 'Загрузить конфигурацию из файла',
@@ -174,7 +174,7 @@ function preInit() {
         pl: 'Konfiguracja została pomyślnie załadowana',
         'zh-cn': '配置已成功加载',
     };
-    systemDictionary.maxTableRaw = {
+    systemDictionary.maxTableRaw =    {
         en: 'Maximum number of allowed raws',
         de: 'Maximale Anzahl von erlaubten Tabellenzeilen',
         ru: 'Достигнуто максимальное число строк',
@@ -187,7 +187,7 @@ function preInit() {
         'zh-cn': '允许的最大原始数量',
     };
     systemDictionary.maxTableRawInfo = {
-        en: 'Warning', de: 'Warnung', ru: 'Внимание', pt: 'Atenção', nl: 'Waarschuwing', fr: 'Attention', it: 'avvertimento', es: 'Advertencia', pl: 'Ostrzeżenie', 'zh-cn': '警告',
+        en: 'Warning',       de: 'Warnung',                  ru: 'Внимание', pt: 'Atenção',  nl: 'Waarschuwing', fr: 'Attention', it: 'avvertimento', es: 'Advertencia', pl: 'Ostrzeżenie', 'zh-cn': '警告',
     };
     systemDictionary['Main settings'] = {
         en: 'Main settings',
@@ -483,9 +483,10 @@ function preInit() {
                     event.stopImmediatePropagation();
                 }
             });
+
+            // Design Fix simatec
+            designFix();
         }
-        // Design Fix simatec
-        designFix();
     }
 
     // Design Fix simatec
@@ -504,11 +505,11 @@ function preInit() {
         });
 
         const logo = document.querySelector('.logo');
+
         if (logo) {
             const col = logo.closest('.col');
             if (col) {
                 const sClasses = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 'm2', 'm4', 'm8', 'm10', 'm12', 'l2', 'l4', 'l8', 'l10', 'l12',];
-
                 sClasses.forEach(sClass => {
                     if (col.classList.contains(sClass)) {
                         col.classList.remove(sClass);
@@ -537,12 +538,12 @@ function preInit() {
             dropdownMenu.classList.add('dropdown-menu');
 
             const tabLinks = tabs.querySelectorAll('li a');
+
             tabLinks.forEach(function (tab) {
                 const dropdownLink = document.createElement('a');
                 dropdownLink.href = tab.getAttribute('href');
                 dropdownLink.textContent = tab.textContent;
                 dropdownMenu.appendChild(dropdownLink);
-
                 dropdownLink.addEventListener('click', function () {
                     tab.click();
                     dropdownMenu.classList.remove('show');
@@ -616,17 +617,17 @@ $(document).ready(function () {
 
     if (window.location.pathname.indexOf('/index_m.html') === -1) {
         // load materialize
-        var cssLink = document.createElement('link');
-        cssLink.href = '../../lib/css/materialize.css';
-        cssLink.type = 'text/css';
-        cssLink.rel = 'stylesheet';
-        cssLink.media = 'screen,print';
+        var cssLink    = document.createElement('link');
+        cssLink.href   = '../../lib/css/materialize.css';
+        cssLink.type   = 'text/css';
+        cssLink.rel    = 'stylesheet';
+        cssLink.media  = 'screen,print';
         document.getElementsByTagName('head')[0].appendChild(cssLink);
 
         // load materialize.js
-        var jsLink = document.createElement('script');
-        jsLink.onload = preInit;
-        jsLink.src = '../../lib/js/materialize.js';
+        var jsLink     = document.createElement('script');
+        jsLink.onload  = preInit;
+        jsLink.src     = '../../lib/js/materialize.js';
         document.head.appendChild(jsLink);
     } else {
         isMaterialize = true;
@@ -736,7 +737,7 @@ function prepareTooltips() {
                 input.setAttribute('id', 'files');
                 input.setAttribute('opacity', 0);
                 input.addEventListener('change', function (e) {
-                    handleFileSelect(e, function () { });
+                    handleFileSelect(e, function () {});
                 }, false);
                 (input.click)();
             });
@@ -780,7 +781,7 @@ function prepareTooltips() {
 
                 var $label = $this.next();
                 if ($label.prop('tagName') === 'LABEL') {
-                    $label.replaceWith('<span style="' + ($label.attr('style') || '') + '" class="' + ($label.attr('class') || '') + '">' + $label.html() + '</span>');
+                    $label.replaceWith('<span style="' + ($label.attr('style') || '') + '" class="' +  ($label.attr('class') || '') + '">' + $label.html() + '</span>');
                     $label = $this.next();
                 }
 
@@ -929,7 +930,7 @@ function showMessageJQ(message, title, icon, width) {
         $dialogMessage = $('#dialog-message-settings');
         $dialogMessage.dialog({
             autoOpen: false,
-            modal: true,
+            modal:    true,
             buttons: [
                 {
                     text: _('Ok'),
@@ -997,7 +998,7 @@ function showMessage(message, title, icon) {
 }
 
 function confirmMessageJQ(message, title, icon, buttons, callback) {
-    var $dialogConfirm = $('#dialog-confirm-settings');
+    var $dialogConfirm =        $('#dialog-confirm-settings');
     if (!$dialogConfirm.length) {
         $('body').append('<div id="dialog-confirm-settings" title="Message" style="display: none">\n' +
             '<p>' +
@@ -1008,7 +1009,7 @@ function confirmMessageJQ(message, title, icon, buttons, callback) {
         $dialogConfirm = $('#dialog-confirm-settings');
         $dialogConfirm.dialog({
             autoOpen: false,
-            modal: true,
+            modal:    true,
         });
     }
     if (typeof buttons === 'function') {
@@ -1128,16 +1129,16 @@ function confirmMessage(message, title, icon, buttons, callback) {
 }
 
 function showError(error) {
-    showMessage(_(error), _('Error'), 'error_outline');
+    showMessage(_(error),  _('Error'), 'error_outline');
 }
 
 function showToast(parent, message, icon, duration, isError, classes) {
     if (typeof parent === 'string') {
         classes = isError;
         isError = duration;
-        icon = message;
+        icon    = message;
         message = parent;
-        parent = null;
+        parent  = null;
     }
     if (parent && parent instanceof jQuery) {
         parent = parent[0];
@@ -1151,8 +1152,8 @@ function showToast(parent, message, icon, duration, isError, classes) {
 
     M.toast({
         parentSelector: parent || $('body')[0],
-        html: message + (icon ? '<i class="material-icons">' + icon + '</i>' : ''),
-        displayLength: duration || 3000,
+        html:           message + (icon ? '<i class="material-icons">' + icon + '</i>' : ''),
+        displayLength:  duration || 3000,
         classes,
     });
 }
@@ -1196,7 +1197,7 @@ function getEnums(_enum, callback) {
 function getGroups(callback) {
     socket.emit('getObjectView', 'system', 'group', { startkey: 'system.group.', endkey: 'system.group.\u9999' }, function (err, res) {
         if (!err && res) {
-            var _res = {};
+            var _res   = {};
             for (var i = 0; i < res.rows.length; i++) {
                 _res[res.rows[i].id] = res.rows[i].value;
             }
@@ -1210,7 +1211,7 @@ function getGroups(callback) {
 function getUsers(callback) {
     socket.emit('getObjectView', 'system', 'user', { startkey: 'system.user.', endkey: 'system.user.\u9999' }, function (err, res) {
         if (!err && res) {
-            var _res = {};
+            var _res   = {};
             for (var i = 0; i < res.rows.length; i++) {
                 _res[res.rows[i].id] = res.rows[i].value;
             }
@@ -1247,7 +1248,7 @@ function fillUsers(elemId, current, callback) {
         for (var u in users) {
             if (users.hasOwnProperty(u)) {
                 var id = users[u]._id.substring(len);
-                text += '<option value="' + id + '" ' + (current === id ? 'selected' : '') + ' >' + (u ? u[0].toUpperCase() + u.substring(1) : '__noname__') + '</option>\n';
+                text += '<option value="' + id + '" ' + (current === id ? 'selected' : '') + ' >' + (u ? u[0].toUpperCase() + u.substring(1) : '__noname__')  + '</option>\n';
             }
         }
         $(elemId).html(text);
@@ -1267,7 +1268,7 @@ function getIPs(host, callback) {
         if (_host) {
             host = _host;
             var IPs4 = [{ name: '[IPv4] 0.0.0.0 - ' + _('Listen on all IPs'), address: '0.0.0.0', family: 'ipv4' }];
-            var IPs6 = [{ name: '[IPv6] ::', address: '::', family: 'ipv6' }];
+            var IPs6 = [{ name: '[IPv6] ::',      address: '::',      family: 'ipv6' }];
             if (host.native.hardware && host.native.hardware.networkInterfaces) {
                 for (var eth in host.native.hardware.networkInterfaces) {
                     if (!host.native.hardware.networkInterfaces.hasOwnProperty(eth)) {
@@ -1393,9 +1394,9 @@ function getExtendableInstances(_adapter, callback) {
             for (var i = 0; i < doc.rows.length; i++) {
                 var obj = doc.rows[i].value;
                 if (obj &&
-                    obj.common &&
-                    obj.common.webExtendable &&
-                    (!_adapter || obj.common.name === _adapter)) {
+                        obj.common &&
+                        obj.common.webExtendable &&
+                        (!_adapter || obj.common.name === _adapter)) {
                     res.push(obj);
                 }
             }
@@ -1425,7 +1426,7 @@ function getIsAdapterAlive(_adapter, callback) {
 // _isInitial - [optional] - if it is initial fill of the table. To not trigger the onChange
 function addToTable(tabId, value, $grid, _isInitial) {
     $grid = $grid || $('#' + tabId);
-    var obj = { _id: $grid[0]._maxIdx++ };
+    var obj  = { _id: $grid[0]._maxIdx++ };
     var cols = $grid[0]._cols;
 
     for (var i = 0; i < cols.length; i++) {
@@ -1436,9 +1437,9 @@ function addToTable(tabId, value, $grid, _isInitial) {
         }
     }
     obj._commands =
-        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-edit-submit">' + _('edit') + '</button>' +
-        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-delete-submit">' + _('delete') + '</button>' +
-        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-ok-submit" style="display:none">' + _('ok') + '</button>' +
+        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-edit-submit">'                        + _('edit')   + '</button>' +
+        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-delete-submit">'                      + _('delete') + '</button>' +
+        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-ok-submit" style="display:none">'     + _('ok')     + '</button>' +
         '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-cancel-submit" style="display:none">' + _('cancel') + '</button>';
 
     $grid.jqGrid('addRowData', tabId + '_' + obj._id, obj);
@@ -1453,7 +1454,7 @@ function _editInitButtons($grid, tabId, objId) {
 
     $('.' + tabId + '-edit-submit' + search).off('click').button({
         icons: { primary: 'ui-icon-pencil' },
-        text: false,
+        text:  false,
     }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
 
@@ -1479,7 +1480,7 @@ function _editInitButtons($grid, tabId, objId) {
 
     $('.' + tabId + '-delete-submit' + search).off('click').button({
         icons: { primary: 'ui-icon-trash' },
-        text: false,
+        text:  false,
     }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
         $grid.jqGrid('delRowData', tabId + '_' + id);
@@ -1502,7 +1503,7 @@ function _editInitButtons($grid, tabId, objId) {
 
     $('.' + tabId + '-ok-submit' + search).off('click').button({
         icons: { primary: 'ui-icon-check' },
-        text: false,
+        text:  false,
     }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
 
@@ -1531,7 +1532,7 @@ function _editInitButtons($grid, tabId, objId) {
 
     $('.' + tabId + '-cancel-submit' + search).off('click').button({
         icons: { primary: 'ui-icon-close' },
-        text: false,
+        text:  false,
     }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
 
@@ -1552,13 +1553,13 @@ function _editInitButtons($grid, tabId, objId) {
 function _editTable(tabId, cols, values, rooms, top, onChange) {
     var title = 'Device list';
     if (typeof tabId === 'object') {
-        cols = tabId.cols;
-        values = tabId.values;
-        rooms = tabId.rooms;
-        top = tabId.top;
+        cols     = tabId.cols;
+        values   = tabId.values;
+        rooms    = tabId.rooms;
+        top      = tabId.top;
         onChange = tabId.onChange;
         if (tabId.title) title = tabId.title;
-        tabId = tabId.tabId;
+        tabId    = tabId.tabId;
     }
 
     initGridLanguage(systemLang);
@@ -1569,16 +1570,16 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 
     colNames.push('id');
     colModel.push({
-        name: '_id',
-        index: '_id',
-        hidden: true,
+        name:    '_id',
+        index:   '_id',
+        hidden:  true,
     });
     for (var i = 0; i < cols.length; i++) {
         var width = null;
         var checkbox = null;
 
         if (typeof cols[i] === 'object') {
-            width = cols[i].width;
+            width  = cols[i].width;
             if (cols[i].checkbox) {
                 checkbox = true;
             }
@@ -1586,8 +1587,8 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         }
         colNames.push(_(cols[i]));
         var _obj = {
-            name: cols[i],
-            index: cols[i],
+            name:     cols[i],
+            index:    cols[i],
             //                width:    160,
             editable: true,
         };
@@ -1595,7 +1596,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             _obj.width = width;
         }
         if (checkbox) {
-            _obj.edittype = 'checkbox';
+            _obj.edittype    = 'checkbox';
             _obj.editoptions = { value: 'true:false' };
         }
 
@@ -1604,11 +1605,11 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             for (room in rooms) {
                 list[room] = _(translateName(rooms[room].common.name));
             }
-            _obj.stype = 'select';
-            _obj.edittype = 'select';
-            _obj.editoptions = { value: list };
+            _obj.stype =         'select';
+            _obj.edittype =      'select';
+            _obj.editoptions =   { value: list };
             _obj.searchoptions = {
-                sopt: ['eq'],
+                sopt:  ['eq'],
                 value: ':' + _('all'),
             };
             for (room in rooms) {
@@ -1622,22 +1623,22 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         name: '_commands', index: '_commands', width: 50, editable: false, align: 'center', search: false,
     });
 
-    $grid[0]._cols = cols;
-    $grid[0]._rooms = rooms;
-    $grid[0]._maxIdx = 0;
-    $grid[0]._top = top;
-    $grid[0]._edited = [];
+    $grid[0]._cols     = cols;
+    $grid[0]._rooms    = rooms;
+    $grid[0]._maxIdx   = 0;
+    $grid[0]._top      = top;
+    $grid[0]._edited   = [];
     $grid[0]._onChange = onChange;
 
     $grid.jqGrid({
-        datatype: 'local',
+        datatype:  'local',
         colNames,
         colModel,
-        width: 800,
-        height: 330,
-        pager: $('#pager-' + tabId),
-        rowNum: 1000,
-        rowList: [1000],
+        width:     800,
+        height:    330,
+        pager:     $('#pager-' + tabId),
+        rowNum:    1000,
+        rowList:   [1000],
         ondblClickRow(rowid) {
             var id = rowid.substring((tabId + '_').length);
             $('.' + tabId + '-edit-submit').hide();
@@ -1657,7 +1658,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                 $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
             }
         },
-        sortname: 'id',
+        sortname:  'id',
         sortorder: 'desc',
         viewrecords: false,
         pgbuttons: false,
@@ -1680,9 +1681,9 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         },
     }).jqGrid('filterToolbar', {
         defaultSearch: 'cn',
-        autosearch: true,
+        autosearch:    true,
         searchOnEnter: false,
-        enableClear: false,
+        enableClear:   false,
         afterSearch() {
             _editInitButtons($grid, tabId);
         },
@@ -1692,10 +1693,10 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 
     if ($('#pager-' + tabId).length) {
         $grid.navGrid('#pager-' + tabId, {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false,
         }).jqGrid('navButtonAdd', '#pager-' + tabId, {
             caption: '',
@@ -1711,7 +1712,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                     found = true;
                     for (var _id = 0; _id < ids.length; _id++) {
                         obj = $grid.jqGrid('getRowData', ids[_id]);
-                        if (obj && obj[$grid[0]._cols[0]] === newText + idx) {
+                        if (obj && obj[$grid[0]._cols[0]] === newText + idx)  {
                             idx++;
                             found = false;
                             break;
@@ -1736,9 +1737,9 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                 addToTable(tabId, obj, $grid);
             },
             position: 'first',
-            id: 'add-cert',
-            title: _('new device'),
-            cursor: 'pointer',
+            id:       'add-cert',
+            title:    _('new device'),
+            cursor:   'pointer',
         });
     }
 
@@ -1805,7 +1806,7 @@ function enumName2Id(enums, name) {
 // To extract data from table
 function editTable(tabId, cols, values, top, onChange) {
     if (typeof tabId === 'object') {
-        cols = tabId.cols;
+        cols     = tabId.cols;
     }
 
     if (cols.indexOf('room') !== -1) {
@@ -1868,30 +1869,30 @@ function showSelectIdDialog(val, callback) {
     if (!window.tableSelectId) {
         socket.emit('getObjects', function (err, res) {
             if (!err && res) {
-                window.tableSelectId = $dialog.selectId('init', {
+                window.tableSelectId = $dialog.selectId('init',  {
                     noMultiselect: true,
                     objects: res,
                     dialogHeight: '420px!important', // 'calc(100% - 100px) !important',
-                    imgPath: '../../lib/css/fancytree/',
-                    filter: { type: 'state' },
-                    name: 'table-select-state',
+                    imgPath:       '../../lib/css/fancytree/',
+                    filter:        { type: 'state' },
+                    name:          'table-select-state',
                     texts: {
-                        select: _('Select'),
-                        cancel: _('Cancel'),
-                        all: _('All'),
-                        id: _('ID'),
-                        name: _('Name'),
-                        role: _('Role'),
-                        room: _('Room'),
-                        value: _('Value'),
-                        selectid: _('Select ID'),
-                        from: _('From'),
-                        lc: _('Last changed'),
-                        ts: _('Time stamp'),
-                        wait: _('Processing...'),
-                        ack: _('Acknowledged'),
-                        selectAll: _('Select all'),
-                        unselectAll: _('Deselect all'),
+                        select:          _('Select'),
+                        cancel:          _('Cancel'),
+                        all:             _('All'),
+                        id:              _('ID'),
+                        name:            _('Name'),
+                        role:            _('Role'),
+                        room:            _('Room'),
+                        value:           _('Value'),
+                        selectid:        _('Select ID'),
+                        from:            _('From'),
+                        lc:              _('Last changed'),
+                        ts:              _('Time stamp'),
+                        wait:            _('Processing...'),
+                        ack:             _('Acknowledged'),
+                        selectAll:       _('Select all'),
+                        unselectAll:     _('Deselect all'),
                         invertSelection: _('Invert selection'),
                     },
                     columns: ['image', 'name', 'role', 'room'],
@@ -1962,8 +1963,8 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
     if (typeof values === 'function') {
         typeof onChange === 'number' ? maxRaw = onChange : maxRaw = null;
         onChange = values;
-        values = divId;
-        divId = '';
+        values   = divId;
+        divId    = '';
     }
 
     if (typeof onReady === 'number') {
@@ -2005,7 +2006,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
                 var $table = $div.find('.table-values');
                 var values = $table.data('values');
-                var names = $table.data('names');
+                var names  = $table.data('names');
                 var obj = {};
                 for (var i = 0; i < names.length; i++) {
                     if (names[i]) {
@@ -2113,9 +2114,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             if (name) {
                 var obj = {
                     name,
-                    type: $(this).data('type') || 'text',
-                    def: $(this).data('default'),
-                    style: $(this).data('style'),
+                    type:    $(this).data('type') || 'text',
+                    def:     $(this).data('default'),
+                    style:   $(this).data('style'),
                     title: $(this).data('title'),
                     label: $(this).data('label'),
                     tdstyle: $(this).data('tdstyle'),
@@ -2175,8 +2176,8 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
             for (var i = 0; i < names.length; i++) {
                 text += '<td';
-                var line = '';
-                var style = '';
+                var line    = '';
+                var style   = '';
                 var dataName = '';
                 var tdstyle = '';
                 if (names[i]) {
