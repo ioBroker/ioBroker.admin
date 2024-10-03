@@ -46,7 +46,7 @@
         "@mui/x-date-pickers": "^7.18.0",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^2.1.0",
-        "@sentry/browser": "^8.32.0",
+        "@sentry/browser": "^8.33.1",
         "@testing-library/jest-dom": "^6.5.0",
         "@testing-library/react": "^16.0.1",
         "@testing-library/user-event": "^14.5.2",
