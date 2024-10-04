@@ -19,7 +19,6 @@ import { Adapter, type AdapterOptions, commonTools, controllerDir } from '@iobro
 import I18n from '@iobroker/i18n';
 // @ts-expect-error it not TS
 import { SocketAdmin } from '@iobroker/socket-classes';
-// @ts-expect-error it not TS
 import * as ws from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
