@@ -24,13 +24,28 @@ import {
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type HostAliveEvent, type HostEvent } from '@/Workers/HostsWorker';
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
+import { replaceLink } from '@/helpers/utils';
 import IntroCard from '@/components/Intro/IntroCard';
 import EditIntroLinkDialog from '@/components/Intro/EditIntroLinkDialog';
 
 import { type InstanceEvent } from '@/Workers/InstancesWorker';
 import NodeUpdateDialog from '@/dialogs/NodeUpdateDialog';
 import IntroCardCamera from '@/components/Intro/IntroCardCamera';
+
+type OldLinkStructure = {
+    link: string;
+    color?: string;
+    order?: number | string;
+    icon?: string;
+    img?: string;
+    description?: ioBroker.StringOrTranslated;
+    pro?: string | boolean;
+    cloud?: string;
+    intro?: boolean;
+    name?: ioBroker.StringOrTranslated;
+    localLinks?: string;
+};
 
 export type CompactHost = {
     _id: `system.host.${string}`;
@@ -834,7 +849,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             url: string;
             port: number;
             instance?: string;
-        }[] = AdminUtils.replaceLink(linkItem.link, common.name, instanceId, {
+        }[] = replaceLink(linkItem.link, common.name, instanceId, {
             instances,
             hostname: this.props.hostname,
             adminInstance: this.props.adminInstance,
@@ -900,7 +915,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             id: instance._id.replace('system.adapter.', ''),
             link: '',
             name: Intro.getText(instance.common.titleLang || instance.common.title || instance.common.name, language),
-            order: 1000,
+            // @ts-expect-error order in common is deprecated, but could happen
+            order: instance.common.order || 1000,
             intro: true,
             description: Intro.getText(instance.common.desc, language),
             icon: instance.common.icon ? `adapter/${instance.common.name}/${instance.common.icon}` : 'img/no-image.png',
@@ -913,10 +929,16 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     link: instance.common.localLink,
                 });
             } else {
-                const compatibilityStructure: Record<string, any> = instance.common.localLink as unknown as Record<
-                    string,
-                    any
-                >;
+                // localLink is an object
+                /*
+                    {
+                        link: string;
+                        color: string;
+                        order: number;
+                        icon: string;
+                    }
+                 */
+                const compatibilityStructure: OldLinkStructure = instance.common.localLink as OldLinkStructure;
                 if (compatibilityStructure.link) {
                     const item: LinkItem = {
                         ...defaultLink,
@@ -951,7 +973,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         link: linkItem,
                     });
                 } else {
-                    const compatibilityStructure: Record<string, any> = linkItem as Record<string, any>;
+                    const compatibilityStructure: OldLinkStructure = linkItem as OldLinkStructure;
 
                     if (compatibilityStructure.link) {
                         const item: LinkItem = {
@@ -963,19 +985,16 @@ class Intro extends React.Component<IntroProps, IntroState> {
                             name: defaultLink.name + (linkName === '_default' ? '' : ` ${linkName}`),
                         };
                         if (compatibilityStructure.color) {
-                            item.color = compatibilityStructure.color as string;
+                            item.color = compatibilityStructure.color;
                         }
                         if (compatibilityStructure.order !== undefined) {
                             item.order = parseInt(compatibilityStructure.order as string, 10) || 1000;
                         }
                         if (compatibilityStructure.icon && compatibilityStructure.img) {
-                            item.icon = (compatibilityStructure.icon || compatibilityStructure.img) as string;
+                            item.icon = compatibilityStructure.icon || compatibilityStructure.img;
                         }
                         if (compatibilityStructure.description) {
-                            item.description = Intro.getText(
-                                compatibilityStructure.description as ioBroker.StringOrTranslated,
-                                language,
-                            );
+                            item.description = Intro.getText(compatibilityStructure.description, language);
                         }
                         if (compatibilityStructure.pro !== undefined) {
                             if (typeof compatibilityStructure.pro === 'string') {
@@ -985,17 +1004,14 @@ class Intro extends React.Component<IntroProps, IntroState> {
                             }
                         }
                         if (compatibilityStructure.cloud !== undefined) {
-                            item.cloud = compatibilityStructure.cloud as string;
+                            item.cloud = compatibilityStructure.cloud;
                         }
                         if (compatibilityStructure.intro !== undefined) {
                             item.intro = compatibilityStructure.intro === true;
                         }
 
                         if (compatibilityStructure.name) {
-                            item.name = Intro.getText(
-                                compatibilityStructure.name as ioBroker.StringOrTranslated,
-                                language,
-                            );
+                            item.name = Intro.getText(compatibilityStructure.name, language);
                         }
                         if (linkName === '_default') {
                             item.default = true;
@@ -1010,9 +1026,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
 
         if (instance.common.welcomeScreen && typeof instance.common.welcomeScreen === 'object') {
-            const compatibilityStructureArr: Record<string, any>[] = Array.isArray(instance.common.welcomeScreen)
-                ? (instance.common.welcomeScreen as Record<string, any>[])
-                : [instance.common.welcomeScreen as Record<string, any>];
+            const compatibilityStructureArr: OldLinkStructure[] = Array.isArray(instance.common.welcomeScreen)
+                ? (instance.common.welcomeScreen as OldLinkStructure[])
+                : [instance.common.welcomeScreen as OldLinkStructure];
+
             compatibilityStructureArr.forEach(compatibilityStructure => {
                 if (compatibilityStructure.link) {
                     const item: LinkItem = {
@@ -1044,7 +1061,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     }
 
                     if (compatibilityStructure.name) {
-                        item.name = Intro.getText(compatibilityStructure.name as ioBroker.StringOrTranslated, language);
+                        item.name = Intro.getText(compatibilityStructure.name, language);
                     }
 
                     result.push(item);
@@ -1052,11 +1069,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
             });
 
             if (instance.common.welcomeScreenPro && typeof instance.common.welcomeScreenPro === 'object') {
-                const _compatibilityStructureArr: Record<string, any>[] = Array.isArray(
-                    instance.common.welcomeScreenPro,
-                )
-                    ? (instance.common.welcomeScreenPro as Record<string, any>[])
-                    : [instance.common.welcomeScreenPro as Record<string, any>];
+                const _compatibilityStructureArr: OldLinkStructure[] = Array.isArray(instance.common.welcomeScreenPro)
+                    ? (instance.common.welcomeScreenPro as OldLinkStructure[])
+                    : [instance.common.welcomeScreenPro as OldLinkStructure];
 
                 _compatibilityStructureArr.forEach(compatibilityStructure => {
                     if (compatibilityStructure.link) {
@@ -1089,10 +1104,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         }
 
                         if (compatibilityStructure.name) {
-                            item.name = Intro.getText(
-                                compatibilityStructure.name as ioBroker.StringOrTranslated,
-                                language,
-                            );
+                            item.name = Intro.getText(compatibilityStructure.name, language);
                         }
 
                         result.push(item);
@@ -1112,7 +1124,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 // normalize icon
                 item.icon = `adapter/${instance.common.name}/${item.icon}`;
             }
-            item.link = item.link.replace(/%ip%/g, '%web_bind%');
         });
 
         if (filterDuplicates) {
@@ -1206,75 +1217,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             }
             const introInstances: IntroInstanceItem[] = [];
             const instances: Record<string, ioBroker.InstanceObject> = {};
+            // Array to the mapped object
             objects.forEach(obj => (instances[obj._id] = obj));
-
-            objects.sort((_a, _b) => {
-                const a: Partial<ioBroker.InstanceCommon> = _a?.common ?? {};
-                const b: Partial<ioBroker.InstanceCommon> = _b?.common ?? {};
-
-                // @ts-expect-error need to be added to types if this can exist
-                if (a.order === undefined && b.order === undefined) {
-                    let aName;
-                    let bName;
-                    if (typeof a.name === 'object') {
-                        const commonNameA: ioBroker.Translated = a.name;
-                        aName = commonNameA[this.props.lang] || commonNameA.en;
-                    } else {
-                        aName = a.name || '';
-                    }
-                    if (typeof b.name === 'object') {
-                        const commonNameB: ioBroker.Translated = b.name;
-                        bName = commonNameB[this.props.lang] || commonNameB.en;
-                    } else {
-                        bName = b.name || '';
-                    }
-                    if (aName.toLowerCase() > bName.toLowerCase()) {
-                        return 1;
-                    }
-                    if (aName.toLowerCase() < bName.toLowerCase()) {
-                        return -1;
-                    }
-                    return 0;
-                }
-                // @ts-expect-error need to be added to types if this can exist
-                if (a.order === undefined) {
-                    return -1;
-                }
-                // @ts-expect-error need to be added to types if this can exist
-                if (b.order === undefined) {
-                    return 1;
-                }
-                // @ts-expect-error need to be added to types if this can exist
-                if (a.order > b.order) {
-                    return 1;
-                }
-                // @ts-expect-error need to be added to types if this can exist
-                if (a.order < b.order) {
-                    return -1;
-                }
-                let aName: string;
-                if (typeof a.name === 'object') {
-                    const commonNameA: ioBroker.Translated = a.name;
-                    aName = commonNameA[this.props.lang] || commonNameA.en;
-                } else {
-                    aName = a.name || '';
-                }
-
-                let bName;
-                if (typeof b.name === 'object') {
-                    const commonNameB: ioBroker.Translated = b.name;
-                    bName = commonNameB[this.props.lang] || commonNameB.en;
-                } else {
-                    bName = b.name || '';
-                }
-                if (aName.toLowerCase() > bName.toLowerCase()) {
-                    return 1;
-                }
-                if (aName.toLowerCase() < bName.toLowerCase()) {
-                    return -1;
-                }
-                return 0;
-            });
 
             objects.forEach(obj => {
                 if (!obj) {
@@ -1301,7 +1245,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 if (name && name !== 'vis-web-admin' && name.match(/^vis-/) && name !== 'vis-2') {
                     return;
                 }
-                if (name && name.match(/^icons-/)) {
+                if (name?.match(/^icons-/)) {
                     return;
                 }
                 if (common && (common.enabled || common.onlyWWW)) {

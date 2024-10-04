@@ -33,7 +33,7 @@ import CustomSelectButton from '@/components/CustomSelectButton';
 import AdaptersUpdaterDialog from '@/dialogs/AdaptersUpdaterDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import IsVisible from '@/components/IsVisible';
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
 import {
     TabHeader,
     type AdminConnection,

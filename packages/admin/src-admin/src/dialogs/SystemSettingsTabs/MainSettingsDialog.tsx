@@ -25,7 +25,7 @@ import type { DragEndEvent, LatLngTuple, Map } from 'leaflet';
 import { Confirm as ConfirmDialog, withWidth, I18n, type Translate } from '@iobroker/adapter-react-v5';
 import { type AdminGuiConfig } from '@/types';
 
-import AdminUtils from '../../AdminUtils';
+import AdminUtils from '../../helpers/AdminUtils';
 import countries from '../../assets/json/countries.json';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 

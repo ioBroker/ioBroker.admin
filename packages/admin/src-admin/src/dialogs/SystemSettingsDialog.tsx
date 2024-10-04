@@ -28,7 +28,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig } from '@/types';
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
 import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
 import LicensesDialog from './SystemSettingsTabs/LicensesDialog';

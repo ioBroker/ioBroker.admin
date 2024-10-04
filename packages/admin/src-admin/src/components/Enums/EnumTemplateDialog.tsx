@@ -18,7 +18,7 @@ import { Icon, type Translate, Utils } from '@iobroker/adapter-react-v5';
 import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
 
-import AdminUtils from '../../AdminUtils';
+import AdminUtils from '../../helpers/AdminUtils';
 
 interface EnumIcon {
     _id: string;

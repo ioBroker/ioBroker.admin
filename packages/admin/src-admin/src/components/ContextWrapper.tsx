@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useMemo, useState, type JSX } from 'react';
 
-import AdminUtils from '@/AdminUtils';
+import AdminUtils from '@/helpers/AdminUtils';
 
 type MyContext = {
     hostsUpdate: number;

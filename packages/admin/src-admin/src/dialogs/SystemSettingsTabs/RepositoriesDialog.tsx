@@ -33,7 +33,7 @@ import { InfoBox } from '@foxriver76/iob-component-lib';
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';
 import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
-import AdminUtils from '../../AdminUtils';
+import AdminUtils from '../../helpers/AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Record<string, any> = {

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.1.5",
+    "version": "7.2.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.2.0": {
+        "en": "Added the check of well-known passwords for the linux systems\nAdded the history for the installation from URL\nfixed wrongly displayed repository warning",
+        "de": "Hinzugefügt die Überprüfung der bekannten Passwörter für die Linux-Systeme\nDie Geschichte der Installation von URL hinzugefügt\nfalsch angezeigte repository-warnung",
+        "ru": "Добавлена проверка известных паролей для систем linux\nДобавлена история установки из URL\nнеправильное предупреждение о репозитории",
+        "pt": "Adicionado a verificação de senhas bem conhecidas para os sistemas linux\nAdicionado o histórico para a instalação de URL\naviso de repositório exibido incorretamente",
+        "nl": "De controle van bekende wachtwoorden voor de Linux systemen toegevoegd\nDe geschiedenis voor de installatie van URL toegevoegd\nvaste foutief weergegeven repository waarschuwing",
+        "fr": "Ajout de la vérification des mots de passe connus pour les systèmes linux\nAjout de l'historique de l'installation depuis l'URL\ncorrection de l'avertissement du dépôt affiché à tort",
+        "it": "Aggiunto il controllo delle password ben note per i sistemi linux\nAggiunto la storia per l'installazione da URL\nfisso erroneamente visualizzato avviso di repository",
+        "es": "Agregó el cheque de contraseñas conocidas para los sistemas linux\nAñadido la historia para la instalación desde URL\naviso de repositorio mal mostrado",
+        "pl": "Dodano sprawdzanie dobrze znanych haseł dla systemów linux\nDodano historię instalacji z URL\nnieprawidłowo ustawione ostrzeżenie repozytorium",
+        "uk": "Додано перевірку відомих паролів для Linux\nДодано історію установки з URL\nвиправлено неправильно відображається попередження репозиторій",
+        "zh-cn": "添加了对 Linux 系统的著名密码的检查\n从 URL 添加安装历史\n错误显示仓库警告"
+      },
       "7.1.5": {
         "en": "Added the read-only flag to the `state` JSON Config component",
         "de": "Die Nur-Lese-Flagge zur \"state\" hinzugefügt JSON Config Komponente",
@@ -96,19 +109,6 @@
         "pl": "Poprawa w przypadku badań automatycznych\nDodano możliwość stylizacji tekstu odpowiedzi dla 'textSendTo' w konfiguracji JSON",
         "uk": "Покращення автоматичних випробувань\nДодано можливість стилю тексту відповіді для `textSendTo`` в JSON Config",
         "zh-cn": "改进自动测试\n在 JSON 配置中添加了“ textSendTo” 的响应文本样式"
-      },
-      "7.0.24": {
-        "en": "Showed min/max limits by controlling the values\nCorrected style for tabs",
-        "de": "Gezeigte Min/Max-Grenzwerte durch Steuerung der Werte\nKorrigierter Stil für Tabs",
-        "ru": "Показано ограничение min/max, контролируя значения\nИсправленный стиль для вкладок",
-        "pt": "Mostrado limites min/max controlando os valores\nEstilo corrigido para abas",
-        "nl": "Min/max limieten getoond door de waarden te controleren\nGecorrigeerde stijl voor tabbladen",
-        "fr": "Limites min/max indiquées en contrôlant les valeurs\nStyle corrigé pour les onglets",
-        "it": "Mostrati limiti min/max controllando i valori\nStile corretto per schede",
-        "es": "Visualizado min/max límites controlando los valores\nEstilo corregido para pestañas",
-        "pl": "Pokazane wartości graniczne min / max poprzez kontrolę wartości\nPoprawiony styl dla zakładek",
-        "uk": "Виявлені ліміти хв/максів, які контролюють значення\nПравильний стиль для вкладок",
-        "zh-cn": "通过控制值来显示分钟/最大限制\n校正标签样式"
       }
     },
     "desc": {
@@ -411,6 +411,38 @@
           },
           "regex": [],
           "limit": 10
+        },
+        {
+          "category": "wellKnownPassword",
+          "name": {
+            "en": "Well known password",
+            "de": "Bekanntes Passwort",
+            "ru": "Известный пароль",
+            "pt": "Senha bem conhecida",
+            "nl": "Bekend wachtwoord",
+            "fr": "Mot de passe bien connu",
+            "it": "Password ben nota",
+            "es": "Contraseña bien conocida",
+            "pl": "Znane hasło",
+            "uk": "Відомий пароль",
+            "zh-cn": "众所周知的密码"
+          },
+          "severity": "alert",
+          "description": {
+            "en": "Your Linux system uses a user with a well-known password. This can lead to the system being hacked from the outside. It is strongly recommended to change the password.",
+            "de": "Ihr Linux-System verwendet einen Benutzer mit einem bekannten Passwort. Dies kann dazu führen, dass das System von außen gehackt wird. Es wird dringend empfohlen, das Passwort zu ändern.",
+            "ru": "Ваша Linux система использует пользователя с хорошо известным паролем. Это может стать причиной взлома системы извне. Настоятельно рекомендуется сменить пароль.",
+            "pt": "Seu sistema Linux usa um usuário com uma senha bem conhecida. Isso pode levar ao hackeamento do sistema de fora. É altamente recomendável mudar a senha.",
+            "nl": "Uw Linux-systeem gebruikt een gebruiker met een bekend wachtwoord. Dit kan ertoe leiden dat het systeem van buitenaf wordt gehackt. Het wordt sterk aanbevolen om het wachtwoord te wijzigen.",
+            "fr": "Votre système Linux utilise un utilisateur avec un mot de passe bien connu. Cela peut entraîner le piratage du système de l'extérieur. Il est fortement recommandé de changer le mot de passe.",
+            "it": "Il tuo sistema Linux utilizza un utente con una password ben nota. Questo può portare a un attacco al sistema dall'esterno. Si consiglia vivamente di cambiare la password.",
+            "es": "Su sistema Linux utiliza un usuario con una contraseña bien conocida. Esto puede llevar a que el sistema sea hackeado desde el exterior. Se recomienda encarecidamente cambiar la contraseña.",
+            "pl": "Twój system Linux używa użytkownika ze znanym hasłem. Może to prowadzić do włamania do systemu z zewnątrz. Zaleca się zmianę hasła.",
+            "uk": "Ваша Linux система використовує користувача з добре відомим паролем. Це може призвести до злому системи ззовні. Настійно рекомендується змінити пароль.",
+            "zh-cn": "您的 Linux 系统使用众所周知的密码。 这可能导致系统被外部黑客攻击。 强烈建议更改密码。"
+          },
+          "regex": [],
+          "limit": 1
         }
       ]
     }

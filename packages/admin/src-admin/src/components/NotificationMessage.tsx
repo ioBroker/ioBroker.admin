@@ -146,7 +146,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
     }
 
     async componentDidMount(): Promise<void> {
-        if (this.props.message.contextData) {
+        if (this.props.message.contextData?.admin?.notification) {
             // request GUI for this notification
             const alive = await this.props.socket.getState(`${this.props.instanceId}.alive`);
             this.lastAlive = alive?.val ? Date.now() : 0;
@@ -156,18 +156,20 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
     }
 
     getGui(): void {
-        if (this.state.alive && this.props.message.contextData) {
-            const contextData = JSON.parse(JSON.stringify(this.props.message.contextData));
+        if (this.state.alive && this.props.message.contextData?.admin?.notification) {
+            const notification: NotificationAction = JSON.parse(
+                JSON.stringify(this.props.message.contextData?.admin?.notification),
+            );
             /** remove the offline message from contextData */
-            if (contextData.offlineMessage) {
-                delete contextData.offlineMessage;
+            if (notification.offlineMessage) {
+                delete notification.offlineMessage;
             }
             // request GUI for this notification
             void this.props.socket
                 .sendTo(
                     this.props.instanceId.replace('system.adapter.', ''),
                     'admin:getNotificationSchema',
-                    contextData,
+                    notification,
                 )
                 .then((result: { data: Record<string, any> | null; schema: ConfigItemPanel | null }) => {
                     if (result) {
@@ -196,14 +198,15 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
 
     renderCustomGui(): JSX.Element | null {
         if (!this.state.schema || !this.state.data || !this.state.alive) {
-            if (this.props.message.contextData) {
+            const notification: NotificationAction | undefined = this.props.message.contextData?.admin?.notification;
+            if (notification) {
                 if (!this.state.alive) {
-                    if (this.props.message.contextData.offlineMessage) {
+                    const offlineMessage: ioBroker.StringOrTranslated | undefined = notification.offlineMessage;
+                    if (offlineMessage) {
                         const text =
-                            typeof this.props.message.contextData.offlineMessage === 'string'
-                                ? this.props.message.contextData.offlineMessage
-                                : this.props.message.contextData.offlineMessage[this.props.socket.systemLang] ||
-                                  this.props.message.contextData.offlineMessage.en;
+                            typeof offlineMessage === 'string'
+                                ? offlineMessage
+                                : offlineMessage[this.props.socket.systemLang] || offlineMessage.en;
 
                         return <Box sx={styles.offline}>{Utils.renderTextWithA(text)}</Box>;
                     }
@@ -229,9 +232,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                     schema={this.state.schema}
                     data={this.state.data}
                     onError={(error?: boolean) => this.setState({ error })}
-                    onChange={(_data: Record<string, any>) => {
-                        // ignore for now
-                    }}
+                    onChange={(data: Record<string, any>) => this.setState({ data })}
                     onBackEndCommand={(command?: BackEndCommandGeneric) => {
                         if (command.schema) {
                             this.setState({ schema: command.schema, data: command.data || this.state.data });
