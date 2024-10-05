@@ -7,9 +7,10 @@ import {
     KeyboardDoubleArrowUp,
     North,
     VerticalAlignTop,
+    Save
 } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, IconCopy as SaveIcon } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 import { InfoBox } from '@foxriver76/iob-component-lib';
 import IsVisible from '@/components/IsVisible';
 import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
@@ -182,7 +183,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<
                         disabled={this.state.currentSavedPolicy === this.state.policy}
                         color="primary"
                         variant="contained"
-                        startIcon={<SaveIcon />}
+                        startIcon={<Save />}
                         onClick={() => this.save()}
                     >
                         {I18n.t('Save')}
