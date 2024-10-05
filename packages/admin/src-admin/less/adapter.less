@@ -260,15 +260,15 @@ h4 {
     .tabs {
         background-color: #272727;
         .tab a {
-            color: #fff;
+            color: #fff !important;
             opacity: 0.7;
             .active {
-                color: #fff;
+                color: rgb(77, 171, 245) !important;
                 opacity: 1;
             }
         }
         .active {
-            border-bottom-color: #436a93;
+            border-bottom-color: rgb(77, 171, 245) !important;
         }
     }
     .card-panel {
@@ -389,15 +389,15 @@ h4 {
     .tabs {
         background-color: #2a3135;
         .tab a {
-            color: #fff;
+            color: #fff !important;
             opacity: 0.7;
             .active {
-                color: #fff;
+                color: #fff !important;
                 opacity: 1;
             }
         }
         .active {
-            border-bottom-color: #436a93;
+            border-bottom-color: #436a93 !important;
         }
     }
     .card-panel {
@@ -493,5 +493,227 @@ h4 {
     }
     .switch label .lever:after {
         background-color: #436a93;
+    }
+}
+
+/* Design Fix simatec */
+.m .col:has(.tabs) {
+    padding: 0 !important;
+}
+
+.m nav {
+    background-color: rgb(51, 153, 204) !important;
+}
+
+.m .btn,
+.m .btn-large,
+.m .btn-small {
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px, rgba(0, 0, 0, 0.12) 0px 1px 18px 0px !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    background-color: rgb(224, 224, 224) !important;
+}
+
+.m .btn-large:hover,
+.m .btn-small:hover,
+.m .btn:hover {
+    background-color: rgb(245, 245, 245) !important;
+    text-decoration: none !important;
+}
+
+.m .btn-floating i {
+    color: rgba(0, 0, 0, 0.87) !important;
+    font-size: 1.6rem !important;
+    line-height: 40px !important;
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.m .btn-floating.btn-small {
+    width: 40px !important;
+    height: 40px !important;
+}
+
+.m .tabs .tab a.active {
+    color: rgb(51, 153, 204) !important;
+}
+
+.m .tabs .tab a {
+    color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.m .tabs .active {
+    border-bottom: 2px solid rgb(51, 153, 204) !important;
+}
+
+.m .dropdown-toggle {
+    display: none;
+}
+
+.m .dropdown-menu {
+    display: none;
+}
+
+/* Styling for small Screen (Responsive) */
+@media screen and (max-width: 768px) {
+
+    .highlight,
+    .highlight thead,
+    .highlight tbody,
+    .highlight th,
+    .highlight td,
+    .highlights tr,
+    .table-values,
+    .table-values thead,
+    .table-values tbody,
+    .table-values th,
+    .table-values td,
+    .table-values tr {
+        display: block;
+        width: 100%;
+    }
+
+    .highlight thead tr,
+    .table-values thead tr {
+        display: none;
+    }
+
+    .m .highlight tr,
+    .m .table-values tr {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        background: #f9f9f9;
+    }
+
+    .m.react-dark .highlight tr,
+    .m.react-blue .highlight tr,
+    .m.react-dark .table-values tr,
+    .m.react-blue .table-values tr {
+        background: #272727 !important;
+    }
+
+    .highlight td,
+    .table-values td {
+        display: block !important;
+        text-align: left;
+        padding: 10px;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    .highlight td:before,
+    .table-values td:before {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    .highlight td::before,
+    .table-values td::before {
+        content: attr(data-title);
+    }
+
+    .adapter-body {
+        overflow: hidden;
+    }
+
+    .m #dialog-select-member {
+        width: calc(100% - 0.3rem) !important;
+        height: calc(100% - 0.3rem) !important;
+        left: 0px;
+        box-sizing: border-box;
+    }
+
+    .m [type=checkbox]+span:not(.lever) {
+        height: auto;
+    }
+
+    .m .modal .modal-content {
+        padding: 5px;
+    }
+}
+
+
+/* Dropdown-Menu for very small screens */
+@media (max-width: 601px) {
+    .help-link {
+        display: none;
+    }
+
+    .m .tabs {
+        display: none !important;
+    }
+
+    .m .dropdown-toggle {
+        position: fixed;
+        top: 15px;
+        right: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 36px;
+        height: 36px;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px, rgba(0, 0, 0, 0.12) 0px 1px 18px 0px !important;
+        color: rgba(0, 0, 0, 0.87) !important;
+        background-color: rgb(224, 224, 224) !important;
+        cursor: pointer;
+        border-radius: 90px;
+        z-index: 1000;
+    }
+
+    .m .dropdown-toggle:hover {
+        background-color: rgb(245, 245, 245) !important;
+        text-decoration: none !important;
+    }
+
+    .m .dropdown-toggle i,
+    .m.react-blue.dropdown-toggle i,
+    .m.react-dark .dropdown-toggle i {
+        color: rgba(0, 0, 0, 0.87) !important;
+        font-size: 24px;
+    }
+
+    .m .dropdown-menu {
+        display: none;
+        flex-direction: column;
+        background-color: #f1f1f1;
+        position: absolute;
+        width: 250px;
+        z-index: 999;
+    }
+
+    .m.react-blue .dropdown-menu,
+    .m.react-dark .dropdown-menu {
+        background-color: #2a3135;
+    }
+
+    .m .dropdown-menu.show {
+        display: flex;
+    }
+
+    .m .dropdown-menu a {
+        padding: 10px;
+        text-align: center;
+        color: #000;
+        text-decoration: none;
+    }
+
+    .m.react-blue .dropdown-menu a,
+    .m.react-dark .dropdown-menu a {
+        color: #fff;
+    }
+
+    .m .dropdown-menu a.active {
+        color: rgb(51, 153, 204) !important;
+    }
+
+    .m .dropdown-menu .active {
+        border-bottom: 2px solid rgb(51, 153, 204) !important;
+    }
+
+    .m .dropdown-menu a:hover {
+        background-color: rgb(245, 245, 245);
     }
 }
