@@ -75,15 +75,15 @@ function copyAllFiles() {
     readme = readme.replaceAll('packages/admin/', '');
     writeFileSync(`${__dirname}/README.md`, readme);
 
-    copyFiles([`${srcRx}build/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
+    copyFiles([`${srcRx}build/**/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
 
     // copy custom plugin
-    copyFiles(`${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/*`, `admin/`);
+    copyFiles(`${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
 
     // copy crypto-js
     copyFiles(
         [
-            `${rootFolder}/node_modules/crypto-js/*.*`,
+            `${rootFolder}/node_modules/crypto-js/**/*.*`,
             `!${rootFolder}/node_modules/crypto-js/CONTRIBUTING.md`,
             `!${rootFolder}/node_modules/crypto-js/README.md`,
         ],
@@ -95,7 +95,7 @@ function copyAllFiles() {
             { find: 'src="/', text: 'src="' },
         ],
     });
-    copyFiles(`${srcRx}build/static/js/*.js`, `${dest}static/js`, {
+    copyFiles(`${srcRx}build/static/js/**/*.js`, `${dest}static/js`, {
         replace: [{ find: 's.p+"static/media', text: '"./static/media' }],
     });
 }
