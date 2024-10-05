@@ -483,7 +483,83 @@ function preInit() {
                     event.stopImmediatePropagation();
                 }
             });
+
+            // Design Fix simatec
+            designFix();
         }
+    }
+
+    // Design Fix simatec
+    function designFix() {
+        const cols = document.querySelectorAll('.col:not(.tab)');
+        const sClasses = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11'];
+
+        cols.forEach(col => {
+            sClasses.forEach(sClass => {
+                if (col.classList.contains(sClass)) {
+                    col.classList.remove(sClass);
+                }
+            });
+
+            col.classList.add('s12');
+        });
+
+        const logo = document.querySelector('.logo');
+
+        if (logo) {
+            const col = logo.closest('.col');
+            if (col) {
+                const sClasses = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 'm2', 'm4', 'm8', 'm10', 'm12', 'l2', 'l4', 'l8', 'l10', 'l12',];
+                sClasses.forEach(sClass => {
+                    if (col.classList.contains(sClass)) {
+                        col.classList.remove(sClass);
+                    }
+                });
+                col.classList.add('s10');
+                col.classList.add('m6');
+                col.classList.add('l6');
+            }
+        }
+
+        const allTabs = document.querySelectorAll('.tabs');
+
+        allTabs.forEach(function (tabs) {
+            const dropdownToggle = document.createElement('div');
+            dropdownToggle.classList.add('dropdown-toggle');
+
+            const icon = document.createElement('i');
+            icon.classList.add('material-icons');
+            icon.textContent = 'menu';
+            dropdownToggle.appendChild(icon);
+
+            tabs.insertAdjacentElement('beforebegin', dropdownToggle);
+
+            const dropdownMenu = document.createElement('div');
+            dropdownMenu.classList.add('dropdown-menu');
+
+            const tabLinks = tabs.querySelectorAll('li a');
+
+            tabLinks.forEach(function (tab) {
+                const dropdownLink = document.createElement('a');
+                dropdownLink.href = tab.getAttribute('href');
+                dropdownLink.textContent = tab.textContent;
+                dropdownMenu.appendChild(dropdownLink);
+                dropdownLink.addEventListener('click', function () {
+                    tab.click();
+                    dropdownMenu.classList.remove('show');
+                });
+            });
+
+            tabs.insertAdjacentElement('beforebegin', dropdownMenu);
+
+            dropdownToggle.addEventListener('click', function () {
+                dropdownMenu.classList.toggle('show');
+            });
+
+            const rect = dropdownToggle.getBoundingClientRect();
+            dropdownMenu.style.top = `${rect.bottom}px`;
+            dropdownMenu.style.right = '10px';
+        });
     }
 
     function loadScript(src, onload) {
@@ -2041,6 +2117,8 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     type:    $(this).data('type') || 'text',
                     def:     $(this).data('default'),
                     style:   $(this).data('style'),
+                    title: $(this).data('title'),
+                    label: $(this).data('label'),
                     tdstyle: $(this).data('tdstyle'),
                     // add radio Button Id and optional span
                     radioButtomId: $(this).data('radio'),
@@ -2100,6 +2178,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 text += '<td';
                 var line    = '';
                 var style   = '';
+                var dataName = '';
                 var tdstyle = '';
                 if (names[i]) {
                     if (names[i].name !== '_index') {
@@ -2107,6 +2186,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         if (tdstyle && tdstyle[0] !== ';') {
                             tdstyle = ';' + tdstyle;
                         }
+                        dataName = names[i]?.title ? names[i].title : names[i]?.label ? names[i].label : names[i].name;
                     }
                     if (names[i].name === '_index') {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
@@ -2170,9 +2250,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     }
                 }
                 if (style.length || tdstyle.length) {
-                    text += ' style="' + style + tdstyle + '">' + line + '</td>';
+                    text += ' style="' + style + tdstyle + '" ' + 'data-title="' + _(dataName) + '"' + '>' + line + '</td>';
                 } else {
-                    text += '>' + line + '</td>';
+                    text += ' data-title="' + _(dataName) + '"' + '>' + line + '</td>';
                 }
             }
 
