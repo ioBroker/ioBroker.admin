@@ -1564,7 +1564,7 @@ class App extends Router<AppProps, AppState> {
             }
         }
 
-        const instances = await this.instancesWorker.getInstances();
+        const instances = await this.instancesWorker.getObjects();
 
         this.setState({ noNotifications, notifications: { notifications, instances } });
     };
@@ -1586,7 +1586,7 @@ class App extends Router<AppProps, AppState> {
         const result = notifications[host].result;
 
         if (result?.system && Object.keys(result.system.categories).length) {
-            await this.instancesWorker.getInstances().then(instances =>
+            await this.instancesWorker.getObjects().then(instances =>
                 this.setState({
                     showHostWarning: {
                         host,

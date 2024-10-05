@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, Grid2, Button } from '@mui/material';
 
@@ -52,233 +52,262 @@ interface UserEditDialogProps {
     getText: (text: ioBroker.StringOrTranslated) => string;
     styles: Record<string, React.CSSProperties>;
 }
+interface UserEditDialogState {
+    originalId: string | null;
+    passwordRepeat: string;
+}
 
-const UserEditDialog: React.FC<UserEditDialogProps> = props => {
-    const [originalId, setOriginalId] = useState(null);
-    const [passwordRepeat, setPasswordRepeat] = useState(props.user.common.password);
+class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState> {
+    constructor(props: UserEditDialogProps) {
+        super(props);
+        this.state = {
+            originalId: props.user._id,
+            passwordRepeat: props.user.common.password,
+        };
+    }
 
-    useEffect(() => {
-        setOriginalId(props.user._id);
-        if (props.isNew) {
+    componentDidMount(): void {
+        if (this.props.isNew) {
             const icon = USER_ICONS[Math.round(Math.random() * (USER_ICONS.length - 1))];
 
             if (icon) {
                 void Utils.getSvg(icon).then((fileBlob: string) => {
-                    const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
+                    const newData: ioBroker.UserObject = Utils.clone(this.props.user) as ioBroker.UserObject;
                     newData.common.icon = fileBlob;
-                    props.onChange(newData);
+                    this.props.onChange(newData);
                 });
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.user, props.isNew]);
-
-    const idExists = props.users.find(user => user._id === props.user._id);
-    const idChanged = props.user._id !== originalId;
-
-    const getShortId = (_id: string): string => _id.split('.').pop();
-
-    const name2Id = (name: string): string =>
-        name
-            .replace(Utils.FORBIDDEN_CHARS, '_')
-            .replace(/\s/g, '_')
-            .replace(/\./g, '_')
-            .replace(/,/g, '_')
-            .replace(/__/g, '_')
-            .replace(/__/g, '_')
-            .toLowerCase();
-
-    const changeShortId = (_id: string, short: string): string => {
-        const idArray = _id.split('.');
-        idArray[idArray.length - 1] = short;
-        return idArray.join('.');
-    };
-
-    const description = props.getText(props.user.common.desc);
-    const name = props.getText(props.user.common.name);
-
-    const errorPassword = AdminUtils.checkPassword((props.user.common as any).password);
-    const errorPasswordRepeat = AdminUtils.checkPassword((props.user.common as any).password, passwordRepeat);
-
-    let canSave = props.user._id !== 'system.user.' && !errorPassword && !errorPasswordRepeat;
-
-    if (props.isNew && idExists) {
-        canSave = false;
-    } else if (idExists && idChanged) {
-        canSave = false;
     }
 
-    return (
-        <Dialog
-            fullWidth={props.innerWidth < 500}
-            open={!0}
-            onClose={(_event, reason) => {
-                if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
-                    props.onClose();
-                }
-            }}
-        >
-            <DialogTitle style={{ ...props.styles.dialogTitle, padding: 12 }}>{props.t('User parameters')}</DialogTitle>
-            <DialogContent
-                sx={{
-                    '&.MuiDialogContent-root': {
-                        ...(props.innerWidth < 500 ? props.styles.narrowContent : undefined),
-                        ...styles.contentRoot,
-                    },
+    render(): React.JSX.Element {
+        const idExists = this.props.users.find(user => user._id === this.props.user._id);
+        const idChanged = this.props.user._id !== this.state.originalId;
+
+        const getShortId = (_id: string): string => _id.split('.').pop();
+
+        const name2Id = (name: string): string =>
+            name
+                .replace(Utils.FORBIDDEN_CHARS, '_')
+                .replace(/\s/g, '_')
+                .replace(/\./g, '_')
+                .replace(/,/g, '_')
+                .replace(/__/g, '_')
+                .replace(/__/g, '_')
+                .toLowerCase();
+
+        const changeShortId = (_id: string, short: string): string => {
+            const idArray = _id.split('.');
+            idArray[idArray.length - 1] = short;
+            return idArray.join('.');
+        };
+
+        const description = this.props.getText(this.props.user.common.desc);
+        const name = this.props.getText(this.props.user.common.name);
+
+        const errorPassword = AdminUtils.checkPassword((this.props.user.common as any).password);
+        const errorPasswordRepeat = AdminUtils.checkPassword(
+            (this.props.user.common as any).password,
+            this.state.passwordRepeat,
+        );
+
+        let canSave = this.props.user._id !== 'system.user.' && !errorPassword && !errorPasswordRepeat;
+
+        if (this.props.isNew && idExists) {
+            canSave = false;
+        } else if (idExists && idChanged) {
+            canSave = false;
+        }
+
+        return (
+            <Dialog
+                fullWidth={this.props.innerWidth < 500}
+                open={!0}
+                onClose={(_event, reason) => {
+                    if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                        this.props.onClose();
+                    }
                 }}
             >
-                <Grid2
-                    container
-                    spacing={props.innerWidth < 500 ? 1 : 4}
-                    style={props.styles.dialog}
+                <DialogTitle style={{ ...this.props.styles.dialogTitle, padding: 12 }}>
+                    {this.props.t('User parameters')}
+                </DialogTitle>
+                <DialogContent
+                    sx={{
+                        '&.MuiDialogContent-root': {
+                            ...(this.props.innerWidth < 500 ? this.props.styles.narrowContent : undefined),
+                            ...styles.contentRoot,
+                        },
+                    }}
                 >
-                    <Grid2 size={{ xs: 12, md: 6 }}>
-                        <IOTextField
-                            label="Name"
-                            t={props.t}
-                            value={name}
-                            onChange={value => {
-                                const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
-                                if (
-                                    !props.user.common.dontDelete &&
-                                    name2Id(newData.common.name) === getShortId(newData._id)
-                                ) {
+                    <Grid2
+                        container
+                        spacing={this.props.innerWidth < 500 ? 1 : 4}
+                        style={this.props.styles.dialog}
+                    >
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                            <IOTextField
+                                label="Name"
+                                t={this.props.t}
+                                value={name}
+                                onChange={value => {
+                                    const newData: ioBroker.UserObject = Utils.clone(
+                                        this.props.user,
+                                    ) as ioBroker.UserObject;
+                                    if (
+                                        !this.props.user.common.dontDelete &&
+                                        name2Id(newData.common.name) === getShortId(newData._id)
+                                    ) {
+                                        newData._id = changeShortId(
+                                            newData._id,
+                                            name2Id(value),
+                                        ) as ioBroker.ObjectIDs.User;
+                                    }
+                                    newData.common.name = value;
+                                    this.props.onChange(newData);
+                                }}
+                                autoComplete="new-password"
+                                icon={TextFieldsIcon}
+                                styles={this.props.styles}
+                            />
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                            <IOTextField
+                                label="ID edit"
+                                t={this.props.t}
+                                disabled={this.props.user.common.dontDelete}
+                                value={this.props.user._id.split('.')[this.props.user._id.split('.').length - 1]}
+                                onChange={value => {
+                                    const newData: ioBroker.UserObject = Utils.clone(
+                                        this.props.user,
+                                    ) as ioBroker.UserObject;
                                     newData._id = changeShortId(newData._id, name2Id(value)) as ioBroker.ObjectIDs.User;
-                                }
-                                newData.common.name = value;
-                                props.onChange(newData);
-                            }}
-                            autoComplete="new-password"
-                            icon={TextFieldsIcon}
-                            styles={props.styles}
-                        />
+                                    this.props.onChange(newData);
+                                }}
+                                icon={LocalOfferIcon}
+                                styles={this.props.styles}
+                            />
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                            <IOTextField
+                                label="ID preview"
+                                t={this.props.t}
+                                disabled
+                                value={this.props.user._id}
+                                icon={PageviewIcon}
+                                styles={this.props.styles}
+                            />
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                            <IOTextField
+                                label="Description"
+                                t={this.props.t}
+                                value={description}
+                                onChange={value => {
+                                    const newData: ioBroker.UserObject = Utils.clone(
+                                        this.props.user,
+                                    ) as ioBroker.UserObject;
+                                    newData.common.desc = value;
+                                    this.props.onChange(newData);
+                                }}
+                                icon={DescriptionIcon}
+                                styles={this.props.styles}
+                            />
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                            <IOTextField
+                                label="Password"
+                                t={this.props.t}
+                                value={this.props.user.common.password}
+                                error={errorPassword ? this.props.t(errorPassword) : undefined}
+                                onChange={value => {
+                                    const newData: ioBroker.UserObject = Utils.clone(
+                                        this.props.user,
+                                    ) as ioBroker.UserObject;
+                                    newData.common.password = value;
+                                    this.props.onChange(newData);
+                                }}
+                                type="password"
+                                autoComplete="new-password"
+                                icon={VpnKeyIcon}
+                                styles={this.props.styles}
+                            />
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                            <IOTextField
+                                label="Password repeat"
+                                t={this.props.t}
+                                value={this.state.passwordRepeat}
+                                error={errorPasswordRepeat ? this.props.t(errorPasswordRepeat) : undefined}
+                                onChange={value => this.setState({ passwordRepeat: value })}
+                                type="password"
+                                autoComplete="new-password"
+                                icon={VpnKeyIcon}
+                                styles={this.props.styles}
+                            />
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                            <IconPicker
+                                icons={USER_ICONS}
+                                label="Icon"
+                                // t={this.props.t}
+                                // lang={this.props.lang}
+                                value={this.props.user.common.icon}
+                                onChange={fileBlob => {
+                                    const newData: ioBroker.UserObject = Utils.clone(
+                                        this.props.user,
+                                    ) as ioBroker.UserObject;
+                                    newData.common.icon = fileBlob;
+                                    this.props.onChange(newData);
+                                }}
+                                previewStyle={this.props.styles.iconPreview}
+                                icon={ImageIcon}
+                                // classes={this.props.classes}
+                            />
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                            <IOColorPicker
+                                label="Color"
+                                t={this.props.t}
+                                value={this.props.user.common.color}
+                                previewStyle={this.props.styles.iconPreview}
+                                onChange={color => {
+                                    const newData: ioBroker.UserObject = Utils.clone(
+                                        this.props.user,
+                                    ) as ioBroker.UserObject;
+                                    newData.common.color = color;
+                                    this.props.onChange(newData);
+                                }}
+                                icon={ColorLensIcon}
+                                style={this.props.styles.colorPicker}
+                                styles={this.props.styles}
+                            />
+                        </Grid2>
                     </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
-                        <IOTextField
-                            label="ID edit"
-                            t={props.t}
-                            disabled={props.user.common.dontDelete}
-                            value={props.user._id.split('.')[props.user._id.split('.').length - 1]}
-                            onChange={value => {
-                                const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
-                                newData._id = changeShortId(newData._id, name2Id(value)) as ioBroker.ObjectIDs.User;
-                                props.onChange(newData);
-                            }}
-                            icon={LocalOfferIcon}
-                            styles={props.styles}
-                        />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
-                        <IOTextField
-                            label="ID preview"
-                            t={props.t}
-                            disabled
-                            value={props.user._id}
-                            icon={PageviewIcon}
-                            styles={props.styles}
-                        />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
-                        <IOTextField
-                            label="Description"
-                            t={props.t}
-                            value={description}
-                            onChange={value => {
-                                const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
-                                newData.common.desc = value;
-                                props.onChange(newData);
-                            }}
-                            icon={DescriptionIcon}
-                            styles={props.styles}
-                        />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
-                        <IOTextField
-                            label="Password"
-                            t={props.t}
-                            value={props.user.common.password}
-                            error={errorPassword ? props.t(errorPassword) : undefined}
-                            onChange={value => {
-                                const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
-                                newData.common.password = value;
-                                props.onChange(newData);
-                            }}
-                            type="password"
-                            autoComplete="new-password"
-                            icon={VpnKeyIcon}
-                            styles={props.styles}
-                        />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
-                        <IOTextField
-                            label="Password repeat"
-                            t={props.t}
-                            value={passwordRepeat}
-                            error={errorPasswordRepeat ? props.t(errorPasswordRepeat) : undefined}
-                            onChange={value => setPasswordRepeat(value)}
-                            type="password"
-                            autoComplete="new-password"
-                            icon={VpnKeyIcon}
-                            styles={props.styles}
-                        />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
-                        <IconPicker
-                            icons={USER_ICONS}
-                            label="Icon"
-                            // t={props.t}
-                            // lang={props.lang}
-                            value={props.user.common.icon}
-                            onChange={fileBlob => {
-                                const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
-                                newData.common.icon = fileBlob;
-                                props.onChange(newData);
-                            }}
-                            previewStyle={props.styles.iconPreview}
-                            icon={ImageIcon}
-                            // classes={props.classes}
-                        />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
-                        <IOColorPicker
-                            label="Color"
-                            t={props.t}
-                            value={props.user.common.color}
-                            previewStyle={props.styles.iconPreview}
-                            onChange={color => {
-                                const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
-                                newData.common.color = color;
-                                props.onChange(newData);
-                            }}
-                            icon={ColorLensIcon}
-                            style={props.styles.colorPicker}
-                            styles={props.styles}
-                        />
-                    </Grid2>
-                </Grid2>
-            </DialogContent>
-            <DialogActions style={props.styles.dialogActions}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    autoFocus
-                    onClick={() => props.saveData(props.isNew ? null : originalId)}
-                    disabled={!canSave}
-                    startIcon={<IconCheck />}
-                >
-                    {props.t('Save')}
-                </Button>
-                <Button
-                    variant="contained"
-                    color="grey"
-                    onClick={props.onClose}
-                    startIcon={<IconCancel />}
-                >
-                    {props.t('Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-};
+                </DialogContent>
+                <DialogActions style={this.props.styles.dialogActions}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        autoFocus
+                        onClick={() => this.props.saveData(this.props.isNew ? null : this.state.originalId)}
+                        disabled={!canSave}
+                        startIcon={<IconCheck />}
+                    >
+                        {this.props.t('Save')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="grey"
+                        onClick={this.props.onClose}
+                        startIcon={<IconCancel />}
+                    >
+                        {this.props.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+}
 
 export default UserEditDialog;

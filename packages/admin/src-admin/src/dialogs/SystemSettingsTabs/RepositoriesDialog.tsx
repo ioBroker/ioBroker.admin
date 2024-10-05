@@ -101,7 +101,7 @@ const styles: Record<string, any> = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;
+export type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;
 
 type RepositoryArray = Array<{ title: string; link: string }>;
 
@@ -370,6 +370,11 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
     }
 
     renderSortableItem(item: RepositoryArray[number], index: number): React.JSX.Element {
+        const errorName =
+            !item.title ||
+            item.title.trimStart() !== item.title ||
+            (item.title.length < 3 && !!item.title.match(/^\d+$/));
+
         const result = (
             <TableRow className="float_row">
                 <TableCell
@@ -519,6 +524,8 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                                 ) : null,
                             },
                         }}
+                        error={errorName}
+                        helperText={errorName ? I18n.t('Invalid name') : undefined}
                     />
                 </TableCell>
                 <TableCell className="grow_cell float_cell">

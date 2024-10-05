@@ -479,7 +479,6 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             maxHeight: '100%',
         };
         const titleStyle: React.CSSProperties = {
-            color: '#333',
             width: '100%',
             fontSize: 16,
             fontWeight: 'bold',
@@ -540,7 +539,12 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                             style={imgStyle}
                         />
                     </div>
-                    <div style={titleStyle}>{this.state.details?.data?.name || this.props.title}</div>
+                    <Box
+                        style={titleStyle}
+                        sx={theme => ({ color: theme.palette.secondary.contrastText })}
+                    >
+                        {this.state.details?.data?.name || this.props.title}
+                    </Box>
                     {this.props.device.hasDetails ? (
                         <Fab
                             disabled={!this.props.alive}

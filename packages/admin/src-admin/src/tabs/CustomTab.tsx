@@ -32,7 +32,7 @@ export async function getHref(
     adminInstance: string,
     themeType: ThemeType,
 ): Promise<string> {
-    const instances = await instancesWorker.getInstances();
+    const instances = await instancesWorker.getObjects();
     let adapter = tab.replace(/^tab-/, '');
     const m = adapter.match(/-(\d+)$/);
     const instNum: number | null = m ? parseInt(m[1], 10) : null;
@@ -81,7 +81,7 @@ export async function getHref(
         const hrefs = replaceLink(href, adapter, _instNum, {
             hostname,
             // it cannot be void
-            instances: instances as Record<string, ioBroker.InstanceObject>,
+            instances: instances,
             hosts,
             adminInstance,
         });

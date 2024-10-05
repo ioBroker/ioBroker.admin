@@ -10,12 +10,6 @@ export interface ObjectEvent {
     oldObj?: ioBroker.Object;
 }
 
-// export interface ObjectsWorker {
-//     getObjects(update?: boolean): Promise<void | Record<string, ioBroker.Object>>;
-//     registerHandler(cb: (events: ObjectEvent[]) => void): void;
-//     unregisterHandler(cb: (events: ObjectEvent[]) => void, doNotUnsubscribe?: boolean): void;
-// }
-
 export default class ObjectsWorker {
     private readonly socket: AdminConnection;
 

@@ -47,6 +47,7 @@ import type AdaptersWorker from '@/Workers/AdaptersWorker';
 import { type AdapterEvent } from '@/Workers/AdaptersWorker';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type { InstanceEvent } from '@/Workers/InstancesWorker';
+import HostAdapterWorker, { type HostAdapterEvent } from '@/Workers/HostAdapterWorker';
 import type { CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 
@@ -285,11 +286,15 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
 
     private hostsTimer: ReturnType<typeof setTimeout> | null = null;
 
+    private onHostAdapterTimer: ReturnType<typeof setTimeout> | null = null;
+
     private tempAdapters: Record<string, any> | null = null;
 
     private tempInstalled: InstalledInfo | null = null;
 
     private tempInstances: Record<string, CompactInstanceInfo> | null = null;
+
+    private hostAdapterWorker: HostAdapterWorker | null = null;
 
     constructor(props: AdaptersProps) {
         super(props);
@@ -373,6 +378,10 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
 
     async componentDidMount(): Promise<void> {
         if (this.props.ready) {
+            this.hostAdapterWorker = new HostAdapterWorker(this.props.socket, this.props.currentHost);
+            this.hostAdapterWorker.registerHandler(this.onHostAdapterChanged);
+            // wait till data is loaded
+            await this.hostAdapterWorker.getObjects();
             await this.updateAll();
             if (this.state.search) {
                 this.filterAdapters();
@@ -400,8 +409,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     componentWillUnmount(): void {
         if (this.updateTimeout) {
             clearTimeout(this.updateTimeout);
+            this.updateTimeout = null;
         }
-        this.updateTimeout = null;
 
         if (this.buildCacheTimer) {
             clearTimeout(this.buildCacheTimer);
@@ -418,8 +427,15 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             this.hostsTimer = null;
         }
 
+        if (this.onHostAdapterTimer) {
+            clearTimeout(this.onHostAdapterTimer);
+            this.onHostAdapterTimer = null;
+        }
+
         this.props.adaptersWorker.unregisterHandler(this.onAdaptersChanged);
         this.props.instancesWorker.unregisterHandler(this.onAdaptersChanged);
+        this.hostAdapterWorker.destroy();
+        this.hostAdapterWorker = null;
     }
 
     onAdaptersChanged = (events: (AdapterEvent | InstanceEvent)[]): void => {
@@ -472,6 +488,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             clearTimeout(this.updateTimeout);
         }
         this.updateTimeout = setTimeout(() => {
+            this.updateTimeout = null;
             const adapters = this.tempAdapters;
             this.tempAdapters = null;
             const installed = this.tempInstalled;
@@ -589,7 +606,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         let adapters: Record<string, ioBroker.AdapterObject>;
 
         try {
-            adapters = (await this.props.adaptersWorker.getAdapters(update)) || {};
+            adapters = (await this.props.adaptersWorker.getObjects(update)) || {};
         } catch (e) {
             window.alert(`Cannot getAdapters: ${e}`);
         }
@@ -1274,6 +1291,16 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         });
     }
 
+    onHostAdapterChanged = (_events: HostAdapterEvent[]): void => {
+        // redraw
+        this.onHostAdapterTimer && clearTimeout(this.onHostAdapterTimer);
+        this.onHostAdapterTimer = setTimeout(() => {
+            this.onHostAdapterTimer = null;
+            this.cache.listOfVisibleAdapter = null;
+            this.forceUpdate();
+        }, 200);
+    };
+
     clearAllFilters(): void {
         (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapter.search');
         (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.installedList');
@@ -1345,6 +1372,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 this.setState({ repository });
             },
             setAdminUpgradeTo: this.setAdminUpgradeTo,
+            hostAdapterWorker: this.hostAdapterWorker,
         } as AdaptersContext;
     }
 
@@ -1877,6 +1905,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             }, 100);
         }
 
+        // if the current host changed
         if (
             this.props.currentHost !== this.state.currentHost ||
             this.props.forceUpdateAdapters !== this.state.forceUpdateAdapters
@@ -1890,7 +1919,18 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                             currentHost: this.props.currentHost,
                             forceUpdateAdapters: this.props.forceUpdateAdapters,
                         },
-                        () => this.updateAll(false, false, true),
+                        async () => {
+                            if (this.hostAdapterWorker.getHost() !== this.props.currentHost) {
+                                this.hostAdapterWorker.destroy();
+                                this.hostAdapterWorker = new HostAdapterWorker(
+                                    this.props.socket,
+                                    this.props.currentHost,
+                                );
+                                this.hostAdapterWorker.registerHandler(this.onHostAdapterChanged);
+                                await this.hostAdapterWorker.getObjects();
+                            }
+                            await this.updateAll(false, false, true);
+                        },
                     );
                 }, 200);
         }

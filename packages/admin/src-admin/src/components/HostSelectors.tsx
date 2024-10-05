@@ -226,7 +226,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                     // new host detected
                     changed = true;
                     hosts.push({
-                        _id: event.id,
+                        _id: event.id as `system.host.${string}`,
                         common: {
                             name: event.obj.common?.name || '',
                             color: event.obj.common?.color || '',

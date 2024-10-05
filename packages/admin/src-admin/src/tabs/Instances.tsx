@@ -307,7 +307,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
     getInstances = async (): Promise<void> => {
         const start = Date.now();
         let instances: ioBroker.InstanceObject[] = [];
-        const instancesFromWorker = await this.props.instancesWorker.getInstances();
+        const instancesFromWorker = await this.props.instancesWorker.getObjects();
 
         if (!instancesFromWorker) {
             window.alert('Cannot read instances!');

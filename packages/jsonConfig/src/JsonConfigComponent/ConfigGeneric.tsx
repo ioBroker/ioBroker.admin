@@ -38,6 +38,8 @@ import {
 } from '@iobroker/adapter-react-v5';
 import type { BackEndCommand, ConfigIconType, ConfigItemAny, ConfigItemConfirmData } from '#JC/types';
 
+const DEFAULT_SM_SIZE = window.innerWidth <= 600 ? 12 : undefined;
+
 // because this class is used in adapter-react-v5, do not include here any foreign files like from '../../helpers/utils.ts'
 export function isObject(it: any): it is Record<string, any> {
     // This is necessary because:
@@ -1079,7 +1081,7 @@ export default class ConfigGeneric<
                 const item = (
                     <Grid2
                         size={{
-                            xs: schema.xs || 12, // if xs is not defined, take the full width
+                            xs: schema.xs || DEFAULT_SM_SIZE, // if xs is not defined, take the full width
                             sm: schema.sm || undefined,
                             md: schema.md || undefined,
                             lg: schema.lg || undefined,

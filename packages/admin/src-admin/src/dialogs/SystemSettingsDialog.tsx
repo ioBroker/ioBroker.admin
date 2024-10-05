@@ -27,10 +27,10 @@ import {
     type ThemeName,
 } from '@iobroker/adapter-react-v5';
 
-import type { AdminGuiConfig } from '@/types';
+import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import AdminUtils from '@/helpers/AdminUtils';
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
-import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
+import RepositoriesDialog, { type Repository } from './SystemSettingsTabs/RepositoriesDialog';
 import LicensesDialog from './SystemSettingsTabs/LicensesDialog';
 import CertificatesDialog from './SystemSettingsTabs/CertificatesDialog';
 import SSLDialog from './SystemSettingsTabs/SSLDialog';
@@ -95,7 +95,7 @@ interface SystemSettingsDialogState {
     confirmExit: boolean;
     systemConfig: ioBroker.SystemConfigObject;
     systemCertificates: ioBroker.Object;
-    systemRepositories: ioBroker.Object;
+    systemRepositories: ioBroker.RepositoryObject;
     systemLicenses: ioBroker.Object;
     multipleRepos: boolean;
     licenseManager: boolean;
@@ -492,6 +492,16 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         }
     }
 
+    static ifRepoError(data: ioBrokerObject<{ repositories: Repository }>): boolean {
+        if (!data?.native?.repositories) {
+            return false;
+        }
+        const invalidKey = Object.keys(data.native.repositories).find((key: string) => {
+            return !key || key.trimStart() !== key || (key.length < 3 && !!key.match(/^\d+$/));
+        });
+        return invalidKey !== undefined;
+    }
+
     render(): JSX.Element {
         const changed = !(
             JSON.stringify(this.state.systemRepositories) === this.originalRepositories &&
@@ -503,6 +513,11 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             }) === this.originalLicenses
         );
 
+        let tabError = false;
+        if (this.props.currentTab.id === 'tabRepositories') {
+            tabError = SystemSettingsDialog.ifRepoError(this.state.systemRepositories);
+        }
+
         const tabsList = this.getTabs().filter(tab => {
             if (!this.state.licenseManager && tab.name === 'tabLicenses') {
                 return false;
@@ -510,11 +525,13 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             return this.props.adminGuiConfig.admin.settings[tab.name] !== false;
         });
 
+        console.log(`get state: ${tabError}`);
         const tabs = tabsList.map(tab => (
             <Tab
                 key={tab.title}
                 label={this.props.t(tab.title)}
                 value={tab.name}
+                disabled={tabError && tab.name !== (this.props.currentTab.id || 'tabConfig')}
                 sx={{ '&.Mui-selected': styles.selected }}
             />
         ));
@@ -580,7 +597,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 <DialogActions>
                     <Button
                         variant="contained"
-                        disabled={!changed || this.state.saving}
+                        disabled={!changed || this.state.saving || tabError}
                         onClick={() => this.onSave()}
                         color="primary"
                         startIcon={<CheckIcon />}

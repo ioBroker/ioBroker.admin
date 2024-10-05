@@ -14,13 +14,14 @@ import { readFileSync, existsSync } from 'node:fs';
 import { platform } from 'node:os';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
+import type { Server as HTTPServer } from 'node:http';
+import type { Server as HTTPSServer } from 'node:https';
 
 import { Adapter, type AdapterOptions, commonTools, controllerDir } from '@iobroker/adapter-core';
 import I18n from '@iobroker/i18n';
 // @ts-expect-error it not TS
 import { SocketAdmin } from '@iobroker/socket-classes';
-// @ts-expect-error it not TS
-import * as ws from '@iobroker/ws-server';
+import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
@@ -861,11 +862,16 @@ class Admin extends Adapter {
 
     initSocket(server: unknown, store: unknown): void {
         socket = new SocketAdmin(this.config, this, objects);
-        socket.start(server, ws, {
-            userKey: 'connect.sid',
-            store,
-            secret: this.secret,
-        });
+        socket.start(
+            server,
+            // Imitate the old socket.io v2 interface
+            { listen: (server: HTTPServer | HTTPSServer) => new SocketIO(server) },
+            {
+                userKey: 'connect.sid',
+                store,
+                secret: this.secret,
+            },
+        );
 
         // subscribe on all object changes
         socket.subscribe('objectChange', '*');

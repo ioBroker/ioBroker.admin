@@ -273,19 +273,18 @@ class Hosts extends Component<HostsProps, HostsState> {
 
         void Promise.all(
             events.map(async event => {
-                const elementFind = hosts.find(host => host._id === event.id);
-                if (elementFind) {
-                    const index = hosts.indexOf(elementFind);
+                const elementIndex = hosts.findIndex(host => host._id === event.id);
+                if (elementIndex !== -1) {
                     if (event.obj) {
                         // updated
-                        hosts[index] = event.obj;
+                        hosts[elementIndex] = event.obj;
                     } else {
                         // deleted
-                        hosts.splice(index, 1);
+                        hosts.splice(elementIndex, 1);
                     }
                 } else {
                     const state = await this.props.socket.getState(`${event.id}.alive`);
-                    alive[event.id] = !!state?.val;
+                    alive[event.id as `system.host.${string}`] = !!state?.val;
                     // new
                     hosts.push(event.obj);
                 }

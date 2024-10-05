@@ -23,7 +23,7 @@ import {
     Refresh as RefreshIcon,
     Add as AddIcon,
     Help as HelpIcon,
-    KeyboardArrowUp as UpdateSettingsIcon,
+    KeyboardArrowUp,
     Cloud as CloudIcon,
     CloudOff as CloudOffIcon,
     ArrowUpward as ArrowUpwardIcon,
@@ -52,7 +52,7 @@ import AdapterInstallDialog, {
     type AdapterRatingInfo,
     type AdaptersContext,
 } from '@/components/Adapters/AdapterInstallDialog';
-import AutoUpgradeConfigDialog from '@/dialogs/AutoUpgradeConfigDialog';
+import AutoUpgradeConfigDialog, { ICONS } from '@/dialogs/AutoUpgradeConfigDialog';
 
 import IsVisible from '../IsVisible';
 import { extractUrlLink } from './Utils';
@@ -258,19 +258,24 @@ export default abstract class AdapterGeneric<
     }
 
     renderAutoUpgradeButton(): JSX.Element | null {
-        if (!this.installedVersion) {
-            return null;
+        const adapterObj = this.props.context.hostAdapterWorker.getObject(this.props.adapterName);
+        if (!adapterObj) {
+            return <div style={{ width: 34, height: 34, display: 'inline-block' }} />;
         }
+
+        // 'none' | 'patch' | 'minor' | 'major'
+        const autoUpgrade: ioBroker.AutoUpgradePolicy = adapterObj.common?.automaticUpgrade;
+
         return (
             <Tooltip
-                title={this.props.context.t('Automatic Upgrade Policy')}
+                title={this.props.context.t('Automatic Upgrade Policy') + (autoUpgrade ? `: ${autoUpgrade}` : '')}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <IconButton
                     size="small"
                     onClick={() => this.setState({ autoUpgradeDialogOpen: true, showDialog: true })}
                 >
-                    <UpdateSettingsIcon />
+                    {!autoUpgrade || autoUpgrade === 'none' ? <KeyboardArrowUp /> : ICONS[autoUpgrade]}
                 </IconButton>
             </Tooltip>
         );

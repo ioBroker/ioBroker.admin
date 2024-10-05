@@ -5,10 +5,10 @@ const less = require('less');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { join } = require('node:path');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { execFile } = require('node:child_process');
 const {
     deleteFoldersRecursive,
-    /*  buildReact, */ patchHtmlFile,
+    buildReact,
+    patchHtmlFile,
     npmInstall,
     copyFiles,
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -19,46 +19,17 @@ const src = `${__dirname}/${srcRx}`;
 const rootFolder = join(__dirname, '..', '..');
 const dest = 'adminWww/';
 
-function buildCraco() {
-    return new Promise((resolve, reject) => {
-        const options = {
-            stdio: 'pipe',
-            cwd: src,
-        };
-
-        console.log(options.cwd);
-
-        let script = `${rootFolder}/node_modules/@craco/craco/dist/bin/craco.js`;
-        if (!existsSync(script)) {
-            script = `${rootFolder}/node_modules/@craco/craco/dist/bin/craco.js`;
-        }
-
-        if (!existsSync(script)) {
-            console.error(`Cannot find execution file: ${script}`);
-            reject(`Cannot find execution file: ${script}`);
-        } else {
-            const cmd = 'node';
-            const args = [script, '--max-old-space-size=7000', 'build'];
-            const child = execFile(cmd, args, { cwd: src });
-
-            child.stderr.pipe(process.stderr);
-            child.stdout.pipe(process.stdout);
-
-            child.on('exit', (code /* , signal */) => {
-                // code 1 is a strange error that cannot be explained. Everything is installed but error :(
-                if (code && code !== 1) {
-                    reject(`Cannot install: ${code}`);
-                } else {
-                    console.log(`"${cmd} in ${src} finished.`);
-                    // command succeeded
-                    resolve();
-                }
-            });
-        }
-    });
-}
-
 async function build() {
+    const socketNew = readFileSync(`${__dirname}/../../node_modules/@iobroker/ws/dist/esm/socket.io.min.js`).toString();
+    const socketOld = readFileSync(`${__dirname}/src-admin/public/lib/js/socket.io.js`).toString();
+    if (socketNew !== socketOld) {
+        writeFileSync(`${__dirname}/src-admin/public/lib/js/socket.io.js`, socketNew);
+        writeFileSync(
+            `${__dirname}/src-admin/public/lib/js/socket.io.js.map`,
+            readFileSync(`${__dirname}/../../node_modules/@iobroker/ws/dist/esm/socket.io.min.js.map`),
+        );
+    }
+
     writeFileSync(
         `${src}public/lib/js/sparkline.js`,
         readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js`),
@@ -72,8 +43,7 @@ async function build() {
     writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, readFileSync(`${ace}worker-json.js`));
     writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`, readFileSync(`${ace}ext-searchbox.js`));
 
-    await buildCraco();
-    // await buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true });
+    await buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true, exec: true });
     if (existsSync(`${__dirname}/adminWww/index.html`)) {
         throw new Error('Front-end was not build to end!');
     }
@@ -105,21 +75,15 @@ function copyAllFiles() {
     readme = readme.replaceAll('packages/admin/', '');
     writeFileSync(`${__dirname}/README.md`, readme);
 
-    copyFiles([`${srcRx}build/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
-
-    // copy source files of jsonConfig
-    copyFiles(`${__dirname}/../jsonConfig/src/*`, `${__dirname}/../jsonConfig/build/src`);
-
-    // copy source files of dm-gui-components
-    copyFiles(`${__dirname}/../dm-gui-components/src/*`, `${__dirname}/../dm-gui-components/build/src`);
+    copyFiles([`${srcRx}build/**/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
 
     // copy custom plugin
-    copyFiles(`${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/*`, `admin/`);
+    copyFiles(`${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
 
     // copy crypto-js
     copyFiles(
         [
-            `${rootFolder}/node_modules/crypto-js/*.*`,
+            `${rootFolder}/node_modules/crypto-js/**/*.*`,
             `!${rootFolder}/node_modules/crypto-js/CONTRIBUTING.md`,
             `!${rootFolder}/node_modules/crypto-js/README.md`,
         ],
@@ -131,7 +95,7 @@ function copyAllFiles() {
             { find: 'src="/', text: 'src="' },
         ],
     });
-    copyFiles(`${srcRx}build/static/js/*.js`, `${dest}static/js`, {
+    copyFiles(`${srcRx}build/static/js/**/*.js`, `${dest}static/js`, {
         replace: [{ find: 's.p+"static/media', text: '"./static/media' }],
     });
 }
