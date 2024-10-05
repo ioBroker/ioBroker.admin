@@ -8507,7 +8507,6 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     !this.props.notEditable &&
                     this.props.objectBrowserAliasEditor &&
                     this.props.objectBrowserEditObject &&
-                    this.state.filter.expertMode &&
                     obj?.type === 'state' &&
                     // @ts-expect-error deprecated from js-controller 6
                     obj.common?.type !== 'file'
