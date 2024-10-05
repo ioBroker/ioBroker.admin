@@ -2,12 +2,12 @@ import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Select, Typography } from '@mui/material';
 
 import {
-    Close as CloseIcon, HorizontalRule,
-    KeyboardArrowUp,
+    Close as CloseIcon,
+    HorizontalRule,
     KeyboardDoubleArrowUp,
     North,
-    VerticalAlignTop
-} from "@mui/icons-material";
+    VerticalAlignTop,
+} from '@mui/icons-material';
 
 import { type AdminConnection, I18n, IconCopy as SaveIcon } from '@iobroker/adapter-react-v5';
 import { InfoBox } from '@foxriver76/iob-component-lib';
@@ -158,7 +158,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<
                                     key={option}
                                     value={option}
                                 >
-                                    <div style={{ display: 'flex', gap: 8}}>
+                                    <div style={{ display: 'flex', gap: 8 }}>
                                         {ICONS[option]}
                                         {AUTO_UPGRADE_OPTIONS_MAPPING[option]}
                                     </div>
