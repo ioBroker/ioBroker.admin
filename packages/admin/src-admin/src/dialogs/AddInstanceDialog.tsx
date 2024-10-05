@@ -144,7 +144,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
     }
 
     componentDidMount(): void {
-        void this.props.instancesWorker.getInstances().then((instances: Record<string, ioBroker.InstanceObject>) => {
+        void this.props.instancesWorker.getObjects().then((instances: Record<string, ioBroker.InstanceObject>) => {
             const instanceNumbers = Object.keys(instances)
                 .filter(id => instances[id]?.common?.name === this.props.adapter)
                 .map(id => id.substring(id.lastIndexOf('.') + 1));

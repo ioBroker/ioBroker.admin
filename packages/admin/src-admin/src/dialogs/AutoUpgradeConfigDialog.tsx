@@ -1,12 +1,25 @@
 import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Select, Typography } from '@mui/material';
 
-import { Close as CloseIcon } from '@mui/icons-material';
+import {
+    Close as CloseIcon, HorizontalRule,
+    KeyboardArrowUp,
+    KeyboardDoubleArrowUp,
+    North,
+    VerticalAlignTop
+} from "@mui/icons-material";
 
 import { type AdminConnection, I18n, IconCopy as SaveIcon } from '@iobroker/adapter-react-v5';
 import { InfoBox } from '@foxriver76/iob-component-lib';
 import IsVisible from '@/components/IsVisible';
 import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
+
+export const ICONS: Record<string, React.JSX.Element> = {
+    none: <HorizontalRule />,
+    patch: <KeyboardDoubleArrowUp style={{ color: 'green' }} />,
+    minor: <North style={{ color: 'orange' }} />,
+    major: <VerticalAlignTop style={{ color: 'red' }} />,
+};
 
 interface AutoUpgradeConfigDialogProps {
     /** Called when user closes dialog */
@@ -24,7 +37,7 @@ interface AutoUpgradeConfigDialogState {
     currentSavedPolicy: ioBroker.AutoUpgradePolicy;
     /** The current configured auto upgrade policy */
     policy: ioBroker.AutoUpgradePolicy;
-    /** The repositories the config applies for */
+    /** The repositories the config apply for */
     repositories: string[];
     /** If the feature is supported */
     supported: boolean;
@@ -106,7 +119,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<
 
         obj.common.automaticUpgrade = this.state.policy;
         await this.props.socket.setObject(this.getAdapterId(), obj);
-        this.setState({ currentSavedPolicy: this.state.policy });
+        this.setState({ currentSavedPolicy: this.state.policy }, () => this.props.onClose());
     }
 
     /**
@@ -145,7 +158,10 @@ export default class AutoUpgradeConfigDialog extends React.Component<
                                     key={option}
                                     value={option}
                                 >
-                                    {AUTO_UPGRADE_OPTIONS_MAPPING[option]}
+                                    <div style={{ display: 'flex', gap: 8}}>
+                                        {ICONS[option]}
+                                        {AUTO_UPGRADE_OPTIONS_MAPPING[option]}
+                                    </div>
                                 </MenuItem>
                             ))}
                         </Select>
@@ -173,9 +189,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<
                     </Button>
                     <Button
                         variant="contained"
-                        onClick={() => {
-                            this.props.onClose();
-                        }}
+                        onClick={() => this.props.onClose()}
                         color="grey"
                         startIcon={<CloseIcon />}
                     >

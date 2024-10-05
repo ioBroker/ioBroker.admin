@@ -11,6 +11,7 @@ import type { AdapterInformation } from '@iobroker/js-controller-common-db/build
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
+import type HostAdapterWorker from '@/Workers/HostAdapterWorker';
 import { extractUrlLink, type RepoAdapterObject } from './Utils';
 
 export type AdapterRating = {
@@ -76,6 +77,7 @@ export type AdaptersContext = {
     isTileView: boolean;
     updateRating: (adapter: string, rating: RatingDialogRepository) => void;
     setAdminUpgradeTo: (version: string) => void;
+    hostAdapterWorker: HostAdapterWorker;
 };
 
 export interface AdapterInstallDialogState {
@@ -163,7 +165,7 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
             }
 
             if (options.instance) {
-                const instances = await options.context.instancesWorker.getInstances();
+                const instances = await options.context.instancesWorker.getObjects();
                 // if the instance already exists
                 if (instances && instances[`system.adapter.${options.adapterName}.${options.instance}`]) {
                     window.alert(
