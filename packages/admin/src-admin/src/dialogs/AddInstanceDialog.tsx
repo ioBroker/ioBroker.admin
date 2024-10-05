@@ -164,16 +164,19 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
             </MenuItem>,
         );
 
-        for (let i = 0; i <= 10; i++) {
+        for (let i = 0; i <= 100; i++) {
             if (!this.state.instanceNumbers.includes(i.toString())) {
                 result.push(
                     <MenuItem
-                        value={i}
+                        value={i.toString()}
                         key={i}
                     >
                         {i}
                     </MenuItem>,
                 );
+            }
+            if (result.length > 11) {
+                break;
             }
         }
 

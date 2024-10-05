@@ -341,7 +341,7 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
                 onHostChange={hostName =>
                     this.setState({ addInstanceHostName: hostName.replace(/^system\.host\./, '') })
                 }
-                onInstanceChange={event => this.setState({ addInstanceId: event.target.value })}
+                onInstanceChange={event => this.setState({ addInstanceId: event.target.value.toString() })}
                 adapterObject={context.repository[this.state.addInstanceDialog]}
                 instances={context.compactInstances}
                 toggleTranslation={context.toggleTranslation}
