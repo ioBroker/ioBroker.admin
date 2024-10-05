@@ -87,6 +87,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+-   (@GermanBluefox) Corrected some GUI errors
+
 ### 7.2.0 (2024-10-01)
 
 -   (@GermanBluefox) Added the check of well-known passwords for the linux systems
