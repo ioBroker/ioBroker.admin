@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.2.0",
+    "version": "7.2.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.2.1": {
+        "en": "Corrected some GUI errors",
+        "de": "Einige GUI-Fehler korrigiert",
+        "ru": "Исправлены некоторые ошибки GUI",
+        "pt": "Corrigido alguns erros GUI",
+        "nl": "Enkele GUI-fouten gecorrigeerd",
+        "fr": "Correction de certaines erreurs d'interface graphique",
+        "it": "Corretto alcuni errori GUI",
+        "es": "Corregido algunos errores de GUI",
+        "pl": "Poprawiono niektóre błędy GUI",
+        "uk": "Виправлено деякі помилки інтерфейсу",
+        "zh-cn": "更正了一些图形用户界面错误"
+      },
       "7.2.0": {
         "en": "Added the check of well-known passwords for the linux systems\nAdded the history for the installation from URL\nfixed wrongly displayed repository warning",
         "de": "Hinzugefügt die Überprüfung der bekannten Passwörter für die Linux-Systeme\nDie Geschichte der Installation von URL hinzugefügt\nfalsch angezeigte repository-warnung",
@@ -96,19 +109,6 @@
         "pl": "Dodano możliwość wyświetlenia przycisku w powiadomieniach\nUsunięto przełyk z procesu budowania",
         "uk": "Додано можливість показати кнопку в повідомленнях\nЗняти ковпачок з процесу будівництва",
         "zh-cn": "添加在通知中显示按钮的可能性\n从构建过程中移除 gulp"
-      },
-      "7.0.25": {
-        "en": "Improvement for automatic tests\nAdded the possibility to style the response text for `textSendTo` in JSON Config",
-        "de": "Verbesserung für automatische Tests\nHinzufügen der Möglichkeit, den Antworttext für `textSendTo` in JSON Config",
-        "ru": "Совершенствование автоматических тестов\nДобавлена возможность отобразить текст ответа для `textSendTo' в JSON Config",
-        "pt": "Melhoria para testes automáticos\nAdicionado a possibilidade de estilo o texto de resposta para `textSendTo` em JSON Config",
-        "nl": "Verbetering van automatische tests\nToegevoegd de mogelijkheid om de response tekst voor te stijlen .textSendTo",
-        "fr": "Amélioration des essais automatiques\nAjout de la possibilité de styler le texte de réponse pour `textSendTo` dans JSON Config",
-        "it": "Miglioramento delle prove automatiche\nAggiunta la possibilità di definire il testo di risposta per `textSendTo` in JSON Config",
-        "es": "Mejora de las pruebas automáticas\nAgregó la posibilidad de estilo del texto de respuesta para 'textSendTo` en JSON Config",
-        "pl": "Poprawa w przypadku badań automatycznych\nDodano możliwość stylizacji tekstu odpowiedzi dla 'textSendTo' w konfiguracji JSON",
-        "uk": "Покращення автоматичних випробувань\nДодано можливість стилю тексту відповіді для `textSendTo`` в JSON Config",
-        "zh-cn": "改进自动测试\n在 JSON 配置中添加了“ textSendTo” 的响应文本样式"
       }
     },
     "desc": {

@@ -1,4 +1,10 @@
 # Older changes
+## 7.1.1 (2024-09-15)
+
+-   (bluefox) Showed the context menu under cursor position in the object browser
+-   (bluefox) Added links to aliases in the object browser
+-   (bluefox) Added confirmation for CRON dialog if set to triggering every minute
+
 ## 7.1.0 (2024-09-02)
 
 -   (bluefox) Added the possibility to show button in notifications
