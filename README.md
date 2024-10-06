@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.2.1 (2024-10-06)
 
 -   (@GermanBluefox) Corrected some GUI errors
 
@@ -112,12 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.1.2 (2024-09-20)
 
 -   (@foxriver76) fixed host base settings dialog
-
-### 7.1.1 (2024-09-15)
-
--   (bluefox) Showed the context menu under cursor position in the object browser
--   (bluefox) Added links to aliases in the object browser
--   (bluefox) Added confirmation for CRON dialog if set to triggering every minute
 
 ## License
 
