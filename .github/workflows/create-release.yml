@@ -56,7 +56,7 @@ jobs:
               with:
                   result-encoding: string
                   script: |
-                      const package = require('./lerna.json');
+                      const package = require('./packages/admin/package.json');
                       return package.version
 
             - name: Extract the commit body

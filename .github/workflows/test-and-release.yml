@@ -166,7 +166,7 @@ jobs:
               with:
                   result-encoding: string
                   script: |
-                      return require('./lerna.json').version;
+                      return require('./packages/admin/package.json').version;
 
             - name: Extract the commit body
               if: steps.automerge.outputs.mergeResult == 'merged'
@@ -193,7 +193,12 @@ jobs:
                   npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
                   npm whoami
                   git checkout -- package-lock.json
-                  npx lerna publish from-package --yes
+                  cd packages/jsonConfig
+                  npm publish
+                  cd ../dm-gui-components
+                  npm publish
+                  cd ../admin
+                  npm publish
 
             - name: Create Github Release
               if: steps.automerge.outputs.mergeResult == 'merged'
