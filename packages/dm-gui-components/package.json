@@ -48,7 +48,16 @@
     },
     "homepage": "https://github.com/ioBroker/dm-gui-components#readme",
     "dependencies": {
+        "@craco/craco": "^7.1.0",
         "@iobroker/adapter-react-v5": "^7.2.4",
-        "@iobroker/json-config": "file:../jsonConfig"
+        "@iobroker/dm-utils": "^0.5.0",
+        "@iobroker/eslint-config": "^0.1.6",
+        "@iobroker/json-config": "file:../jsonConfig",
+        "@iobroker/types": "^7.0.0",
+        "@types/react": "^18.3.11",
+        "@types/react-dom": "^18.3.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "typescript": "^5.6.2"
     }
 }

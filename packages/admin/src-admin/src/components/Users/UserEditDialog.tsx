@@ -14,7 +14,7 @@ import {
     Check as IconCheck,
 } from '@mui/icons-material';
 
-import { Utils, IconPicker, type Translate } from '@iobroker/adapter-react-v5';
+import { I18n, Utils, IconPicker, type Translate } from '@iobroker/adapter-react-v5';
 
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 import AdminUtils from '../../helpers/AdminUtils';
@@ -156,7 +156,7 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                                     ) as ioBroker.UserObject;
                                     if (
                                         !this.props.user.common.dontDelete &&
-                                        name2Id(newData.common.name) === getShortId(newData._id)
+                                        name2Id(this.props.getText(newData.common.name)) === getShortId(newData._id)
                                     ) {
                                         newData._id = changeShortId(
                                             newData._id,

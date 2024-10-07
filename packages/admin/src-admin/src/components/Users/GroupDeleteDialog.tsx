@@ -3,7 +3,7 @@ import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, B
 
 import { Close as IconCancel, Delete as IconDelete } from '@mui/icons-material';
 
-import type { Translate } from '@iobroker/adapter-react-v5';
+import { type Translate } from '@iobroker/adapter-react-v5';
 
 interface GroupDeleteDialogProps {
     t: Translate;
@@ -11,6 +11,7 @@ interface GroupDeleteDialogProps {
     group: ioBroker.GroupObject;
     deleteGroup: (groupId: string) => void;
     styles: Record<string, React.CSSProperties>;
+    getText: (text: ioBroker.StringOrTranslated) => string;
 }
 
 export default function GroupDeleteDialog(props: GroupDeleteDialogProps): JSX.Element {
@@ -22,7 +23,7 @@ export default function GroupDeleteDialog(props: GroupDeleteDialogProps): JSX.El
             <DialogTitle>{props.t('Please confirm')}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    {props.t('Do you want to delete group %s?', props.group.common.name)}
+                    {props.t('Do you want to delete group %s?', props.getText(props.group.common.name))}
                 </DialogContentText>
             </DialogContent>
             <DialogActions style={props.styles.dialogActions}>

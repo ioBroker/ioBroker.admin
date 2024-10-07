@@ -676,6 +676,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                 ) : null}
                 {this.state.userDeleteDialog ? (
                     <UserDeleteDialog
+                        getText={this.getText}
                         onClose={() => this.setState({ userDeleteDialog: false })}
                         user={this.state.userDeleteDialog}
                         t={this.props.t}
@@ -684,6 +685,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                 ) : null}
                 {this.state.groupDeleteDialog ? (
                     <GroupDeleteDialog
+                        getText={this.getText}
                         onClose={() => this.setState({ groupDeleteDialog: false })}
                         group={this.state.groupDeleteDialog}
                         t={this.props.t}

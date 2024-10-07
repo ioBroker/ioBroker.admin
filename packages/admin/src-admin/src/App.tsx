@@ -2397,9 +2397,7 @@ class App extends Router<AppProps, AppState> {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
             return (
                 <div>
-                    {/* @ts-expect-error fixed in js-controller */}
                     {this.state.systemConfig.common.siteName ? (
-                        /* @ts-expect-error fixed in js-controller */
                         <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>
                     ) : null}
 
@@ -2444,9 +2442,7 @@ class App extends Router<AppProps, AppState> {
                 </div>
             );
         }
-        // @ts-expect-error fixed in js-controller
         if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
-            // @ts-expect-error fixed in js-controller
             return <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>;
         }
         return null;
