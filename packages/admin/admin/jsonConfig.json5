@@ -1,330 +1,358 @@
 {
-  "type": "tabs",
-  "i18n": true,
-  "items": {
-    // main tab
-    "mainTab": {
-      "type": "panel",
-      "label": "Main settings",
-      "items": {
-        "bind": {
-          "newLine": true,
-          "type": "ip",
-          "listenOnAllPorts": true,
-          "label": "IP",
-          "xs": 12,
-          "sm": 12,
-          "md": 8,
-          "lg": 5
-        },
-        "port": {
-          "type": "port",
-          "min": 1,
-          "max": 65565,
-          "label": "Port",
-          "xs": 12,
-          "sm": 12,
-          "md": 4,
-          "lg": 3
-        },
-        "secure": {
-          "newLine": true,
-          "type": "checkbox",
-          "label": "Secure(HTTPS)",
-          "xs": 12,
-          "sm": 12,
-          "md": 6,
-          "lg": 2
-        },
-        "_certs": {
-          "type": "certificates",
-          "newLine": true,
-          "hidden": "!data.secure",
-          "xs": 12,
-          "sm": 12
-        },
-        "auth": {
-          "newLine": true,
-          "type": "checkbox",
-          "confirm": {
-            "condition": "!data.secure && data.auth",
-            "title": "Warning!",
-            "text": "Unsecure_Auth",
-            "ok": "Ignore warning",
-            "cancel": "Disable authentication",
-            "type": "warning",
-            "alsoDependsOn": [
-              "secure"
-            ]
-          },
-          "label": "Authentication",
-          "xs": 12,
-          "sm": 12,
-          "md": 6,
-          "lg": 2
-        },
-        "defaultUser": {
-          "hidden": "!!data.auth",
-          "type": "user",
-          "label": "Run as",
-          "xs": 12,
-          "sm": 12,
-          "md": 6,
-          "lg": 2
-        },
-        "ttl": {
-          "hidden": "!data.auth",
-          "type": "number",
-          "label": "Login timeout",
-          "help": "sec",
-          "xs": 12,
-          "sm": 12,
-          "md": 6,
-          "lg": 2
-        },
-        "autoUpdate": {
-          "newLine": true,
-          "type": "select",
-          "label": "Auto update",
-          "options": [
-            {
-              "label": "manually",
-              "value": 0
+    type: 'tabs',
+    i18n: true,
+    items: {
+        // main tab
+        mainTab: {
+            type: 'panel',
+            label: 'Main settings',
+            items: {
+                bind: {
+                    newLine: true,
+                    type: 'ip',
+                    listenOnAllPorts: true,
+                    label: 'IP',
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 5,
+                },
+                port: {
+                    type: 'port',
+                    min: 1,
+                    max: 65565,
+                    label: 'Port',
+                    xs: 12,
+                    sm: 12,
+                    md: 4,
+                    lg: 3,
+                },
+                secure: {
+                    newLine: true,
+                    type: 'checkbox',
+                    label: 'Secure(HTTPS)',
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                    lg: 5,
+                },
+                _certs: {
+                    type: 'certificates',
+                    newLine: true,
+                    hidden: '!data.secure',
+                    xs: 12,
+                    sm: 12,
+                },
+                auth: {
+                    newLine: true,
+                    type: 'checkbox',
+                    confirm: {
+                        condition: '!data.secure && data.auth',
+                        title: 'Warning!',
+                        text: 'Unsecure_Auth',
+                        ok: 'Ignore warning',
+                        cancel: 'Disable authentication',
+                        type: 'warning',
+                        alsoDependsOn: ['secure'],
+                    },
+                    label: 'Authentication',
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                    lg: 2,
+                },
+                defaultUser: {
+                    hidden: '!!data.auth',
+                    type: 'user',
+                    label: 'Run as',
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                    lg: 2,
+                },
+                ttl: {
+                    hidden: '!data.auth',
+                    type: 'number',
+                    label: 'Login timeout',
+                    help: 'sec',
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                    lg: 2,
+                },
+                autoUpdate: {
+                    newLine: true,
+                    type: 'select',
+                    label: 'Auto update',
+                    options: [
+                        {
+                            label: 'manually',
+                            value: 0,
+                        },
+                        {
+                            label: 'every 12 hours',
+                            value: 12,
+                        },
+                        {
+                            label: 'every day',
+                            value: 24,
+                        },
+                        {
+                            label: 'every 2 days',
+                            value: 48,
+                        },
+                        {
+                            label: 'every 3 days',
+                            value: 72,
+                        },
+                        {
+                            label: 'every week',
+                            value: 168,
+                        },
+                        {
+                            label: 'every 2 weeks',
+                            value: 336,
+                        },
+                    ],
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                    lg: 2,
+                },
+                thresholdValue: {
+                    type: 'number',
+                    min: 50,
+                    label: 'Events threshold value',
+                    xs: 12,
+                    sm: 12,
+                    md: 4,
+                    lg: 2,
+                },
+                language: {
+                    newLine: true,
+                    label: 'Language for only this instance',
+                    system: true,
+                    type: 'language',
+                    xs: 12,
+                    sm: 12,
+                    md: 4,
+                    lg: 2,
+                },
+                doNotCheckPublicIP: {
+                    newLine: true,
+                    label: 'Do not check if this instance is available from internet',
+                    type: 'checkbox',
+                    xs: 12,
+                    sm: 12,
+                    md: 4,
+                    lg: 4,
+                    hidden: '!!data.auth',
+                },
             },
-            {
-              "label": "every 12 hours",
-              "value": 12
-            },
-            {
-              "label": "every day",
-              "value": 24
-            },
-            {
-              "label": "every 2 days",
-              "value": 48
-            },
-            {
-              "label": "every 3 days",
-              "value": 72
-            },
-            {
-              "label": "every week",
-              "value": 168
-            },
-            {
-              "label": "every 2 weeks",
-              "value": 336
-            }
-          ],
-          "xs": 12,
-          "sm": 12,
-          "md": 6,
-          "lg": 2
         },
-        "thresholdValue": {
-          "type": "number",
-          "min": 50,
-          "label": "Events threshold value",
-          "xs": 12,
-          "sm": 12,
-          "md": 4,
-          "lg": 2
+        loadingTab: {
+            type: 'panel',
+            label: 'Loading background',
+            items: {
+                loadingBackgroundColor: {
+                    type: 'color',
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 4,
+                    label: 'Background color of the loading screen',
+                },
+                loadingHideLogo: {
+                    newLine: true,
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 4,
+                    type: 'checkbox',
+                    label: 'Hide logo',
+                },
+                loadingBackgroundImage: {
+                    newLine: true,
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 4,
+                    type: 'checkbox',
+                    label: 'Use background image',
+                },
+                'loading-bg.png': {
+                    newLine: true,
+                    type: 'image',
+                    hidden: '!data.loadingBackgroundImage',
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 4,
+                    accept: 'image/png',
+                    label: 'Upload image',
+                    crop: true,
+                },
+            },
         },
-        "language": {
-          "newLine": true,
-          "label": "Language for only this instance",
-          "system": true,
-          "type": "language",
-          "xs": 12,
-          "sm": 12,
-          "md": 4,
-          "lg": 2
+        leTab: {
+            type: 'panel',
+            label: "Let's Encrypt SSL",
+            hidden: '!data.secure',
+            items: {
+                _image: {
+                    type: 'staticImage',
+                    tooltip: "Read about Let's Encrypt certificates",
+                    href: 'https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates',
+                    src: '../../img/le.png',
+                    style: {
+                        width: 200,
+                        height: 59,
+                    },
+                },
+                _staticText: {
+                    type: 'staticText',
+                    text: 'ra_Use iobroker.acme adapter for letsencrypt certificates',
+                },
+            },
         },
-        "doNotCheckPublicIP": {
-          "newLine": true,
-          "label": "Do not check if this instance is available from internet",
-          "type": "checkbox",
-          "xs": 12,
-          "sm": 12,
-          "md": 4,
-          "lg": 4,
-          "hidden": "!!data.auth"
-        }
-      }
+        loginTab: {
+            type: 'panel',
+            label: 'Login background',
+            hidden: '!data.auth',
+            items: {
+                loginBackgroundColor: {
+                    type: 'color',
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 4,
+                    label: 'Background color of the login screen',
+                },
+                loginHideLogo: {
+                    newLine: true,
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 4,
+                    type: 'checkbox',
+                    label: 'Hide logo',
+                },
+                loginMotto: {
+                    newLine: true,
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 4,
+                    type: 'text',
+                    label: 'Own motto',
+                },
+                loginBackgroundImage: {
+                    newLine: true,
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 4,
+                    type: 'checkbox',
+                    label: 'Use background image',
+                },
+                'login-bg.png': {
+                    newLine: true,
+                    type: 'image',
+                    hidden: '!data.loginBackgroundImage',
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 4,
+                    accept: 'image/png',
+                    label: 'Upload image',
+                    crop: true,
+                },
+            },
+        },
+        instancesTab: {
+            type: 'panel',
+            label: 'Access to instances',
+            items: {
+                _text1: {
+                    type: 'staticText',
+                    text: 'There is a option to allow access to the specific configuration pages of selected instances.',
+                },
+                accessLimit: {
+                    newLine: true,
+                    type: 'checkbox',
+                    label: 'Allow access only to specific instances',
+                },
+                applyRights: {
+                    newLine: true,
+                    type: 'checkbox',
+                    label: 'Apply access rights for selected instances',
+                },
+                accessAllowedConfigs: {
+                    i18n: true,
+                    type: 'custom',
+                    hidden: '!data.accessLimit',
+                    newLine: true,
+                    url: 'custom/customComponents.js',
+                    name: 'AdminComponentEasyAccessSet/Components/ConfigCustomEasyAccess',
+                },
+            },
+        },
+        reverseProxyTab: {
+            type: 'panel',
+            label: 'Reverse proxy',
+            items: {
+                _explanation: {
+                    type: 'staticText',
+                    text: 'You can use admin behind a reverse proxy.',
+                },
+                reverseProxy: {
+                    xs: 12,
+                    sm: 12,
+                    newLine: true,
+                    type: 'table',
+                    items: [
+                        {
+                            type: 'text',
+                            width: '50%',
+                            title: 'Global path',
+                            attr: 'globalPath',
+                            filter: false,
+                            sort: false,
+                            default: '/iobroker/',
+                        },
+                        // {"type": "text", "width": "20%", "title": "Domain", "attr": "domain", "filter": false, "sort": false, "default": "*"},
+                        { type: 'staticText', text: '=>', noTranslation: true, width: 20 },
+                        {
+                            type: 'table',
+                            width: '50%',
+                            attr: 'paths',
+                            filter: false,
+                            sort: false,
+                            default: [{ instance: 'web.0', path: '/web/' }],
+                            items: [
+                                {
+                                    type: 'instance',
+                                    width: 200,
+                                    title: { en: 'Instance' },
+                                    attr: 'instance',
+                                    filter: false,
+                                    sort: false,
+                                    default: 'web.0',
+                                },
+                                {
+                                    type: 'text',
+                                    width: '80%',
+                                    title: { en: 'Instance path behind proxy' },
+                                    attr: 'path',
+                                    filter: false,
+                                    sort: false,
+                                    default: '/web/',
+                                },
+                            ],
+                        },
+                    ],
+                },
+            },
+        },
     },
-    "loadingTab": {
-      "type": "panel",
-      "label": "Loading background",
-      "items": {
-        "loadingBackgroundColor": {
-          "type": "color",
-          "xs": 12,
-          "sm": 12,
-          "md": 8,
-          "lg": 4,
-          "label": "Background color of the loading screen"
-        },
-        "loadingHideLogo": {
-          "newLine": true,
-          "xs": 12,
-          "sm": 12,
-          "md": 8,
-          "lg": 4,
-          "type": "checkbox",
-          "label": "Hide logo"
-        },
-        "loadingBackgroundImage": {
-          "newLine": true,
-          "xs": 12,
-          "sm": 12,
-          "md": 8,
-          "lg": 4,
-          "type": "checkbox",
-          "label": "Use background image"
-        },
-        "loading-bg.png": {
-          "newLine": true,
-          "type": "image",
-          "hidden": "!data.loadingBackgroundImage",
-          "xs": 12,
-          "sm": 12,
-          "md": 8,
-          "lg": 4,
-          "accept": "image/png",
-          "label": "Upload image",
-          "crop": true
-        }
-      }
-    },
-    "leTab": {
-      "type": "panel",
-      "label": "Let's Encrypt SSL",
-      "hidden": "!data.secure",
-      "items": {
-        "_image": {
-          "type": "staticImage",
-          "tooltip": "Read about Let's Encrypt certificates",
-          "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
-          "src": "../../img/le.png",
-          "style": {
-            "width": 200,
-            "height": 59
-          }
-        },
-        "_staticText": {
-            "type": "staticText",
-            "text": "ra_Use iobroker.acme adapter for letsencrypt certificates"
-        }
-      }
-    },
-    "loginTab": {
-      "type": "panel",
-      "label": "Login background",
-      "hidden": "!data.auth",
-      "items": {
-        "loginBackgroundColor": {
-          "type": "color",
-          "xs": 12,
-          "sm": 12,
-          "md": 8,
-          "lg": 4,
-          "label": "Background color of the login screen"
-        },
-        "loginHideLogo": {
-          "newLine": true,
-          "xs": 12,
-          "sm": 12,
-          "md": 8,
-          "lg": 4,
-          "type": "checkbox",
-          "label": "Hide logo"
-        },
-        "loginMotto": {
-          "newLine": true,
-          "xs": 12,
-          "sm": 12,
-          "md": 8,
-          "lg": 4,
-          "type": "text",
-          "label": "Own motto"
-        },
-        "loginBackgroundImage": {
-          "newLine": true,
-          "xs": 12,
-          "sm": 12,
-          "md": 8,
-          "lg": 4,
-          "type": "checkbox",
-          "label": "Use background image"
-        },
-        "login-bg.png": {
-          "newLine": true,
-          "type": "image",
-          "hidden": "!data.loginBackgroundImage",
-          "xs": 12,
-          "sm": 12,
-          "md": 8,
-          "lg": 4,
-          "accept": "image/png",
-          "label": "Upload image",
-          "crop": true
-        }
-      }
-    },
-    "instancesTab": {
-      "type": "panel",
-      "label": "Access to instances",
-      "items": {
-        "_text1": {
-          "type": "staticText",
-          "text": "There is a option to allow access to the specific configuration pages of selected instances."
-        },
-        "accessLimit": {
-          "newLine": true,
-          "type": "checkbox",
-          "label": "Allow access only to specific instances"
-        },
-        "applyRights": {
-          "newLine": true,
-          "type": "checkbox",
-          "label": "Apply access rights for selected instances"
-        },
-        "accessAllowedConfigs": {
-          "i18n": true,
-          "type": "custom",
-          "hidden": "!data.accessLimit",
-          "newLine": true,
-          "url": "custom/customComponents.js",
-          "name": "AdminComponentEasyAccessSet/Components/ConfigCustomEasyAccess"
-        }
-      }
-    },
-    "reverseProxyTab": {
-      "type": "panel",
-      "label": "Reverse proxy",
-      "items": {
-        "_explanation": {
-          "type": "staticText",
-          "text": "You can use admin behind a reverse proxy."
-        },
-        "reverseProxy": {
-          "xs": 12,
-          "sm": 12,
-          "newLine": true,
-          "type": "table",
-          "items": [
-            {"type": "text", "width": "50%", "title": "Global path", "attr": "globalPath", "filter": false, "sort": false, "default": "/iobroker/"},
-            // {"type": "text", "width": "20%", "title": "Domain", "attr": "domain", "filter": false, "sort": false, "default": "*"},
-            {"type": "staticText", "text": "=>", "noTranslation":  true, "width": 20},
-            {"type": "table", "width": "50%", "attr": "paths", "filter": false, "sort": false, default: [{instance:  "web.0", "path": "/web/"}],
-              items: [
-                {"type": "instance", "width": 200, "title": {"en": "Instance"}, "attr": "instance", "filter": false, "sort": false, "default": "web.0"},
-                {"type": "text", "width": "80%", "title": {"en": "Instance path behind proxy"}, "attr": "path", "filter": false, "sort": false, "default": "/web/"}
-              ]
-            }
-          ]
-        }
-      }
-    }
-  }
 }

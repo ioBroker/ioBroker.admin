@@ -290,7 +290,9 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                                 theme={theme}
                                 onChange={setSchemaData}
                                 schema={schema as unknown as ConfigItemPanel}
-                                onError={(attr, _error) => setError({ ...error, [attr]: _error })}
+                                onError={(attr: string, _error?: string): void =>
+                                    setError({ ...error, [attr]: _error })
+                                }
                                 // all unused properties
                                 isFloatComma
                                 instance={0}

@@ -1590,7 +1590,7 @@ class App extends Router<AppProps, AppState> {
                 this.setState({
                     showHostWarning: {
                         host,
-                        instances: instances as Record<string, ioBroker.InstanceObject>,
+                        instances,
                         result,
                     },
                 }),

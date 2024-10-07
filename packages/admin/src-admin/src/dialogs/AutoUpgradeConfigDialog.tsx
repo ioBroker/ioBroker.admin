@@ -7,7 +7,7 @@ import {
     KeyboardDoubleArrowUp,
     North,
     VerticalAlignTop,
-    Save
+    Save,
 } from '@mui/icons-material';
 
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';

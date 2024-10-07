@@ -28,7 +28,7 @@
         "@iobroker/socket-classes": "^1.6.1",
         "@iobroker/webserver": "^1.0.6",
         "@iobroker/ws": "^2.0.0",
-        "@iobroker/ws-server": "^3.0.1",
+        "@iobroker/ws-server": "3.0.2",
         "ajv": "^8.17.1",
         "archiver": "^7.0.1",
         "axios": "^1.7.7",
@@ -64,6 +64,7 @@
         "LICENSE"
     ],
     "scripts": {
+        "npm": "npm i -f",
         "start": "cd src-admin && npm run start",
         "test": "npm run test:package && npm run test:unit",
         "test:package": "mocha test/package --exit",
@@ -73,7 +74,7 @@
         "test:gui": "mocha test/*.gui.js --exit",
         "prepublishOnly": "npm run build",
         "build": "npm run build:frontend && npm run build:backend",
-        "build:backend": "tsc -p tsconfig.build.json",
+        "build:backend": "tsc -p tsconfig.build.json && node tasks --backend-i18n",
         "clean": "rimraf src-admin/build",
         "lint-backend": "eslint -c eslint.config.mjs src",
         "react-0-configCSS": "node tasks --react-0-configCSS",

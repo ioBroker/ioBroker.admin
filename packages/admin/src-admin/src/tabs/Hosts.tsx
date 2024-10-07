@@ -284,7 +284,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                     }
                 } else {
                     const state = await this.props.socket.getState(`${event.id}.alive`);
-                    alive[event.id as `system.host.${string}`] = !!state?.val;
+                    alive[event.id] = !!state?.val;
                     // new
                     hosts.push(event.obj);
                 }
