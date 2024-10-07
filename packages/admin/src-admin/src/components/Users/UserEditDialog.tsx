@@ -156,7 +156,7 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                                     ) as ioBroker.UserObject;
                                     if (
                                         !this.props.user.common.dontDelete &&
-                                        name2Id(newData.common.name) === getShortId(newData._id)
+                                        name2Id(this.props.getText(newData.common.name)) === getShortId(newData._id)
                                     ) {
                                         newData._id = changeShortId(
                                             newData._id,

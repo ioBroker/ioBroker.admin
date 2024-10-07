@@ -270,7 +270,7 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
                             const newData: ioBroker.GroupObject = Utils.clone(this.props.group) as ioBroker.GroupObject;
                             if (
                                 !this.props.group.common.dontDelete &&
-                                name2Id(newData.common.name) === getShortId(newData._id)
+                                name2Id(this.props.getText(newData.common.name)) === getShortId(newData._id)
                             ) {
                                 newData._id = changeShortId(newData._id, name2Id(value)) as ioBroker.ObjectIDs.Group;
                             }

@@ -1,7 +1,7 @@
 import React, { Component, type JSX } from 'react';
 import semver from 'semver';
 
-import { type Translate, type AdminConnection, type ThemeType, type IobTheme, I18n } from "@iobroker/adapter-react-v5";
+import { type Translate, type AdminConnection, type ThemeType, type IobTheme, I18n } from '@iobroker/adapter-react-v5';
 
 import { checkCondition, type CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
 

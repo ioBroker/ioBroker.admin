@@ -459,7 +459,6 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                         <span>
                             <Checkbox
                                 disabled
-                                // @ts-expect-error will be fixed in js-controller
                                 checked={this.props.repoInfo[item.title]?.stable}
                                 indeterminate={!this.props.repoInfo[item.title]}
                             />

@@ -106,9 +106,6 @@ const FILE_TYPE_ICONS: Record<string, React.FC<{ fontSize?: 'small' }>> = {
 };
 
 const styles: Record<string, any> = {
-    dialog: (theme: IobTheme) => ({
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
-    }),
     root: {
         width: '100%',
         overflow: 'hidden',
@@ -151,7 +148,8 @@ const styles: Record<string, any> = {
         textAlign: 'center',
         opacity: 0.1,
         transition: 'opacity 1s',
-        margin: 4,
+        margin: '4px',
+        borderRadius: '4px',
         '&:hover': {
             background: theme.palette.secondary.light,
             color: Utils.invertColor(theme.palette.secondary.main, true),
@@ -274,8 +272,8 @@ const styles: Record<string, any> = {
         opacity: 0.4,
     },
     itemFolderIconTable: (theme: IobTheme) => ({
-        marginTop: 1,
-        marginLeft: 8,
+        marginTop: '1px',
+        marginLeft: '8px',
         display: 'inline-block',
         width: 30,
         height: 30,
@@ -410,6 +408,9 @@ const styles: Record<string, any> = {
             background: theme.palette.primary.main,
         },
     }),
+    pathDivBreadcrumbSelected: {
+        // todo: add style
+    },
     backgroundImageLight: {
         background: 'white',
     },
@@ -1030,7 +1031,17 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         const relPath = parts.join('/');
 
         // make all requests here serial
-        const files = await this.readDirSerial(adapter || '', relPath);
+        let files: ioBroker.ReadDirResult[];
+        try {
+            files = await this.readDirSerial(adapter || '', relPath);
+        } catch (error: unknown) {
+            // work around: 0_userdata.0 is a special folder, that should exist event when other folders and itself do not exit, as the browser shows it anyway.
+            if (error === 'Not exists' && adapter === '0_userdata.0') {
+                files = [];
+            } else {
+                throw error;
+            }
+        }
         try {
             const _folders: FolderOrFileItem[] = [];
 
@@ -1146,9 +1157,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
     };
 
     changeFolder(e: React.MouseEvent<HTMLDivElement>, folder?: string): void {
-        if (e) {
-            e.stopPropagation();
-        }
+        e?.stopPropagation();
 
         this.lastSelect = Date.now();
 
@@ -1165,6 +1174,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             return;
         }
 
+        // If desired folder is not yet loaded
         if (_folder && !this.state.folders[_folder]) {
             this.browseFolder(_folder)
                 .then(folders =>
@@ -1246,6 +1256,11 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         const isUserData = item.name === USER_DATA;
         const isSpecialData = isUserData || item.name === 'vis.0' || item.name === 'vis-2.0';
 
+        const iconStyle = Utils.getStyle(
+            this.props.theme,
+            styles[`itemFolderIcon${this.state.viewType}`],
+            isSpecialData && styles.specialFolder,
+        );
         return (
             <Box
                 component="div"
@@ -1265,11 +1280,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 )}
             >
                 <IconEl
-                    style={Utils.getStyle(
-                        this.props.theme,
-                        styles[`itemFolderIcon${this.state.viewType}`],
-                        isSpecialData && styles.specialFolder,
-                    )}
+                    style={iconStyle}
                     onClick={
                         this.state.viewType === TABLE ? (e: React.MouseEvent) => this.toggleFolder(item, e) : undefined
                     }
@@ -1358,7 +1369,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     styles[`itemFolder${this.state.viewType}`],
                 )}
             >
-                <IconClosed style={styles[`itemFolderIcon${this.state.viewType}`]} />
+                <IconClosed style={Utils.getStyle(this.props.theme, styles[`itemFolderIcon${this.state.viewType}`])} />
                 <IconBack sx={styles.itemFolderIconBack} />
 
                 <Box

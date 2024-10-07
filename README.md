@@ -87,9 +87,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.2.2 (2024-10-07)
+### **WORK IN PROGRESS**
 
 -   (@GermanBluefox) Corrected some GUI errors
+-   (@GermanBluefox) Ignore error by opening `0_userdata.0`
 
 ### 7.2.0 (2024-10-01)
 

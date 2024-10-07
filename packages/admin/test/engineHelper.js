@@ -67,10 +67,10 @@ function startIoBroker(options) {
                         setup.startCustomAdapter('admin', 0);
                         await checkIsAdminStartedAsync(states);
                         resolve({ objects, states });
-                    }
+                    },
                 );
             },
-            options
+            options,
         );
     });
 }
@@ -82,7 +82,7 @@ async function stopIoBroker() {
         setup.stopController(normalTerminated => {
             console.log(`Adapter normal terminated: ${normalTerminated}`);
             resolve();
-        })
+        }),
     );
 }
 

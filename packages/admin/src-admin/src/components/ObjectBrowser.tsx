@@ -3321,7 +3321,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (this.props.objectsWorker) {
             this.props.objectsWorker.unregisterHandler(this.onObjectChangeFromWorker, true);
         } else {
-            this.props.socket
+            void this.props.socket
                 .unsubscribeObject('*', this.onObjectChange)
                 .catch(e => console.error(`Cannot unsubscribe *: ${e}`));
         }
@@ -5257,14 +5257,16 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         this.setState({ expanded });
     }
 
-    private onCopy(e: React.MouseEvent, text: string): void {
+    private onCopy(e: React.MouseEvent, text: string | undefined): void {
         e.stopPropagation();
         e.preventDefault();
-        Utils.copyToClipboard(text);
-        if (text.length < 50) {
-            this.setState({ toast: this.props.t('ra_Copied %s', text) });
-        } else {
-            this.setState({ toast: this.props.t('ra_Copied') });
+        if (text) {
+            Utils.copyToClipboard(text);
+            if (text.length < 50) {
+                this.setState({ toast: this.props.t('ra_Copied %s', text) });
+            } else {
+                this.setState({ toast: this.props.t('ra_Copied') });
+            }
         }
     }
 
