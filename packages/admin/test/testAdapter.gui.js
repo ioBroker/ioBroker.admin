@@ -5,7 +5,7 @@ let gPage;
 
 async function screenshot(page, fileName) {
     page = page || gPage;
-    await page.screenshot({path: `${__dirname}/../tmp/screenshots/${fileName}.png`});
+    await page.screenshot({ path: `${__dirname}/../tmp/screenshots/${fileName}.png` });
 }
 
 describe('admin-gui', () => {

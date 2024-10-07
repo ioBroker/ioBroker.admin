@@ -64,7 +64,9 @@ function checkCondition(objMessages, oldVersion, newVersion, instances) {
                             const split = rule.match(/([a-z][-a-z_0-9]+)([!=<>]+)([.\d]+)/);
                             if (split) {
                                 // Check that adapter is installed in desired version
-                                const instId = Object.keys(instances).find(id => instances[id]?.common?.name === split[1]);
+                                const instId = Object.keys(instances).find(
+                                    id => instances[id]?.common?.name === split[1],
+                                );
                                 if (instId) {
                                     version = instances[instId].common.version;
                                     op = split[2];
