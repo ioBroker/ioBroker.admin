@@ -14,7 +14,7 @@ import {
     Check as IconCheck,
 } from '@mui/icons-material';
 
-import { I18n, Utils, IconPicker, type Translate } from '@iobroker/adapter-react-v5';
+import { Utils, IconPicker, type Translate } from '@iobroker/adapter-react-v5';
 
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 import AdminUtils from '../../helpers/AdminUtils';

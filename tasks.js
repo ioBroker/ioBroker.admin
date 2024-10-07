@@ -1,4 +1,5 @@
 const { exec } = require('node:child_process');
+const { existsSync } = require('node:fs');
 
 const COLORS = {
     RED: '\x1b[31m',
@@ -56,14 +57,29 @@ function execAsync(
 async function build() {
     log('-------------- JSON-Config --------------', COLORS.YELLOW, true);
     await execAsync('npm run build', `${__dirname}/packages/jsonConfig`);
+    if (!existsSync(`${__dirname}/packages/jsonConfig/build/JsonConfig.js`)) {
+        throw new Error('JsonConfig.js not found');
+    }
     log('');
     log('');
     log('-------------- DM-GUI-Component --------------', COLORS.MAGENTA, true);
     await execAsync('npm run build', `${__dirname}/packages/dm-gui-components`);
+    if (!existsSync(`${__dirname}/packages/dm-gui-components/build/index.js`)) {
+        throw new Error('dm-gui-components/build/index.js not found');
+    }
     log('');
     log('');
     log('-------------- Admin --------------', COLORS.BLUE, true);
     await execAsync('npm run build', `${__dirname}/packages/admin`);
+    if (!existsSync(`${__dirname}/packages/admin/adminWww/index.html`)) {
+        throw new Error('admin/adminWww/index.html');
+    }
+    if (!existsSync(`${__dirname}/packages/admin/build-backend/main.js`)) {
+        throw new Error('admin/build-backend/main.js');
+    }
+    if (!existsSync(`${__dirname}/packages/admin/build-backend/i18n/de.json`)) {
+        throw new Error('admin/build-backend/i18n/de.json');
+    }
     log('-------------- END --------------', COLORS.RED);
 }
 build().catch(e => {
