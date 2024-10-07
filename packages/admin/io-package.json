@@ -19,19 +19,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.2.1": {
-        "en": "Corrected some GUI errors",
-        "de": "Einige GUI-Fehler korrigiert",
-        "ru": "Исправлены некоторые ошибки GUI",
-        "pt": "Corrigido alguns erros GUI",
-        "nl": "Enkele GUI-fouten gecorrigeerd",
-        "fr": "Correction de certaines erreurs d'interface graphique",
-        "it": "Corretto alcuni errori GUI",
-        "es": "Corregido algunos errores de GUI",
-        "pl": "Poprawiono niektóre błędy GUI",
-        "uk": "Виправлено деякі помилки інтерфейсу",
-        "zh-cn": "更正了一些图形用户界面错误"
-      },
       "7.2.0": {
         "en": "Added the check of well-known passwords for the linux systems\nAdded the history for the installation from URL\nfixed wrongly displayed repository warning",
         "de": "Hinzugefügt die Überprüfung der bekannten Passwörter für die Linux-Systeme\nDie Geschichte der Installation von URL hinzugefügt\nfalsch angezeigte repository-warnung",

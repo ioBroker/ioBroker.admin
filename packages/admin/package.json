@@ -28,7 +28,7 @@
         "@iobroker/socket-classes": "^1.6.1",
         "@iobroker/webserver": "^1.0.6",
         "@iobroker/ws": "^2.0.0",
-        "@iobroker/ws-server": "^3.0.0",
+        "@iobroker/ws-server": "^3.0.1",
         "ajv": "^8.17.1",
         "archiver": "^7.0.1",
         "axios": "^1.7.7",
