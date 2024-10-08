@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.2.2",
+    "version": "7.2.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.2.3": {
+        "en": "Corrected some GUI errors\nIgnore error by opening `0_userdata.0`",
+        "de": "Einige GUI-Fehler korrigiert\nFehler ignorieren durch Öffnen von `0_userdata.0`",
+        "ru": "Исправлены некоторые ошибки GUI\nИгнорировать ошибку, открывая `0_userdata.0`",
+        "pt": "Corrigido alguns erros GUI\nIgnorar erro ao abrir `0_userdata.0`",
+        "nl": "Enkele GUI-fouten gecorrigeerd\nFout negeren door het openen van ",
+        "fr": "Correction de certaines erreurs d'interface graphique\nIgnorer l'erreur en ouvrant `0_userdata.0`",
+        "it": "Corretto alcuni errori GUI\nIgnora errore aprendo `0_userdata.0`",
+        "es": "Corregido algunos errores de GUI\nIgnora el error al abrir `0_userdata.0`",
+        "pl": "Poprawiono niektóre błędy GUI\nIgnoruj błąd otwierając '0 _ userdata.0'",
+        "uk": "Виправлено деякі помилки інтерфейсу\nІм’я користувача `0_userdata.0`",
+        "zh-cn": "更正了一些图形用户界面错误\n打开 '0_userdata.0' 忽略错误"
+      },
       "7.2.0": {
         "en": "Added the check of well-known passwords for the linux systems\nAdded the history for the installation from URL\nfixed wrongly displayed repository warning",
         "de": "Hinzugefügt die Überprüfung der bekannten Passwörter für die Linux-Systeme\nDie Geschichte der Installation von URL hinzugefügt\nfalsch angezeigte repository-warnung",
