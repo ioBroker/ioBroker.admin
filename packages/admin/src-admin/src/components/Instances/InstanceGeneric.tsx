@@ -411,6 +411,7 @@ export interface InstanceGenericProps {
     item: InstanceItem;
     context: InstanceContext;
     idx: number;
+    saveScrollPosition: () => void;
 }
 
 export interface InstanceGenericState {
@@ -1255,6 +1256,7 @@ export default abstract class InstanceGeneric<
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
+                            this.props.saveScrollPosition();
                             Router.doNavigate('tab-instances', 'config', this.props.id);
                         }}
                     >

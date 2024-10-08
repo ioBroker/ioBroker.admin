@@ -141,6 +141,8 @@ interface InstancesState {
 
 // every tab should get their data itself from server
 class Instances extends Component<InstancesProps, InstancesState> {
+    static lastScrollPosition = 0;
+
     private readonly localStorage: Storage;
 
     private statePromise: Promise<Record<string, ioBroker.State>> | null = null;
@@ -160,6 +162,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
     private readonly t: Translate;
 
     private readonly inputRef: React.RefObject<HTMLInputElement>;
+
+    private readonly refTabContent: React.RefObject<HTMLDivElement>;
 
     private subscribed: boolean = false;
 
@@ -243,6 +247,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
         this.t = this.translate;
         this.inputRef = createRef();
+        this.refTabContent = createRef();
     }
 
     translate = (word: string, arg1?: any, arg2?: any): string => {
@@ -861,6 +866,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
         this.closeCommands[panel] = closeCommand;
     };
 
+    saveScrollPosition = (): void => {
+        Instances.lastScrollPosition = (this.refTabContent.current?.parentNode as HTMLDivElement)?.scrollTop;
+    };
+
     getPanels(): JSX.Element[] | JSX.Element {
         if (!this._cacheList) {
             this.cacheInstances();
@@ -894,6 +903,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     category: item.category,
                     render: (
                         <InstanceCard
+                            saveScrollPosition={this.saveScrollPosition}
                             deleting={this.state.deleting === instance.id}
                             id={id}
                             idx={idx}
@@ -909,6 +919,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 category: item.category,
                 render: (
                     <InstanceRow
+                        saveScrollPosition={this.saveScrollPosition}
                         deleting={this.state.deleting === instance.id}
                         id={id}
                         idx={idx}
@@ -1088,7 +1099,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
         if (!this.state.instances) {
             return <LinearProgress />;
         }
-        console.log(`Width: ${this.props.width}`);
 
         if (this.props.currentHost !== this.state.currentHost) {
             this.hostsTimer =
@@ -1135,6 +1145,17 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     </Paper>
                 );
             }
+        } else if (Instances.lastScrollPosition) {
+            setTimeout(
+                (scrollPos: number): void => {
+                    if (this.refTabContent.current?.parentNode) {
+                        (this.refTabContent.current?.parentNode as HTMLDivElement).scrollTop = scrollPos;
+                    }
+                },
+                200,
+                Instances.lastScrollPosition,
+            );
+            Instances.lastScrollPosition = 0;
         }
 
         if (this.shouldUpdateAfterDialogClosed) {
@@ -1377,7 +1398,12 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     </Box>
                 </TabHeader>
                 <TabContent overflow="auto">
-                    <div style={this.state.viewMode ? styles.cards : undefined}>{this.getPanels()}</div>
+                    <div
+                        ref={this.refTabContent}
+                        style={this.state.viewMode ? styles.cards : undefined}
+                    >
+                        {this.getPanels()}
+                    </div>
                 </TabContent>
             </TabContainer>
         );
