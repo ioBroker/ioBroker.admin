@@ -1,5 +1,5 @@
 const { exec } = require('node:child_process');
-const { existsSync } = require('node:fs');
+const { existsSync, readFileSync, writeFileSync } = require('node:fs');
 
 const COLORS = {
     RED: '\x1b[31m',
@@ -82,7 +82,37 @@ async function build() {
     }
     log('-------------- END --------------', COLORS.RED);
 }
-build().catch(e => {
-    console.error(e);
-    process.exit(1);
-});
+if (process.argv.includes('--build')) {
+    build().catch(e => {
+        console.error(e);
+        process.exit(1);
+    });
+} else if (process.argv.includes('--bump-versions')) {
+    // read the version in package/admin
+    const packAdmin = JSON.parse(readFileSync(`${__dirname}/packages/admin/package.json`).toString());
+    const version = packAdmin.version;
+    // replace in JsonConfig the version
+    const packJsonConfig = JSON.parse(readFileSync(`${__dirname}/packages/jsonConfig/package.json`).toString());
+    packJsonConfig.version = version;
+    log(`Set the version in jsonConfig/package.json to ${packJsonConfig.version}`, COLORS.CYAN);
+    writeFileSync(`${__dirname}/packages/jsonConfig/package.json`, JSON.stringify(packJsonConfig, null, 4));
+
+    // replace in JsonConfig the version
+    const packDmComponents = JSON.parse(readFileSync(`${__dirname}/packages/dm-gui-components/package.json`).toString());
+    packDmComponents.version = version;
+    packDmComponents.dependencies['@iobroker/json-config'] = version;
+    packAdmin.devDependencies['@iobroker/dm-gui-components'] = version;
+    packAdmin.devDependencies['@iobroker/json-config'] = version;
+    log(`Set the version in dm-gui-components/package.json to ${packDmComponents.version}`, COLORS.GREEN);
+    writeFileSync(`${__dirname}/packages/dm-gui-components/package.json`, JSON.stringify(packDmComponents, null, 4));
+
+    // const packAdminGuiComponents = JSON.parse(readFileSync(`${__dirname}/packages/admin/src-admin/package.json`).toString());
+    // packAdminGuiComponents.version = version;
+    // packAdminGuiComponents.dependencies['@iobroker/dm-gui-components'] = version;
+    // packAdminGuiComponents.dependencies['@iobroker/json-config'] = version;
+    // log(`Set the version in admin/src-admin/package.json to ${packAdminGuiComponents.version}`, COLORS.YELLOW);
+    // writeFileSync(`${__dirname}/packages/admin/src-admin/package.json`, JSON.stringify(packAdminGuiComponents, null, 4));
+
+    log(`Set the version in admin/package.json to ${packAdmin.version}`, COLORS.MAGENTA);
+    writeFileSync(`${__dirname}/packages/admin/package.json`, JSON.stringify(packAdmin, null, 4));
+}
