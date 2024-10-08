@@ -1,5 +1,5 @@
 {
-    "plugins": ["iobroker", "license"],
+    "plugins": ["iobroker", "license", "lerna"],
     "ioPackage": "packages/admin",
     "exec": {
         "before_commit": "npm run build && npm run bump-versions"
