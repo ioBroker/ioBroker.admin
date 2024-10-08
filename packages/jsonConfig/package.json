@@ -15,6 +15,12 @@
     "publishConfig": {
         "access": "public"
     },
+    "dependencies": {
+        "react-qr-code": "^2.0.15",
+        "crypto-js": "^4.2.0",
+        "react-color": "^2.19.3",
+        "react-ace": "^12.0.0"
+    },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
         "@iobroker/adapter-react-v5": "^7.2.4",
@@ -24,12 +30,8 @@
         "@types/react": "^18.3.11",
         "@types/react-color": "^3.0.12",
         "@types/react-dom": "^18.3.0",
-        "crypto-js": "^4.2.0",
         "react": "^18.3.1",
-        "react-ace": "^12.0.0",
-        "react-color": "^2.19.3",
         "react-dom": "^18.3.1",
-        "react-qr-code": "^2.0.15",
         "tsc-alias": "^1.8.10",
         "typescript": "^5.6.2"
     },
