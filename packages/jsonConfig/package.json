@@ -1,7 +1,7 @@
 {
     "name": "@iobroker/json-config",
     "description": "This package contains the ioBroker JSON config UI components",
-    "version": "7.2.2",
+    "version": "7.2.3",
     "main": "./build/index.js",
     "types": "./build/index.d.ts",
     "scripts": {
@@ -16,10 +16,10 @@
         "access": "public"
     },
     "dependencies": {
-        "react-qr-code": "^2.0.15",
         "crypto-js": "^4.2.0",
+        "react-ace": "^12.0.0",
         "react-color": "^2.19.3",
-        "react-ace": "^12.0.0"
+        "react-qr-code": "^2.0.15"
     },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
