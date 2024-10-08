@@ -30,6 +30,7 @@ import {
     PlayArrow as PlayArrowIcon,
     Refresh as RefreshIcon,
     Edit as EditIcon,
+    ArrowBack,
 } from '@mui/icons-material';
 
 import {
@@ -608,11 +609,31 @@ class Config extends Component<ConfigProps, ConfigState> {
                     color="default"
                     position="static"
                 >
-                    <Toolbar variant="dense">
+                    <Toolbar
+                        variant="dense"
+                        style={{ marginLeft: 8 }}
+                    >
                         <Typography
                             variant="h6"
                             color="inherit"
                         >
+                            <IconButton
+                                size="small"
+                                onClick={() => {
+                                    if (this.props.easyMode) {
+                                        Router.doNavigate('easy');
+                                    } else {
+                                        Router.doNavigate('tab-instances');
+                                    }
+                                }}
+                                onFocus={event => event.stopPropagation()}
+                                style={{
+                                    marginRight: 10,
+                                    display: 'none',
+                                }}
+                            >
+                                <ArrowBack />
+                            </IconButton>
                             {this.props.jsonConfig ? (
                                 <Icon
                                     src={this.props.icon}
