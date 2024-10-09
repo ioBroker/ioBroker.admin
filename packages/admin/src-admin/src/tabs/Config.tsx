@@ -168,6 +168,7 @@ interface ConfigProps {
     theme: IobTheme;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     version?: string;
+    handleNavigation: (tab: string, subTab?: string, param?: string) => void;
 }
 
 interface ConfigState {
@@ -403,9 +404,9 @@ class Config extends Component<ConfigProps, ConfigState> {
 
         if (event.data === 'close' || event.message === 'close') {
             if (this.props.easyMode) {
-                Router.doNavigate('easy');
+                this.props.handleNavigation('easy');
             } else {
-                Router.doNavigate('tab-instances');
+                this.props.handleNavigation('tab-instances');
             }
         } else if (event.data === 'change' || event.message === 'change') {
             this.props.configStored(false);
@@ -417,7 +418,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         ) {
             const [, url] = (event.data || event.message).split(':');
             const [tab, subTab, parameter] = url.split('/');
-            Router.doNavigate(tab, subTab, parameter);
+            this.props.handleNavigation(tab, subTab, parameter);
         }
     };
 
@@ -621,15 +622,14 @@ class Config extends Component<ConfigProps, ConfigState> {
                                 size="small"
                                 onClick={() => {
                                     if (this.props.easyMode) {
-                                        Router.doNavigate('easy');
+                                        this.props.handleNavigation('easy');
                                     } else {
-                                        Router.doNavigate('tab-instances');
+                                        this.props.handleNavigation('tab-instances');
                                     }
                                 }}
                                 onFocus={event => event.stopPropagation()}
                                 style={{
                                     marginRight: 10,
-                                    display: 'none',
                                 }}
                             >
                                 <ArrowBack />

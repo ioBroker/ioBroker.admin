@@ -445,7 +445,11 @@ interface AppState {
     tab: any;
     allStored: boolean;
     dataNotStoredDialog: boolean;
-    dataNotStoredTab: string;
+    dataNotStoredTab: {
+        tab: string;
+        subTab?: string;
+        param?: string;
+    } | null;
     baseSettingsOpened: boolean;
     unsavedDataInDialog: boolean;
     systemSettingsOpened: boolean;
@@ -674,7 +678,7 @@ class App extends Router<AppProps, AppState> {
                 tab: null,
                 allStored: true,
                 dataNotStoredDialog: false,
-                dataNotStoredTab: '',
+                dataNotStoredTab: null,
 
                 baseSettingsOpened: false,
                 unsavedDataInDialog: false,
@@ -1921,6 +1925,7 @@ class App extends Router<AppProps, AppState> {
                                     this.refConfigIframe = null;
                                 }
                             }}
+                            handleNavigation={this.handleNavigation}
                         />
                     </Suspense>
                 );
@@ -2191,16 +2196,16 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    handleNavigation(tab: string): void {
+    handleNavigation = (tab: string, subTab?: string, param?: string): void => {
         if (tab) {
             if (this.state.allStored) {
-                Router.doNavigate(tab);
+                Router.doNavigate(tab, subTab, param);
 
                 this.setState({ currentTab: Router.getLocation() });
             } else {
                 this.setState({
                     dataNotStoredDialog: true,
-                    dataNotStoredTab: tab,
+                    dataNotStoredTab: { tab, subTab, param },
                 });
             }
         }
@@ -2212,7 +2217,7 @@ class App extends Router<AppProps, AppState> {
         tab = tab || (this.state.currentTab && this.state.currentTab.tab) || '';
 
         this.setTitle(tab.replace('tab-', ''));
-    }
+    };
 
     allStored(value: boolean): void {
         this.setState({
@@ -2230,7 +2235,12 @@ class App extends Router<AppProps, AppState> {
                 dataNotStoredDialog: false,
                 allStored: true,
             },
-            () => this.handleNavigation(this.state.dataNotStoredTab),
+            () =>
+                this.handleNavigation(
+                    this.state.dataNotStoredTab?.tab,
+                    this.state.dataNotStoredTab?.subTab,
+                    this.state.dataNotStoredTab?.param,
+                ),
         );
     }
 
@@ -2941,6 +2951,7 @@ class App extends Router<AppProps, AppState> {
                                         this.refConfigIframe = null;
                                     }
                                 }}
+                                handleNavigation={this.handleNavigation}
                             />
                         </Suspense>
                     </div>
@@ -3076,7 +3087,7 @@ class App extends Router<AppProps, AppState> {
                                 editMenuList={this.state.editMenuList}
                                 setEditMenuList={(editMenuList: boolean) => this.setState({ editMenuList })}
                                 systemConfig={this.state.systemConfig}
-                                handleNavigation={(name: string) => this.handleNavigation(name)}
+                                handleNavigation={this.handleNavigation}
                                 onStateChange={(state: 0 | 1 | 2) => this.handleDrawerState(state)}
                                 onLogout={() => App.logout()}
                                 currentTab={this.state.currentTab && this.state.currentTab.tab}

@@ -104,6 +104,7 @@ interface InstancesProps {
     onUnregisterIframeRef: (el: HTMLIFrameElement) => void;
 
     configStored: (allStored: boolean) => void;
+    handleNavigation: (tab: string, subTab?: string, param?: string) => void;
 }
 
 interface HostData {
@@ -1141,6 +1142,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                             version={instance.version}
                             onRegisterIframeRef={(ref: HTMLIFrameElement) => this.props.onRegisterIframeRef(ref)}
                             onUnregisterIframeRef={(ref: HTMLIFrameElement) => this.props.onUnregisterIframeRef(ref)}
+                            handleNavigation={this.props.handleNavigation}
                         />
                     </Paper>
                 );

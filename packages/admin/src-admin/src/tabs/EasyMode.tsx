@@ -126,6 +126,7 @@ interface EasyModeProps {
     onUnregisterIframeRef: (ref: HTMLIFrameElement) => void;
     configs?: InstanceConfig[];
     adminInstance: string;
+    handleNavigation: (tab: string, subTab?: string, param?: string) => void;
 }
 
 interface EasyModeState {
@@ -245,6 +246,7 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
                             // version={currentInstance.version} We don't need a version in easy mode
                             onRegisterIframeRef={(ref: HTMLIFrameElement) => this.props.onRegisterIframeRef(ref)}
                             onUnregisterIframeRef={(ref: HTMLIFrameElement) => this.props.onUnregisterIframeRef(ref)}
+                            handleNavigation={this.props.handleNavigation}
                         />
                     </Paper>
                 ) : (
