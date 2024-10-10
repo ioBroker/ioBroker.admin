@@ -15,7 +15,8 @@
         "resolveJsonModule": true,
         "noImplicitAny": true,
         "useUnknownInCatchVariables": false,
-        "target": "ES2022"
+        "target": "ES2022",
+        "types": ["@types/node", "@iobroker/types"]
     },
     "include": ["**/*.js", "**/*.ts", "**/*.d.ts",
         "eslint.config.mjs"
