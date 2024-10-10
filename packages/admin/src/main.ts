@@ -1690,7 +1690,7 @@ class Admin extends Adapter {
      */
     async updateRegister(): Promise<void> {
         if (lastRepoUpdate && Date.now() - lastRepoUpdate < 3600000) {
-            this.log.error('Automatic repository update is not allowed more than once a hour');
+            this.log.error('Automatic repository update is not allowed more than once an hour');
             this.restartRepoUpdate();
             return;
         }
