@@ -48,6 +48,9 @@ jobs:
             - name: 'Build backend'
               run: npm run build:backend -w packages/admin
 
+            - name: 'Build React-Components'
+              run: npm run build -w packages/react-components
+
             - name: 'Build JsonConfig'
               run: npm run build -w packages/jsonConfig
 

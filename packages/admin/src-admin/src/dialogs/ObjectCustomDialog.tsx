@@ -4,14 +4,14 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, AppBar, Tabs
 
 import {
     I18n,
-    Confirm as ConfirmDialog,
+    DialogConfirm,
     Router,
     type AdminConnection,
     type IobTheme,
     type ThemeType,
     type ThemeName,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 // Icons
 import { Close as CloseIcon, Save as SaveIcon } from '@mui/icons-material';
@@ -194,12 +194,12 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         );
     }
 
-    renderConfirmDialog(): JSX.Element | null {
+    renderDialogConfirm(): JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }
         return (
-            <ConfirmDialog
+            <DialogConfirm
                 title={I18n.t('You have unsaved changes')}
                 text={I18n.t('Discard?')}
                 ok={I18n.t('Yes')}
@@ -222,7 +222,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
             return null;
         }
         return (
-            <ConfirmDialog
+            <DialogConfirm
                 text={
                     <div style={{ color: '#F00' }}>
                         {this.props.t('Your are intend to edit ALL objects. Are you sure?')}
@@ -252,7 +252,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                 maxWidth="xl"
                 aria-labelledby="form-dialog-title"
             >
-                {this.renderConfirmDialog()}
+                {this.renderDialogConfirm()}
                 {this.renderWarningDialog()}
                 <DialogTitle>
                     {this.props.objectIDs.length > 1

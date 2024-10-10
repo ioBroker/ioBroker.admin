@@ -7,7 +7,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/
 // Icons
 import { Close as CloseIcon, Check as CheckIcon } from '@mui/icons-material';
 
-import { withWidth, type Translate, type ThemeName } from '@iobroker/adapter-react-v5';
+import { withWidth, type Translate, type ThemeName } from '@iobroker/react-components';
 import type { ioBrokerObject } from '@/types';
 
 const styles: Record<string, React.CSSProperties> = {

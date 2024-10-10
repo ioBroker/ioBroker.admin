@@ -30,7 +30,7 @@ import {
     Box,
 } from '@mui/material';
 
-// @material-ui/icons
+// @mui/icons-material
 import {
     Menu as MenuIcon,
     Build as BuildIcon,
@@ -53,7 +53,7 @@ import {
     Loader,
     I18n,
     Router,
-    Confirm as ConfirmDialog,
+    DialogConfirm,
     Icon,
     withWidth,
     Theme,
@@ -64,19 +64,8 @@ import {
     type AdminConnection,
     type ThemeType,
     Utils,
-} from '@iobroker/adapter-react-v5';
-
-import enAR from '@iobroker/adapter-react-v5/i18n/en.json';
-import deAR from '@iobroker/adapter-react-v5/i18n/de.json';
-import ruAR from '@iobroker/adapter-react-v5/i18n/ru.json';
-import ptAR from '@iobroker/adapter-react-v5/i18n/pt.json';
-import nlAR from '@iobroker/adapter-react-v5/i18n/nl.json';
-import frAR from '@iobroker/adapter-react-v5/i18n/fr.json';
-import itAR from '@iobroker/adapter-react-v5/i18n/it.json';
-import esAR from '@iobroker/adapter-react-v5/i18n/es.json';
-import plAR from '@iobroker/adapter-react-v5/i18n/pl.json';
-import ukAR from '@iobroker/adapter-react-v5/i18n/uk.json';
-import zhCNAR from '@iobroker/adapter-react-v5/i18n/zh-cn.json';
+    dictionary,
+} from '@iobroker/react-components';
 
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
 import type { AdminGuiConfig, CompactAdapterInfo, CompactHost, NotificationsCount } from '@/types';
@@ -556,19 +545,7 @@ class App extends Router<AppProps, AppState> {
         }
 
         // init translations
-        this.translations = {
-            en: enAR,
-            de: deAR,
-            ru: ruAR,
-            pt: ptAR,
-            nl: nlAR,
-            fr: frAR,
-            it: itAR,
-            es: esAR,
-            pl: plAR,
-            uk: ukAR,
-            'zh-cn': zhCNAR,
-        };
+        this.translations = dictionary;
 
         const translations: Record<ioBroker.Languages, Record<string, string>> = {
             en: enLocal,
@@ -2460,8 +2437,8 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    renderConfirmDialog(): JSX.Element | null {
-        /* return <ConfirmDialog
+    renderDialogConfirm(): JSX.Element | null {
+        /* return <DialogConfirm
             onClose={() => this.closeDataNotStoredDialog()}
             open={this.state.dataNotStoredDialog}
             header={I18n.t('Please confirm')}
@@ -2469,14 +2446,14 @@ class App extends Router<AppProps, AppState> {
             confirmText={I18n.t('Ok')}
         >
             {I18n.t('Some data are not stored. Discard?')}
-        </ConfirmDialog>; */
+        </DialogConfirm>; */
         return this.state.dataNotStoredDialog ? (
-            <ConfirmDialog
+            <DialogConfirm
                 title={I18n.t('Please confirm')}
                 text={I18n.t('Some data are not stored. Discard?')}
                 ok={I18n.t('Ok')}
                 cancel={I18n.t('Cancel')}
-                onClose={isYes => (isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog())}
+                onClose={(isYes: boolean) => (isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog())}
             />
         ) : null;
     }
@@ -3126,7 +3103,7 @@ class App extends Router<AppProps, AppState> {
                     </Paper>
                     {this.renderExpertDialog()}
                     {this.getCurrentDialog()}
-                    {this.renderConfirmDialog()}
+                    {this.renderDialogConfirm()}
                     {this.renderCommandDialog()}
                     {this.renderWizardDialog()}
                     {this.showRedirectDialog()}

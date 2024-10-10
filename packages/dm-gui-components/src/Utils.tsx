@@ -32,7 +32,7 @@ import {
     WifiOff,
 } from '@mui/icons-material';
 
-import { I18n, Icon } from '@iobroker/adapter-react-v5';
+import { I18n, Icon } from '@iobroker/react-components';
 
 function getFaIcon(icon: string, color?: string): React.JSX.Element | null {
     const iconStyle = icon

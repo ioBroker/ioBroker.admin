@@ -39,7 +39,7 @@ import {
     Build as BuildIcon,
 } from '@mui/icons-material';
 
-import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import { type IobTheme, Utils } from '@iobroker/react-components';
 
 import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
 import CustomModal from '@/components/CustomModal';
@@ -361,9 +361,7 @@ export default abstract class AdapterGeneric<
             >
                 <CloudOffIcon />
             </Tooltip>
-        ) : (
-            <CloudOffIcon opacity={0} />
-        );
+        ) : null;
     }
 
     renderDataSource(): JSX.Element | null {
@@ -402,12 +400,15 @@ export default abstract class AdapterGeneric<
         const adapter = this.props.context.repository[this.props.adapterName];
         const link = extractUrlLink(adapter);
 
-        return (
+        return adapter.licenseInformation?.type ? (
             <Link
                 href={link}
                 target="_blank"
                 rel="noopener"
-                sx={{ color: 'black', '&:hover': { color: 'black' } }}
+                sx={(theme: IobTheme) => ({
+                    color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                    '&:hover': { color: theme.palette.mode === 'dark' ? 'white' : 'black' },
+                })}
             >
                 {adapter.licenseInformation?.type === 'paid' ? (
                     <Tooltip
@@ -430,11 +431,9 @@ export default abstract class AdapterGeneric<
                     >
                         <MonetizationOn opacity={0.5} />
                     </Tooltip>
-                ) : (
-                    <MonetizationOn opacity={0} />
-                )}
+                ) : null}
             </Link>
-        );
+        ) : null;
     }
 
     renderSentryInfo(): JSX.Element | null {
@@ -677,7 +676,8 @@ export default abstract class AdapterGeneric<
                             .getObject(`system.adapter.${this.props.adapterName}`)
                             .then(obj => {
                                 if (obj?.common) {
-                                    (obj.common as ioBroker.AdapterCommon).ignoreVersion = ignoreVersion;
+                                    // @ts-expect-error must be defined
+                                    obj.common.ignoreVersion = ignoreVersion;
                                     this.props.context.socket
                                         .setObject(obj._id, obj)
                                         .catch(error => window.alert(`Cannot write object: ${error}`));

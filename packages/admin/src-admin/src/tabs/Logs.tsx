@@ -55,7 +55,7 @@ import {
     type AdminConnection,
     TabContainer,
     TabContent,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import type LogsWorker from '@/Workers/LogsWorker';
 import type { LogLineSaved } from '@/Workers/LogsWorker';

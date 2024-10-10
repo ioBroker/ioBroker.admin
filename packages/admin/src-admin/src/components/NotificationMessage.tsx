@@ -9,7 +9,7 @@ import {
     type ThemeName,
     type ThemeType,
     Utils,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 import {
     type BackEndCommandGeneric,
     type BackEndCommandOpenLink,

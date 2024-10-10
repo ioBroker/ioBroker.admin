@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/react-components';
 import type { ConfigItemAlive } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 

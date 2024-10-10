@@ -1,0 +1,15 @@
+/**
+ * Copyright 2021-2023 ioBroker GmbH
+ *
+ * MIT License
+ *
+ **/
+
+.logo-background-light,
+.logo-background-colored {
+    background: white;
+}
+.logo-background-dark,
+.logo-background-blue {
+    background: black;
+}

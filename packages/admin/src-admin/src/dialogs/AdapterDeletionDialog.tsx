@@ -14,7 +14,7 @@ import {
 
 import { Close as CloseIcon, Check as CheckIcon } from '@mui/icons-material';
 
-import type { AdminConnection, IobTheme, Translate } from '@iobroker/adapter-react-v5';
+import type { AdminConnection, IobTheme, Translate } from '@iobroker/react-components';
 
 const styles: Record<string, any> = {
     formControl: {

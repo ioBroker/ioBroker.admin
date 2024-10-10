@@ -10,12 +10,12 @@ import {
     Router,
     SaveCloseButtons,
     Theme,
-    Confirm as ConfirmDialog,
+    DialogConfirm,
     type AdminConnection,
     type IobTheme,
     type ThemeName,
     type ThemeType,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import type { ConfigItemAny, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
 import Utils from '#JC/Utils';
@@ -405,17 +405,19 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         return null;
     }
 
-    renderConfirmDialog(): JSX.Element | null {
+    renderDialogConfirm(): JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }
         return (
-            <ConfirmDialog
+            <DialogConfirm
                 title={I18n.t('ra_Please confirm')}
                 text={I18n.t('ra_Some data are not stored. Discard?')}
                 ok={I18n.t('ra_Discard')}
                 cancel={I18n.t('ra_Cancel')}
-                onClose={isYes => this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate(null))}
+                onClose={(isYes: boolean) =>
+                    this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate(null))
+                }
             />
         );
     }
@@ -512,12 +514,14 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             return null;
         }
         return (
-            <ConfirmDialog
+            <DialogConfirm
                 title={I18n.t('ra_Please confirm')}
                 text={I18n.t('Save configuration?')}
                 ok={I18n.t('ra_Save')}
                 cancel={I18n.t('ra_Cancel')}
-                onClose={isYes => this.setState({ saveConfigDialog: false }, () => isYes && this.onSave(true))}
+                onClose={(isYes: boolean) =>
+                    this.setState({ saveConfigDialog: false }, () => isYes && this.onSave(true))
+                }
             />
         );
     }
@@ -706,7 +710,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
         return (
             <div style={styles.root}>
-                {this.renderConfirmDialog()}
+                {this.renderDialogConfirm()}
                 {this.getExportImportButtons()}
                 {this.renderSaveConfigDialog()}
                 <JsonConfigComponent

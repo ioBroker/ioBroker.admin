@@ -26,7 +26,7 @@ import {
 
 import { blue, grey, red } from '@mui/material/colors';
 
-import { Utils, IconCopy as SaveIcon, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { Utils, IconCopy as SaveIcon, type IobTheme, type Translate } from '@iobroker/react-components';
 
 import AdminUtils from '../../helpers/AdminUtils';
 

@@ -27,7 +27,7 @@ import { OSM, Vector as VectorSource } from 'ol/source';
 import { Point } from 'ol/geom';
 import { toLonLat, fromLonLat } from 'ol/proj';
 
-import { type AdminConnection, type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type IobTheme, type Translate, withWidth } from '@iobroker/react-components';
 
 // Icons
 import { FaCrosshairs as GeoIcon } from 'react-icons/fa';

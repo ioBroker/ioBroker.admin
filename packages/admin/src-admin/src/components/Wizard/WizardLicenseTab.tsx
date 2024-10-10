@@ -21,7 +21,7 @@ import {
 
 import { Language as IconWorld, Close as IconCancel, Check as IconCheck, Close } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, type ThemeType, type Translate, withWidth } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type ThemeType, type Translate, withWidth } from '@iobroker/react-components';
 
 import Editor from '@/components/Editor';
 import LicenseTexts from '../LicenseTexts';

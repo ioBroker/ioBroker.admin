@@ -17,7 +17,7 @@ import {
 
 import { Add as AddIcon, Delete as DeleteIcon, Close as CloseIcon } from '@mui/icons-material';
 
-import { withWidth, I18n, type Translate } from '@iobroker/adapter-react-v5';
+import { withWidth, I18n, type Translate } from '@iobroker/react-components';
 
 import { type ioBrokerObject } from '@/types';
 import AdminUtils from '../../helpers/AdminUtils';

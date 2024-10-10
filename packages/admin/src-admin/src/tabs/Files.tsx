@@ -9,7 +9,7 @@ import {
     type Translate,
     TabContainer,
     TabContent,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import FileBrowser, { type FileBrowserClass, type MetaObject } from '../components/FileBrowser';
 

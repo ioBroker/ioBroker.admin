@@ -34,7 +34,7 @@ import {
     Info as InfoIcon,
 } from '@mui/icons-material';
 
-import { type AdminConnection, type IobTheme, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type IobTheme, type ThemeType, type Translate } from '@iobroker/react-components';
 
 import ObjectChart from './ObjectChart';
 import { localeMap } from './utils';

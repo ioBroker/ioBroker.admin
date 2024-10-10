@@ -9,7 +9,7 @@ import { Input, OutlinedInput, InputLabel, Chip, FormControl, FormHelperText, Bo
 import FilledInput from '@mui/material/FilledInput/FilledInput';
 import blue from '@mui/material/colors/blue';
 
-import { type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type ThemeType } from '@iobroker/react-components';
 import Utils from '../Utils';
 
 const variantComponent = {

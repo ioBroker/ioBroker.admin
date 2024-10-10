@@ -27,7 +27,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, withWidth, Confirm as ConfirmDialog, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, withWidth, DialogConfirm, type Translate, type ThemeType } from '@iobroker/react-components';
 import { InfoBox } from '@foxriver76/iob-component-lib';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
@@ -350,10 +350,10 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         }
     }
 
-    renderConfirmDialog(): React.JSX.Element {
+    renderDialogConfirm(): React.JSX.Element {
         if (this.state.confirm) {
             return (
-                <ConfirmDialog
+                <DialogConfirm
                     text={this.props.t('confirm_change_repo')}
                     onClose={result => {
                         const value = this.state.confirmValue;
@@ -698,7 +698,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
 
         return (
             <div style={styles.tabPanel}>
-                {this.renderConfirmDialog()}
+                {this.renderDialogConfirm()}
                 <div style={styles.buttonPanel}>
                     <Fab
                         size="small"

@@ -4,7 +4,7 @@ import { TextField, FormControl, InputAdornment, IconButton } from '@mui/materia
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import { ColorPicker, type Translate } from '@iobroker/adapter-react-v5';
+import { ColorPicker, type Translate } from '@iobroker/react-components';
 
 interface IOTextFieldProps {
     label: string;

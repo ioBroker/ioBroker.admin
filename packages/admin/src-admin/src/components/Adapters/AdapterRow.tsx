@@ -88,10 +88,10 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
                 )}
                 <TableCell>
                     <div style={this.styles.flex}>
-                        {this.renderConnectionType()}
-                        {this.renderDataSource()}
-                        <div>{this.renderLicenseInfo()}</div>
-                        {this.renderSentryInfo()}
+                        {this.renderConnectionType() || <div style={{ marginLeft: 5, width: 24, height: 24 }} />}
+                        {this.renderDataSource() || <div style={{ width: 24, height: 24 }} />}
+                        {this.renderSentryInfo() || <div style={{ width: 24, height: 24 }} />}
+                        {this.renderLicenseInfo()}
                     </div>
                 </TableCell>
                 <TableCell>{this.renderInstalledVersion(true)}</TableCell>

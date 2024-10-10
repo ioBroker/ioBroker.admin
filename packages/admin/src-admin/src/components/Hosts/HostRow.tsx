@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { Box, CardContent, CardMedia, Skeleton, Typography } from '@mui/material';
 
-import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
+import { Utils, type IobTheme } from '@iobroker/react-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
 import HostGeneric, {

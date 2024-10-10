@@ -1,4 +1,4 @@
-import { type AdminConnection } from '@iobroker/adapter-react-v5';
+import { type AdminConnection } from '@iobroker/react-components';
 import AdminUtils from '../helpers/AdminUtils';
 
 export type ObjectEventType = 'new' | 'changed' | 'deleted';
@@ -86,11 +86,11 @@ export default class ObjectsWorker {
 
         this.promise = this.socket
             .getObjects(update, true)
-            .then(objects => {
+            .then((objects: Record<string, ioBroker.Object>) => {
                 this.objects = objects;
                 return this.objects;
             })
-            .catch(e => window.alert(`Cannot get objects: ${e}`));
+            .catch((e: any) => window.alert(`Cannot get objects: ${e}`));
 
         return this.promise;
     }
@@ -102,7 +102,7 @@ export default class ObjectsWorker {
             if (this.handlers.length) {
                 this.socket
                     .subscribeObject('*', this.objectChangeHandler)
-                    .catch(e => window.alert(`Cannot subscribe on objects: ${e}`));
+                    .catch((e: any) => window.alert(`Cannot subscribe on objects: ${e}`));
 
                 void this.getObjects(true).then(
                     objects => objects && Object.keys(objects).forEach(id => this.objectChangeHandler(id, objects[id])),
@@ -120,7 +120,7 @@ export default class ObjectsWorker {
             if (this.handlers.length === 1 && this.connected) {
                 this.socket
                     .subscribeObject('*', this.objectChangeHandler)
-                    .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
+                    .catch((e: any) => window.alert(`Cannot subscribe on object: ${e}`));
             }
         }
     }
@@ -134,7 +134,7 @@ export default class ObjectsWorker {
         if (!this.handlers.length && this.connected && !doNotUnsubscribe) {
             this.socket
                 .unsubscribeObject('*', this.objectChangeHandler)
-                .catch(e => window.alert(`Cannot unsubscribe on object: ${e}`));
+                .catch((e: any) => window.alert(`Cannot unsubscribe on object: ${e as Error}`));
         }
     }
 }

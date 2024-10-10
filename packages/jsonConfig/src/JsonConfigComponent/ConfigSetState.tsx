@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 
 import { Warning as IconWarning, Error as IconError, Info as IconInfo } from '@mui/icons-material';
 
-import { Confirm as ConfirmDialog, Icon, I18n } from '@iobroker/adapter-react-v5';
+import { DialogConfirm, Icon, I18n } from '@iobroker/react-components';
 import type { ConfigItemSetState } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
@@ -53,7 +53,7 @@ class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGene
         }
     }
 
-    renderConfirmDialog(): JSX.Element | null {
+    renderDialogConfirm(): JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }
@@ -68,7 +68,7 @@ class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGene
         }
 
         return (
-            <ConfirmDialog
+            <DialogConfirm
                 title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
                 text={this.getText(confirm.text)}
                 ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}

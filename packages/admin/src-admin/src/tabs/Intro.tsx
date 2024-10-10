@@ -19,7 +19,7 @@ import {
     type Translate,
     TabContainer,
     TabContent,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
@@ -1488,7 +1488,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                                                 ? formatInfo[value](hostData[value] as number, this.t)
                                                 : (typeof hostData[value] === 'object'
                                                       ? JSON.stringify(hostData[value])
-                                                      : hostData[value].toString()) || '--'}
+                                                      : (hostData[value] as any).toString()) || '--'}
                                         </span>
                                     ) : (
                                         <Skeleton />
@@ -1501,8 +1501,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             text:
                 hostData && typeof hostData === 'object'
                     ? Object.keys(hostData).reduce(
-                          (acom, item) =>
-                              `${acom}${this.t(item)}:${formatInfo[item] ? formatInfo[item](hostData[item] as number, this.t) : (typeof hostData[item] === 'object' ? JSON.stringify(hostData[item]) : hostData[item]) || '--'}\n`,
+                          (acom: string, item: string) =>
+                              `${acom}${this.t(item)}:${formatInfo[item] ? formatInfo[item](hostData[item] as number, this.t) : (typeof hostData[item] === 'object' ? JSON.stringify(hostData[item]) : hostData[item] as string) || '--'}\n`,
                       )
                     : '',
         };

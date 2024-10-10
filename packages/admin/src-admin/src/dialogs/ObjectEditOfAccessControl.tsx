@@ -1,7 +1,7 @@
 import React, { useEffect, useState, type JSX } from 'react';
 import { Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Switch } from '@mui/material';
 
-import { I18n, Icon, type IobTheme, type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, Icon, type IobTheme, type ThemeType, type Translate, Utils } from '@iobroker/react-components';
 
 import CustomModal from '../components/CustomModal';
 

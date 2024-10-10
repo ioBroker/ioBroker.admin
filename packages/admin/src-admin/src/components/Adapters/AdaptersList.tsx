@@ -12,7 +12,7 @@ import {
     Typography,
 } from '@mui/material';
 
-import { TabContent } from '@iobroker/adapter-react-v5';
+import { TabContent } from '@iobroker/react-components';
 
 import type { AdaptersContext } from '@/components/Adapters/AdapterInstallDialog';
 import AdapterCategoryRow from '@/components/Adapters/AdapterCategoryRow';
@@ -41,7 +41,7 @@ const styles: Record<string, any> = {
         width: '100%',
     },
     containerNotFullHeight: {
-        height: 'calc(100% - 22px)',
+        height: 'calc(100% - 50px)',
     },
     containerFullHeight: {
         height: '100%',

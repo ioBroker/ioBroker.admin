@@ -17,7 +17,7 @@ import {
 import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
 import {
-    Confirm as ConfirmDialog,
+    DialogConfirm,
     withWidth,
     type IobTheme,
     type Translate,
@@ -25,7 +25,7 @@ import {
     type AdminConnection,
     type ThemeType,
     type ThemeName,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import AdminUtils from '@/helpers/AdminUtils';
@@ -241,10 +241,10 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         }
     }
 
-    renderConfirmDialog(): JSX.Element | null {
+    renderDialogConfirm(): JSX.Element | null {
         if (this.state.confirmExit) {
             return (
-                <ConfirmDialog
+                <DialogConfirm
                     text={this.props.t('Discard unsaved changes?')}
                     onClose={result => this.setState({ confirmExit: false }, () => result && this.props.onClose())}
                 />
@@ -592,7 +592,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                         </div>
                     </AppBar>
                     {this.getDialogContent(tabsList)}
-                    {this.renderConfirmDialog()}
+                    {this.renderDialogConfirm()}
                 </DialogContent>
                 <DialogActions>
                     <Button

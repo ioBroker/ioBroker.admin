@@ -4,12 +4,7 @@ import { Button, CircularProgress } from '@mui/material';
 
 import { Warning as IconWarning, Error as IconError, Info as IconInfo } from '@mui/icons-material';
 
-import {
-    Confirm as DialogConfirm,
-    Error as DialogError,
-    Message as DialogMessage,
-    I18n,
-} from '@iobroker/adapter-react-v5';
+import { DialogConfirm, DialogError, DialogMessage, I18n } from '@iobroker/react-components';
 
 import type { ConfigItemSendTo } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -323,7 +318,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
             });
     }
 
-    renderConfirmDialog(): JSX.Element | null {
+    renderDialogConfirm(): JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }

@@ -23,7 +23,7 @@ import {
 // icons
 import { Add as AddIcon, Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
-import { UploadImage, type AdminConnection, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { UploadImage, type AdminConnection, type IobTheme, type Translate } from '@iobroker/react-components';
 
 import IntroCardCamera from '@/components/Intro/IntroCardCamera';
 import IntroCard from './IntroCard';

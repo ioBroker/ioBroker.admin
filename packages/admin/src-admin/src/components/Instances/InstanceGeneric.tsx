@@ -52,16 +52,16 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Confirm as ConfirmDialog,
+    DialogConfirm,
     SelectWithIcon,
-    ComplexCronDialog as ComplexCron,
+    DialogComplexCron,
     type AdminConnection,
     TextWithIcon,
     Router,
     type IobTheme,
     type ThemeType,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 import { amber, blue, green, grey, orange, red } from '@mui/material/colors';
 
 import State from '@/components/State';
@@ -929,7 +929,7 @@ export default abstract class InstanceGeneric<
         }
 
         return (
-            <ConfirmDialog
+            <DialogConfirm
                 title={this.props.context.t('Please confirm')}
                 text={this.props.context.t('stop_admin', this.props.context.adminInstance)}
                 ok={this.props.context.t('Stop admin')}
@@ -961,7 +961,7 @@ export default abstract class InstanceGeneric<
 
     renderCronDialog(): JSX.Element {
         return (
-            <ComplexCron
+            <DialogComplexCron
                 title={this.props.context.t('Edit restart rule for %s', this.props.instance.id)}
                 clearButton
                 cron={InstanceGeneric.getRestartSchedule(this.props.instance.obj)}
@@ -973,7 +973,7 @@ export default abstract class InstanceGeneric<
 
     renderScheduleDialog(): JSX.Element {
         return (
-            <ComplexCron
+            <DialogComplexCron
                 title={this.props.context.t('Edit schedule rule for %s', this.props.instance.id)}
                 clearButton
                 cron={InstanceGeneric.getSchedule(this.props.instance.obj)}

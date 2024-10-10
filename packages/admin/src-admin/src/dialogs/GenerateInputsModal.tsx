@@ -4,7 +4,7 @@ import { Button, Dialog, DialogActions, DialogContent, Paper, Typography, Box, A
 
 import { Settings as SettingsIcon, Close as CloseIcon, Check as CheckIcon } from '@mui/icons-material';
 
-import { I18n, type AdminConnection, type ThemeName, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection, type ThemeName, type ThemeType, type IobTheme } from '@iobroker/react-components';
 
 import { type ConfigItemPanel, ConfigPanel } from '@iobroker/json-config';
 
