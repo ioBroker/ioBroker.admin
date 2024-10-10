@@ -41,7 +41,7 @@ const styles: Record<string, any> = {
         width: '100%',
     },
     containerNotFullHeight: {
-        height: 'calc(100% - 22px)',
+        height: 'calc(100% - 50px)',
     },
     containerFullHeight: {
         height: '100%',
