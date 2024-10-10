@@ -24,7 +24,7 @@ import {
 } from '@mui/icons-material';
 import { FaFileUpload as UploadIcon } from 'react-icons/fa';
 
-import { Confirm as ConfirmDialog, Utils, I18n } from '@iobroker/adapter-react-v5';
+import { DialogConfirm, Utils, I18n } from '@iobroker/react-components';
 
 import type { ConfigItemFileSelector } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -275,7 +275,7 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
             return null;
         }
         return (
-            <ConfirmDialog
+            <DialogConfirm
                 title={I18n.t('ra_Are you sure?')}
                 text={I18n.t('ra_File will be deleted')}
                 ok={I18n.t('ra_Delete')}

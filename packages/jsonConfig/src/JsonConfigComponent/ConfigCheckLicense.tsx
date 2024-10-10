@@ -19,7 +19,7 @@ import {
 
 import { Check as IconCheck, Send as IconSend } from '@mui/icons-material';
 
-import { Confirm as ConfirmDialog, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
+import { DialogConfirm, I18n, type IobTheme } from '@iobroker/react-components';
 
 import type { ConfigItemCheckLicense } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -649,7 +649,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
             return null;
         }
         return (
-            <ConfirmDialog
+            <DialogConfirm
                 text={I18n.t(
                     'ra_License not found in license manager. Do you want to read licenses from iobroker.net?',
                 )}

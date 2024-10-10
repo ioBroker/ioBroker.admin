@@ -61,8 +61,8 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Error as ErrorDialog,
-    TextInput as TextInputDialog,
+    DialogError,
+    DialogTextInput,
     IconExpert,
     IconClosed,
     IconOpen,
@@ -75,9 +75,9 @@ import {
     type ThemeType,
     type Translate,
     type IobTheme,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
-import FileViewer, { EXTENSIONS } from './FileViewer';
+import { FileViewer, EXTENSIONS } from './FileViewer';
 
 const ROW_HEIGHT = 32;
 const BUTTON_WIDTH = 32;
@@ -1989,7 +1989,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             }
 
             return (
-                <TextInputDialog
+                <DialogTextInput
                     key="inputDialog"
                     applyText={this.props.t('ra_Create')}
                     cancelText={this.props.t('ra_Cancel')}
@@ -2358,7 +2358,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
     renderError(): JSX.Element | null {
         if (this.state.errorText) {
             return (
-                <ErrorDialog
+                <DialogError
                     key="errorDialog"
                     text={this.state.errorText}
                     onClose={() => this.setState({ errorText: '' })}

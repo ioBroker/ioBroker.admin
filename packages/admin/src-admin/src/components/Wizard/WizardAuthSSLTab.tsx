@@ -18,7 +18,7 @@ import {
 
 import { Check as IconCheck } from '@mui/icons-material';
 
-import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate, withWidth } from '@iobroker/react-components';
 
 const TOOLBAR_HEIGHT = 64;
 

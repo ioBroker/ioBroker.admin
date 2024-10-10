@@ -7,7 +7,7 @@ import {
     type Translate,
     TabContainer,
     TabContent,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import UsersList from '../components/Users/UsersList';
 

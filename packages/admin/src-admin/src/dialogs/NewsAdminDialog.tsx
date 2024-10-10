@@ -11,7 +11,7 @@ import {
     Public as WorldIcon,
 } from '@mui/icons-material';
 
-import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme, Utils } from '@iobroker/react-components';
 import type { CompactAdapterInfo } from '@/types';
 
 const styles: Record<string, any> = {

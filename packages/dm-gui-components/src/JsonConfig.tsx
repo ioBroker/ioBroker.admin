@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Connection, AdminConnection, ThemeName, ThemeType, IobTheme } from '@iobroker/adapter-react-v5';
+import type { Connection, AdminConnection, ThemeName, ThemeType, IobTheme } from '@iobroker/react-components';
 import { JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
 
 interface JsonConfigDmProps {

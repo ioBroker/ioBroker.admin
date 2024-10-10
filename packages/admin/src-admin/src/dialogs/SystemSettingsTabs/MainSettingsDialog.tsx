@@ -22,7 +22,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 import { Marker } from 'leaflet';
 import type { DragEndEvent, LatLngTuple, Map } from 'leaflet';
 
-import { Confirm as ConfirmDialog, withWidth, I18n, type Translate } from '@iobroker/adapter-react-v5';
+import { DialogConfirm, withWidth, I18n, type Translate } from '@iobroker/react-components';
 import { type AdminGuiConfig } from '@/types';
 
 import AdminUtils from '../../helpers/AdminUtils';
@@ -474,10 +474,10 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         );
     }
 
-    renderConfirmDialog(): JSX.Element | null {
+    renderDialogConfirm(): JSX.Element | null {
         if (this.state.confirm) {
             return (
-                <ConfirmDialog
+                <DialogConfirm
                     text={this.props.t('confirm_change_repo')}
                     onClose={result => {
                         const value = this.state.confirmValue;
@@ -639,7 +639,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
 
         return (
             <div style={styles.tabPanel}>
-                {this.renderConfirmDialog()}
+                {this.renderDialogConfirm()}
                 <Grid2
                     container
                     spacing={3}

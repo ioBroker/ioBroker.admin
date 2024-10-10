@@ -39,7 +39,7 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/react-components';
 
 import type { ConfigItemTableIndexed, ConfigItemPanel, ConfigItemTable } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';

@@ -39,7 +39,7 @@ import {
     Build as BuildIcon,
 } from '@mui/icons-material';
 
-import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import { type IobTheme, Utils } from '@iobroker/react-components';
 
 import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
 import CustomModal from '@/components/CustomModal';
@@ -677,7 +677,8 @@ export default abstract class AdapterGeneric<
                             .getObject(`system.adapter.${this.props.adapterName}`)
                             .then(obj => {
                                 if (obj?.common) {
-                                    (obj.common as ioBroker.AdapterCommon).ignoreVersion = ignoreVersion;
+                                    // @ts-expect-error must be defined
+                                    obj.common.ignoreVersion = ignoreVersion;
                                     this.props.context.socket
                                         .setObject(obj._id, obj)
                                         .catch(error => window.alert(`Cannot write object: ${error}`));

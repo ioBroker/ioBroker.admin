@@ -23,7 +23,7 @@ import { MdClose as IconClose, MdMenu as IconMenu, MdExpandMore as IconExpandMor
 
 import { FaGithub as IconGithub } from 'react-icons/fa';
 
-import { type AdminConnection, type IobTheme, type ThemeName, I18n, Loader, Utils } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type IobTheme, type ThemeName, I18n, Loader, Utils } from '@iobroker/react-components';
 
 import IconGlobe from '../assets/globe.svg';
 import IconLink from '../assets/link.svg';
@@ -35,7 +35,7 @@ import MDUtils, {
     type MarkdownHeader,
     type MarkdownPart,
 } from './MDUtils';
-// import { Page404 } from '@iobroker/adapter-react-v5';
+// import { Page404 } from '@iobroker/react-components';
 
 const styles: Record<string, any> = {
     root: {

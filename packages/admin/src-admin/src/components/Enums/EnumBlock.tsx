@@ -27,7 +27,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
 import { type DragItem } from './DragObjectBrowser';
@@ -294,7 +294,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                 if (cIcon && !cIcon.startsWith('data:image/') && cIcon.includes('.')) {
                     let instance;
                     if (objects[id] && (objects[id].type === 'instance' || objects[id].type === 'adapter')) {
-                        icons[i] = `${imagePrefix}/adapter/${objects[id].common.name}/${cIcon}`;
+                        icons[i] = `${imagePrefix}/adapter/${this.props.getName(objects[id].common.name)}/${cIcon}`;
                     } else if (id && id.startsWith('system.adapter.')) {
                         instance = id.split('.', 3);
                         if (cIcon[0] === '/') {

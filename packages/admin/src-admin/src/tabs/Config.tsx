@@ -36,13 +36,13 @@ import {
 import {
     Router,
     Icon,
-    Confirm as ConfirmDialog,
+    DialogConfirm,
     type IobTheme,
     type AdminConnection,
     type ThemeName,
     type ThemeType,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import { type DeviceManagerPropsProps, JsonConfig } from '@iobroker/json-config';
 import DeviceManager from '@iobroker/dm-gui-components';
@@ -496,7 +496,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 
     returnStopAdminDialog(): JSX.Element | null {
         return this.state.showStopAdminDialog ? (
-            <ConfirmDialog
+            <DialogConfirm
                 title={this.props.t('Please confirm')}
                 text={this.props.t('stop_admin', this.props.instance)}
                 ok={this.props.t('Stop admin')}

@@ -18,7 +18,7 @@ import {
     Box,
 } from '@mui/material';
 
-import { withWidth, Confirm as DialogConfirm, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { withWidth, DialogConfirm, type IobTheme, type Translate } from '@iobroker/react-components';
 import { type AdminConnection } from '@iobroker/socket-client';
 
 const styles: Record<string, any> = {
@@ -286,7 +286,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                 <DialogConfirm
                     title={this.props.t('Please confirm')}
                     text={this.props.t('switch_db_note')}
-                    onClose={result => {
+                    onClose={(result: boolean) => {
                         if (result) {
                             let port;
 

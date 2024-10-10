@@ -4,7 +4,7 @@ import { amber, blue, red } from '@mui/material/colors';
 
 import { Grid2, LinearProgress, Paper, Switch, Typography } from '@mui/material';
 
-import { Router, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
+import { Router, type AdminConnection, type Translate } from '@iobroker/react-components';
 
 import AdminUtils, { type Style } from '../helpers/AdminUtils';
 

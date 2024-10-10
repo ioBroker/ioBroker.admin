@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { Box } from '@mui/material';
 
-import type { IobTheme } from '@iobroker/adapter-react-v5';
+import type { IobTheme } from '@iobroker/react-components';
 
 import type { ConfigItemStaticHeader } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';

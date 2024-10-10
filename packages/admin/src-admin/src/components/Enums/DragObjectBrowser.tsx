@@ -7,7 +7,7 @@ import { Box, Card } from '@mui/material';
 
 import { List as ListIcon } from '@mui/icons-material';
 
-import { type AdminConnection, Icon, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, Icon, type IobTheme, type Translate } from '@iobroker/react-components';
 
 import ObjectBrowser, {
     type TreeItemData,

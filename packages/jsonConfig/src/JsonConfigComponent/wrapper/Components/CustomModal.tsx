@@ -4,7 +4,7 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextFiel
 
 import { Check as CheckIcon, Close as CloseIcon, Language as LanguageIcon } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/react-components';
 
 const styles: Record<string, React.CSSProperties> = {
     modalDialog: {

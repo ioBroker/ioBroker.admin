@@ -4,7 +4,7 @@ import { Grid2, Toolbar, Button, Paper, Box } from '@mui/material';
 
 import { Public as IconCloud, Language as IconCloudPro, Check as IconCheck } from '@mui/icons-material';
 
-import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { withWidth, type IobTheme, type Translate } from '@iobroker/react-components';
 
 const TOOLBAR_HEIGHT = 64;
 

@@ -9,7 +9,7 @@ import { LinearProgress, Grid2, Typography, Fab, Box } from '@mui/material';
 
 import { PersonAdd as PersonAddIcon, GroupAdd as GroupAddIcon } from '@mui/icons-material';
 
-import { Utils, type AdminConnection, type Translate, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
+import { Utils, type AdminConnection, type Translate, type IobTheme, type ThemeType } from '@iobroker/react-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
 import UserBlock from './UserBlock';

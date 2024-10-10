@@ -12,7 +12,7 @@ import {
 
 import { Close as CloseIcon, Refresh as ReloadIcon } from '@mui/icons-material';
 
-import { I18n, type AdminConnection, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection, type ThemeType } from '@iobroker/react-components';
 
 interface WebserverParameters {
     useHttps: boolean;
