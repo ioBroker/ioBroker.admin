@@ -87,6 +87,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+-   (@GermanBluefox) Trying to fix a GUI build process
+-   (@GermanBluefox) Changed license icon
+
 ### 7.2.4 (2024-10-08)
 
 -   (@GermanBluefox) Corrected some GUI errors
