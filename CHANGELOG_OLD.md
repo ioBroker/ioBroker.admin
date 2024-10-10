@@ -1,4 +1,8 @@
 # Older changes
+## 7.1.2 (2024-09-20)
+
+-   (@foxriver76) fixed host base settings dialog
+
 ## 7.1.1 (2024-09-15)
 
 -   (bluefox) Showed the context menu under cursor position in the object browser
