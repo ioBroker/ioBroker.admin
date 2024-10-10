@@ -1,0 +1,946 @@
+[
+  {
+    "_id": "storeroom",
+    "name": {
+      "en": "Storeroom",
+      "ru": "Кладовая",
+      "de": "Abstellraum",
+      "fr": "Débarras",
+      "it": "Dispensa",
+      "nl": "Bergplaats",
+      "pl": "Magazyn",
+      "pt": "Despensa",
+      "es": "Trastero",
+      "zh-cn": "库房"
+    },
+    "icon": "Storeroom.svg"
+  },
+  {
+    "_id": "second_floor",
+    "name": {
+      "en": "Second floor",
+      "ru": "Второй этаж",
+      "de": "Erster OG",
+      "pt": "Primeiro andar",
+      "nl": "Eerste verdieping",
+      "fr": "Premier étage",
+      "it": "Primo piano",
+      "es": "Primer piso",
+      "pl": "Pierwsze piętro",
+      "zh-cn": "第一层"
+    },
+    "icon": "Second Floor.svg"
+  },
+  {
+    "_id": "dressing_room",
+    "name": {
+      "en": "Dressing Room",
+      "ru": "Гардеробная",
+      "de": "Ankleide",
+      "fr": "Vestiaire",
+      "it": "Camerino",
+      "nl": "Kleedkamer",
+      "pl": "Przebieralnia",
+      "pt": "Provador",
+      "es": "Vestidor",
+      "zh-cn": "更衣室"
+    },
+    "icon": "Dressing Room.svg"
+  },
+  {
+    "_id": "workspace",
+    "name": {
+      "en": "Workspace",
+      "ru": "Рабочая Среда",
+      "de": "Arbeitszimmer",
+      "fr": "Espace De Travail",
+      "it": "Area Di Lavoro",
+      "nl": "Workspace",
+      "pl": "Workspace",
+      "pt": "Área De Trabalho",
+      "es": "Espacio De Trabajo",
+      "zh-cn": "工作区"
+    },
+    "icon": "Workspace.svg"
+  },
+  {
+    "_id": "driveway",
+    "name": {
+      "en": "Driveway",
+      "ru": "Дорога",
+      "de": "Auffahrt",
+      "fr": "Allée",
+      "it": "Viale",
+      "nl": "Pad",
+      "pl": "Podjazd",
+      "pt": "Entrada Da Garagem",
+      "es": "Entrada De Coches",
+      "zh-cn": "车道"
+    },
+    "icon": "Driveway.svg"
+  },
+  {
+    "_id": "outdoors",
+    "name": {
+      "en": "Outdoors",
+      "ru": "На Улице",
+      "de": "Außenbereich",
+      "fr": "En Plein Air",
+      "it": "All'Aperto",
+      "nl": "Buitenshuis",
+      "pl": "Na Dworze",
+      "pt": "Ao Ar Livre",
+      "es": "Al Aire Libre",
+      "zh-cn": "户外"
+    },
+    "icon": "Outdoors.svg"
+  },
+  {
+    "_id": "bathroom",
+    "name": {
+      "en": "Bathroom",
+      "ru": "Ванная Комната",
+      "de": "Badezimmer",
+      "fr": "Salle De Bains",
+      "it": "Bagno",
+      "nl": "Badkamer",
+      "pl": "Łazienka",
+      "pt": "Banheiro",
+      "es": "Baño",
+      "zh-cn": "浴室"
+    },
+    "icon": "Bathroom.svg"
+  },
+  {
+    "_id": "balcony",
+    "name": {
+      "en": "Balcony",
+      "ru": "Балкон",
+      "de": "Balkon",
+      "fr": "Balcon",
+      "it": "Balcone",
+      "nl": "Balkon",
+      "pl": "Balkon",
+      "pt": "Sacada",
+      "es": "Balcón",
+      "zh-cn": "阳台"
+    },
+    "icon": "Balcony.svg"
+  },
+  {
+    "_id": "office",
+    "name": {
+      "en": "Office",
+      "ru": "Офис",
+      "de": "Office",
+      "fr": "Bureau",
+      "it": "Ufficio",
+      "nl": "Kantoor",
+      "pl": "Gabinet",
+      "pt": "Escritório",
+      "es": "Oficina",
+      "zh-cn": "办公室"
+    },
+    "icon": "Office.svg"
+  },
+  {
+    "_id": "carport",
+    "name": {
+      "en": "Carport",
+      "ru": "Навес",
+      "de": "Carport",
+      "fr": "Carport",
+      "it": "Posto Auto Coperto",
+      "nl": "Carport",
+      "pl": "Wiata",
+      "pt": "Telheiro",
+      "es": "Cochera",
+      "zh-cn": "车棚"
+    },
+    "icon": "Carport.svg"
+  },
+  {
+    "_id": "attic",
+    "name": {
+      "en": "Attic",
+      "ru": "Чердак",
+      "de": "Dachgeschoss",
+      "fr": "Grenier",
+      "it": "Attico",
+      "nl": "Zolder",
+      "pl": "Poddasze",
+      "pt": "Sótão",
+      "es": "Ático",
+      "zh-cn": "阁楼"
+    },
+    "icon": "Attic.svg"
+  },
+  {
+    "_id": "hall",
+    "name": {
+      "en": "Hall",
+      "ru": "Зал",
+      "de": "Diele",
+      "fr": "Salle",
+      "it": "Sala",
+      "nl": "Hal",
+      "pl": "Sala",
+      "pt": "Corredor",
+      "es": "Sala",
+      "zh-cn": "大厅"
+    },
+    "icon": "Hall.svg"
+  },
+  {
+    "_id": "entrance",
+    "name": {
+      "en": "Entrance",
+      "ru": "Вход",
+      "de": "Eingang",
+      "fr": "Entrée",
+      "it": "Ingresso",
+      "nl": "Ingang",
+      "pl": "Wejście",
+      "pt": "Entrada",
+      "es": "Entrada",
+      "zh-cn": "入口"
+    },
+    "icon": "Entrance.svg"
+  },
+  {
+    "_id": "ground_floor",
+    "name": {
+      "en": "Ground Floor",
+      "ru": "Первый Этаж",
+      "de": "Erdgeschoss",
+      "fr": "Rez-De-Chaussée",
+      "it": "Piano Terra",
+      "nl": "Begane Grond",
+      "pl": "Parter",
+      "pt": "Térreo",
+      "es": "Planta Baja",
+      "zh-cn": "一楼"
+    },
+    "icon": "Ground Floor.svg"
+  },
+  {
+    "_id": "dining_area",
+    "name": {
+      "en": "Dining Area",
+      "ru": "Столовая",
+      "de": "Essbereich",
+      "fr": "Salle À Manger",
+      "it": "Zona Pranzo",
+      "nl": "Eethoek",
+      "pl": "Jadalnia",
+      "pt": "Área De Refeições",
+      "es": "Comedor",
+      "zh-cn": "用餐区"
+    },
+    "icon": "Dining Area.svg"
+  },
+  {
+    "_id": "dining_room",
+    "name": {
+      "en": "Dining Room",
+      "ru": "Столовая",
+      "de": "Esszimmer",
+      "fr": "Salle À Manger",
+      "it": "Sala Da Pranzo",
+      "nl": "Eetkamer",
+      "pl": "Jadalnia",
+      "pt": "Sala De Jantar",
+      "es": "Comedor",
+      "zh-cn": "饭厅"
+    },
+    "icon": "Dining Room.svg"
+  },
+  {
+    "_id": "gym",
+    "name": {
+      "en": "Gym",
+      "ru": "Спортзал",
+      "de": "Fitnessraum",
+      "fr": "Gym",
+      "it": "Palestra",
+      "nl": "Sportschool",
+      "pl": "Siłownia",
+      "pt": "Ginásio",
+      "es": "Gimnasio",
+      "zh-cn": "健身房"
+    },
+    "icon": "Gym.svg"
+  },
+  {
+    "_id": "gallery",
+    "name": {
+      "en": "Gallery",
+      "ru": "Галерея",
+      "de": "Galerie",
+      "fr": "Galerie",
+      "it": "Galleria",
+      "nl": "Galerij",
+      "pl": "Galeria",
+      "pt": "Galeria",
+      "es": "Galería",
+      "zh-cn": "画廊"
+    },
+    "icon": "Gallery.svg"
+  },
+  {
+    "_id": "garage",
+    "name": {
+      "en": "Garage",
+      "ru": "Гараж",
+      "de": "Garage",
+      "fr": "Garage",
+      "it": "Box Auto",
+      "nl": "Garage",
+      "pl": "Garaż",
+      "pt": "Garagem",
+      "es": "Garaje",
+      "zh-cn": "车库"
+    },
+    "icon": "Garage.svg"
+  },
+  {
+    "_id": "wardrobe",
+    "name": {
+      "en": "Wardrobe",
+      "ru": "Гардероб",
+      "de": "Garderobe",
+      "fr": "Penderie",
+      "it": "Armadio",
+      "nl": "Garderobe",
+      "pl": "Szafa",
+      "pt": "Guarda Roupa",
+      "es": "Armario",
+      "zh-cn": "衣柜"
+    },
+    "icon": "Wardrobe.svg"
+  },
+  {
+    "_id": "garden",
+    "name": {
+      "en": "Garden",
+      "ru": "Сад",
+      "de": "Garten",
+      "fr": "Jardin",
+      "it": "Giardino",
+      "nl": "Tuin",
+      "pl": "Ogród",
+      "pt": "Jardim",
+      "es": "Jardín",
+      "zh-cn": "花园"
+    },
+    "icon": "Garden.svg"
+  },
+  {
+    "_id": "summer_house",
+    "name": {
+      "en": "Summer House",
+      "ru": "Дача",
+      "de": "Gartenhaus",
+      "fr": "Maison D'Été",
+      "it": "Casa Estiva",
+      "nl": "Zomerhuis",
+      "pl": "Domek Letniskowy",
+      "pt": "Summer House",
+      "es": "Casa De Verano",
+      "zh-cn": "凉亭"
+    },
+    "icon": "Summer House.svg"
+  },
+  {
+    "_id": "guest_bathroom",
+    "name": {
+      "en": "Guest Bathroom",
+      "ru": "Гостевая Комната",
+      "de": "Gäste-WC",
+      "fr": "Salle De Bains Invité",
+      "it": "Guest Bathroom",
+      "nl": "Gastenbadkamer",
+      "pl": "Łazienka Gościnna",
+      "pt": "Banheiro De Hóspedes",
+      "es": "Baño De Visitas",
+      "zh-cn": "客用浴室"
+    },
+    "icon": "Guest Bathroom.svg"
+  },
+  {
+    "_id": "guest_room",
+    "name": {
+      "en": "Guest Room",
+      "ru": "Гостевая Комната",
+      "de": "Gästezimmer",
+      "fr": "Chambre D'Amis",
+      "it": "Stanza Degli Ospiti",
+      "nl": "Guest Room",
+      "pl": "Pokój Gościnny",
+      "pt": "Quarto De Hóspedes",
+      "es": "Habitación De Huéspedes",
+      "zh-cn": "客房"
+    },
+    "icon": "Guest Room.svg"
+  },
+  {
+    "_id": "laundry_room",
+    "name": {
+      "en": "Laundry Room",
+      "ru": "Прачечная",
+      "de": "Hauswirtschaftsraum",
+      "fr": "Buanderie",
+      "it": "Lavanderia",
+      "nl": "Wasruimte",
+      "pl": "Pralnia",
+      "pt": "Lavandaria",
+      "es": "Cuarto De Lavado",
+      "zh-cn": "洗衣房"
+    },
+    "icon": "Laundry Room.svg"
+  },
+  {
+    "_id": "home_theater",
+    "name": {
+      "en": "Home Theater",
+      "ru": "Домашний Театр",
+      "de": "Heimkino",
+      "fr": "Cinéma Maison",
+      "it": "Home Theater",
+      "nl": "Thuisbioscoop",
+      "pl": "Kino Domowe",
+      "pt": "Cinema Em Casa",
+      "es": "Cine En Casa",
+      "zh-cn": "家庭电影院"
+    },
+    "icon": "Home Theater.svg"
+  },
+  {
+    "_id": "boiler_room",
+    "name": {
+      "en": "Boiler Room",
+      "ru": "Бойлерная",
+      "de": "Heizungsraum",
+      "fr": "Chaufferie",
+      "it": "Locale Caldaia",
+      "nl": "Boiler Room",
+      "pl": "Kotłownia",
+      "pt": "Sala Da Caldeira",
+      "es": "Sala De Calderas",
+      "zh-cn": "锅炉房"
+    },
+    "icon": "Boiler Room.svg"
+  },
+  {
+    "_id": "chamber",
+    "name": {
+      "en": "Chamber",
+      "ru": "Камера",
+      "de": "Kammer",
+      "fr": "Chambre",
+      "it": "Camera",
+      "nl": "Kamer",
+      "pl": "Izba",
+      "pt": "Câmara",
+      "es": "Cámara",
+      "zh-cn": "商会"
+    },
+    "icon": "Chamber.svg"
+  },
+  {
+    "_id": "basement,_cellar",
+    "name": {
+      "en": "Basement, Cellar",
+      "ru": "Подвал, Погреб",
+      "de": "Keller",
+      "fr": "Sous-Sol, Cave",
+      "it": "Taverna, Cantina",
+      "nl": "Kelder, Kelder",
+      "pl": "Piwnica, Piwnica",
+      "pt": "Porão, Adega",
+      "es": "Sótano, Bodega",
+      "zh-cn": "地下室，地窖"
+    },
+    "icon": "Basement.svg"
+  },
+  {
+    "_id": "nursery",
+    "name": {
+      "en": "Nursery",
+      "ru": "Питомник",
+      "de": "Kinderzimmer",
+      "fr": "Garderie",
+      "it": "Asilo",
+      "nl": "Kinderkamer",
+      "pl": "Żłobek",
+      "pt": "Berçário",
+      "es": "Guardería",
+      "zh-cn": "苗圃"
+    },
+    "icon": "Nursery.svg"
+  },
+  {
+    "_id": "corridor",
+    "name": {
+      "en": "Corridor",
+      "ru": "Коридор",
+      "de": "Korridor",
+      "fr": "Couloir",
+      "it": "Corridoio",
+      "nl": "Gang",
+      "pl": "Korytarz",
+      "pt": "Corredor",
+      "es": "Corredor",
+      "zh-cn": "走廊"
+    },
+    "icon": "Corridor.svg"
+  },
+  {
+    "_id": "kitchen",
+    "name": {
+      "en": "Kitchen",
+      "ru": "Кухня",
+      "de": "Küche",
+      "fr": "Cuisine",
+      "it": "Cucina",
+      "nl": "Keuken",
+      "pl": "Kuchnia",
+      "pt": "Cozinha",
+      "es": "Cocina",
+      "zh-cn": "厨房"
+    },
+    "icon": "Kitchen.svg"
+  },
+  {
+    "_id": "upstairs",
+    "name": {
+      "en": "Upstairs",
+      "ru": "Вверх По Лестнице",
+      "de": "Obergeschoss",
+      "fr": "En Haut",
+      "it": "Di Sopra",
+      "nl": "Boven",
+      "pl": "Na Górę",
+      "pt": "Andar De Cima",
+      "es": "Piso Superior",
+      "zh-cn": "楼上"
+    },
+    "icon": "Upstairs.svg"
+  },
+  {
+    "_id": "office",
+    "name": {
+      "en": "Office",
+      "ru": "Офис",
+      "de": "Office",
+      "fr": "Bureau",
+      "it": "Ufficio",
+      "nl": "Kantoor",
+      "pl": "Gabinet",
+      "pt": "Escritório",
+      "es": "Oficina",
+      "zh-cn": "办公室"
+    },
+    "icon": "Office.svg"
+  },
+  {
+    "_id": "pool",
+    "name": {
+      "en": "Pool",
+      "ru": "Бассейн",
+      "de": "Pool",
+      "fr": "Piscine",
+      "it": "Piscina",
+      "nl": "Zwembad",
+      "pl": "Basen",
+      "pt": "Piscina",
+      "es": "Piscina",
+      "zh-cn": "水池"
+    },
+    "icon": "Pool.svg"
+  },
+  {
+    "_id": "rear_wall",
+    "name": {
+      "en": "Rear Wall",
+      "ru": "Задняя Стенка",
+      "de": "Rückwand",
+      "fr": "Paroi Arrière",
+      "it": "Parete Posteriore",
+      "nl": "Achterwand",
+      "pl": "Tylna Ściana",
+      "pt": "Parede Traseira",
+      "es": "Pared Posterior",
+      "zh-cn": "后墙"
+    },
+    "icon": "Rear Wall.svg"
+  },
+  {
+    "_id": "barn",
+    "name": {
+      "en": "Barn",
+      "ru": "Амбар",
+      "de": "Scheune",
+      "fr": "Grange",
+      "it": "Fienile",
+      "nl": "Schuur",
+      "pl": "Stodoła",
+      "pt": "Celeiro",
+      "es": "Granero",
+      "zh-cn": "谷仓"
+    },
+    "icon": "Barn.svg"
+  },
+  {
+    "_id": "sleeping_area",
+    "name": {
+      "en": "Sleeping Area",
+      "ru": "Спальное Место",
+      "de": "Schlafbereich",
+      "fr": "Coin Montagne",
+      "it": "Area Sleeping",
+      "nl": "Sleeping Area",
+      "pl": "Powierzchnia Spania",
+      "pt": "Sleeping Area",
+      "es": "Área De Dormir",
+      "zh-cn": "睡眠区"
+    },
+    "icon": "Sleeping Area.svg"
+  },
+  {
+    "_id": "bedroom",
+    "name": {
+      "en": "Bedroom",
+      "ru": "Спальная Комната",
+      "de": "Schlafzimmer",
+      "fr": "Chambre",
+      "it": "Camera Da Letto",
+      "nl": "Slaapkamer",
+      "pl": "Sypialnia",
+      "pt": "Quarto",
+      "es": "Cuarto",
+      "zh-cn": "卧室"
+    },
+    "icon": "Bedroom.svg"
+  },
+  {
+    "_id": "shed",
+    "name": {
+      "en": "Shed",
+      "ru": "Сбрасывать",
+      "de": "Schuppen",
+      "fr": "Hangar",
+      "it": "Capannone",
+      "nl": "Schuur",
+      "pl": "Budka",
+      "pt": "Cabana",
+      "es": "Cobertizo",
+      "zh-cn": "棚"
+    },
+    "icon": "Shed.svg"
+  },
+  {
+    "_id": "swimming_pool",
+    "name": {
+      "en": "Swimming Pool",
+      "ru": "Плавательный Бассейн",
+      "de": "Schwimmbad",
+      "fr": "Piscine",
+      "it": "Piscina",
+      "nl": "Zwembad",
+      "pl": "Basen",
+      "pt": "Piscina",
+      "es": "Piscina",
+      "zh-cn": "游泳池"
+    },
+    "icon": "Swimming Pool.svg"
+  },
+  {
+    "_id": "dining",
+    "name": {
+      "en": "Dining",
+      "ru": "Обеденный",
+      "de": "Speis",
+      "fr": "À Manger",
+      "it": "Cenare",
+      "nl": "Dining",
+      "pl": "Jadalnia",
+      "pt": "Jantar",
+      "es": "Comida",
+      "zh-cn": "用餐"
+    },
+    "icon": "Dining.svg"
+  },
+  {
+    "_id": "playroom",
+    "name": {
+      "en": "Playroom",
+      "ru": "Игровая Комната",
+      "de": "Spielzimmer",
+      "fr": "Salle De Jeux",
+      "it": "Stanza Dei Giochi",
+      "nl": "Speelkamer",
+      "pl": "Pokój Zabaw",
+      "pt": "Sala De Jogos",
+      "es": "Cuarto De Jugar",
+      "zh-cn": "游戏室"
+    },
+    "icon": "Playroom.svg"
+  },
+  {
+    "_id": "stairway",
+    "name": {
+      "en": "Stairway",
+      "ru": "Лестница",
+      "de": "Treppe",
+      "fr": "Escalier",
+      "it": "Scala",
+      "nl": "Trap",
+      "pl": "Klatka Schodowa",
+      "pt": "Escada",
+      "es": "Escalera",
+      "zh-cn": "楼梯"
+    },
+    "icon": "Stairway.svg"
+  },
+  {
+    "_id": "equipment_room",
+    "name": {
+      "en": "Equipment Room",
+      "ru": "Оборудование Номера",
+      "de": "Technikraum",
+      "fr": "Salle D'Équipement",
+      "it": "Stanza Degli Attrezzi",
+      "nl": "Technische Ruimte",
+      "pl": "Wyposażenie Pokoi",
+      "pt": "Sala De Equipamentos",
+      "es": "Cuarto De Equipos",
+      "zh-cn": "机房"
+    },
+    "icon": "Equipment Room.svg"
+  },
+  {
+    "_id": "terrace",
+    "name": {
+      "en": "Terrace",
+      "ru": "Терраса",
+      "de": "Terrasse",
+      "fr": "Terrasse",
+      "it": "Terrazza",
+      "nl": "Terras",
+      "pl": "Taras",
+      "pt": "Terraço",
+      "es": "Terraza",
+      "zh-cn": "阳台"
+    },
+    "icon": "Terrace.svg"
+  },
+  {
+    "_id": "toilet",
+    "name": {
+      "en": "Toilet",
+      "ru": "Туалет",
+      "de": "Toilette",
+      "fr": "Toilette",
+      "it": "Gabinetto",
+      "nl": "Toilet",
+      "pl": "Toaleta",
+      "pt": "Banheiro",
+      "es": "Inodoro",
+      "zh-cn": "洗手间"
+    },
+    "icon": "Toilet.svg"
+  },
+  {
+    "_id": "stairwell",
+    "name": {
+      "en": "Stairwell",
+      "ru": "Лестничная клетка",
+      "de": "Treppenhaus",
+      "fr": "Cage D'Escalier",
+      "it": "Tromba Delle Scale",
+      "nl": "Trappenhuis",
+      "pl": "Klatka Schodowa",
+      "pt": "Caixa De Escada",
+      "es": "Hueco De Escalera",
+      "zh-cn": "楼梯间"
+    },
+    "icon": "Stairwell.svg"
+  },
+  {
+    "_id": "locker_room",
+    "name": {
+      "en": "Locker Room",
+      "ru": "Камера Хранения",
+      "de": "Umkleideraum",
+      "fr": "Vestiaire",
+      "it": "Spogliatoio",
+      "nl": "Kleedkamer",
+      "pl": "Szatnia",
+      "pt": "Vestiário",
+      "es": "Vestuario",
+      "zh-cn": "更衣室"
+    },
+    "icon": "Locker Room.svg"
+  },
+  {
+    "_id": "basement",
+    "name": {
+      "en": "Basement",
+      "ru": "Подвал",
+      "de": "Untergeschoss",
+      "fr": "Sous-Sol",
+      "it": "Seminterrato",
+      "nl": "Kelder",
+      "pl": "Piwnica",
+      "pt": "Porão",
+      "es": "Sótano",
+      "zh-cn": "地下室"
+    },
+    "icon": "Basement.svg"
+  },
+  {
+    "_id": "front_yard",
+    "name": {
+      "en": "Front Yard",
+      "ru": "Передний Двор",
+      "de": "Vorgarten",
+      "fr": "Front Yard",
+      "it": "Cortile",
+      "nl": "Voortuin",
+      "pl": "Podwórko",
+      "pt": "Jardim Da Frente",
+      "es": "Patio Delantero",
+      "zh-cn": "前院"
+    },
+    "icon": "Front Yard.svg"
+  },
+  {
+    "_id": "anteroom",
+    "name": {
+      "en": "Anteroom",
+      "ru": "Передняя",
+      "de": "Vorraum",
+      "fr": "Antichambre",
+      "it": "Anticamera",
+      "nl": "Voorkamer",
+      "pl": "Przedpokój",
+      "pt": "Ante-Sala",
+      "es": "Antesala",
+      "zh-cn": "接待室"
+    },
+    "icon": "Anteroom.svg"
+  },
+  {
+    "_id": "washroom",
+    "name": {
+      "en": "Washroom",
+      "ru": "Уборная",
+      "de": "Waschraum",
+      "fr": "Toilettes",
+      "it": "Bagno",
+      "nl": "Waskamer",
+      "pl": "Umywalnia",
+      "pt": "Banheiro",
+      "es": "Baño",
+      "zh-cn": "卫生间"
+    },
+    "icon": "Washroom.svg"
+  },
+  {
+    "_id": "wc",
+    "name": {
+      "en": "Wc",
+      "ru": "Туалет",
+      "de": "WC",
+      "fr": "Toilettes",
+      "it": "Bagno",
+      "nl": "Wc",
+      "pl": "Toaleta",
+      "pt": "Banheiro",
+      "es": "Wc",
+      "zh-cn": "厕所"
+    },
+    "icon": "Wc.svg"
+  },
+  {
+    "_id": "workshop",
+    "name": {
+      "en": "Workshop",
+      "ru": "Мастерская",
+      "de": "Werkstatt",
+      "fr": "Atelier",
+      "it": "Laboratorio",
+      "nl": "Werkplaats",
+      "pl": "Warsztat",
+      "pt": "Oficina",
+      "es": "Taller",
+      "zh-cn": "作坊"
+    },
+    "icon": "Workshop.svg"
+  },
+  {
+    "_id": "windscreen",
+    "name": {
+      "en": "Windscreen",
+      "ru": "Ветровое Стекло",
+      "de": "Windfang",
+      "fr": "Pare-Brise",
+      "it": "Parabrezza",
+      "nl": "Voorruit",
+      "pl": "Szyba Przednia",
+      "pt": "Pára-Brisas",
+      "es": "Parabrisas",
+      "zh-cn": "风档"
+    },
+    "icon": "Windscreen.svg"
+  },
+  {
+    "_id": "living_area",
+    "name": {
+      "en": "Living Area",
+      "ru": "Жилая Площадь",
+      "de": "Wohnbereich",
+      "fr": "Salon",
+      "it": "Zona Giorno",
+      "nl": "Living Area",
+      "pl": "Powierzchnia Mieszkalna",
+      "pt": "Sala-De-Estar",
+      "es": "Sala De Estar",
+      "zh-cn": "生活区域"
+    },
+    "icon": "Living Area.svg"
+  },
+  {
+    "_id": "living_room",
+    "name": {
+      "en": "Living Room",
+      "ru": "Гостинная",
+      "de": "Wohnzimmer",
+      "fr": "Le Salon",
+      "it": "Soggiorno",
+      "nl": "Woonkamer",
+      "pl": "Salon",
+      "pt": "Sala De Estar",
+      "es": "Sala De Estar",
+      "zh-cn": "客厅"
+    },
+    "icon": "Living Room.svg"
+  },
+  {
+    "_id": "living_room",
+    "name": {
+      "en": "Living Room",
+      "ru": "Гостинная",
+      "de": "Wohnzimmer",
+      "fr": "Le Salon",
+      "it": "Soggiorno",
+      "nl": "Woonkamer",
+      "pl": "Salon",
+      "pt": "Sala De Estar",
+      "es": "Sala De Estar",
+      "zh-cn": "客厅"
+    },
+    "icon": "Living Room.svg"
+  }
+]
