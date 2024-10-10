@@ -1,6 +1,6 @@
 {
     "name": "@iobroker/react-components",
-    "version": "7.2.4",
+    "version": "7.2.5",
     "description": "React components to develop ioBroker interfaces with react.",
     "author": {
         "name": "bluefox",
@@ -50,10 +50,10 @@
     },
     "homepage": "https://github.com/ioBroker/iobroker.admin#readme",
     "dependencies": {
-        "@iobroker/socket-client": "^3.1.1",
-        "@iobroker/types": "^6.0.11",
         "@iobroker/js-controller-common": "^6.0.11",
         "@iobroker/js-controller-common-db": "^6.0.11",
+        "@iobroker/socket-client": "^3.1.1",
+        "@iobroker/types": "^6.0.11",
         "@mui/icons-material": "^6.1.3",
         "@mui/material": "^6.1.3",
         "@mui/x-date-pickers": "^7.19.0",
@@ -67,13 +67,13 @@
         "react-inlinesvg": "^4.1.3"
     },
     "devDependencies": {
-        "@babel/plugin-proposal-class-properties": "^7.18.6",
-        "@iobroker/eslint-config": "^0.1.6",
         "@babel/core": "^7.25.7",
+        "@babel/plugin-proposal-class-properties": "^7.18.6",
         "@babel/plugin-transform-runtime": "^7.25.7",
         "@babel/preset-env": "^7.25.7",
         "@babel/preset-flow": "^7.25.7",
         "@babel/preset-react": "^7.25.7",
+        "@iobroker/eslint-config": "^0.1.6",
         "@types/node": "^22.7.5",
         "@types/react": "^18.3.11",
         "@types/react-color": "^3.0.12",
