@@ -268,10 +268,7 @@ export class ColorPicker extends Component<ColorPickerProps, ColorPickerState> {
                         disabled={this.props.disabled}
                         onClick={() => this.handleChange('')}
                         size="small"
-                        style={{
-                            ...(this.props.label || this.props.name ? styles.delButton : undefined),
-                            ...(color ? undefined : { opacity: 0, cursor: 'default' }),
-                        }}
+                        style={this.props.label || this.props.name ? styles.delButton : undefined}
                     >
                         <IconDelete />
                     </IconButton>

@@ -865,6 +865,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
             !schedule.period.years &&
             !schedule.period.days &&
             !schedule.period.weeks;
+
         if (isOnce && !schedule.period.once) {
             schedule.period.once = Schedule.now2string(true);
         }

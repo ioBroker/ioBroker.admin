@@ -33,7 +33,7 @@ export class Router<P = {}, S = {}> extends Component<P, S> {
                 return item ? decodeURIComponent(item) : '';
             } catch {
                 console.error(`Router: Cannot decode ${item}`);
-                return item || '';
+                return item;
             }
         });
         // #tabName/dialogName/deviceId
