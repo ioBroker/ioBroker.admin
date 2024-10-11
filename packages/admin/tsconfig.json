@@ -13,18 +13,10 @@
 
         // This is necessary for the automatic typing of the adapter config
         "resolveJsonModule": true,
-
-        // If you want to disable the stricter type checks (not recommended), uncomment the following line
-        // "strict": false,
-        // And enable some of those features for more fine-grained control
-        // "strictNullChecks": true,
-        // "strictPropertyInitialization": true,
-        // "strictBindCallApply": true,
         "noImplicitAny": true,
-        // "noUnusedLocals": true,
-        // "noUnusedParameters": true,
         "useUnknownInCatchVariables": false,
-        "target": "ES2022"
+        "target": "ES2022",
+        "types": ["@types/node", "@iobroker/types"]
     },
     "include": ["**/*.js", "**/*.ts", "**/*.d.ts",
         "eslint.config.mjs"

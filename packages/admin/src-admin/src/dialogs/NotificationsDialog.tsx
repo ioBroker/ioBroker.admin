@@ -26,11 +26,21 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, type ThemeType, type IobTheme, type AdminConnection, type ThemeName } from '@iobroker/adapter-react-v5';
-
-import type { BackEndCommandOpenLink } from '@iobroker/json-config/src';
+import { I18n, type ThemeType, type IobTheme, type AdminConnection, type ThemeName } from '@iobroker/react-components';
 
 import NotificationMessage, { type Message, type Severity } from '../components/NotificationMessage';
+import type { BackEndCommandGeneric } from '#JC/types';
+
+export interface BackEndCommandOpenLink extends BackEndCommandGeneric {
+    command: 'link';
+    /** Link url. Could be relative ('#blabla') or absolute ('https://blabla') */
+    url: string;
+    /** Target of the link. Default is `_self` for relative and '_blank' for absolute links */
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    target?: '_self' | '_blank' | string;
+    /** If GUI should be closed after the link was opened (Only for target='_self') */
+    close?: boolean;
+}
 
 const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({

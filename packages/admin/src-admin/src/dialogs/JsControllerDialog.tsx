@@ -17,7 +17,7 @@ import {
 
 import { ExpandMore as ExpandMoreIcon, Description as DescriptionIcon, Close as CloseIcon } from '@mui/icons-material';
 
-import { I18n, Utils, IconCopy, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n, Utils, IconCopy, type IobTheme } from '@iobroker/react-components';
 import { CONTROLLER_CHANGELOG_URL } from '@/helpers/utils';
 
 const styles: Record<string, any> = {

@@ -15,7 +15,7 @@ import {
 } from '@mui/icons-material';
 import { FaRegFolder as IconCollapsed, FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
 
-import { type AdminConnection, type IobTheme, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type IobTheme, type ThemeType, type Translate } from '@iobroker/react-components';
 
 import EnumBlock from './EnumBlock';
 import CategoryLabel from './CategoryLabel';

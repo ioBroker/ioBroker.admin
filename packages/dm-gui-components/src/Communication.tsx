@@ -29,7 +29,7 @@ import {
 
 import { Close, Check } from '@mui/icons-material';
 
-import type { Connection, AdminConnection, ThemeName, ThemeType, IobTheme } from '@iobroker/adapter-react-v5';
+import type { Connection, AdminConnection, ThemeName, ThemeType, IobTheme } from '@iobroker/react-components';
 import { type ConfigItemPanel } from '@iobroker/json-config';
 import type {
     ActionBase,

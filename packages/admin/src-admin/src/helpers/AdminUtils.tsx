@@ -1,5 +1,5 @@
 import semver from 'semver';
-import { type Translate } from '@iobroker/adapter-react-v5';
+import { type Translate } from '@iobroker/react-components';
 
 declare module '@mui/material/Button' {
     interface ButtonPropsColorOverrides {

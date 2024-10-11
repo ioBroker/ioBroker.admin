@@ -1,7 +1,7 @@
 import React, { Component, type JSX } from 'react';
 import { Button, Fab, Switch } from '@mui/material';
 
-import type { Connection } from '@iobroker/adapter-react-v5';
+import type { Connection } from '@iobroker/react-components';
 import type { ControlBase, ControlState, DeviceControl } from '@iobroker/dm-utils';
 
 import { renderControlIcon, getTranslation } from './Utils';

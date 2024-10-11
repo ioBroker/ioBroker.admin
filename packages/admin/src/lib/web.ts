@@ -382,7 +382,6 @@ class Web {
             `system.adapter.${adapterName}`,
         );
 
-        // @ts-expect-error fixed in js-controller
         if (res?.common.adminUI?.config === 'json') {
             try {
                 const ajv = new Ajv.Ajv({

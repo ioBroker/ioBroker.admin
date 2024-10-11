@@ -2,7 +2,7 @@ import React, { Component, type JSX } from 'react';
 
 import { Paper } from '@mui/material';
 
-import { withWidth, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import { withWidth, type ThemeType, type Translate } from '@iobroker/react-components';
 
 import Editor from '../Editor';
 

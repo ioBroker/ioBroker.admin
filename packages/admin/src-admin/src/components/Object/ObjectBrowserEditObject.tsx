@@ -31,14 +31,14 @@ import { FaClipboard as IconCopyClipboard } from 'react-icons/fa';
 import {
     Utils,
     I18n,
-    SelectID as DialogSelectID,
+    DialogSelectID,
     IconFx,
     UploadImage,
     type Connection,
     type Translate,
     type ThemeType,
     type IobTheme,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import Editor from '../Editor';
 
@@ -803,11 +803,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 dialogName="aliasesEdit"
                 title={`${this.props.t('Select for')} ${this.props.obj._id}`}
                 selected={id}
-                onOk={idx => {
+                onOk={(idx: string | string[] | undefined) => {
                     const selectRead = this.state.selectRead;
                     const selectWrite = this.state.selectWrite;
                     const selectId = this.state.selectId;
-                    const stateId = idx as string;
+                    const stateId = Array.isArray(idx) ? idx[0] : idx;
                     this.setState({ selectId: false, selectRead: false, selectWrite: false }, () => {
                         if (selectRead) {
                             this.setAliasItem(json, 'id.read', stateId);

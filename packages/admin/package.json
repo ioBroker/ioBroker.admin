@@ -1,7 +1,7 @@
 {
     "name": "iobroker.admin",
     "description": "The adapter opens a webserver for the ioBroker admin UI.",
-    "version": "7.2.3",
+    "version": "7.2.5",
     "contributors": [
         "bluefox <dogafox@gmail.com>",
         "apollon77",
@@ -53,6 +53,7 @@
         "@iobroker/json-config": "file:../jsonConfig",
         "@iobroker/legacy-testing": "^1.0.13",
         "@iobroker/testing": "^5.0.0",
+        "@iobroker/types": "^7.0.0",
         "@types/archiver": "^6.0.2",
         "@types/body-parser": "^1.19.5",
         "@types/compression": "^1.7.5",
@@ -97,6 +98,7 @@
         "test:gui": "mocha test/*.gui.js --exit",
         "prepublishOnly": "npm run build",
         "build": "npm run build:frontend && npm run build:backend",
+        "tsc:backend": "tsc -p tsconfig.build.json",
         "build:backend": "tsc -p tsconfig.build.json && node tasks --backend-i18n",
         "clean": "rimraf src-admin/build",
         "lint-backend": "eslint -c eslint.config.mjs src",

@@ -40,7 +40,7 @@ import {
     type AdminConnection,
     type IobTheme,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import { localeMap } from './utils';
 
@@ -1057,7 +1057,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         return <LinearProgress />;
     }
 
-    renderConfirmDialog(): JSX.Element {
+    renderDialogConfirm(): JSX.Element {
         return (
             <Dialog
                 open={!!this.state.areYouSure}
@@ -1647,7 +1647,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 >
                     {this.renderTable()}
                 </Box>
-                {this.renderConfirmDialog()}
+                {this.renderDialogConfirm()}
                 {this.renderEditDialog()}
             </Paper>
         );

@@ -12,7 +12,7 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { Icon, Utils, type AdminConnection, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
+import { Icon, Utils, type AdminConnection, type Translate, type ThemeType } from '@iobroker/react-components';
 
 interface UserBlockProps {
     t: Translate;

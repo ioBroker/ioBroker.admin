@@ -14,7 +14,7 @@ import {
     Typography,
 } from '@mui/material';
 
-import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate, withWidth } from '@iobroker/react-components';
 
 const boxShadow = '0 4px 7px 5px rgb(0 0 0 / 14%), 0 3px 1px 1px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%)';
 

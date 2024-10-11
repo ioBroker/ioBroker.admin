@@ -14,7 +14,7 @@ import type { Connection } from '@iobroker/socket-client';
 import * as ace from 'ace-builds';
 import 'ace-builds/src-noconflict/ext-modelist';
 
-import { Utils, withWidth, IconNoIcon, Icon, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import { Utils, withWidth, IconNoIcon, Icon, type ThemeType, type Translate } from '@iobroker/react-components';
 
 import Editor from './Editor';
 
@@ -91,7 +91,7 @@ interface FileViewerState {
     imgError: boolean;
 }
 
-class FileViewer extends Component<FileViewerProps, FileViewerState> {
+class FileViewerClass extends Component<FileViewerProps, FileViewerState> {
     private timeout: ReturnType<typeof setTimeout> | null = null;
 
     constructor(props: FileViewerProps) {
@@ -312,7 +312,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
             // File viewer in adapter-react does not support write
             return (
                 <Editor
-                    mode={FileViewer.getEditFile(this.props.formatEditFile)}
+                    mode={FileViewerClass.getEditFile(this.props.formatEditFile)}
                     themeType={this.props.themeType}
                     value={this.state.editingValue || this.state.code || this.state.text}
                     onChange={
@@ -397,4 +397,4 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
     }
 }
 
-export default withWidth()(FileViewer);
+export const FileViewer = withWidth()(FileViewerClass);

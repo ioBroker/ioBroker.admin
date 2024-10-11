@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Close as CloseIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/react-components';
 
 interface NodeUpdateDialogProps {
     /** Called when user closes dialog */

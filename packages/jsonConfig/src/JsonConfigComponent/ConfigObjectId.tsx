@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { InputLabel, FormControl, Button, TextField } from '@mui/material';
 
-import { SelectID as DialogSelectID } from '@iobroker/adapter-react-v5';
+import { DialogSelectID } from '@iobroker/react-components';
 
 import type { ConfigItemObjectId } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';

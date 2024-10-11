@@ -26,7 +26,7 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Confirm as ConfirmDialog,
+    DialogConfirm,
     Icon,
     Utils,
     type AdminConnection,
@@ -35,12 +35,12 @@ import {
     type ThemeType,
     type ThemeName,
     type IobTheme,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 import type { BackEndCommand, ConfigIconType, ConfigItemAny, ConfigItemConfirmData } from '#JC/types';
 
 const DEFAULT_SM_SIZE = window.innerWidth <= 600 ? 12 : undefined;
 
-// because this class is used in adapter-react-v5, do not include here any foreign files like from '../../helpers/utils.ts'
+// because this class is used in react-components, do not include here any foreign files like from '../../helpers/utils.ts'
 export function isObject(it: any): it is Record<string, any> {
     // This is necessary because:
     // typeof null === 'object'
@@ -369,7 +369,7 @@ export default class ConfigGeneric<
         return (text as any).toString();
     }
 
-    renderConfirmDialog(): JSX.Element | null {
+    renderDialogConfirm(): JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }
@@ -384,7 +384,7 @@ export default class ConfigGeneric<
         }
 
         return (
-            <ConfirmDialog
+            <DialogConfirm
                 title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
                 text={this.getText(confirm.text)}
                 ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
@@ -1191,7 +1191,7 @@ export default class ConfigGeneric<
             return (
                 <>
                     <div style={{ flexBasis: '100%', height: 0 }} />
-                    {this.renderConfirmDialog()}
+                    {this.renderDialogConfirm()}
                     {item}
                 </>
             );
@@ -1199,7 +1199,7 @@ export default class ConfigGeneric<
         if (this.state.confirmDialog) {
             return (
                 <>
-                    {this.renderConfirmDialog()}
+                    {this.renderDialogConfirm()}
                     {item}
                 </>
             );

@@ -15,7 +15,7 @@ import {
 
 import { Close as IconClose, Check as IconCheck, Add as IconAdd, Close as CloseIcon } from '@mui/icons-material';
 
-import { UploadImage, type Translate } from '@iobroker/adapter-react-v5';
+import { UploadImage, type Translate } from '@iobroker/react-components';
 
 const styles: Record<string, any> = {
     error: {

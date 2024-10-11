@@ -87,7 +87,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.2.5 (2024-10-10)
+
+-   (@GermanBluefox) Trying to fix a GUI build process
+-   (@GermanBluefox) Changed license icon
+
+### 7.2.4 (2024-10-08)
 
 -   (@GermanBluefox) Corrected some GUI errors
 -   (@GermanBluefox) Ignore error by opening `0_userdata.0`
@@ -109,10 +114,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@foxriver76) allow distinguishing between alert notifications and others for host notifications
 -   (@foxriver76) do not automatically open the notification dialog without user interaction
 -   (@foxriver76) fixed logging as a socket client is now throwing real errors
-
-### 7.1.2 (2024-09-20)
-
--   (@foxriver76) fixed host base settings dialog
 
 ## License
 

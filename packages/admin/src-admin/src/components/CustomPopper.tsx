@@ -4,7 +4,7 @@ import { Popper, Typography, Fade, Paper, IconButton } from '@mui/material';
 
 import { Edit as EditIcon } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/react-components';
 
 let timer: ReturnType<typeof setTimeout>;
 

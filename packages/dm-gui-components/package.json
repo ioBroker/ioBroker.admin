@@ -1,6 +1,6 @@
 {
     "name": "@iobroker/dm-gui-components",
-    "version": "7.2.3",
+    "version": "7.2.5",
     "description": "ReactJS components to develop admin interface for ioBroker device manager.",
     "author": {
         "name": "Jey Cee",
@@ -48,11 +48,11 @@
     },
     "homepage": "https://github.com/ioBroker/dm-gui-components#readme",
     "dependencies": {
-        "@iobroker/json-config": "file:../jsonConfig"
+        "@iobroker/json-config": "file:../jsonConfig",
+        "@iobroker/react-components": "file:../react-components"
     },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
-        "@iobroker/adapter-react-v5": "^7.2.4",
         "@iobroker/dm-utils": "^0.5.0",
         "@iobroker/eslint-config": "^0.1.6",
         "@iobroker/types": "^7.0.0",

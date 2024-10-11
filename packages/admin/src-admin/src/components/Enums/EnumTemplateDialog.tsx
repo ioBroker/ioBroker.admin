@@ -13,7 +13,7 @@ import {
 
 import { Clear as ClearIcon, Brush as CustomGroup, Close as CloseIcon } from '@mui/icons-material';
 
-import { Icon, type Translate, Utils } from '@iobroker/adapter-react-v5';
+import { Icon, type Translate, Utils } from '@iobroker/react-components';
 
 import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';

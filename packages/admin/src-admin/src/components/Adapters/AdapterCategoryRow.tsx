@@ -6,7 +6,7 @@ import { blue, green } from '@mui/material/colors';
 
 import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { type Translate } from '@iobroker/adapter-react-v5';
+import { type Translate } from '@iobroker/react-components';
 
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 

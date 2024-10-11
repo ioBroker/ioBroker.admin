@@ -32,7 +32,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n, Utils, type ThemeType, type IobTheme } from '@iobroker/react-components';
 
 const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({

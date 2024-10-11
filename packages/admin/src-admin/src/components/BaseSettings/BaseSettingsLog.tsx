@@ -30,7 +30,7 @@ import {
     Computer as IconSyslog,
     Send as IconStream,
 } from '@mui/icons-material';
-import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { withWidth, type IobTheme, type Translate } from '@iobroker/react-components';
 import IconSeq from '../../assets/seq.png';
 
 const styles: Record<string, any> = {

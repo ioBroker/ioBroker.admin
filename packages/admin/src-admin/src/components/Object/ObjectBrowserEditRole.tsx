@@ -3,7 +3,7 @@ import React, { Component, type JSX } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Autocomplete } from '@mui/material';
 
 import { Close as IconCancel, Check as IconCheck } from '@mui/icons-material';
-import type { AdminConnection, Translate } from '@iobroker/adapter-react-v5';
+import type { AdminConnection, Translate } from '@iobroker/react-components';
 
 interface ObjectBrowserEditRoleProps {
     roles: string[];

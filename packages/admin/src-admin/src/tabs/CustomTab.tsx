@@ -1,7 +1,7 @@
 import React, { Component, type JSX } from 'react';
 import { LinearProgress } from '@mui/material';
 
-import { withWidth, type ThemeType, Router } from '@iobroker/adapter-react-v5';
+import { withWidth, type ThemeType, Router } from '@iobroker/react-components';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import AdminUtils from '@/helpers/AdminUtils';

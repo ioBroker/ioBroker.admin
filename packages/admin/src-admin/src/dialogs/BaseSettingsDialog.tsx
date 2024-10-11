@@ -17,12 +17,12 @@ import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
 import {
     type AdminConnection,
-    Confirm as ConfirmDialog,
+    DialogConfirm,
     withWidth,
     type ThemeType,
     type IobTheme,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import BaseSettingsSystem, { type SystemSettings } from '../components/BaseSettings/BaseSettingsSystem';
 import BaseSettingsMultihost, { type MultihostSettings } from '../components/BaseSettings/BaseSettingsMultihost';
@@ -105,10 +105,10 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         await this.getSettings(this.state.currentHost);
     }
 
-    renderConfirmDialog(): JSX.Element | null {
+    renderDialogConfirm(): JSX.Element | null {
         if (this.state.confirmExit) {
             return (
-                <ConfirmDialog
+                <DialogConfirm
                     text={this.props.t('Discard unsaved changes?')}
                     onClose={result => this.setState({ confirmExit: false }, () => result && this.props.onClose())}
                 />
@@ -120,7 +120,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
     renderRestartDialog(): JSX.Element | null {
         if (this.state.showRestart) {
             return (
-                <ConfirmDialog
+                <DialogConfirm
                     title={this.props.t('Please confirm')}
                     text={
                         <>
@@ -405,7 +405,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
                             {this.renderPlugins()}
                         </Box>
                     ) : null}
-                    {this.renderConfirmDialog()}
+                    {this.renderDialogConfirm()}
                     {this.renderRestartDialog()}
                 </DialogContent>
                 <DialogActions>

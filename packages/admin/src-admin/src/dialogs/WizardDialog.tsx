@@ -13,7 +13,7 @@ import {
     type AdminConnection,
     type ThemeName,
     type ThemeType,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/react-components';
 
 import WizardPasswordTab from '@/components/Wizard/WizardPasswordTab';
 import WizardLicenseTab from '@/components/Wizard/WizardLicenseTab';

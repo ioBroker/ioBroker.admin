@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { type AdminConnection, type Translate, type ThemeType, type ThemeName } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type Translate, type ThemeType, type ThemeName } from '@iobroker/react-components';
 
 import type { AdminGuiConfig } from '@/types';
 

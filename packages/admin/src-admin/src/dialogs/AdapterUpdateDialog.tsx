@@ -24,7 +24,7 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { I18n, Utils, type IobTheme, type Translate } from '@iobroker/react-components';
 
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';

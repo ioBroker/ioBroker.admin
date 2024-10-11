@@ -9,7 +9,7 @@ import {
     Videocam as IconVideo,
 } from '@mui/icons-material';
 
-import { SelectFile as SelectFileDialog } from '@iobroker/adapter-react-v5';
+import { DialogSelectFile } from '@iobroker/react-components';
 
 import type { ConfigItemFile } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -142,7 +142,7 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
             return null;
         }
         return (
-            <SelectFileDialog
+            <DialogSelectFile
                 imagePrefix={this.props.imagePrefix}
                 socket={this.props.socket}
                 selected={this.state.value}

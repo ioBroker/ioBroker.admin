@@ -22,7 +22,7 @@ import {
 
 import { Close as CloseIcon, Language as LanguageIcon, Info as InfoIcon } from '@mui/icons-material';
 
-import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme, Utils } from '@iobroker/react-components';
 
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import { checkCondition } from '@/dialogs/AdapterUpdateDialog';

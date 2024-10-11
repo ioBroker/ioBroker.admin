@@ -15,7 +15,7 @@ import {
 // Icons
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { withWidth, Error as DialogError, Confirm as ConfirmDialog, type IobTheme } from '@iobroker/adapter-react-v5';
+import { withWidth, DialogError, DialogConfirm, type IobTheme } from '@iobroker/react-components';
 
 import { ConfigGeneric, JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
 import AdminUtils from '@/helpers/AdminUtils';
@@ -882,7 +882,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             return null;
         }
         return (
-            <ConfirmDialog
+            <DialogConfirm
                 text={this.props.t(
                     'The changes will be applied to %s states. Are you sure?',
                     this.props.objectIDs.length.toString(),
