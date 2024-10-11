@@ -26,7 +26,6 @@ import {
     Update as UpdateIcon,
     Star as StarIcon,
     Close as CloseIcon,
-    SavedSearch,
 } from '@mui/icons-material';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 

@@ -13,14 +13,8 @@ import type { Connection } from '@iobroker/socket-client';
 import { IconNoIcon } from '../icons/IconNoIcon';
 import { withWidth } from './withWidth';
 import { Utils } from './Utils';
-import type { Translate } from '../types';
+import type { ThemeType, Translate } from '../types';
 import { Icon } from './Icon';
-// File viewer in adapter-react does not use ace editor
-// import * as ace from 'ace-builds';
-// import 'ace-builds/src-noconflict/ext-modelist';
-// import Editor from './Editor';
-
-// const modelist = ace.require('ace/ext/modelist');
 
 const styles: Record<string, React.CSSProperties> = {
     dialog: {
@@ -65,23 +59,23 @@ function bufferToBase64(buffer: Buffer, isFull?: boolean): string {
     return window.btoa(binary);
 }
 
-interface FileViewerProps {
+export interface FileViewerProps {
     /** Translation function */
     t: Translate;
     /** Callback when the viewer is closed. */
     onClose: () => void;
     /** The URL (file path) to the file to be displayed. */
     href: string;
-    // formatEditFile?: string;
+    formatEditFile?: string;
     socket: Connection;
     setStateBackgroundImage: () => void;
-    // themeType: ThemeType;
+    themeType: ThemeType;
     getStyleBackgroundImage: () => React.CSSProperties | null;
     /** Flag is the js-controller support subscribe on file */
     supportSubscribes?: boolean;
 }
 
-interface FileViewerState {
+export interface FileViewerState {
     text: string | null;
     code: string | null;
     ext: string | null;
@@ -220,37 +214,21 @@ export class FileViewerClass extends Component<FileViewerProps, FileViewerState>
         }
     };
 
-    // eslint-disable-next-line class-methods-use-this
-    writeFile64 = (): void => {
-        /*
-        // File viewer in adapter-react does not support write
-        const parts = this.props.href.split('/');
-        const data = this.state.editingValue;
-        parts.splice(0, 2);
-        const adapter = parts[0];
-        const name = parts.splice(1).join('/');
-        this.props.socket.writeFile64(adapter, name, Buffer.from(data).toString('base64'))
-            .then(() => this.props.onClose())
-            .catch(e => window.alert(`Cannot write file: ${e}`));
-        */
-    };
-
-    static getEditFile(ext: string | null): 'json' | 'json5' | 'javascript' | 'html' | 'text' {
-        switch (ext) {
-            case 'json':
-                return 'json';
-            case 'json5':
-                return 'json5';
-            case 'js':
-                return 'javascript';
-            case 'html':
-                return 'html';
-            case 'txt':
-                return 'html';
-            default:
-                // e.g. ace/mode/text
-                return 'text';
-        }
+    getEditorOrViewer(): JSX.Element {
+        return (
+            <TextField
+                variant="standard"
+                style={styles.textarea}
+                multiline
+                value={this.state.editingValue || this.state.code || this.state.text}
+                // onChange={newValue => this.setState({ editingValue: newValue, changed: true })}
+                slotProps={{
+                    htmlInput: {
+                        readOnly: !this.state.editing,
+                    },
+                }}
+            />
+        );
     }
 
     getContent(): React.JSX.Element | null {
@@ -315,27 +293,19 @@ export class FileViewerClass extends Component<FileViewerProps, FileViewerState>
         if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             // File viewer in adapter-react does not support write
             // return <Editor
-            //     mode={FileViewerClass.getEditFile(this.props.formatEditFile)}
+            //     mode={this.getEditFile(this.props.formatEditFile)}
             //     themeType={this.props.themeType}
             //     value={this.state.editingValue || this.state.code || this.state.text}
             //     onChange={this.state.editing ? newValue => this.setState({ editingValue: newValue, changed: true }) : undefined}
             // />;
-            return (
-                <TextField
-                    variant="standard"
-                    style={styles.textarea}
-                    multiline
-                    value={this.state.editingValue || this.state.code || this.state.text}
-                    // onChange={newValue => this.setState({ editingValue: newValue, changed: true })}
-                    slotProps={{
-                        htmlInput: {
-                            readOnly: !this.state.editing,
-                        },
-                    }}
-                />
-            );
+            return this.getEditorOrViewer();
         }
         return null;
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    onSave(): void {
+        // Do nothing as the file viewer in adapter-react does not support writing
     }
 
     render(): JSX.Element {
@@ -389,7 +359,7 @@ export class FileViewerClass extends Component<FileViewerProps, FileViewerState>
                                 this.state.editingValue === this.state.text
                             }
                             variant="contained"
-                            onClick={this.writeFile64}
+                            onClick={() => this.onSave()}
                             startIcon={<SaveIcon />}
                         >
                             {this.props.t('Save')}

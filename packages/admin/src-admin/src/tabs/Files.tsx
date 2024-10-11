@@ -11,8 +11,9 @@ import {
     TabContent,
 } from '@iobroker/adapter-react-v5';
 
-import FileBrowser, { type FileBrowserClass, type MetaObject } from '../components/FileBrowser';
+import { FileBrowser, type FileBrowserClass, type MetaObject } from '@iobroker/adapter-react-v5';
 
+import { FileEditor } from '../components/FileEditor';
 import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';
 
 interface FilesProps {
@@ -157,6 +158,7 @@ class Files extends Component<FilesProps> {
                         allowDelete
                         expertMode={this.props.expertMode}
                         modalEditOfAccessControl={(context: FileBrowserClass) => this.renderAclDialog(context)}
+                        FileViewer={FileEditor}
                     />
                 </TabContent>
             </TabContainer>

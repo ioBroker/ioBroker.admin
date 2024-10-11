@@ -7,14 +7,17 @@ import { Box, Card } from '@mui/material';
 
 import { List as ListIcon } from '@mui/icons-material';
 
-import { type AdminConnection, Icon, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
-
-import ObjectBrowser, {
+import {
+    type AdminConnection,
+    Icon,
+    type IobTheme,
+    type Translate,
+    ObjectBrowser,
     type TreeItemData,
     type TreeItem,
     getSelectIdIconFromObjects,
     ITEM_IMAGES,
-} from '../ObjectBrowser';
+} from '@iobroker/adapter-react-v5';
 
 export interface DragItem {
     data: TreeItemData;
