@@ -1,4 +1,4 @@
-import type { I18n, AdminConnection, ThemeType, ThemeName } from '@iobroker/react-components';
+import type { I18n, AdminConnection, ThemeType, ThemeName } from '@iobroker/adapter-react-v5';
 
 declare module '*.png';
 declare module '*.svg';

@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 
 import { Warning as IconWarning, Error as IconError, Info as IconInfo } from '@mui/icons-material';
 
-import { DialogConfirm, Icon, I18n } from '@iobroker/react-components';
+import { DialogConfirm, Icon, I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemSetState } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 

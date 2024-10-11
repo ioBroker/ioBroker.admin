@@ -36,7 +36,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 // icons
 import { FaChartLine as SplitLineIcon } from 'react-icons/fa';

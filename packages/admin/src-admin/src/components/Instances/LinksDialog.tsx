@@ -2,7 +2,7 @@ import React, { Component, type JSX } from 'react';
 
 import { List, ListItemButton, ListItemText, DialogTitle, Dialog, ListItemAvatar, Avatar } from '@mui/material';
 
-import { I18n, type ThemeType, type Translate, Utils } from '@iobroker/react-components';
+import { I18n, type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '../../helpers/AdminUtils';
 

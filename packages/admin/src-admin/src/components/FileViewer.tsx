@@ -14,7 +14,7 @@ import type { Connection } from '@iobroker/socket-client';
 import * as ace from 'ace-builds';
 import 'ace-builds/src-noconflict/ext-modelist';
 
-import { Utils, withWidth, IconNoIcon, Icon, type ThemeType, type Translate } from '@iobroker/react-components';
+import { Utils, withWidth, IconNoIcon, Icon, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
 
 import Editor from './Editor';
 

@@ -4,7 +4,7 @@ import { TextField, Grid2, Toolbar, Button, Paper, Box } from '@mui/material';
 
 import { Check as IconCheck } from '@mui/icons-material';
 
-import { type IobTheme, type Translate, withWidth } from '@iobroker/react-components';
+import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '../../helpers/AdminUtils';
 

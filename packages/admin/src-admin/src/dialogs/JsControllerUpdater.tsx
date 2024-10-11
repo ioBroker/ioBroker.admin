@@ -5,7 +5,7 @@ import { LinearProgress, Button, Dialog, DialogActions, DialogContent, DialogTit
 
 import { Close as CloseIcon, Refresh as ReloadIcon } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, type ThemeType } from '@iobroker/react-components';
+import { type AdminConnection, I18n, type ThemeType } from '@iobroker/adapter-react-v5';
 
 interface NetworkInterface {
     address: string;

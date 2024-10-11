@@ -14,8 +14,9 @@ or step-by-step
 
 ```bash
 npm i -f
+npm i -w packages/adapter-react-v5 -f
+npm i -w packages/jsonConfig -f
 npm i -w packages/dm-gui-components -f
-npm i -f -w packages/jsonConfig
 npm i -w packages/admin -f
 ```
 

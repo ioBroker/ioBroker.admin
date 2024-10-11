@@ -17,7 +17,7 @@ import {
 
 import { Check as CheckIcon, Close as CloseIcon, AddBox as AddIcon } from '@mui/icons-material';
 
-import { I18n, Utils } from '@iobroker/react-components';
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 
 const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', 'object', 'string'];

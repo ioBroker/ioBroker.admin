@@ -25,7 +25,7 @@ import {
     type AdminConnection,
     type ThemeType,
     type ThemeName,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import AdminUtils from '@/helpers/AdminUtils';

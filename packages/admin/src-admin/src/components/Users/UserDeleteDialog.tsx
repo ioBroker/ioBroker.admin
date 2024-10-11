@@ -3,7 +3,7 @@ import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, B
 
 import { Close as IconCancel, Delete as IconDelete } from '@mui/icons-material';
 
-import { type Translate } from '@iobroker/react-components';
+import { type Translate } from '@iobroker/adapter-react-v5';
 
 interface UserDeleteDialogProps {
     t: Translate;

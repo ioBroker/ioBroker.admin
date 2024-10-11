@@ -15,7 +15,7 @@ import {
     type IobTheme,
     type ThemeName,
     type ThemeType,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemAny, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
 import Utils from '#JC/Utils';

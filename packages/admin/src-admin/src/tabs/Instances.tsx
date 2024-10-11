@@ -31,7 +31,7 @@ import {
     type ThemeType,
     TabHeader,
     type Translate,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '@/helpers/AdminUtils';
 import { replaceLink } from '@/helpers/utils';

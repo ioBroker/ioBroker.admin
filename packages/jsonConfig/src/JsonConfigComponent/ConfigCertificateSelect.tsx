@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { InputLabel, MenuItem, FormControl, Select, FormHelperText } from '@mui/material';
 
-import { I18n } from '@iobroker/react-components';
+import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCertificateSelect } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 

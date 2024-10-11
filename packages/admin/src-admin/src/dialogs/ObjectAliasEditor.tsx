@@ -23,9 +23,9 @@ import {
 // Icons
 import { Close, Link as IconLink, AddLink, Close as IconClose } from '@mui/icons-material';
 
-import { withWidth } from '@iobroker/react-components';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
-import { I18n, IconFx, type IobTheme, type AdminConnection, type Translate } from '@iobroker/react-components';
+import { I18n, IconFx, type IobTheme, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 
 import type { ioBrokerObject } from '@/types';
 

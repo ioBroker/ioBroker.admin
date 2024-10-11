@@ -4,7 +4,7 @@ import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, B
 
 import { Delete as DeleteIcon, Close as CloseIcon } from '@mui/icons-material';
 
-import type { Translate } from '@iobroker/react-components';
+import type { Translate } from '@iobroker/adapter-react-v5';
 
 interface EnumDeleteDialogProps {
     onClose: () => void;

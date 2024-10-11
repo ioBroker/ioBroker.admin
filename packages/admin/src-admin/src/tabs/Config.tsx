@@ -42,7 +42,7 @@ import {
     type ThemeName,
     type ThemeType,
     type Translate,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import { type DeviceManagerPropsProps, JsonConfig } from '@iobroker/json-config';
 import DeviceManager from '@iobroker/dm-gui-components';

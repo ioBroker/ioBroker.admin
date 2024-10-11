@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { Close as CloseIcon, Add as AddIcon, Public as IconWeb, Language as LanguageIcon } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/react-components';
+import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 import type HostsWorker from '@/Workers/HostsWorker';
 import type InstancesWorker from '@/Workers/InstancesWorker';

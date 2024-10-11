@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { TextField } from '@mui/material';
 
-import { I18n } from '@iobroker/react-components';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemPort } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';

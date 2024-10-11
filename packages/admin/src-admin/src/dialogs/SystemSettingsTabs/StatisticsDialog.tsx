@@ -14,7 +14,7 @@ import {
 
 import blueGrey from '@mui/material/colors/blueGrey';
 
-import { withWidth, type Translate, type ThemeType } from '@iobroker/react-components';
+import { withWidth, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
 import AdminUtils from '@/helpers/AdminUtils';
 import Editor from '../../components/Editor';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';

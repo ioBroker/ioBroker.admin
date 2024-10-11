@@ -3,7 +3,7 @@ import { IconButton, InputAdornment, TextField, Toolbar, Tooltip, LinearProgress
 
 import { Clear, Refresh } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/react-components';
+import { I18n } from '@iobroker/adapter-react-v5';
 import type { DeviceInfo, InstanceDetails } from '@iobroker/dm-utils';
 
 import DeviceCard from './DeviceCard';

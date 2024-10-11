@@ -29,7 +29,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import { getHref } from '@/tabs/CustomTab';
 import AdminUtils from '@/helpers/AdminUtils';

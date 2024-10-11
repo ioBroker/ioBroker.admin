@@ -8,7 +8,7 @@ import {
     type ThemeType,
     type Translate,
     type IobTheme,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import type { FolderOrFileItem, Folders, MetaACL, MetaObject } from '@/components/FileBrowser';
 

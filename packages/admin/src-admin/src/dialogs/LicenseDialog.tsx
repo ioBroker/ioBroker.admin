@@ -5,7 +5,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, LinearP
 
 import { Close as IconClose, Check as IconCheck, ArrowDownward as IconArrowDownward } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/react-components';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
     root: {

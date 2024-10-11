@@ -1,5 +1,5 @@
 import type React from 'react';
-import type { ObjectBrowserCustomFilter, ObjectBrowserType } from '@iobroker/react-components';
+import type { ObjectBrowserCustomFilter, ObjectBrowserType } from '@iobroker/adapter-react-v5';
 
 declare module '@mui/material/Button' {
     interface ButtonPropsColorOverrides {

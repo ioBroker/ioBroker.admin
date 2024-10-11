@@ -24,7 +24,7 @@ import {
 
 import { green, grey, orange, red } from '@mui/material/colors';
 
-import { I18n } from '@iobroker/react-components';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import filterIcon from '../../assets/filter.svg';
 

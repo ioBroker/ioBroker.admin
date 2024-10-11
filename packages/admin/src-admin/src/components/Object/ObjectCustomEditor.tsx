@@ -15,7 +15,7 @@ import {
 // Icons
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { withWidth, DialogError, DialogConfirm, type IobTheme } from '@iobroker/react-components';
+import { withWidth, DialogError, DialogConfirm, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import { ConfigGeneric, JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
 import AdminUtils from '@/helpers/AdminUtils';

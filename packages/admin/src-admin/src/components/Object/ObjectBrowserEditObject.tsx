@@ -38,7 +38,7 @@ import {
     type Translate,
     type ThemeType,
     type IobTheme,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
 

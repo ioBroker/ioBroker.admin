@@ -4,7 +4,7 @@ import { TextField, IconButton, InputAdornment } from '@mui/material';
 
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/react-components';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemPassword } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';

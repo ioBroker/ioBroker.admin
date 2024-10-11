@@ -18,7 +18,7 @@ import {
     Box,
 } from '@mui/material';
 
-import { DialogConfirm, withWidth, type IobTheme, type Translate } from '@iobroker/react-components';
+import { DialogConfirm, withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 import { type AdminConnection } from '@iobroker/socket-client';
 

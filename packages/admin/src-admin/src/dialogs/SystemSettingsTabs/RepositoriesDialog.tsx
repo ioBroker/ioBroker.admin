@@ -27,7 +27,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, withWidth, DialogConfirm, type Translate, type ThemeType } from '@iobroker/react-components';
+import { I18n, withWidth, DialogConfirm, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
 import { InfoBox } from '@foxriver76/iob-component-lib';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';

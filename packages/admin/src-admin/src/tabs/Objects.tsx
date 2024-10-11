@@ -22,7 +22,7 @@ import {
     type Translate,
     withWidth,
     Router,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import type ObjectsWorker from '@/Workers/ObjectsWorker';
 

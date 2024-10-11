@@ -105,7 +105,7 @@ import {
     type ThemeType,
     type ThemeName,
     type Translate,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 // own
 
 declare global {

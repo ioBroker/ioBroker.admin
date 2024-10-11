@@ -4,7 +4,7 @@ import { Grid2, Skeleton } from '@mui/material';
 
 import { Error as ErrorIcon } from '@mui/icons-material';
 
-import { type AdminConnection } from '@iobroker/react-components';
+import { type AdminConnection } from '@iobroker/adapter-react-v5';
 
 import IntroCard, { type IntroCardProps, type IntroCardState } from '@/components/Intro/IntroCard';
 import CameraIntroDialog from './CameraIntroDialog';

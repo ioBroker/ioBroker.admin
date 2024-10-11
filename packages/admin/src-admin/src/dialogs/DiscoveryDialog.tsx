@@ -47,7 +47,7 @@ import {
     type AdminConnection,
     type ThemeType,
     type ThemeName,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 import type { CompactHost } from '@/types';
 
 import Command from '../components/Command';

@@ -13,7 +13,7 @@ If you want to create the configuration page with ReactJS:
     - Change `name` from `src` to `ADAPTERNAME-admin` (Of course replace `ADAPTERNAME` with yours)
     - Add to devDependencies:
         ```json
-        "@iobroker/react-components": "^7.2.4",
+        "@iobroker/adapter-react-v5": "^7.2.5",
         ```
         Versions can be higher.
         So your `src/package.json` should look like:
@@ -24,7 +24,7 @@ If you want to create the configuration page with ReactJS:
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@iobroker/react-components": "^7.2.4",
+        "@iobroker/adapter-react-v5": "^7.2.5",
         "@iobroker/build-tools": "^1.0.0",
         "@iobroker/eslint-config": "^0.1.2",
         "@mui/material": "^6.0.2",
@@ -52,7 +52,7 @@ If you want to create the configuration page with ReactJS:
 ```
 
 5. Call in `src`: `npm install`
-6. Copy `tasks.js` into `src`: `cp node_modules/@iobroker/react-components/tasks.js tasks.js`
+6. Copy `tasks.js` into `src`: `cp node_modules/@iobroker/adapter-react-v5/tasks.js tasks.js`
 7. Add scripts to your `package.json` `scripts` section:
 
 ```json
@@ -227,7 +227,7 @@ Usage:
 
 ```jsx
 import React from 'react';
-import { I18n, Confirm as ConfirmDialog } from '@iobroker/react-components';
+import { I18n, Confirm as ConfirmDialog } from '@iobroker/adapter-react-v5';
 
 class ExportImportDialog extends React.Component {
     constructor(props) {
@@ -296,7 +296,7 @@ renderMessage() {
 ![Logo](img/selectID.png)
 
 ```jsx
-import { SelectID as DialogSelectID } from '@iobroker/react-components';
+import { SelectID as DialogSelectID } from '@iobroker/adapter-react-v5';
 
 class MyComponent extends Component {
     constructor(props) {

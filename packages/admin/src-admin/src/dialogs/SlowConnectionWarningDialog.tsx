@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogActions, DialogTitle, DialogContentText, T
 
 import { Close as CloseIcon, AccessTime as TimeIcon, Check as CheckIcon } from '@mui/icons-material';
 
-import { AdminConnection, type Translate } from '@iobroker/react-components';
+import { AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
 
 const styles: Record<string, React.CSSProperties> = {

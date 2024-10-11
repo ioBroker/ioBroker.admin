@@ -4,7 +4,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, 
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import type { IobTheme, Translate, AdminConnection } from '@iobroker/react-components';
+import type { IobTheme, Translate, AdminConnection } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
     rootGrid: {

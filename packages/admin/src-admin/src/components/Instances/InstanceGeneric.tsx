@@ -61,7 +61,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 import { amber, blue, green, grey, orange, red } from '@mui/material/colors';
 
 import State from '@/components/State';

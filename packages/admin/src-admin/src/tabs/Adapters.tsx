@@ -43,7 +43,7 @@ import {
     type Translate,
     TabContainer,
     Utils,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 import type AdaptersWorker from '@/Workers/AdaptersWorker';
 import { type AdapterEvent } from '@/Workers/AdaptersWorker';
 import type InstancesWorker from '@/Workers/InstancesWorker';

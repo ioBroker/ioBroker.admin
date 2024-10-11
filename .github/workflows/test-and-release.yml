@@ -48,8 +48,8 @@ jobs:
             - name: 'Build backend'
               run: npm run build:backend -w packages/admin
 
-            - name: 'Build React-Components'
-              run: npm run build -w packages/react-components
+            - name: 'Build adapter-react-v5'
+              run: npm run build -w packages/adapter-react-v5
 
             - name: 'Build JsonConfig'
               run: npm run build -w packages/jsonConfig

@@ -5,7 +5,7 @@ import { Box, Card, CardContent, CardMedia, Fab, Tooltip, Typography } from '@mu
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { amber } from '@mui/material/colors';
 
-import { type IobTheme, Utils } from '@iobroker/react-components';
+import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import IsVisible from '../IsVisible';
 import AdapterGeneric, {

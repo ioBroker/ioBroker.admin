@@ -4,7 +4,7 @@ import { Box, Card, CardContent, CardMedia, Fab, Skeleton, Typography } from '@m
 
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 
-import { Utils, type IobTheme } from '@iobroker/react-components';
+import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '@/helpers/AdminUtils';
 import HostGeneric, {
