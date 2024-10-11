@@ -19,32 +19,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.2.5": {
-        "en": "Trying to fix a GUI build process\nChanged license icon",
-        "de": "Versuchen, einen GUI-Building-Prozess zu beheben\nGeändertes Lizenzsymbol",
-        "ru": "Попытка исправить процесс построения графического интерфейса\nИзменение иконки лицензии",
-        "pt": "Tentando corrigir um processo de compilação GUI\nÍcone de licença alterado",
-        "nl": "Proberen een GUI build proces te repareren\nGewijzigd licentiepictogram",
-        "fr": "Essayer de réparer un processus de construction d'interface graphique\nIcône de licence modifiée",
-        "it": "Cercare di risolvere un processo di costruzione GUI\nIcona di licenza modificata",
-        "es": "Tratando de arreglar un proceso de construcción GUI\nIcono de licencia cambiado",
-        "pl": "Próbuje naprawić proces budowania GUI\nZmieniona ikona licencji",
-        "uk": "Спробуйте виправити процес побудови GUI\nЗміна іконки ліцензії",
-        "zh-cn": "试图修正图形界面构建进程\n更改许可证图标"
-      },
-      "7.2.4": {
-        "en": "Corrected some GUI errors\nIgnore error by opening `0_userdata.0`",
-        "de": "Einige GUI-Fehler korrigiert\nFehler ignorieren durch Öffnen von `0_userdata.0`",
-        "ru": "Исправлены некоторые ошибки GUI\nИгнорировать ошибку, открывая `0_userdata.0`",
-        "pt": "Corrigido alguns erros GUI\nIgnorar erro ao abrir `0_userdata.0`",
-        "nl": "Enkele GUI-fouten gecorrigeerd\nFout negeren door het openen van ",
-        "fr": "Correction de certaines erreurs d'interface graphique\nIgnorer l'erreur en ouvrant `0_userdata.0`",
-        "it": "Corretto alcuni errori GUI\nIgnora errore aprendo `0_userdata.0`",
-        "es": "Corregido algunos errores de GUI\nIgnora el error al abrir `0_userdata.0`",
-        "pl": "Poprawiono niektóre błędy GUI\nIgnoruj błąd otwierając '0 _ userdata.0'",
-        "uk": "Виправлено деякі помилки інтерфейсу\nІм’я користувача `0_userdata.0`",
-        "zh-cn": "更正了一些图形用户界面错误\n打开 '0_userdata.0' 忽略错误"
-      },
       "7.2.0": {
         "en": "Added the check of well-known passwords for the linux systems\nAdded the history for the installation from URL\nfixed wrongly displayed repository warning",
         "de": "Hinzugefügt die Überprüfung der bekannten Passwörter für die Linux-Systeme\nDie Geschichte der Installation von URL hinzugefügt\nfalsch angezeigte repository-warnung",

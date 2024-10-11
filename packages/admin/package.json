@@ -28,7 +28,7 @@
         "@iobroker/socket-classes": "^1.6.1",
         "@iobroker/webserver": "^1.0.6",
         "@iobroker/ws": "^2.0.0",
-        "@iobroker/ws-server": "3.0.3",
+        "@iobroker/ws-server": "4.0.1",
         "ajv": "^8.17.1",
         "archiver": "^7.0.1",
         "axios": "^1.7.7",
@@ -69,10 +69,10 @@
         "colorette": "^2.0.20",
         "less": "^4.2.0",
         "mocha": "^10.7.3",
-        "puppeteer": "^23.5.1",
+        "puppeteer": "^23.5.3",
         "sinon-chai": "^3.7.0",
         "src-rx": "file:src-admin",
-        "typescript": "^5.6.2"
+        "typescript": "^5.6.3"
     },
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.admin/issues"

@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.2.5 (2024-10-10)
+### **WORK IN PROGRESS**
 
 -   (@GermanBluefox) Trying to fix a GUI build process
 -   (@GermanBluefox) Changed license icon

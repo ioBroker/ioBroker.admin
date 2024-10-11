@@ -26,6 +26,7 @@ import {
     Update as UpdateIcon,
     Star as StarIcon,
     Close as CloseIcon,
+    SavedSearch,
 } from '@mui/icons-material';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
@@ -240,7 +241,9 @@ interface AdaptersState extends AdapterInstallDialogState {
     filterTiles: string;
     gitHubInstallDialog: boolean;
     updateAvailable: string[];
-    filteredList: any;
+    filteredList: {
+        [adapterName: string]: { exact: boolean; type: 'name' | 'desc' | 'title' | 'keywords'; start?: boolean };
+    } | null;
     showUpdater: boolean;
     descWidth: number;
     showStatistics: boolean;
@@ -685,6 +688,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         sortByName: boolean,
         sortPopularFirst?: boolean,
         sortRecentlyUpdated?: boolean,
+        filteredList?: {
+            [adapterName: string]: { exact: boolean; type: 'name' | 'desc' | 'title' | 'keywords'; start?: boolean };
+        } | null,
     ): void {
         const titles: { [adapterName: string]: string } = {};
         list.sort((a, b) => {
@@ -711,6 +717,15 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
                 }
                 return (adapters[a] as AdapterCacheEntry).daysAgo - (adapters[b] as AdapterCacheEntry).daysAgo;
+            }
+
+            if (filteredList) {
+                if (filteredList[a].exact && !filteredList[b].exact) {
+                    return -1;
+                }
+                if (!filteredList[a].exact && filteredList[b].exact) {
+                    return 1;
+                }
             }
 
             if (installed[a] && installed[b]) {
@@ -1245,7 +1260,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     filterAdapters(search?: string): void {
         search = search === undefined ? this.state.search : search;
         search = (search || '').toLowerCase().trim();
-        let filteredList: string[] = [];
+        let filteredList: {
+            [adapterName: string]: { exact: boolean; type: 'name' | 'desc' | 'title' | 'keywords'; start?: boolean };
+        } = {};
         if (search) {
             this.state.categories.forEach(category =>
                 category.adapters.forEach(name => {
@@ -1253,13 +1270,15 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     if (!adapter) {
                         return;
                     }
-
-                    let title = adapter.titleLang || adapter.title;
-                    if (typeof title === 'object') {
-                        title = title[this.props.lang] || title.en;
+                    let title: string | undefined;
+                    let desc: string | undefined;
+                    const titleM = adapter.titleLang || adapter.title;
+                    if (typeof titleM === 'object') {
+                        title = titleM[this.props.lang] || titleM.en;
+                    } else {
+                        title = titleM;
                     }
                     title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                    let desc: string;
                     if (adapter.desc) {
                         if (typeof adapter.desc === 'string') {
                             desc = adapter.desc;
@@ -1271,13 +1290,13 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     }
 
                     if (name.includes(search)) {
-                        filteredList.push(name);
+                        filteredList[name] = { exact: name === search, type: 'name', start: name.startsWith(search) };
                     } else if (title && typeof title === 'string' && title.toLowerCase().includes(search)) {
-                        filteredList.push(name);
+                        filteredList[name] = { exact: false, type: 'title' };
                     } else if (desc && typeof desc === 'string' && desc.toLowerCase().includes(search)) {
-                        filteredList.push(name);
-                    } else {
-                        adapter.keywords?.forEach(value => value.includes(search) && filteredList.push(name));
+                        filteredList[name] = { exact: false, type: 'desc' };
+                    } else if (adapter.keywords?.find(value => value.includes(search))) {
+                        filteredList[name] = { exact: false, type: 'keywords' };
                     }
                 }),
             );
@@ -1405,7 +1424,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                         const updateAvailable = this.state.updateAvailable.includes(adapterName);
                         const installed = this.state.installed[adapterName];
 
-                        let show = !this.state.filteredList || this.state.filteredList.includes(adapterName);
+                        let show: boolean = !this.state.filteredList || !!this.state.filteredList[adapterName];
                         if (show && this.state.filterConnectionType) {
                             show = connectionType === 'local';
                         }
@@ -1499,6 +1518,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             sortByName,
             context.sortPopularFirst,
             context.sortRecentlyUpdated,
+            this.state.filteredList,
         );
 
         console.log(`[ADAPTERS] ${new Date().toISOString()} Update cache!`);

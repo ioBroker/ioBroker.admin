@@ -34,7 +34,7 @@
         "@fnando/sparkline": "^0.3.10",
         "@foxriver76/iob-component-lib": "^0.1.6",
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
-        "@iobroker/admin-component-easy-access": "^1.0.1",
+        "@iobroker/admin-component-easy-access": "^1.0.7",
         "@iobroker/dm-utils": "^0.5.0",
         "@iobroker/eslint-config": "^0.1.6",
         "@iobroker/js-controller-common-db": "^7.0.0",
@@ -113,5 +113,5 @@
             }
         ]
     ],
-    "version": "7.2.4"
+    "version": "7.2.5"
 }
