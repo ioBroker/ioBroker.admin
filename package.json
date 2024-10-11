@@ -7,7 +7,7 @@
     "dependencies": {
         "@iobroker/dm-gui-components": "file:packages/dm-gui-components",
         "@iobroker/json-config": "file:packages/jsonConfig",
-        "@iobroker/react-components": "file:packages/react-components",
+        "@iobroker/adapter-react-v5": "file:packages/adapter-react-v5",
         "iobroker.admin": "file:packages/admin"
     },
     "devDependencies": {
@@ -28,7 +28,7 @@
     "scripts": {
         "build": "npm run clean && lerna run build",
         "clean": "lerna run clean",
-        "install-monorepo": "npm i && npm i -w packages/react-components && npm i -w packages/dm-gui-components && npm i -w packages/jsonConfig && npm i -w packages/admin",
+        "install-monorepo": "npm i && npm i -w packages/adapter-react-v5 && npm i -w packages/dm-gui-components && npm i -w packages/jsonConfig && npm i -w packages/admin",
         "npm": "npm run install-monorepo",
         "start": "npm run start -w packages/admin",
         "release": "release-script -y --noPush --no-update-lockfile",
@@ -37,6 +37,6 @@
         "release-major": "release-script major --yes --no-update-lockfile --publishAll",
         "prettier": "cd packages/admin && npm run prettier && cd src-admin && npm run prettier && cd ../../dm-gui-components && npm run prettier && cd ../jsonConfig && npm run prettier",
         "lint": "cd packages/admin && npm run lint-backend && cd src-admin && npm run lint && cd ../../dm-gui-components && npm run lint && cd ../jsonConfig && npm run lint",
-        "update-packages": "ncu --upgrade && cd packages/admin && ncu --upgrade && cd src-admin && ncu --upgrade && cd ../../dm-gui-components && ncu --upgrade && cd ../jsonConfig && ncu --upgrade"
+        "update-packages": "ncu --upgrade && cd packages/adapter-react-v5 && ncu --upgrade && cd packages/admin && ncu --upgrade && cd src-admin && ncu --upgrade && cd ../../dm-gui-components && ncu --upgrade && cd ../jsonConfig && ncu --upgrade"
     }
 }

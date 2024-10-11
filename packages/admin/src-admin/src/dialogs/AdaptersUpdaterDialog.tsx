@@ -21,7 +21,7 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/react-components';
+import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';

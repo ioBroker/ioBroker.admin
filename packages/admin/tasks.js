@@ -78,8 +78,22 @@ function copyAllFiles() {
     copyFiles([`${srcRx}build/**/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
 
     // copy custom plugin
-    copyFiles(`${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
-
+    if (existsSync(`${rootFolder}/node_modules/@iobroker/admin-component-easy-access`)) {
+        copyFiles(
+            [
+                `${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/**/*`,
+                `${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/*`,
+            ],
+            `admin/`,
+        );
+    } else if (existsSync(`${__dirname}/node_modules/@iobroker/admin-component-easy-access`)) {
+        copyFiles(`${__dirname}/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
+    } else if (existsSync(`${__dirname}/node_modules/src-admin/@iobroker/admin-component-easy-access`)) {
+        copyFiles(`${__dirname}/src-admin/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
+    } else {
+        console.error('Cannot find admin-component-easy-access');
+        process.exit(1);
+    }
     // copy crypto-js
     copyFiles(
         [

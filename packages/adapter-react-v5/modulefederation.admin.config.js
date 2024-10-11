@@ -12,7 +12,7 @@ function makeShared(pkgs) {
 // Admin shares these modules for all components
 module.exports = {
     shared: makeShared([
-        '@iobroker/react-components',
+        '@iobroker/adapter-react-v5',
         '@iobroker/json-config',
         '@iobroker/dm-gui-components',
         '@mui/icons-material',

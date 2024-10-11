@@ -65,7 +65,7 @@ import {
     type ThemeType,
     Utils,
     dictionary,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
 import type { AdminGuiConfig, CompactAdapterInfo, CompactHost, NotificationsCount } from '@/types';

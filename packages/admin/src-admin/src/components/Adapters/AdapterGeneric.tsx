@@ -39,7 +39,7 @@ import {
     Build as BuildIcon,
 } from '@mui/icons-material';
 
-import { type IobTheme, Utils } from '@iobroker/react-components';
+import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
 import CustomModal from '@/components/CustomModal';

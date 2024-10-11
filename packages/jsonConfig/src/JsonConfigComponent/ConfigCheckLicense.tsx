@@ -19,7 +19,7 @@ import {
 
 import { Check as IconCheck, Send as IconSend } from '@mui/icons-material';
 
-import { DialogConfirm, I18n, type IobTheme } from '@iobroker/react-components';
+import { DialogConfirm, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemCheckLicense } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';

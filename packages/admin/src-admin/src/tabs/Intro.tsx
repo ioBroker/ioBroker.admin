@@ -19,7 +19,7 @@ import {
     type Translate,
     TabContainer,
     TabContent,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';

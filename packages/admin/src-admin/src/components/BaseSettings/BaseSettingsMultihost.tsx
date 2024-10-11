@@ -2,7 +2,7 @@ import React, { createRef, Component, type JSX } from 'react';
 
 import { Grid2, FormControlLabel, Checkbox, TextField, Paper } from '@mui/material';
 
-import { type AdminConnection, withWidth, type Translate } from '@iobroker/react-components';
+import { type AdminConnection, withWidth, type Translate } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, React.CSSProperties> = {
     paper: {

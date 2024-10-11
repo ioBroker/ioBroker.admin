@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { InputLabel, FormHelperText, FormControl } from '@mui/material';
 
-import { UploadImage } from '@iobroker/react-components';
+import { UploadImage } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemImageUpload } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';

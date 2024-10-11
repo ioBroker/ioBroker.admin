@@ -1,4 +1,4 @@
-import type { AdminConnection } from '@iobroker/react-components';
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import AdminUtils from '@/helpers/AdminUtils';
 
 export type EventType = 'new' | 'changed' | 'deleted';

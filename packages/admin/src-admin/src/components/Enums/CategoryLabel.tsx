@@ -5,7 +5,7 @@ import { Tooltip, IconButton } from '@mui/material';
 
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
-import { Icon, type ThemeType, type Translate, Utils } from '@iobroker/react-components';
+import { Icon, type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
 
 interface CategoryLabelProps {
     categoryData: Record<string, any>;

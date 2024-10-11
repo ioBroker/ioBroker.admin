@@ -4,7 +4,7 @@ import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRo
 
 import { Refresh as IconRefresh } from '@mui/icons-material';
 
-import { withWidth, Utils, type AdminConnection, type Translate } from '@iobroker/react-components';
+import { withWidth, Utils, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';

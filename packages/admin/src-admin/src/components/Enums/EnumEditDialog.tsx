@@ -13,7 +13,7 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
-import { Utils, IconPicker, type Translate } from '@iobroker/react-components';
+import { Utils, IconPicker, type Translate } from '@iobroker/adapter-react-v5';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 import type { EnumCommon } from './EnumBlock';
 

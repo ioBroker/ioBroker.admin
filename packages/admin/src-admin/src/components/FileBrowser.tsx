@@ -75,7 +75,7 @@ import {
     type ThemeType,
     type Translate,
     type IobTheme,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import { FileViewer, EXTENSIONS } from './FileViewer';
 

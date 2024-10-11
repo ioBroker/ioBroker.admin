@@ -40,7 +40,7 @@ import {
     type AdminConnection,
     type IobTheme,
     type Translate,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import { localeMap } from './utils';
 

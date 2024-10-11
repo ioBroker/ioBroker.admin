@@ -1,4 +1,4 @@
-import type { AdminConnection } from '@iobroker/react-components';
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import type { FilteredNotificationInformation } from '@iobroker/socket-client';
 import GenericWorker, { type EventType, type GenericEvent } from './GenericWorker';
 

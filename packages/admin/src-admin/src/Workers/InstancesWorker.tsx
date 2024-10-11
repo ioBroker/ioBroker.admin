@@ -1,4 +1,4 @@
-import { type AdminConnection } from '@iobroker/react-components';
+import { type AdminConnection } from '@iobroker/adapter-react-v5';
 import GenericWorker, { type EventType, type GenericEvent } from './GenericWorker';
 
 export type InstanceEventType = EventType;

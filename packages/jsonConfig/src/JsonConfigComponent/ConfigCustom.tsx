@@ -1,7 +1,7 @@
 import React, { type JSX } from 'react';
 import { Grid2, LinearProgress } from '@mui/material';
 
-import { I18n } from '@iobroker/react-components';
+import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCustom } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from '#JC/JsonConfigComponent/ConfigGeneric';
 

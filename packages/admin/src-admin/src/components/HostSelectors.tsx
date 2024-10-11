@@ -2,7 +2,7 @@ import React, { Component, type JSX } from 'react';
 
 import { Box, Button, Menu, MenuItem, Tooltip } from '@mui/material';
 
-import { type AdminConnection, I18n, Icon, Utils } from '@iobroker/react-components';
+import { type AdminConnection, I18n, Icon, Utils } from '@iobroker/adapter-react-v5';
 import type { CompactHost } from '@/types';
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type HostEvent, type HostAliveEvent } from '@/Workers/HostsWorker';

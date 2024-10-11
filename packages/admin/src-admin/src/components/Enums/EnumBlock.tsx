@@ -27,7 +27,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '@/helpers/AdminUtils';
 import { type DragItem } from './DragObjectBrowser';

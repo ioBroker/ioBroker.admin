@@ -27,7 +27,7 @@ import {
     type ThemeName,
     type ThemeType,
     type IobTheme,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 import type { DeviceDetails, DeviceInfo, ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils';
 
 import DeviceActionButton from './DeviceActionButton';

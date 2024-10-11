@@ -24,7 +24,7 @@ import {
 
 import { HowToVote as VoteIcon, Close as CloseIcon, Info as InfoIcon } from '@mui/icons-material';
 
-import type { IobTheme, Translate } from '@iobroker/react-components';
+import type { IobTheme, Translate } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
     rating: {

@@ -5,7 +5,7 @@
  *
  * */
 import React from 'react';
-import { Utils as _Utils, I18n } from '@iobroker/react-components';
+import { Utils as _Utils, I18n } from '@iobroker/adapter-react-v5';
 
 const NAMESPACE = 'material';
 const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];

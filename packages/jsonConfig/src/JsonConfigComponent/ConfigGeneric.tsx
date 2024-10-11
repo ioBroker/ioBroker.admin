@@ -35,7 +35,7 @@ import {
     type ThemeType,
     type ThemeName,
     type IobTheme,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 import type { BackEndCommand, ConfigIconType, ConfigItemAny, ConfigItemConfirmData } from '#JC/types';
 
 const DEFAULT_SM_SIZE = window.innerWidth <= 600 ? 12 : undefined;

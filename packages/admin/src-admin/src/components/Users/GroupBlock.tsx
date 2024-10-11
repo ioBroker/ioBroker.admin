@@ -10,7 +10,7 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { Utils, Icon, type Translate, type ThemeType, type IobTheme } from '@iobroker/react-components';
+import { Utils, Icon, type Translate, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
 
 interface GroupBlockProps {
     t: Translate;

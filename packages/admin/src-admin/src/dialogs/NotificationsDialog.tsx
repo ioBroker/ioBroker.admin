@@ -26,7 +26,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, type ThemeType, type IobTheme, type AdminConnection, type ThemeName } from '@iobroker/react-components';
+import { I18n, type ThemeType, type IobTheme, type AdminConnection, type ThemeName } from '@iobroker/adapter-react-v5';
 
 import NotificationMessage, { type Message, type Severity } from '../components/NotificationMessage';
 import type { BackEndCommandGeneric } from '#JC/types';

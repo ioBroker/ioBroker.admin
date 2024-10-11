@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { Close as CloseIcon, Add as AddIcon, Public as IconWeb, Language as LanguageIcon } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/react-components';
+import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 import type HostsWorker from '@/Workers/HostsWorker';
 import type InstancesWorker from '@/Workers/InstancesWorker';
@@ -190,13 +190,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         const array = [];
         for (const adapter of dependencies) {
             if (!adapter.installedVersion) {
-                array.push(
-                    this.props.t(
-                        'Latest available version of "%s" is required, but nothing installed. Please install first "%s" and then retry.',
-                        adapter.name,
-                        adapter.name,
-                    ),
-                );
+                array.push(this.props.t('No version of %s', adapter.name, adapter.name));
             } else if (!adapter.rightVersion) {
                 array.push(
                     `${this.props.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version)}${adapter.installedVersion}`,

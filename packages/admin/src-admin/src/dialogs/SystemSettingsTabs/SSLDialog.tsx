@@ -4,7 +4,7 @@ import { Grid2, FormControl, TextField, Paper, InputAdornment, IconButton } from
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import { withWidth, type Translate, type IobTheme } from '@iobroker/react-components';
+import { withWidth, type Translate, type IobTheme } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 import AdminUtils from '@/helpers/AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';

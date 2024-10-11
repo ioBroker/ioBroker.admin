@@ -2,7 +2,7 @@ import React, { useState, type JSX } from 'react';
 
 import { Button, Menu, MenuItem, Tooltip } from '@mui/material';
 
-import type { Translate } from '@iobroker/react-components';
+import type { Translate } from '@iobroker/adapter-react-v5';
 import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';
 
 const styles: Record<string, React.CSSProperties> = {

@@ -22,7 +22,7 @@ import {
     type ThemeType,
     type IobTheme,
     type Translate,
-} from '@iobroker/react-components';
+} from '@iobroker/adapter-react-v5';
 
 import BaseSettingsSystem, { type SystemSettings } from '../components/BaseSettings/BaseSettingsSystem';
 import BaseSettingsMultihost, { type MultihostSettings } from '../components/BaseSettings/BaseSettingsMultihost';

@@ -22,7 +22,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 import { Marker } from 'leaflet';
 import type { DragEndEvent, LatLngTuple, Map } from 'leaflet';
 
-import { DialogConfirm, withWidth, I18n, type Translate } from '@iobroker/react-components';
+import { DialogConfirm, withWidth, I18n, type Translate } from '@iobroker/adapter-react-v5';
 import { type AdminGuiConfig } from '@/types';
 
 import AdminUtils from '../../helpers/AdminUtils';

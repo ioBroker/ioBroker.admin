@@ -21,7 +21,7 @@ import {
     ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 
-import { I18n, type IobTheme } from '@iobroker/react-components';
+import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemAccordion, ConfigItemAny, ConfigItemIndexed, ConfigItemPanel } from '#JC/types';
 import Utils from '#JC/Utils';
