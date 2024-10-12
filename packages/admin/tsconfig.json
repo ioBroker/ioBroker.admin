@@ -4,6 +4,7 @@
     "compilerOptions": {
         // do not compile anything. This file is just to configure type checking
         "noEmit": true,
+        "allowSyntheticDefaultImports": true,
         // check JS files
         "allowJs": true,
         "checkJs": true,

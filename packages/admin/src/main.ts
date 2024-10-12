@@ -532,9 +532,7 @@ class Admin extends Adapter {
     }
 
     onLog(obj: Record<string, unknown>): void {
-        if (socket) {
-            socket.sendLog(obj);
-        }
+        socket?.sendLog(obj);
     }
 
     async createUpdateInfo(): Promise<void> {
