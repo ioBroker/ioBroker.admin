@@ -87,6 +87,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Corrected cloud icon for admin
+
 ### 7.2.6 (2024-10-11)
 
 -   (@GermanBluefox) Trying to fix a GUI build process

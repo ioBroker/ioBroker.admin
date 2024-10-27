@@ -19,21 +19,12 @@
         "@iobroker/adapter-react-v5": "file:../adapter-react-v5",
         "crypto-js": "^4.2.0",
         "react-ace": "^12.0.0",
-        "react-color": "^2.19.3",
         "react-qr-code": "^2.0.15"
     },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
-        "@iobroker/eslint-config": "^0.1.6",
-        "@iobroker/types": "^7.0.0",
         "@types/crypto-js": "^4.2.2",
-        "@types/react": "^18.3.11",
-        "@types/react-color": "^3.0.12",
-        "@types/react-dom": "^18.3.0",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-        "tsc-alias": "^1.8.10",
-        "typescript": "^5.6.2"
+        "tsc-alias": "^1.8.10"
     },
     "files": [
         "build/",
