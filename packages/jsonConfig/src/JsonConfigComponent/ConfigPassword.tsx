@@ -15,12 +15,12 @@ const styles: Record<string, React.CSSProperties> = {
         display: 'inline-block',
     },
     halfWidth1: {
-        width: 'calc(50% - 4px)',
+        width: 'calc(50% - 5px)',
         display: 'inline-block',
         marginRight: 8,
     },
     halfWidth2: {
-        width: 'calc(50% - 4px)',
+        width: 'calc(50% - 5px)',
         display: 'inline-block',
     },
 };
@@ -92,7 +92,7 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
                             this.state.value &&
                             this.state.value !== PASSWORD_PLACEHOLDER &&
                             this.props.schema.visible &&
-                            !disabled &&  
+                            !disabled &&
                             !this.props.schema.readOnly ? (
                                 <InputAdornment position="end">
                                     <IconButton
@@ -130,11 +130,11 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
         );
 
         if (this.props.schema.repeat && !this.props.schema.readOnly) {
-            const passwordRepeat = (
+            const passwordRepeat = this.state._visible ? (
                 <TextField
                     variant="standard"
                     fullWidth
-                    type={this.state._visible && this.state._repeat !== PASSWORD_PLACEHOLDER ? 'text' : 'password'}
+                    type="password"
                     value={this.state._repeat}
                     error={!!error || this.state._notEqual}
                     disabled={!!disabled}
@@ -142,25 +142,6 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
                     label={`${this.getText(this.props.schema.label)} (${I18n.t('ra_repeat')})`}
                     slotProps={{
                         input: {
-                            endAdornment:
-                                this.state._repeat &&
-                                this.state._repeat !== PASSWORD_PLACEHOLDER &&
-                                this.props.schema.visible && !disabled ? (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            size="large"
-                                            tabIndex={-1}
-                                            onClick={e => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                this.setState({ _visible: !this.state._visible });
-                                            }}
-                                            edge="end"
-                                        >
-                                            {this.state._visible ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ) : undefined,
                             autoComplete: 'new-password',
                         },
                         htmlInput: {
@@ -179,7 +160,7 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
                               )
                     }
                 />
-            );
+            ) : null;
 
             return (
                 <div style={styles.fullWidth}>
