@@ -1,7 +1,6 @@
 # ioBroker JSON Configuration: A Guide for Beginners
 
-This guide explains how to define configuration options for your ioBroker adapter using JSON. \
-This approach offers a more user-friendly and flexible way to manage adapter settings within the ioBroker Admin interface.
+This guide explains how to define configuration options for your ioBroker adapter using JSON. This approach offers a more user-friendly and flexible way to manage adapter settings within the ioBroker Admin interface.
 
 ## What you'll need
 
@@ -90,57 +89,59 @@ A jsonConfig consists of several elements that are structured hierarchically. \
 Each of the elements can be of one of the following types.\
 Some elements can contain additional child elements.
 
-- [**`text`:**](#text) Single-line text input field
-- [**`number`:**](#number) Numeric input field with min/max values and step size
-- [**`color`:**](#color) Color picker
-- [**`checkbox`:**](#checkbox) Checkbox for boolean values
-- [**`slider`:**](#slider) Slider for selecting a value within a range (Admin 6 only)
-- [**`qrCode`:**](#qrcode) Displays data as a QR code (Admin 7.0.18 or newer)
-- [**`ip`:**](#ip) Input field for IP addresses with advanced options
-- [**`user`:**](#user) Selects a user from the system.user list
-- [**`room`:**](#room) Selects a room from the enum.room list (Admin 6 only)
-- [**`func`:**](#func) Selects a function from the enum.func list (Admin 6 only)
-- [**`select`:**](#select) Dropdown menu with predefined options
-- [**`autocomplete`:**](#autocomplete) Input field with autocomplete suggestions
-- [**`image`:**](#image) Uploads or displays an image
-- [**`objectId`:**](#objectid) Selects an object ID with name, color, and icon
-- [**`password`:**](#password) Password input field
-- [**`instance`:**](#instance) Selects an adapter instance
-- [**`chips`:**](#chips) User can enter words that are added to an array
-- [**`alive`:**](#alive) Displays if an instance is running (read-only)
-- [**`pattern`:**](#pattern) Read-only field showing a pattern (e.g., URL)
-- [**`sendto`:**](#sendto) Button that sends a request to an instance
-- [**`setState`:**](#setstate) Button that sets an instance's state
-- [**`staticText`:**](#statictext) Displays static text (e.g., description)
-- [**`staticLink`:**](#staticlink) Creates a static link
-- [**`staticImage`:**](#staticimage) Displays a static image
-- [**`table`:**](#table) Table with rows that can be added, deleted, or reordered
 - [**`accordion`:**](#accordion) Accordion element for collapsible content (Admin 6.6.0 or newer)
-- [**`jsonEditor`:**](#jsoneditor) JSON editor for complex configuration data
-- [**`language`:**](#language) Selects the user interface language
+- [**`alive`:**](#alive) Displays if an instance is running (read-only)
+- [**`autocomplete`:**](#autocomplete) Input field with autocomplete suggestions
+- [**`autocompleteSendTo`:**](#autocompletesendto) Autocomplete control with instance values for sending data
 - [**`certificate`:**](#certificate) Manages certificates for secure connections
-- [**`certificates`:**](#certificates) Universal type for managing different certificate types (from Admin 6.4.0)
 - [**`certificateCollection`:**](#certificatecollection) Selects a collection for Let's Encrypt certificates
+- [**`certificates`:**](#certificates) Universal type for managing different certificate types (from Admin 6.4.0)
+- [**`checkbox`:**](#checkbox) Checkbox for boolean values
+- [**`checkLicense`:**](#checklicense) Very special component to check the license online
+- [**`chips`:**](#chips) User can enter words that are added to an array
+- [**`color`:**](#color) Color picker
+- [**`cron`:**](#cron) Configures cron expressions for scheduling tasks
 - [**`custom`:**](#custom) Integrates custom components for specific functionalities (Admin 6 only)
 - [**`datePicker`:**](#datepicker) Allows users to select a date
-- [**`timePicker`:**](#timepicker) Allows users to select a time
-- [**`divider`:**](#divider) Creates a horizontal line separator
-- [**`header`:**](#header) Creates a heading with different sizes (h1-h5)
-- [**`cron`:**](#cron) Configures cron expressions for scheduling tasks
-- [**`fileSelector`:**](#fileselector) Allows users to select files from the system
-- [**`file`:**](#file) Input field with file selection and optional upload/download capabilities (Admin 6 only)
-- [**`imageSendTo`:**](#imagesendto) Displays an image received from the backend and sends data based on a command
-- [**`selectSendTo`:**](#selectsendto) Dropdown menu with instance values for sending data
-- [**`autocompleteSendTo`:**](#autocompletesendto) Autocomplete control with instance values for sending data
-- [**`textSendTo`:**](#textsendto) Shows readonly control with the given from the instance values.
-- [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
-- [**`interface`:**](#interface) Selects the interface from of the host, where the instance runs
-- [**`license`:**](#license) shows the license information if not already accepted.
-- [**`checkLicense`:**](#checklicense) Very special component to check the license online
-- [**`uuid`:**](#uuid) Show iobroker UUID
-- [**`port`:**](#port) Special input for ports
-- [**`state`:**](#state) (admin >= 7.1.0) Show control or information from the state
 - [**`deviceManager`:**](#devicemanager) show device manager
+- [**`divider`:**](#divider) Creates a horizontal line separator
+- [**`file`:**](#file) Input field with file selection and optional upload/download capabilities (Admin 6 only)
+- [**`fileSelector`:**](#fileselector) Allows users to select files from the system (only Admin6)
+- [**`func`:**](#func) Selects a function from the enum.func list (Admin 6 only)
+- [**`header`:**](#header) Creates a heading with different sizes (h1-h5)
+- [**`image`:**](#image) Uploads or displays an image
+- [**`imageSendTo`:**](#imagesendto) Displays an image received from the backend and sends data based on a command
+- [**`instance`:**](#instance) Selects an adapter instance
+- [**`interface`:**](#interface) Selects the interface from of the host, where the instance runs
+- [**`ip`:**](#ip) Input field for IP addresses with advanced options
+- [**`jsonEditor`:**](#jsoneditor) JSON editor for complex configuration data
+- [**`language`:**](#language) Selects the user interface language
+- [**`license`:**](#license) shows the license information if not already accepted.
+- [**`number`:**](#number) Numeric input field with min/max values and step size
+- [**`objectId`:**](#objectid) Selects an object ID with name, color, and icon
+- [**`panel`:**](#panel) Tab with items
+- [**`password`:**](#password) Password input field
+- [**`pattern`:**](#pattern) Read-only field showing a pattern (e.g., URL)
+- [**`port`:**](#port) Special input for ports
+- [**`qrCode`:**](#qrcode) Displays data as a QR code (Admin 7.0.18 or newer)
+- [**`room`:**](#room) Selects a room from the enum.room list (Admin 6 only)
+- [**`select`:**](#select) Dropdown menu with predefined options
+- [**`selectSendTo`:**](#selectsendto) Dropdown menu with instance values for sending data
+- [**`sendto`:**](#sendto) Button that sends a request to an instance
+- [**`setState`:**](#setstate) Button that sets an instance's state
+- [**`slider`:**](#slider) Slider for selecting a value within a range (Admin 6 only)
+- [**`state`:**](#state) (admin >= 7.1.0) Show control or information from the state
+- [**`staticImage`:**](#staticimage) Displays a static image
+- [**`staticLink`:**](#staticlink) Creates a static link
+- [**`staticText`:**](#statictext) Displays static text (e.g., description)
+- [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
+- [**`table`:**](#table) Table with rows that can be added, deleted, or reordered
+- [**`tabs`:**](#tabs) Tabs with items
+- [**`text`:**](#text) Single-line text input field
+- [**`textSendTo`:**](#textsendto) Shows readonly control with the given from the instance values.
+- [**`timePicker`:**](#timepicker) Allows users to select a time
+- [**`user`:**](#user) Selects a user from the system.user list
+- [**`uuid`:**](#uuid) Show iobroker UUID
 
 By leveraging JSON configuration, you can create a user-friendly and \
 adaptable configuration experience for your ioBroker adapter.
@@ -177,6 +178,29 @@ The included file must be in the same directory as the main file.
 ## Element types
 
 Each element can have [common attributes](#common-attributes-of-controls) and the special attributes belonging to the respective type as follows
+
+### `tabs`
+
+Tabs with items
+
+| Property       | Description                                                                                    |
+| -------------- | ---------------------------------------------------------------------------------------------- |
+| `items`        | Object with panels `{"tab1": {}, "tab2": {}...}`                                               |
+| `iconPosition` | `bottom`, `end`, `start` or `top`. Only for panels that has `icon` attribute. Default: `start` |
+| `tabsStyle`    | CSS Styles in React format (`marginLeft` and not `margin-left`) for the Mui-Tabs component     |
+
+### `panel`
+
+Tab with items
+
+| Property      | Description                                                                                                                             |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `icon`        | tab can have icon (base64 like `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`)                                  |
+| `label`       | Label of tab                                                                                                                            |
+| `items`       | Object `{"attr1": {}, "attr2": {}}...`                                                                                                  |
+| `collapsable` | only possible as not part of tabs[jsonConfig.json](..%2F..%2F..%2F..%2F..%2FioBroker.ring%2Fadmin%2FjsonConfig.json)                    |
+| `color`       | color of collapsable header `primary` or `secondary` or nothing                                                                         |
+| `innerStyle`  | CSS Styles for inner div in React format (`marginLeft` and not `margin-left`) for the Panel component. Not used for collapsable panels. |
 
 ### `text`
 
