@@ -127,7 +127,7 @@ Some elements can contain additional child elements.
 - [**`room`:**](#room) Selects a room from the enum.room list (Admin 6 only)
 - [**`select`:**](#select) Dropdown menu with predefined options
 - [**`selectSendTo`:**](#selectsendto) Dropdown menu with instance values for sending data
-- [**`sendto`:**](#sendto) Button that sends a request to an instance
+- [**`sendTo`:**](#sendto) Button that sends a request to an instance
 - [**`setState`:**](#setstate) Button that sets an instance's state
 - [**`slider`:**](#slider) Slider for selecting a value within a range (Admin 6 only)
 - [**`state`:**](#state) (admin >= 7.1.0) Show control or information from the state
@@ -486,7 +486,7 @@ Text input with the read-only flag, that shows a pattern.
 | `copyToClipboard` | if true - show button |
 | `pattern`         | my pattern            |
 
-### `sendto`
+### `sendTo`
 
 button that sends request to instance (<https://github.com/iobroker-community-adapters/ioBroker.email/blob/master/admin/index_m.html#L128>)
 
