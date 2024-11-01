@@ -37,6 +37,24 @@ This guide explains how to define configuration options for your ioBroker adapte
    The configuration file defines a hierarchical structure of tabs, panels, and control elements. \
    Each element has specific attributes that determine its behavior and appearance in the Admin interface.
 
+   jsonConfig automatically ensures that the collected data is recorded as configuration data for the adapter and stored internally so that it can be retrieved and further processed in the adapter.
+
+   The following example would create the following configuration object:
+
+```json5
+{
+  options1: {
+    myPort: 1234,
+    options: {
+      myType: 1,
+    },
+    myBool: false,
+  },
+}
+```
+
+_If the attribute name starts with "\_" it will not be saved in the object._
+
 ## Example of a jsonConfig with multiple tabs
 
 ```json5
@@ -71,11 +89,13 @@ This guide explains how to define configuration options for your ioBroker adapte
                 "myBool": {
                     "type": "checkbox",
                     "label": "My checkbox",
-                }
+                },
+                "_notSaved":"abc"
             }
         },
         "tab2": {
             "label": "Tab2",
+            "type": "panel",
             "disabled": "data.myType === 1",
             "hidden": "data.myType === 2",
         }
@@ -83,11 +103,31 @@ This guide explains how to define configuration options for your ioBroker adapte
 }
 ```
 
+Further examples can be found in many other adapters on GitHub in the respective admin directory.
+
+## Support for developing tools
+
+### VS Code
+
+To enable the validation of the jsonConfig in VS code, the following section must be added to the file ".vscode/settings.json".
+
+```json5
+    "json.schemas": [
+        {
+            "fileMatch": ["admin/jsonConfig.json", "admin/jsonCustom.json", "admin/jsonTab.json"],
+            "url": "https://raw.githubusercontent.com/ioBroker/adapter-react-v5/main/schemas/jsonConfig.json"
+        }
+    ]
+```
+
 ## Common Control Elements
 
 A jsonConfig consists of several elements that are structured hierarchically. \
 Each of the elements can be of one of the following types.\
 Some elements can contain additional child elements.
+
+You can see almost all components in action if you test this adapter: [jsonconfig-demo](https://github.com/mcm4iob/ioBroker.jsonconfig-demo).\
+You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-demo` on the npm tab.
 
 - [**`accordion`:**](#accordion) Accordion element for collapsible content (Admin 6.6.0 or newer)
 - [**`alive`:**](#alive) Displays if an instance is running (read-only)
@@ -148,12 +188,12 @@ adaptable configuration experience for your ioBroker adapter.
 
 ## Example projects
 
-| Type              | Link                                                                                            |
-| ----------------- | ----------------------------------------------------------------------------------------------- |
-| Multiple Tabs:    | [ioBroker.admin](https://github.com/ioBroker/ioBroker.admin/blob/master/admin/jsonConfig.json5) |
-| Only one Panel:   | [ioBroker.dwd](https://github.com/ioBroker/ioBroker.dwd/blob/master/admin/jsonConfig.json)      |
-| Custom component: |                                                                                                 |
-| Validation:       |                                                                                                 |
+| Type              | Link                                                                                                                                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Multiple Tabs:    | [`ioBroker.admin`](https://github.com/ioBroker/ioBroker.admin/blob/master/admin/jsonConfig.json5)                                                                                                |
+| Only one Panel:   | [`ioBroker.dwd`](https://github.com/ioBroker/ioBroker.dwd/blob/master/admin/jsonConfig.json)                                                                                                     |
+| Custom component: | [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) |
+| Validation:       |                                                                                                                                                                                                  |
 
 ## Seperation of Large Configurations
 
@@ -174,6 +214,97 @@ The included file must be in the same directory as the main file.
   },
 }
 ```
+
+## i18n - Internationalization
+
+There are several options to provide the translations. Only the first one is compatible with our Community Translation Tool Weblate, so it should be favored over the others!
+
+To enable the translation feature, you need to provide and enable the i18n property at the top level of the JSON configuration object.
+
+```json5
+{
+  i18n: true,
+}
+```
+
+### Translation in seperate files - Compatible with weblate
+
+By default, the files must be located in the following directories:
+
+```text
+admin/i18n/de/translations.json
+admin/i18n/en/translations.json
+```
+
+or
+
+```text
+admin/i18n/de.json
+admin/i18n/en.json
+```
+
+Additionally, user can provide the path to i18n files, i18n: "customI18n"and provide files in admin:
+
+```json5
+  i18n: "customI18n",
+```
+
+```text
+admin/customI18n/de/translations.json
+admin/customI18n/en/translations.json
+```
+
+or
+
+```text
+admin/customI18n/de.json
+admin/customI18n/en.json
+```
+
+The structure of a file corresponds to the following structure
+
+**en.json:**
+
+```json5
+{
+  i18nText1: "Open",
+  i18nText2: "Close",
+  "This is a Text": "This is a Text",
+}
+```
+
+**de.json:**
+
+```json5
+{
+  i18nText1: "Öffnen",
+  i18nText2: "Schließen",
+  "This is a Text": "Dies ist ein Text",
+}
+```
+
+When searching for a translation, the information in the specific field is used to find the property with the text in the files. If the property is not found, the information from the field remains. It is recommended to enter the text in English.
+
+### Provide translation directliy in the fields
+
+Translations can be specified in all fields that can contain text. Examples of fields are label, title, tooltip, text, etc.
+
+```json5
+   "type": "text",
+   "label: {
+        "en": "house",
+        "de": "Haus"
+    }
+}
+```
+
+### Provide translation directliy in the i18n
+
+The translations can also be provided directly as an object in the ia8n attribute at the top level of the jsonConfig object.
+
+When searching for a translation, the information in the specific field is used to find the property with the text in the i18n object.
+If the property is not found, the information from the field remains.
+It is recommended to enter the text in English.
 
 ## Element types
 
@@ -1107,7 +1238,7 @@ In this case, the value will be provided as an array of all possible values.
 
 Example:
 
-```json
+```json5
 // ...
    "timeout": {
       "type": "number",
@@ -1163,3 +1294,107 @@ If no schema is provided, the schema must be created automatically from data.
 - name `bind` => ip
 - name `port` => number, min=1, max=0xFFFF
 - name `timeout` => number, help="ms"
+
+## Todo
+
+The following chapters are taken from the origina SCHEMA.MD.
+I didnt understand the content in detail and had to be improved by bluefox.
+
+## JS Functions
+
+### Configuration dialog
+
+JS function is:
+
+```js
+const myValidator = "_alive === true && data.options.myType == 2";
+
+const func = new Function(
+  'data',          // actual obj.native or obj.common.custom['adapter.X'] object
+                   // If table, so data is current line in the table
+  'originalData',  // data before changes
+  '_system',       // system config => 'system.config'=>common
+  '_alive',        // If instance is alive
+  '_common',       // common part of instance = 'system.config.ADAPTER.X' => common
+  '_socket',       // socket connection
+  '_instance',     // instance number
+  'arrayIndex',    // filled only by table and represents the row index
+  'globalData',    // filled only by table and represents the obj.native or obj.common.custom['adapter.X'] object
+  '_changed'       // indicator if some data was changed and must be saved
+  myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
+
+const isValid = func(data, systemConfig.common, instanceAlive, adapter.common, this.props.socket);
+
+```
+
+If the `alive` status changes, so all fields must be updated, validated, disabled, hidden anew.
+
+The following variables are available in JS function in adapter settings:
+
+- `data` - native settings for this instance or current line in the table (to access all settings use globalData)
+- `_system` - system configuration
+- `_alive` - is instance being alive
+- `_common` - common settings for this instance
+- `_socket` - socket
+- `_instance` - instance number
+- `arrayIndex` - used only in table and represent current line in an array
+- `globalData` - used only in table for all settings and not only one table line
+
+### Custom settings dialog
+
+JS function is:
+
+```js
+const myValidator =
+  "customObj.common.type === 'boolean' && data.options.myType == 2";
+
+const func = new Function(
+  "data",
+  "originalData",
+  "_system",
+  "instanceObj",
+  "customObj",
+  "_socket",
+  arrayIndex,
+  myValidator.includes("return") ? myValidator : "return " + myValidator
+); // e.g. "_alive === true"
+
+const isValid = func(
+  data || this.props.data,
+  this.props.originalData,
+  this.props.systemConfig,
+  instanceObj,
+  customObj,
+  this.props.socket
+);
+```
+
+The following variables are available in JS function in custom settings:
+
+- `data` - current custom settings or current line in the table (to access all settings use globalData)
+- `originalData` - Unchanged data
+- `_system` - system configuration
+- `instanceObj` - adapter instance object
+- `customObj` - current object itself
+- `_socket` - socket
+- `arrayIndex` - used only in table and represent current line in an array
+- `globalData` - used only in table for all settings and not only one table line
+
+## Custom component
+
+```jsx
+<CustomInstancesEditor
+    common={common data}
+    alive={isInstanceAlive}
+    data={data}
+    socket={this.props.socket}
+    themeName={this.props.themeName}
+    themeType={this.props.themeType}
+    theme={this.props.theme}
+    name="accessAllowedConfigs"
+    onChange={(newData, isChanged) => {}}
+    onError={error => error can be true/false or text}
+/>
+```
+
+You can find examples in [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) adapter.
