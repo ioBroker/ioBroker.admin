@@ -2384,9 +2384,13 @@ class App extends Router<AppProps, AppState> {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
             return (
                 <div>
-                    {this.state.systemConfig.common.siteName ? (
-                        <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>
-                    ) : null}
+                    {
+                        // @ts-expect-error fixed in js-controller 7
+                        this.state.systemConfig.common.siteName ? (
+                            // @ts-expect-error fixed in js-controller 7
+                            <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>
+                        ) : null
+                    }
 
                     <Box
                         component="div"
@@ -2429,7 +2433,9 @@ class App extends Router<AppProps, AppState> {
                 </div>
             );
         }
+        // @ts-expect-error fixed in js-controller 7
         if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
+            // @ts-expect-error fixed in js-controller 7
             return <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>;
         }
         return null;

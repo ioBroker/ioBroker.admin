@@ -1131,10 +1131,10 @@ export function getSelectIdIconFromObjects(
     id: string,
     lang: ioBroker.Languages,
     imagePrefix?: string,
-): string | JSX.Element | null {
+): string | React.JSX.Element | null {
     // `admin` has prefix '.' and `web` has '../..'
     imagePrefix = imagePrefix || '.'; // http://localhost:8081';
-    let src: string | JSX.Element = '';
+    let src: string | React.JSX.Element | number | React.JSX.Element[] = '';
     const _id_ = `system.adapter.${id}`;
     const aIcon = id && objects[_id_] && objects[_id_].common && objects[_id_].common.icon;
     if (aIcon) {
@@ -1153,7 +1153,8 @@ export function getSelectIdIconFromObjects(
                 return null; // '<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
             }
         } else if (aIcon.startsWith('data:image/svg')) {
-            src = (
+            const svgEl: any = (
+                // @ts-expect-error unknown error: 'SVG' cannot be used as a JSX component. Its return type 'string | number | boolean | Element | Iterable<ReactNode>' is not a valid JSX element.
                 <SVG
                     className="iconOwn"
                     src={aIcon}
@@ -1161,6 +1162,7 @@ export function getSelectIdIconFromObjects(
                     height={28}
                 />
             );
+            src = svgEl as React.JSX.Element;
         } else {
             src = aIcon;
         }
@@ -1203,7 +1205,8 @@ export function getSelectIdIconFromObjects(
                     }
                 } else if (cIcon.startsWith('data:image/svg')) {
                     // if base 64 image
-                    src = (
+                    const svgEl: any = (
+                        // @ts-expect-error unknown error: 'SVG' cannot be used as a JSX component. Its return type 'string | number | boolean | Element | Iterable<ReactNode>' is not a valid JSX element.
                         <SVG
                             className="iconOwn"
                             src={cIcon}
@@ -1211,6 +1214,7 @@ export function getSelectIdIconFromObjects(
                             height={28}
                         />
                     );
+                    src = svgEl as React.JSX.Element;
                 } else {
                     src = cIcon;
                 }
@@ -1472,7 +1476,7 @@ function getSystemIcon(
     lang: ioBroker.Languages,
     imagePrefix?: string,
 ): string | JSX.Element | null {
-    let icon;
+    let icon: string | JSX.Element | null | undefined;
 
     // system or design has special icons
     if (id === 'alias' || id === 'alias.0') {
@@ -5954,9 +5958,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </DialogTitle>
                 <List sx={{ '&.MuiList-root': styles.enumList }}>
                     {enums.map(_item => {
-                        let id;
-                        let name;
-                        let icon;
+                        let id: string;
+                        let name: string;
+                        let icon: string | JSX.Element | null;
 
                         if (typeof _item === 'object') {
                             id = _item.value;

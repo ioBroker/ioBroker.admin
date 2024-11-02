@@ -84,11 +84,11 @@ const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element => {
                                         style={props.stylesParent.icon}
                                         src={
                                             objectRef.current
-                                                ? getSelectIdIconFromObjects(
+                                                ? (getSelectIdIconFromObjects(
                                                       objectRef.current,
                                                       dragProps.item.data.obj._id,
                                                       props.lang,
-                                                  )
+                                                  ) as string | React.JSX.Element)
                                                 : dragProps.item.data.obj.common.icon
                                         }
                                     />

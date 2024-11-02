@@ -424,7 +424,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         prefix: string;
     }) => JSX.Element;
 
-    private readonly meta: () => string;
+    private readonly meta: (_props: any) => JSX.Element;
 
     private readonly link: () => JSX.Element;
 
@@ -579,7 +579,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 </h6>
             );
         };
-        this.meta = () => 'meta'; // text, id, level, prefix,
+        this.meta = () => <span>meta</span>; // text, id, level, prefix,
 
         this.link = () => <div>linkAAAAA</div>; // text, id, level, prefix,
     }

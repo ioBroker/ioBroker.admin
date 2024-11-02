@@ -676,7 +676,6 @@ export default abstract class AdapterGeneric<
                             .getObject(`system.adapter.${this.props.adapterName}`)
                             .then(obj => {
                                 if (obj?.common) {
-                                    // @ts-expect-error must be defined
                                     obj.common.ignoreVersion = ignoreVersion;
                                     this.props.context.socket
                                         .setObject(obj._id, obj)

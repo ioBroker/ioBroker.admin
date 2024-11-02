@@ -553,7 +553,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             // evaluate function
             if (
                 this._executeCustom(
-                    this.jsonConfigs[adapter].json.hidden,
+                    this.jsonConfigs[adapter].json.hidden as string,
                     data,
                     customObj,
                     instanceObj,
@@ -573,7 +573,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>)[this.props.lang] ||
                     (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>).en;
             } else {
-                help = this.props.t(this.jsonConfigs[adapter].json.help);
+                help = this.props.t(this.jsonConfigs[adapter].json.help as string);
             }
         }
 
