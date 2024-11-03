@@ -1154,7 +1154,6 @@ export function getSelectIdIconFromObjects(
             }
         } else if (aIcon.startsWith('data:image/svg')) {
             const svgEl: any = (
-                // @ts-expect-error unknown error: 'SVG' cannot be used as a JSX component. Its return type 'string | number | boolean | Element | Iterable<ReactNode>' is not a valid JSX element.
                 <SVG
                     className="iconOwn"
                     src={aIcon}
