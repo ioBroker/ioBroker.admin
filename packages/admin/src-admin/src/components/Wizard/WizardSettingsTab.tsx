@@ -1,5 +1,10 @@
 import React, { Component, type JSX } from 'react';
 
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import { Marker } from 'leaflet';
+import type { DragEndEvent, LatLngTuple, Map } from 'leaflet';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
+
 import {
     Grid2,
     Toolbar,
@@ -17,21 +22,17 @@ import {
     Box,
 } from '@mui/material';
 
-import { Close as CloseIcon, Check as IconCheck } from '@mui/icons-material';
+import { Close as CloseIcon, Check as IconCheck, GpsFixed } from '@mui/icons-material';
 
-import 'ol/ol.css';
-import { Map, View, Feature } from 'ol';
-import { Tile, Vector as LayerVector } from 'ol/layer';
-import { Icon, Style } from 'ol/style';
-import { OSM, Vector as VectorSource } from 'ol/source';
-import { Point } from 'ol/geom';
-import { toLonLat, fromLonLat } from 'ol/proj';
+import { type AdminConnection, I18n, type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
 
-import { type AdminConnection, type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
-
-// Icons
-import { FaCrosshairs as GeoIcon } from 'react-icons/fa';
-import PinSVG from '../../assets/pin.svg';
+const MyMapComponent: React.FC<{ addMap: (map: any) => any }> = props => {
+    const map = useMap();
+    if (props.addMap) {
+        props.addMap(map);
+    }
+    return null;
+};
 
 const TOOLBAR_HEIGHT = 64;
 const SETTINGS_WIDTH = 300;
@@ -141,15 +142,24 @@ interface WizardSettingsTabState {
     longitude: number | string;
     latitude: number | string;
     firstDayOfWeek: 'sunday' | 'monday';
+    zoom: number;
 }
 
 class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettingsTabState> {
-    private OSM: {
+    /*private OSM: {
         markerSource?: VectorSource;
         markerStyle?: Style;
         oMap?: Map;
         marker?: Feature;
-    } | null = null;
+    } | null = null;*/
+
+    private marker: Marker;
+
+    private map: Map;
+
+    private cityTimer: ReturnType<typeof setTimeout>;
+
+    private latLongTimer: ReturnType<typeof setTimeout>;
 
     constructor(props: WizardSettingsTabProps) {
         super(props);
@@ -165,25 +175,8 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
             longitude: 0,
             latitude: 0,
             firstDayOfWeek: 'monday',
+            zoom: 14,
         };
-
-        void this.props.socket.getCompactSystemConfig(true).then(obj =>
-            this.setState(
-                {
-                    tempUnit: obj.common.tempUnit,
-                    currency: obj.common.currency,
-                    dateFormat: obj.common.dateFormat,
-                    isFloatComma: obj.common.isFloatComma,
-                    country: obj.common.country,
-                    city: obj.common.city,
-                    address: '',
-                    longitude: obj.common.longitude,
-                    latitude: obj.common.latitude,
-                    firstDayOfWeek: obj.common.firstDayOfWeek || 'monday',
-                },
-                () => this.updateMap(),
-            ),
-        );
     }
 
     positionReady(position: { coords: { latitude: number; longitude: number } }): void {
@@ -192,103 +185,138 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                 latitude: parseFloat(position.coords.latitude.toFixed(8)),
                 longitude: parseFloat(position.coords.longitude.toFixed(8)),
             },
-            () => this.updateMap(),
+            () => this.changeMapPosition(),
         );
     }
 
-    getPositionForAddress(): void {
-        window
-            .fetch(
-                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(`${this.state.country} ${this.state.city} ${this.state.address}`)}`,
-            )
-            .then(data => data.json())
-            .then(data => {
-                let changed = false;
-
-                if (!data || !data[0]) {
-                    window.alert(this.props.t('Nothing found'));
-                    return;
-                }
-
-                let latitude = parseFloat(this.state.latitude as any as string);
-                if (latitude !== parseFloat(data[0].lat)) {
-                    latitude = parseFloat(data[0].lat);
-                    changed = true;
-                }
-                let longitude = parseFloat(this.state.longitude as any as string);
-                if (longitude !== parseFloat(data[0].lon)) {
-                    longitude = parseFloat(data[0].lon);
-                    changed = true;
-                }
-                if (changed) {
-                    this.setState({ longitude, latitude }, () => this.updateMap());
-                }
-            })
-            .catch(e => window.alert(this.props.t('Cannot fetch address %s', e)));
-    }
-
-    updateMap(): void {
-        // OPEN STREET MAPS
+    getBrowserCoordinates(): void {
         if (window.navigator.geolocation && (!this.state.longitude || !this.state.latitude)) {
             window.navigator.geolocation.getCurrentPosition(position => this.positionReady(position));
+        } else {
+            this.changeMapPosition();
         }
-
-        const center = fromLonLat([
-            parseFloat((this.state.longitude as any as string) || '0'),
-            parseFloat((this.state.latitude as any as string) || '0'),
-        ]);
-
-        if (!this.OSM) {
-            // get the coordinates from the browser
-
-            this.OSM = {};
-            this.OSM.markerSource = new VectorSource();
-
-            this.OSM.markerStyle = new Style({
-                image: new Icon({
-                    anchor: [0.5, 49],
-                    anchorXUnits: 'fraction',
-                    anchorYUnits: 'pixels',
-                    opacity: 0.75,
-                    src: PinSVG,
-                }),
-            });
-
-            this.OSM.oMap = new Map({
-                target: 'map',
-                layers: [
-                    new Tile({ source: new OSM() }),
-                    new LayerVector({
-                        source: this.OSM.markerSource,
-                        style: this.OSM.markerStyle,
-                    }),
-                ],
-                view: new View({ center, zoom: 17 }),
-            });
-
-            this.OSM.marker = new Feature({
-                geometry: new Point(center),
-                name: this.props.t('Your home'),
-            });
-
-            this.OSM.markerSource.addFeature(this.OSM.marker);
-
-            this.OSM.oMap.on('singleclick', event => {
-                const lonLat = toLonLat(event.coordinate);
-                this.setState({ longitude: lonLat[0], latitude: lonLat[1] }, () => this.updateMap());
-            });
-        }
-
-        const zoom = this.OSM.oMap.getView().getZoom();
-        this.OSM.marker.setGeometry(new Point(center));
-        this.OSM.oMap.setView(new View({ center, zoom }));
     }
 
-    componentDidMount(): void {
-        this.updateMap();
+    async componentDidMount(): Promise<void> {
+        const systemConfig = await this.props.socket.getCompactSystemConfig(true);
+        this.setState(
+            {
+                tempUnit: systemConfig.common.tempUnit,
+                currency: systemConfig.common.currency,
+                dateFormat: systemConfig.common.dateFormat,
+                isFloatComma: systemConfig.common.isFloatComma,
+                country: systemConfig.common.country,
+                city: systemConfig.common.city,
+                address: '',
+                longitude: systemConfig.common.longitude,
+                latitude: systemConfig.common.latitude,
+                firstDayOfWeek: systemConfig.common.firstDayOfWeek || 'monday',
+            },
+            () => this.getBrowserCoordinates(),
+        );
     }
+
+    onMap = (map: Map): void => {
+        if (!this.map || this.map !== map) {
+            this.map = map;
+            const center: LatLngTuple = [
+                parseFloat(this.state.latitude !== undefined ? (this.state.latitude as any as string) : '50') || 0,
+                parseFloat(this.state.longitude !== undefined ? (this.state.longitude as any as string) : '10') || 0,
+            ];
+
+            this.marker = new Marker(center, {
+                draggable: true,
+                title: I18n.t('Resource location'),
+                alt: I18n.t('Resource Location'),
+                riseOnHover: true,
+            })
+                .addTo(map)
+                .bindPopup('Popup for any custom information.')
+                .on({ dragend: (evt: DragEndEvent) => this.onMarkerDragend(evt) });
+        }
+    };
+
+    onMarkerDragend = (evt: DragEndEvent): void => {
+        // ignore changes during saving
+        this.setState({ latitude: evt.target._latlng.lat, longitude: evt.target._latlng.lng });
+    };
+
+    changeMapPosition(noWait?: boolean): void {
+        if (this.latLongTimer) {
+            clearTimeout(this.latLongTimer);
+        }
+        this.latLongTimer = setTimeout(
+            () => {
+                this.latLongTimer = null;
+                this.map.flyTo([
+                    parseFloat(this.state.latitude as any as string),
+                    parseFloat(this.state.longitude as any as string),
+                ]);
+                this.marker.setLatLng([
+                    parseFloat(this.state.latitude as any as string),
+                    parseFloat(this.state.longitude as any as string),
+                ]);
+            },
+            noWait ? 0 : 500,
+        );
+    }
+
+    onChangePosition = (evt: { target: { value: string } }, id: string): void => {
+        const value = evt.target.value;
+        if (id === 'latitude') {
+            this.setState({ latitude: value });
+        } else {
+            this.setState({ longitude: value });
+        }
+
+        this.changeMapPosition();
+    };
+
+    addressToPosition(): void {
+        if (this.cityTimer) {
+            clearTimeout(this.cityTimer);
+        }
+
+        this.cityTimer = setTimeout(() => {
+            this.cityTimer = null;
+            const provider = new OpenStreetMapProvider();
+
+            void provider
+                .search({ query: `${this.state.country} ${this.state.city}, ${this.state.address}` })
+                .then(results => {
+                    if (results[0]) {
+                        setTimeout(
+                            () =>
+                                this.setState({ latitude: results[0].y, longitude: results[0].x, zoom: 23 }, () =>
+                                    this.changeMapPosition(true),
+                                ),
+                            1200,
+                        );
+                    }
+                });
+        }, 500);
+    }
+
+    onChangeAddress = (evt: { target: { value: string } }, id: 'city' | 'address' | 'country'): void => {
+        if (id === 'city') {
+            this.setState({ city: evt.target.value });
+        } else if (id === 'address') {
+            this.setState({ address: evt.target.value });
+        } else {
+            this.setState({ country: evt.target.value });
+        }
+
+        this.addressToPosition();
+    };
 
     render(): JSX.Element {
+        const center: LatLngTuple = [
+            parseFloat(this.state.longitude !== undefined ? (this.state.longitude as any as string) : '50') || 0,
+            parseFloat(this.state.longitude !== undefined ? (this.state.longitude as any as string) : '10') || 0,
+        ];
+
+        const { zoom } = this.state;
+
         return (
             <Paper style={styles.paper}>
                 <Grid2
@@ -336,10 +364,10 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         freeSolo
                                         options={CURRENCY}
                                         inputValue={this.state.currency}
-                                        onChange={(event, newValue: { id: string; title: string }) =>
+                                        onChange={(_event, newValue: { id: string; title: string }) =>
                                             this.setState({ currency: newValue ? newValue.id : '' })
                                         }
-                                        onInputChange={(event, currency) => this.setState({ currency })}
+                                        onInputChange={(_event, currency) => this.setState({ currency })}
                                         getOptionLabel={(option: { id: string; title: string }) => option.title}
                                         renderOption={(props, option: { id: string; title: string }) => (
                                             <li {...props}>{option.title}</li>
@@ -401,7 +429,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         <Select
                                             variant="standard"
                                             value={this.state.country || ''}
-                                            onChange={e => this.setState({ country: e.target.value })}
+                                            onChange={e => this.onChangeAddress(e, 'country')}
                                         >
                                             <MenuItem value="">{this.props.t('Please select country')}</MenuItem>
                                             <MenuItem value="Germany">{this.props.t('Germany')}</MenuItem>
@@ -727,7 +755,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         label={this.props.t('City')}
                                         style={styles.controlItem}
                                         value={this.state.city}
-                                        onChange={e => this.setState({ city: e.target.value })}
+                                        onChange={e => this.onChangeAddress(e, 'city')}
                                         slotProps={{
                                             input: {
                                                 endAdornment: this.state.city ? (
@@ -750,8 +778,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         label={this.props.t('Address')}
                                         style={styles.controlItemAddress}
                                         value={this.state.address}
-                                        onKeyUp={e => e.key === 'Enter' && this.getPositionForAddress()}
-                                        onChange={e => this.setState({ address: e.target.value })}
+                                        onChange={e => this.onChangeAddress(e, 'address')}
                                         helperText={this.props.t('Used only to calculate position.')}
                                         slotProps={{
                                             input: {
@@ -770,9 +797,9 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                     />
                                     <Fab
                                         size="small"
-                                        onClick={() => this.getPositionForAddress()}
+                                        onClick={() => this.addressToPosition()}
                                     >
-                                        <GeoIcon />
+                                        <GpsFixed />
                                     </Fab>
                                 </Grid2>
                                 <Grid2>
@@ -781,9 +808,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         label={this.props.t('Longitude')}
                                         style={styles.controlItem}
                                         value={this.state.longitude}
-                                        onChange={e =>
-                                            this.setState({ longitude: parseFloat(e.target.value.replace(',', '.')) })
-                                        }
+                                        onChange={e => this.onChangePosition(e, 'longitude')}
                                         slotProps={{
                                             input: {
                                                 endAdornment: this.state.longitude ? (
@@ -806,9 +831,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         label={this.props.t('Latitude')}
                                         style={styles.controlItem}
                                         value={this.state.latitude}
-                                        onChange={e =>
-                                            this.setState({ latitude: parseFloat(e.target.value.replace(',', '.')) })
-                                        }
+                                        onChange={e => this.onChangePosition(e, 'latitude')}
                                         slotProps={{
                                             input: {
                                                 endAdornment: this.state.latitude ? (
@@ -847,10 +870,22 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                         </Grid2>
                     </Grid2>
                     <Grid2 style={styles.mapGrid}>
-                        <div
-                            id="map"
+                        <MapContainer
                             style={styles.map}
-                        />
+                            center={center}
+                            zoom={zoom}
+                            maxZoom={18}
+                            attributionControl
+                            zoomControl
+                            doubleClickZoom
+                            scrollWheelZoom
+                            dragging
+                            // animate
+                            easeLinearity={0.35}
+                        >
+                            <TileLayer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />
+                            <MyMapComponent addMap={map => this.onMap(map)} />
+                        </MapContainer>
                     </Grid2>
                 </Grid2>
                 <Toolbar style={styles.toolbar}>
