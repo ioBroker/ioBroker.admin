@@ -23,6 +23,14 @@ import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 
+function isLocalUrl(path: string): boolean {
+    try {
+        return new URL(path, "http://127.0.0.1:3000").origin === "http://127.0.0.1:3000";
+    } catch (e) {
+        return false;
+    }
+}
+
 export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     accessAllowedConfigs: string[];
     accessAllowedTabs: string[];
@@ -620,7 +628,7 @@ class Web {
                         if (parts && parts.length > 1 && parts[1]) {
                             redirect = decodeURIComponent(parts[1]);
                             // if some invalid characters in redirect
-                            if (redirect.match(/[^-_a-zA-Z0-9&%?./]/)) {
+                            if (redirect.match(/[^-_a-zA-Z0-9&%?./]/) || !isLocalUrl(redirect)) {
                                 redirect = '/';
                             }
                         } else {
