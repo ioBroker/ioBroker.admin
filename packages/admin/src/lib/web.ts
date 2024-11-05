@@ -8,7 +8,7 @@ import { inherits } from 'util';
 import { join, normalize, parse, dirname } from 'node:path';
 import { Transform } from 'node:stream';
 import * as compression from 'compression';
-import { lookup } from 'mime';
+import * as mime from 'mime';
 import { gunzipSync } from 'node:zlib';
 import * as archiver from 'archiver';
 import axios from 'axios';
@@ -186,7 +186,10 @@ interface AdminAdapter extends ioBroker.Adapter {
  */
 class Web {
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    server: { app: null | Express; server: null | Server } = {
+    server: {
+        app: null | Express;
+        server: null | (Server & { __server: { app: null | Express; server: null | Server } });
+    } = {
         app: null,
         server: null,
     };
@@ -240,9 +243,9 @@ class Web {
         void this.#init();
     }
 
-    decorateLogFile(filename: string, text?: string): string {
-        const log = text || readFileSync(filename).toString();
-        return logTemplate.replace('@@title@@', parse(filename).name).replace('@@body@@', log);
+    decorateLogFile(fileName: string, text?: string): string {
+        const log = text || readFileSync(fileName).toString();
+        return logTemplate.replace('@@title@@', parse(fileName).name).replace('@@body@@', log);
     }
 
     setLanguage(lang: ioBroker.Languages): void {
@@ -267,7 +270,7 @@ class Web {
             if (pattern === 'disableDataReporting') {
                 template = template.replace(
                     /['"]@@disableDataReporting@@["']/g,
-                    // @ts-expect-error this is not used on instance objects use system.adapter.xy.plugins.sentry.enabled
+                    // @ts-expect-error deprecated: this is not used on instance objects use system.adapter.xy.plugins.sentry.enabled
                     this.adapter.common?.disableDataReporting ? 'true' : 'false',
                 );
             } else if (pattern === 'loginBackgroundImage') {
@@ -416,7 +419,7 @@ class Web {
         }
     }
 
-    unzipFile(filename: string, data: string, res: Response): void {
+    unzipFile(fileName: string, data: string, res: Response): void {
         // extract the file
         try {
             const text = gunzipSync(data).toString('utf8');
@@ -425,12 +428,12 @@ class Web {
                 res.send(text);
             } else {
                 res.header('Content-Type', 'text/html');
-                res.send(this.decorateLogFile(filename, text));
+                res.send(this.decorateLogFile(fileName, text));
             }
         } catch (e) {
             res.header('Content-Type', 'application/gzip');
             res.send(data);
-            this.adapter.log.error(`Cannot extract file ${filename}: ${e}`);
+            this.adapter.log.error(`Cannot extract file ${fileName}: ${e}`);
         }
     }
 
@@ -762,92 +765,57 @@ class Web {
                 res.status(200).send('validated');
             });
 
-            this.server.app.get('/zip/*', (req: Request, res: Response): void => {
-                const parts = req.url.split('/');
-                const filename = parts.pop();
-                let hostname = parts.pop();
-                // backwards compatibility with JavaScript < 3.5.5
-                if (hostname === 'zip') {
-                    hostname = `system.host.${this.adapter.host}`;
-                }
-
-                // @ts-expect-error TODO: binary states have been removed
-                if (this.adapter.getBinaryState) {
-                    // @ts-expect-error TODO: binary states have been removed
-                    this.adapter.getBinaryState(`${hostname}.zip.${filename}`, (err, buff): void => {
-                        if (err) {
-                            res.status(500).send(escapeHtml(typeof err === 'string' ? err : JSON.stringify(err)));
-                        } else {
-                            if (!buff) {
-                                res.status(404).send(get404Page(escapeHtml(`File ${filename}.zip not found`)));
-                            } else {
-                                // remove file
-                                // @ts-expect-error TODO: binary states have been removed
-                                if (this.adapter.delBinaryState) {
-                                    // @ts-expect-error TODO: binary states have been removed
-                                    this.adapter.delBinaryState(`system.host.${this.adapter.host}.zip.${filename}`);
-                                }
-                                res.set('Content-Type', 'application/zip');
-                                res.send(buff);
-                            }
-                        }
-                    });
-                } else {
-                    res.status(501).send('Cannot get binary states');
-                }
-            });
-
             // send log files
             this.server.app.get('/log/*', (req: Request, res: Response): void => {
                 let parts = decodeURIComponent(req.url).split('/');
                 if (parts.length === 5) {
+                    // remove first "/"
                     parts.shift();
+                    // remove "log"
                     parts.shift();
                     const [host, transport] = parts;
                     parts = parts.splice(2);
-                    const filename = parts.join('/');
-                    this.adapter.sendToHost(`system.host.${host}`, 'getLogFile', { filename, transport }, result => {
-                        // @ts-expect-error fix later
-                        if (!result || result.error) {
-                            res.status(404).send(get404Page(`File ${escapeHtml(filename)} not found`));
+                    const fileName = parts.join('/');
+                    if (fileName.includes('..')) {
+                        res.status(404).send(
+                            get404Page(`File ${escapeHtml(fileName)} not found. Do not use relative paths!`),
+                        );
+                        return;
+                    }
+
+                    this.adapter.sendToHost(`system.host.${host}`, 'getLogFile', { fileName, transport }, result => {
+                        const _result = result as { error?: string; data?: string; size?: number; gz?: boolean };
+                        if (!_result || _result.error) {
+                            res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
                         } else {
-                            // @ts-expect-error fix later
-                            if (result.gz) {
-                                // @ts-expect-error fix later
-                                if (result.size > 1024 * 1024) {
+                            if (_result.gz) {
+                                if (_result.size > 1024 * 1024) {
                                     res.header('Content-Type', 'application/gzip');
-                                    // @ts-expect-error fix later
-                                    res.send(result.data);
+                                    res.send(_result.data);
                                 } else {
                                     try {
-                                        // @ts-expect-error fix later
-                                        this.unzipFile(filename, result.data, res);
+                                        this.unzipFile(fileName, _result.data, res);
                                     } catch (e) {
                                         res.header('Content-Type', 'application/gzip');
-                                        // @ts-expect-error fix later
-                                        res.send(result.data);
-                                        this.adapter.log.error(`Cannot extract file ${filename}: ${e}`);
+                                        res.send(_result.data);
+                                        this.adapter.log.error(`Cannot extract file ${fileName}: ${e}`);
                                     }
                                 }
-                                // @ts-expect-error fix later
-                            } else if (result.data === undefined || result.data === null) {
-                                res.status(404).send(get404Page(`File ${escapeHtml(filename)} not found`));
-                                // @ts-expect-error fix later
-                            } else if (result.size > 2 * 1024 * 1024) {
+                            } else if (_result.data === undefined || _result.data === null) {
+                                res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
+                            } else if (_result.size > 2 * 1024 * 1024) {
                                 res.header('Content-Type', 'text/plain');
-                                // @ts-expect-error fix later
-                                res.send(result.data);
+                                res.send(_result.data);
                             } else {
                                 res.header('Content-Type', 'text/html');
-                                // @ts-expect-error fix later
-                                res.send(this.decorateLogFile(filename, result.data));
+                                res.send(this.decorateLogFile(fileName, _result.data));
                             }
                         }
                     });
                 } else {
                     parts = parts.splice(2);
                     const transport = parts.shift();
-                    let filename = parts.join('/');
+                    let fileName = parts.join('/');
                     const config = this.adapter.systemConfig;
 
                     // detect file log
@@ -875,35 +843,35 @@ class Web {
                                 }
                             }
 
-                            filename = normalize(join(logFolder, filename).replace(/\\/g, '/')).replace(/\\/g, '/');
+                            fileName = normalize(join(logFolder, fileName).replace(/\\/g, '/')).replace(/\\/g, '/');
 
-                            if (filename.startsWith(logFolder) && existsSync(filename)) {
-                                const stat = lstatSync(filename);
+                            if (fileName.startsWith(logFolder) && existsSync(fileName)) {
+                                const stat = lstatSync(fileName);
                                 // if a file is an archive
-                                if (filename.toLowerCase().endsWith('.gz')) {
+                                if (fileName.toLowerCase().endsWith('.gz')) {
                                     // try to not process to big files
                                     if (stat.size > 1024 * 1024 /* || !existsSync('/dev/null')*/) {
                                         res.header('Content-Type', 'application/gzip');
-                                        res.sendFile(filename);
+                                        res.sendFile(fileName);
                                     } else {
                                         try {
                                             this.unzipFile(
-                                                filename,
-                                                readFileSync(filename, { encoding: 'utf-8' }),
+                                                fileName,
+                                                readFileSync(fileName, { encoding: 'utf-8' }),
                                                 res,
                                             );
                                         } catch (e) {
                                             res.header('Content-Type', 'application/gzip');
-                                            res.sendFile(filename);
-                                            this.adapter.log.error(`Cannot extract file ${filename}: ${e}`);
+                                            res.sendFile(fileName);
+                                            this.adapter.log.error(`Cannot extract file ${fileName}: ${e}`);
                                         }
                                     }
                                 } else if (stat.size > 2 * 1024 * 1024) {
                                     res.header('Content-Type', 'text/plain');
-                                    res.sendFile(filename);
+                                    res.sendFile(fileName);
                                 } else {
                                     res.header('Content-Type', 'text/html');
-                                    res.send(this.decorateLogFile(filename));
+                                    res.send(this.decorateLogFile(fileName));
                                 }
 
                                 return;
@@ -911,7 +879,7 @@ class Web {
                         }
                     }
 
-                    res.status(404).send(get404Page(`File ${escapeHtml(filename)} not found`));
+                    res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
                 }
             });
 
@@ -1003,6 +971,8 @@ class Web {
                     url = req.url;
                 }
 
+                // sanitize url
+
                 // add index.html
                 url = url.replace(/\/($|\?|#)/, '/index.html$1');
 
@@ -1015,7 +985,7 @@ class Web {
                     if (url.startsWith(this.dirName)) {
                         try {
                             if (existsSync(url)) {
-                                res.contentType(lookup(url) || 'text/javascript');
+                                res.contentType(mime.getType(url) || 'text/javascript');
                                 createReadStream(url).pipe(res);
                             } else {
                                 res.status(404).send(get404Page(`File not found`));
@@ -1072,7 +1042,7 @@ class Web {
                             res.contentType(mimeType);
                         } else {
                             try {
-                                const _mimeType = lookup(url);
+                                const _mimeType = mime.getType(url);
                                 res.contentType(_mimeType || 'text/javascript');
                             } catch {
                                 res.contentType('text/javascript');
@@ -1217,22 +1187,20 @@ class Web {
                 );
 
                 this.adapter.sendTo(instance, 'oauth2Callback', query, result => {
+                    const _result = result as { error?: string; result?: string };
                     if (timeout) {
                         clearTimeout(timeout);
                         timeout = null;
-                        // @ts-expect-error fix later
-                        if (result?.error) {
+                        if (_result?.error) {
                             let text = readFileSync(`${this.baseDir}/public/oauthError.html`).toString('utf8');
                             text = text.replace('%LANGUAGE%', this.systemLanguage);
-                            // @ts-expect-error fix later
-                            text = text.replace('%ERROR%', result.error);
+                            text = text.replace('%ERROR%', _result.error);
                             res.setHeader('Content-Type', 'text/html');
                             res.status(500).send(text);
                         } else {
                             let text = readFileSync(`${this.baseDir}/public/oauthSuccess.html`).toString('utf8');
                             text = text.replace('%LANGUAGE%', this.systemLanguage);
-                            // @ts-expect-error fix later
-                            text = text.replace('%MESSAGE%', result ? result.result || '' : '');
+                            text = text.replace('%MESSAGE%', _result?.result || '');
                             res.setHeader('Content-Type', 'text/html');
                             res.status(200).send(text);
                         }
@@ -1271,7 +1239,6 @@ class Web {
                 return;
             }
 
-            // @ts-expect-error fix later
             this.server.server.__server = this.server;
         } else {
             this.adapter.log.error('port missing');
