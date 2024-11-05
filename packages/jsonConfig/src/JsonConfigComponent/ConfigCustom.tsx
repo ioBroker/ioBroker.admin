@@ -149,7 +149,7 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
             if (this.props.schema.i18n === true) {
                 // load i18n from files
                 const pos = url.lastIndexOf('/');
-                let i18nURL;
+                let i18nURL: string;
                 if (pos !== -1) {
                     i18nURL = url.substring(0, pos);
                 } else {

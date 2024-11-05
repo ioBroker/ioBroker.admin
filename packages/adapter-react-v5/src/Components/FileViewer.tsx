@@ -5,8 +5,12 @@ import React, { Component, type JSX } from 'react';
 import { TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
 
 // Icons
-import { FaCopy as CopyIcon } from 'react-icons/fa';
-import { Close as CloseIcon, Save as SaveIcon, Brightness6 as Brightness5Icon } from '@mui/icons-material';
+import {
+    Close as CloseIcon,
+    Save as SaveIcon,
+    Brightness6 as Brightness5Icon,
+    ContentCopy as CopyIcon,
+} from '@mui/icons-material';
 
 import type { Connection } from '@iobroker/socket-client';
 

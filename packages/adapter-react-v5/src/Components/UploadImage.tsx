@@ -4,8 +4,7 @@ import { Cropper, type ReactCropperElement } from 'react-cropper';
 
 import { Menu, MenuItem, Tooltip, IconButton } from '@mui/material';
 
-import { Close as IconClose, Crop as CropIcon } from '@mui/icons-material';
-import { FaFileUpload as UploadIcon } from 'react-icons/fa';
+import { Close as IconClose, Crop as CropIcon, UploadFileOutlined as UploadIcon } from '@mui/icons-material';
 
 import { I18n } from '../i18n';
 import { Icon } from './Icon';

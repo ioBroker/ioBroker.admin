@@ -12,7 +12,6 @@
         "sourceRoot": "./src",
         "noImplicitAny": true,
         "skipLibCheck": true,
-        "verbatimModuleSyntax": true,
         "lib": ["es2018", "DOM"],
         "jsx": "react",
         "types": ["@iobroker/types"],

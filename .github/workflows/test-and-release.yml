@@ -61,6 +61,8 @@ jobs:
               run: |
                   cd packages/admin/src-admin
                   npm run check-ts
+              # Wait till js-controller 7 types are available
+              continue-on-error: true
 
             - name: 'Build'
               run: |

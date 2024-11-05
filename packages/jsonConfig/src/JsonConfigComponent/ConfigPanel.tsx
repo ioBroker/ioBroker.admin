@@ -101,6 +101,7 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     room: ConfigRoom,
     select: ConfigSelect,
     selectSendTo: ConfigSelectSendTo,
+    // @deprecated Use "sendTo"
     sendto: ConfigSendTo,
     sendTo: ConfigSendTo,
     setState: ConfigSetState,
