@@ -73,7 +73,7 @@ import { Icon } from './Icon';
 import { withWidth } from './withWidth';
 import type { ThemeName, ThemeType, Translate, IobTheme } from '../types';
 
-import { FileViewer, EXTENSIONS } from './FileViewer';
+import { FileViewer, EXTENSIONS, type FileViewerProps } from './FileViewer';
 
 const ROW_HEIGHT = 32;
 const BUTTON_WIDTH = 32;
@@ -455,7 +455,7 @@ export interface FileBrowserProps {
     lang: ioBroker.Languages;
     /** The socket connection. */
     socket: Connection;
-    /** Is the component data ready. */
+    /** Shows if the component data ready. */
     ready?: boolean;
     /** Is expert mode enabled? (default: false) */
     expertMode?: boolean;
@@ -506,6 +506,8 @@ export interface FileBrowserProps {
     allowNonRestricted?: boolean;
 
     showTypeSelector?: boolean;
+
+    FileViewer?: React.FC<FileViewerProps>;
 }
 
 export interface FolderOrFileItem {
@@ -856,7 +858,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
             this.browseList[0].processing = true;
             this.props.socket
-                .readDir(this.browseList[0].adapter, this.browseList[0].relPath as string)
+                .readDir(this.browseList[0].adapter, this.browseList[0].relPath)
                 .then(files => {
                     if (this.browseList) {
                         // if component still mounted
@@ -2294,7 +2296,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     aria-labelledby="ar_dialog_file_delete_title"
                 >
                     <DialogTitle id="ar_dialog_file_delete_title">
-                        {this.props.t('ra_Confirm deletion of %s', this.state.deleteItem.split('/').pop() as string)}
+                        {this.props.t('ra_Confirm deletion of %s', this.state.deleteItem.split('/').pop())}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>{this.props.t('ra_Are you sure?')}</DialogContentText>
@@ -2333,8 +2335,10 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
     }
 
     renderViewDialog(): JSX.Element | null {
+        const FileViewerComponent = this.props.FileViewer || FileViewer;
+
         return this.state.viewer ? (
-            <FileViewer
+            <FileViewerComponent
                 supportSubscribes={this.supportSubscribes}
                 key={this.state.viewer}
                 href={this.state.viewer}
@@ -2344,8 +2348,6 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 getStyleBackgroundImage={this.getStyleBackgroundImage}
                 t={this.props.t}
                 socket={this.props.socket}
-                lang={this.props.lang}
-                expertMode={this.state.expertMode}
                 onClose={() => this.setState({ viewer: '', formatEditFile: '' })}
             />
         ) : null;

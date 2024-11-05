@@ -59,6 +59,7 @@
         "@types/cookie-parser": "^1.4.7",
         "@types/express-fileupload": "^1.5.1",
         "@types/express-session": "^1.18.0",
+        "@types/mime": "3.0.4",
         "@types/passport": "^1.0.16",
         "@types/passport-local": "^1.0.38",
         "@types/validator": "^13.12.2",

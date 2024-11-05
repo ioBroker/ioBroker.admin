@@ -15,7 +15,13 @@ export {
     type Folders,
     FileBrowserClass,
 } from './Components/FileBrowser';
-export { EXTENSIONS, FileViewer, FileViewerClass } from './Components/FileViewer';
+export {
+    EXTENSIONS,
+    FileViewer,
+    FileViewerClass,
+    type FileViewerProps,
+    type FileViewerState,
+} from './Components/FileViewer';
 export { getSystemIcon, getSelectIdIcon, Icon } from './Components/Icon';
 export { IconPicker } from './Components/IconPicker';
 export { IconSelector } from './Components/IconSelector';

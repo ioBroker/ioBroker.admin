@@ -8,9 +8,11 @@ import {
     type ThemeType,
     type Translate,
     type IobTheme,
+    type FolderOrFileItem,
+    type Folders,
+    type MetaACL,
+    type MetaObject,
 } from '@iobroker/adapter-react-v5';
-
-import type { FolderOrFileItem, Folders, MetaACL, MetaObject } from '@/components/FileBrowser';
 
 import AdminUtils from '../helpers/AdminUtils';
 import CustomModal from '../components/CustomModal';

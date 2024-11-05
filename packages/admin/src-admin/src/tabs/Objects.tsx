@@ -22,15 +22,14 @@ import {
     type Translate,
     withWidth,
     Router,
+    ObjectBrowser,
+    type ObjectBrowserClass,
+    type ObjectBrowserFilter,
+    type TreeItemData,
 } from '@iobroker/adapter-react-v5';
 
 import type ObjectsWorker from '@/Workers/ObjectsWorker';
 
-import ObjectBrowser, {
-    type ObjectBrowserClass,
-    type ObjectBrowserFilter,
-    type TreeItemData,
-} from '../components/ObjectBrowser';
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
 import ObjectBrowserValue from '../components/Object/ObjectBrowserValue';
 import ObjectBrowserEditObject from '../components/Object/ObjectBrowserEditObject';

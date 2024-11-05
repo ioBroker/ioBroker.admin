@@ -1374,7 +1374,7 @@ function applyFilter(
         }
         if (!filteredOut && filters.role && common) {
             if (common) {
-                filteredOut = !(common.role && common.role.startsWith(context.role as string));
+                filteredOut = !(common.role && common.role.startsWith(context.role));
             } else {
                 filteredOut = true;
             }
@@ -1703,7 +1703,7 @@ function buildTree(
                             cRoot = _cRoot;
                             info.ids.push(curPath); // IDs will be added by alphabet
                         } else if (cRoot.children) {
-                            cRoot = cRoot.children.find(item => item.data.name === parts[k]) as TreeItem;
+                            cRoot = cRoot.children.find(item => item.data.name === parts[k]);
                         }
                     }
                 }
@@ -1774,8 +1774,8 @@ function buildTree(
     }
 
     info.roomEnums.sort((a, b) => {
-        const aName: string = getName(objects[a]?.common?.name, options.lang) || (a.split('.').pop() as string);
-        const bName: string = getName(objects[b]?.common?.name, options.lang) || (b.split('.').pop() as string);
+        const aName: string = getName(objects[a]?.common?.name, options.lang) || a.split('.').pop();
+        const bName: string = getName(objects[b]?.common?.name, options.lang) || b.split('.').pop();
         if (aName > bName) {
             return 1;
         }
@@ -1785,8 +1785,8 @@ function buildTree(
         return 0;
     });
     info.funcEnums.sort((a, b) => {
-        const aName: string = getName(objects[a]?.common?.name, options.lang) || (a.split('.').pop() as string);
-        const bName: string = getName(objects[b]?.common?.name, options.lang) || (b.split('.').pop() as string);
+        const aName: string = getName(objects[a]?.common?.name, options.lang) || a.split('.').pop();
+        const bName: string = getName(objects[b]?.common?.name, options.lang) || b.split('.').pop();
         if (aName > bName) {
             return 1;
         }
@@ -1820,7 +1820,7 @@ function findNode(root: TreeItem, id: string, _parts?: string[], _path?: string,
             if (_id === _path) {
                 found = root.children[i];
                 break;
-            } else if (_id > (_path as string)) {
+            } else if (_id > _path) {
                 break;
             }
         }
@@ -3068,7 +3068,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.systemConfig =
                 this.systemConfig ||
                 (objects?.['system.config'] as ioBroker.SystemConfigObject) ||
-                ((await props.socket.getObject('system.config')) as ioBroker.SystemConfigObject);
+                (await props.socket.getObject('system.config'));
 
             this.systemConfig.common = this.systemConfig.common || ({} as ioBroker.SystemConfigCommon);
             this.systemConfig.common.defaultNewAcl = this.systemConfig.common.defaultNewAcl || {
@@ -5249,14 +5249,16 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         this.setState({ expanded });
     }
 
-    private onCopy(e: React.MouseEvent, text: string): void {
+    private onCopy(e: React.MouseEvent, text: string | undefined): void {
         e.stopPropagation();
         e.preventDefault();
-        Utils.copyToClipboard(text);
-        if (text.length < 50) {
-            this.setState({ toast: this.props.t('ra_Copied %s', text) });
-        } else {
-            this.setState({ toast: this.props.t('ra_Copied') });
+        if (text) {
+            Utils.copyToClipboard(text);
+            if (text.length < 50) {
+                this.setState({ toast: this.props.t('ra_Copied %s', text) });
+            } else {
+                this.setState({ toast: this.props.t('ra_Copied') });
+            }
         }
     }
 
@@ -5771,7 +5773,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         info.style = getValueStyle({ state, isExpertMode: this.state.filter.expertMode, isButton: item.data.button });
 
-        let val: JSX.Element[] = info.valTextRx as JSX.Element[];
+        let val: JSX.Element[] = info.valTextRx;
         if (!this.state.filter.expertMode) {
             if (item.data.button) {
                 val = [
@@ -5892,7 +5894,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
         const type = this.state.enumDialog.type;
         const item = this.state.enumDialog.item;
-        const itemEnums: string[] = this.state.enumDialogEnums as string[];
+        const itemEnums: string[] = this.state.enumDialogEnums;
         const enumsOriginal = this.state.enumDialog.enumsOriginal;
 
         const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums)
@@ -6010,7 +6012,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     roles={this.info.roles}
                     onClose={(obj?: ioBroker.Object | null) => {
                         if (obj) {
-                            this.info.objects[this.state.roleDialog as string] = obj;
+                            this.info.objects[this.state.roleDialog] = obj;
                         }
                         this.setState({ roleDialog: null });
                     }}
@@ -6043,14 +6045,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.props.socket
                 .getObject(this.state.columnsEditCustomDialog?.obj?._id || '')
                 .then(obj => {
-                    if (
-                        obj &&
-                        ObjectBrowserClass.setCustomValue(
-                            obj,
-                            this.state.columnsEditCustomDialog?.it as AdapterColumn,
-                            value,
-                        )
-                    ) {
+                    if (obj && ObjectBrowserClass.setCustomValue(obj, this.state.columnsEditCustomDialog?.it, value)) {
                         return this.props.socket.setObject(obj._id, obj);
                     }
                     throw new Error(this.props.t('ra_Cannot update attribute, because not found in the object'));
@@ -6825,7 +6820,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             <IconCopy
                                 className="copyButton"
                                 style={styles.cellCopyButton}
-                                onClick={e => this.onCopy(e, item.data?.title as string)}
+                                onClick={e => this.onCopy(e, item.data?.title)}
                             />
                         </Box>
                     ) : null}
@@ -7235,7 +7230,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 <IconCopy
                                     className="copyButton"
                                     style={styles.cellCopyButtonInDetails}
-                                    onClick={e => this.onCopy(e, item.data?.title as string)}
+                                    onClick={e => this.onCopy(e, item.data?.title)}
                                 />
                             ) : null}
                         </div>
@@ -7433,7 +7428,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        return items as JSX.Element[];
+        return items;
     }
 
     private calculateColumnsVisibility(
@@ -7681,9 +7676,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if ((e.target as HTMLDivElement).dataset.left === 'true') {
                 this.resizeLeft = true;
                 this.resizerNextDiv = this.resizerActiveDiv.previousElementSibling as HTMLDivElement;
-                let handle: HTMLDivElement | null = this.resizerNextDiv.querySelector(
-                    '.iob-ob-resize-handler',
-                ) as HTMLDivElement;
+                let handle: HTMLDivElement | null = this.resizerNextDiv.querySelector('.iob-ob-resize-handler');
                 while (this.resizerNextDiv && !handle && i < 10) {
                     this.resizerNextDiv = this.resizerNextDiv.previousElementSibling as HTMLDivElement;
                     handle = this.resizerNextDiv.querySelector('.iob-ob-resize-handler');
@@ -7702,8 +7695,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
             this.resizerNextName = this.resizerNextDiv.dataset.name || null;
 
-            this.resizerMin = parseInt(this.resizerActiveDiv.dataset.min as string, 10) || 0;
-            this.resizerNextMin = parseInt(this.resizerNextDiv.dataset.min as string, 10) || 0;
+            this.resizerMin = parseInt(this.resizerActiveDiv.dataset.min, 10) || 0;
+            this.resizerNextMin = parseInt(this.resizerNextDiv.dataset.min, 10) || 0;
 
             this.resizerPosition = e.clientX;
 
