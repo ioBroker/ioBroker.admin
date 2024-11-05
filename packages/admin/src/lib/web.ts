@@ -1,6 +1,6 @@
 import { commonTools, EXIT_CODES } from '@iobroker/adapter-core';
 import * as IoBWebServer from '@iobroker/webserver';
-import express from 'express';
+import * as express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
 import type { Server } from 'node:http';
 import { readFileSync, existsSync, createReadStream, readdirSync, lstatSync } from 'node:fs';
@@ -510,7 +510,7 @@ class Web {
 
             if (this.settings.auth) {
                 AdapterStore = commonTools.session(session, this.settings.ttl);
-                const { default: flash } = await import('connect-flash');
+                const flash = await import('connect-flash');
                 this.store = new AdapterStore({ adapter: this.adapter });
 
                 passport.use(
