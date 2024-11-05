@@ -816,7 +816,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                 },
             },
             xAxis: {
-                type: 'time',
+                // type: 'time',
                 splitLine: {
                     show: false,
                 },

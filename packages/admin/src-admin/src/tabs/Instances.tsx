@@ -420,9 +420,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 instance.links = instance.links || [];
                 let link: InstanceLink;
                 if (typeof links[linkName] === 'string') {
-                    link = { link: links[linkName] };
+                    link = { link: links[linkName] as string };
                 } else {
-                    link = links[linkName];
+                    link = links[linkName] as InstanceLink;
                 }
 
                 const urls =

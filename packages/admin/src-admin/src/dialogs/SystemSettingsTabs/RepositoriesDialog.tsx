@@ -101,7 +101,7 @@ const styles: Record<string, any> = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-export type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;
+export type Repository = Record<string, ioBroker.RepositoryInformation>;
 
 type RepositoryArray = Array<{ title: string; link: string }>;
 
@@ -459,6 +459,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                         <span>
                             <Checkbox
                                 disabled
+                                // @ts-expect-error will be fixed in js-controller 7
                                 checked={this.props.repoInfo[item.title]?.stable}
                                 indeterminate={!this.props.repoInfo[item.title]}
                             />

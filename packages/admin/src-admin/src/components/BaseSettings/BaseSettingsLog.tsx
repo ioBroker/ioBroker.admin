@@ -127,9 +127,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             if (settings.transport[id].type === 'file') {
                 const multiplier =
                     typeof settings.transport[id].maxSize === 'string'
-                        ? settings.transport[id].maxSize.includes('k')
+                        ? (settings.transport[id].maxSize as string).includes('k')
                             ? 0.1
-                            : settings.transport[id].maxSize.includes('g')
+                            : (settings.transport[id].maxSize as string).includes('g')
                               ? 10
                               : 1
                         : 1;

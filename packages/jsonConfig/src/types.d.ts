@@ -805,11 +805,11 @@ export interface ConfigItemInterface extends ConfigItem {
 
 export interface ConfigItemImageUpload extends ConfigItem {
     type: 'image';
-    /** name of file is structure name. In the below example `login-bg.png` is file name for `writeFile("myAdapter.INSTANCE", "login-bg.png")` */
+    /** name of a file is structure name. In the below example `login-bg.png` is file name for `writeFile("myAdapter.INSTANCE", "login-bg.png")` */
     filename?: string;
-    /** html accept attribute, like `{ 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }` */
+    /** HTML accept attribute, like `{ 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }` */
     accept?: Record<string, string[]>;
-    /** maximal size of file to upload */
+    /** maximal size of a file to upload */
     maxSize?: number;
     /** if true, the image will be saved as data-url in attribute, elsewise as binary in file storage */
     base64?: boolean;

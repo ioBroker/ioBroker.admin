@@ -72,11 +72,11 @@ _If the attribute name starts with "\_" it will not be saved in the object._
                     "max": 65565,
                     "label": "Number",
                     "sm": 6, // 1 - 12
-                    "validator": "'"!!data.name"'", // else error
+                    "validator": "!!data.name", // else error
                     "hidden": "data.myType === 1", // hidden if myType is 1
                     "disabled": "data.myType === 2" // disabled if myType is 2
                 },
-                "options.myType": { // name could support more than one levelhelperText
+                "options.myType": { // name could support more than one level
                     "newLine": true, // must start from new row
                     "type": "select",
                     "label": "Type",
@@ -164,7 +164,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`pattern`:**](#pattern) Read-only field showing a pattern (e.g., URL)
 - [**`port`:**](#port) Special input for ports
 - [**`qrCode`:**](#qrcode) Displays data as a QR code (Admin 7.0.18 or newer)
-- [**`room`:**](#room) Selects a room from the enum.room list (Admin 6 only)
+- [**`room`:**](#room) Selects a room from the `enum.room` list (Admin 6 only)
 - [**`select`:**](#select) Dropdown menu with predefined options
 - [**`selectSendTo`:**](#selectsendto) Dropdown menu with instance values for sending data
 - [**`sendTo`:**](#sendto) Button that sends a request to an instance
@@ -180,7 +180,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`text`:**](#text) Single-line text input field
 - [**`textSendTo`:**](#textsendto) Shows readonly control with the given from the instance values.
 - [**`timePicker`:**](#timepicker) Allows users to select a time
-- [**`user`:**](#user) Selects a user from the system.user list
+- [**`user`:**](#user) Selects a user from the `system.user` list
 - [**`uuid`:**](#uuid) Show iobroker UUID
 
 By leveraging JSON configuration, you can create a user-friendly and \
@@ -188,20 +188,20 @@ adaptable configuration experience for your ioBroker adapter.
 
 ## Example projects
 
-| Type              | Link                                                                                                                                                                                             |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Multiple Tabs:    | [`ioBroker.admin`](https://github.com/ioBroker/ioBroker.admin/blob/master/admin/jsonConfig.json5)                                                                                                |
-| Only one Panel:   | [`ioBroker.dwd`](https://github.com/ioBroker/ioBroker.dwd/blob/master/admin/jsonConfig.json)                                                                                                     |
-| Custom component: | [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) |
-| Validation:       |                                                                                                                                                                                                  |
+| Type              | Link                                                                                                                                                                                              |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Multiple Tabs:    | [`ioBroker.admin`](https://github.com/ioBroker/ioBroker.admin/blob/master/admin/jsonConfig.json5)                                                                                                 |
+| Only one Panel:   | [`ioBroker.dwd`](https://github.com/ioBroker/ioBroker.dwd/blob/master/admin/jsonConfig.json)                                                                                                      |
+| Custom component: | [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin)  |
+| Validation:       |                                                                                                                                                                                                   |
 
-## Seperation of Large Configurations
+## Separation of the large Configurations
 
 ## Includes
 
 Requires admin 6.17.1 or newer.
 
-To write complex JSON files, you can include other JSON files.\
+To write complex JSON files, you can include other JSON files.
 The included file must be in the same directory as the main file.
 
 ```json5
@@ -227,7 +227,7 @@ To enable the translation feature, you need to provide and enable the i18n prope
 }
 ```
 
-### Translation in seperate files - Compatible with weblate
+### Translation in separated files: compatible with weblate
 
 By default, the files must be located in the following directories:
 
@@ -243,7 +243,7 @@ admin/i18n/de.json
 admin/i18n/en.json
 ```
 
-Additionally, user can provide the path to i18n files, i18n: "customI18n"and provide files in admin:
+Additionally, user can provide the path to `i18n` files, `i18n`: `customI18n` and provide files in admin:
 
 ```json5
   i18n: "customI18n",
@@ -285,7 +285,7 @@ The structure of a file corresponds to the following structure
 
 When searching for a translation, the information in the specific field is used to find the property with the text in the files. If the property is not found, the information from the field remains. It is recommended to enter the text in English.
 
-### Provide translation directliy in the fields
+### Provide translation directly in the fields
 
 Translations can be specified in all fields that can contain text. Examples of fields are label, title, tooltip, text, etc.
 
@@ -298,9 +298,9 @@ Translations can be specified in all fields that can contain text. Examples of f
 }
 ```
 
-### Provide translation directliy in the i18n
+### Provide translation directly in the i18n
 
-The translations can also be provided directly as an object in the ia8n attribute at the top level of the jsonConfig object.
+The translations can also be provided directly as an object in the `i18n` attribute at the top level of the `jsonConfig` object.
 
 When searching for a translation, the information in the specific field is used to find the property with the text in the i18n object.
 If the property is not found, the information from the field remains.
@@ -314,18 +314,18 @@ Each element can have [common attributes](#common-attributes-of-controls) and th
 
 Tabs with items
 
-| Property       | Description                                                                                    |
-| -------------- | ---------------------------------------------------------------------------------------------- |
-| `items`        | Object with panels `{"tab1": {}, "tab2": {}...}`                                               |
-| `iconPosition` | `bottom`, `end`, `start` or `top`. Only for panels that has `icon` attribute. Default: `start` |
-| `tabsStyle`    | CSS Styles in React format (`marginLeft` and not `margin-left`) for the Mui-Tabs component     |
+| Property        | Description                                                                                    |
+|-----------------|------------------------------------------------------------------------------------------------|
+| `items`         | Object with panels `{"tab1": {}, "tab2": {}...}`                                               |
+| `iconPosition`  | `bottom`, `end`, `start` or `top`. Only for panels that has `icon` attribute. Default: `start` |
+| `tabsStyle`     | CSS Styles in React format (`marginLeft` and not `margin-left`) for the Mui-Tabs component     |
 
 ### `panel`
 
 Tab with items
 
 | Property      | Description                                                                                                                             |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | `icon`        | tab can have icon (base64 like `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`)                                  |
 | `label`       | Label of tab                                                                                                                            |
 | `items`       | Object `{"attr1": {}, "attr2": {}}...`                                                                                                  |
@@ -338,7 +338,7 @@ Tab with items
 Text component
 
 | Property        | Description                                                                                            |
-| --------------- | ------------------------------------------------------------------------------------------------------ |
+|-----------------|--------------------------------------------------------------------------------------------------------|
 | `maxLength`     | max length of the text in field                                                                        |
 | `readOnly`      | read-only field                                                                                        |
 | `trim`          | default is true. Set this attribute to `false` if trim is not desired.                                 |
@@ -352,7 +352,7 @@ Text component
 ### `number`
 
 | Property | Description   |
-| -------- | ------------- |
+|----------|---------------|
 | `min`    | minimal value |
 | `max`    | maximal value |
 | `step`   | step          |
@@ -362,7 +362,7 @@ Text component
 color picker
 
 | Property        | Description                                                    |
-| --------------- | -------------------------------------------------------------- |
+|-----------------|----------------------------------------------------------------|
 | `noClearButton` | if true, the clear button will not be shown (admin >= 6.17.13) |
 
 ### `checkbox`
@@ -397,7 +397,7 @@ show data in a QR Code (admin >= 7.0.18)
 bind address
 
 | Property           | Description                       |
-| ------------------ | --------------------------------- |
+|--------------------|-----------------------------------|
 | `listenOnAllPorts` | add 0.0.0.0 to option             |
 | `onlyIp4`          | show only IP4 addresses           |
 | `onlyIp6`          | show only IP6 addresses           |
@@ -408,7 +408,7 @@ bind address
 lect user from system.user. (With color and icon)
 
 | Property | Description     |
-| -------- | --------------- |
+|----------|-----------------|
 | `short`  | no system.user. |
 
 ### `room`
@@ -416,7 +416,7 @@ lect user from system.user. (With color and icon)
 Select room from `enum.room` (With color and icon) - (only Admin6)
 
 | Property          | Description              |
-| ----------------- | ------------------------ |
+|-------------------|--------------------------|
 | `short`           | no `enum.rooms.`         |
 | `allowDeactivate` | allow letting room empty |
 
@@ -425,14 +425,14 @@ Select room from `enum.room` (With color and icon) - (only Admin6)
 Select function from `enum.func` (With color and icon) - (only Admin6)
 
 | Property          | Description                       |
-| ----------------- | --------------------------------- |
+|-------------------|-----------------------------------|
 | `short`           | no `enum.func.`                   |
 | `allowDeactivate` | allow letting functionality empty |
 
 ### `select`
 
 | Property  | Description                                                             |
-| --------- | ----------------------------------------------------------------------- |
+|-----------|-------------------------------------------------------------------------|
 | `options` | object with labels, optional translations, optional grouping and values |
 
 #### Example for `select options`
@@ -441,9 +441,9 @@ Select function from `enum.func` (With color and icon) - (only Admin6)
 [
   {"label": {"en": "option 1"}, "value": 1}, ...
 ]
-
+```
 or
-
+```json
 [
    {
       "items": [
@@ -466,16 +466,16 @@ or
 ### `autocomplete`
 
 | Property   | Description                                                                                                   |
-| ---------- | ------------------------------------------------------------------------------------------------------------- |
+|------------|---------------------------------------------------------------------------------------------------------------|
 | `options`  | `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]` (keys must be unique) |
 | `freeSolo` | Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.                                     |
 
 ### `image`
 
-saves image as file of the `adapter.X` object or as base64 in attribute
+saves image as a file of the `adapter.X` object or as base64 in attribute
 
 | Property     | Description                                                                                                                            |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------|
 | `filename`   | name of file is structure name. In the below example `login-bg.png` is file name for `writeFile("myAdapter.INSTANCE", "login-bg.png")` |
 | `accept`     | html accept attribute, like `{ 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }`                             |
 | `maxSize`    | maximal size of file to upload                                                                                                         |
@@ -513,7 +513,7 @@ saves image as file of the `adapter.X` object or as base64 in attribute
 object ID: show it with name, color and icon
 
 | Property       | Description                                                                                                                                                                           |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `types`        | Desired type: `channel`, `device`, ... (has only `state` by default). It is plural, because `type` is already occupied.                                                               |
 | `root`         | [optional] Show only this root object and its children                                                                                                                                |
 | `customFilter` | [optional] Cannot be used together with `type` settings. It is an object and not a JSON string.                                                                                       |
@@ -533,7 +533,7 @@ object ID: show it with name, color and icon
 
 `{common: {custom: '_dataSources'}}`
 
-##### show only objects of custom settings of specific adapter (all instances)
+##### show only objects of custom settings for specific adapter (all instances)
 
 `{common: {custom: 'adapterName.'}}`
 
@@ -545,11 +545,11 @@ object ID: show it with name, color and icon
 
 `{type: ['channel', 'device']}`
 
-##### show only states of type 'number
+##### show only states of type 'number'
 
 `{common: {type: 'number'}`
 
-##### show only states of type 'number and string
+##### show only states of type 'number' and 'string'
 
 `{common: {type: ['number', 'string']}`
 
@@ -563,13 +563,13 @@ object ID: show it with name, color and icon
 
 ### `password`
 
-This field-type just have an effect in the UI.
+This field-type just has an effect on the UI.
 Passwords and other sensitive data should be stored encrypted!
 To do this, the key must be provided in the io-package.json under [nativeEncrypted](https://github.com/ioBroker/ioBroker.js-controller#automatically-encryptdecrypt-configuration-fields).
 Additionally, you can protect this property from being served to other adapters but `admin` and `cloud` by adding it to `protectedNative` in `io-package.json` file.
 
 | Property    | Description                                                                                             |
-| ----------- | ------------------------------------------------------------------------------------------------------- |
+|-------------|---------------------------------------------------------------------------------------------------------|
 | `repeat`    | repeat password must be compared with password                                                          |
 | `visible`   | true if allow viewing the password by toggling the view button (only for a new password while entering) |
 | `readOnly`  | the read-only flag. Visible is automatically true if readOnly is true                                   |
@@ -578,7 +578,7 @@ Additionally, you can protect this property from being served to other adapters 
 ### `instance`
 
 | Property          | Description                                                                                                                                     |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | `adapter`         | name of adapter. With special name `_dataSources` you can get all adapters with flag `common.getHistory`.                                       |
 | `adapters`        | optional list of adapters, that should be shown. If not defined, all adapters will be shown. Only active if `adapter` attribute is not defined. |
 | `allowDeactivate` | if true. Additional option "deactivate" is shown                                                                                                |
@@ -592,7 +592,7 @@ Additionally, you can protect this property from being served to other adapters 
 User can enter the word, and it will be added (see cloud => services => White list). Output is an array if no `delimiter` defined.
 
 | Property    | Description                                                                                                                                                           |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `delimiter` | if it is defined, so the option will be stored as string with delimiter instead of an array. E.g., by `delimiter=;` you will get `a;b;c` instead of `['a', 'b', 'c']` |
 
 ### `alive`
@@ -602,7 +602,7 @@ just indication if the instance is alive, and it could be used in "hidden" and "
 Just text: Instance is running, Instance is not running
 
 | Property       | Description                                                                                                                         |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | `instance`     | check if the instance is alive. If not defined, it will be used current instance. You can use `${data.number}` pattern in the text. |
 | `textAlive`    | default text is `Instance %s is alive`, where %s will be replaced by `ADAPTER.0`. The translation must exist in i18n files          |
 | `textNotAlive` | default text is `Instance %s is not alive`, where %s will be replaced by `ADAPTER.0`. The translation must exist in i18n files      |
@@ -613,7 +613,7 @@ read-only field with pattern like 'https://${data.ip}:${data.port}' (will not be
 Text input with the read-only flag, that shows a pattern.
 
 | Property          | Description           |
-| ----------------- | --------------------- |
+|-------------------|-----------------------|
 | `copyToClipboard` | if true - show button |
 | `pattern`         | my pattern            |
 
@@ -622,7 +622,7 @@ Text input with the read-only flag, that shows a pattern.
 button that sends request to instance (<https://github.com/iobroker-community-adapters/ioBroker.email/blob/master/admin/index_m.html#L128>)
 
 | Property        | Description                                                                                                                                                                                                                                  |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `command`       | (Default `send`)                                                                                                                                                                                                                             |
 | `jsonData`      | string - `"{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}"`. You can use special variables `data._origin` and `data._originIp` to send to instance the caller URL, like `http://127.0.0.1:8081/admin`.      |
 | `data`          | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.                                                                                                                                                |
@@ -643,10 +643,10 @@ button that sends request to instance (<https://github.com/iobroker-community-ad
 button that sets instance's state
 
 | Property  | Description                                                                                                                       |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------- |
+|-----------|-----------------------------------------------------------------------------------------------------------------------------------|
 | `id`      | `system.adapter.myAdapter.%INSTANCE%.test`, you can use the placeholder `%INSTANCE%` to replace it with the current instance name |
 | `ack`     | false (default false)                                                                                                             |
-| `val`     | '${data.myText}\_test' or number. Type will be detected automatically from the state type and converting done too                 |
+| `val`     | `${data.myText}\_test` or number. Type will be detected automatically from the state type and converting done too                 |
 | `okText`  | Alert which will be shown by pressing the button                                                                                  |
 | `variant` | `contained`, `outlined`, ''                                                                                                       |
 
@@ -655,14 +655,14 @@ button that sets instance's state
 static text like description
 
 | Property | Description         |
-| -------- | ------------------- |
+|----------|---------------------|
 | `label`  | multi-language text |
 | `text`   | same as label       |
 
 ### `staticLink`
 
 | Property  | Description                                                                                                                                                                                                                                                                     |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `label`   | multi-language text                                                                                                                                                                                                                                                             |
 | `href`    | link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`                                                                                                                                                                                                        |
 | `target`  | `_blank` or `_self` or window name                                                                                                                                                                                                                                              |
@@ -675,7 +675,7 @@ static text like description
 ### `staticImage`
 
 | Property | Description                            |
-| -------- | -------------------------------------- |
+|----------|----------------------------------------|
 | `href`   | optional HTTP link                     |
 | `src`    | name of picture (from admin directory) |
 
@@ -684,7 +684,7 @@ static text like description
 table with items that could be deleted, added, moved up, moved down
 
 | Property              | Description                                                                                                                                     |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | `items`               | `[{"type": see above, "width": px or %, "title": {"en": "header"}, "attr": "name", "filter": false, "sort": true, "default": ""}]`              |
 | `noDelete`            | boolean if delete or add disabled, If `noDelete` is false, add, delete and move up/down should work                                             |
 | `objKeyName`          | (legacy setting, don't use!) - name of the key in `{"192.168.1.1": {delay: 1000, enabled: true}, "192.168.1.2": {delay: 2000, enabled: false}}` |
@@ -704,7 +704,7 @@ table with items that could be deleted, added, moved up, moved down
 accordion with items that could be deleted, added, moved up, moved down (Admin 6.6.0 and newer)
 
 | Property    | Description                                                                                                                         |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | `items`     | `[{"type": see above, "attr": "name", "default": ""}]` items can be placed like on a `panel` (xs, sm, md, lg and newLine)           |
 | `titleAttr` | key of the item's list which should be used as name                                                                                 |
 | `noDelete`  | boolean if delete or add disabled, If `noDelete` is false, add, delete and move up/down should work                                 |
@@ -713,7 +713,7 @@ accordion with items that could be deleted, added, moved up, moved down (Admin 6
 ### `jsonEditor`
 
 | Property       | Description                                                        |
-| -------------- | ------------------------------------------------------------------ |
+|----------------|--------------------------------------------------------------------|
 | `validateJson` | if false, the text will be not validated as JSON                   |
 | `allowEmpty`   | if true, the JSON will be validated only if the value is not empty |
 
@@ -722,13 +722,13 @@ accordion with items that could be deleted, added, moved up, moved down (Admin 6
 select language
 
 | Property | Description                                                                                                          |
-| -------- | -------------------------------------------------------------------------------------------------------------------- |
+|----------|----------------------------------------------------------------------------------------------------------------------|
 | `system` | allow the usage of the system language from `system.config` as default (will have an empty string value if selected) |
 
 ### `certificate`
 
 | Property   | Description                                                                            |
-| ---------- | -------------------------------------------------------------------------------------- |
+|------------|----------------------------------------------------------------------------------------|
 | `certType` | on of: `public`, `private`, `chained`. But from 6.4.0 you can use `certificates` type. |
 
 ### `certificates`
@@ -752,7 +752,7 @@ Example:
 select certificate collection or just use all collections or don't use let's encrypt at all.
 
 | Property           | Description                        |
-| ------------------ | ---------------------------------- |
+|--------------------|------------------------------------|
 | `leCollectionName` | name of the certificate collection |
 
 ### `custom`
@@ -760,8 +760,8 @@ select certificate collection or just use all collections or don't use let's enc
 only Admin6
 
 | Property | Description                                                                                                                    |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `name`   | Component name that will be provided via props, like ComponentInstancesEditor                                                  |
+|----------|--------------------------------------------------------------------------------------------------------------------------------|
+| `name`   | Component name that will be provided via props, like `ComponentInstancesEditor`                                                |
 | `url`    | Location of the component                                                                                                      |
 | `i18n`   | true if `i18n/xx.json` files are located in the same directory as component, or translation object `{"text1": {"en": Text1"}}` |
 
@@ -780,7 +780,7 @@ allow the user to select a date input the UI format comes from the configured
 allow the user to select a date input the returned string is a parseable date string or of format `HH:mm:ss`
 
 | Property       | Description                                                                                          |
-| -------------- | ---------------------------------------------------------------------------------------------------- |
+|----------------|------------------------------------------------------------------------------------------------------|
 | `format`       | format passed to the date picker defaults to `HH:mm:ss`                                              |
 | `views`        | Configure which views should be shown to the users. Defaults to `['hours', 'minutes', 'seconds']`    |
 | `timeSteps`    | Represent the available time steps for each view. Defaults to `{ hours: 1, minutes: 5, seconds: 5 }` |
@@ -791,21 +791,21 @@ allow the user to select a date input the returned string is a parseable date st
 horizontal line
 
 | Property | Description                                      |
-| -------- | ------------------------------------------------ |
+|----------|--------------------------------------------------|
 | `height` | optional height                                  |
 | `color`  | optional divider color or `primary`, `secondary` |
 
 ### `header`
 
 | Property | Description  |
-| -------- | ------------ |
+|----------|--------------|
 | `text`   |              |
 | `size`   | 1-5 => h1-h5 |
 
 ### `cron`
 
 | Property  | Description                                   |
-| --------- | --------------------------------------------- |
+|-----------|-----------------------------------------------|
 | `complex` | show CRON with "minutes", "seconds" and so on |
 | `simple`  | show simple CRON settings                     |
 
@@ -814,7 +814,7 @@ horizontal line
 only Admin6
 
 | Property     | Description                                                                                                                                                                                              |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `pattern`    | File extension pattern. Allowed `**/*.ext` to show all files from subfolders too, `*.ext` to show from root folder or `folderName/*.ext` to show all files in sub-folder `folderName`. Default `**/*.*`. |
 | `fileTypes`  | [optional] type of files: `audio`, `image`, `text`                                                                                                                                                       |
 | `objectID`   | Object ID of type `meta`. You can use special placeholder `%INSTANCE%`: like `myAdapter.%INSTANCE%.files`                                                                                                |
@@ -832,7 +832,7 @@ only Admin6.
 Input field with file selector
 
 | Property            | Description                                                                              |
-| ------------------- | ---------------------------------------------------------------------------------------- |
+|---------------------|------------------------------------------------------------------------------------------|
 | `disableEdit`       | if user can manually enter the file name and not only through select dialog              |
 | `limitPath`         | limit selection to one specific object of type `meta` and following path (not mandatory) |
 | `filterFiles`       | like `['png', 'svg', 'bmp', 'jpg', 'jpeg', 'gif']`                                       |
@@ -846,10 +846,10 @@ Input field with file selector
 
 ### `imageSendTo`
 
-shows image, that was received from backend as base64 string
+shows image that was received from backend as base64 string
 
 | Property   | Description                                                                                                                                                 |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `width`    | width of QR code in px                                                                                                                                      |
 | `height`   | height of QR code in px                                                                                                                                     |
 | `command`  | sendTo command                                                                                                                                              |
@@ -876,7 +876,7 @@ adapter.on("message", (obj) => {
 Shows the drop-down menu with the given from the instance values.
 
 | Property        | Description                                                                                                                                                                             |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `command`       | sendTo command                                                                                                                                                                          |
 | `jsonData`      | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend                                                                 |
 | `data`          | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.                         |
@@ -945,7 +945,7 @@ adapter.on("message", (obj) => {
 Shows autocomplete control with the given from the instance values.
 
 | Property        | Description                                                                                                                                                     |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `command`       | sendTo command                                                                                                                                                  |
 | `jsonData`      | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend                                         |
 | `data`          | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined. |
@@ -963,7 +963,7 @@ See `selectSendTo` for handler example
 Shows readonly control with the given from the instance values.
 
 | Property          | Description                                                                                                                                                     |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `container`       | div, text, html                                                                                                                                                 |
 | `copyToClipboard` | if true - show button                                                                                                                                           |
 | `alsoDependsOn`   | by change of which attributes, the command must be resent                                                                                                       |
@@ -979,7 +979,7 @@ The result of command must be a string or object with the following parameters:
   text: "text to show", // mandatory
   style: { color: "red" }, // optional
   icon: "search", // optional. It could be base64 or link to image in the same folder as jsonConfig.json file
-  // possible predefined names: edit, rename, delete, refresh, add, search, unpair, pair, identify, play, stop, puase, forward, backward, next, previous, lamp, backlight, dimmer, socket, settings, group, user, qrcode, connection, no-connection, visible
+  // possible predefined names: edit, rename, delete, refresh, add, search, unpair, pair, identify, play, stop, pause, forward, backward, next, previous, lamp, backlight, dimmer, socket, settings, group, user, qrcode, connection, no-connection, visible
   iconStyle: { width: 30 }, // optional
 }
 ```
@@ -1030,7 +1030,7 @@ adapter.on("message", (obj) => {
 Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
 
 | Property        | Description                                                                                                                                                            |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `divider`       | divider between latitude and longitude. Default "," (Used if longitudeName and latitudeName are not defined)                                                           |
 | `autoInit`      | init field with current coordinates if empty                                                                                                                           |
 | `longitudeName` | if defined, the longitude will be stored in this attribute, divider will be ignored                                                                                    |
@@ -1039,10 +1039,10 @@ Determines current location and used `system.config` coordinates if not possible
 
 ### `interface`
 
-Selects the interface from of the host, where the instance runs
+Selects the interface of the host, where the instance runs
 
 | Property         | Description                                                    |
-| ---------------- | -------------------------------------------------------------- |
+|------------------|----------------------------------------------------------------|
 | `ignoreLoopback` | do not show loopback interface (127.0.0.1)                     |
 | `ignoreInternal` | do not show internal interfaces (normally it is 127.0.0.1 too) |
 
@@ -1051,7 +1051,7 @@ Selects the interface from of the host, where the instance runs
 shows the license information if not already accepted. One of attributes `texts` or `licenseUrl` must be defined. When the license is accepted, the defined configuration attribute will be set to `true`.
 
 | Property     | Description                                                                                                |
-| ------------ | ---------------------------------------------------------------------------------------------------------- |
+|--------------|------------------------------------------------------------------------------------------------------------|
 | `texts`      | array of paragraphs with texts, which will be shown each as a separate paragraph                           |
 | `licenseUrl` | URL to the license file (e.g. <https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/LICENSE>)   |
 | `title`      | Title of the license dialog                                                                                |
@@ -1063,7 +1063,7 @@ shows the license information if not already accepted. One of attributes `texts`
 Very special component to check the license online. It's required exactly `license` and `useLicenseManager` properties in native.
 
 | Property  | Description   |
-| --------- | ------------- |
+|-----------|---------------|
 | `uuid`    | Check UUID    |
 | `version` | Check version |
 
@@ -1076,7 +1076,7 @@ Show iobroker UUID
 Special input for ports. It checks automatically if port is used by other instances and shows a warning
 
 | Property | Description                                                                                                                   |
-| -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+|----------|-------------------------------------------------------------------------------------------------------------------------------|
 | `min`    | minimal allowed port number. It could be 0. And if the value is then zero, the check if the port is occupied will not happen. |
 
 ### `state`
@@ -1084,7 +1084,7 @@ Special input for ports. It checks automatically if port is used by other instan
 (admin >= 7.1.0) Show control or information from the state
 
 | Property         | Description                                                                                                                   |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------|
 | `oid`            | Which object ID should be taken for the controlling. The ID is without "adapter.X." prefix                                    |
 | `system`         | If true, the state will be taken from system.adapter.XX.I. and not from XX.I                                                  |
 | `control`        | How the value of the state should be shown: `text`, `html`, `input`, `slider`, `select`, `button`, `switch`, `number`         |
@@ -1144,11 +1144,12 @@ Here is an example of how to show device manager in a tab:
 These options are used to define the width of elements on different screen sizes, ensuring a responsive and adaptable layout across various devices.
 
 Valid numbers are 1 to 12.
+
 If you specify a number, for example 6, then the width of the element will be 6/12 (50%) of the screen width or for example 3, then the width of the element will be 3/12 (25%) of the screen width.
-Assign numbers to the different layoutoptions specify the with of the element for the different screen sizes.
+Assign numbers to the different layout options specify the width of the element for the different screen sizes.
 
 | option | description                              |
-| ------ | ---------------------------------------- |
+|--------|------------------------------------------|
 | `xl`   | extra large screens (1536px >= width)    |
 | `lg`   | large screens (1200px <= width < 1536px) |
 | `md`   | middle screens (900px <= width < 1200px) |
@@ -1165,7 +1166,7 @@ The following options are the recommended presets that fit most cases
 "xl": 4,
 ```
 
-#### Recomended checking the layout
+#### Recommended checking the layout
 
 The respective layout should be checked for each adapter to see whether the layout can be displayed and used in all resolutions.
 
@@ -1179,12 +1180,12 @@ Step 3: Select different devices (2)
 
 ![image](img/webdevtools.png)
 
-In the Settings of the Web developer tools, you can create own devices with the exact widths if you want.
+In the Settings of the Web developer tools, you can create your own devices with the exact widths if you want.
 
 ### Further options
 
 | option                   | description                                                                                                                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `type`                   | If element has no attribute `type`, assume it has default type 'panel'. Type of an element. For currently available options see [Common Control Elements:](#common-control-elements) |
 | `newLine`                | should be shown from new line                                                                                                                                                        |
 | `label`                  | String or object like {en: 'Name', ru: 'Имя'}                                                                                                                                        |
@@ -1258,13 +1259,15 @@ Boolean must support indeterminate if value is [false, true]
 
 For non changed `__different__` the value different must be returned:
 
-```json
 Input:
+```json
 data: {
    timeout: [1000, 2000, 3000]
 }
+```
 
 Output if timeout was not changed:
+```json
 newData: {
    timeout: "__different__"
 }
@@ -1297,8 +1300,8 @@ If no schema is provided, the schema must be created automatically from data.
 
 ## Todo
 
-The following chapters are taken from the origina SCHEMA.MD.
-I didnt understand the content in detail and had to be improved by bluefox.
+The following chapters are taken from the original SCHEMA.MD.
+I didn't understand the content in detail and had to be improved by bluefox.
 
 ## JS Functions
 
@@ -1320,11 +1323,10 @@ const func = new Function(
   '_instance',     // instance number
   'arrayIndex',    // filled only by table and represents the row index
   'globalData',    // filled only by table and represents the obj.native or obj.common.custom['adapter.X'] object
-  '_changed'       // indicator if some data was changed and must be saved
+  '_changed',      // indicator if some data was changed and must be saved
   myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
 
 const isValid = func(data, systemConfig.common, instanceAlive, adapter.common, this.props.socket);
-
 ```
 
 If the `alive` status changes, so all fields must be updated, validated, disabled, hidden anew.
@@ -1384,7 +1386,7 @@ The following variables are available in JS function in custom settings:
 
 ```jsx
 <CustomInstancesEditor
-    common={common data}
+    common={common.data}
     alive={isInstanceAlive}
     data={data}
     socket={this.props.socket}
