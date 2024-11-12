@@ -74,14 +74,23 @@ export { IconNoIcon } from './icons/IconNoIcon';
 export { IconDocumentReadOnly } from './icons/IconDocumentReadOnly';
 export { IconClearFilter } from './icons/IconClearFilter';
 export { DialogComplexCron } from './Dialogs/ComplexCron';
+export { DialogComplexCron as ComplexCronDialog } from './Dialogs/ComplexCron'; // deprecated
 export { DialogConfirm } from './Dialogs/Confirm';
+export { DialogConfirm as Confirm } from './Dialogs/Confirm'; // deprecated
 export { DialogCron } from './Dialogs/Cron';
+export { DialogCron as Cron } from './Dialogs/Cron'; // deprecated
 export { DialogError } from './Dialogs/Error';
+export { DialogError as Error } from './Dialogs/Error'; // deprecated
 export { DialogMessage } from './Dialogs/Message';
+export { DialogMessage as Message } from './Dialogs/Message'; // deprecated
 export { DialogSelectID } from './Dialogs/SelectID';
+export { DialogSelectID as SelectID } from './Dialogs/SelectID'; // deprecated
 export { DialogSelectFile } from './Dialogs/SelectFile';
+export { DialogSelectFile as SelectFile } from './Dialogs/SelectFile'; // deprecated
 export { DialogSimpleCron } from './Dialogs/SimpleCron';
+export { DialogSimpleCron as SimpleCronDialog } from './Dialogs/SimpleCron'; // deprecated
 export { DialogTextInput } from './Dialogs/TextInput';
+export { DialogTextInput as TextInput } from './Dialogs/TextInput'; // deprecated
 export { Connection, PROGRESS, ERRORS, PERMISSION_ERROR } from './Connection';
 export { AdminConnection } from './AdminConnection';
 export { dictionary } from './dictionary';
