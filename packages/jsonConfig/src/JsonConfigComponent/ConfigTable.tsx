@@ -1112,7 +1112,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         query = query.replace(/^@media( ?)/m, '');
         return window.matchMedia(query).matches;
     }
-    enhancedFilterCard(buttonsWidth: number, doAnyFilterSet: boolean): JSX.Element {
+    enhancedFilterCard(/* buttonsWidth: number, doAnyFilterSet: boolean */): JSX.Element {
         const { schema } = this.props;
         const { order, orderBy } = this.state;
         let tdStyle: React.CSSProperties | undefined;
@@ -1132,13 +1132,13 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             >
                 <Card>
                     <Paper style={styles.paper}>
-                        <Accordion>
+                        <Accordion style={styles.paper}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 aria-controls="panel1-content"
                                 id="panel1-header"
                             >
-                                Filter and Data Actions
+                                <Typography>Filter and Data Actions</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Table>
@@ -1383,7 +1383,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             <Grid2 container>
                 {this.showImportDialog()}
                 {this.showTypeOfImportDialog()}
-                {this.enhancedFilterCard(0, doAnyFilterSet)}
+                {this.enhancedFilterCard(/* 0, doAnyFilterSet */)}
                 {visibleValue.map((idx, i) => (
                     <Grid2
                         key={`${idx}_${i}`}
@@ -1710,9 +1710,8 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
         if (schema.usecardfor && schema.usecardfor.map(el => el.toUpperCase()).includes(isBreakpoint)) {
             return this.renderCard();
-        } else {
-            return this.renderTable();
         }
+        return this.renderTable();
     }
 }
 
