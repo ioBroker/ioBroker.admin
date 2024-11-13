@@ -1267,24 +1267,34 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                             </TableCell>
                                             <TableCell style={tdStyle}>
                                                 {!schema.noDelete && schema.import ? (
-                                                    <IconButton
-                                                        style={{ marginRight: 10 }}
-                                                        size="small"
-                                                        onClick={() => this.setState({ showImportDialog: true })}
-                                                        title={I18n.t('ra_import data from %s file', 'CSV')}
+                                                    <Tooltip
+                                                        title={I18n.t('Import data from %s file', 'CSV')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
                                                     >
-                                                        <ImportIcon />
-                                                    </IconButton>
+                                                        <IconButton
+                                                            /* style={{ marginRight: 10 }} */
+                                                            size="small"
+                                                            onClick={() => this.setState({ showImportDialog: true })}
+                                                            /* title={I18n.t('ra_import data from %s file', 'CSV')} */
+                                                        >
+                                                            <ImportIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 ) : null}
                                                 {schema.export ? (
-                                                    <IconButton
-                                                        style={{ marginRight: 10 }}
-                                                        size="small"
-                                                        onClick={() => this.onExport()}
+                                                    <Tooltip
                                                         title={I18n.t('ra_Export data to %s file', 'CSV')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
                                                     >
-                                                        <ExportIcon />
-                                                    </IconButton>
+                                                        <IconButton
+                                                            /* style={{ marginRight: 10 }} */
+                                                            size="small"
+                                                            onClick={() => this.onExport()}
+                                                            /* title={I18n.t('ra_Export data to %s file', 'CSV')} */
+                                                        >
+                                                            <ExportIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 ) : null}
                                                 <IconButton
                                                     disabled
@@ -1422,38 +1432,36 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                                 style={tdStyle}
                                             >
                                                 {!doAnyFilterSet && !this.state.orderBy ? (
-                                                    i ? (
-                                                        <Tooltip
-                                                            title={I18n.t('ra_Move up')}
-                                                            slotProps={{ popper: { sx: styles.tooltip } }}
-                                                        >
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Move up')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <span>
                                                             <IconButton
                                                                 size="small"
                                                                 onClick={() => this.onMoveUp(idx)}
+                                                                disabled={i === 0}
                                                             >
                                                                 <UpIcon />
                                                             </IconButton>
-                                                        </Tooltip>
-                                                    ) : (
-                                                        <div style={styles.buttonEmpty} />
-                                                    )
+                                                        </span>
+                                                    </Tooltip>
                                                 ) : null}
                                                 {!doAnyFilterSet && !this.state.orderBy ? (
-                                                    i < visibleValue.length - 1 ? (
-                                                        <Tooltip
-                                                            title={I18n.t('ra_Move down')}
-                                                            slotProps={{ popper: { sx: styles.tooltip } }}
-                                                        >
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Move down')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <span>
                                                             <IconButton
                                                                 size="small"
                                                                 onClick={() => this.onMoveDown(idx)}
+                                                                disabled={i === visibleValue.length - 1}
                                                             >
                                                                 <DownIcon />
                                                             </IconButton>
-                                                        </Tooltip>
-                                                    ) : (
-                                                        <div style={styles.buttonEmpty} />
-                                                    )
+                                                        </span>
+                                                    </Tooltip>
                                                 ) : null}
                                                 <Tooltip
                                                     title={I18n.t('ra_Delete current row')}
