@@ -1118,7 +1118,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         const { order, orderBy } = this.state;
         return (
             <Grid2
-                key={`filterkey`}
+                /* key={`filterkey`} */
                 size={{
                     xs: schema.xs || 12, // if xs is not defined, take the full width
                     sm: schema.sm || undefined,
