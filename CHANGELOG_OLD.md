@@ -1,4 +1,12 @@
 # Older changes
+## 7.1.3 (2024-09-20)
+
+-   (@foxriver76) improve appearance and standardization of some warning messages
+-   (@foxriver76) indicate `alert` warnings by the badge color on the notification button
+-   (@foxriver76) allow distinguishing between alert notifications and others for host notifications
+-   (@foxriver76) do not automatically open the notification dialog without user interaction
+-   (@foxriver76) fixed logging as a socket client is now throwing real errors
+
 ## 7.1.2 (2024-09-20)
 
 -   (@foxriver76) fixed host base settings dialog

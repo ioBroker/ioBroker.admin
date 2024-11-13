@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.3.0 (2024-11-13)
 -   (@GermanBluefox) Corrected cloud icon for admin
 -   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
 
@@ -110,14 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.1.5 (2024-09-26)
 
 -   (bluefox) Added the read-only flag to the `state` JSON Config component
-
-### 7.1.3 (2024-09-20)
-
--   (@foxriver76) improve appearance and standardization of some warning messages
--   (@foxriver76) indicate `alert` warnings by the badge color on the notification button
--   (@foxriver76) allow distinguishing between alert notifications and others for host notifications
--   (@foxriver76) do not automatically open the notification dialog without user interaction
--   (@foxriver76) fixed logging as a socket client is now throwing real errors
 
 ## License
 
