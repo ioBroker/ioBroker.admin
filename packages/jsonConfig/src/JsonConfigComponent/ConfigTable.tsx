@@ -27,7 +27,6 @@ import {
     Tooltip,
     Typography,
     FormHelperText,
-    Box,
 } from '@mui/material';
 
 import {
@@ -468,15 +467,15 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
     handleRequestSort = (property: string, orderCheck: boolean = false): void => {
         const { order, orderBy } = this.state;
-        if (orderBy || 'asc') {
-            const isAsc = orderBy === property && order === 'asc';
-            const newOrder = orderCheck ? order : isAsc ? 'desc' : 'asc';
-            const newValue = this.stableSort(newOrder, property);
-            this.setState(
-                { value: newValue, order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 },
-                () => this.applyFilter(false, newValue),
-            );
-        }
+        //if (orderBy || 'asc') {
+        const isAsc = orderBy === property && order === 'asc';
+        const newOrder = orderCheck ? order : isAsc ? 'desc' : 'asc';
+        const newValue = this.stableSort(newOrder, property);
+        this.setState(
+            { value: newValue, order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 },
+            () => this.applyFilter(false, newValue),
+        );
+        //}
     };
 
     stableSort = (order: 'desc' | 'asc', orderBy: string): Record<string, any>[] => {
