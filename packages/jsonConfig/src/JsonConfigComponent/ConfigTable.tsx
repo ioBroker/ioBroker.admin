@@ -1115,6 +1115,10 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     enhancedFilterCard(buttonsWidth: number, doAnyFilterSet: boolean): JSX.Element {
         const { schema } = this.props;
         const { order, orderBy } = this.state;
+        let tdStyle: React.CSSProperties | undefined;
+        if (this.props.schema.compact) {
+            tdStyle = { paddingTop: 1, paddingBottom: 1 };
+        }
         return (
             <Grid2
                 /* key={`filterkey`} */
@@ -1143,13 +1147,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                             schema.items.map((headCell: ConfigItemTableIndexed, i: number) => (
                                                 <TableRow key={`${headCell.attr}_${i}`}>
                                                     <TableCell
-                                                        style={{
-                                                            width:
-                                                                typeof headCell.width === 'string' &&
-                                                                headCell.width.endsWith('%')
-                                                                    ? headCell.width
-                                                                    : headCell.width,
-                                                        }}
+                                                        style={tdStyle}
                                                         align="left"
                                                         sortDirection={orderBy === headCell.attr ? order : false}
                                                     >
@@ -1263,8 +1261,11 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                             <TableCell
                                                 key={`actionshead_filter`}
                                                 align="left"
+                                                style={tdStyle}
                                             >
                                                 <span style={styles.headerText}>{this.getText('Actions')}</span>
+                                            </TableCell>
+                                            <TableCell style={tdStyle}>
                                                 {!schema.noDelete && schema.import ? (
                                                     <IconButton
                                                         style={{ marginRight: 10 }}
@@ -1305,6 +1306,9 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     enhancedBottomCard(): JSX.Element {
         const { schema } = this.props;
         let tdStyle: React.CSSProperties | undefined;
+        if (this.props.schema.compact) {
+            tdStyle = { paddingTop: 1, paddingBottom: 1 };
+        }
         const doAnyFilterSet = this.isAnyFilterSet();
         return (
             <Grid2
@@ -1324,7 +1328,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                 <TableRow key={`filter_actionsrow`}>
                                     <TableCell
                                         colSpan={schema.items.length + 1}
-                                        style={{ ...tdStyle }}
+                                        style={tdStyle}
                                     >
                                         <Tooltip
                                             title={
@@ -1357,12 +1361,14 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     renderCard(): JSX.Element | null {
         const { schema } = this.props;
         let { visibleValue } = this.state;
-
+        let tdStyle: React.CSSProperties | undefined;
+        if (this.props.schema.compact) {
+            tdStyle = { paddingTop: 1, paddingBottom: 1 };
+        }
         visibleValue = visibleValue || this.state.value.map((_, i) => i);
 
         const doAnyFilterSet = this.isAnyFilterSet();
 
-        let tdStyle: React.CSSProperties | undefined;
         return (
             <Grid2 container>
                 {this.showImportDialog()}
