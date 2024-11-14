@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.3.0",
+    "version": "7.3.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.3.1": {
+        "en": "Corrected cloud icon for admin\nAdded old dialog names to adapter-react-v5 again\nCorrected the password field in JSON-Config",
+        "de": "Korrigiertes Cloud-Symbol für Admin\nWieder alte Dialognamen zum Adapter-React-v5 hinzugefügt\nDas Passwortfeld in JSON-Config korrigiert",
+        "ru": "Исправлена значок облака для администратора\nДобавлены старые диалоговые имена для адаптер-реакт-v5\nИсправлено поле паролей в JSON-Config",
+        "pt": "Ícone de nuvem corrigido para admin\nAdicionados nomes de diálogo antigos para adaptador-react-v5 novamente\nCorrigido o campo de senha em JSON-Config",
+        "nl": "Gecorrigeerde cloudpictogram voor admin\nOude dialoognamen weer toegevoegd aan adapter-react-v5\nHet wachtwoordveld in JSON-Config corrigeren",
+        "fr": "Icône cloud corrigée pour admin\nAjout d'anciens noms de dialogue à adaptateur-réaction-v5 à nouveau\nCorrection du champ mot de passe dans JSON-Config",
+        "it": "Icona cloud corretta per admin\nAggiunto vecchi nomi di dialogo per adattatore-react-v5 di nuovo\nCorretto il campo password in JSON-Config",
+        "es": "Icono de nube corregido para admin\nAñadido viejos nombres de diálogo para adaptar-react-v5 de nuevo\nCorregido el campo de contraseña en JSON-Config",
+        "pl": "Skorygowana ikona chmur dla admin\nDodano stare nazwy dialogowe do adapter- react- v5 ponownie\nPoprawiono hasło w JSON- Config",
+        "uk": "Виправлена хмарна ікона для адміністратора\nДодано старі діалогові імена для адаптера-react-v5 знову\nВиправлено поле пароля в JSON-Config",
+        "zh-cn": "管理员的校正云图标\n再次添加旧对话框名称到适配器- react-v5\n更正了 JSON- Config 中的密码字段"
+      },
       "7.2.0": {
         "en": "Added the check of well-known passwords for the linux systems\nAdded the history for the installation from URL\nfixed wrongly displayed repository warning",
         "de": "Hinzugefügt die Überprüfung der bekannten Passwörter für die Linux-Systeme\nDie Geschichte der Installation von URL hinzugefügt\nfalsch angezeigte repository-warnung",
