@@ -130,7 +130,7 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
         );
 
         if (this.props.schema.repeat && !this.props.schema.readOnly) {
-            const passwordRepeat = this.state._visible ? (
+            const passwordRepeat = !this.state._visible ? (
                 <TextField
                     variant="standard"
                     fullWidth

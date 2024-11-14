@@ -87,9 +87,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.3.0 (2024-11-13)
+### **WORK IN PROGRESS**
+
 -   (@GermanBluefox) Corrected cloud icon for admin
 -   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
+-   (@GermanBluefox) Corrected the password field in JSON-Config
 
 ### 7.2.6 (2024-10-11)
 
