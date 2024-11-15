@@ -112,6 +112,20 @@ function copyAllFiles() {
     copyFiles(`${srcRx}build/static/js/**/*.js`, `${dest}static/js`, {
         replace: [{ find: 's.p+"static/media', text: '"./static/media' }],
     });
+    copyFiles(
+        [
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-json.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-html.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-xml.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-yaml.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-javascript.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-css.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/snippets/html.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/snippets/css.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/snippets/javascript.js`,
+        ],
+        `${dest}static/js`,
+    );
 }
 
 async function configCSS() {
