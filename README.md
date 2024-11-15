@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### **WORK IN PROGRESS**
 
 -   (@GermanBluefox) Some GUI packages were updated.
+-   (@GermanBluefox) Improved file viewer. Added icons viewer
 
 ### 7.3.1 (2024-11-14)
 
