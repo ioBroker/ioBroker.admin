@@ -2,10 +2,9 @@ import React, { type JSX } from 'react';
 
 import { Box } from '@mui/material';
 
-import { type IobTheme } from '@iobroker/adapter-react-v5';
+import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemStaticDivider } from '#JC/types';
-import Utils from '#JC/Utils';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: {
