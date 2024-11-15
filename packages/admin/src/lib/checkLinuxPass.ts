@@ -31,19 +31,33 @@ function checkLinuxPassword(login: string, password: string): Promise<boolean> {
         try {
             const su = spawn('su', [login]);
             let result = false;
-            let responseTimeout = setTimeout(() => {
+            let responseTimeout: NodeJS.Timeout | null = setTimeout(() => {
                 responseTimeout = null;
                 su.kill();
             }, 3000);
 
             function _checkPassword(data: string): void {
+                if (!responseTimeout) {
+                    return;
+                }
                 data = data.replace(/\r/g, ' ').replace(/\n/g, ' ').trim();
                 console.log(`[STDX] "${data}"`);
                 if (data.endsWith(':')) {
-                    su.stdin.write(`${password}\n`);
+                    try {
+                        su.stdin?.write(`${password}\n`);
+                    } catch {
+                        return;
+                    }
                     setTimeout(() => {
+                        if (!responseTimeout) {
+                            return;
+                        }
                         console.log(`[LOG] write whoami`);
-                        su.stdin.write(`whoami\n`);
+                        try {
+                            su.stdin?.write(`whoami\n`);
+                        } catch {
+                            // ignore
+                        }
                     }, 50);
                 } else if (data === login) {
                     result = true;
@@ -55,21 +69,31 @@ function checkLinuxPassword(login: string, password: string): Promise<boolean> {
             }
 
             // Listen for data on stdout
-            su.stdout.on('data', data => _checkPassword(data.toString()));
+            su.stdout.on('data', data => {
+                if (data && responseTimeout) {
+                    _checkPassword(data.toString());
+                }
+            });
 
             // Listen for data on stderr
-            su.stderr.on('data', data => _checkPassword(data.toString()));
+            su.stderr.on('data', data => {
+                if (data && responseTimeout) {
+                    _checkPassword(data.toString());
+                }
+            });
 
             // Listen for the close event
             su.on('close', () => {
                 console.log(`[LOG] -------- closed with result: ${result}\n`);
-                responseTimeout && clearTimeout(responseTimeout);
-                responseTimeout = null;
+                if (responseTimeout) {
+                    clearTimeout(responseTimeout);
+                    responseTimeout = null;
+                }
                 resolve(result);
             });
-        } catch (e: any) {
-            console.error(`[LOG] -------- Error by execution: ${e.message}\n`);
-            reject(new Error(e));
+        } catch (e: unknown) {
+            console.error(`[LOG] -------- Error by execution: ${(e as Error).message}\n`);
+            reject(new Error(e as string));
         }
     });
 }
