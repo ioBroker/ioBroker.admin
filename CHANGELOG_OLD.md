@@ -1,4 +1,8 @@
 # Older changes
+## 7.1.5 (2024-09-26)
+
+-   (bluefox) Added the read-only flag to the `state` JSON Config component
+
 ## 7.1.3 (2024-09-20)
 
 -   (@foxriver76) improve appearance and standardization of some warning messages

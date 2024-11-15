@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.3.2 (2024-11-15)
 
 -   (@GermanBluefox) Some GUI packages were updated.
 -   (@GermanBluefox) Improved file viewer. Added icons viewer
@@ -113,10 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Added the check of well-known passwords for the linux systems
 -   (@GermanBluefox) Added the history for the installation from URL
 -   (@foxriver76) fixed wrongly displayed repository warning
-
-### 7.1.5 (2024-09-26)
-
--   (bluefox) Added the read-only flag to the `state` JSON Config component
 
 ## License
 
