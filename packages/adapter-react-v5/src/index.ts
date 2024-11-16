@@ -53,6 +53,7 @@ export { UploadImage } from './Components/UploadImage';
 export { Utils } from './Components/Utils';
 export { withWidth } from './Components/withWidth';
 export { cron2state, SimpleCron } from './Components/SimpleCron';
+export { convertCronToText } from './Components/SimpleCron/cronText';
 export { LoaderVendor } from './Components/Loaders/Vendor';
 export { LoaderPT } from './Components/Loaders/PT';
 export { LoaderMV } from './Components/Loaders/MV';

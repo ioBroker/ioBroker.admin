@@ -177,7 +177,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
 - [**`table`:**](#table) Table with rows that can be added, deleted, or reordered
 - [**`tabs`:**](#tabs) Tabs with items
-- [**`text`:**](#text) Single-line text input field
+- [**`text`:**](#text) Single- or multi-line text input field
 - [**`textSendTo`:**](#textsendto) Shows readonly control with the given from the instance values.
 - [**`timePicker`:**](#timepicker) Allows users to select a time
 - [**`user`:**](#user) Selects a user from the `system.user` list
