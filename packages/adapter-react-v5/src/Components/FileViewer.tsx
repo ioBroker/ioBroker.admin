@@ -46,7 +46,7 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 export const EXTENSIONS = {
-    images: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'apng', 'avif', 'webp'],
+    images: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'apng', 'avif', 'webp', 'ico'],
     code: ['js', 'json', 'json5', 'md'],
     txt: ['log', 'txt', 'html', 'css', 'xml', 'ics'],
     audio: ['mp3', 'wav', 'ogg', 'acc'],
@@ -55,7 +55,7 @@ export const EXTENSIONS = {
 
 function bufferToBase64(buffer: Buffer, isFull?: boolean): string {
     let binary = '';
-    const bytes = new Uint8Array(buffer);
+    const bytes = new Uint8Array((buffer as unknown as { data: number[]; type: 'Buffer' })?.data || buffer);
     const len = bytes.byteLength;
     for (let i = 0; i < len && (isFull || i < 50); i++) {
         binary += String.fromCharCode(bytes[i]);
@@ -121,9 +121,9 @@ export class FileViewerClass extends Component<FileViewerProps, FileViewerState>
 
             this.props.socket
                 .readFile(adapter, name)
-                .then((data: { data: Buffer; type: string } | { file: string; mimeType: string }) => {
-                    let fileData = '';
-                    if ((data as { file: string; mimeType: string }).file !== undefined) {
+                .then((data: { file: string | Buffer; mimeType: string }) => {
+                    let fileData: string | Buffer = '';
+                    if (data.file !== undefined) {
                         fileData = (data as { file: string; mimeType: string }).file;
                     }
 
@@ -132,20 +132,18 @@ export class FileViewerClass extends Component<FileViewerProps, FileViewerState>
                         ext: this.state.ext,
                     };
                     // try to detect valid extension
-                    if ((data as { data: Buffer; type: string }).type === 'Buffer') {
+                    if ((fileData as unknown as { data: Buffer; type: string }).type === 'Buffer') {
                         if (name.toLowerCase().endsWith('.json5')) {
                             newState.ext = 'json5';
                             newState.copyPossible = true;
                             try {
-                                fileData = atob(bufferToBase64((data as { data: Buffer; type: string }).data, true));
+                                fileData = atob(bufferToBase64(fileData as unknown as Buffer, true));
                             } catch {
                                 console.error('Cannot convert base64 to string');
                                 fileData = '';
                             }
                         } else {
-                            const ext = Utils.detectMimeType(
-                                bufferToBase64((data as { data: Buffer; type: string }).data),
-                            );
+                            const ext = Utils.detectMimeType(bufferToBase64(fileData as unknown as Buffer));
                             if (ext) {
                                 newState.ext = ext;
                                 newState.copyPossible = EXTENSIONS.code.includes(ext) || EXTENSIONS.txt.includes(ext);

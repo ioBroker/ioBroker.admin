@@ -312,7 +312,7 @@ export default class ConfigGeneric<
         if (typeof part === 'string' && typeof data[part] === 'object') {
             return ConfigGeneric.getValue(data[part], attr);
         }
-        return null;
+        return undefined;
     }
 
     static setValue(data: Record<string, any>, attr: string | string[], value: any): void {
