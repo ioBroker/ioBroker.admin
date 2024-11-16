@@ -336,9 +336,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
 
         const icon = this.state.icon ? (
             this.state.icon?.length < 20 ? (
-                getDeviceIcon(this.state.icon as Types) || (
-                    <Icon src={this.state.icon} />
-                )
+                getDeviceIcon(this.state.icon as Types) || <Icon src={this.state.icon} />
             ) : (
                 <Icon src={this.state.icon} />
             )
