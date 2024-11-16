@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Checkbox, Button, MenuItem, Select, FormControlLabel, AppBar, Tabs, Tab, TextField } from '@mui/material';
 
 import { I18n } from '../i18n';
-import convertCronToText from './SimpleCron/cronText';
+import { convertCronToText } from './SimpleCron/cronText';
 
 const styles: Record<string, React.CSSProperties> = {
     mainDiv: {
