@@ -64,48 +64,52 @@ import {
 import { I18n, Icon } from '@iobroker/adapter-react-v5';
 
 // Taken from type detector: https://github.com/ioBroker/ioBroker.type-detector/blob/master/src/types.ts#L27
-export declare enum Types {
-    unknown = 'unknown',
-    airCondition = 'airCondition',
-    blind = 'blind',
-    blindButtons = 'blindButtons',
-    button = 'button',
-    buttonSensor = 'buttonSensor',
-    camera = 'camera',
-    chart = 'chart',
-    cie = 'cie',
-    ct = 'ct',
-    dimmer = 'dimmer',
-    door = 'door',
-    fireAlarm = 'fireAlarm',
-    floodAlarm = 'floodAlarm',
-    gate = 'gate',
-    hue = 'hue',
-    humidity = 'humidity',
-    image = 'image',
-    info = 'info',
-    instance = 'instance',
-    light = 'light',
-    location = 'location',
-    lock = 'lock',
-    media = 'media',
-    motion = 'motion',
-    rgb = 'rgb',
-    rgbSingle = 'rgbSingle',
-    rgbwSingle = 'rgbwSingle',
-    slider = 'slider',
-    socket = 'socket',
-    temperature = 'temperature',
-    thermostat = 'thermostat',
-    vacuumCleaner = 'vacuumCleaner',
-    volume = 'volume',
-    volumeGroup = 'volumeGroup',
-    warning = 'warning',
-    weatherCurrent = 'weatherCurrent',
-    weatherForecast = 'weatherForecast',
-    window = 'window',
-    windowTilt = 'windowTilt',
-}
+export type Types =
+    | 'unknown'
+    | 'airCondition'
+    | 'blind'
+    | 'blindButtons'
+    | 'button'
+    | 'buttonSensor'
+    | 'camera'
+    | 'chart'
+    | 'cie'
+    | 'ct'
+    | 'dimmer'
+    | 'door'
+    | 'fireAlarm'
+    | 'floodAlarm'
+    | 'gate'
+    | 'hue'
+    | 'humidity'
+    | 'image'
+    | 'info'
+    | 'instance'
+    | 'light'
+    | 'location'
+    | 'lock'
+    | 'media'
+    | 'motion'
+    | 'rgb'
+    | 'rgbSingle'
+    | 'rgbwSingle'
+    | 'slider'
+    | 'socket'
+    | 'temperature'
+    | 'thermostat'
+    | 'vacuumCleaner'
+    | 'volume'
+    | 'volumeGroup'
+    | 'warning'
+    | 'weatherCurrent'
+    | 'weatherForecast'
+    | 'window'
+    | 'windowTilt'
+    // additional special matter types
+    | 'hub3'
+    | 'node'
+    | 'controller'
+    | 'hub5';
 
 function getFaIcon(icon: string, color?: string): React.JSX.Element | null {
     const iconStyle = icon
@@ -259,138 +263,138 @@ function getIconByName(name: string, altName?: string, color?: string): React.JS
     return <QuestionMark style={{ color }} />;
 }
 
-export function getDeviceIcon(type: Types | 'hub3' | 'node' | 'controller' | 'hub5'): React.JSX.Element | null {
+export function getDeviceIcon(type: Types, style?: React.CSSProperties): React.JSX.Element | null {
     if (type === 'hub3') {
-        return <DeviceHub />;
+        return <DeviceHub style={style} />;
     }
     if (type === 'node') {
-        return <Polyline />;
+        return <Polyline style={style} />;
     }
     if (type === 'hub5') {
-        return <Hub />;
+        return <Hub style={style} />;
     }
     if (type === 'controller') {
-        return <ControlCamera />;
+        return <ControlCamera style={style} />;
     }
-    if (type === Types.airCondition) {
-        return <AcUnit />;
+    if (type === 'airCondition') {
+        return <AcUnit style={style} />;
     }
-    if (type === Types.blind) {
-        return <Blinds />;
+    if (type === 'blind') {
+        return <Blinds style={style} />;
     }
-    if (type === Types.camera) {
-        return <Videocam />;
+    if (type === 'camera') {
+        return <Videocam style={style} />;
     }
-    if (type === Types.chart) {
-        return <Timeline />;
+    if (type === 'chart') {
+        return <Timeline style={style} />;
     }
-    if (type === Types.ct) {
-        return <Gradient />;
+    if (type === 'ct') {
+        return <Gradient style={style} />;
     }
-    if (type === Types.dimmer) {
-        return <TipsAndUpdates />;
+    if (type === 'dimmer') {
+        return <TipsAndUpdates style={style} />;
     }
-    if (type === Types.door) {
-        return <SensorDoor />;
+    if (type === 'door') {
+        return <SensorDoor style={style} />;
     }
-    if (type === Types.fireAlarm) {
-        return <Whatshot />;
+    if (type === 'fireAlarm') {
+        return <Whatshot style={style} />;
     }
-    if (type === Types.floodAlarm) {
-        return <Water />;
+    if (type === 'floodAlarm') {
+        return <Water style={style} />;
     }
-    if (type === Types.humidity) {
-        return <WaterDrop />;
+    if (type === 'humidity') {
+        return <WaterDrop style={style} />;
     }
-    if (type === Types.image) {
-        return <Image />;
+    if (type === 'image') {
+        return <Image style={style} />;
     }
-    if (type === Types.light) {
-        return <Lightbulb />;
+    if (type === 'light') {
+        return <Lightbulb style={style} />;
     }
-    if (type === Types.lock) {
-        return <Lock />;
+    if (type === 'lock') {
+        return <Lock style={style} />;
     }
-    if (type === Types.location) {
-        return <LocationOn />;
+    if (type === 'location') {
+        return <LocationOn style={style} />;
     }
-    if (type === Types.media) {
-        return <PlayArrowRounded />;
+    if (type === 'media') {
+        return <PlayArrowRounded style={style} />;
     }
-    if (type === Types.motion) {
-        return <DirectionsRun />;
+    if (type === 'motion') {
+        return <DirectionsRun style={style} />;
     }
-    if (type === Types.rgb) {
-        return <Palette />;
+    if (type === 'rgb') {
+        return <Palette style={style} />;
     }
-    if (type === Types.rgbSingle) {
-        return <Palette />;
+    if (type === 'rgbSingle') {
+        return <Palette style={style} />;
     }
-    if (type === Types.rgbwSingle) {
-        return <Palette />;
+    if (type === 'rgbwSingle') {
+        return <Palette style={style} />;
     }
-    if (type === Types.slider) {
-        return <Tune />;
+    if (type === 'slider') {
+        return <Tune style={style} />;
     }
-    if (type === Types.socket) {
-        return <Power />;
+    if (type === 'socket') {
+        return <Power style={style} />;
     }
-    if (type === Types.temperature) {
-        return <Thermostat />;
+    if (type === 'temperature') {
+        return <Thermostat style={style} />;
     }
-    if (type === Types.thermostat) {
-        return <Thermostat />;
+    if (type === 'thermostat') {
+        return <Thermostat style={style} />;
     }
-    if (type === Types.volume) {
-        return <VolumeUp />;
+    if (type === 'volume') {
+        return <VolumeUp style={style} />;
     }
-    if (type === Types.volumeGroup) {
-        return <VolumeUp />;
+    if (type === 'volumeGroup') {
+        return <VolumeUp style={style} />;
     }
-    if (type === Types.weatherCurrent) {
-        return <Air />;
+    if (type === 'weatherCurrent') {
+        return <Air style={style} />;
     }
-    if (type === Types.weatherForecast) {
-        return <WbSunny />;
+    if (type === 'weatherForecast') {
+        return <WbSunny style={style} />;
     }
-    if (type === Types.window) {
-        return <Window />;
+    if (type === 'window') {
+        return <Window style={style} />;
     }
-    if (type === Types.windowTilt) {
-        return <Window />;
+    if (type === 'windowTilt') {
+        return <Window style={style} />;
     }
-    if (type === Types.blindButtons) {
-        return <QuestionMark />;
+    if (type === 'blindButtons') {
+        return <QuestionMark style={style} />;
     }
-    if (type === Types.button) {
-        return <QuestionMark />;
+    if (type === 'button') {
+        return <QuestionMark style={style} />;
     }
-    if (type === Types.buttonSensor) {
-        return <QuestionMark />;
+    if (type === 'buttonSensor') {
+        return <QuestionMark style={style} />;
     }
-    if (type === Types.cie) {
-        return <QuestionMark />;
+    if (type === 'cie') {
+        return <QuestionMark style={style} />;
     }
-    if (type === Types.gate) {
-        return <QuestionMark />;
+    if (type === 'gate') {
+        return <QuestionMark style={style} />;
     }
-    if (type === Types.hue) {
-        return <QuestionMark />;
+    if (type === 'hue') {
+        return <QuestionMark style={style} />;
     }
-    if (type === Types.info) {
-        return <Info />;
+    if (type === 'info') {
+        return <Info style={style} />;
     }
-    if (type === Types.instance) {
-        return <QuestionMark />;
+    if (type === 'instance') {
+        return <QuestionMark style={style} />;
     }
-    if (type === Types.unknown) {
-        return <QuestionMark />;
+    if (type === 'unknown') {
+        return <QuestionMark style={style} />;
     }
-    if (type === Types.vacuumCleaner) {
-        return <QuestionMark />;
+    if (type === 'vacuumCleaner') {
+        return <QuestionMark style={style} />;
     }
-    if (type === Types.warning) {
-        return <Warning />;
+    if (type === 'warning') {
+        return <Warning style={style} />;
     }
     return null;
 }

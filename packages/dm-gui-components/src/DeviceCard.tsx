@@ -336,7 +336,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
 
         const icon = this.state.icon ? (
             this.state.icon?.length < 20 ? (
-                getDeviceIcon(this.state.icon as Types | 'hub3' | 'node' | 'controller' | 'hub5') || (
+                getDeviceIcon(this.state.icon as Types) || (
                     <Icon src={this.state.icon} />
                 )
             ) : (
@@ -522,6 +522,24 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
               ? this.props.device.status
               : [this.props.device.status];
 
+        const icon = this.state.icon ? (
+            this.state.icon?.length < 20 ? (
+                getDeviceIcon(this.state.icon as Types, imgStyle) || (
+                    <Icon
+                        src={this.state.icon}
+                        style={imgStyle}
+                    />
+                )
+            ) : (
+                <Icon
+                    src={this.state.icon}
+                    style={imgStyle}
+                />
+            )
+        ) : (
+            <NoImageIcon style={imgStyle} />
+        );
+
         return (
             <Paper
                 style={cardStyle}
@@ -546,10 +564,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                                 socket={this.props.socket}
                             />
                         ) : null}
-                        <Icon
-                            src={this.state.icon}
-                            style={imgStyle}
-                        />
+                        {icon}
                     </div>
                     <Box
                         style={titleStyle}
