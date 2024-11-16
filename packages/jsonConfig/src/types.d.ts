@@ -263,6 +263,8 @@ export interface ConfigItemText extends ConfigItem {
     max?: number;
     /** read-only field */
     readOnly?: boolean;
+    /** show copy to clipboard button, but only if disabled or read-only */
+    copyToClipboard?: boolean;
     /** default is true. Set this attribute to `false` if trim is not desired. */
     trim?: boolean;
     /** default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row. */

@@ -21,7 +21,7 @@
         "3-patchReadme": "node tasks --3-patchReadme",
         "npm": "npm i -f",
         "lint": "eslint -c eslint.config.mjs src",
-        "test": "ts-node test/testSchema.ts"
+        "test": "ts-node ../jsonConfig/test/testSchema.ts"
     },
     "repository": {
         "type": "git",

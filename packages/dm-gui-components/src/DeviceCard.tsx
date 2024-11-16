@@ -35,7 +35,7 @@ import DeviceControlComponent from './DeviceControl';
 import DeviceStatusComponent from './DeviceStatus';
 import JsonConfig from './JsonConfig';
 import DeviceImageUpload from './DeviceImageUpload';
-import { getTranslation } from './Utils';
+import { getDeviceIcon, getTranslation, type Types } from './Utils';
 
 function NoImageIcon(props: { style?: React.CSSProperties; className?: string }): JSX.Element {
     return (
@@ -334,6 +334,18 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
               ? this.props.device.status
               : [this.props.device.status];
 
+        const icon = this.state.icon ? (
+            this.state.icon?.length < 20 ? (
+                getDeviceIcon(this.state.icon as Types | 'hub3' | 'node' | 'controller' | 'hub5') || (
+                    <Icon src={this.state.icon} />
+                )
+            ) : (
+                <Icon src={this.state.icon} />
+            )
+        ) : (
+            <NoImageIcon />
+        );
+
         return (
             <Card
                 sx={{
@@ -365,7 +377,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                                     socket={this.props.socket}
                                 />
                             ) : null}
-                            {this.state.icon ? <Icon src={this.state.icon} /> : <NoImageIcon />}
+                            {icon}
                         </div>
                     }
                     action={
