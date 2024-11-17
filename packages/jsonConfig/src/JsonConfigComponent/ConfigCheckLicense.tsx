@@ -43,13 +43,13 @@ const styles: Record<string, any> = {
     licValue: {
         fontWeight: 'normal',
     },
-    errorTitle: (theme: IobTheme) => ({
+    errorTitle: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#e39191' : '#b62020',
     }),
-    okTitle: (theme: IobTheme) => ({
+    okTitle: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#6fd56f' : '#007c00',
     }),
-    errorText: (theme: IobTheme) => ({
+    errorText: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#e39191' : '#b62020',
         mb: '30px',
     }),

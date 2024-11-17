@@ -12,7 +12,7 @@ const styles: Record<string, any> = {
         height: '100%',
         width: '100%',
     },
-    link: (theme: IobTheme) => ({
+    link: (theme: IobTheme): React.CSSProperties => ({
         textDecoration: 'underline',
         color: theme.palette.mode === 'dark' ? '#4dabf5' : '#254e72',
         cursor: 'pointer',

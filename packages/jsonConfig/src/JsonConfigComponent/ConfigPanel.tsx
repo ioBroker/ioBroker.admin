@@ -141,11 +141,11 @@ const styles: Record<string, any> = {
         padding: '10px',
     },
     heading: {},
-    primary: (theme: IobTheme) => ({
+    primary: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.mode === 'dark' ? 'inherit' : '#FFF',
     }),
-    secondary: (theme: IobTheme) => ({
+    secondary: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.secondary.main,
     }),
 };
