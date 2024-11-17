@@ -1,4 +1,10 @@
 # Older changes
+## 7.2.0 (2024-10-01)
+
+-   (@GermanBluefox) Added the check of well-known passwords for the linux systems
+-   (@GermanBluefox) Added the history for the installation from URL
+-   (@foxriver76) fixed wrongly displayed repository warning
+
 ## 7.1.5 (2024-09-26)
 
 -   (bluefox) Added the read-only flag to the `state` JSON Config component

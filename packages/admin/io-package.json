@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.3.2",
+    "version": "7.4.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.0": {
+        "en": "Added new JsonConfig control: staticInfo",
+        "de": "Neue JsonConfig Steuerung hinzugefügt: statische Info",
+        "ru": "Добавлено новое управление JsonConfig: Информация",
+        "pt": "Adicionado novo JsonConfig control: static Info",
+        "nl": "Toegevoegd nieuwe JsonConfig controle: statisch Informatie",
+        "fr": "Ajout du nouveau contrôle JsonConfig : statique Informations",
+        "it": "Aggiunto il nuovo controllo JsonConfig: static Info",
+        "es": "Nuevo control JsonConfig: estática Info",
+        "pl": "Dodano nowy sterownik JsonConfig: statyczny Informacja",
+        "uk": "Додано новий JsonConfig control: статичний Новини",
+        "zh-cn": "添加新的 Jsonconfig 控件: 静态 资讯"
+      },
       "7.3.2": {
         "en": "Some GUI packages were updated.\nImproved file viewer. Added icons viewer",
         "de": "Einige GUI-Pakete wurden aktualisiert.\nVerbesserte Dateiansicht. Icons Viewer hinzugefügt",
@@ -96,19 +109,6 @@
         "pl": "stałe okno ustawień bazy hosta",
         "uk": "виправлені налаштування бази хост діалог",
         "zh-cn": "固定主机基础设置对话框"
-      },
-      "7.1.1": {
-        "en": "Showed the context menu under cursor position in the object browser\nAdded links to aliases in the object browser\nAdded confirmation for CRON dialog if set to triggering every minute",
-        "de": "Das Kontextmenü unter Cursorposition im Objektbrowser angezeigt\nLinks zu Aliases im Objektbrowser hinzugefügt\nBestätigung für CRON-Dialog hinzugefügt, wenn Sie jede Minute auslösen",
-        "ru": "Показать контекстное меню в позиции курсора в браузере объекта\nДобавлены ссылки на псевдонимы в объектном браузере\nДобавлено подтверждение для диалога CRON, если он настроен на запуск каждую минуту",
-        "pt": "Mostrou o menu de contexto na posição do cursor no navegador objeto\nAdicionados links para aliases no navegador objeto\nAdicionado confirmação para CRON diálogo se definido para acionar cada minuto",
-        "nl": "Het contextmenu getoond onder cursorpositie in de objectbrowser\nLinks naar aliassen toegevoegd in de objectbrowser\nBevestiging voor CRON-dialoog toegevoegd indien ingesteld om elke minuut te activeren",
-        "fr": "Affiche le menu contextuel sous la position du curseur dans le navigateur objet\nAjout de liens vers des alias dans le navigateur objet\nAjout de la confirmation pour la boîte de dialogue CRON si elle est configurée pour déclencher chaque minute",
-        "it": "Mostrato il menu contestuale sotto posizione cursore nel browser oggetto\nAggiunto link a alias nel browser oggetto\nAggiunto la conferma per CRON finestra di dialogo se impostato per attivare ogni minuto",
-        "es": "Muestra el menú contextual bajo la posición del cursor en el navegador objeto\nAñadidos a alias en el navegador objeto\nConfirmación agregada para el diálogo CRON si se establece para activar cada minuto",
-        "pl": "Pokazane menu kontekstowe w pozycji kursora w przeglądarce obiektu\nDodano linki do pseudonimów w przeglądarce obiektu\nDodano potwierdzenie dla okna CRON, jeśli ustawiono na uruchamianie co minutę",
-        "uk": "Показати контекстне меню під назвою курсора в браузері об'єкта\nДодано посилання на псевдоніми в браузері об'єкта\nДодано підтвердження для діалогу CRON, якщо встановити, щоб викликати кожну хвилину",
-        "zh-cn": "在对象浏览器中光标位置下显示上下文菜单\n在对象浏览器中添加的链接\n如果设定为每分钟触发 CRON 对话框, 则添加确认"
       }
     },
     "desc": {

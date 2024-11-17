@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.0 (2024-11-17)
 
 -   (@GermanBluefox) Added new JsonConfig control: staticInfo
 
@@ -111,12 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 -   (@GermanBluefox) Corrected some GUI errors
 -   (@GermanBluefox) Ignore error by opening `0_userdata.0`
-
-### 7.2.0 (2024-10-01)
-
--   (@GermanBluefox) Added the check of well-known passwords for the linux systems
--   (@GermanBluefox) Added the history for the installation from URL
--   (@foxriver76) fixed wrongly displayed repository warning
 
 ## License
 
