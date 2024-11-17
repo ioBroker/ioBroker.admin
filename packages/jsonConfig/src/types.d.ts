@@ -439,10 +439,10 @@ export interface ConfigItemStaticText extends Omit<ConfigItem, 'button'> {
     /** if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (it starts with `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`) . (Request via issue if you need more icons) */
     icon?: ConfigIconType;
     /** styles for the button */
-    controlStyle: CustomCSSProperties;
+    controlStyle?: CustomCSSProperties;
 }
 
-export interface ConfigItemStaticInfo extends ConfigItem {
+export interface ConfigItemStaticInfo extends Omit<ConfigItem, 'data'> {
     type: 'staticInfo';
     /** multi-language text or value */
     data: ioBroker.StringOrTranslated | number | boolean;
