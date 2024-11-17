@@ -1,12 +1,8 @@
 const engineHelper = require('./engineHelper');
-const guiHelper = require('./guiHelper');
+const guiHelper = require('@iobroker/legacy-testing/guiHelper');
 
 let gPage;
-
-async function screenshot(page, fileName) {
-    page = page || gPage;
-    await page.screenshot({ path: `${__dirname}/../tmp/screenshots/${fileName}.png` });
-}
+const rootDir = `${__dirname}/../`;
 
 describe('admin-gui', () => {
     before(async function () {
@@ -14,14 +10,14 @@ describe('admin-gui', () => {
 
         // install js-controller, web and vis-2-beta
         await engineHelper.startIoBroker();
-        const { page } = await guiHelper.startBrowser(process.env.CI === 'true');
+        const { page } = await guiHelper.startBrowser(null, rootDir, process.env.CI === 'true', '/');
         gPage = page;
     });
 
     it('Check all widgets', async function () {
         this.timeout(120_000);
         await gPage.waitForSelector('a[href="/#easy"]', { timeout: 120_000 });
-        await screenshot(gPage, '00_started');
+        await guiHelper.screenshot(rootDir, gPage, '01_started');
     });
 
     after(async function () {
