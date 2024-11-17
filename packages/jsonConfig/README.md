@@ -1123,6 +1123,7 @@ This control is used mostly in dynamic forms
 | `styleUnit`       | (optional) React CSS Styles                                                                                                                     |
 | `copyToClipboard` | (optional) Show copy to clipboard button for value                                                                                              |
 | `labelIcon`       | (optional) base64 icon for label                                                                                                                |
+| `size`            | (optional) font size: small, normal, large or number                                                                                            |
 
 ### `deviceManager`
 
@@ -1421,3 +1422,6 @@ The following variables are available in JS function in custom settings:
 ```
 
 You can find examples in [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) adapter.
+
+## For maintainer
+To update location of JsonConfig schema, create pull request to this file: https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json

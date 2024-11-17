@@ -466,6 +466,8 @@ export interface ConfigItemStaticInfo extends ConfigItem {
     styleValue?: CustomCSSProperties;
     /** Unit style */
     styleUnit?: CustomCSSProperties;
+    /** Font size */
+    size?: number | 'small' | 'normal' | 'large';
 }
 
 export interface ConfigItemRoom extends ConfigItem {

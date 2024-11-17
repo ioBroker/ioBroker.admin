@@ -50,6 +50,7 @@ import ConfigState from './ConfigState';
 import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticImage from './ConfigStaticImage';
+import ConfigStaticInfo from './ConfigStaticInfo';
 import ConfigStaticText from './ConfigStaticText';
 import ConfigTable from './ConfigTable';
 import ConfigText from './ConfigText';
@@ -107,6 +108,7 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     slider: ConfigSlider,
     state: ConfigState,
     staticImage: ConfigStaticImage,
+    staticInfo: ConfigStaticInfo,
     staticLink: ConfigStaticText,
     staticText: ConfigStaticText,
     table: ConfigTable,

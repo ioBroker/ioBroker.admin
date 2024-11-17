@@ -241,7 +241,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                     size="small"
                     onClick={() => {
                         Utils.copyToClipboard(this.state.value);
-                        window.alert('Copied');
+                        window.alert(I18n.t('ra_Copied'));
                     }}
                 >
                     <IconCopy />

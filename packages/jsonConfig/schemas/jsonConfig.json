@@ -77,6 +77,7 @@
                 "slider",
                 "state",
                 "staticImage",
+                "staticInfo",
                 "staticLink",
                 "staticText",
                 "table",
@@ -3539,6 +3540,107 @@
                         "if": {
                             "properties": {
                                 "type": {
+                                    "const": "staticInfo"
+                                }
+                            }
+                        },
+                        "then": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/tableItemBaseProps"
+                                }
+                            ],
+                            "properties": {
+                                "attr": true,
+                                "width": true,
+                                "title": true,
+                                "filter": true,
+                                "sort": true,
+                                "label": true,
+                                "type": true,
+                                "xs": true,
+                                "sm": true,
+                                "md": true,
+                                "lg": true,
+                                "xl": true,
+                                "newLine": true,
+                                "hidden": true,
+                                "helpLink": true,
+                                "help": true,
+                                "style": true,
+                                "darkStyle": true,
+                                "tooltip": true,
+                                "noTranslation": true,
+                                "data": {
+                                    "description": "Value to be shown",
+                                    "type": ["object", "string", "number", "boolean"]
+                                },
+                                "unit": {
+                                    "description": "unit (could be multi-language)",
+                                    "type": ["object", "string"]
+                                },
+                                "narrow": {
+                                    "description": "With this flag, the value will appear just after the label",
+                                    "type": "boolean"
+                                },
+                                "addColon": {
+                                    "description": "Add to label the colon at the end if not exist in label",
+                                    "type": "boolean"
+                                },
+                                "blinkOnUpdate": {
+                                    "description": "Value should blink when updated (true or color)",
+                                    "type": ["boolean", "string"]
+                                },
+                                "blink": {
+                                    "description": "Value should blink continuously (true or color)",
+                                    "type": ["boolean", "string"]
+                                },
+                                "styleLabel": {
+                                    "description": "React CSS Styles for label",
+                                    "type": "object"
+                                },
+                                "styleValue": {
+                                    "description": "React CSS Styles for value",
+                                    "type": "object"
+                                },
+                                "styleUnit": {
+                                    "description": "React CSS Styles for unit",
+                                    "type": "object"
+                                },
+                                "copyToClipboard": {
+                                    "description": "Show copy to clipboard button for value",
+                                    "type": "boolean"
+                                },
+                                "labelIcon": {
+                                    "description": "Base64 icon for label",
+                                    "type": "string"
+                                },
+                                "size": {
+                                    "description": "Font size",
+                                    "oneOf": [
+                                        {
+                                            "default": "normal",
+                                            "type": "string",
+                                            "enum": [
+                                                "small",
+                                                "normal",
+                                                "large"
+                                            ]
+                                        },
+                                        {
+                                            "type": "number"
+                                        }
+                                    ]
+                                }
+                            },
+                            "additionalProperties": false,
+                            "required": ["type", "label", "data"]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "type": {
                                     "const": "instance"
                                 }
                             }
@@ -5933,6 +6035,97 @@
                                                 "required": ["label"]
                                             }
                                         ]
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "properties": {
+                                            "type": {
+                                                "const": "staticInfo"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "label": true,
+                                            "type": true,
+                                            "xs": true,
+                                            "sm": true,
+                                            "md": true,
+                                            "lg": true,
+                                            "xl": true,
+                                            "newLine": true,
+                                            "hidden": true,
+                                            "helpLink": true,
+                                            "help": true,
+                                            "style": true,
+                                            "darkStyle": true,
+                                            "tooltip": true,
+                                            "noTranslation": true,
+                                            "data": {
+                                                "description": "Value to be shown",
+                                                "type": ["object", "string", "number", "boolean"]
+                                            },
+                                            "unit": {
+                                                "description": "unit (could be multi-language)",
+                                                "type": ["object", "string"]
+                                            },
+                                            "narrow": {
+                                                "description": "With this flag, the value will appear just after the label",
+                                                "type": "boolean"
+                                            },
+                                            "addColon": {
+                                                "description": "Add to label the colon at the end if not exist in label",
+                                                "type": "boolean"
+                                            },
+                                            "blinkOnUpdate": {
+                                                "description": "Value should blink when updated (true or color)",
+                                                "type": ["boolean", "string"]
+                                            },
+                                            "blink": {
+                                                "description": "Value should blink continuously (true or color)",
+                                                "type": ["boolean", "string"]
+                                            },
+                                            "styleLabel": {
+                                                "description": "React CSS Styles for label",
+                                                "type": "object"
+                                            },
+                                            "styleValue": {
+                                                "description": "React CSS Styles for value",
+                                                "type": "object"
+                                            },
+                                            "styleUnit": {
+                                                "description": "React CSS Styles for unit",
+                                                "type": "object"
+                                            },
+                                            "copyToClipboard": {
+                                                "description": "Show copy to clipboard button for value",
+                                                "type": "boolean"
+                                            },
+                                            "labelIcon": {
+                                                "description": "Base64 icon for label",
+                                                "type": "string"
+                                            },
+                                            "size": {
+                                                "description": "Font size",
+                                                "oneOf": [
+                                                    {
+                                                        "default": "normal",
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "small",
+                                                            "normal",
+                                                            "large"
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "number"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "required": ["type", "label", "data"]
                                     }
                                 },
                                 {

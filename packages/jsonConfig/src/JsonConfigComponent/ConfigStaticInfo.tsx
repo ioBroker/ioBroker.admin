@@ -1,13 +1,94 @@
 import React, { type JSX } from 'react';
 
 import { Box } from '@mui/material';
-
-import { Icon, Utils } from '@iobroker/adapter-react-v5';
+import { ContentCopy } from '@mui/icons-material';
+import { I18n, Icon, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemStaticInfo } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, React.CSSProperties> = {
+function valueBlinkOnce(theme: IobTheme, force: boolean, color?: string | boolean): any {
+    if (typeof color === 'string') {
+        return {
+            '@keyframes newValueAnimationOnceColor': {
+                '0%': {
+                    color: force ? `${color} !important` : color,
+                },
+                '100%': {
+                    color:
+                        theme.palette.mode === 'dark'
+                            ? force
+                                ? '#fff !important'
+                                : '#fff'
+                            : force
+                              ? '#000 !important'
+                              : '#000',
+                },
+            },
+            animation: 'newValueAnimationOnceColor 2s ease-in-out',
+        };
+    }
+    return {
+        '@keyframes newValueAnimationOnce': {
+            '0%': {
+                color: force ? `#00f900 !important` : '#00f900',
+            },
+            '80%': {
+                color:
+                    theme.palette.mode === 'dark'
+                        ? force
+                            ? `#518851 !important`
+                            : '#518851'
+                        : force
+                          ? `#008000 !important`
+                          : '#008000',
+            },
+            '100%': {
+                color:
+                    theme.palette.mode === 'dark'
+                        ? force
+                            ? '#fff !important'
+                            : '#fff'
+                        : force
+                          ? '#000 !important'
+                          : '#000',
+            },
+        },
+        animation: 'newValueAnimationOnce 2s ease-in-out',
+    };
+}
+
+function valueBlink(theme: IobTheme, color?: string | boolean): any {
+    if (typeof color === 'string') {
+        return {
+            '@keyframes blinkAnimationColor': {
+                '0%': {
+                    color,
+                },
+                '100%': {
+                    color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+                },
+            },
+            animation: 'blinkAnimationColor 2s ease-in-out infinite',
+        };
+    }
+    return {
+        '@keyframes blinkAnimation': {
+            '0%': {
+                color: '#00f900',
+            },
+            '80%': {
+                color: theme.palette.mode === 'dark' ? '#518851' : '#008000',
+            },
+            '100%': {
+                color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+            },
+        },
+        animation: 'blinkAnimation 2s ease-in-out infinite',
+    };
+}
+
+const styles: Record<string, any> = {
     label: {
         fontWeight: 'bold',
     },
@@ -17,7 +98,7 @@ const styles: Record<string, React.CSSProperties> = {
     valueAndUnit: {
         display: 'flex',
         gap: 4,
-        alignItems: 'center',
+        alignItems: 'baseline',
     },
     value: {},
     unit: {
@@ -46,11 +127,22 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
         ) {
             label = Utils.renderTextWithA(label);
         }
+        let fontSize: number | undefined;
+        if (this.props.schema.size === 'normal') {
+            fontSize = 16;
+        } else if (this.props.schema.size === 'large') {
+            fontSize = 20;
+        } else if (typeof this.props.schema.size === 'number') {
+            fontSize = this.props.schema.size;
+        }
+
         const divStyle: React.CSSProperties = {
             width: '100%',
             height: '100%',
             display: 'flex',
             alignItems: 'center',
+            position: 'relative',
+            fontSize,
         };
 
         if (this.props.schema.narrow) {
@@ -71,6 +163,9 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
             valueTxt = JSON.stringify(this.props.schema.data);
         } else if (typeof this.props.schema.data === 'number') {
             valueTxt = this.props.schema.data.toString();
+            if (this.props.isFloatComma) {
+                valueTxt = valueTxt.replace('.', ',');
+            }
         } else {
             valueTxt = this.props.schema.data.toString();
         }
@@ -83,6 +178,32 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
         } else {
             value = <div style={{ ...styles.value, ...(this.props.schema.styleValue || undefined) }}>{valueTxt}</div>;
         }
+        if (this.props.schema.blinkOnUpdate && this.props.schema.blink) {
+            const style1 = valueBlinkOnce(this.props.theme, true, this.props.schema.blinkOnUpdate);
+            const style2 = valueBlink(this.props.theme, this.props.schema.blink);
+            value = (
+                <Box
+                    key={valueTxt}
+                    sx={{ ...style1, ...style2 }}
+                >
+                    {value}
+                </Box>
+            );
+        } else if (this.props.schema.blinkOnUpdate) {
+            const style = valueBlinkOnce(this.props.theme, false, this.props.schema.blinkOnUpdate);
+            value = (
+                <Box
+                    key={valueTxt}
+                    sx={style}
+                >
+                    {value}
+                </Box>
+            );
+        } else if (this.props.schema.blink) {
+            const style = valueBlink(this.props.theme, this.props.schema.blink);
+            value = <Box sx={style}>{value}</Box>;
+        }
+
         if (this.props.schema.unit) {
             value = (
                 <div style={styles.valueAndUnit}>
@@ -103,17 +224,47 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
                 />
             );
         }
+        let copyButton: React.JSX.Element | undefined;
+        if (this.props.schema.copyToClipboard) {
+            copyButton = (
+                <ContentCopy
+                    className="staticCopyButton"
+                    style={{
+                        position: 'absolute',
+                        top: 'calc(50% - 12px)',
+                        right: 0,
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                        Utils.copyToClipboard(valueTxt);
+                        window.alert(I18n.t('ra_Copied'));
+                    }}
+                />
+            );
+        }
 
         return (
             <Box
                 component="div"
                 style={divStyle}
+                sx={{
+                    '& .staticCopyButton': {
+                        display: 'none',
+                    },
+                    '& .staticCopyButton:action': {
+                        transform: 'scale(0.9)',
+                    },
+                    '&:hover .staticCopyButton': {
+                        display: 'block',
+                    },
+                }}
             >
                 <div style={{ ...styles.label, ...(this.props.schema.styleLabel || undefined) }}>
                     {labelIcon}
                     {label}
                 </div>
                 {value}
+                {copyButton}
             </Box>
         );
     }
