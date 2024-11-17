@@ -4,7 +4,7 @@ import { Autocomplete, TextField, TextareaAutosize, InputAdornment, IconButton }
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n, IconCopy, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemText } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -234,6 +234,36 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                 </div>
             );
         }
+        let actionButton: React.JSX.Element | undefined;
+        if ((this.props.schema.readOnly || disabled) && this.props.schema.copyToClipboard) {
+            actionButton = (
+                <IconButton
+                    size="small"
+                    onClick={() => {
+                        Utils.copyToClipboard(this.state.value);
+                        window.alert(I18n.t('ra_Copied'));
+                    }}
+                >
+                    <IconCopy />
+                </IconButton>
+            );
+        } else if (!this.props.schema.readOnly && !disabled && this.state.value && !this.props.schema.noClearButton) {
+            actionButton = (
+                <InputAdornment position="end">
+                    <IconButton
+                        size="small"
+                        onClick={() =>
+                            this.setState({ value: '', oldValue: this.state.value }, () =>
+                                this.onChange(this.props.attr, ''),
+                            )
+                        }
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </InputAdornment>
+            );
+        }
+
         return (
             <TextField
                 variant="standard"
@@ -247,24 +277,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                         readOnly: this.props.schema.readOnly || false,
                     },
                     input: {
-                        endAdornment:
-                            !this.props.schema.readOnly &&
-                            !disabled &&
-                            this.state.value &&
-                            !this.props.schema.noClearButton ? (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() =>
-                                            this.setState({ value: '', oldValue: this.state.value }, () =>
-                                                this.onChange(this.props.attr, ''),
-                                            )
-                                        }
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment>
-                            ) : null,
+                        endAdornment: actionButton,
                     },
                 }}
                 onChange={e => {

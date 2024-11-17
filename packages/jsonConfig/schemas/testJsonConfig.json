@@ -1,0 +1,675 @@
+{
+    "$schema": "jsonConfig.json",
+    "type": "tabs",
+    "i18n": true,
+    "iconPosition": "bottom",
+    "tabsStyle": {},
+    "items": {
+        "mainTab": {
+            "type": "panel",
+            "style": {},
+            "innerStyle": {},
+            "label": "Main settings",
+            "items": {
+                "qrCode": {
+                    "type": "qrCode",
+                    "data": "MT:XYZ",
+                    "bgColor": "red",
+                    "fgColor": "blue",
+                    "size": 24,
+                    "level": "M"
+                },
+                "timePicker": {
+                    "type": "timePicker",
+                    "format": "HH:mm:ss",
+                    "views": ["hours", "minutes"],
+                    "returnFormat": "HH:mm:ss",
+                    "timeSteps": {
+                        "minutes": 1,
+                        "hours": 1
+                    },
+                    "tooltip": "test"
+                },
+                "datePicker": {
+                    "type": "datePicker"
+                },
+                "fileSelector": {
+                    "type": "fileSelector",
+                    "pattern": "*.jsx",
+                    "maxSize": "2MB",
+                    "noSize": true
+                },
+                "bind": {
+                    "type": "ip",
+                    "listenOnAllPorts": true,
+                    "label": "IP",
+                    "sm": 12,
+                    "md": 8,
+                    "lg": 5,
+                    "noInternal": true
+                },
+                "port": {
+                    "type": "number",
+                    "step": 1,
+                    "min": 1,
+                    "max": 65565,
+                    "label": "Port",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 3
+                },
+                "secure": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Secure(HTTPS)",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 2
+                },
+                "certPublic": {
+                    "type": "certificate",
+                    "hidden": "!data.secure",
+                    "certType": "public",
+                    "validator": "!data.secure || data.certPublic",
+                    "label": "Public certificate",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 2
+                },
+                "certPrivate": {
+                    "hidden": "!data.secure",
+                    "type": "certificate",
+                    "certType": "private",
+                    "validator": "!data.secure || data.certPrivate",
+                    "label": "Private certificate",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 2
+                },
+                "certChained": {
+                    "hidden": "!data.secure",
+                    "type": "certificate",
+                    "certType": "chained",
+                    "label": "Chained certificate",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 2
+                },
+                "cron": {
+                    "label": "cron",
+                    "type": "cron",
+                    "simple": true
+                },
+                "auth": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "confirm": {
+                        "condition": "!data.secure && data.auth",
+                        "title": "Warning!",
+                        "text": "Unsecure_Auth",
+                        "ok": "Ignore warning",
+                        "cancel": "Disable authentication",
+                        "type": "warning",
+                        "alsoDependsOn": ["secure"]
+                    },
+                    "label": "Authentication",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 2
+                },
+                "autocmpleteSendTo": {
+                    "type": "autocompleteSendTo",
+                    "command": "",
+                    "alsoDependsOn": ["auth"]
+                },
+                "defaultUser": {
+                    "hidden": "!!data.auth",
+                    "type": "user",
+                    "label": "Run as",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 2
+                },
+                "ttl": {
+                    "hidden": "!data.auth",
+                    "type": "number",
+                    "label": "Login timeout",
+                    "step": 5,
+                    "help": {
+                        "en": "sec"
+                    },
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 2
+                },
+                "autoUpdate": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "Auto update",
+                    "options": [
+                        {
+                            "label": "manually",
+                            "value": 0
+                        },
+                        {
+                            "label": "every 12 hours",
+                            "value": 12
+                        },
+                        {
+                            "label": "every day",
+                            "value": 24
+                        },
+                        {
+                            "label": "every 2 days",
+                            "value": 48
+                        },
+                        {
+                            "label": "every 3 days",
+                            "value": 72
+                        },
+                        {
+                            "label": "every week",
+                            "value": 168
+                        },
+                        {
+                            "label": "every 2 weeks",
+                            "value": 336
+                        },
+                        {
+                            "label": "monthly",
+                            "value": 720
+                        }
+                    ],
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 2
+                },
+                "thresholdValue": {
+                    "type": "number",
+                    "min": 50,
+                    "label": "Events threshold value",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 2
+                },
+                "react": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Use react UI(experts)",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 3
+                },
+                "instance": {
+                    "type": "instance",
+                    "allowDeactivate": true,
+                    "adapter": "admin",
+                    "long": true
+                }
+            }
+        },
+        "leTab": {
+            "type": "panel",
+            "label": "Let's Encrypt SSL",
+            "disabled": "!data.secure",
+            "items": {
+                "_image": {
+                    "type": "staticImage",
+                    "tooltip": "Read about Let's Encrypt certificates",
+                    "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
+                    "src": "../../img/le.png",
+                    "style": {
+                        "width": 200,
+                        "height": 59
+                    }
+                },
+                "_link": {
+                    "newLine": true,
+                    "type": "staticLink",
+                    "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
+                    "text": "Read about Let's Encrypt certificates",
+                    "color": "#fff",
+                    "style": {
+                        "fontSize": 16,
+                        "marginBottom": 20
+                    }
+                },
+                "_linkButton": {
+                    "button": true,
+                    "variant": "contained",
+                    "newLine": true,
+                    "type": "staticLink",
+                    "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
+                    "text": "Read about Let's Encrypt certificates",
+                    "style": {
+                        "fontSize": 16,
+                        "marginBottom": 20
+                    }
+                },
+                "leEnabled": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Use Lets Encrypt certificates"
+                },
+                "leUpdate": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "hidden": "!data.leEnabled",
+                    "label": "Use this instance for automatic update"
+                },
+                "lePort": {
+                    "newLine": true,
+                    "sm": 11,
+                    "lg": 4,
+                    "type": "number",
+                    "doNotSave": true,
+                    "hidden": "!data.leEnabled || !data.leUpdate",
+                    "label": "Port to check the domain",
+                    "style": {
+                        "marginTop": 15,
+                        "maxWidth": 200
+                    }
+                },
+                "certs": {
+                    "type": "certificates",
+                    "newLine": true
+                }
+            }
+        },
+        "loginTab": {
+            "type": "panel",
+            "label": "Login background",
+            "disabled": "!data.auth",
+            "items": {
+                "loginBackgroundColor": {
+                    "type": "color",
+                    "sm": 12,
+                    "md": 8,
+                    "lg": 4,
+                    "label": "Background color of the login screen"
+                },
+                "loginHideLogo": {
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 8,
+                    "lg": 4,
+                    "type": "checkbox",
+                    "label": "Hide logo"
+                },
+                "loginMotto": {
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 8,
+                    "lg": 4,
+                    "type": "text",
+                    "label": "Own motto",
+                    "noClearButton": true
+                },
+                "loginBackgroundImage": {
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 8,
+                    "lg": 4,
+                    "type": "checkbox",
+                    "label": "Use background image"
+                },
+                "login-bg.png": {
+                    "newLine": true,
+                    "type": "image",
+                    "hidden": "!data.loginBackgroundImage",
+                    "sm": 12,
+                    "md": 8,
+                    "lg": 4,
+                    "accept": "image/*",
+                    "label": "Upload image",
+                    "crop": true
+                }
+            }
+        },
+        "instancesTab": {
+            "type": "panel",
+            "icon": "",
+            "iconPosition": "start",
+            "label": {
+                "en": "Access to instances",
+                "de": "",
+                "uk": ""
+            },
+            "items": {
+                "_text1": {
+                    "type": "staticText",
+                    "text": {
+                        "en": "There is a option to allow access to the specific configuration pages of selected instances."
+                    }
+                },
+                "_text2": {
+                    "type": "staticText",
+                    "label": {
+                        "en": "label is also ok instead of text"
+                    }
+                },
+                "defaultSendToText": {
+                    "type": "text",
+                    "defaultSendTo": "fill",
+                    "allowSaveWithError": true
+                },
+                "textSendTo": {
+                    "type": "textSendTo",
+                    "command": "test"
+                },
+                "accessLimit": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": {
+                        "en": "Allow access only to specific instances"
+                    }
+                },
+                "applyRights": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": {
+                        "en": "Apply access rights for selected instances"
+                    }
+                },
+                "accessAllowedConfigs": {
+                    "hidden": "!data.accessLimit",
+                    "newLine": true,
+                    "type": "custom",
+                    "url": "custom/customComponents.js",
+                    "name": "AdminComponentEasyAccessSet/Components/ConfigCustomEasyAccess",
+                    "i18n": true
+                }
+            }
+        },
+        "demoTab": {
+            "type": "panel",
+            "label": {
+                "en": "Demo"
+            },
+            "items": {
+                "demoPattern": {
+                    "label": "Pattern",
+                    "type": "pattern",
+                    "pattern": "my ${data.bind} ${_alive}",
+                    "copyToClipboard": true
+                },
+                "_header": {
+                    "newLine": true,
+                    "type": "divider",
+                    "sm": 12
+                },
+                "port": {
+                    "type": "port",
+                    "min": 1,
+                    "max": 65565,
+                    "label": "Port",
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 3
+                },
+                "sendTo": {
+                    "type": "sendTo",
+                    "command": "test",
+                    "openUrl": true,
+                    "onLoaded": true
+                },
+                "reverseProxy": {
+                    "sm": 12,
+                    "newLine": true,
+                    "type": "table",
+                    "showSecondAddAt": 1,
+                    "items": [
+                        {
+                            "type": "chips",
+                            "width": 100,
+                            "filter": false
+                        },
+                        {
+                            "type": "autocomplete",
+                            "options": [],
+                            "width": 100,
+                            "filter": false
+                        },
+                        {
+                            "filter": true,
+                            "width": 200,
+                            "type": "staticLink",
+                            "href": "https://iobroker.net",
+                            "color": "#fff"
+                        },
+                        {
+                            "type": "datePicker"
+                        },
+                        {
+                            "type": "timePicker",
+                            "tooltip": "test",
+                            "format": "HH:mm:ss",
+                            "views": ["hours", "minutes"],
+                            "returnFormat": "HH:mm:ss",
+                            "timeSteps": {
+                                "minutes": 1,
+                                "hours": 1
+                            }
+                        },
+                        {
+                            "type": "panel",
+                            "#include": "dummy.jsonConfig.json"
+                        },
+                        {
+                            "type": "text",
+                            "defaultSendTo": "fill"
+                        },
+                        {
+                            "type": "fileSelector",
+                            "pattern": "*.js"
+                        },
+                        {
+                            "type": "objectId",
+                            "title": "s_TargetState",
+                            "attr": "chTargetState",
+                            "filter": false,
+                            "sort": false,
+                            "width": "40%",
+                            "types": ["state"]
+                        },
+                        {
+                            "type": "autocompleteSendTo",
+                            "command": "",
+                            "alsoDependsOn": [],
+                            "width": 50
+                        },
+                        {
+                            "type": "text",
+                            "width": "50%",
+                            "title": "Global path",
+                            "attr": "globalPath",
+                            "filter": false,
+                            "sort": false,
+                            "default": "/iobroker/"
+                        },
+                        {
+                            "type": "staticText",
+                            "text": "=>",
+                            "noTranslation": true,
+                            "width": 20
+                        },
+                        {
+                            "type": "table",
+                            "width": "50%",
+                            "attr": "paths",
+                            "filter": false,
+                            "sort": false,
+                            "default": [
+                                {
+                                    "instance": "web.0",
+                                    "path": "/web/"
+                                }
+                            ],
+                            "items": [
+                                {
+                                    "type": "instance",
+                                    "width": 200,
+                                    "title": {
+                                        "en": "Instance"
+                                    },
+                                    "attr": "instance",
+                                    "filter": false,
+                                    "sort": false,
+                                    "default": "web.0"
+                                },
+                                {
+                                    "type": "text",
+                                    "width": "80%",
+                                    "title": {
+                                        "en": "Instance path behind proxy"
+                                    },
+                                    "attr": "path",
+                                    "filter": false,
+                                    "sort": false,
+                                    "default": "/web/"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "myTable": {
+                    "newLine": true,
+                    "sm": 12,
+                    "noDelete": false,
+                    "type": "table",
+                    "export": true,
+                    "allowAddByFilter": false,
+                    "uniqueColumns": ["ip"],
+                    "items": [
+                        {
+                            "type": "cron",
+                            "complex": true,
+                            "width": 50
+                        },
+                        {
+                            "type": "select",
+                            "width": 50
+                        },
+                        {
+                            "type": "password",
+                            "width": 10,
+                            "attr": "pw1"
+                        },
+                        {
+                            "type": "selectSendTo",
+                            "alsoDependsOn": ["sendTo"],
+                            "command": "test",
+                            "width": 50,
+                            "title": {
+                                "en": "Select send to",
+                                "de": ""
+                            },
+                            "doNotSave": true
+                        },
+                        {
+                            "type": "certificates"
+                        },
+                        {
+                            "type": "text",
+                            "noClearButton": true,
+                            "attr": "ip",
+                            "width": 100,
+                            "title": "IP",
+                            "filter": true,
+                            "sort": true
+                        },
+                        {
+                            "type": "number",
+                            "attr": "delay",
+                            "width": "100%",
+                            "title": "Delay",
+                            "filter": false,
+                            "sort": true,
+                            "min": 1
+                        },
+                        {
+                            "type": "checkbox",
+                            "attr": "enabled",
+                            "width": 50,
+                            "title": "Active",
+                            "filter": false,
+                            "sort": false
+                        },
+                        {
+                            "type": "qrCode",
+                            "data": "MT:XYZ",
+                            "bgColor": "red",
+                            "fgColor": "blue",
+                            "size": 24,
+                            "level": "L"
+                        }
+                    ]
+                },
+                "myAccordion": {
+                    "hidden": "!!data.foreignSettingsInstance",
+                    "newLine": true,
+                    "type": "accordion",
+                    "titleAttr": "name",
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "items": [
+                        {
+                            "type": "header",
+                            "attr": "_header",
+                            "text": "Headline",
+                            "size": 4
+                        },
+                        {
+                            "type": "text",
+                            "attr": "name",
+                            "label": "Name",
+                            "sm": 12,
+                            "md": 4,
+                            "lg": 4,
+                            "default": "custom",
+                            "help": "Just lower case letters (a-z)",
+                            "validator": "/^([a-z]{1,})$/.test(data.name) && !['time', 'date', 'temperature', 'humidity', 'battery'].includes(data.name) && [...globalData.customApps, ...globalData.historyApps, ...globalData.expertApps].filter(app => app.name === data.name).length === 1",
+                            "validatorErrorText": "Just lower case letters (a-z)",
+                            "validatorNoSaveOnError": true
+                        }
+                    ]
+                },
+                "alive": {
+                    "type": "alive",
+                    "instance": "admin.0",
+                    "textAlive": "Instance %s is alive",
+                    "textNotAlive": "Instance %s is not alive"
+                },
+                "myInstance": {
+                    "newLine": true,
+                    "sm": 6,
+                    "type": "instance",
+                    "adapter": "history",
+                    "label": "History"
+                },
+                "myObjectId": {
+                    "type": "objectId",
+                    "sm": 6,
+                    "label": "Object ID"
+                },
+                "myLanguage": {
+                    "newLine": true,
+                    "type": "language",
+                    "sm": 6,
+                    "label": "Language",
+                    "system": true
+                },
+                "_setState": {
+                    "type": "setState",
+                    "ack": true,
+                    "variant": "contained",
+                    "okText": "Done",
+                    "val": "${data.myLanguage}",
+                    "id": "javascript.0.value",
+                    "label": "Test"
+                }
+            }
+        }
+    }
+}

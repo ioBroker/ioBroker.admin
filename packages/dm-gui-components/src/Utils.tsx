@@ -12,6 +12,7 @@ import {
     FastRewind,
     Fluorescent,
     Group,
+    Info,
     Lightbulb,
     Link as LinkIcon,
     LinkOff,
@@ -29,6 +30,7 @@ import {
     Visibility,
     WbIncandescent,
     Wifi,
+    WifiFind,
     WifiOff,
 } from '@mui/icons-material';
 
@@ -106,66 +108,82 @@ function getFaIcon(icon: string, color?: string): React.JSX.Element | null {
     return <QuestionMark style={{ color }} />;
 }
 
-function getIconByName(name: string, color?: string): React.JSX.Element | null {
-    if (name === 'edit' || name === 'rename') {
+function getIconByName(name: string, altName?: string, color?: string): React.JSX.Element | null {
+    if (name === 'edit' || name === 'rename' || altName === 'edit' || altName === 'rename') {
         return <Edit style={{ color }} />;
     }
-    if (name === 'delete') {
+    if (name === 'delete' || altName === 'delete') {
         return <Delete style={{ color }} />;
     }
-    if (name === 'refresh') {
+    if (name === 'refresh' || altName === 'refresh') {
         return <Refresh style={{ color }} />;
     }
-    if (name === 'newDevice' || name === 'new' || name === 'add') {
+    if (
+        name === 'newDevice' ||
+        name === 'new' ||
+        name === 'add' ||
+        altName === 'newDevice' ||
+        altName === 'new' ||
+        altName === 'add'
+    ) {
         return <Add style={{ color }} />;
     }
-    if (name === 'discover' || name === 'search') {
+    if (name === 'discover' || name === 'search' || altName === 'discover' || altName === 'search') {
         return <Search style={{ color }} />;
     }
-    if (name === 'unpairDevice' || name === 'unpair') {
+    if (name === 'unpairDevice' || name === 'unpair' || altName === 'unpairDevice' || altName === 'unpair') {
         return <LinkOff style={{ color }} />;
     }
-    if (name === 'pairDevice' || name === 'pair') {
+    if (name === 'pairDevice' || name === 'pair' || altName === 'pairDevice' || altName === 'pair') {
         return <LinkIcon style={{ color }} />;
     }
-    if (name === 'identify') {
+    if (name === 'identify' || altName === 'identify') {
         return <NotListedLocation style={{ color }} />;
     }
-    if (name === 'play') {
+    if (name === 'play' || altName === 'play') {
         return <PlayArrow style={{ color }} />;
     }
-    if (name === 'stop') {
+    if (name === 'stop' || altName === 'stop') {
         return <Stop style={{ color }} />;
     }
-    if (name === 'pause') {
+    if (name === 'pause' || altName === 'pause') {
         return <Pause style={{ color }} />;
     }
-    if (name === 'forward' || name === 'next') {
+    if (name === 'forward' || name === 'next' || altName === 'forward' || altName === 'next') {
         return <FastForward style={{ color }} />;
     }
-    if (name === 'rewind' || name === 'previous') {
+    if (name === 'rewind' || name === 'previous' || altName === 'rewind' || altName === 'previous') {
         return <FastRewind style={{ color }} />;
     }
-    if (name === 'lamp' || name === 'light') {
+    if (name === 'lamp' || name === 'light' || altName === 'lamp' || altName === 'light') {
         return <Lightbulb style={{ color }} />;
     }
-    if (name === 'backlight') {
+    if (name === 'backlight' || altName === 'backlight') {
         return <Fluorescent style={{ color }} />;
     }
-    if (name === 'dimmer') {
+    if (name === 'dimmer' || altName === 'dimmer') {
         return <WbIncandescent style={{ color }} />;
     }
-    if (name === 'socket') {
+    if (name === 'socket' || altName === 'socket') {
         return <Power style={{ color }} />;
     }
-    if (name === 'settings') {
+    if (name === 'settings' || altName === 'settings') {
         return <Settings style={{ color }} />;
     }
-    if (name === 'users' || name === 'group') {
+    if (name === 'users' || name === 'group' || altName === 'users' || altName === 'group') {
         return <Group style={{ color }} />;
     }
-    if (name === 'user') {
+    if (name === 'user' || altName === 'user') {
         return <Person style={{ color }} />;
+    }
+    if (name === 'qrcode' || altName === 'qrcode') {
+        return <QrCode style={{ color }} />;
+    }
+    if (name === 'identify' || altName === 'identify') {
+        return <WifiFind style={{ color }} />;
+    }
+    if (name === 'info' || altName === 'info') {
+        return <Info style={{ color }} />;
     }
     return <QuestionMark style={{ color }} />;
 }
@@ -208,7 +226,7 @@ export function renderControlIcon(
             />
         );
     }
-    return getIconByName(action.id, color);
+    return getIconByName(action.id, action.icon, color);
 }
 
 export function renderActionIcon(action: ActionBase): React.JSX.Element | null {
@@ -227,7 +245,7 @@ export function renderActionIcon(action: ActionBase): React.JSX.Element | null {
             />
         );
     }
-    return getIconByName(action.id, action.color);
+    return getIconByName(action.id, action.icon, action.color);
 }
 
 let language: ioBroker.Languages;

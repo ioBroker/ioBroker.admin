@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { TextField, IconButton } from '@mui/material';
 
-import { Icon, IconCopy, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, Icon, IconCopy, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemSendTo } from '#JC/types';
 import getIconByName from './Icons';
@@ -124,7 +124,7 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
                                     size="small"
                                     onClick={() => {
                                         Utils.copyToClipboard(this.state.text);
-                                        window.alert('Copied');
+                                        window.alert(I18n.t('ra_Copied'));
                                     }}
                                 >
                                     <IconCopy />

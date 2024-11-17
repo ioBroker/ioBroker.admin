@@ -65,11 +65,11 @@ function onLink(href: string, target: '_blank' | '_self' | string, instanceId: s
     }
 }
 
-interface ConfigInstanceSelectProps extends ConfigGenericProps {
+interface ConfigStaticTextProps extends ConfigGenericProps {
     schema: ConfigItemStaticText;
 }
 
-class ConfigStaticText extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGenericState> {
+class ConfigStaticText extends ConfigGeneric<ConfigStaticTextProps, ConfigGenericState> {
     renderItem(_error: string, disabled: boolean /* , defaultValue */): JSX.Element {
         if (this.props.schema.button) {
             const icon = this.getIcon();

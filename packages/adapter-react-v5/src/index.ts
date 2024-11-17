@@ -23,6 +23,7 @@ export {
     type FileViewerState,
 } from './Components/FileViewer';
 export { getSystemIcon, getSelectIdIcon, Icon } from './Components/Icon';
+export { isDeviceIcon, type DeviceType, IconDeviceType } from './Components/IconDeviceType';
 export { IconPicker } from './Components/IconPicker';
 export { IconSelector } from './Components/IconSelector';
 export { Image } from './Components/Image';
@@ -60,20 +61,22 @@ export { LoaderMV } from './Components/Loaders/MV';
 export { type IconProps } from './icons/IconProps';
 export { IconAdapter } from './icons/IconAdapter';
 export { IconAlias } from './icons/IconAlias';
+export { IconButtonImage } from './icons/IconButtonImage';
 export { IconChannel } from './icons/IconChannel';
+export { IconClearFilter } from './icons/IconClearFilter';
 export { IconClosed } from './icons/IconClosed';
 export { IconCopy } from './icons/IconCopy';
 export { IconDevice } from './icons/IconDevice';
 export { IconDocument } from './icons/IconDocument';
+export { IconDocumentReadOnly } from './icons/IconDocumentReadOnly';
 export { IconExpert } from './icons/IconExpert';
 export { IconFx } from './icons/IconFx';
 export { IconInstance } from './icons/IconInstance';
 export { IconLogout } from './icons/IconLogout';
+export { IconNoIcon } from './icons/IconNoIcon';
 export { IconOpen } from './icons/IconOpen';
 export { IconState } from './icons/IconState';
-export { IconNoIcon } from './icons/IconNoIcon';
-export { IconDocumentReadOnly } from './icons/IconDocumentReadOnly';
-export { IconClearFilter } from './icons/IconClearFilter';
+export { IconVacuum } from './icons/IconVacuum';
 export { DialogComplexCron } from './Dialogs/ComplexCron';
 export { DialogComplexCron as ComplexCronDialog } from './Dialogs/ComplexCron'; // deprecated
 export { DialogConfirm } from './Dialogs/Confirm';

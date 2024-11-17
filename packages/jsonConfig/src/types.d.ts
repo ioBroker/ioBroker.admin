@@ -32,6 +32,7 @@ export type ConfigItemType =
     | 'pattern'
     | 'sendto'
     | 'setState'
+    | 'staticInfo'
     | 'staticText'
     | 'staticLink'
     | 'staticImage'
@@ -263,6 +264,8 @@ export interface ConfigItemText extends ConfigItem {
     max?: number;
     /** read-only field */
     readOnly?: boolean;
+    /** show copy to clipboard button, but only if disabled or read-only */
+    copyToClipboard?: boolean;
     /** default is true. Set this attribute to `false` if trim is not desired. */
     trim?: boolean;
     /** default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row. */
@@ -418,7 +421,7 @@ export interface ConfigItemStaticImage extends ConfigItem {
 export interface ConfigItemStaticText extends Omit<ConfigItem, 'button'> {
     type: 'staticText';
     /** multi-language text */
-    text: string;
+    text: ioBroker.StringOrTranslated;
     /** @deprecated use text */
     label?: ioBroker.StringOrTranslated;
     /** link. Link could be dynamic like `#tab-objects/customs/${data.parentId} */
@@ -437,6 +440,34 @@ export interface ConfigItemStaticText extends Omit<ConfigItem, 'button'> {
     icon?: ConfigIconType;
     /** styles for the button */
     controlStyle: CustomCSSProperties;
+}
+
+export interface ConfigItemStaticInfo extends ConfigItem {
+    type: 'staticInfo';
+    /** multi-language text or value */
+    data: ioBroker.StringOrTranslated | number | boolean;
+    /** Base64 icon */
+    labelIcon?: string;
+    /** Unit */
+    unit?: ioBroker.StringOrTranslated;
+    /** Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label*/
+    narrow?: boolean;
+    /** Add to label the colon at the end if not exist in label */
+    addColon?: boolean;
+    /** Value should blink when updated (true or color) */
+    blinkOnUpdate?: boolean | string;
+    /** Value should blink continuously (true or color) */
+    blink?: boolean | string;
+    /** Show copy to clipboard button for value */
+    copyToClipboard?: boolean;
+    /** Label style */
+    styleLabel?: CustomCSSProperties;
+    /** Value style */
+    styleValue?: CustomCSSProperties;
+    /** Unit style */
+    styleUnit?: CustomCSSProperties;
+    /** Font size */
+    size?: number | 'small' | 'normal' | 'large';
 }
 
 export interface ConfigItemRoom extends ConfigItem {
@@ -938,6 +969,7 @@ export type ConfigItemAny =
     | ConfigItemSetState
     | ConfigItemStaticDivider
     | ConfigItemStaticHeader
+    | ConfigItemStaticInfo
     | ConfigItemStaticImage
     | ConfigItemStaticText
     | ConfigItemTopic

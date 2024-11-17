@@ -337,17 +337,18 @@ Tab with items
 
 Text component
 
-| Property        | Description                                                                                            |
-|-----------------|--------------------------------------------------------------------------------------------------------|
-| `maxLength`     | max length of the text in field                                                                        |
-| `readOnly`      | read-only field                                                                                        |
-| `trim`          | default is true. Set this attribute to `false` if trim is not desired.                                 |
-| `minRows`       | default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row. |
-| `maxRows`       | max rows of textarea. Used only if `minRows` > 1.                                                      |
-| `noClearButton` | if true, the clear button will not be shown (admin >= 6.17.13)                                         |
-| `validateJson`  | if true, the text will be validated as JSON                                                            |
-| `allowEmpty`    | if true, the JSON will be validated only if the value is not empty                                     |
-| `time`          | the value is time in ms or a string. Used only with readOnly flag                                      |
+| Property          | Description                                                                                            |
+|-------------------|--------------------------------------------------------------------------------------------------------|
+| `maxLength`       | max length of the text in field                                                                        |
+| `readOnly`        | read-only field                                                                                        |
+| `copyToClipboard` | show copy to clipboard button, but only if disabled or read-only is true                               |
+| `trim`            | default is true. Set this attribute to `false` if trim is not desired.                                 |
+| `minRows`         | default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row. |
+| `maxRows`         | max rows of textarea. Used only if `minRows` > 1.                                                      |
+| `noClearButton`   | if true, the clear button will not be shown (admin >= 6.17.13)                                         |
+| `validateJson`    | if true, the text will be validated as JSON                                                            |
+| `allowEmpty`      | if true, the JSON will be validated only if the value is not empty                                     |
+| `time`            | the value is time in ms or a string. Used only with readOnly flag                                      |
 
 ### `number`
 
@@ -1103,6 +1104,27 @@ Special input for ports. It checks automatically if port is used by other instan
 | `variant`        | Variant of button: `contained`, `outlined`, `text`                                                                            |
 | `readOnly`       | Defines if the control is read-only                                                                                           |
 
+### `staticInfo`
+
+(admin >= 7.3.3) Shows static information in preformatted form, like "Title: value unit"
+This control is used mostly in dynamic forms 
+
+| Property          | Description                                                                                                                                     |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `data`            | Value to be shown                                                                                                                               |
+| `label`           | Label for the value (could be multi-language)                                                                                                   |
+| `unit`            | (optional) unit (could be multi-language)                                                                                                       |
+| `narrow`          | (optional) Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label |
+| `addColon`        | (optional) Add to label the colon at the end if not exist in label                                                                              |
+| `blinkOnUpdate`   | (optional) Value should blink when updated (true or color)                                                                                      |
+| `blink`           | (optional) Value should blink continuously (true or color)                                                                                      |
+| `styleLabel`      | (optional) React CSS Styles                                                                                                                     |
+| `styleValue`      | (optional) React CSS Styles                                                                                                                     |
+| `styleUnit`       | (optional) React CSS Styles                                                                                                                     |
+| `copyToClipboard` | (optional) Show copy to clipboard button for value                                                                                              |
+| `labelIcon`       | (optional) base64 icon for label                                                                                                                |
+| `size`            | (optional) font size: small, normal, large or number                                                                                            |
+
 ### `deviceManager`
 
 show device manager. For that, the adapter must support device manager protocol. See iobroker/dm-utils.
@@ -1400,3 +1422,6 @@ The following variables are available in JS function in custom settings:
 ```
 
 You can find examples in [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) adapter.
+
+## For maintainer
+To update location of JsonConfig schema, create pull request to this file: https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json

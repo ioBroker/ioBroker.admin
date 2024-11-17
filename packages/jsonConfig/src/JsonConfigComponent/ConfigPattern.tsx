@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { IconButton, TextField } from '@mui/material';
 
-import { IconCopy, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, IconCopy, Utils } from '@iobroker/adapter-react-v5';
 import type { ConfigItemPattern } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
@@ -24,7 +24,7 @@ class ConfigPattern extends ConfigGeneric<ConfigPatternProps, ConfigGenericState
                                 size="small"
                                 onClick={() => {
                                     Utils.copyToClipboard(this.getPattern(this.props.schema.pattern));
-                                    window.alert('Copied');
+                                    window.alert(I18n.t('ra_Copied'));
                                 }}
                             >
                                 <IconCopy />

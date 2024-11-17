@@ -170,15 +170,11 @@ class Admin extends Adapter {
      * @param state the changed state value
      */
     onStateChange(id: string, state: ioBroker.State | null | undefined): void {
-        if (socket) {
-            socket.stateChange(id, state);
-        }
+        socket?.stateChange(id, state);
     }
 
     onFileChange(id: string, fileName: string, size: number): void {
-        if (socket) {
-            socket.fileChange(id, fileName, size);
-        }
+        socket?.fileChange(id, fileName, size);
     }
 
     /**
@@ -286,9 +282,7 @@ class Admin extends Adapter {
             return this.processNotificationsGui(obj);
         }
 
-        if (socket) {
-            socket.sendCommand(obj);
-        }
+        socket?.sendCommand(obj);
     }
 
     processNotificationsGui(obj: ioBroker.Message): void {

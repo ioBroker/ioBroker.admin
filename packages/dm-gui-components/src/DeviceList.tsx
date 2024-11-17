@@ -36,6 +36,8 @@ interface DeviceListProps extends CommunicationProps {
     style?: React.CSSProperties;
     /** Use small cards for devices */
     smallCards?: boolean;
+    /** To trigger the reload of devices, just change this variable */
+    triggerLoad?: number;
 }
 
 interface DeviceListState extends CommunicationState {
@@ -45,6 +47,7 @@ interface DeviceListState extends CommunicationState {
     instanceInfo: InstanceDetails;
     loading: boolean;
     alive: boolean | null;
+    triggerLoad: number;
 }
 
 /**
@@ -56,6 +59,8 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
     private lastPropsFilter: string | undefined;
 
     private lastInstance: string;
+
+    private lastTriggerLoad = 0;
 
     private filterTimeout: ReturnType<typeof setTimeout> | null;
 
@@ -92,6 +97,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
 
         this.lastPropsFilter = this.props.filter;
         this.lastInstance = this.props.selectedInstance;
+        this.lastTriggerLoad = this.props.triggerLoad || 0;
         this.filterTimeout = null;
         this.language = I18n.getLanguage();
     }
@@ -218,6 +224,11 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
         const emptyStyle: React.CSSProperties = {
             padding: 25,
         };
+
+        if ((this.props.triggerLoad || 0) !== this.lastTriggerLoad) {
+            this.lastTriggerLoad = this.props.triggerLoad || 0;
+            setTimeout(() => this.loadData(), 50);
+        }
 
         if (this.props.embedded && this.lastPropsFilter !== this.props.filter) {
             this.lastPropsFilter = this.props.filter;

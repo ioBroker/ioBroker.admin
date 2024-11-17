@@ -21,12 +21,12 @@ import { MoreVert as MoreVertIcon, VideogameAsset as ControlIcon, Close as Close
 
 import {
     Utils,
-    Icon,
     type Connection,
     I18n,
     type ThemeName,
     type ThemeType,
     type IobTheme,
+    IconDeviceType,
 } from '@iobroker/adapter-react-v5';
 import type { DeviceDetails, DeviceInfo, ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils';
 
@@ -334,6 +334,8 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
               ? this.props.device.status
               : [this.props.device.status];
 
+        const icon = this.state.icon ? <IconDeviceType src={this.state.icon} /> : <NoImageIcon />;
+
         return (
             <Card
                 sx={{
@@ -365,7 +367,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                                     socket={this.props.socket}
                                 />
                             ) : null}
-                            {this.state.icon ? <Icon src={this.state.icon} /> : <NoImageIcon />}
+                            {icon}
                         </div>
                     }
                     action={
@@ -459,31 +461,29 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         };
         const headerStyle: React.CSSProperties = {
             display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            paddingLeft: 8,
             position: 'relative',
-            justifyContent: 'space-between',
             minHeight: 60,
             color: '#000',
-            padding: '0 10px 0 10px',
-            borderRadius: '4px 4px 0 0',
         };
         const imgAreaStyle: React.CSSProperties = {
             height: 45,
             width: 45,
-            margin: 'auto',
             justifyContent: 'center',
-            display: 'grid',
+            display: 'flex',
+            alignItems: 'center',
         };
         const imgStyle: React.CSSProperties = {
             zIndex: 2,
             maxWidth: '100%',
             maxHeight: '100%',
+            color: '#FFF',
         };
         const titleStyle: React.CSSProperties = {
-            width: '100%',
             fontSize: 16,
             fontWeight: 'bold',
-            paddingTop: 16,
-            paddingLeft: 8,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -510,6 +510,17 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
               ? this.props.device.status
               : [this.props.device.status];
 
+        const icon = this.state.icon ? (
+            <IconDeviceType
+                src={this.state.icon}
+                style={imgStyle}
+            />
+        ) : (
+            <NoImageIcon style={imgStyle} />
+        );
+
+        const title: string = this.state.details?.data?.name || this.props.title || '';
+
         return (
             <Paper
                 style={cardStyle}
@@ -534,13 +545,11 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                                 socket={this.props.socket}
                             />
                         ) : null}
-                        <Icon
-                            src={this.state.icon}
-                            style={imgStyle}
-                        />
+                        {icon}
                     </div>
                     <Box
                         style={titleStyle}
+                        title={title.length > 20 ? title : undefined}
                         sx={theme => ({ color: theme.palette.secondary.contrastText })}
                     >
                         {this.state.details?.data?.name || this.props.title}
