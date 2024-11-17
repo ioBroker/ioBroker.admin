@@ -23,6 +23,7 @@ export {
     type FileViewerState,
 } from './Components/FileViewer';
 export { getSystemIcon, getSelectIdIcon, Icon } from './Components/Icon';
+export { isDeviceIcon, type DeviceType, IconDeviceType } from './Components/IconDeviceType';
 export { IconPicker } from './Components/IconPicker';
 export { IconSelector } from './Components/IconSelector';
 export { Image } from './Components/Image';
@@ -75,6 +76,7 @@ export { IconLogout } from './icons/IconLogout';
 export { IconNoIcon } from './icons/IconNoIcon';
 export { IconOpen } from './icons/IconOpen';
 export { IconState } from './icons/IconState';
+export { IconVacuum } from './icons/IconVacuum';
 export { DialogComplexCron } from './Dialogs/ComplexCron';
 export { DialogComplexCron as ComplexCronDialog } from './Dialogs/ComplexCron'; // deprecated
 export { DialogConfirm } from './Dialogs/Confirm';

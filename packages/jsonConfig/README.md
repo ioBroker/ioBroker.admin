@@ -1104,6 +1104,26 @@ Special input for ports. It checks automatically if port is used by other instan
 | `variant`        | Variant of button: `contained`, `outlined`, `text`                                                                            |
 | `readOnly`       | Defines if the control is read-only                                                                                           |
 
+### `staticInfo`
+
+(admin >= 7.3.3) Shows static information in preformatted form, like "Title: value unit"
+This control is used mostly in dynamic forms 
+
+| Property          | Description                                                                                                                                     |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `data`            | Value to be shown                                                                                                                               |
+| `label`           | Label for the value (could be multi-language)                                                                                                   |
+| `unit`            | (optional) unit (could be multi-language)                                                                                                       |
+| `narrow`          | (optional) Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label |
+| `addColon`        | (optional) Add to label the colon at the end if not exist in label                                                                              |
+| `blinkOnUpdate`   | (optional) Value should blink when updated (true or color)                                                                                      |
+| `blink`           | (optional) Value should blink continuously (true or color)                                                                                      |
+| `styleLabel`      | (optional) React CSS Styles                                                                                                                     |
+| `styleValue`      | (optional) React CSS Styles                                                                                                                     |
+| `styleUnit`       | (optional) React CSS Styles                                                                                                                     |
+| `copyToClipboard` | (optional) Show copy to clipboard button for value                                                                                              |
+| `labelIcon`       | (optional) base64 icon for label                                                                                                                |
+
 ### `deviceManager`
 
 show device manager. For that, the adapter must support device manager protocol. See iobroker/dm-utils.
