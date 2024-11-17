@@ -1,7 +1,7 @@
 {
     "name": "@iobroker/json-config",
     "description": "This package contains the ioBroker JSON config UI components",
-    "version": "7.3.2",
+    "version": "7.4.0",
     "main": "./build/index.js",
     "types": "./build/index.d.ts",
     "scripts": {
@@ -27,8 +27,8 @@
     "devDependencies": {
         "@craco/craco": "^7.1.0",
         "@types/crypto-js": "^4.2.2",
-        "tsc-alias": "^1.8.10",
-        "ajv": "^8.17.1"
+        "ajv": "^8.17.1",
+        "tsc-alias": "^1.8.10"
     },
     "files": [
         "build/",
