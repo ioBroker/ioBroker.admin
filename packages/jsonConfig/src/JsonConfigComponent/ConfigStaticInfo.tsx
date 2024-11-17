@@ -243,21 +243,28 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
             );
         }
 
+        const boxStyle: Record<string, any> = {
+            '& .staticCopyButton': {
+                display: 'none',
+            },
+            '& .staticCopyButton:action': {
+                transform: 'scale(0.9)',
+            },
+            '&:hover .staticCopyButton': {
+                display: 'block',
+            },
+        };
+        if (this.props.schema.highlight) {
+            boxStyle['&:hover'] = {
+                backgroundColor: this.props.themeType === 'dark' ? '#11111180' : '#eeeeee80',
+            };
+        }
+
         return (
             <Box
                 component="div"
                 style={divStyle}
-                sx={{
-                    '& .staticCopyButton': {
-                        display: 'none',
-                    },
-                    '& .staticCopyButton:action': {
-                        transform: 'scale(0.9)',
-                    },
-                    '&:hover .staticCopyButton': {
-                        display: 'block',
-                    },
-                }}
+                sx={boxStyle}
             >
                 <div style={{ ...styles.label, ...(this.props.schema.styleLabel || undefined) }}>
                     {labelIcon}

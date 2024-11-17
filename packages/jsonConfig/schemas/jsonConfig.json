@@ -3615,6 +3615,10 @@
                                     "description": "Base64 icon for label",
                                     "type": "string"
                                 },
+                                "highlight": {
+                                    "description": "Highlight line on mouse over",
+                                    "type": "boolean"
+                                },
                                 "size": {
                                     "description": "Font size",
                                     "oneOf": [
@@ -6105,6 +6109,10 @@
                                             "labelIcon": {
                                                 "description": "Base64 icon for label",
                                                 "type": "string"
+                                            },
+                                            "highlight": {
+                                                "description": "Highlight line on mouse over",
+                                                "type": "boolean"
                                             },
                                             "size": {
                                                 "description": "Font size",

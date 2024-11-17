@@ -1124,6 +1124,7 @@ This control is used mostly in dynamic forms
 | `copyToClipboard` | (optional) Show copy to clipboard button for value                                                                                              |
 | `labelIcon`       | (optional) base64 icon for label                                                                                                                |
 | `size`            | (optional) font size: small, normal, large or number                                                                                            |
+| `highlight`       | (optional) Highlight line on mouse over                                                                                                         |
 
 ### `deviceManager`
 

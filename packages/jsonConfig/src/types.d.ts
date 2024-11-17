@@ -468,6 +468,8 @@ export interface ConfigItemStaticInfo extends Omit<ConfigItem, 'data'> {
     styleUnit?: CustomCSSProperties;
     /** Font size */
     size?: number | 'small' | 'normal' | 'large';
+    /** Highlight line on mouse over */
+    highlight?: boolean;
 }
 
 export interface ConfigItemRoom extends ConfigItem {
