@@ -36,6 +36,7 @@ import DeviceStatusComponent from './DeviceStatus';
 import JsonConfig from './JsonConfig';
 import DeviceImageUpload from './DeviceImageUpload';
 import { getTranslation } from './Utils';
+import type { ConfigItemPanel, ConfigItemTabs } from '@iobroker/json-config';
 
 function NoImageIcon(props: { style?: React.CSSProperties; className?: string }): JSX.Element {
     return (
@@ -206,7 +207,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                     <JsonConfig
                         instanceId={this.props.instanceId}
                         socket={this.props.socket}
-                        schema={this.state.details.schema}
+                        schema={this.state.details.schema as ConfigItemPanel | ConfigItemTabs}
                         data={this.state.data}
                         onChange={(data: Record<string, any>) => this.setState({ data })}
                         themeName={this.props.themeName}

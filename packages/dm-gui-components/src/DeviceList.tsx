@@ -234,6 +234,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
             this.lastPropsFilter = this.props.filter;
             setTimeout(() => this.applyFilter(), 50);
         }
+        // if instance changed
         if (this.props.embedded && this.lastInstance !== this.props.selectedInstance) {
             this.lastInstance = this.props.selectedInstance;
             setTimeout(() => this.loadData(), 50);

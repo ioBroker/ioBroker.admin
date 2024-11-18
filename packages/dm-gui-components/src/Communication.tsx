@@ -48,6 +48,7 @@ import type {
     JsonFormSchema,
     ActionButton,
 } from '@iobroker/dm-utils';
+import type { ConfigItemPanel, ConfigItemTabs } from '@iobroker/json-config';
 
 import { getTranslation } from './Utils';
 import JsonConfig from './JsonConfig';
@@ -587,7 +588,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 <DialogContent>
                     <JsonConfig
                         instanceId={this.props.selectedInstance}
-                        schema={this.state.form.schema}
+                        schema={this.state.form.schema as ConfigItemPanel | ConfigItemTabs}
                         data={this.state.form.data || {}}
                         socket={this.props.socket as AdminConnection}
                         onChange={(data: Record<string, any>) => {
