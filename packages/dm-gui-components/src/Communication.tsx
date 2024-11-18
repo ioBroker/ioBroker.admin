@@ -36,8 +36,8 @@ import {
     type ThemeType,
     type IobTheme,
     I18n,
+    Icon,
 } from '@iobroker/adapter-react-v5';
-import { type ConfigItemPanel } from '@iobroker/json-config';
 import type {
     ActionBase,
     ControlBase,
@@ -45,6 +45,8 @@ import type {
     DeviceInfo,
     DeviceRefresh,
     InstanceDetails,
+    JsonFormSchema,
+    ActionButton,
 } from '@iobroker/dm-utils';
 
 import { getTranslation } from './Utils';
@@ -70,12 +72,12 @@ export type CommunicationProps = {
 };
 
 interface CommunicationForm {
-    title?: string | null | undefined;
-    label?: string | null | undefined; // same as title
+    title?: ioBroker.StringOrTranslated | null | undefined;
+    label?: ioBroker.StringOrTranslated | null | undefined; // same as title
     noTranslation?: boolean; // Do not translate title/label
-    schema?: ConfigItemPanel;
+    schema?: JsonFormSchema;
     data?: Record<string, any>;
-    handleClose?: (data?: Record<string, any>) => void;
+    buttons?: (ActionButton | 'apply' | 'cancel')[];
 }
 
 interface InputAction extends ActionBase {
@@ -96,7 +98,7 @@ export type CommunicationState = {
         message: string;
         handleClose: (confirmation?: boolean) => void;
     } | null;
-    form: CommunicationForm | null;
+    form: (CommunicationForm & { handleClose?: (data?: Record<string, any>) => void }) | null;
     progress: {
         open: boolean;
         progress: number;
@@ -144,7 +146,7 @@ interface DmActionResponse extends DmResponse {
     };
     message?: string;
     confirm?: string;
-    form?: any;
+    form?: CommunicationForm;
     progress?: {
         open: boolean;
         progress: number;
@@ -497,9 +499,56 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         );
     }
 
+    getOkButton(button?: ActionButton | 'apply' | 'cancel'): React.JSX.Element {
+        if (typeof button === 'string') {
+            button = undefined;
+        }
+        return (
+            <Button
+                key="apply"
+                variant={button?.variant || 'contained'}
+                color={button?.color || 'primary'}
+                onClick={() => this.state.form?.handleClose && this.state.form.handleClose(this.state.form?.data)}
+                startIcon={button?.icon ? <Icon src={button?.icon} /> : undefined}
+            >
+                {getTranslation(button?.label || 'okButtonText', button?.noTranslation)}
+            </Button>
+        );
+    }
+
+    getCancelButton(button?: ActionButton | 'apply' | 'cancel'): React.JSX.Element {
+        if (typeof button === 'string') {
+            button = undefined;
+        }
+        return (
+            <Button
+                key="cancel"
+                variant={button?.variant || 'contained'}
+                color={button?.color || 'grey'}
+                onClick={() => this.state.form?.handleClose && this.state.form.handleClose()}
+                startIcon={button?.icon ? <Icon src={button?.icon} /> : undefined}
+            >
+                {getTranslation(button?.label || 'cancelButtonText', button?.noTranslation)}
+            </Button>
+        );
+    }
+
     renderFormDialog(): React.JSX.Element | null {
         if (!this.state.form || !this.state.form.schema) {
             return null;
+        }
+        let buttons: React.JSX.Element[];
+        if (this.state.form.buttons) {
+            buttons = [];
+            this.state.form.buttons.forEach((button: ActionButton | 'apply' | 'cancel'): void => {
+                if (button === 'apply' || (button as ActionButton).type === 'apply') {
+                    buttons.push(this.getOkButton(button));
+                } else {
+                    buttons.push(this.getCancelButton(button));
+                }
+            });
+        } else {
+            buttons = [this.getOkButton(), this.getCancelButton()];
         }
         return (
             <Dialog
@@ -523,7 +572,9 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                         socket={this.props.socket as AdminConnection}
                         onChange={(data: Record<string, any>) => {
                             console.log('handleFormChange', { data });
-                            const form: CommunicationForm | null | undefined = { ...this.state.form };
+                            const form: CommunicationForm & { handleClose?: (data?: Record<string, any>) => void } = {
+                                ...this.state.form,
+                            };
                             if (form) {
                                 form.data = data;
                                 this.setState({ form });
@@ -536,25 +587,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                         dateFormat={this.props.dateFormat}
                     />
                 </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() =>
-                            this.state.form?.handleClose && this.state.form.handleClose(this.state.form?.data)
-                        }
-                        autoFocus
-                    >
-                        {getTranslation('okButtonText')}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="grey"
-                        onClick={() => this.state.form?.handleClose && this.state.form.handleClose()}
-                    >
-                        {getTranslation('cancelButtonText')}
-                    </Button>
-                </DialogActions>
+                <DialogActions>{buttons}</DialogActions>
             </Dialog>
         );
     }

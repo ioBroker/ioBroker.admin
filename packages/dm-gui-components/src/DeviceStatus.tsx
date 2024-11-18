@@ -147,6 +147,7 @@ export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Eleme
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             {status.battery === 'charging' ? <BatteryCharging50Icon /> : <BatteryFullIcon />}
                             {status.battery !== 'charging' ? (
+                                // @ts-expect-error fixed in dm-utils
                                 status.battery.includes('V') || status.battery.includes('mV') ? (
                                     <p style={{ fontSize: 'small', margin: 0 }}>{status.battery}</p>
                                 ) : (
