@@ -29,7 +29,14 @@ import {
 
 import { Close, Check } from '@mui/icons-material';
 
-import type { Connection, AdminConnection, ThemeName, ThemeType, IobTheme } from '@iobroker/adapter-react-v5';
+import {
+    type Connection,
+    type AdminConnection,
+    type ThemeName,
+    type ThemeType,
+    type IobTheme,
+    I18n,
+} from '@iobroker/adapter-react-v5';
 import { type ConfigItemPanel } from '@iobroker/json-config';
 import type {
     ActionBase,
@@ -64,6 +71,8 @@ export type CommunicationProps = {
 
 interface CommunicationForm {
     title?: string | null | undefined;
+    label?: string | null | undefined; // same as title
+    noTranslation?: boolean; // Do not translate title/label
     schema?: ConfigItemPanel;
     data?: Record<string, any>;
     handleClose?: (data?: Record<string, any>) => void;
@@ -146,6 +155,8 @@ interface DmActionResponse extends DmResponse {
  * Device List Component
  */
 class Communication<P extends CommunicationProps, S extends CommunicationState> extends Component<P, S> {
+    private responseTimeout: ReturnType<typeof setTimeout> | null = null;
+
     // eslint-disable-next-line react/no-unused-class-component-methods
     instanceHandler: (action: ActionBase) => () => void;
 
@@ -221,6 +232,13 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         }
     }
 
+    componentWillUnmount(): void {
+        if (this.responseTimeout) {
+            clearTimeout(this.responseTimeout);
+            this.responseTimeout = null;
+        }
+    }
+
     // eslint-disable-next-line class-methods-use-this
     loadData(): void {
         console.error('loadData not implemented');
@@ -229,11 +247,21 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
     sendActionToInstance = (command: `dm:${string}`, messageToSend: Message, refresh?: () => void): void => {
         const send = async (): Promise<void> => {
             this.setState({ showSpinner: true });
+            this.responseTimeout = setTimeout(() => {
+                this.setState({ showSpinner: false });
+                window.alert(I18n.t('ra_No response from the backend'));
+            }, 5000);
+
             const response: DmActionResponse = await this.props.socket.sendTo(
                 this.props.selectedInstance,
                 command,
                 messageToSend,
             );
+
+            if (this.responseTimeout) {
+                clearTimeout(this.responseTimeout);
+                this.responseTimeout = null;
+            }
 
             const type: string = response.type;
             console.log(`Response: ${response.type}`);
@@ -253,6 +281,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                         ),
                                     ),
                             },
+                            showSpinner: false,
                         });
                     }
                     break;
@@ -275,6 +304,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                         ),
                                     ),
                             },
+                            showSpinner: false,
                         });
                     }
                     break;
@@ -298,6 +328,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                         );
                                     }),
                             },
+                            showSpinner: false,
                         });
                     }
                     break;
@@ -306,9 +337,9 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     if (response.progress) {
                         if (this.state.progress) {
                             const progress = { ...this.state.progress, ...response.progress };
-                            this.setState({ progress });
+                            this.setState({ progress, showSpinner: false });
                         } else {
-                            this.setState({ progress: response.progress });
+                            this.setState({ progress: response.progress, showSpinner: false });
                         }
                     }
                     this.sendActionToInstance('dm:actionProgress', { origin: response.origin }, refresh);
@@ -335,9 +366,10 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     }
                     if (response.result.error) {
                         console.error(`Error: ${response.result.error.message}`);
-                        this.setState({ showToast: response.result.error.message });
+                        this.setState({ showToast: response.result.error.message, showSpinner: false });
+                    } else {
+                        this.setState({ showSpinner: false });
                     }
-                    this.setState({ showSpinner: false });
                     break;
 
                 default:
@@ -466,7 +498,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
     }
 
     renderFormDialog(): React.JSX.Element | null {
-        if (!this.state.form || !this.state.form.schema || !this.state.form.data) {
+        if (!this.state.form || !this.state.form.schema) {
             return null;
         }
         return (
@@ -475,12 +507,19 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 onClose={() => this.state.form?.handleClose && this.state.form.handleClose()}
                 hideBackdrop
             >
-                {this.state.form?.title ? <DialogTitle>{getTranslation(this.state.form?.title)}</DialogTitle> : null}
+                {this.state.form?.title ? (
+                    <DialogTitle>
+                        {getTranslation(
+                            this.state.form?.label || this.state.form?.title,
+                            this.state.form.noTranslation,
+                        )}
+                    </DialogTitle>
+                ) : null}
                 <DialogContent>
                     <JsonConfig
                         instanceId={this.props.selectedInstance}
                         schema={this.state.form.schema}
-                        data={this.state.form.data}
+                        data={this.state.form.data || {}}
                         socket={this.props.socket as AdminConnection}
                         onChange={(data: Record<string, any>) => {
                             console.log('handleFormChange', { data });
@@ -545,13 +584,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
     }
 
     renderSpinner(): React.JSX.Element | null {
-        if (
-            !this.state.showSpinner &&
-            !this.state.progress?.open &&
-            !this.state.message &&
-            !this.state.confirm &&
-            !this.state.form
-        ) {
+        if (!this.state.showSpinner) {
             return null;
         }
         return (
@@ -839,13 +872,13 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
             <>
                 {this.renderSnackbar()}
                 {this.renderContent()}
-                {this.renderSpinner()}
                 {this.renderConfirmDialog()}
                 {this.renderMessageDialog()}
                 {this.renderFormDialog()}
                 {this.renderProgressDialog()}
                 {this.renderConfirmationDialog()}
                 {this.renderInputDialog()}
+                {this.renderSpinner()}
             </>
         );
     }

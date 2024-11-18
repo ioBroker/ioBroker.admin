@@ -256,6 +256,7 @@ let language: ioBroker.Languages;
 export function getTranslation(
     /** Text to translate */
     text: ioBroker.StringOrTranslated,
+    noTranslation?: boolean,
 ): string {
     language = language || I18n.getLanguage();
 
@@ -263,5 +264,5 @@ export function getTranslation(
         return text[language] || text.en;
     }
 
-    return I18n.t(text);
+    return noTranslation ? text : I18n.t(text);
 }
