@@ -49,7 +49,7 @@ const styles: Record<string, any> = {
     okTitle: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#6fd56f' : '#007c00',
     }),
-    errorText: (theme: IobTheme): React.CSSProperties => ({
+    errorText: (theme: IobTheme): any => ({
         color: theme.palette.mode === 'dark' ? '#e39191' : '#b62020',
         mb: '30px',
     }),
