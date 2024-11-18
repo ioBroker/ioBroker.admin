@@ -1084,47 +1084,54 @@ Special input for ports. It checks automatically if port is used by other instan
 
 (admin >= 7.1.0) Show control or information from the state
 
-| Property         | Description                                                                                                                   |
-|------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| `oid`            | Which object ID should be taken for the controlling. The ID is without "adapter.X." prefix                                    |
-| `system`         | If true, the state will be taken from system.adapter.XX.I. and not from XX.I                                                  |
-| `control`        | How the value of the state should be shown: `text`, `html`, `input`, `slider`, `select`, `button`, `switch`, `number`         |
-| `controlled`     | If true, the state will be shown as switch, select, button, slider or text input. Used only if no control property is defined |
-| `unit`           | Add unit to the value                                                                                                         |
-| `trueText`       | this text will be shown if the value is true                                                                                  |
-| `trueTextStyle`  | Style of the text if the value is true                                                                                        |
-| `falseText`      | this text will be shown if the value is false or if the control is a "button"                                                 |
-| `falseTextStyle` | Style of the text if the value is false or if the control is a "button"                                                       |
-| `trueImage`      | This image will be shown if the value is true                                                                                 |
-| `falseImage`     | This image will be shown if the value is false or if the control is a "button"                                                |
-| `min`            | Minimum value for control type slider or number                                                                               |
-| `max`            | Maximum value for control type slider or number                                                                               |
-| `step`           | Step value for control type slider or number                                                                                  |
-| `controlDelay`   | delay in ms for slider or number                                                                                              |
-| `variant`        | Variant of button: `contained`, `outlined`, `text`                                                                            |
-| `readOnly`       | Defines if the control is read-only                                                                                           |
+| Property         | Description                                                                                                                          |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `oid`            | Which object ID should be taken for the controlling. The ID is without `adapter.X.` prefix                                           |
+| `system`         | If true, the state will be taken from `system.adapter.X.` and not from `adapter.X`                                                   |
+| `foreign`        | The `oid` is absolute and no need to add `adapter.X` or `system.adapter.X.` to oid                                                   |
+| `control`        | How the value of the state should be shown: `text`, `html`, `input`, `slider`, `select`, `button`, `switch`, `number`                |
+| `controlled`     | If true, the state will be shown as switch, select, button, slider or text input. Used only if no control property is defined        |
+| `unit`           | Add unit to the value                                                                                                                |
+| `trueText`       | this text will be shown if the value is true                                                                                         |
+| `trueTextStyle`  | Style of the text if the value is true                                                                                               |
+| `falseText`      | this text will be shown if the value is false or if the control is a "button"                                                        |
+| `falseTextStyle` | Style of the text if the value is false or if the control is a "button"                                                              |
+| `trueImage`      | This image will be shown if the value is true                                                                                        |
+| `falseImage`     | This image will be shown if the value is false or if the control is a "button"                                                       |
+| `min`            | Minimum value for control type slider or number                                                                                      |
+| `max`            | Maximum value for control type slider or number                                                                                      |
+| `step`           | Step value for control type slider or number                                                                                         |
+| `controlDelay`   | delay in ms for slider or number                                                                                                     |
+| `variant`        | Variant of button: `contained`, `outlined`, `text`                                                                                   |
+| `readOnly`       | Defines if the control is read-only                                                                                                  |
+| `narrow`         | Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label |
+| `blinkOnUpdate`  | Value should blink when updated (true or color)                                                                                      |
+| `size`           | Font size: small, normal, large or number                                                                                            |
+| `addColon`       | Add to label the colon at the end if not exist in label                                                                              |
+| `labelIcon`      | Base64 icon for label                                                                                                                |
 
 ### `staticInfo`
 
 (admin >= 7.3.3) Shows static information in preformatted form, like "Title: value unit"
 This control is used mostly in dynamic forms 
 
-| Property          | Description                                                                                                                                     |
-|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `data`            | Value to be shown                                                                                                                               |
-| `label`           | Label for the value (could be multi-language)                                                                                                   |
-| `unit`            | (optional) unit (could be multi-language)                                                                                                       |
-| `narrow`          | (optional) Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label |
-| `addColon`        | (optional) Add to label the colon at the end if not exist in label                                                                              |
-| `blinkOnUpdate`   | (optional) Value should blink when updated (true or color)                                                                                      |
-| `blink`           | (optional) Value should blink continuously (true or color)                                                                                      |
-| `styleLabel`      | (optional) React CSS Styles                                                                                                                     |
-| `styleValue`      | (optional) React CSS Styles                                                                                                                     |
-| `styleUnit`       | (optional) React CSS Styles                                                                                                                     |
-| `copyToClipboard` | (optional) Show copy to clipboard button for value                                                                                              |
-| `labelIcon`       | (optional) base64 icon for label                                                                                                                |
-| `size`            | (optional) font size: small, normal, large or number                                                                                            |
-| `highlight`       | (optional) Highlight line on mouse over                                                                                                         |
+| Property            | Description                                                                                                                                     |
+|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `data`              | Value to be shown                                                                                                                               |
+| `label`             | Label for the value (could be multi-language)                                                                                                   |
+| `unit`              | (optional) unit (could be multi-language)                                                                                                       |
+| `narrow`            | (optional) Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label |
+| `addColon`          | (optional) Add to label the colon at the end if not exist in label                                                                              |
+| `blinkOnUpdate`     | (optional) Value should blink when updated (true or color)                                                                                      |
+| `blink`             | (optional) Value should blink continuously (true or color)                                                                                      |
+| `styleLabel`        | (optional) React CSS Styles                                                                                                                     |
+| `styleValue`        | (optional) React CSS Styles                                                                                                                     |
+| `styleUnit`         | (optional) React CSS Styles                                                                                                                     |
+| `copyToClipboard`   | (optional) Show copy to clipboard button for value                                                                                              |
+| `labelIcon`         | (optional) base64 icon for label                                                                                                                |
+| `size`              | (optional) font size: small, normal, large or number                                                                                            |
+| `highlight`         | (optional) Highlight line on mouse over                                                                                                         |
+| `booleanAsCheckbox` | (optional) Show boolean values as checkbox                                                                                                      |
 
 ### `deviceManager`
 

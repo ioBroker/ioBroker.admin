@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import { Box } from '@mui/material';
+import { Box, Checkbox } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
 import { I18n, Icon, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
@@ -166,10 +166,25 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
             if (this.props.isFloatComma) {
                 valueTxt = valueTxt.replace('.', ',');
             }
-        } else {
+        } else if (!this.props.schema.booleanAsCheckbox || typeof this.props.schema.data !== 'boolean') {
             valueTxt = this.props.schema.data.toString();
         }
-        if (valueTxt.startsWith('data:image/')) {
+
+        if (this.props.schema.booleanAsCheckbox && typeof this.props.schema.data === 'boolean') {
+            value = (
+                <Checkbox
+                    checked={!!value}
+                    disabled
+                    size={
+                        this.props.schema.size === 'small'
+                            ? 'small'
+                            : this.props.schema.size === 'large'
+                              ? 'large'
+                              : undefined
+                    }
+                />
+            );
+        } else if (valueTxt.startsWith('data:image/')) {
             value = (
                 <div style={{ ...styles.value, ...styles.valueImage, ...(this.props.schema.styleValue || undefined) }}>
                     <Icon src={valueTxt} />
@@ -178,6 +193,7 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
         } else {
             value = <div style={{ ...styles.value, ...(this.props.schema.styleValue || undefined) }}>{valueTxt}</div>;
         }
+
         if (this.props.schema.blinkOnUpdate && this.props.schema.blink) {
             const style1 = valueBlinkOnce(this.props.theme, true, this.props.schema.blinkOnUpdate);
             const style2 = valueBlink(this.props.theme, this.props.schema.blink);
@@ -256,7 +272,7 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
         };
         if (this.props.schema.highlight) {
             boxStyle['&:hover'] = {
-                backgroundColor: this.props.themeType === 'dark' ? '#11111180' : '#eeeeee80',
+                backgroundColor: this.props.themeType === 'dark' ? '#51515180' : '#b8b8b880',
             };
         }
 
