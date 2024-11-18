@@ -75,9 +75,15 @@ interface CommunicationForm {
     title?: ioBroker.StringOrTranslated | null | undefined;
     label?: ioBroker.StringOrTranslated | null | undefined; // same as title
     noTranslation?: boolean; // Do not translate title/label
-    schema?: JsonFormSchema;
+    schema: JsonFormSchema;
     data?: Record<string, any>;
     buttons?: (ActionButton | 'apply' | 'cancel')[];
+}
+
+interface CommunicationFormInState extends CommunicationForm {
+    handleClose?: (data?: Record<string, any>) => void;
+    originalData: string;
+    changed: boolean;
 }
 
 interface InputAction extends ActionBase {
@@ -98,7 +104,7 @@ export type CommunicationState = {
         message: string;
         handleClose: (confirmation?: boolean) => void;
     } | null;
-    form: (CommunicationForm & { handleClose?: (data?: Record<string, any>) => void }) | null;
+    form: CommunicationFormInState | null;
     progress: {
         open: boolean;
         progress: number;
@@ -314,9 +320,22 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 case 'form':
                     console.log('Form received');
                     if (response.form) {
+                        const data: Record<string, any> | undefined = response.form.data;
+                        const originalData: Record<string, any> = {};
+                        if (data) {
+                            Object.keys(data).forEach(key => {
+                                if (data[key] !== undefined) {
+                                    originalData[key] = data[key];
+                                }
+                            });
+                        }
+                        response.form.data = JSON.parse(JSON.stringify(originalData)) as Record<string, any>;
+
                         this.setState({
                             form: {
                                 ...response.form,
+                                changed: false,
+                                originalData: JSON.stringify(originalData),
                                 handleClose: (data: any) =>
                                     this.setState({ form: null }, () => {
                                         console.log(`Form ${JSON.stringify(data)}`);
@@ -506,6 +525,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         return (
             <Button
                 key="apply"
+                disabled={!this.state.form?.changed}
                 variant={button?.variant || 'contained'}
                 color={button?.color || 'primary'}
                 onClick={() => this.state.form?.handleClose && this.state.form.handleClose(this.state.form?.data)}
@@ -572,11 +592,12 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                         socket={this.props.socket as AdminConnection}
                         onChange={(data: Record<string, any>) => {
                             console.log('handleFormChange', { data });
-                            const form: CommunicationForm & { handleClose?: (data?: Record<string, any>) => void } = {
-                                ...this.state.form,
+                            const form: CommunicationFormInState = {
+                                ...(this.state.form as CommunicationFormInState),
                             };
                             if (form) {
                                 form.data = data;
+                                form.changed = JSON.stringify(data) !== form.originalData;
                                 this.setState({ form });
                             }
                         }}
@@ -686,6 +707,42 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         );
     }
 
+    onShowInputOk(): void {
+        if (!this.state.showInput) {
+            return;
+        }
+
+        const showInput = this.state.showInput;
+        this.setState({ showInput: null }, () => {
+            if (showInput.deviceId) {
+                this.sendActionToInstance(
+                    'dm:deviceAction',
+                    {
+                        actionId: showInput.id,
+                        deviceId: showInput.deviceId,
+                        value:
+                            showInput.inputBefore?.type === 'checkbox'
+                                ? !!this.state.inputValue
+                                : showInput.inputBefore?.type === 'number'
+                                  ? parseFloat(this.state.inputValue as string) || 0
+                                  : this.state.inputValue,
+                    },
+                    showInput.refresh,
+                );
+            } else {
+                this.sendActionToInstance('dm:instanceAction', {
+                    actionId: showInput.id,
+                    value:
+                        showInput.inputBefore?.type === 'checkbox'
+                            ? !!this.state.inputValue
+                            : showInput.inputBefore?.type === 'number'
+                              ? parseFloat(this.state.inputValue as string) || 0
+                              : this.state.inputValue,
+                });
+            }
+        });
+    }
+
     renderInputDialog(): React.JSX.Element | null {
         if (!this.state.showInput || !this.state.showInput.inputBefore) {
             return null;
@@ -745,6 +802,11 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                             fullWidth
                             value={this.state.inputValue}
                             onChange={e => this.setState({ inputValue: e.target.value })}
+                            onKeyUp={(e: React.KeyboardEvent) => {
+                                if (e.key === 'Enter') {
+                                    this.onShowInputOk();
+                                }
+                            }}
                         />
                     ) : null}
                     {this.state.showInput.inputBefore.type === 'checkbox' ? (
@@ -791,7 +853,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                 <Grid2>
                                     <Slider
                                         value={typeof this.state.inputValue === 'number' ? this.state.inputValue : 0}
-                                        onChange={(event: Event, newValue: number) =>
+                                        onChange={(_event: Event, newValue: number) =>
                                             this.setState({ inputValue: newValue })
                                         }
                                     />
@@ -848,41 +910,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                         variant="contained"
                         disabled={okDisabled}
                         color="primary"
-                        onClick={() => {
-                            if (!this.state.showInput) {
-                                return;
-                            }
-
-                            const showInput = this.state.showInput;
-                            this.setState({ showInput: null }, () => {
-                                if (showInput.deviceId) {
-                                    this.sendActionToInstance(
-                                        'dm:deviceAction',
-                                        {
-                                            actionId: showInput.id,
-                                            deviceId: showInput.deviceId,
-                                            value:
-                                                showInput.inputBefore?.type === 'checkbox'
-                                                    ? !!this.state.inputValue
-                                                    : showInput.inputBefore?.type === 'number'
-                                                      ? parseFloat(this.state.inputValue as string) || 0
-                                                      : this.state.inputValue,
-                                        },
-                                        showInput.refresh,
-                                    );
-                                } else {
-                                    this.sendActionToInstance('dm:instanceAction', {
-                                        actionId: showInput.id,
-                                        value:
-                                            showInput.inputBefore?.type === 'checkbox'
-                                                ? !!this.state.inputValue
-                                                : showInput.inputBefore?.type === 'number'
-                                                  ? parseFloat(this.state.inputValue as string) || 0
-                                                  : this.state.inputValue,
-                                    });
-                                }
-                            });
-                        }}
+                        onClick={() => this.onShowInputOk()}
                         startIcon={<Check />}
                     >
                         {getTranslation('yesButtonText')}
