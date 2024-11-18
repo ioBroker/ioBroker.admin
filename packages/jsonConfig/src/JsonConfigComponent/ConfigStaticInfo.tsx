@@ -91,6 +91,7 @@ function valueBlink(theme: IobTheme, color?: string | boolean): any {
 const styles: Record<string, any> = {
     label: {
         fontWeight: 'bold',
+        whiteSpace: 'nowrap',
     },
     valueImage: {
         maxHeight: '100%',
@@ -169,6 +170,7 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
         } else if (!this.props.schema.booleanAsCheckbox || typeof this.props.schema.data !== 'boolean') {
             valueTxt = this.props.schema.data.toString();
         }
+        let multiLine = false;
 
         if (this.props.schema.booleanAsCheckbox && typeof this.props.schema.data === 'boolean') {
             value = (
@@ -191,7 +193,37 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
                 </div>
             );
         } else {
-            value = <div style={{ ...styles.value, ...(this.props.schema.styleValue || undefined) }}>{valueTxt}</div>;
+            const valStyle: React.CSSProperties = { ...styles.value, ...(this.props.schema.styleValue || undefined) };
+            if (this.props.schema.html) {
+                value = (
+                    <div
+                        style={valStyle}
+                        dangerouslySetInnerHTML={{ __html: valueTxt }}
+                    />
+                );
+            } else {
+                if (Array.isArray(this.props.schema.data)) {
+                    multiLine = true;
+                    value = (
+                        <div style={valStyle}>
+                            {this.props.schema.data.map((it, i) => (
+                                <div key={i}>
+                                    {typeof it === 'object' || it === null || it === undefined
+                                        ? JSON.stringify(it)
+                                        : it}
+                                </div>
+                            ))}
+                        </div>
+                    );
+                } else {
+                    if (valueTxt.includes('\n')) {
+                        multiLine = true;
+                        value = <div style={valStyle}>{Utils.renderTextWithA(valueTxt)}</div>;
+                    } else {
+                        value = <div style={valStyle}>{valueTxt}</div>;
+                    }
+                }
+            }
         }
 
         if (this.props.schema.blinkOnUpdate && this.props.schema.blink) {
@@ -274,6 +306,9 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
             boxStyle['&:hover'] = {
                 backgroundColor: this.props.themeType === 'dark' ? '#51515180' : '#b8b8b880',
             };
+        }
+        if (multiLine) {
+            divStyle.alignItems = 'top';
         }
 
         return (

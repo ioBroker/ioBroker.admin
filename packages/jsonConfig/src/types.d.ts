@@ -472,6 +472,8 @@ export interface ConfigItemStaticInfo extends Omit<ConfigItem, 'data'> {
     highlight?: boolean;
     /** Show boolean values as checkbox */
     booleanAsCheckbox?: boolean;
+    /** Show string values as HTML */
+    html?: boolean;
 }
 
 export interface ConfigItemRoom extends ConfigItem {
