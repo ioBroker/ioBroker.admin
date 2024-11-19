@@ -49,6 +49,9 @@
         "url": "https://github.com/ioBroker/iobroker.admin/issues"
     },
     "homepage": "https://github.com/ioBroker/iobroker.admin#readme",
+    "optionalDependencies": {
+        "@rollup/rollup-linux-x64-gnu": "*"
+    },
     "dependencies": {
         "@emotion/react": "^11.13.3",
         "@emotion/styled": "^11.13.0",
