@@ -1,4 +1,9 @@
 # Older changes
+## 7.2.4 (2024-10-08)
+
+-   (@GermanBluefox) Corrected some GUI errors
+-   (@GermanBluefox) Ignore error by opening `0_userdata.0`
+
 ## 7.2.0 (2024-10-01)
 
 -   (@GermanBluefox) Added the check of well-known passwords for the linux systems
