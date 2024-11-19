@@ -5,7 +5,8 @@
     "scripts": {
         "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && craco start",
         "lint": "eslint -c eslint.config.mjs src",
-        "build": "craco build",
+        "patch-webpack": "node ../tasks --patch-webpack",
+        "build": "npm run patch-webpack && craco build",
         "check-ts": "tsc --noEmit --checkJS false",
         "tsc": "tsc --project tsconfig.json",
         "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}",
