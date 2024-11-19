@@ -84,6 +84,9 @@
         "semver": "^7.6.3",
         "tsconfig-paths-webpack-plugin": "^4.1.0"
     },
+    "resolutions": {
+        "webpack": "^5.96.1"
+    },
     "proxya": "http://127.0.0.1:8081",
     "plugins": [
         [
