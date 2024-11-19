@@ -11,7 +11,7 @@ import {
     Utils,
 } from '@iobroker/adapter-react-v5';
 import {
-    type BackEndCommandGeneric,
+    type BackEndCommand,
     type BackEndCommandOpenLink,
     type ConfigItemPanel,
     JsonConfigComponent,
@@ -233,7 +233,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                     data={this.state.data}
                     onError={(error?: boolean) => this.setState({ error })}
                     onChange={(data: Record<string, any>) => this.setState({ data })}
-                    onBackEndCommand={(command?: BackEndCommandGeneric) => {
+                    onBackEndCommand={(command?: BackEndCommand) => {
                         if (command.schema) {
                             this.setState({ schema: command.schema, data: command.data || this.state.data });
                         }
@@ -242,7 +242,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                             this.getGui();
                         }
                         if (command.command === 'link') {
-                            this.props.onLink(command as BackEndCommandOpenLink);
+                            this.props.onLink(command);
                         }
                     }}
                     embedded

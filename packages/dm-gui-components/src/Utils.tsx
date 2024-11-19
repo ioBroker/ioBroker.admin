@@ -4,6 +4,7 @@ import type { ControlBase } from '@iobroker/dm-utils/build/types/base';
 import type { ActionBase } from '@iobroker/dm-utils/build/types/api';
 import {
     Add,
+    Article,
     Bluetooth,
     BluetoothDisabled,
     Delete,
@@ -36,6 +37,30 @@ import {
 
 import { I18n, Icon } from '@iobroker/adapter-react-v5';
 
+/**
+ * Get Icon by font-awesome name. Do not use these name, use names from getIconByName
+ *
+ * @param icon font-awesome icon name
+ * Only following font-awesome icons are supported:
+ * - fa-trash-can, fa-trash
+ * - fa-pen
+ * - fa-redo-alt
+ * - fa-plus
+ * - fa-qrcode, qrcode
+ * - fa-wifi
+ * - fa-wifi-slash
+ * - fa-bluetooth
+ * - fa-bluetooth-slash
+ * - fa-eye
+ * - fa-search
+ * - fa-unlink
+ * - fa-link
+ * - fa-search-location
+ * - fa-play
+ * - fa-stop
+ * - fa-pause
+ * @param color color of the icon
+ */
 function getFaIcon(icon: string, color?: string): React.JSX.Element | null {
     const iconStyle = icon
         .split(' ')
@@ -93,21 +118,41 @@ function getFaIcon(icon: string, color?: string): React.JSX.Element | null {
     if (iconStyle.includes('fa-pause')) {
         return <Pause style={{ color }} />;
     }
-    if (iconStyle.includes('forward')) {
-        return <FastForward style={{ color }} />;
-    }
-    if (iconStyle.includes('rewind')) {
-        return <FastRewind style={{ color }} />;
-    }
-    if (iconStyle.includes('users') || iconStyle.includes('group')) {
-        return <Group style={{ color }} />;
-    }
-    if (iconStyle.includes('user')) {
-        return <Person style={{ color }} />;
-    }
     return <QuestionMark style={{ color }} />;
 }
 
+/**
+ * Get Icon by name or by action
+ *
+ * @param name action name
+ * possible action or icon names are
+ * - edit, rename
+ * - delete
+ * - refresh
+ * - newDevice, new, add
+ * - discover, search
+ * - unpairDevice, unpair
+ * - pairDevice, pair
+ * - identify
+ * - play
+ * - stop
+ * - pause
+ * - forward, next
+ * - rewind, previous
+ * - lamp, light
+ * - backlight
+ * - dimmer
+ * - socket
+ * - settings
+ * - users, group
+ * - user
+ * - qrcode
+ * - identify
+ * - info
+ * - lines
+ * @param altName icon name
+ * @param color color of the icon
+ */
 function getIconByName(name: string, altName?: string, color?: string): React.JSX.Element | null {
     if (name === 'edit' || name === 'rename' || altName === 'edit' || altName === 'rename') {
         return <Edit style={{ color }} />;
@@ -185,6 +230,9 @@ function getIconByName(name: string, altName?: string, color?: string): React.JS
     if (name === 'info' || altName === 'info') {
         return <Info style={{ color }} />;
     }
+    if (name === 'lines' || altName === 'lines') {
+        return <Article style={{ color }} />;
+    }
     return <QuestionMark style={{ color }} />;
 }
 
@@ -256,6 +304,7 @@ let language: ioBroker.Languages;
 export function getTranslation(
     /** Text to translate */
     text: ioBroker.StringOrTranslated,
+    noTranslation?: boolean,
 ): string {
     language = language || I18n.getLanguage();
 
@@ -263,5 +312,5 @@ export function getTranslation(
         return text[language] || text.en;
     }
 
-    return I18n.t(text);
+    return noTranslation ? text : I18n.t(text);
 }

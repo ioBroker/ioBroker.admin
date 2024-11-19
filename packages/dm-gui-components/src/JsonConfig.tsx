@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import type { Connection, AdminConnection, ThemeName, ThemeType, IobTheme } from '@iobroker/adapter-react-v5';
-import { JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
+import { JsonConfigComponent, type ConfigItemPanel, type ConfigItemTabs } from '@iobroker/json-config';
 
 interface JsonConfigDmProps {
     instanceId: string;
     socket: Connection;
-    schema: ConfigItemPanel;
+    schema: ConfigItemPanel | ConfigItemTabs;
     data: Record<string, any>;
     onChange: (data: Record<string, any>) => void;
     themeName: ThemeName;

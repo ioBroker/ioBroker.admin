@@ -12,15 +12,15 @@ const styles: {
     primary: (theme: IobTheme) => React.CSSProperties;
     secondary: (theme: IobTheme) => React.CSSProperties;
 } = {
-    fullWidth: (theme: IobTheme) => ({
+    fullWidth: (theme: IobTheme): React.CSSProperties => ({
         width: '100%',
         backgroundColor: theme.palette.mode === 'dark' ? '#FFF' : '#000',
         borderStyle: 'hidden',
     }),
-    primary: (theme: IobTheme) => ({
+    primary: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.primary.main,
     }),
-    secondary: (theme: IobTheme) => ({
+    secondary: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.secondary.main,
     }),
 };

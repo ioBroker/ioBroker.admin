@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import { Box } from '@mui/material';
+import { Box, Checkbox } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
 import { I18n, Icon, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
@@ -91,6 +91,7 @@ function valueBlink(theme: IobTheme, color?: string | boolean): any {
 const styles: Record<string, any> = {
     label: {
         fontWeight: 'bold',
+        whiteSpace: 'nowrap',
     },
     valueImage: {
         maxHeight: '100%',
@@ -166,18 +167,65 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
             if (this.props.isFloatComma) {
                 valueTxt = valueTxt.replace('.', ',');
             }
-        } else {
+        } else if (!this.props.schema.booleanAsCheckbox || typeof this.props.schema.data !== 'boolean') {
             valueTxt = this.props.schema.data.toString();
         }
-        if (valueTxt.startsWith('data:image/')) {
+        let multiLine = false;
+
+        if (this.props.schema.booleanAsCheckbox && typeof this.props.schema.data === 'boolean') {
+            value = (
+                <Checkbox
+                    checked={!!value}
+                    disabled
+                    size={
+                        this.props.schema.size === 'small'
+                            ? 'small'
+                            : this.props.schema.size === 'large'
+                              ? 'large'
+                              : undefined
+                    }
+                />
+            );
+        } else if (valueTxt.startsWith('data:image/')) {
             value = (
                 <div style={{ ...styles.value, ...styles.valueImage, ...(this.props.schema.styleValue || undefined) }}>
                     <Icon src={valueTxt} />
                 </div>
             );
         } else {
-            value = <div style={{ ...styles.value, ...(this.props.schema.styleValue || undefined) }}>{valueTxt}</div>;
+            const valStyle: React.CSSProperties = { ...styles.value, ...(this.props.schema.styleValue || undefined) };
+            if (this.props.schema.html) {
+                value = (
+                    <div
+                        style={valStyle}
+                        dangerouslySetInnerHTML={{ __html: valueTxt }}
+                    />
+                );
+            } else {
+                if (Array.isArray(this.props.schema.data)) {
+                    multiLine = true;
+                    value = (
+                        <div style={valStyle}>
+                            {this.props.schema.data.map((it, i) => (
+                                <div key={i}>
+                                    {typeof it === 'object' || it === null || it === undefined
+                                        ? JSON.stringify(it)
+                                        : it}
+                                </div>
+                            ))}
+                        </div>
+                    );
+                } else {
+                    if (valueTxt.includes('\n')) {
+                        multiLine = true;
+                        value = <div style={valStyle}>{Utils.renderTextWithA(valueTxt)}</div>;
+                    } else {
+                        value = <div style={valStyle}>{valueTxt}</div>;
+                    }
+                }
+            }
         }
+
         if (this.props.schema.blinkOnUpdate && this.props.schema.blink) {
             const style1 = valueBlinkOnce(this.props.theme, true, this.props.schema.blinkOnUpdate);
             const style2 = valueBlink(this.props.theme, this.props.schema.blink);
@@ -243,21 +291,31 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
             );
         }
 
+        const boxStyle: Record<string, any> = {
+            '& .staticCopyButton': {
+                display: 'none',
+            },
+            '& .staticCopyButton:action': {
+                transform: 'scale(0.9)',
+            },
+            '&:hover .staticCopyButton': {
+                display: 'block',
+            },
+        };
+        if (this.props.schema.highlight) {
+            boxStyle['&:hover'] = {
+                backgroundColor: this.props.themeType === 'dark' ? '#51515180' : '#b8b8b880',
+            };
+        }
+        if (multiLine) {
+            divStyle.alignItems = 'top';
+        }
+
         return (
             <Box
                 component="div"
                 style={divStyle}
-                sx={{
-                    '& .staticCopyButton': {
-                        display: 'none',
-                    },
-                    '& .staticCopyButton:action': {
-                        transform: 'scale(0.9)',
-                    },
-                    '&:hover .staticCopyButton': {
-                        display: 'block',
-                    },
-                }}
+                sx={boxStyle}
             >
                 <div style={{ ...styles.label, ...(this.props.schema.styleLabel || undefined) }}>
                     {labelIcon}

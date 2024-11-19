@@ -80,7 +80,7 @@ const styles: Record<string, React.CSSProperties> = {
         display: 'flex',
         justifyContent: 'space-between',
     },
-    // highlight: (theme: IobTheme) => (theme.palette.mode === 'light'
+    // highlight: (theme: IobTheme): React.CSSProperties => (theme.palette.mode === 'light'
     //     ? {
     //         color: theme.palette.secondary.main,
     //         // backgroundColor: lighten(theme.palette.secondary.light, 0.85),

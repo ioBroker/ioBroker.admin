@@ -32,13 +32,13 @@ const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
-    accordionSummary: (theme: IobTheme) => ({
+    accordionSummary: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
     }),
     accordionTitle: {
         // fontWeight: 'bold',
     },
-    toolbar: (theme: IobTheme) => ({
+    toolbar: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
         borderRadius: '3px',
     }),

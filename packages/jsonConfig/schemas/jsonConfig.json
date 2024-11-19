@@ -819,6 +819,42 @@
                     "description": "Defines if the control is read-only. Applied only to 'input', 'slider', 'select', 'button', 'switch', 'number'",
                     "type": "boolean"
                 },
+                "foreign": {
+                    "description": "The 'oid' is absolute and no need to add 'adapter.X' or 'system.adapter.X.' to oid",
+                    "type": "boolean"
+                },
+                "narrow": {
+                    "description": "With this flag, the value will appear just after the label",
+                    "type": "boolean"
+                },
+                "blinkOnUpdate": {
+                    "description": "Value should blink when updated (true or color). Only texts",
+                    "type": "boolean"
+                },
+                "size": {
+                    "description": "Font size: small, normal, large or number",
+                    "size": {
+                        "description": "Font size",
+                        "oneOf": [
+                            {
+                                "default": "normal",
+                                "type": "string",
+                                "enum": ["small", "normal", "large"]
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ]
+                    }
+                },
+                "addColon": {
+                    "description": "Add to label the colon at the end if not exist in label",
+                    "type": "boolean"
+                },
+                "labelIcon": {
+                    "description": "Base64 icon for label",
+                    "type": "string"
+                },
                 "label": true,
                 "type": true,
                 "xs": true,
@@ -3615,17 +3651,25 @@
                                     "description": "Base64 icon for label",
                                     "type": "string"
                                 },
+                                "highlight": {
+                                    "description": "Highlight line on mouse over",
+                                    "type": "boolean"
+                                },
+                                "booleanAsCheckbox": {
+                                    "description": "Show boolean values as checkbox",
+                                    "type": "boolean"
+                                },
+                                "html": {
+                                    "description": "Show string values as HTML",
+                                    "type": "boolean"
+                                },
                                 "size": {
                                     "description": "Font size",
                                     "oneOf": [
                                         {
                                             "default": "normal",
                                             "type": "string",
-                                            "enum": [
-                                                "small",
-                                                "normal",
-                                                "large"
-                                            ]
+                                            "enum": ["small", "normal", "large"]
                                         },
                                         {
                                             "type": "number"
@@ -6106,17 +6150,25 @@
                                                 "description": "Base64 icon for label",
                                                 "type": "string"
                                             },
+                                            "highlight": {
+                                                "description": "Highlight line on mouse over",
+                                                "type": "boolean"
+                                            },
+                                            "booleanAsCheckbox": {
+                                                "description": "Show boolean values as checkbox",
+                                                "type": "boolean"
+                                            },
+                                            "html": {
+                                                "description": "Show string values as HTML",
+                                                "type": "boolean"
+                                            },
                                             "size": {
                                                 "description": "Font size",
                                                 "oneOf": [
                                                     {
                                                         "default": "normal",
                                                         "type": "string",
-                                                        "enum": [
-                                                            "small",
-                                                            "normal",
-                                                            "large"
-                                                        ]
+                                                        "enum": ["small", "normal", "large"]
                                                     },
                                                     {
                                                         "type": "number"

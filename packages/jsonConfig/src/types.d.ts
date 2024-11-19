@@ -439,10 +439,10 @@ export interface ConfigItemStaticText extends Omit<ConfigItem, 'button'> {
     /** if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (it starts with `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`) . (Request via issue if you need more icons) */
     icon?: ConfigIconType;
     /** styles for the button */
-    controlStyle: CustomCSSProperties;
+    controlStyle?: CustomCSSProperties;
 }
 
-export interface ConfigItemStaticInfo extends ConfigItem {
+export interface ConfigItemStaticInfo extends Omit<ConfigItem, 'data'> {
     type: 'staticInfo';
     /** multi-language text or value */
     data: ioBroker.StringOrTranslated | number | boolean;
@@ -468,6 +468,12 @@ export interface ConfigItemStaticInfo extends ConfigItem {
     styleUnit?: CustomCSSProperties;
     /** Font size */
     size?: number | 'small' | 'normal' | 'large';
+    /** Highlight line on mouse over */
+    highlight?: boolean;
+    /** Show boolean values as checkbox */
+    booleanAsCheckbox?: boolean;
+    /** Show string values as HTML */
+    html?: boolean;
 }
 
 export interface ConfigItemRoom extends ConfigItem {
@@ -652,9 +658,11 @@ export interface ConfigItemSendTo extends Omit<ConfigItem, 'data'> {
 
 export interface ConfigItemState extends ConfigItem {
     type: 'state';
-    /** Describes, which object ID should be taken for the controlling. The ID is without "adapter.X." prefix */
+    /** Describes, which object ID should be taken for the controlling. The ID is without `ADAPTER.I.` prefix */
     oid: string;
-    /** If true, the state will be taken from system.adapter.XX.I. and not from XX.I */
+    /** The `oid` is absolute and no need to add `ADAPTER.I` or `system.adapter.ADAPTER.I.` to oid */
+    foreign?: boolean;
+    /** If true, the state will be taken from `system.adapter.ADAPTER.I` and not from `ADAPTER.I` */
     system?: boolean;
     /** How the value of the state should be shown */
     control?: 'text' | 'html' | 'input' | 'slider' | 'select' | 'button' | 'switch' | 'number';
@@ -686,6 +694,16 @@ export interface ConfigItemState extends ConfigItem {
     variant?: 'contained' | 'outlined' | 'text';
     /** Defines if the control is read-only. Applied only to 'input', 'slider', 'select', 'button', 'switch', 'number' */
     readOnly?: boolean;
+    /** Base64 icon */
+    labelIcon?: string;
+    /** Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label*/
+    narrow?: boolean;
+    /** Add to label the colon at the end if not exist in label */
+    addColon?: boolean;
+    /** Value should blink when updated (true or color) */
+    blinkOnUpdate?: boolean | string;
+    /** Font size */
+    size?: number | 'small' | 'normal' | 'large';
 }
 
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {
