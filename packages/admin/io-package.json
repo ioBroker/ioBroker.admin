@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.0",
+    "version": "7.4.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.1": {
+        "en": "Made improvement for JSONConfig components",
+        "de": "Hergestellte Verbesserung für JSONConfig Komponenten",
+        "ru": "Сделано улучшение для компонентов JSONConfig",
+        "pt": "Melhoria feita para componentes JSONConfig",
+        "nl": "Verbeterd voor JSONConfig componenten",
+        "fr": "Amélioration des composants JSONConfig",
+        "it": "Miglioramento fatto per i componenti JSONConfig",
+        "es": "Mejorado para componentes JSONConfig",
+        "pl": "Poprawiono komponenty JSONConfig",
+        "uk": "Виготовлено вдосконалення компонентів JSONConfig",
+        "zh-cn": "改进JSONConfig组件"
+      },
       "7.4.0": {
         "en": "Added new JsonConfig control: staticInfo",
         "de": "Neue JsonConfig Steuerung hinzugefügt: statische Info",
@@ -96,19 +109,6 @@
         "pl": "poprawić wygląd i standaryzację niektórych komunikatów ostrzegawczych\nw przycisku powiadomienia należy wskazać ostrzeżenia \"alert\" za pomocą koloru odznaki\numożliwić rozróżnienie powiadomień o ostrzeżeniach od innych powiadomień o przyjmowaniu\nnie otwieraj automatycznie okna powiadomień bez interakcji z użytkownikiem\nstałe logowanie jako klient gniazda jest teraz rzucanie prawdziwych błędów",
         "uk": "поліпшення зовнішнього вигляду та стандартизації деяких попереджувальних повідомлень\nвкажіть попередження `alert` за кольором значка на кнопках повідомлення\nдозволяє відрізнити повідомлення про оповіщення та інші повідомлення про хост\nне автоматично відкрийте діалогове вікно повідомлення без взаємодії користувача\nвиправлений вхід як клієнт розетки тепер кидає реальні помилки",
         "zh-cn": "改进一些警告信息的外观和标准化\n以通知按钮上的徽章颜色表示“警告”\n允许区分提醒通知和主机通知的其他通知\n没有用户交互, 不自动打开通知对话框\n当套接字客户端现在丢出真实错误时, 固定记录"
-      },
-      "7.1.2": {
-        "en": "fixed host base settings dialog",
-        "de": "feste host-basiseinstellungen dialog",
-        "ru": "диалог параметров базы фиксированного хоста",
-        "pt": "diálogo de configurações de base do host fixo",
-        "nl": "dialoogvenster met vaste basis-hostinstellingen",
-        "fr": "boîte de dialogue des paramètres de base de l'hôte fixe",
-        "it": "finestra di dialogo impostazioni base host fisso",
-        "es": "diálogo de configuración de base de host fijo",
-        "pl": "stałe okno ustawień bazy hosta",
-        "uk": "виправлені налаштування бази хост діалог",
-        "zh-cn": "固定主机基础设置对话框"
       }
     },
     "desc": {

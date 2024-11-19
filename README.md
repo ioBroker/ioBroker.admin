@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.1 (2024-11-19)
 
 -   (@GermanBluefox) Made improvement for JSONConfig components
 
@@ -110,11 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 -   (@GermanBluefox) Trying to fix a GUI build process
 -   (@GermanBluefox) Changed license icon
-
-### 7.2.4 (2024-10-08)
-
--   (@GermanBluefox) Corrected some GUI errors
--   (@GermanBluefox) Ignore error by opening `0_userdata.0`
 
 ## License
 
