@@ -170,8 +170,9 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`sendTo`:**](#sendto) Button that sends a request to an instance
 - [**`setState`:**](#setstate) Button that sets an instance's state
 - [**`slider`:**](#slider) Slider for selecting a value within a range (Admin 6 only)
-- [**`state`:**](#state) (admin >= 7.1.0) Show control or information from the state
+- [**`state`:**](#state) Show control or information from the state (admin >= 7.1.0)
 - [**`staticImage`:**](#staticimage) Displays a static image
+- [**`staticInfo`:**](#staticinfo) Shows static information in preformatted form, like "Title: value unit" (admin >= 7.3.3)
 - [**`staticLink`:**](#staticlink) Creates a static link
 - [**`staticText`:**](#statictext) Displays static text (e.g., description)
 - [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
