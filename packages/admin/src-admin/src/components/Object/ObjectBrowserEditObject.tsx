@@ -1542,11 +1542,16 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         const withAlias = obj._id.startsWith('alias.0') && obj.type === 'state';
         const fullWidth = obj.type !== 'state' || (obj.common.type !== 'number' && obj.common.type !== 'boolean');
 
+        let dialogStyle = styles.dialog;
+        if (window.innerWidth > 1920) {
+            dialogStyle = { ...dialogStyle, maxWidth: 'calc(100% - 150px)' };
+        }
+
         return (
             <Dialog
-                sx={{ '& .MuiPaper-root': styles.dialog }}
+                sx={{ '& .MuiPaper-root': dialogStyle }}
                 open={!0}
-                maxWidth="lg"
+                maxWidth="xl"
                 fullWidth={fullWidth}
                 fullScreen={false}
                 onClose={() => this.props.onClose()}

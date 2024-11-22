@@ -28,7 +28,10 @@ function patchModuleFederationPlugin() {
     if (!file.includes('if (!(compilation instanceof Compilation)) {')) {
         return;
     }
-    file = file.replace('if (!(compilation instanceof Compilation)) {', 'if (false && !(compilation instanceof Compilation)) {');
+    file = file.replace(
+        'if (!(compilation instanceof Compilation)) {',
+        'if (false && !(compilation instanceof Compilation)) {',
+    );
     writeFileSync(fileName, file);
 }
 
