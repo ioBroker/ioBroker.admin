@@ -15,7 +15,8 @@ const styles: Record<string, React.CSSProperties> = {
     },
     label: {
         width: '100%',
-        fontSize: 16,
+        fontSize: 14,
+        marginBottom: 2,
     },
     helper: {
         width: '100%',
@@ -193,6 +194,57 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                 />
             );
         }
+
+        let actionButton: React.JSX.Element | undefined;
+        let actionButtonStyle: React.CSSProperties | undefined;
+        if ((this.props.schema.readOnly || disabled) && this.props.schema.copyToClipboard) {
+            if (this.props.schema.minRows > 1) {
+                actionButtonStyle = {
+                    position: 'absolute',
+                    right: 3,
+                    top: 20,
+                    zIndex: 1000,
+                };
+            }
+            actionButton = (
+                <IconButton
+                    style={actionButtonStyle}
+                    size="small"
+                    onClick={() => {
+                        Utils.copyToClipboard(this.state.value);
+                        window.alert(I18n.t('ra_Copied'));
+                    }}
+                >
+                    <IconCopy />
+                </IconButton>
+            );
+        } else if (!this.props.schema.readOnly && !disabled && this.state.value && !this.props.schema.noClearButton) {
+            if (this.props.schema.minRows > 1) {
+                actionButtonStyle = {
+                    position: 'absolute',
+                    right: 3,
+                    top: 20,
+                    zIndex: 1000,
+                };
+            }
+            actionButton = (
+                <IconButton
+                    style={actionButtonStyle}
+                    size="small"
+                    onClick={() =>
+                        this.setState({ value: '', oldValue: this.state.value }, () =>
+                            this.onChange(this.props.attr, ''),
+                        )
+                    }
+                >
+                    <CloseIcon />
+                </IconButton>
+            );
+            if (this.props.schema.minRows <= 1) {
+                actionButton = <InputAdornment position="end">{actionButton}</InputAdornment>;
+            }
+        }
+
         if (this.props.schema.minRows > 1) {
             const helper = this.renderHelp(
                 this.props.schema.help,
@@ -200,7 +252,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                 this.props.schema.noTranslation,
             );
             return (
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', position: 'relative' }}>
                     {this.props.schema.label ? (
                         <div style={styles.label}>{this.getText(this.props.schema.label)}</div>
                     ) : null}
@@ -232,35 +284,6 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                         </div>
                     ) : null}
                 </div>
-            );
-        }
-        let actionButton: React.JSX.Element | undefined;
-        if ((this.props.schema.readOnly || disabled) && this.props.schema.copyToClipboard) {
-            actionButton = (
-                <IconButton
-                    size="small"
-                    onClick={() => {
-                        Utils.copyToClipboard(this.state.value);
-                        window.alert(I18n.t('ra_Copied'));
-                    }}
-                >
-                    <IconCopy />
-                </IconButton>
-            );
-        } else if (!this.props.schema.readOnly && !disabled && this.state.value && !this.props.schema.noClearButton) {
-            actionButton = (
-                <InputAdornment position="end">
-                    <IconButton
-                        size="small"
-                        onClick={() =>
-                            this.setState({ value: '', oldValue: this.state.value }, () =>
-                                this.onChange(this.props.attr, ''),
-                            )
-                        }
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                </InputAdornment>
             );
         }
 

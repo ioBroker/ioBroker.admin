@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### **WORK IN PROGRESS**
 
 -   (@GermanBluefox) Made improvement for JSONConfig components
+-   (@GermanBluefox) Added clear button to text area JSON config component
 
 ### 7.4.0 (2024-11-17)
 

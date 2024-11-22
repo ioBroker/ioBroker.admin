@@ -473,6 +473,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             alignItems: 'center',
             gap: 8,
             paddingLeft: 8,
+            paddingRight: 8,
             position: 'relative',
             minHeight: 60,
             color: '#000',
