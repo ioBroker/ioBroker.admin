@@ -20,8 +20,9 @@ class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAu
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        const selectOptions = this.props.schema.options.map((item: any) =>
-            typeof item === 'string' ? { label: item, value: item } : JSON.parse(JSON.stringify(item)),
+        const selectOptions: { label: string; value: string }[] = this.props.schema.options.map(
+            (item: { label: string; value: string } | string) =>
+                typeof item === 'string' ? { label: item, value: item } : JSON.parse(JSON.stringify(item)),
         );
 
         // if __different
@@ -42,7 +43,7 @@ class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAu
         }
 
         let item;
-        const options: (string | ConfigItemSelectOption)[] = JSON.parse(JSON.stringify(this.state.selectOptions));
+        const options: ConfigItemSelectOption[] = JSON.parse(JSON.stringify(this.state.selectOptions));
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (isIndeterminate) {
@@ -72,6 +73,27 @@ class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAu
                 freeSolo={!!this.props.schema.freeSolo}
                 value={item}
                 options={options}
+                isOptionEqualToValue={(option, value) => option.value === value.value}
+                filterOptions={(options: { value: string; label: string }[], params) => {
+                    const filtered = options.filter(option => {
+                        if (params.inputValue === '') {
+                            return true;
+                        }
+                        return (
+                            option.label.toLowerCase().includes(params.inputValue.toLowerCase()) ||
+                            option.value.toLowerCase().includes(params.inputValue.toLowerCase())
+                        );
+                    });
+
+                    if (this.props.schema.freeSolo && params.inputValue !== '') {
+                        filtered.push({
+                            label: params.inputValue,
+                            value: params.inputValue,
+                        });
+                    }
+
+                    return filtered;
+                }}
                 // autoComplete
                 onInputChange={e => {
                     if (!e || !this.props.schema.freeSolo) {
