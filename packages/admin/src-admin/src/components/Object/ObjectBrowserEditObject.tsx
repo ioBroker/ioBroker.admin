@@ -548,11 +548,12 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     async componentDidMount(): Promise<void> {
         // editSchemas is like 'iobobject://system.adapter.admin/native.schemas.specificObject'
 
-        // @ts-expect-error fixed in js-controller
-        const editSchemas: Record<string, IobUri> | undefined = this.props.obj.common.editSchemas as Record<
-            string,
-            EditSchemaTab
-        >;
+        const editSchemas: Record<string, IobUri> | undefined =
+            // @ts-expect-error fixed in js-controller
+            (this.props.obj?.common?.editSchemas as Record<string, IobUri>) ||
+            // @ts-expect-error fixed in js-controller
+            (this.props.obj?.editSchemas as Record<string, IobUri>);
+
         const customEditTabs: EditSchemaTabEditor[] = [];
 
         if (editSchemas) {
