@@ -1001,7 +1001,7 @@ export type BackEndCommandType = 'nop' | 'refresh' | 'link' | 'message';
 export interface BackEndCommandGeneric {
     command: BackEndCommandType;
     /** New GUI schema */
-    schema?: ConfigItemPanel;
+    schema?: ConfigItemPanel | ConfigItemTabs;
     /** New GUI data */
     data?: Record<string, any>;
     refresh?: boolean;

@@ -35,12 +35,16 @@ import {
     IconFx,
     UploadImage,
     type Connection,
+    type AdminConnection,
     type Translate,
     type ThemeType,
     type IobTheme,
+    Icon,
 } from '@iobroker/adapter-react-v5';
+import { JsonConfigComponent, type ConfigItemPanel, type ConfigItemTabs } from '@iobroker/json-config';
 
 import Editor from '../Editor';
+import type { IobUri, IobUriParsed } from '@/types';
 
 const styles: Record<string, any> = {
     divWithoutTitle: {
@@ -436,6 +440,18 @@ const DEFAULT_ROLES = [
     'weather.type',
 ] as const;
 
+interface EditSchemaTab {
+    json: ConfigItemPanel | ConfigItemTabs;
+    label?: ioBroker.StringOrTranslated;
+    /** Do not translate label */
+    noTranslation?: boolean;
+    path?: string; // path in object, like common or native.json
+    icon?: IobUri;
+    color?: string;
+    order?: number;
+    key?: string;
+}
+
 interface ObjectBrowserEditObjectProps {
     socket: Connection;
     obj: ioBroker.AnyObject;
@@ -457,6 +473,7 @@ interface ObjectBrowserEditObjectProps {
 interface ObjectBrowserEditObjectState {
     text: string;
     error: boolean;
+    customError: boolean;
     changed: boolean;
     readError: string;
     writeError: string;
@@ -468,6 +485,8 @@ interface ObjectBrowserEditObjectState {
     selectRead: boolean;
     selectWrite: boolean;
     newId: string;
+    customEditTabs?: EditSchemaTab[];
+    lang: ioBroker.Languages;
 }
 
 class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, ObjectBrowserEditObjectState> {
@@ -501,6 +520,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         this.state = {
             text: JSON.stringify(this.props.obj, null, 2),
             error: false,
+            customError: false,
             changed: false,
             readError: this.checkFunction(aliasRead, false),
             writeError: this.checkFunction(aliasWrite, true),
@@ -511,12 +531,254 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             selectRead: false,
             selectWrite: false,
             newId: '',
+            lang: I18n.getLanguage(),
         };
 
         this.originalObj = JSON.stringify(this.props.obj, null, 2);
     }
 
-    componentDidMount(): void {
+    /** Parse ioBroker URI */
+    static parseIobUri(uri: string): IobUriParsed {
+        const result: IobUriParsed = {
+            type: 'object',
+            address: '',
+        };
+        if (uri.startsWith('iobobject://')) {
+            result.type = 'object';
+            uri = uri.replace('iobobject://', '');
+            const parts = uri.split('/');
+            result.address = parts[0];
+            result.path = parts[1]; // native.schemas.myObject
+        } else if (uri.startsWith('iobstate://')) {
+            result.type = 'state';
+            uri = uri.replace('iobstate://', '');
+            const parts = uri.split('/');
+            result.address = parts[0];
+            result.path = parts[1]; // val, ts, lc, from, q, ...
+        } else if (uri.startsWith('iobfile://')) {
+            result.type = 'file';
+            uri = uri.replace('iobfile://', '');
+            const parts = uri.split('/');
+            result.address = parts.shift();
+            result.path = parts.join('/'); // main/img/hello.png
+        } else if (uri.startsWith('http://') || uri.startsWith('https://')) {
+            result.type = 'http';
+            result.address = uri; // https://googlw.com/path/uri?lakds=7889
+        } else if (uri.startsWith('data:')) {
+            // data:image/jpeg;base64,
+            result.type = 'base64';
+            result.address = uri; // data:image/jpeg;base64,...
+        } else {
+            // no protocol provided
+            const parts = uri.split('/');
+            if (parts.length === 2) {
+                result.address = parts[0];
+                result.path = parts[1];
+                if (result.path.includes('.')) {
+                    result.type = 'object';
+                } else if (result.path) {
+                    if (
+                        result.path === 'val' ||
+                        result.path === 'q' ||
+                        result.path === 'ack' ||
+                        result.path === 'ts' ||
+                        result.path === 'lc' ||
+                        result.path === 'from' ||
+                        result.path === 'user' ||
+                        result.path === 'expire' ||
+                        result.path === 'c'
+                    ) {
+                        result.type = 'state';
+                    } else if (
+                        result.path === 'common' ||
+                        result.path === 'native' ||
+                        result.path === 'from' ||
+                        result.path === 'acl' ||
+                        result.path === 'type'
+                    ) {
+                        result.type = 'object';
+                    } else {
+                        throw new Error(`Unknown path: ${result.path}`);
+                    }
+                } else {
+                    result.type = 'state';
+                }
+            } else if (parts.length === 1) {
+                result.address = parts[0];
+                result.type = 'state';
+            } else {
+                // it is a file
+                result.address = parts.shift();
+                result.type = 'file';
+                result.path = parts.join('/');
+            }
+        }
+        return result;
+    }
+
+    static iobUriToString(uri: IobUriParsed): IobUri {
+        if (uri.type === 'object') {
+            return `iobobject://${uri.address}/${uri.path || ''}`;
+        }
+        if (uri.type === 'state') {
+            return `iobstate://${uri.address}`;
+        }
+        if (uri.type === 'file') {
+            return `iobfile://${uri.address}/${uri.path || ''}`;
+        }
+        if (uri.type === 'http') {
+            return uri.address;
+        }
+        if (uri.path?.includes('/')) {
+            return `iobfile://${uri.address}/${uri.path}`;
+        }
+        if (uri.path) {
+            return `iobobject://${uri.address}/${uri.path}`;
+        }
+        return `iobstate://${uri.address}`;
+    }
+
+    static getAttr(obj: Record<string, any> | null | undefined, path: string[] | undefined, _position?: number): any {
+        _position = _position || 0;
+        if (obj === undefined || obj === null || !path) {
+            return obj;
+        }
+        if (path.length - 1 === _position) {
+            return obj[path[_position]];
+        }
+        if (typeof obj === 'object') {
+            return ObjectBrowserEditObject.getAttr(obj[path[_position]], path, _position + 1);
+        }
+        return undefined;
+    }
+
+    static setAttr(
+        obj: Record<string, any> | null | undefined,
+        path: string[] | undefined,
+        value: any,
+        _position?: number,
+    ): any {
+        _position = _position || 0;
+        if (obj === undefined || obj === null || !path) {
+            return value;
+        }
+        if (path.length - 1 === _position) {
+            obj[path[_position]] = value;
+            return obj;
+        }
+        if (typeof obj === 'object') {
+            return ObjectBrowserEditObject.setAttr(obj[path[_position]], path, value, _position + 1);
+        }
+    }
+
+    static async readIobUri(uri: IobUri | IobUriParsed, socket: Connection): Promise<any> {
+        if (typeof uri === 'string') {
+            uri = ObjectBrowserEditObject.parseIobUri(uri);
+        }
+        if (uri.type === 'object') {
+            const obj: ioBroker.Object | null | undefined = await socket.getObject(uri.address);
+            return ObjectBrowserEditObject.getAttr(obj, uri.path?.split('.'));
+        }
+        if (uri.type === 'state') {
+            const state: ioBroker.State | null | undefined = await socket.getState(uri.address);
+            if (!uri.path) {
+                return state;
+            }
+            return (state as Record<string, any>)?.[uri.path];
+        }
+        if (uri.type === 'file') {
+            return await socket.readFile(uri.address, uri.path, true);
+        }
+        if (uri.type === 'http') {
+            return fetch(uri.address)
+                .then(response => response.text())
+                .then(text => {
+                    if ((text.startsWith('{') && text.endsWith('}')) || (text.startsWith('[') && text.endsWith(']'))) {
+                        try {
+                            return JSON.parse(text);
+                        } catch {
+                            // ignore
+                        }
+                    }
+                    return text;
+                });
+        }
+        throw new Error(`Unknown type: ${uri.type}`);
+    }
+
+    async componentDidMount(): Promise<void> {
+        // editSchema is like 'iobobject://system.adapter.admin/native.schemas.specificObject'
+
+        // @ts-expect-error fixed in js-controller
+        const editSchema: Record<string, IobUri> | undefined = this.props.obj.common.editSchema as Record<
+            string,
+            EditSchemaTab
+        >;
+        const customEditTabs: EditSchemaTab[] = [];
+
+        if (editSchema) {
+            if (typeof editSchema === 'object') {
+                const schemas = Object.keys(editSchema);
+                for (let i = 0; i < schemas.length; i++) {
+                    try {
+                        const schema: EditSchemaTab | undefined = await ObjectBrowserEditObject.readIobUri(
+                            editSchema[schemas[i]],
+                            this.props.socket,
+                        );
+                        schema.key = schemas[i];
+                        if (schema && typeof schema === 'object') {
+                            // we expect { json: ..., title: {}, icon?, color? }
+                            customEditTabs.push(schema);
+                        }
+                        if (schema.icon) {
+                            try {
+                                const parsed = ObjectBrowserEditObject.parseIobUri(schema.icon);
+                                if (parsed.type !== 'base64' && parsed.type !== 'http') {
+                                    const icon = await ObjectBrowserEditObject.readIobUri(parsed, this.props.socket);
+                                    if (icon) {
+                                        schema.icon = icon;
+                                    }
+                                }
+                            } catch (e) {
+                                console.warn(`Cannot get icon for schema from "${schema.icon}": ${e}`);
+                                schema.icon = undefined;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(`Cannot get edit schema for "${editSchema[schemas[i]]}": ${e}`);
+                    }
+                }
+                if (customEditTabs.length) {
+                    customEditTabs.sort((a, b) => {
+                        if (a.order !== undefined && b.order !== undefined) {
+                            return a.order - b.order;
+                        }
+                        if (a.order !== undefined) {
+                            return -1;
+                        }
+                        if (b.order !== undefined) {
+                            return 1;
+                        }
+                        return a.key > b.key ? 1 : -1;
+                    });
+                    this.setState({ customEditTabs });
+                }
+            } else {
+                console.warn(`Invalid edit schema for "${editSchema}": expected object, but got ${typeof editSchema}`);
+            }
+        }
+
+        if (
+            this.state.tab !== 'object' &&
+            this.state.tab !== 'common' &&
+            (this.state.tab !== 'alias' ||
+                (this.state.tab === 'alias' &&
+                    (!this.props.obj._id.startsWith('alias.0') || this.props.obj.type !== 'state'))) &&
+            !customEditTabs.find(tab => tab.key === this.state.tab)
+        ) {
+            this.setState({ tab: 'object' });
+        }
+
         void this.props.socket.subscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
@@ -524,7 +786,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         void this.props.socket.unsubscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
-    onObjectUpdated = (id: string, obj: ioBroker.AnyObject): void => {
+    onObjectUpdated = (_id: string, obj: ioBroker.AnyObject): void => {
         if (this.originalObj !== JSON.stringify(obj, null, 2)) {
             this.originalObj = JSON.stringify(obj, null, 2);
             if (!this.state.changed) {
@@ -710,12 +972,102 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
     }
 
+    static getPartOfObject(text: string, path?: string): any {
+        if (path) {
+            return ObjectBrowserEditObject.getAttr(JSON.parse(text), path.split('.'));
+        }
+        return JSON.parse(text);
+    }
+
+    static setPartOfObject(text: string, value: any, path?: string): string {
+        let data = ObjectBrowserEditObject.getPartOfObject(text, path);
+        if (data === undefined) {
+            return text;
+        }
+        data = ObjectBrowserEditObject.setAttr(data, path.split('.'), value);
+        return JSON.stringify(data, null, 2);
+    }
+
+    renderCustomPanel(): JSX.Element | null {
+        const tab = this.state.customEditTabs?.find(it => it.key === this.state.tab);
+        if (!tab) {
+            return null;
+        }
+        let data: Record<string, any>;
+        try {
+            data = ObjectBrowserEditObject.getPartOfObject(this.state.text, tab.path);
+        } catch (e) {
+            console.error(`Cannot get data for ${tab.path}: ${e}`);
+            return <div>{I18n.t('Cannot get data for %s: %s', tab.path, e)}</div>;
+        }
+
+        return (
+            <JsonConfigComponent
+                theme={this.props.theme}
+                socket={this.props.socket as unknown as AdminConnection}
+                themeName={this.props.theme.palette.mode}
+                themeType={this.props.theme.palette.mode}
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
+                schema={tab.json}
+                data={data}
+                onChange={data => {
+                    try {
+                        const text = ObjectBrowserEditObject.setPartOfObject(this.state.text, data, tab.path);
+                        this.onChange(text);
+                    } catch (e) {
+                        console.error(`Cannot set data for ${tab.path}: ${e}`);
+                    }
+                }}
+                adapterName={''}
+                instance={0}
+                onError={(error: boolean): void => {
+                    console.warn(`Error in JSON editor: ${error}`);
+                    if (this.state.customError !== error) {
+                        this.setState({ customError: error });
+                    }
+                }}
+            />
+        );
+    }
+
+    renderCustomTab(tab: EditSchemaTab): JSX.Element {
+        let style: React.CSSProperties | undefined;
+        if (tab.color) {
+            style = {
+                backgroundColor: tab.color,
+                color: Utils.invertColor(tab.color, true),
+            };
+        }
+        const label: string | React.JSX.Element =
+            tab.label && typeof tab.label === 'object'
+                ? tab.label[this.state.lang] || tab.label.en
+                : tab.noTranslation
+                  ? (tab.label as string) || tab.key
+                  : this.props.t((tab.label as string) || tab.key);
+
+        return (
+            <Tab
+                disabled={this.state.error || this.state.customError}
+                value={tab.key}
+                label={label}
+                style={style}
+                icon={
+                    <Icon
+                        src={tab.icon}
+                        style={styles.funcIcon}
+                    />
+                }
+            />
+        );
+    }
+
     renderTabs(): JSX.Element {
         return (
             <Tabs
                 style={styles.tabsPadding}
                 value={this.state.tab}
-                onChange={(e, tab) => {
+                onChange={(_e, tab) => {
                     ((window as any)._localStorage || window.localStorage).setItem(
                         `${this.props.dialogName || 'App'}.editTab`,
                         tab,
@@ -750,18 +1102,22 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             >
                 <Tab
                     value="common"
+                    disabled={this.state.customError || this.state.error}
                     label={this.props.t('Common')}
                 />
                 <Tab
                     value="object"
+                    disabled={this.state.customError}
                     label={this.props.t('Object data')}
                 />
                 {this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' && (
                     <Tab
+                        disabled={this.state.customError || this.state.error}
                         value="alias"
                         label={this.props.t('Alias')}
                     />
                 )}
+                {this.state.customEditTabs?.map(tab => this.renderCustomTab(tab))}
             </Tabs>
         );
     }
@@ -1536,6 +1892,35 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
+    renderPanelObject(withAlias: boolean): React.JSX.Element {
+        return (
+            <div
+                style={{
+                    ...styles.divWithoutTitle,
+                    ...(withAlias ? styles.divWithoutTitleAndTab : undefined),
+                    ...(this.state.error ? styles.error : undefined),
+                }}
+                onKeyDown={e => {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.onUpdate();
+                    }
+                }}
+            >
+                <Editor
+                    value={this.state.text}
+                    onChange={newValue => this.onChange(newValue)}
+                    name="UNIQUE_ID_OF_DIV"
+                    themeType={this.props.themeType}
+                />
+                {this.state.showCommonDeleteMessage ? (
+                    <div style={styles.commonDeleteTip}>{I18n.t('common_delete_tip')}</div>
+                ) : null}
+            </div>
+        );
+    }
+
     render(): JSX.Element {
         const obj = this.props.obj;
 
@@ -1584,38 +1969,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         p: this.props.width === 'xs' && this.state.tab === 'object' ? '6px' : undefined,
                     }}
                 >
-                    {this.state.tab === 'object' ? (
-                        <div
-                            style={{
-                                ...styles.divWithoutTitle,
-                                ...(withAlias ? styles.divWithoutTitleAndTab : undefined),
-                                ...(this.state.error ? styles.error : undefined),
-                            }}
-                            onKeyDown={e => {
-                                if (e.ctrlKey && e.key === 'Enter') {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    this.onUpdate();
-                                }
-                            }}
-                        >
-                            <Editor
-                                value={this.state.text}
-                                onChange={newValue => this.onChange(newValue)}
-                                name="UNIQUE_ID_OF_DIV"
-                                themeType={this.props.themeType}
-                            />
-                            {this.state.showCommonDeleteMessage ? (
-                                <div style={styles.commonDeleteTip}>{I18n.t('common_delete_tip')}</div>
-                            ) : null}
-                        </div>
-                    ) : null}
+                    {this.state.tab === 'object' ? this.renderPanelObject(withAlias) : null}
                     {this.state.tab === 'alias' &&
                     this.props.obj._id.startsWith('alias.0') &&
                     this.props.obj.type === 'state'
                         ? this.renderAliasEdit()
                         : null}
                     {this.state.tab === 'common' ? this.renderCommonEdit() : null}
+                    {this.renderCustomPanel()}
                     {this.renderSelectDialog()}
                 </DialogContent>
                 <DialogActions sx={styles.wrapperButton}>
@@ -1645,7 +2006,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     )}
                     <Button
                         variant="contained"
-                        disabled={this.state.error || !this.state.changed}
+                        disabled={this.state.error || !this.state.changed || this.state.customError}
                         onClick={() => this.onUpdate()}
                         startIcon={this.props.width === 'xs' ? undefined : <IconCheck />}
                         color="primary"
