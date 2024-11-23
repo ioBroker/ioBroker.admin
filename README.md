@@ -92,6 +92,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Made improvement for JSONConfig components
 -   (@GermanBluefox) Added clear button to text area JSON config component
 
+### 7.4.1 (2024-11-19)
+
+-   (@GermanBluefox) Made improvement for JSONConfig components
+
 ### 7.4.0 (2024-11-17)
 
 -   (@GermanBluefox) Added new JsonConfig control: staticInfo
@@ -111,11 +115,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 -   (@GermanBluefox) Trying to fix a GUI build process
 -   (@GermanBluefox) Changed license icon
-
-### 7.2.4 (2024-10-08)
-
--   (@GermanBluefox) Corrected some GUI errors
--   (@GermanBluefox) Ignore error by opening `0_userdata.0`
 
 ## License
 
