@@ -41,7 +41,7 @@ export {
 } from './Components/ObjectBrowser';
 export { Router } from './Components/Router';
 export { SaveCloseButtons } from './Components/SaveCloseButtons';
-export { Schedule } from './Components/Schedule';
+export { Schedule, type ScheduleConfig } from './Components/Schedule';
 export { SelectWithIcon } from './Components/SelectWithIcon';
 export { TabContainer } from './Components/TabContainer';
 export { TabContent } from './Components/TabContent';
