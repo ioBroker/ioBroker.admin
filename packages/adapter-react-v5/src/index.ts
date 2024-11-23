@@ -108,6 +108,17 @@ export {
     pattern2RegEx,
 } from './LegacyConnection';
 
+export {
+    type IobUri,
+    type IobUriType,
+    type IobUriParsed,
+    getAttrInObject,
+    setAttrInObject,
+    iobUriToString,
+    iobUriParse,
+    iobUriRead,
+} from './Components/IobUri';
+
 export type {
     Translate,
     ConnectionProps,

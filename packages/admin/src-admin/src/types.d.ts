@@ -85,7 +85,3 @@ export interface NotificationsCount {
     /** Number of present notify and info notifications */
     other: number;
 }
-export type IobUri = string;
-export type IobUriType = 'object' | 'state' | 'file' | 'http' | 'base64';
-
-export type IobUriParsed = { type: IobUriType; address: string; path?: string };

@@ -40,11 +40,15 @@ import {
     type ThemeType,
     type IobTheme,
     Icon,
+    iobUriParse,
+    iobUriRead,
+    type IobUri,
+    setAttrInObject,
+    getAttrInObject,
 } from '@iobroker/adapter-react-v5';
 import { JsonConfigComponent, type ConfigItemPanel, type ConfigItemTabs } from '@iobroker/json-config';
 
 import Editor from '../Editor';
-import type { IobUri, IobUriParsed } from '@/types';
 
 const styles: Record<string, any> = {
     divWithoutTitle: {
@@ -91,6 +95,7 @@ const styles: Record<string, any> = {
     commonTabWrapper: {
         flexFlow: 'wrap',
         display: 'flex',
+        gap: 8,
     },
     commonWrapper: {
         width: 500,
@@ -449,6 +454,9 @@ interface EditSchemaTab {
     icon?: IobUri;
     color?: string;
     order?: number;
+}
+
+interface EditSchemaTabEditor extends EditSchemaTab {
     key?: string;
 }
 
@@ -485,7 +493,7 @@ interface ObjectBrowserEditObjectState {
     selectRead: boolean;
     selectWrite: boolean;
     newId: string;
-    customEditTabs?: EditSchemaTab[];
+    customEditTabs?: EditSchemaTabEditor[];
     lang: ioBroker.Languages;
 }
 
@@ -537,194 +545,25 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         this.originalObj = JSON.stringify(this.props.obj, null, 2);
     }
 
-    /** Parse ioBroker URI */
-    static parseIobUri(uri: string): IobUriParsed {
-        const result: IobUriParsed = {
-            type: 'object',
-            address: '',
-        };
-        if (uri.startsWith('iobobject://')) {
-            result.type = 'object';
-            uri = uri.replace('iobobject://', '');
-            const parts = uri.split('/');
-            result.address = parts[0];
-            result.path = parts[1]; // native.schemas.myObject
-        } else if (uri.startsWith('iobstate://')) {
-            result.type = 'state';
-            uri = uri.replace('iobstate://', '');
-            const parts = uri.split('/');
-            result.address = parts[0];
-            result.path = parts[1]; // val, ts, lc, from, q, ...
-        } else if (uri.startsWith('iobfile://')) {
-            result.type = 'file';
-            uri = uri.replace('iobfile://', '');
-            const parts = uri.split('/');
-            result.address = parts.shift();
-            result.path = parts.join('/'); // main/img/hello.png
-        } else if (uri.startsWith('http://') || uri.startsWith('https://')) {
-            result.type = 'http';
-            result.address = uri; // https://googlw.com/path/uri?lakds=7889
-        } else if (uri.startsWith('data:')) {
-            // data:image/jpeg;base64,
-            result.type = 'base64';
-            result.address = uri; // data:image/jpeg;base64,...
-        } else {
-            // no protocol provided
-            const parts = uri.split('/');
-            if (parts.length === 2) {
-                result.address = parts[0];
-                result.path = parts[1];
-                if (result.path.includes('.')) {
-                    result.type = 'object';
-                } else if (result.path) {
-                    if (
-                        result.path === 'val' ||
-                        result.path === 'q' ||
-                        result.path === 'ack' ||
-                        result.path === 'ts' ||
-                        result.path === 'lc' ||
-                        result.path === 'from' ||
-                        result.path === 'user' ||
-                        result.path === 'expire' ||
-                        result.path === 'c'
-                    ) {
-                        result.type = 'state';
-                    } else if (
-                        result.path === 'common' ||
-                        result.path === 'native' ||
-                        result.path === 'from' ||
-                        result.path === 'acl' ||
-                        result.path === 'type'
-                    ) {
-                        result.type = 'object';
-                    } else {
-                        throw new Error(`Unknown path: ${result.path}`);
-                    }
-                } else {
-                    result.type = 'state';
-                }
-            } else if (parts.length === 1) {
-                result.address = parts[0];
-                result.type = 'state';
-            } else {
-                // it is a file
-                result.address = parts.shift();
-                result.type = 'file';
-                result.path = parts.join('/');
-            }
-        }
-        return result;
-    }
-
-    static iobUriToString(uri: IobUriParsed): IobUri {
-        if (uri.type === 'object') {
-            return `iobobject://${uri.address}/${uri.path || ''}`;
-        }
-        if (uri.type === 'state') {
-            return `iobstate://${uri.address}`;
-        }
-        if (uri.type === 'file') {
-            return `iobfile://${uri.address}/${uri.path || ''}`;
-        }
-        if (uri.type === 'http') {
-            return uri.address;
-        }
-        if (uri.path?.includes('/')) {
-            return `iobfile://${uri.address}/${uri.path}`;
-        }
-        if (uri.path) {
-            return `iobobject://${uri.address}/${uri.path}`;
-        }
-        return `iobstate://${uri.address}`;
-    }
-
-    static getAttr(obj: Record<string, any> | null | undefined, path: string[] | undefined, _position?: number): any {
-        _position = _position || 0;
-        if (obj === undefined || obj === null || !path) {
-            return obj;
-        }
-        if (path.length - 1 === _position) {
-            return obj[path[_position]];
-        }
-        if (typeof obj === 'object') {
-            return ObjectBrowserEditObject.getAttr(obj[path[_position]], path, _position + 1);
-        }
-        return undefined;
-    }
-
-    static setAttr(
-        obj: Record<string, any> | null | undefined,
-        path: string[] | undefined,
-        value: any,
-        _position?: number,
-    ): any {
-        _position = _position || 0;
-        if (obj === undefined || obj === null || !path) {
-            return value;
-        }
-        if (path.length - 1 === _position) {
-            obj[path[_position]] = value;
-            return obj;
-        }
-        if (typeof obj === 'object') {
-            return ObjectBrowserEditObject.setAttr(obj[path[_position]], path, value, _position + 1);
-        }
-    }
-
-    static async readIobUri(uri: IobUri | IobUriParsed, socket: Connection): Promise<any> {
-        if (typeof uri === 'string') {
-            uri = ObjectBrowserEditObject.parseIobUri(uri);
-        }
-        if (uri.type === 'object') {
-            const obj: ioBroker.Object | null | undefined = await socket.getObject(uri.address);
-            return ObjectBrowserEditObject.getAttr(obj, uri.path?.split('.'));
-        }
-        if (uri.type === 'state') {
-            const state: ioBroker.State | null | undefined = await socket.getState(uri.address);
-            if (!uri.path) {
-                return state;
-            }
-            return (state as Record<string, any>)?.[uri.path];
-        }
-        if (uri.type === 'file') {
-            return await socket.readFile(uri.address, uri.path, true);
-        }
-        if (uri.type === 'http') {
-            return fetch(uri.address)
-                .then(response => response.text())
-                .then(text => {
-                    if ((text.startsWith('{') && text.endsWith('}')) || (text.startsWith('[') && text.endsWith(']'))) {
-                        try {
-                            return JSON.parse(text);
-                        } catch {
-                            // ignore
-                        }
-                    }
-                    return text;
-                });
-        }
-        throw new Error(`Unknown type: ${uri.type}`);
-    }
-
     async componentDidMount(): Promise<void> {
-        // editSchema is like 'iobobject://system.adapter.admin/native.schemas.specificObject'
+        // editSchemas is like 'iobobject://system.adapter.admin/native.schemas.specificObject'
 
         // @ts-expect-error fixed in js-controller
-        const editSchema: Record<string, IobUri> | undefined = this.props.obj.common.editSchema as Record<
+        const editSchemas: Record<string, IobUri> | undefined = this.props.obj.common.editSchemas as Record<
             string,
             EditSchemaTab
         >;
-        const customEditTabs: EditSchemaTab[] = [];
+        const customEditTabs: EditSchemaTabEditor[] = [];
 
-        if (editSchema) {
-            if (typeof editSchema === 'object') {
-                const schemas = Object.keys(editSchema);
+        if (editSchemas) {
+            if (typeof editSchemas === 'object') {
+                const schemas = Object.keys(editSchemas);
                 for (let i = 0; i < schemas.length; i++) {
                     try {
-                        const schema: EditSchemaTab | undefined = await ObjectBrowserEditObject.readIobUri(
-                            editSchema[schemas[i]],
+                        const schema: EditSchemaTabEditor | undefined = (await iobUriRead(
+                            editSchemas[schemas[i]],
                             this.props.socket,
-                        );
+                        )) as EditSchemaTab;
                         schema.key = schemas[i];
                         if (schema && typeof schema === 'object') {
                             // we expect { json: ..., title: {}, icon?, color? }
@@ -732,9 +571,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         }
                         if (schema.icon) {
                             try {
-                                const parsed = ObjectBrowserEditObject.parseIobUri(schema.icon);
+                                const parsed = iobUriParse(schema.icon);
                                 if (parsed.type !== 'base64' && parsed.type !== 'http') {
-                                    const icon = await ObjectBrowserEditObject.readIobUri(parsed, this.props.socket);
+                                    const icon = await iobUriRead(parsed, this.props.socket);
                                     if (icon) {
                                         schema.icon = icon;
                                     }
@@ -745,7 +584,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             }
                         }
                     } catch (e) {
-                        console.warn(`Cannot get edit schema for "${editSchema[schemas[i]]}": ${e}`);
+                        console.warn(`Cannot get edit schema for "${editSchemas[schemas[i]]}": ${e}`);
                     }
                 }
                 if (customEditTabs.length) {
@@ -764,7 +603,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     this.setState({ customEditTabs });
                 }
             } else {
-                console.warn(`Invalid edit schema for "${editSchema}": expected object, but got ${typeof editSchema}`);
+                console.warn(
+                    `Invalid edit schema for "${editSchemas}": expected object, but got ${typeof editSchemas}`,
+                );
             }
         }
 
@@ -974,17 +815,17 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
     static getPartOfObject(text: string, path?: string): any {
         if (path) {
-            return ObjectBrowserEditObject.getAttr(JSON.parse(text), path.split('.'));
+            return getAttrInObject(JSON.parse(text), path.split('.'));
         }
         return JSON.parse(text);
     }
 
     static setPartOfObject(text: string, value: any, path?: string): string {
-        let data = ObjectBrowserEditObject.getPartOfObject(text, path);
+        let data: any = JSON.parse(text);
         if (data === undefined) {
             return text;
         }
-        data = ObjectBrowserEditObject.setAttr(data, path.split('.'), value);
+        data = setAttrInObject(data, path.split('.'), value);
         return JSON.stringify(data, null, 2);
     }
 
@@ -999,6 +840,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         } catch (e) {
             console.error(`Cannot get data for ${tab.path}: ${e}`);
             return <div>{I18n.t('Cannot get data for %s: %s', tab.path, e)}</div>;
+        }
+
+        if (!data) {
+            return <div>{I18n.t('Cannot get data for %s', tab.path)}</div>;
         }
 
         return (
@@ -1031,14 +876,23 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
-    renderCustomTab(tab: EditSchemaTab): JSX.Element {
+    renderCustomTab(tab: EditSchemaTabEditor, parsedObj: ioBroker.Object | null | undefined): JSX.Element {
         let style: React.CSSProperties | undefined;
+        if (!parsedObj) {
+            return null;
+        }
+        if (!getAttrInObject(parsedObj, tab.path?.split('.'))) {
+            // no part in object found
+            return null;
+        }
+
         if (tab.color) {
             style = {
                 backgroundColor: tab.color,
                 color: Utils.invertColor(tab.color, true),
             };
         }
+
         const label: string | React.JSX.Element =
             tab.label && typeof tab.label === 'object'
                 ? tab.label[this.state.lang] || tab.label.en
@@ -1052,17 +906,20 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 value={tab.key}
                 label={label}
                 style={style}
+                iconPosition="start"
                 icon={
-                    <Icon
-                        src={tab.icon}
-                        style={styles.funcIcon}
-                    />
+                    tab.icon ? (
+                        <Icon
+                            src={tab.icon}
+                            style={styles.funcIcon}
+                        />
+                    ) : undefined
                 }
             />
         );
     }
 
-    renderTabs(): JSX.Element {
+    renderTabs(parsedObj: ioBroker.Object | null | undefined): JSX.Element {
         return (
             <Tabs
                 style={styles.tabsPadding}
@@ -1117,7 +974,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         label={this.props.t('Alias')}
                     />
                 )}
-                {this.state.customEditTabs?.map(tab => this.renderCustomTab(tab))}
+                {this.state.customEditTabs?.map(tab => this.renderCustomTab(tab, parsedObj))}
             </Tabs>
         );
     }
@@ -1292,7 +1149,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             ...styles.commonWrapper,
                             width: this.props.width === 'xs' ? '100%' : undefined,
                             minWidth: this.props.width === 'xs' ? '100%' : undefined,
-                            gap: this.props.width === 'xs' ? '10px' : undefined,
+                            gap: this.props.width === 'xs' ? 10 : 8,
                             display: this.props.width === 'xs' ? 'flex' : undefined,
                             flexDirection: this.props.width === 'xs' ? 'column' : undefined,
                         }}
@@ -1302,7 +1159,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 variant="standard"
                                 disabled={disabled}
                                 label={t('Name')}
-                                style={{ ...styles.marginBlock, ...styles.textField }}
+                                style={{ ...styles.textField, marginTop: 8 }}
                                 fullWidth
                                 value={Utils.getObjectNameFromObj(json, I18n.getLanguage(), {}, false, true)}
                                 onChange={el => this.setCommonItem(json, 'name', el.target.value)}
@@ -1932,6 +1789,13 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             dialogStyle = { ...dialogStyle, maxWidth: 'calc(100% - 150px)' };
         }
 
+        let parsedObj: ioBroker.Object;
+        try {
+            parsedObj = JSON.parse(this.state.text);
+        } catch {
+            // ignore
+        }
+
         return (
             <Dialog
                 sx={{ '& .MuiPaper-root': dialogStyle }}
@@ -1961,12 +1825,23 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     </Box>
                 </DialogTitle>
 
-                {this.renderTabs()}
+                {this.renderTabs(parsedObj)}
                 {this.renderCopyDialog()}
 
                 <DialogContent
                     sx={{
-                        p: this.props.width === 'xs' && this.state.tab === 'object' ? '6px' : undefined,
+                        p:
+                            this.props.width === 'xs' && this.state.tab === 'object'
+                                ? '6px'
+                                : this.state.tab === 'object' ||
+                                    this.state.tab === 'common' ||
+                                    this.state.tab === 'alias'
+                                  ? '0 24px'
+                                  : '0 6px',
+                        overflow:
+                            this.state.tab === 'object' || this.state.tab === 'common' || this.state.tab === 'alias'
+                                ? undefined
+                                : 'hidden',
                     }}
                 >
                     {this.state.tab === 'object' ? this.renderPanelObject(withAlias) : null}
