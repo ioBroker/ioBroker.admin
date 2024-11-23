@@ -3,7 +3,7 @@
     "private": true,
     "homepage": ".",
     "scripts": {
-        "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && npm run patch-webpack && craco start",
+        "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && craco start",
         "lint": "eslint -c eslint.config.mjs src",
         "patch-webpack": "node ../tasks --patch-webpack",
         "build": "npm run patch-webpack && craco build",
