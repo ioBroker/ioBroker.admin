@@ -152,7 +152,7 @@ function padding(num: number): string {
     return `${num}`;
 }
 
-interface ScheduleConfig {
+export interface ScheduleConfig {
     time: {
         exactTime: boolean;
         start: string;
