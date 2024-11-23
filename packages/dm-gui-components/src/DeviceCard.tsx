@@ -346,10 +346,18 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             >
                 <CardHeader
                     sx={theme => ({
-                        backgroundColor: this.props.device.color || theme.palette.secondary.main,
-                        color: this.props.device.color
-                            ? Utils.invertColor(this.props.device.color, true)
-                            : theme.palette.secondary.contrastText,
+                        backgroundColor:
+                            this.props.device.color === 'primary'
+                                ? theme.palette.primary.main
+                                : theme.palette.secondary.main === 'secondary'
+                                  ? theme.palette.secondary.main
+                                  : this.props.device.color || theme.palette.secondary.main,
+                        color:
+                            this.props.device.color &&
+                            this.props.device.color !== 'primary' &&
+                            this.props.device.color !== 'secondary'
+                                ? Utils.invertColor(this.props.device.color, true)
+                                : theme.palette.secondary.contrastText,
                         maxWidth: 345,
                     })}
                     avatar={
@@ -465,6 +473,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             alignItems: 'center',
             gap: 8,
             paddingLeft: 8,
+            paddingRight: 8,
             position: 'relative',
             minHeight: 60,
             color: '#000',

@@ -3,7 +3,7 @@
     "private": true,
     "homepage": ".",
     "scripts": {
-        "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && craco start",
+        "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && npm run patch-webpack && craco start",
         "lint": "eslint -c eslint.config.mjs src",
         "patch-webpack": "node ../tasks --patch-webpack",
         "build": "npm run patch-webpack && craco build",
@@ -36,7 +36,7 @@
         "@foxriver76/iob-component-lib": "^0.1.6",
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
         "@iobroker/admin-component-easy-access": "^1.0.8",
-        "@iobroker/dm-utils": "^0.6.6",
+        "@iobroker/dm-utils": "^0.6.8",
         "@iobroker/socket-client": "^3.1.2",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^2.1.0",

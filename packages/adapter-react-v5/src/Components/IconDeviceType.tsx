@@ -237,8 +237,8 @@ export function getDeviceIcon(type: DeviceType, props?: IconProps): React.JSX.El
     if (SvgComponent) {
         return (
             <SvgComponent
-                style={props.style || undefined}
-                className={Utils.clsx(props.className, 'iconOwn')}
+                style={props?.style || undefined}
+                className={Utils.clsx(props?.className, 'iconOwn')}
             />
         );
     }

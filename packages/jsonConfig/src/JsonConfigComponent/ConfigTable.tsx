@@ -363,31 +363,24 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
         return (
             <ConfigPanel
-                index={idx + this.state.iteration}
+                DeviceManager={this.props.DeviceManager}
+                adapterName={this.props.adapterName}
+                alive={this.props.alive}
                 arrayIndex={idx}
                 changed={this.props.changed}
-                globalData={this.props.data}
-                socket={this.props.socket}
-                adapterName={this.props.adapterName}
-                instance={this.props.instance}
                 common={this.props.common}
-                alive={this.props.alive}
-                themeType={this.props.themeType}
-                themeName={this.props.themeName}
-                data={data}
-                table
                 custom
-                schema={schemaItem as ConfigItemPanel}
-                systemConfig={this.props.systemConfig}
-                dateFormat={this.props.dateFormat}
-                isFloatComma={this.props.isFloatComma}
-                imagePrefix={this.props.imagePrefix}
-                onCommandRunning={this.props.onCommandRunning}
-                forceUpdate={this.props.forceUpdate}
-                originalData={this.props.originalData}
                 customs={this.props.customs}
-                theme={this.props.theme}
-                DeviceManager={this.props.DeviceManager}
+                data={data}
+                dateFormat={this.props.dateFormat}
+                forceUpdate={this.props.forceUpdate}
+                globalData={this.props.data}
+                imagePrefix={this.props.imagePrefix}
+                index={idx + this.state.iteration}
+                instance={this.props.instance}
+                instanceObj={this.props.instanceObj}
+                isFloatComma={this.props.isFloatComma}
+                onBackEndCommand={this.props.onBackEndCommand}
                 onChange={(attr: string, valueChange: any) => {
                     const newObj: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
                     newObj[idx][attr] = valueChange;
@@ -396,8 +389,16 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                         this.onChangeWrapper(newObj, true);
                     });
                 }}
+                onCommandRunning={this.props.onCommandRunning}
                 onError={(error: string, attr?: string) => this.onError(error, attr)}
-                onBackEndCommand={this.props.onBackEndCommand}
+                originalData={this.props.originalData}
+                schema={schemaItem as ConfigItemPanel}
+                socket={this.props.socket}
+                systemConfig={this.props.systemConfig}
+                table
+                theme={this.props.theme}
+                themeName={this.props.themeName}
+                themeType={this.props.themeType}
             />
         );
     }

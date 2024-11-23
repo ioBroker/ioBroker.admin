@@ -279,6 +279,7 @@ const styles: Record<string, any> = {
         display: 'flex',
         marginRight: 'auto',
         overflowY: 'auto',
+        alignItems: 'center',
     },
 
     flexGrow: {

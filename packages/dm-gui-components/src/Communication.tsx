@@ -79,6 +79,7 @@ interface CommunicationForm {
     schema: JsonFormSchema;
     data?: Record<string, any>;
     buttons?: (ActionButton | 'apply' | 'cancel')[];
+    maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 interface CommunicationFormInState extends CommunicationForm {
@@ -576,6 +577,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 open={!0}
                 onClose={() => this.state.form?.handleClose && this.state.form.handleClose()}
                 hideBackdrop
+                maxWidth={this.state.form.maxWidth || 'md'}
             >
                 {this.state.form?.title ? (
                     <DialogTitle>

@@ -99,7 +99,9 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
         }
 
         let item;
-        const options = this.state.selectOptions ? JSON.parse(JSON.stringify(this.state.selectOptions)) : [];
+        const options: { value: string; label: string }[] = this.state.selectOptions
+            ? JSON.parse(JSON.stringify(this.state.selectOptions))
+            : [];
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_LABEL;
 
         if (isIndeterminate) {
@@ -155,8 +157,28 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                 fullWidth
                 freeSolo={!!this.props.schema.freeSolo}
                 options={options}
-                // autoComplete
-                getOptionLabel={option => option?.label ?? ''}
+                isOptionEqualToValue={(option, value) => option.value === value.value}
+                filterOptions={(options: { value: string; label: string }[], params) => {
+                    const filtered = options.filter(option => {
+                        if (params.inputValue === '') {
+                            return true;
+                        }
+                        return (
+                            option.label.toLowerCase().includes(params.inputValue.toLowerCase()) ||
+                            option.value.toLowerCase().includes(params.inputValue.toLowerCase())
+                        );
+                    });
+
+                    if (this.props.schema.freeSolo && params.inputValue !== '') {
+                        filtered.push({
+                            label: params.inputValue,
+                            value: params.inputValue,
+                        });
+                    }
+
+                    return filtered;
+                }}
+                getOptionLabel={(option: { value: string; label: string }): string => option?.label ?? ''}
                 onInputChange={e => {
                     if (!e || !this.props.schema.freeSolo) {
                         return;

@@ -53,6 +53,6 @@
     },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
-        "@iobroker/dm-utils": "^0.6.6"
+        "@iobroker/dm-utils": "^0.6.8"
     }
 }
