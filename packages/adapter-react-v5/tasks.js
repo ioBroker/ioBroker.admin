@@ -37,6 +37,7 @@ function copyAllFiles() {
             ['src/assets/lamp_ceiling.svg', 'src/assets/lamp_table.svg', 'src/assets/no_icon.svg'],
             'build/assets',
         );
+        copyFiles(['src/i18n/*.json'], 'i18n');
         // copyFiles(['README.md', 'LICENSE'], 'build');
         // copyFileSync('tasksExample.js', 'build/tasks.js');
         copyFiles(['src/*.css'], 'build');

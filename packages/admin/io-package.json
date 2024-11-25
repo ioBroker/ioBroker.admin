@@ -623,5 +623,190 @@
       },
       "native": {}
     }
-  ]
+    ],
+    "schemas": {
+        "systemConfig": {
+            "label": "System config",
+            "path": "common",
+            "json": {
+                "type": "panel",
+                "items": {
+                    "city": {
+                        "newLine": true,
+                        "type": "text",
+                        "label": "City",
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3
+                    },
+                    "country": {
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "max-length": 2,
+                        "type": "text",
+                        "label": "Country"
+                    },
+                    "address": {
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "text",
+                        "label": "Address"
+                    },
+                    "longitude": {
+                        "newLine": true,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "number",
+                        "label": "Longitude"
+                    },
+                    "latitude": {
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "number",
+                        "label": "Latitude"
+                    },
+                    "language": {
+                        "newLine": true,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "language",
+                        "label": "Language"
+                    },
+                    "tempUnit": {
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "select",
+                        "noTranslation": true,
+                        "options": [
+                            {
+                                "label": "°C",
+                                "value": "°C"
+                            },
+                            {
+                                "label": "°F",
+                                "value": "°F"
+                            }
+                        ],
+                        "label": "Temperature unit"
+                    },
+                    "currency": {
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "text",
+                        "label": "Currency"
+                    },
+                    "dateFormat": {
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "text",
+                        "label": "Date format"
+                    },
+                    "isFloatComma": {
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "checkbox",
+                        "label": "Float divider sign"
+                    },
+                    "defaultHistory": {
+                        "newLine": true,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "instance",
+                        "adapter": "_dataSources",
+                        "label": "Default History"
+                    },
+                    "defaultLogLevel": {
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "select",
+                        "noTranslation": true,
+                        "options": [
+                            {
+                                "label": "silly",
+                                "value": "silly"
+                            },
+                            {
+                                "label": "debug",
+                                "value": "debug"
+                            },
+                            {
+                                "label": "info",
+                                "value": "info"
+                            },
+                            {
+                                "label": "warn",
+                                "value": "warn"
+                            },
+                            {
+                                "label": "error",
+                                "value": "error"
+                            }
+                        ],
+                        "label": "Default log level"
+                    },
+                    "diag": {
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "select",
+                        "options": [
+                            {
+                                "value": "none",
+                                "label": "diag-type-note-none"
+                            },
+                            {
+                                "value": "normal",
+                                "label": "diag-type-note-normal"
+                            },
+                            {
+                                "value": "no-city",
+                                "label": "diag-type-note-no-city"
+                            },
+                            {
+                                "value": "extended",
+                                "label": "diag-type-note-extended"
+                            }
+                        ],
+                        "label": "Diagnostics level"
+                    },
+                    "firstDayOfWeek": {
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "select",
+                        "options": [
+                            {
+                                "label": "monday",
+                                "value": "monday"
+                            },
+                            {
+                                "label": "sunday",
+                                "value": "sunday"
+                            }
+                        ],
+                        "label": "First day of week"
+                    },
+                    "siteName": {
+                        "newLine": true,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 3,
+                        "type": "text",
+                        "label": "Site name"
+                    }
+                }
+            }
+        }
+    }
 }

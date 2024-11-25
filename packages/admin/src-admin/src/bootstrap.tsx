@@ -67,6 +67,9 @@ if (
     });
 } else {
     window.onerror = (event: Event | string, source?: string, lineno?: number, colno?: number, error?: Error) => {
+        if (!error && event) {
+            error = event as unknown as Error;
+        }
         const errText = error.toString();
         if (typeof error === 'object' && errText && versionChanged.find(e => errText.includes(e))) {
             const message = error.message;
@@ -76,6 +79,13 @@ if (
             console.error(JSON.stringify(stack, null, 2));
             window.location.reload();
             return;
+        }
+        if (typeof error === 'string') {
+            if (ignoreErrors.find(e => (error as unknown as string).includes(e))) {
+                console.error(`Ignore error: ${error}`);
+                return;
+            }
+            throw new Error(error);
         }
         throw error;
     };
