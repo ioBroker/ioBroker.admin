@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.1",
+    "version": "7.4.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.2": {
+        "en": "Made improvement for JSONConfig components\nAdded clear button to text area JSON config component",
+        "de": "Hergestellte Verbesserung für JSONConfig Komponenten\nHinzugefügt klare Schaltfläche zum Textbereich JSON config Komponente",
+        "ru": "Сделано улучшение для компонентов JSONConfig\nДобавление четкой кнопки в текстовый компонент конфигурации JSON",
+        "pt": "Melhoria feita para componentes JSONConfig\nAdicionado botão claro para área de texto JSON config componente",
+        "nl": "Verbeterd voor JSONConfig componenten\nDuidelijke knop toegevoegd aan tekstgebied JSON config component",
+        "fr": "Amélioration des composants JSONConfig\nAjout d'un bouton clair au composant de configuration JSON",
+        "it": "Miglioramento fatto per i componenti JSONConfig\nAggiunto il pulsante chiaro all'area testo JSON config componente",
+        "es": "Mejorado para componentes JSONConfig\nAñadido botón claro para el componente de configuración JSON",
+        "pl": "Poprawiono komponenty JSONConfig\nDodano jasny przycisk do obszaru tekstowego komponentu konfiguracyjnego JSON",
+        "uk": "Виготовлено вдосконалення компонентів JSONConfig\nДодано чітку кнопку до текстового компонента JSON config",
+        "zh-cn": "改进JSONConfig组件\n添加到文本区域 JSON 配置组件的清晰按钮"
+      },
       "7.4.1": {
         "en": "Made improvement for JSONConfig components",
         "de": "Hergestellte Verbesserung für JSONConfig Komponenten",
@@ -96,19 +109,6 @@
         "pl": "Dodano flagę read- only do 'stanu' Składnik konfiguracyjny JSON",
         "uk": "Додано прапор `state` JSON Конфіг компонент",
         "zh-cn": "将只读的旗帜添加到“国家”中 JSON 配置组件"
-      },
-      "7.1.3": {
-        "en": "improve appearance and standardization of some warning messages\nindicate `alert` warnings by the badge color on the notification button\nallow to distinguish between alert notifications and others for host notifications\ndo not automatically open the notification dialog without user interaction\nfixed logging as socket client is now throwing real errors",
-        "de": "verbesserung des aussehens und der standardisierung einiger warnmeldungen\n`alert` warnungen durch die abzeichenfarbe auf der benachrichtigungstaste anzeigen\nermöglichen, zwischen alarmmeldungen und anderen für host-benachrichtigungen zu unterscheiden\nnicht automatisch den benachrichtigungsdialog ohne benutzerinteraktion öffnen\nfeste protokollierung als buchsen-client ist jetzt werfen reale fehler",
-        "ru": "улучшить внешний вид и стандартизацию некоторых предупреждающих сообщений\nуведомление\nпозволяет проводить различие между уведомлениями о оповещении и другими уведомлениями о размещении\nне открывать автоматически диалог уведомления без взаимодействия пользователя\nфиксированная регистрация как клиент сокета теперь бросает реальные ошибки",
-        "pt": "melhorar a aparência e padronização de algumas mensagens de aviso\nindicar avisos `alert` pela cor do crachá no botão de notificação\npermitir distinguir entre notificações de alerta e outros para notificações de host\nnão abra automaticamente a caixa de diálogo de notificação sem interação do usuário\nlog fixo como cliente soquete está agora jogando erros reais",
-        "nl": "verbetering van het uiterlijk en de standaardisatie van sommige waarschuwingsberichten\nde waarschuwingen van de badge op de meldingsknop aangeven\nhet mogelijk maken onderscheid te maken tussen alarmmeldingen en andere meldingen van ontvangst\nhet meldingsvenster niet automatisch openen zonder gebruikersinteractie\nvaste logging als socket client gooit nu echte fouten",
-        "fr": "améliorer l'apparence et la normalisation de certains messages d'avertissement\nindiquer les avertissements `alerte` par la couleur du badge sur le bouton de notification\npermettre de distinguer les notifications d'alerte des autres notifications d'hôte\nn'ouvrez pas automatiquement la boîte de dialogue de notification sans interaction utilisateur\nlogage fixe en tant que client socket lance maintenant des erreurs réelles",
-        "it": "migliorare l'aspetto e la standardizzazione di alcuni messaggi di avviso\nindicare `allerta` avvisi dal colore del distintivo sul pulsante di notifica\nconsentire di distinguere tra le notifiche di avviso e altre per le notifiche host\nnon aprire automaticamente la finestra di dialogo di notifica senza interazione dell'utente\nregistrazione fissa come client socket sta ora lanciando errori reali",
-        "es": "mejorar la apariencia y estandarización de algunos mensajes de advertencia\nindicar advertencias por el color de la placa en el botón de notificación\npermitir distinguir entre las notificaciones de alerta y otras para las notificaciones de host\nno abrir automáticamente el diálogo de notificación sin interacción del usuario\nregistro fijo como cliente de socket está lanzando errores reales",
-        "pl": "poprawić wygląd i standaryzację niektórych komunikatów ostrzegawczych\nw przycisku powiadomienia należy wskazać ostrzeżenia \"alert\" za pomocą koloru odznaki\numożliwić rozróżnienie powiadomień o ostrzeżeniach od innych powiadomień o przyjmowaniu\nnie otwieraj automatycznie okna powiadomień bez interakcji z użytkownikiem\nstałe logowanie jako klient gniazda jest teraz rzucanie prawdziwych błędów",
-        "uk": "поліпшення зовнішнього вигляду та стандартизації деяких попереджувальних повідомлень\nвкажіть попередження `alert` за кольором значка на кнопках повідомлення\nдозволяє відрізнити повідомлення про оповіщення та інші повідомлення про хост\nне автоматично відкрийте діалогове вікно повідомлення без взаємодії користувача\nвиправлений вхід як клієнт розетки тепер кидає реальні помилки",
-        "zh-cn": "改进一些警告信息的外观和标准化\n以通知按钮上的徽章颜色表示“警告”\n允许区分提醒通知和主机通知的其他通知\n没有用户交互, 不自动打开通知对话框\n当套接字客户端现在丢出真实错误时, 固定记录"
       }
     },
     "desc": {
@@ -623,190 +623,190 @@
       },
       "native": {}
     }
-    ],
-    "schemas": {
-        "systemConfig": {
-            "label": "System config",
-            "path": "common",
-            "json": {
-                "type": "panel",
-                "items": {
-                    "city": {
-                        "newLine": true,
-                        "type": "text",
-                        "label": "City",
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3
-                    },
-                    "country": {
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "max-length": 2,
-                        "type": "text",
-                        "label": "Country"
-                    },
-                    "address": {
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "text",
-                        "label": "Address"
-                    },
-                    "longitude": {
-                        "newLine": true,
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "number",
-                        "label": "Longitude"
-                    },
-                    "latitude": {
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "number",
-                        "label": "Latitude"
-                    },
-                    "language": {
-                        "newLine": true,
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "language",
-                        "label": "Language"
-                    },
-                    "tempUnit": {
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "select",
-                        "noTranslation": true,
-                        "options": [
-                            {
-                                "label": "°C",
-                                "value": "°C"
-                            },
-                            {
-                                "label": "°F",
-                                "value": "°F"
-                            }
-                        ],
-                        "label": "Temperature unit"
-                    },
-                    "currency": {
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "text",
-                        "label": "Currency"
-                    },
-                    "dateFormat": {
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "text",
-                        "label": "Date format"
-                    },
-                    "isFloatComma": {
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "checkbox",
-                        "label": "Float divider sign"
-                    },
-                    "defaultHistory": {
-                        "newLine": true,
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "instance",
-                        "adapter": "_dataSources",
-                        "label": "Default History"
-                    },
-                    "defaultLogLevel": {
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "select",
-                        "noTranslation": true,
-                        "options": [
-                            {
-                                "label": "silly",
-                                "value": "silly"
-                            },
-                            {
-                                "label": "debug",
-                                "value": "debug"
-                            },
-                            {
-                                "label": "info",
-                                "value": "info"
-                            },
-                            {
-                                "label": "warn",
-                                "value": "warn"
-                            },
-                            {
-                                "label": "error",
-                                "value": "error"
-                            }
-                        ],
-                        "label": "Default log level"
-                    },
-                    "diag": {
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "select",
-                        "options": [
-                            {
-                                "value": "none",
-                                "label": "diag-type-note-none"
-                            },
-                            {
-                                "value": "normal",
-                                "label": "diag-type-note-normal"
-                            },
-                            {
-                                "value": "no-city",
-                                "label": "diag-type-note-no-city"
-                            },
-                            {
-                                "value": "extended",
-                                "label": "diag-type-note-extended"
-                            }
-                        ],
-                        "label": "Diagnostics level"
-                    },
-                    "firstDayOfWeek": {
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "select",
-                        "options": [
-                            {
-                                "label": "monday",
-                                "value": "monday"
-                            },
-                            {
-                                "label": "sunday",
-                                "value": "sunday"
-                            }
-                        ],
-                        "label": "First day of week"
-                    },
-                    "siteName": {
-                        "newLine": true,
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 3,
-                        "type": "text",
-                        "label": "Site name"
-                    }
-                }
-            }
+  ],
+  "schemas": {
+    "systemConfig": {
+      "label": "System config",
+      "path": "common",
+      "json": {
+        "type": "panel",
+        "items": {
+          "city": {
+            "newLine": true,
+            "type": "text",
+            "label": "City",
+            "sm": 12,
+            "md": 6,
+            "lg": 3
+          },
+          "country": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "max-length": 2,
+            "type": "text",
+            "label": "Country"
+          },
+          "address": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Address"
+          },
+          "longitude": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "number",
+            "label": "Longitude"
+          },
+          "latitude": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "number",
+            "label": "Latitude"
+          },
+          "language": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "language",
+            "label": "Language"
+          },
+          "tempUnit": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "noTranslation": true,
+            "options": [
+              {
+                "label": "°C",
+                "value": "°C"
+              },
+              {
+                "label": "°F",
+                "value": "°F"
+              }
+            ],
+            "label": "Temperature unit"
+          },
+          "currency": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Currency"
+          },
+          "dateFormat": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Date format"
+          },
+          "isFloatComma": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "checkbox",
+            "label": "Float divider sign"
+          },
+          "defaultHistory": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "instance",
+            "adapter": "_dataSources",
+            "label": "Default History"
+          },
+          "defaultLogLevel": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "noTranslation": true,
+            "options": [
+              {
+                "label": "silly",
+                "value": "silly"
+              },
+              {
+                "label": "debug",
+                "value": "debug"
+              },
+              {
+                "label": "info",
+                "value": "info"
+              },
+              {
+                "label": "warn",
+                "value": "warn"
+              },
+              {
+                "label": "error",
+                "value": "error"
+              }
+            ],
+            "label": "Default log level"
+          },
+          "diag": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "options": [
+              {
+                "value": "none",
+                "label": "diag-type-note-none"
+              },
+              {
+                "value": "normal",
+                "label": "diag-type-note-normal"
+              },
+              {
+                "value": "no-city",
+                "label": "diag-type-note-no-city"
+              },
+              {
+                "value": "extended",
+                "label": "diag-type-note-extended"
+              }
+            ],
+            "label": "Diagnostics level"
+          },
+          "firstDayOfWeek": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "options": [
+              {
+                "label": "monday",
+                "value": "monday"
+              },
+              {
+                "label": "sunday",
+                "value": "sunday"
+              }
+            ],
+            "label": "First day of week"
+          },
+          "siteName": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Site name"
+          }
         }
+      }
     }
+  }
 }

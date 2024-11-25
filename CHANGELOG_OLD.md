@@ -1,4 +1,9 @@
 # Older changes
+## 7.2.6 (2024-10-11)
+
+-   (@GermanBluefox) Trying to fix a GUI build process
+-   (@GermanBluefox) Changed license icon
+
 ## 7.2.4 (2024-10-08)
 
 -   (@GermanBluefox) Corrected some GUI errors
