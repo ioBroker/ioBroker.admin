@@ -39,6 +39,7 @@
     ],
     "files": [
         "build/",
+        "i18n/",
         "LICENSE",
         "tasksExample.js",
         "craco-module-federation.js",

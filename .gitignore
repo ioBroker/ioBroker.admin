@@ -37,3 +37,4 @@ packages/admin/build-backend
 packages/admin/README.md
 /packages/jsonConfig/test/testSchema.js
 /packages/jsonConfig/test/testSchema.js.map
+/packages/adapter-react-v5/i18n/
