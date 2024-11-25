@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.2 (2024-11-25)
 
 -   (@GermanBluefox) Made improvement for JSONConfig components
 -   (@GermanBluefox) Added clear button to text area JSON config component
@@ -110,11 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Corrected cloud icon for admin
 -   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
 -   (@GermanBluefox) Corrected the password field in JSON-Config
-
-### 7.2.6 (2024-10-11)
-
--   (@GermanBluefox) Trying to fix a GUI build process
--   (@GermanBluefox) Changed license icon
 
 ## License
 
