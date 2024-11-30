@@ -844,7 +844,7 @@ export class LegacyConnection {
                     ids,
                     (err: string | null, states: Record<string, ioBroker.State>) => {
                         if (err) {
-                            err && console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(err)}`);
+                            console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(err)}`);
                             reject(new Error(err));
                         } else {
                             if (states) {
