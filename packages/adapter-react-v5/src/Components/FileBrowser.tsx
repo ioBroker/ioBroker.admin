@@ -936,14 +936,16 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
         if (newFoldersNotNull[folderId] && !force) {
             if (!_checkEmpty) {
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve, reject): void => {
                     Promise.all(
                         newFoldersNotNull[folderId]
                             .filter(item => item.folder)
-                            .map(item => this.browseFolder(item.id, newFoldersNotNull, true).catch(() => undefined)),
+                            .map(item =>
+                                this.browseFolder(item.id, newFoldersNotNull, true).catch((): undefined => undefined),
+                            ),
                     )
-                        .then(() => resolve(newFoldersNotNull))
-                        .catch(error => reject(new Error(error)));
+                        .then((): void => resolve(newFoldersNotNull))
+                        .catch((error: unknown): void => reject(new Error(error as string)));
                 });
             }
 
@@ -1010,8 +1012,10 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     return Promise.all(
                         _folders
                             .filter(item => item.folder)
-                            .map(item => this.browseFolder(item.id, newFoldersNotNull, true).catch(() => undefined)),
-                    ).then(() => newFoldersNotNull);
+                            .map(item =>
+                                this.browseFolder(item.id, newFoldersNotNull, true).catch((): undefined => undefined),
+                            ),
+                    ).then((): Folders => newFoldersNotNull);
                 }
             } catch (e: unknown) {
                 const knownError = e as Error;

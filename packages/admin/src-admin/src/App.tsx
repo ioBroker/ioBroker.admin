@@ -1251,7 +1251,7 @@ class App extends Router<AppProps, AppState> {
                         this.showAlert(errorStr, 'error');
                     }
                 },
-            });
+            }) as unknown as AdminConnection;
         }
     }
 
@@ -1449,6 +1449,7 @@ class App extends Router<AppProps, AppState> {
             themeName={this.state.themeName}
             theme={this.state.theme}
             socket={this.socket}
+            systemConfig={this.state.systemConfig.common}
             dateFormat={this.state.systemConfig.common.dateFormat}
             currentHost={this.state.currentHost}
             defaultLogLevel={this.state.systemConfig.common.defaultLogLevel}

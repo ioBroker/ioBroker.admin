@@ -1004,9 +1004,9 @@ export type ConfigItemAny =
     | ConfigItemQrCode;
 
 export type JsonConfigContext = {
-    DeviceManager: React.FC<DeviceManagerPropsProps>;
+    DeviceManager?: React.FC<DeviceManagerPropsProps>;
     adapterName: string;
-    changeLanguage: () => void;
+    changeLanguage?: () => void;
     customs?: Record<string, typeof ConfigGeneric>;
     dateFormat: string;
     embedded?: boolean;
@@ -1019,10 +1019,10 @@ export type JsonConfigContext = {
     /** If true, this field edits multiple data points at once and thus contains an array, should not be saved if not changed */
     multiEdit?: boolean;
     /** Backend request to refresh data */
-    onBackEndCommand: (command?: BackEndCommand) => void;
+    onBackEndCommand?: (command?: BackEndCommand) => void;
     onCommandRunning: (commandRunning: boolean) => void;
-    onValueChange: (attr: string, value: any, saveConfig: boolean) => void;
-    registerOnForceUpdate: (attr: string, cb?: (data: any) => void) => void;
+    onValueChange?: (attr: string, value: any, saveConfig: boolean) => void;
+    registerOnForceUpdate?: (attr: string, cb?: (data: any) => void) => void;
     socket: AdminConnection;
     systemConfig: ioBroker.SystemConfigCommon;
     theme: IobTheme;
