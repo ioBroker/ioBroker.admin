@@ -134,7 +134,7 @@ const styles: Record<string, any> = {
         flex: `0 0 ${TILE_WIDTH}px`,
     },
 
-    itemTile: (theme: IobTheme) => ({
+    itemTile: (theme: IobTheme): any => ({
         position: 'relative',
         userSelect: 'none',
         cursor: 'pointer',
@@ -163,14 +163,14 @@ const styles: Record<string, any> = {
         textAlign: 'center',
         wordBreak: 'break-all',
     },
-    itemFolderIconTile: (theme: IobTheme) => ({
+    itemFolderIconTile: (theme: IobTheme): any => ({
         width: '100%',
         height: TILE_HEIGHT - 32 - 16 - 8, // name + size
         display: 'block',
         pl: 1,
         color: theme.palette.secondary.main || '#fbff7d',
     }),
-    itemFolderIconBack: (theme: IobTheme) => ({
+    itemFolderIconBack: (theme: IobTheme): React.CSSProperties => ({
         position: 'absolute',
         top: 22,
         left: 18,
@@ -198,12 +198,12 @@ const styles: Record<string, any> = {
         objectFit: 'contain',
     },
 
-    itemSelected: (theme: IobTheme) => ({
+    itemSelected: (theme: IobTheme): React.CSSProperties => ({
         background: theme.palette.primary.main,
         color: Utils.invertColor(theme.palette.primary.main, true),
     }),
 
-    itemTable: (theme: IobTheme) => ({
+    itemTable: (theme: IobTheme): any => ({
         userSelect: 'none',
         cursor: 'pointer',
         height: ROW_HEIGHT,
@@ -267,7 +267,7 @@ const styles: Record<string, any> = {
     itemFolderTemp: {
         opacity: 0.4,
     },
-    itemFolderIconTable: (theme: IobTheme) => ({
+    itemFolderIconTable: (theme: IobTheme): React.CSSProperties => ({
         marginTop: '1px',
         marginLeft: '8px',
         display: 'inline-block',
@@ -275,7 +275,7 @@ const styles: Record<string, any> = {
         height: 30,
         color: theme.palette.secondary.main || '#fbff7d',
     }),
-    itemDownloadButtonTable: (theme: IobTheme) => ({
+    itemDownloadButtonTable: (theme: IobTheme): any => ({
         display: 'inline-block',
         width: BUTTON_WIDTH,
         height: ROW_HEIGHT,
@@ -344,7 +344,7 @@ const styles: Record<string, any> = {
         opacity: 1,
     },
 
-    uploadCenterDiv: (theme: IobTheme) => ({
+    uploadCenterDiv: (theme: IobTheme): any => ({
         m: '20px',
         border: '3px dashed grey',
         borderRadius: '30px',
@@ -383,7 +383,7 @@ const styles: Record<string, any> = {
     menuButtonRestrictActive: {
         color: '#c05000',
     },
-    pathDiv: (theme: IobTheme) => ({
+    pathDiv: (theme: IobTheme): any => ({
         display: 'flex',
         width: 'calc(100% - 16px)',
         ml: 1,
@@ -396,7 +396,7 @@ const styles: Record<string, any> = {
     pathDivInput: {
         width: '100%',
     },
-    pathDivBreadcrumbDir: (theme: IobTheme) => ({
+    pathDivBreadcrumbDir: (theme: IobTheme): any => ({
         pl: '2px',
         pr: '2px',
         cursor: 'pointer',
@@ -416,7 +416,7 @@ const styles: Record<string, any> = {
     backgroundImageColored: {
         background: 'silver',
     },
-    specialFolder: (theme: IobTheme) => ({
+    specialFolder: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#229b0f' : '#5dd300',
     }),
     tooltip: {

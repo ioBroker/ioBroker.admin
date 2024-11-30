@@ -1238,6 +1238,7 @@ In the Settings of the Web developer tools, you can create your own devices with
 | `onChange`               | Structure in form `{"alsoDependsOn": ["attr1", "attr2"], "calculateFunc": "data.attr1 + data.attr2", "ignoreOwnChanges": true}`                                                      |
 | `doNotSave`              | Do not save this attribute as used only for internal calculations                                                                                                                    |
 | `noMultiEdit`            | if this flag set to true, this field will not be shown if user selected more than one object for edit.                                                                               |
+| `expertMode`             | if this flag set to true, this field will be shown only if the expert mode is true                                                                                                   |
 
 ### Options with detailed configuration
 
@@ -1278,8 +1279,8 @@ Example:
    }
 // ...
 
-data: {
-   timeout: [1000, 2000, 3000]
+"data": {
+   "timeout": [1000, 2000, 3000]
 }
 ```
 
@@ -1292,15 +1293,15 @@ For non changed `__different__` the value different must be returned:
 
 Input:
 ```json
-data: {
-   timeout: [1000, 2000, 3000]
+"data": {
+   "timeout": [1000, 2000, 3000]
 }
 ```
 
 Output if timeout was not changed:
 ```json
-newData: {
-   timeout: "__different__"
+"newData": {
+   "timeout": "__different__"
 }
 ```
 

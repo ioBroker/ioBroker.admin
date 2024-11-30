@@ -14,8 +14,12 @@ import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
 import type { Connection } from '../Connection';
 
 import { I18n } from '../i18n';
-import { ObjectBrowser, type ObjectBrowserFilter } from '../Components/ObjectBrowser';
-import type { ObjectBrowserColumn, ObjectBrowserCustomFilter, ObjectBrowserType } from '../Components/types';
+import {
+    ObjectBrowser,
+    type ObjectBrowserFilter,
+    type ObjectBrowserColumn,
+    type ObjectBrowserCustomFilter,
+} from '../Components/ObjectBrowser';
 import type { IobTheme } from '../types';
 
 export interface SelectIDFilters {
@@ -48,7 +52,7 @@ interface DialogSelectIDProps {
     /** optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'] */
     columns?: ObjectBrowserColumn[];
     /**  Object types to show; default: 'state' only */
-    types?: ObjectBrowserType | ObjectBrowserType[];
+    types?: ioBroker.ObjectType | ioBroker.ObjectType[];
     /** The language. */
     lang?: ioBroker.Languages;
     /** The socket connection. */

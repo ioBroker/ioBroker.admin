@@ -95,6 +95,7 @@ const styles: Record<string, any> = {
         fontSize: 12,
         opacity: 0.4,
         display: 'block',
+        whiteSpace: 'nowrap',
     },
     tooltip: {
         pointerEvents: 'none',
@@ -518,7 +519,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                 </TabHeader>
                 <TabContent overflow="auto">
                     {!Utils.isStableRepository(this.props.systemConfig.common.activeRepo) ? (
-                        <Box sx={{ marginX: 2, width: 'fit-content', alignSelf: 'center' }}>
+                        <Box sx={{ marginX: 2, width: 'calc(100% - 32px)', alignSelf: 'center' }}>
                             <InfoBox type={'warning'}>
                                 {this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}
                             </InfoBox>

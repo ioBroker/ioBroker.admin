@@ -88,8 +88,8 @@ class ConfigStaticText extends ConfigGeneric<ConfigStaticTextProps, ConfigGeneri
                                       ? this.getText(this.props.schema.href, true)
                                       : null;
                                   if (href) {
-                                      if (this.props.onBackEndCommand) {
-                                          this.props.onBackEndCommand({
+                                      if (this.props.oContext.onBackEndCommand) {
+                                          this.props.oContext.onBackEndCommand({
                                               command: 'link',
                                               url: href,
                                               target: this.props.schema.target,
@@ -99,7 +99,7 @@ class ConfigStaticText extends ConfigGeneric<ConfigStaticTextProps, ConfigGeneri
                                           onLink(
                                               href,
                                               this.props.schema.target,
-                                              `${this.props.adapterName}.${this.props.instance}`,
+                                              `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
                                           );
                                       }
                                   }
@@ -130,8 +130,8 @@ class ConfigStaticText extends ConfigGeneric<ConfigStaticTextProps, ConfigGeneri
                               // calculate one more time just before call
                               const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
                               if (href) {
-                                  if (this.props.onBackEndCommand) {
-                                      this.props.onBackEndCommand({
+                                  if (this.props.oContext.onBackEndCommand) {
+                                      this.props.oContext.onBackEndCommand({
                                           command: 'link',
                                           url: href,
                                           target: this.props.schema.target || '_blank',
@@ -141,7 +141,7 @@ class ConfigStaticText extends ConfigGeneric<ConfigStaticTextProps, ConfigGeneri
                                       onLink(
                                           href,
                                           this.props.schema.target || '_blank',
-                                          `${this.props.adapterName}.${this.props.instance}`,
+                                          `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
                                       );
                                   }
                               }

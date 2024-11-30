@@ -45,7 +45,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
         super.componentDidMount();
         let value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        if (Array.isArray(value) && this.props.multiEdit) {
+        if (Array.isArray(value) && this.props.oContext.multiEdit) {
             value = ConfigGeneric.DIFFERENT_VALUE;
             this.setState({ value, oldValue: value, jsonError: false });
             return;
@@ -71,7 +71,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
     }
 
     static getDerivedStateFromProps(props: ConfigTextProps, state: ConfigTextState): Partial<ConfigTextState> | null {
-        if (props.multiEdit && state.value === ConfigGeneric.DIFFERENT_VALUE) {
+        if (props.oContext.multiEdit && state.value === ConfigGeneric.DIFFERENT_VALUE) {
             return { value: ConfigGeneric.DIFFERENT_VALUE };
         }
 
@@ -261,8 +261,8 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                         style={{
                             width: '100%',
                             resize: 'vertical',
-                            backgroundColor: this.props.themeType === 'dark' ? '#363636' : '#cccccc',
-                            color: this.props.themeType === 'dark' ? '#fff' : '#111',
+                            backgroundColor: this.props.oContext.themeType === 'dark' ? '#363636' : '#cccccc',
+                            color: this.props.oContext.themeType === 'dark' ? '#fff' : '#111',
                         }}
                         minRows={this.props.schema.minRows}
                         maxRows={this.props.schema.maxRows}

@@ -87,6 +87,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+-   (@GermanBluefox) Changed information box on the hosts tab
+-   (@GermanBluefox) Corrected some errors in JsonConfig library
+-   (@GermanBluefox) Added flag expertMode to hide JSON config controls for non-experts
+
 ### 7.4.2 (2024-11-25)
 
 -   (@GermanBluefox) Made improvement for JSONConfig components

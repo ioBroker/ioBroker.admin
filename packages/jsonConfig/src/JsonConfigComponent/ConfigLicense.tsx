@@ -87,7 +87,7 @@ class ConfigLicense extends ConfigGeneric<ConfigLicenseProps, ConfigLicenseState
         }
     }
 
-    renderItem(/* error: string, disabled: boolean, defaultValue */): JSX.Element | null {
+    renderItem(_error: string, disabled: boolean /*, defaultValue */): JSX.Element | null {
         if (!this.state.showLicenseDialog) {
             return null;
         }
@@ -143,6 +143,7 @@ class ConfigLicense extends ConfigGeneric<ConfigLicenseProps, ConfigLicenseState
                         <FormControlLabel
                             control={
                                 <Checkbox
+                                    disabled={disabled}
                                     checked={!!this.state.licenseChecked}
                                     onClick={() => this.setState({ licenseChecked: !this.state.licenseChecked })}
                                 />
@@ -152,6 +153,7 @@ class ConfigLicense extends ConfigGeneric<ConfigLicenseProps, ConfigLicenseState
                     ) : null}
                     <Button
                         disabled={
+                            disabled ||
                             this.state.loading ||
                             this.state.error ||
                             (this.props.schema.checkBox && !this.state.licenseChecked) ||

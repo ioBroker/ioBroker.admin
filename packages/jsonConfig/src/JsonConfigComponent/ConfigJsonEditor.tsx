@@ -60,7 +60,7 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
         return jsonError;
     }
 
-    renderItem(/* _error: string, _disabled: boolean, defaultValue */): JSX.Element | null {
+    renderItem(_error: string, disabled: boolean /* , defaultValue */): JSX.Element | null {
         if (!this.state.initialized) {
             return null;
         }
@@ -76,6 +76,7 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
                 <div style={styles.flex}>
                     <Button
                         color="grey"
+                        disabled={disabled}
                         style={styles.button}
                         size="small"
                         variant="outlined"
@@ -100,7 +101,7 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
                                     this.setState({ value: newValue, jsonError: this.validateJson(newValue) })
                                 }
                                 name="ConfigJsonEditor"
-                                themeType={this.props.themeType}
+                                themeType={this.props.oContext.themeType}
                             />
                         </div>
                     </CustomModal>

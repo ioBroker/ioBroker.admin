@@ -28,7 +28,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
         if (this.props.alive) {
             let data = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
-                const dataStr: string = this.getPattern(this.props.schema.jsonData);
+                const dataStr: string = this.getPattern(this.props.schema.jsonData, null, true);
                 try {
                     if (typeof dataStr === 'string') {
                         data = JSON.parse(dataStr);
@@ -42,8 +42,12 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                 data = null;
             }
 
-            void this.props.socket
-                .sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
+            void this.props.oContext.socket
+                .sendTo(
+                    `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
+                    this.props.schema.command || 'send',
+                    data,
+                )
                 .then((list: unknown) => {
                     if (list && Array.isArray(list)) {
                         list.forEach(item =>
@@ -79,20 +83,20 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
     }
 
     getContext(): string {
-        const context: Record<string, any> = {};
+        const oContext: Record<string, any> = {};
         if (Array.isArray(this.props.schema.alsoDependsOn)) {
             this.props.schema.alsoDependsOn.forEach(
-                attr => (context[attr] = ConfigGeneric.getValue(this.props.data, attr)),
+                attr => (oContext[attr] = ConfigGeneric.getValue(this.props.data, attr)),
             );
         }
-        return JSON.stringify(context);
+        return JSON.stringify(oContext);
     }
 
     renderItem(error: unknown, disabled: boolean): JSX.Element | null {
         if (this.props.alive) {
-            const context = this.getContext();
-            if (context !== this._context || !this.initialized) {
-                this._context = context;
+            const oContext = this.getContext();
+            if (oContext !== this._context || !this.initialized) {
+                this._context = oContext;
                 setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
                 this.initialized = true;
             }

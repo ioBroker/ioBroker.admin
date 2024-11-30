@@ -64,6 +64,7 @@ class ConfigCRON extends ConfigGeneric<ConfigCRONProps, ConfigCRONState> {
                     />
                     <Button
                         color="grey"
+                        disabled={disabled}
                         style={styles.button}
                         size="small"
                         variant="outlined"
@@ -81,7 +82,7 @@ class ConfigCRON extends ConfigGeneric<ConfigCRONProps, ConfigCRONState> {
                         onClose={() => this.setState({ showDialog: false })}
                         cancel={I18n.t('ra_Cancel')}
                         ok={I18n.t('ra_Ok')}
-                        theme={this.props.theme}
+                        theme={this.props.oContext.theme}
                         onOk={value_ =>
                             this.setState({ showDialog: false, value: value_ }, () => this.onChange(attr, value_))
                         }

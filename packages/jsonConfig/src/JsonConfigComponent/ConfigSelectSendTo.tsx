@@ -84,7 +84,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
         if (this.props.alive) {
             let data: Record<string, any> | undefined = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
-                const dataStr: string = this.getPattern(this.props.schema.jsonData);
+                const dataStr: string = this.getPattern(this.props.schema.jsonData, null, true);
                 try {
                     data = JSON.parse(dataStr);
                 } catch {
@@ -96,9 +96,9 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                 data = null;
             }
             this.setState({ running: true }, () => {
-                void this.props.socket
+                void this.props.oContext.socket
                     .sendTo(
-                        `${this.props.adapterName}.${this.props.instance}`,
+                        `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
                         this.props.schema.command || 'send',
                         data,
                     )
@@ -115,15 +115,15 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
     }
 
     getContext(): string {
-        const context: Record<string, any> = {};
+        const oContext: Record<string, any> = {};
 
         if (Array.isArray(this.props.schema.alsoDependsOn)) {
             this.props.schema.alsoDependsOn.forEach(
-                attr => (context[attr] = ConfigGeneric.getValue(this.props.data, attr)),
+                attr => (oContext[attr] = ConfigGeneric.getValue(this.props.data, attr)),
             );
         }
 
-        return JSON.stringify(context);
+        return JSON.stringify(oContext);
     }
 
     _getValue(): string | string[] {
@@ -145,9 +145,9 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
 
     renderItem(error: unknown, disabled: boolean /* , defaultValue */): JSX.Element | string {
         if (this.props.alive) {
-            const context = this.getContext();
-            if (context !== this._context || !this.initialized) {
-                this._context = context;
+            const oContext = this.getContext();
+            if (oContext !== this._context || !this.initialized) {
+                this._context = oContext;
                 setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
                 this.initialized = true;
             }
@@ -211,7 +211,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                     item.hidden,
                     this.props.data,
                     this.props.customObj,
-                    this.props.instanceObj,
+                    this.props.oContext.instanceObj,
                     this.props.arrayIndex,
                     this.props.globalData,
                 );

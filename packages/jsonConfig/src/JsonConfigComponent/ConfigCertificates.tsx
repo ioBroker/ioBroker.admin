@@ -35,13 +35,13 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
     async componentDidMount(): Promise<void> {
         super.componentDidMount();
         // Important: getCertificates is only available in AdminConnection
-        const certificates = await this.props.socket.getCertificates();
+        const certificates = await this.props.oContext.socket.getCertificates();
         const certsPublicOptions: { label: string; value: string }[] = [];
         const certsPrivateOptions: { label: string; value: string }[] = [];
         const certsChainOptions: { label: string; value: string }[] = [];
 
         let collectionsOptions: string[] | null = [];
-        const collectionsOptionsObj = await this.props.socket.getObject('system.certificates');
+        const collectionsOptionsObj = await this.props.oContext.socket.getObject('system.certificates');
         if (collectionsOptionsObj?.native?.collections) {
             collectionsOptions = Object.keys(collectionsOptionsObj.native.collections);
         } else {

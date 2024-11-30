@@ -42,7 +42,7 @@ export default class ConfigTimePicker extends ConfigGeneric<ConfigTimePickerProp
                         transform: 'translate(0px, -9px) scale(0.75)',
                     },
                 })}
-                ampm={this.props.systemConfig.dateFormat.includes('/')}
+                ampm={this.props.oContext.systemConfig.dateFormat.includes('/')}
                 timeSteps={
                     this.props.schema.timeSteps || this.props.schema.timesteps || { hours: 1, minutes: 5, seconds: 5 }
                 }
