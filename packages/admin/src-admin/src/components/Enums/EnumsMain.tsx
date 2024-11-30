@@ -403,7 +403,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                 this.scrollToItem = null;
                             }
                         })
-                        .catch(() => undefined);
+                        .catch((): undefined => undefined);
                 },
                 this.fastUpdate ? 0 : 200,
             );

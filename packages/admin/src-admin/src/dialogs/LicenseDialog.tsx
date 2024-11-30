@@ -80,11 +80,11 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
 
         fetch(_url)
             .then(el => el.text())
-            .then(txt => {
+            .then((txt: string): void => {
                 setText(txt);
                 setLoading(false);
             })
-            .catch(() => setLoading(false));
+            .catch((): void => setLoading(false));
     }, [url]);
 
     useEffect(() => {
