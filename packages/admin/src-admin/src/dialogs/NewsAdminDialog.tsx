@@ -13,6 +13,7 @@ import {
 
 import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 import type { CompactAdapterInfo } from '@/types';
+import type { CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
 
 const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({
@@ -122,7 +123,7 @@ const Status = ({ name }: { name: string }): JSX.Element => {
     }
 };
 
-function checkActive(adapterName: string, instances: Record<string, any>): boolean {
+function checkActive(adapterName: string, instances: Record<string, CompactInstanceInfo>): boolean {
     return !!Object.keys(instances)
         .filter(id => id.startsWith(`adapter.system.${adapterName}.`))
         .find(id => instances[id].enabled);
@@ -161,11 +162,11 @@ function checkConditions(condition: string, installedVersion: string): boolean {
     return true;
 }
 
-type DbType = 'file' | 'jsonl' | 'redis';
+export type DbType = 'file' | 'jsonl' | 'redis';
 
 interface Context {
     adapters: Record<string, CompactAdapterInfo>;
-    instances: ioBroker.InstanceObject[];
+    instances: Record<string, CompactInstanceInfo>;
     nodeVersion: string;
     npmVersion: string;
     os: string;

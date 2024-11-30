@@ -78,7 +78,7 @@ interface ConfigSelectSendToState extends ConfigGenericState {
 class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSelectSendToState> {
     private initialized = false;
 
-    private _context: string | undefined;
+    private localContext: string | undefined;
 
     askInstance(): void {
         if (this.props.alive) {
@@ -115,15 +115,15 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
     }
 
     getContext(): string {
-        const oContext: Record<string, any> = {};
+        const localContext: Record<string, any> = {};
 
         if (Array.isArray(this.props.schema.alsoDependsOn)) {
             this.props.schema.alsoDependsOn.forEach(
-                attr => (oContext[attr] = ConfigGeneric.getValue(this.props.data, attr)),
+                attr => (localContext[attr] = ConfigGeneric.getValue(this.props.data, attr)),
             );
         }
 
-        return JSON.stringify(oContext);
+        return JSON.stringify(localContext);
     }
 
     _getValue(): string | string[] {
@@ -145,9 +145,9 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
 
     renderItem(error: unknown, disabled: boolean /* , defaultValue */): JSX.Element | string {
         if (this.props.alive) {
-            const oContext = this.getContext();
-            if (oContext !== this._context || !this.initialized) {
-                this._context = oContext;
+            const localContext = this.getContext();
+            if (localContext !== this.localContext || !this.initialized) {
+                this.localContext = localContext;
                 setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
                 this.initialized = true;
             }

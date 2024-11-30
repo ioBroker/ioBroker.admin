@@ -179,7 +179,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                   }
 
                   const type = items[attr].type || 'panel';
-                  let ItemComponent: typeof ConfigGeneric<any, any>;
+                  let ItemComponent: typeof ConfigGeneric<ConfigGenericProps, any>;
                   if (type === 'custom') {
                       // name
                       // url
@@ -199,16 +199,13 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
 
                   return (
                       <ItemComponent
+                          oContext={this.props.oContext}
                           key={`${attr}_${this.props.index === undefined ? '' : this.props.index}`}
                           index={this.props.index}
                           changed={this.props.changed}
                           arrayIndex={this.props.arrayIndex}
-                          globalData={this.props.globalData}
                           commandRunning={this.props.commandRunning}
                           style={styles.panel}
-                          socket={this.props.oContext.socket}
-                          adapterName={this.props.oContext.adapterName}
-                          instance={this.props.oContext.instance}
                           common={this.props.common}
                           alive={this.props.alive}
                           themeName={this.props.themeName}

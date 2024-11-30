@@ -35,7 +35,7 @@ interface Response {
 class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSendToState> {
     private initialized = false;
 
-    private _context: string | undefined;
+    private localContext: string | undefined;
 
     askInstance(): void {
         if (this.props.alive) {
@@ -76,21 +76,21 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
         }
     }
 
-    getContext(): string {
-        const oContext: Record<string, any> = {};
+    getLocalContext(): string {
+        const localContext: Record<string, any> = {};
         if (Array.isArray(this.props.schema.alsoDependsOn)) {
             this.props.schema.alsoDependsOn.forEach(
-                attr => (oContext[attr] = ConfigGeneric.getValue(this.props.data, attr)),
+                attr => (localContext[attr] = ConfigGeneric.getValue(this.props.data, attr)),
             );
         }
-        return JSON.stringify(oContext);
+        return JSON.stringify(localContext);
     }
 
     renderItem(/* error, disabled, defaultValue */): JSX.Element {
         if (this.props.alive) {
-            const oContext = this.getContext();
-            if (oContext !== this._context || !this.initialized) {
-                this._context = oContext;
+            const localContext = this.getLocalContext();
+            if (localContext !== this.localContext || !this.initialized) {
+                this.localContext = localContext;
                 setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
                 this.initialized = true;
             }

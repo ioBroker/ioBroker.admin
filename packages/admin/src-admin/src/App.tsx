@@ -86,7 +86,7 @@ import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
 import ExpertModeDialog from './dialogs/ExpertModeDialog';
-import NewsAdminDialog, { checkMessages, type ShowMessage } from './dialogs/NewsAdminDialog';
+import NewsAdminDialog, { checkMessages, type DbType, type ShowMessage } from './dialogs/NewsAdminDialog';
 import HostWarningDialog from './dialogs/HostWarningDialog';
 import LogsWorker from './Workers/LogsWorker';
 import InstancesWorker from './Workers/InstancesWorker';
@@ -96,6 +96,7 @@ import ObjectsWorker from './Workers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from './dialogs/SlowConnectionWarningDialog';
 import IsVisible from './components/IsVisible';
+import type { CompactInstanceInfo } from './dialogs/AdapterUpdateDialog';
 
 import enLocal from './i18n/en.json';
 import deLocal from './i18n/de.json';
@@ -1601,11 +1602,33 @@ class App extends Router<AppProps, AppState> {
 
                 if (news?.length && news[0].id !== lastNewsId?.val) {
                     const uuid: string = await this.socket.getUuid();
-                    const info = await this.socket.getHostInfo(this.state.currentHost).catch(() => null);
+                    const info: {
+                        Platform: string;
+                        os: string;
+                        Architecture: string;
+                        CPUs: number;
+                        Speed: number;
+                        Model: string;
+                        RAM: number;
+                        'System uptime': number;
+                        'Node.js': string;
+                        time: number;
+                        timeOffset: number;
+                        NPM: string;
+                        'adapters count': number;
+                        'Disk size': number;
+                        'Disk free': number;
+                        'Active instances': number;
+                        location: string;
+                        Uptime: number;
+                    } | null = await this.socket.getHostInfo(this.state.currentHost).catch((): null => null);
 
-                    const instances = await this.socket.getCompactInstances().catch(() => null);
+                    const instances: Record<string, CompactInstanceInfo> | null = await this.socket
+                        .getCompactInstances()
+                        .catch((): null => null);
 
-                    const objectsDbType = (await this.socket.getDiagData(this.state.currentHost, 'normal')).objectsType;
+                    const objectsDbType: DbType = (await this.socket.getDiagData(this.state.currentHost, 'normal'))
+                        .objectsType;
 
                     const objects = await this.objectsWorker.getObjects(true);
                     const noObjects = Object.keys(objects || {}).length;
@@ -1613,7 +1636,7 @@ class App extends Router<AppProps, AppState> {
                     const checkNews = checkMessages(news, lastNewsId?.val as string, {
                         lang: I18n.getLanguage(),
                         adapters: this.state.adapters,
-                        instances: instances || [],
+                        instances: instances || {},
                         nodeVersion: info ? info['Node.js'] || '?' : '?',
                         npmVersion: info ? info.NPM || '?' : '?',
                         os: info ? info.os || '?' : '?',
