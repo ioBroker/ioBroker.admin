@@ -1,5 +1,5 @@
 // const webpack = require('webpack');
-const paths = require('react-scripts/config/paths');
+// const paths = require('react-scripts/config/paths');
 
 const getModuleFederationConfigPath = (additionalPaths = []) => {
     const path = require('node:path');
@@ -30,7 +30,7 @@ module.exports = {
 
             htmlWebpackPlugin.userOptions = {
                 ...htmlWebpackPlugin.userOptions,
-                publicPath: paths.publicUrlOrPath,
+                publicPath: './',
                 excludeChunks: [myModule.name],
             };
 

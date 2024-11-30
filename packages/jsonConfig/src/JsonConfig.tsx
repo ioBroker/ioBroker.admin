@@ -15,10 +15,10 @@ import {
     type IobTheme,
     type ThemeName,
     type ThemeType,
+    Utils,
 } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemAny, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
-import Utils from '#JC/Utils';
 import ConfigGeneric, { type DeviceManagerPropsProps } from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
 

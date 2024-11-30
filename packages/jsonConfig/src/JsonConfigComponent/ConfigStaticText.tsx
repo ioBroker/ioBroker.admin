@@ -12,7 +12,7 @@ const styles: Record<string, any> = {
         height: '100%',
         width: '100%',
     },
-    link: (theme: IobTheme) => ({
+    link: (theme: IobTheme): React.CSSProperties => ({
         textDecoration: 'underline',
         color: theme.palette.mode === 'dark' ? '#4dabf5' : '#254e72',
         cursor: 'pointer',
@@ -65,11 +65,11 @@ function onLink(href: string, target: '_blank' | '_self' | string, instanceId: s
     }
 }
 
-interface ConfigInstanceSelectProps extends ConfigGenericProps {
+interface ConfigStaticTextProps extends ConfigGenericProps {
     schema: ConfigItemStaticText;
 }
 
-class ConfigStaticText extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGenericState> {
+class ConfigStaticText extends ConfigGeneric<ConfigStaticTextProps, ConfigGenericState> {
     renderItem(_error: string, disabled: boolean /* , defaultValue */): JSX.Element {
         if (this.props.schema.button) {
             const icon = this.getIcon();

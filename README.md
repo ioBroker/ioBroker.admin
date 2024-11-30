@@ -88,36 +88,33 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+
 -   (@GermanBluefox) Corrected cloud icon for admin
 -   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
 
-### 7.2.6 (2024-10-11)
+### 7.4.2 (2024-11-25)
 
--   (@GermanBluefox) Trying to fix a GUI build process
--   (@GermanBluefox) Changed license icon
+-   (@GermanBluefox) Made improvement for JSONConfig components
+-   (@GermanBluefox) Added clear button to text area JSON config component
 
-### 7.2.4 (2024-10-08)
+### 7.4.1 (2024-11-19)
 
--   (@GermanBluefox) Corrected some GUI errors
--   (@GermanBluefox) Ignore error by opening `0_userdata.0`
+-   (@GermanBluefox) Made improvement for JSONConfig components
 
-### 7.2.0 (2024-10-01)
+### 7.4.0 (2024-11-17)
 
--   (@GermanBluefox) Added the check of well-known passwords for the linux systems
--   (@GermanBluefox) Added the history for the installation from URL
--   (@foxriver76) fixed wrongly displayed repository warning
+-   (@GermanBluefox) Added new JsonConfig control: staticInfo
 
-### 7.1.5 (2024-09-26)
+### 7.3.2 (2024-11-15)
 
--   (bluefox) Added the read-only flag to the `state` JSON Config component
+-   (@GermanBluefox) Some GUI packages were updated.
+-   (@GermanBluefox) Improved file viewer. Added icons viewer
 
-### 7.1.3 (2024-09-20)
+### 7.3.1 (2024-11-14)
 
--   (@foxriver76) improve appearance and standardization of some warning messages
--   (@foxriver76) indicate `alert` warnings by the badge color on the notification button
--   (@foxriver76) allow distinguishing between alert notifications and others for host notifications
--   (@foxriver76) do not automatically open the notification dialog without user interaction
--   (@foxriver76) fixed logging as a socket client is now throwing real errors
+-   (@GermanBluefox) Corrected cloud icon for admin
+-   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
+-   (@GermanBluefox) Corrected the password field in JSON-Config
 
 ## License
 

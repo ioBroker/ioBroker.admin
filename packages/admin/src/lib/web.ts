@@ -791,35 +791,43 @@ class Web {
                         return;
                     }
 
-                    this.adapter.sendToHost(`system.host.${host}`, 'getLogFile', { fileName, transport }, result => {
-                        const _result = result as { error?: string; data?: string; size?: number; gz?: boolean };
-                        if (!_result || _result.error) {
-                            res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
-                        } else {
-                            if (_result.gz) {
-                                if (_result.size > 1024 * 1024) {
-                                    res.header('Content-Type', 'application/gzip');
-                                    res.send(_result.data);
-                                } else {
-                                    try {
-                                        this.unzipFile(fileName, _result.data, res);
-                                    } catch (e) {
+                    this.adapter.sendToHost(
+                        `system.host.${host}`,
+                        'getLogFile',
+                        { filename: fileName, transport },
+                        result => {
+                            const _result = result as { error?: string; data?: string; size?: number; gz?: boolean };
+                            if (!_result || _result.error) {
+                                if (_result.error) {
+                                    this.adapter.log.warn(`Cannot read log file ${fileName}: ${_result.error}`);
+                                }
+                                res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
+                            } else {
+                                if (_result.gz) {
+                                    if (_result.size > 1024 * 1024) {
                                         res.header('Content-Type', 'application/gzip');
                                         res.send(_result.data);
-                                        this.adapter.log.error(`Cannot extract file ${fileName}: ${e}`);
+                                    } else {
+                                        try {
+                                            this.unzipFile(fileName, _result.data, res);
+                                        } catch (e) {
+                                            res.header('Content-Type', 'application/gzip');
+                                            res.send(_result.data);
+                                            this.adapter.log.error(`Cannot extract file ${fileName}: ${e}`);
+                                        }
                                     }
+                                } else if (_result.data === undefined || _result.data === null) {
+                                    res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
+                                } else if (_result.size > 2 * 1024 * 1024) {
+                                    res.header('Content-Type', 'text/plain');
+                                    res.send(_result.data);
+                                } else {
+                                    res.header('Content-Type', 'text/html');
+                                    res.send(this.decorateLogFile(fileName, _result.data));
                                 }
-                            } else if (_result.data === undefined || _result.data === null) {
-                                res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
-                            } else if (_result.size > 2 * 1024 * 1024) {
-                                res.header('Content-Type', 'text/plain');
-                                res.send(_result.data);
-                            } else {
-                                res.header('Content-Type', 'text/html');
-                                res.send(this.decorateLogFile(fileName, _result.data));
                             }
-                        }
-                    });
+                        },
+                    );
                 } else {
                     parts = parts.splice(2);
                     const transport = parts.shift();

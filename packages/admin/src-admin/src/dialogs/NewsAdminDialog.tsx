@@ -188,13 +188,13 @@ interface Message {
     os?: string;
     repo: string;
     conditions: {
-        [adapter: string]: '!installed' | 'active' | '!active';
+        // bigger(x.x.x), smaller(x.x.x), equals(x.x.x), between(x.x.x, x.x.x)
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+        [adapter: string]: '!installed' | 'active' | '!active' | string;
     };
     title: Record<ioBroker.Languages, string>;
     content: Record<ioBroker.Languages, string>;
     class: 'info' | 'warning' | 'danger';
-    /** Name of the FA-icon */
-    icon: string;
     created: string;
     /** Link destination */
     link?: string;
@@ -213,7 +213,6 @@ export interface ShowMessage {
     title: string;
     content: string;
     class: 'info' | 'warning' | 'danger';
-    icon: string;
     created: string;
     link?: string;
     linkTitle: string;
@@ -240,24 +239,35 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
             } else if (showIt && message['date-end'] && new Date(message['date-end']).getTime() < today) {
                 showIt = false;
             } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
-                Object.keys(message.conditions).forEach(key => {
-                    if (showIt) {
-                        const adapter = context.adapters[key];
-                        const condition = message.conditions[key];
-
+                let andConditions = true;
+                if (message.conditions.or === 'true') {
+                    andConditions = false;
+                }
+                const adapters = Object.keys(message.conditions).filter(key => key !== 'or');
+                let conditionResult = true;
+                for (let a = 0; a < adapters.length; a++) {
+                    const adapter = context.adapters[adapters[a]];
+                    const condition = message.conditions[adapters[a]];
+                    if (condition) {
                         if (!adapter && condition !== '!installed') {
-                            showIt = false;
+                            conditionResult = false;
                         } else if (adapter && condition === '!installed') {
-                            showIt = false;
+                            conditionResult = false;
                         } else if (adapter && condition === 'active') {
-                            showIt = checkActive(key, context.instances);
+                            conditionResult = checkActive(adapters[a], context.instances);
                         } else if (adapter && condition === '!active') {
-                            showIt = !checkActive(key, context.instances);
+                            conditionResult = !checkActive(adapters[a], context.instances);
                         } else if (adapter) {
-                            showIt = checkConditions(condition, adapter.v);
+                            conditionResult = checkConditions(condition, adapter.v);
                         }
                     }
-                });
+                    if (andConditions && !conditionResult) {
+                        break;
+                    } else if (!andConditions && conditionResult) {
+                        break;
+                    }
+                }
+                showIt = conditionResult;
             }
 
             if (showIt && message['node-version'] && context.nodeVersion) {
@@ -302,7 +312,6 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
                     title: message.title[context.lang] || message.title.en,
                     content: message.content[context.lang] || message.content.en,
                     class: message.class,
-                    icon: message.icon,
                     created: message.created,
                     link: message.link,
                     linkTitle:

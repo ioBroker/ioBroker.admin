@@ -170,14 +170,15 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`sendTo`:**](#sendto) Button that sends a request to an instance
 - [**`setState`:**](#setstate) Button that sets an instance's state
 - [**`slider`:**](#slider) Slider for selecting a value within a range (Admin 6 only)
-- [**`state`:**](#state) (admin >= 7.1.0) Show control or information from the state
+- [**`state`:**](#state) Show control or information from the state (admin >= 7.1.0)
 - [**`staticImage`:**](#staticimage) Displays a static image
+- [**`staticInfo`:**](#staticinfo) Shows static information in preformatted form, like "Title: value unit" (admin >= 7.3.3)
 - [**`staticLink`:**](#staticlink) Creates a static link
 - [**`staticText`:**](#statictext) Displays static text (e.g., description)
 - [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
 - [**`table`:**](#table) Table with rows that can be added, deleted, or reordered
 - [**`tabs`:**](#tabs) Tabs with items
-- [**`text`:**](#text) Single-line text input field
+- [**`text`:**](#text) Single- or multi-line text input field
 - [**`textSendTo`:**](#textsendto) Shows readonly control with the given from the instance values.
 - [**`timePicker`:**](#timepicker) Allows users to select a time
 - [**`user`:**](#user) Selects a user from the `system.user` list
@@ -337,17 +338,18 @@ Tab with items
 
 Text component
 
-| Property        | Description                                                                                            |
-|-----------------|--------------------------------------------------------------------------------------------------------|
-| `maxLength`     | max length of the text in field                                                                        |
-| `readOnly`      | read-only field                                                                                        |
-| `trim`          | default is true. Set this attribute to `false` if trim is not desired.                                 |
-| `minRows`       | default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row. |
-| `maxRows`       | max rows of textarea. Used only if `minRows` > 1.                                                      |
-| `noClearButton` | if true, the clear button will not be shown (admin >= 6.17.13)                                         |
-| `validateJson`  | if true, the text will be validated as JSON                                                            |
-| `allowEmpty`    | if true, the JSON will be validated only if the value is not empty                                     |
-| `time`          | the value is time in ms or a string. Used only with readOnly flag                                      |
+| Property          | Description                                                                                            |
+|-------------------|--------------------------------------------------------------------------------------------------------|
+| `maxLength`       | max length of the text in field                                                                        |
+| `readOnly`        | read-only field                                                                                        |
+| `copyToClipboard` | show copy to clipboard button, but only if disabled or read-only is true                               |
+| `trim`            | default is true. Set this attribute to `false` if trim is not desired.                                 |
+| `minRows`         | default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row. |
+| `maxRows`         | max rows of textarea. Used only if `minRows` > 1.                                                      |
+| `noClearButton`   | if true, the clear button will not be shown (admin >= 6.17.13)                                         |
+| `validateJson`    | if true, the text will be validated as JSON                                                            |
+| `allowEmpty`      | if true, the JSON will be validated only if the value is not empty                                     |
+| `time`            | the value is time in ms or a string. Used only with readOnly flag                                      |
 
 ### `number`
 
@@ -1083,25 +1085,54 @@ Special input for ports. It checks automatically if port is used by other instan
 
 (admin >= 7.1.0) Show control or information from the state
 
-| Property         | Description                                                                                                                   |
-|------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| `oid`            | Which object ID should be taken for the controlling. The ID is without "adapter.X." prefix                                    |
-| `system`         | If true, the state will be taken from system.adapter.XX.I. and not from XX.I                                                  |
-| `control`        | How the value of the state should be shown: `text`, `html`, `input`, `slider`, `select`, `button`, `switch`, `number`         |
-| `controlled`     | If true, the state will be shown as switch, select, button, slider or text input. Used only if no control property is defined |
-| `unit`           | Add unit to the value                                                                                                         |
-| `trueText`       | this text will be shown if the value is true                                                                                  |
-| `trueTextStyle`  | Style of the text if the value is true                                                                                        |
-| `falseText`      | this text will be shown if the value is false or if the control is a "button"                                                 |
-| `falseTextStyle` | Style of the text if the value is false or if the control is a "button"                                                       |
-| `trueImage`      | This image will be shown if the value is true                                                                                 |
-| `falseImage`     | This image will be shown if the value is false or if the control is a "button"                                                |
-| `min`            | Minimum value for control type slider or number                                                                               |
-| `max`            | Maximum value for control type slider or number                                                                               |
-| `step`           | Step value for control type slider or number                                                                                  |
-| `controlDelay`   | delay in ms for slider or number                                                                                              |
-| `variant`        | Variant of button: `contained`, `outlined`, `text`                                                                            |
-| `readOnly`       | Defines if the control is read-only                                                                                           |
+| Property         | Description                                                                                                                          |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `oid`            | Which object ID should be taken for the controlling. The ID is without `adapter.X.` prefix                                           |
+| `system`         | If true, the state will be taken from `system.adapter.X.` and not from `adapter.X`                                                   |
+| `foreign`        | The `oid` is absolute and no need to add `adapter.X` or `system.adapter.X.` to oid                                                   |
+| `control`        | How the value of the state should be shown: `text`, `html`, `input`, `slider`, `select`, `button`, `switch`, `number`                |
+| `controlled`     | If true, the state will be shown as switch, select, button, slider or text input. Used only if no control property is defined        |
+| `unit`           | Add unit to the value                                                                                                                |
+| `trueText`       | this text will be shown if the value is true                                                                                         |
+| `trueTextStyle`  | Style of the text if the value is true                                                                                               |
+| `falseText`      | this text will be shown if the value is false or if the control is a "button"                                                        |
+| `falseTextStyle` | Style of the text if the value is false or if the control is a "button"                                                              |
+| `trueImage`      | This image will be shown if the value is true                                                                                        |
+| `falseImage`     | This image will be shown if the value is false or if the control is a "button"                                                       |
+| `min`            | Minimum value for control type slider or number                                                                                      |
+| `max`            | Maximum value for control type slider or number                                                                                      |
+| `step`           | Step value for control type slider or number                                                                                         |
+| `controlDelay`   | delay in ms for slider or number                                                                                                     |
+| `variant`        | Variant of button: `contained`, `outlined`, `text`                                                                                   |
+| `readOnly`       | Defines if the control is read-only                                                                                                  |
+| `narrow`         | Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label |
+| `blinkOnUpdate`  | Value should blink when updated (true or color)                                                                                      |
+| `size`           | Font size: small, normal, large or number                                                                                            |
+| `addColon`       | Add to label the colon at the end if not exist in label                                                                              |
+| `labelIcon`      | Base64 icon for label                                                                                                                |
+
+### `staticInfo`
+
+(admin >= 7.3.3) Shows static information in preformatted form, like "Title: value unit"
+This control is used mostly in dynamic forms 
+
+| Property            | Description                                                                                                                                     |
+|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `data`              | Value to be shown                                                                                                                               |
+| `label`             | Label for the value (could be multi-language)                                                                                                   |
+| `unit`              | (optional) unit (could be multi-language)                                                                                                       |
+| `narrow`            | (optional) Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label |
+| `addColon`          | (optional) Add to label the colon at the end if not exist in label                                                                              |
+| `blinkOnUpdate`     | (optional) Value should blink when updated (true or color)                                                                                      |
+| `blink`             | (optional) Value should blink continuously (true or color)                                                                                      |
+| `styleLabel`        | (optional) React CSS Styles                                                                                                                     |
+| `styleValue`        | (optional) React CSS Styles                                                                                                                     |
+| `styleUnit`         | (optional) React CSS Styles                                                                                                                     |
+| `copyToClipboard`   | (optional) Show copy to clipboard button for value                                                                                              |
+| `labelIcon`         | (optional) base64 icon for label                                                                                                                |
+| `size`              | (optional) font size: small, normal, large or number                                                                                            |
+| `highlight`         | (optional) Highlight line on mouse over                                                                                                         |
+| `booleanAsCheckbox` | (optional) Show boolean values as checkbox                                                                                                      |
 
 ### `deviceManager`
 
@@ -1400,3 +1431,6 @@ The following variables are available in JS function in custom settings:
 ```
 
 You can find examples in [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) adapter.
+
+## For maintainer
+To update location of JsonConfig schema, create pull request to this file: https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json

@@ -22,7 +22,7 @@ import {
     Article as IconText,
     Code as IconCode,
 } from '@mui/icons-material';
-import { FaFileUpload as UploadIcon } from 'react-icons/fa';
+import { UploadFile as UploadIcon } from '@mui/icons-material';
 
 import { DialogConfirm, Utils, I18n } from '@iobroker/adapter-react-v5';
 

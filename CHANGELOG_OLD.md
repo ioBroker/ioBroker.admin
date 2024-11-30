@@ -1,4 +1,32 @@
 # Older changes
+## 7.2.6 (2024-10-11)
+
+-   (@GermanBluefox) Trying to fix a GUI build process
+-   (@GermanBluefox) Changed license icon
+
+## 7.2.4 (2024-10-08)
+
+-   (@GermanBluefox) Corrected some GUI errors
+-   (@GermanBluefox) Ignore error by opening `0_userdata.0`
+
+## 7.2.0 (2024-10-01)
+
+-   (@GermanBluefox) Added the check of well-known passwords for the linux systems
+-   (@GermanBluefox) Added the history for the installation from URL
+-   (@foxriver76) fixed wrongly displayed repository warning
+
+## 7.1.5 (2024-09-26)
+
+-   (bluefox) Added the read-only flag to the `state` JSON Config component
+
+## 7.1.3 (2024-09-20)
+
+-   (@foxriver76) improve appearance and standardization of some warning messages
+-   (@foxriver76) indicate `alert` warnings by the badge color on the notification button
+-   (@foxriver76) allow distinguishing between alert notifications and others for host notifications
+-   (@foxriver76) do not automatically open the notification dialog without user interaction
+-   (@foxriver76) fixed logging as a socket client is now throwing real errors
+
 ## 7.1.2 (2024-09-20)
 
 -   (@foxriver76) fixed host base settings dialog

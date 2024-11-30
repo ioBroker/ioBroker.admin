@@ -1,0 +1,26 @@
+// Root tsconfig to set the settings and power editor support for all TS files
+{
+    "extends": "../../../tsconfig.json",
+    "compilerOptions": {
+        "module": "esnext",
+        "target": "esnext",
+        "baseUrl": ".",
+        "jsx": "preserve",
+        "moduleResolution": "node",
+
+        // do not compile anything. This file is just to configure type checking
+        "noEmit": true,
+        "allowJs": false,
+        "checkJs": false,
+        "outDir": "./",
+        "sourceMap": true,
+        "inlineSources": true,
+
+        // This is necessary for the automatic typing of the adapter config
+        "noImplicitAny": true,
+        "useUnknownInCatchVariables": false,
+        "types": ["@types/node"]
+    },
+    "include": ["**/*.ts", "**/*.d.ts", "eslint.config.mjs"],
+    "exclude": ["node_modules/**", "test/testSchema.js"]
+}

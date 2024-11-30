@@ -105,7 +105,7 @@ export function getSelectIdIcon(obj: ioBroker.Object | null, imagePrefix?: strin
     return src || null;
 }
 
-interface IconProps {
+export interface IconProps {
     /** URL, UTF-8 character, or svg code (data:image/svg...) */
     src: string | React.JSX.Element | null | undefined;
     /** Class name */
@@ -165,7 +165,7 @@ export function Icon(props: IconProps): React.JSX.Element | null {
                         className={Utils.clsx(props.className, 'iconOwn')}
                         width={props.style?.width || 28}
                         height={props.style?.height || props.style?.width || 28}
-                        style={props.style || {}}
+                        style={props.style || undefined}
                     />
                 );
             }
@@ -183,7 +183,7 @@ export function Icon(props: IconProps): React.JSX.Element | null {
                             component="img"
                             sx={props.sx}
                             title={props.title || undefined}
-                            style={props.style || {}}
+                            style={props.style || undefined}
                             className={Utils.clsx(props.className, 'iconOwn')}
                             src={`https://remote-files.iobroker.in${src}`}
                             alt={props.alt || undefined}
@@ -195,7 +195,7 @@ export function Icon(props: IconProps): React.JSX.Element | null {
                 return (
                     <img
                         title={props.title || undefined}
-                        style={props.style || {}}
+                        style={props.style || undefined}
                         className={Utils.clsx(props.className, 'iconOwn')}
                         src={`https://remote-files.iobroker.in${src}`}
                         alt={props.alt || undefined}
@@ -210,7 +210,7 @@ export function Icon(props: IconProps): React.JSX.Element | null {
                         component="img"
                         sx={props.sx}
                         title={props.title || undefined}
-                        style={props.style || {}}
+                        style={props.style || undefined}
                         className={Utils.clsx(props.className, 'iconOwn')}
                         src={props.src}
                         alt={props.alt || undefined}
@@ -222,7 +222,7 @@ export function Icon(props: IconProps): React.JSX.Element | null {
             return (
                 <img
                     title={props.title || undefined}
-                    style={props.style || {}}
+                    style={props.style || undefined}
                     className={Utils.clsx(props.className, 'iconOwn')}
                     src={props.src}
                     alt={props.alt || undefined}

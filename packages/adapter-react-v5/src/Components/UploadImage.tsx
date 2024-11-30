@@ -1,5 +1,5 @@
 import React, { Component, createRef, type JSX } from 'react';
-import Dropzone from 'react-dropzone';
+import Dropzone, { type FileRejection } from 'react-dropzone';
 import { Cropper, type ReactCropperElement } from 'react-cropper';
 
 import { Menu, MenuItem, Tooltip, IconButton } from '@mui/material';
@@ -500,17 +500,10 @@ export class UploadImage extends Component<UploadImageProps, UploadImageState> {
                 maxSize={maxSize}
                 onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
                 onDragLeave={() => this.setState({ uploadFile: true })}
-                onDrop={(acceptedFiles: File[], errors) => {
+                onDrop={(acceptedFiles: File[], errors: FileRejection[]) => {
                     this.setState({ uploadFile: false });
                     if (!acceptedFiles.length) {
-                        window.alert(
-                            (errors &&
-                                errors[0] &&
-                                errors[0].errors &&
-                                errors[0].errors[0] &&
-                                errors[0].errors[0].message) ||
-                                I18n.t('ra_Cannot upload'),
-                        );
+                        window.alert(errors?.[0]?.errors?.[0]?.message || I18n.t('ra_Cannot upload'));
                     } else {
                         this.onDrop(acceptedFiles);
                     }

@@ -4,9 +4,8 @@ import { Grid2, Accordion, AccordionSummary, AccordionDetails, Typography, Box }
 
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { type IobTheme } from '@iobroker/adapter-react-v5';
+import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 import type { ConfigItemPanel } from '#JC/types';
-import Utils from '#JC/Utils';
 
 import ConfigGeneric, { type ConfigGenericState, type ConfigGenericProps } from './ConfigGeneric';
 import ConfigAccordion from './ConfigAccordion';
@@ -51,6 +50,7 @@ import ConfigState from './ConfigState';
 import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticImage from './ConfigStaticImage';
+import ConfigStaticInfo from './ConfigStaticInfo';
 import ConfigStaticText from './ConfigStaticText';
 import ConfigTable from './ConfigTable';
 import ConfigText from './ConfigText';
@@ -108,6 +108,7 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     slider: ConfigSlider,
     state: ConfigState,
     staticImage: ConfigStaticImage,
+    staticInfo: ConfigStaticInfo,
     staticLink: ConfigStaticText,
     staticText: ConfigStaticText,
     table: ConfigTable,
@@ -140,11 +141,11 @@ const styles: Record<string, any> = {
         padding: '10px',
     },
     heading: {},
-    primary: (theme: IobTheme) => ({
+    primary: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.mode === 'dark' ? 'inherit' : '#FFF',
     }),
-    secondary: (theme: IobTheme) => ({
+    secondary: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.secondary.main,
     }),
 };
