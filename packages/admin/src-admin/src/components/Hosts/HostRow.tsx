@@ -40,7 +40,7 @@ const styles: Record<string, any> = {
         alignItems: 'baseline',
     },
     collapse: {
-        height: 200,
+        height: 215,
         backgroundColor: 'rgba(128, 128, 128, 0.1)',
         // position: 'absolute',
         width: '100%',

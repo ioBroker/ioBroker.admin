@@ -1,4 +1,16 @@
 import React, { Component, type JSX } from 'react';
+import moment from 'moment';
+
+import 'moment/locale/de';
+import 'moment/locale/es';
+import 'moment/locale/fr';
+import 'moment/locale/it';
+import 'moment/locale/nl';
+import 'moment/locale/pl';
+import 'moment/locale/pt';
+import 'moment/locale/ru';
+import 'moment/locale/uk';
+import 'moment/locale/zh-cn';
 
 import {
     Dialog,
@@ -187,7 +199,46 @@ const styles: Record<string, any> = {
     tooltip: {
         pointerEvents: 'none',
     },
+    stateRow: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        '&:hover': {
+            backgroundColor: '#00000030',
+        },
+    },
+    stateTitle: {
+        minWidth: 150,
+        fontWeight: 'bold',
+    },
+    stateUnit: {
+        opacity: 0.7,
+        marginLeft: 4,
+    },
+    stateValue: {
+        animation: 'newStateEditorAnimation 2s ease-in-out',
+    },
+    stateTime: {
+        fontStyle: 'italic',
+    },
+    stateImage: {
+        maxWidth: 200,
+        maxHeight: 200,
+    },
 };
+
+function valueBlink(theme: IobTheme, color: string): any {
+    return {
+        '@keyframes newStateEditorAnimation': {
+            '0%': {
+                color: theme.palette.mode === 'dark' ? '#27cf00' : '#174e00',
+            },
+            '100%': {
+                color: color || (theme.palette.mode === 'dark' ? '#ffffff' : '#000000'),
+            },
+        },
+    };
+}
 
 const DEFAULT_ROLES = [
     'button',
@@ -495,11 +546,14 @@ interface ObjectBrowserEditObjectState {
     newId: string;
     customEditTabs?: EditSchemaTabEditor[];
     lang: ioBroker.Languages;
+    value: ioBroker.State | null | undefined;
 }
 
 class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, ObjectBrowserEditObjectState> {
     /** Original object stringified */
     private originalObj: string;
+    private subscribed = false;
+    private updateTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(props: ObjectBrowserEditObjectProps) {
         super(props);
@@ -540,7 +594,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             selectWrite: false,
             newId: '',
             lang: I18n.getLanguage(),
+            value: undefined,
         };
+
+        moment.locale(this.state.lang);
 
         this.originalObj = JSON.stringify(this.props.obj, null, 2);
     }
@@ -611,20 +668,36 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
 
         if (
+            this.state.tab === 'alias' &&
+            (!this.props.obj._id.startsWith('alias.0') || this.props.obj.type !== 'state')
+        ) {
+            this.setState({ tab: 'object' });
+        } else if (this.state.tab === 'state' && this.props.obj.type !== 'state') {
+            this.setState({ tab: 'object' });
+        } else if (
             this.state.tab !== 'object' &&
             this.state.tab !== 'common' &&
-            (this.state.tab !== 'alias' ||
-                (this.state.tab === 'alias' &&
-                    (!this.props.obj._id.startsWith('alias.0') || this.props.obj.type !== 'state'))) &&
+            this.state.tab !== 'alias' &&
+            this.state.tab !== 'state' &&
             !customEditTabs.find(tab => tab.key === this.state.tab)
         ) {
             this.setState({ tab: 'object' });
+        }
+
+        if (this.state.tab === 'state') {
+            this.subscribeOnState(true);
         }
 
         void this.props.socket.subscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
     componentWillUnmount(): void {
+        if (this.updateTimer) {
+            clearInterval(this.updateTimer);
+            this.updateTimer = null;
+        }
+        this.subscribeOnState(false);
+
         void this.props.socket.unsubscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
@@ -920,6 +993,237 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
+    renderStateTab(): JSX.Element | null {
+        if (
+            this.props.obj.type !== 'state' ||
+            // @ts-expect-error file is deprecated, but could appear
+            this.props.obj.common.type === 'file'
+        ) {
+            return null;
+        }
+
+        return (
+            <Tab
+                disabled={this.state.customError || this.state.error}
+                value="state"
+                label={this.props.t('State')}
+            />
+        );
+    }
+
+    renderStatePanel(): JSX.Element {
+        if (this.state.value === undefined || this.state.value === null) {
+            return <div>{this.props.t('State does not exist')}</div>;
+        }
+        if (typeof this.state.value !== 'object') {
+            return (
+                <div>
+                    <div>{this.props.t('State is invalid')}</div>
+                    <div>
+                        <pre>{JSON.stringify(this.state.value, null, 4)}</pre>
+                    </div>
+                </div>
+            );
+        }
+
+        let strVal: string | React.JSX.Element | undefined;
+        const styleValue: React.CSSProperties = {};
+        const v = this.state.value.val;
+        const type = typeof v;
+
+        if (v === undefined) {
+            strVal = '[undef]';
+            styleValue.color = '#bc6400';
+            styleValue.fontStyle = 'italic';
+        } else if (v === null) {
+            strVal = '(null)';
+            styleValue.color = '#0047b1';
+            styleValue.fontStyle = 'italic';
+        } else if (
+            typeof this.props.obj.common.role === 'string' &&
+            this.props.obj.common.role.match(/^value\.time|^date/)
+        ) {
+            // if timestamp
+            if (v && type === 'string') {
+                if (Utils.isStringInteger(v as string)) {
+                    // we assume a unix ts
+                    strVal = new Date(parseInt(v as string, 10)).toString();
+                } else {
+                    // check if parsable by new date
+                    try {
+                        const parsedDate = new Date(v as string);
+
+                        if (Utils.isValidDate(parsedDate)) {
+                            strVal = parsedDate.toString();
+                        }
+                    } catch {
+                        // ignore
+                    }
+                }
+            } else if (v && type === 'number') {
+                if ((v as number) > 946681200 && (v as number) < 946681200000) {
+                    // '2000-01-01T00:00:00' => 946681200000
+                    strVal = new Date((v as number) * 1_000).toString(); // maybe the time is in seconds (UNIX time)
+                } else if ((v as number) > 946681200000000) {
+                    // "null" and undefined could not be here. See `let v = (isCommon && isCommon.type === 'file') ....` above
+                    strVal = new Date(v as number).toString();
+                }
+            }
+        }
+
+        if (!strVal) {
+            if (type === 'number') {
+                if (!Number.isInteger(v)) {
+                    strVal = (Math.round((v as number) * 1_000_000_000) / 1_000_000_000).toString(); // remove 4.00000000000000001
+                    if (this.props.isFloatComma) {
+                        strVal = strVal.toString().replace('.', ',');
+                    }
+                }
+            } else if (type === 'boolean') {
+                strVal = v ? I18n.t('true') : I18n.t('false');
+                styleValue.color = v ? '#139800' : '#cd6b55';
+            } else if (type === 'object') {
+                strVal = JSON.stringify(v);
+            } else if (type === 'string' && (v as string).startsWith('data:image/')) {
+                strVal = (
+                    <img
+                        src={v as string}
+                        alt="img"
+                        style={styles.stateImage}
+                    />
+                );
+            } else {
+                strVal = v.toString();
+            }
+        }
+
+        Object.assign(styleValue, valueBlink(this.props.theme, styleValue.color));
+
+        return (
+            <div
+                style={{
+                    ...styles.divWithoutTitle,
+                    padding: '24px 24px 0 24px',
+                    fontSize: 16,
+                }}
+            >
+                <div
+                    style={{
+                        ...styles.stateRow,
+                        marginBottom: 24,
+                    }}
+                >
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_value')}:</div>
+                    <Box
+                        component="div"
+                        key={typeof strVal === 'string' ? strVal : 'image'}
+                        sx={styleValue}
+                        style={styles.stateValue}
+                    >
+                        {strVal}
+                        {(this.props.obj.common as ioBroker.StateCommon)?.unit ? (
+                            <span style={styles.stateUnit}>{(this.props.obj.common as ioBroker.StateCommon).unit}</span>
+                        ) : null}
+                    </Box>
+                </div>
+                <div style={styles.stateRow}>
+                    <div style={styles.stateTitle}>{I18n.t('Type')}:</div>
+                    <div style={styles.stateValue}>{type}</div>
+                </div>
+                <div style={styles.stateRow}>
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_ts')}:</div>
+                    <Tooltip
+                        title={new Date(this.state.value.ts).toLocaleString()}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <div style={styles.stateValue}>
+                            <span style={styles.stateTime}>{moment(this.state.value.ts).fromNow()}</span>
+                        </div>
+                    </Tooltip>
+                </div>
+                <div style={styles.stateRow}>
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_ack')}:</div>
+                    <div
+                        style={{
+                            ...styles.stateValue,
+                            color: this.state.value.ack ? 'green' : 'red',
+                        }}
+                    >
+                        {this.state.value.ack ? I18n.t('Acknowledged') : I18n.t('Command')}
+                        {this.state.value.ack ? ' (true)' : ' (false)'}
+                    </div>
+                </div>
+                <div style={styles.stateRow}>
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_lc')}:</div>
+                    <Tooltip
+                        title={new Date(this.state.value.lc).toLocaleString()}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <div style={styles.stateValue}>
+                            <span style={styles.stateTime}>{moment(this.state.value.lc).fromNow()}</span>
+                        </div>
+                    </Tooltip>
+                </div>
+                <div style={styles.stateRow}>
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_quality')}:</div>
+                    <div style={styles.stateValue}>{Utils.quality2text(this.state.value.q || 0).join(', ')}</div>
+                </div>
+                <div style={styles.stateRow}>
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_from')}:</div>
+                    <div style={styles.stateValue}>{this.state.value.from}</div>
+                </div>
+                <div style={styles.stateRow}>
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_user')}:</div>
+                    <div style={styles.stateValue}>{this.state.value.user || '--'}</div>
+                </div>
+                {this.state.value.expire ? (
+                    <div style={styles.stateRow}>
+                        <div style={styles.stateTitle}>{I18n.t('ra_tooltip_expire')}:</div>
+                        <div style={styles.stateValue}>
+                            {this.state.value.expire} {I18n.t('sc_seconds')}
+                        </div>
+                    </div>
+                ) : null}
+                {this.state.value.c ? (
+                    <div style={styles.stateRow}>
+                        <div style={styles.stateTitle}>{I18n.t('ra_tooltip_comment')}:</div>
+                        <div style={styles.stateValue}>{this.state.value.c}</div>
+                    </div>
+                ) : null}
+            </div>
+        );
+    }
+
+    onStateChange = (id: string, state: ioBroker.State | null | undefined): void => {
+        if (JSON.stringify(state) !== JSON.stringify(this.state.value)) {
+            this.setState({ value: state });
+        }
+    };
+
+    subscribeOnState(enable: boolean): void {
+        if (enable) {
+            if (!this.subscribed) {
+                if (!this.updateTimer) {
+                    this.updateTimer = setInterval(() => {
+                        // update times
+                        this.forceUpdate();
+                    }, 5000);
+                }
+                this.subscribed = true;
+                void this.props.socket.subscribeState(this.props.obj._id, this.onStateChange);
+            }
+        } else {
+            if (this.subscribed) {
+                if (this.updateTimer) {
+                    clearInterval(this.updateTimer);
+                    this.updateTimer = null;
+                }
+                this.subscribed = false;
+                void this.props.socket.unsubscribeState(this.props.obj._id, this.onStateChange);
+            }
+        }
+    }
+
     renderTabs(parsedObj: ioBroker.Object | null | undefined): JSX.Element {
         return (
             <Tabs
@@ -953,6 +1257,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         } catch {
                             // ignore
                         }
+                        this.subscribeOnState(false);
+                    } else if (tab === 'state') {
+                        this.subscribeOnState(true);
+                    } else {
+                        this.subscribeOnState(false);
                     }
 
                     this.setState({ tab });
@@ -968,6 +1277,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     disabled={this.state.customError}
                     label={this.props.t('Object data')}
                 />
+                {this.renderStateTab()}
                 {this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' && (
                     <Tab
                         disabled={this.state.customError || this.state.error}
@@ -1852,6 +2162,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         ? this.renderAliasEdit()
                         : null}
                     {this.state.tab === 'common' ? this.renderCommonEdit() : null}
+                    {this.state.tab === 'state' ? this.renderStatePanel() : null}
                     {this.renderCustomPanel()}
                     {this.renderSelectDialog()}
                 </DialogContent>

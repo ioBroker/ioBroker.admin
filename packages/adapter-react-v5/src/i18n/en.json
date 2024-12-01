@@ -115,6 +115,7 @@
     "ra_License %s": "License %s",
     "ra_License agreement": "License agreement",
     "ra_License does not exist": "License does not exist",
+    "ra_tooltip_expire": "Expires in",
     "ra_License expired on %s": "License expired on %s",
     "ra_License for other product \"%s\"": "License for other product \"%s\"",
     "ra_License is for version %s, but required version is %s.": "License is for version %s, but required version is %s.",

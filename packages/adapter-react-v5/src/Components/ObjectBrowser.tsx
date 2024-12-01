@@ -2045,6 +2045,7 @@ function formatValue(options: FormatValueOptions): {
     if (isCommon?.unit) {
         valText.u = isCommon.unit;
     }
+
     let valFull:
         | {
               /** label */

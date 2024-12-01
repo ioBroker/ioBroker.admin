@@ -69,7 +69,7 @@ And with rest-api instance: `https://iobroker.mydomain.com/ioBrokerAPI/ => http:
 You can add the following lines into Reverse Proxy tab to let Intro tab run behind reverse proxy properly:
 
 | Global path       | Instance      | Instance path behind proxy |
-| ----------------- | ------------- | -------------------------- |
+|-------------------|---------------|----------------------------|
 | `/ioBrokerAdmin/` | `web.0`       | `/ioBrokerWeb/`            |
 |                   | `rest-api.0`  | `/ioBrokerAPI/`            |
 |                   | `admin.0`     | `/ioBrokerAdmin/`          |
@@ -87,6 +87,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+-   (@GermanBluefox) Showed value in object edit dialog
+
 ### 7.4.3 (2024-12-01)
 
 -   (@GermanBluefox) Changed information box on the hosts tab
