@@ -87,8 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 7.4.3 (2024-12-01)
 
 -   (@GermanBluefox) Changed information box on the hosts tab
 -   (@GermanBluefox) Corrected some errors in JsonConfig library
@@ -113,12 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 -   (@GermanBluefox) Some GUI packages were updated.
 -   (@GermanBluefox) Improved file viewer. Added icons viewer
-
-### 7.3.1 (2024-11-14)
-
--   (@GermanBluefox) Corrected cloud icon for admin
--   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
--   (@GermanBluefox) Corrected the password field in JSON-Config
 
 ## License
 
