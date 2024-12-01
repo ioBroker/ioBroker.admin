@@ -69,7 +69,7 @@ And with rest-api instance: `https://iobroker.mydomain.com/ioBrokerAPI/ => http:
 You can add the following lines into Reverse Proxy tab to let Intro tab run behind reverse proxy properly:
 
 | Global path       | Instance      | Instance path behind proxy |
-|-------------------|---------------|----------------------------|
+| ----------------- | ------------- | -------------------------- |
 | `/ioBrokerAdmin/` | `web.0`       | `/ioBrokerWeb/`            |
 |                   | `rest-api.0`  | `/ioBrokerAPI/`            |
 |                   | `admin.0`     | `/ioBrokerAdmin/`          |
@@ -87,6 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+
 ### **WORK IN PROGRESS**
 
 -   (@GermanBluefox) Changed information box on the hosts tab
@@ -94,7 +95,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Added flag expertMode to hide JSON config controls for non-experts
 -   (@GermanBluefox) Corrected cloud icon for admin
 -   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
--   
+-
+
 ### 7.4.2 (2024-11-25)
 
 -   (@GermanBluefox) Made improvement for JSONConfig components
