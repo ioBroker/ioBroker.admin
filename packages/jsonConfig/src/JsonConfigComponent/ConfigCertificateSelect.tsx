@@ -19,7 +19,7 @@ class ConfigCertificateSelect extends ConfigGeneric<ConfigCertificateSelectProps
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         // Important: getCertificates is only available in AdminConnection
-        const certificates = await this.props.socket.getCertificates();
+        const certificates = await this.props.oContext.socket.getCertificates();
 
         const selectOptions: { label: string; value: string }[] = certificates
             .filter(el => {

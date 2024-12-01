@@ -30,14 +30,16 @@ function checkLinuxPassword(login: string, password: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
         try {
             const su = spawn('su', [login]);
+            let closed = false;
             let result = false;
             let responseTimeout: NodeJS.Timeout | null = setTimeout(() => {
+                closed = true;
                 responseTimeout = null;
                 su.kill();
             }, 3000);
 
             function _checkPassword(data: string): void {
-                if (!responseTimeout) {
+                if (!responseTimeout || closed) {
                     return;
                 }
                 data = data.replace(/\r/g, ' ').replace(/\n/g, ' ').trim();
@@ -49,7 +51,7 @@ function checkLinuxPassword(login: string, password: string): Promise<boolean> {
                         return;
                     }
                     setTimeout(() => {
-                        if (!responseTimeout) {
+                        if (!responseTimeout || closed) {
                             return;
                         }
                         console.log(`[LOG] write whoami`);
@@ -67,6 +69,33 @@ function checkLinuxPassword(login: string, password: string): Promise<boolean> {
                     su.kill();
                 }
             }
+            su.stdin?.on('error', (): void => {
+                closed = true;
+            });
+            su.stdout?.on('error', (): void => {
+                closed = true;
+            });
+            su.stderr?.on('error', (): void => {
+                closed = true;
+            });
+            su.stdin?.on('finish', (): void => {
+                closed = true;
+            });
+            su.stdout?.on('finish', (): void => {
+                closed = true;
+            });
+            su.stderr?.on('finish', (): void => {
+                closed = true;
+            });
+            su.stdin?.on('close', (): void => {
+                closed = true;
+            });
+            su.stdout?.on('close', (): void => {
+                closed = true;
+            });
+            su.stderr?.on('close', (): void => {
+                closed = true;
+            });
 
             // Listen for data on stdout
             su.stdout.on('data', data => {
@@ -84,6 +113,7 @@ function checkLinuxPassword(login: string, password: string): Promise<boolean> {
 
             // Listen for the close event
             su.on('close', () => {
+                closed = true;
                 console.log(`[LOG] -------- closed with result: ${result}\n`);
                 if (responseTimeout) {
                     clearTimeout(responseTimeout);
@@ -92,6 +122,7 @@ function checkLinuxPassword(login: string, password: string): Promise<boolean> {
                 resolve(result);
             });
         } catch (e: unknown) {
+            closed = true;
             console.error(`[LOG] -------- Error by execution: ${(e as Error).message}\n`);
             reject(new Error(e as string));
         }

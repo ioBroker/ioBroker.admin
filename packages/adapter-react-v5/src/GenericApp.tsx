@@ -361,7 +361,7 @@ export class GenericApp<
                             });
                         }
 
-                        waitPromise = (waitPromise instanceof Promise) ? waitPromise : Promise.resolve();
+                        waitPromise = waitPromise instanceof Promise ? waitPromise : Promise.resolve();
 
                         void waitPromise.then(() => {
                             if (instanceObj) {

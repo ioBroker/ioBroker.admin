@@ -58,7 +58,7 @@ class ConfigCoordinates extends ConfigGeneric<ConfigCoordinatesProps, ConfigCoor
     }
 
     async getSystemCoordinates(): Promise<void> {
-        const obj = await this.props.socket.getCompactSystemConfig();
+        const obj = await this.props.oContext.socket.getCompactSystemConfig();
         if (obj?.common && (obj.common.longitude || obj.common.latitude)) {
             window.alert(I18n.t('ra_Used system settings'));
             if (this.props.schema.longitudeName && this.props.schema.latitudeName) {

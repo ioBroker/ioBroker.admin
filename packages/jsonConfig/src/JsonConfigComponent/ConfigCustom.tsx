@@ -125,7 +125,7 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
         if (this.props.schema.url.startsWith('./')) {
             url = `${window.location.protocol}//${window.location.host}${this.props.schema.url.replace(/^\./, '')}`;
         } else {
-            url = `${window.location.protocol}//${window.location.host}/adapter/${this.props.adapterName}/${this.props.schema.url}`;
+            url = `${window.location.protocol}//${window.location.host}/adapter/${this.props.oContext.adapterName}/${this.props.schema.url}`;
         }
         const [uniqueName, fileToLoad, ...componentNameParts] = this.props.schema.name.split('/');
         const componentName = componentNameParts.join('/');
@@ -230,7 +230,7 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                         // marginRight: 8,
                         textAlign: 'left',
                         ...schema.style,
-                        ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
+                        ...(this.props.oContext.themeType === 'dark' ? schema.darkStyle : {}),
                     }}
                 >
                     {this.state.error ? <div>{this.state.error}</div> : <LinearProgress />}

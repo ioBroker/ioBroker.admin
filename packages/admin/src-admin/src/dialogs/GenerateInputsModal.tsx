@@ -180,6 +180,7 @@ interface SchemaItem {
 }
 
 interface GenerateInputsModalProps {
+    systemConfig: ioBroker.SystemConfigCommon;
     themeType: ThemeType;
     themeName: ThemeName;
     theme: IobTheme;
@@ -196,6 +197,7 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
     socket,
     newInstance,
     onClose,
+    systemConfig,
 }) => {
     const [error, setError] = useState<Record<string, string>>({});
 
@@ -283,25 +285,29 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                     >
                         <Paper style={styles.paperTable}>
                             <ConfigPanel
+                                oContext={{
+                                    socket,
+                                    themeType,
+                                    theme,
+                                    isFloatComma: true,
+                                    instance: 0,
+                                    dateFormat: 'YYYY.MM.DD',
+                                    forceUpdate: () => {},
+                                    onCommandRunning: () => {},
+                                    adapterName: 'dummy',
+                                    _themeName: themeName,
+                                    systemConfig,
+                                }}
                                 data={schemaData}
-                                socket={socket}
-                                themeType={themeType}
                                 themeName={themeName}
-                                theme={theme}
                                 onChange={setSchemaData}
-                                schema={schema as unknown as ConfigItemPanel}
                                 onError={(attr: string, _error?: string): void =>
                                     setError({ ...error, [attr]: _error })
                                 }
+                                schema={schema as unknown as ConfigItemPanel}
                                 // all unused properties
-                                isFloatComma
-                                instance={0}
                                 alive
-                                dateFormat="YYYY.MM.DD"
-                                forceUpdate={() => {}}
-                                onCommandRunning={() => {}}
                                 changed={false}
-                                adapterName="dummy"
                                 originalData={schemaData}
                                 common={{}}
                             />

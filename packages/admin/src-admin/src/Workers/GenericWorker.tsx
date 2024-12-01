@@ -170,8 +170,8 @@ export default class GenericWorker<T extends ioBroker.ObjectType> {
 
                 return this.objects;
             })
-            .catch(e => {
-                window.alert(`Cannot get objects of type ${this.objectType}, with root "${this.root}": ${e}`);
+            .catch((e: unknown): null => {
+                window.alert(`Cannot get objects of type ${this.objectType}, with root "${this.root}": ${e as Error}`);
                 return null;
             });
 

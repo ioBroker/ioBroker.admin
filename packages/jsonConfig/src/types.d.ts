@@ -1,5 +1,12 @@
 import type React from 'react';
-import type { ObjectBrowserCustomFilter, ObjectBrowserType } from '@iobroker/adapter-react-v5';
+import type {
+    AdminConnection,
+    IobTheme,
+    ObjectBrowserCustomFilter,
+    ObjectBrowserType,
+    ThemeType,
+} from '@iobroker/adapter-react-v5';
+import type { ConfigGeneric, DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
 
 declare module '@mui/material/Button' {
     interface ButtonPropsColorOverrides {
@@ -168,6 +175,8 @@ export interface ConfigItem {
         ignoreOwnChanges?: boolean;
     };
     doNotSave?: boolean;
+    /** If the control should be shown ONLY in the expert mode */
+    expertMode?: boolean;
     noMultiEdit?: boolean;
     confirm?: ConfigItemConfirmData;
     icon?: ConfigIconType;
@@ -993,6 +1002,33 @@ export type ConfigItemAny =
     | ConfigItemTopic
     | ConfigItemObjectId
     | ConfigItemQrCode;
+
+export type JsonConfigContext = {
+    DeviceManager?: React.FC<DeviceManagerPropsProps>;
+    adapterName: string;
+    changeLanguage?: () => void;
+    customs?: Record<string, typeof ConfigGeneric>;
+    dateFormat: string;
+    embedded?: boolean;
+    expertMode?: boolean;
+    forceUpdate: (attr: string | string[], data: any) => void;
+    imagePrefix?: string;
+    instance: number;
+    instanceObj?: ioBroker.InstanceObject;
+    isFloatComma: boolean;
+    /** If true, this field edits multiple data points at once and thus contains an array, should not be saved if not changed */
+    multiEdit?: boolean;
+    /** Backend request to refresh data */
+    onBackEndCommand?: (command?: BackEndCommand) => void;
+    onCommandRunning: (commandRunning: boolean) => void;
+    onValueChange?: (attr: string, value: any, saveConfig: boolean) => void;
+    registerOnForceUpdate?: (attr: string, cb?: (data: any) => void) => void;
+    socket: AdminConnection;
+    systemConfig: ioBroker.SystemConfigCommon;
+    theme: IobTheme;
+    themeType: ThemeType;
+    _themeName: ThemeName;
+};
 
 // Notification GUI
 

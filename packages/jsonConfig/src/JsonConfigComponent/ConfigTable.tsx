@@ -313,7 +313,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         }
 
         if (this.props.schema.encryptedAttributes) {
-            const systemConfig = await this.props.socket.getCompactSystemConfig();
+            const systemConfig = await this.props.oContext.socket.getCompactSystemConfig();
             this.secret = systemConfig?.native.secret || this.secret;
 
             _value.forEach((el: Record<string, any>) => {
@@ -363,24 +363,15 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
         return (
             <ConfigPanel
-                DeviceManager={this.props.DeviceManager}
-                adapterName={this.props.adapterName}
+                oContext={this.props.oContext}
                 alive={this.props.alive}
                 arrayIndex={idx}
                 changed={this.props.changed}
                 common={this.props.common}
                 custom
-                customs={this.props.customs}
                 data={data}
-                dateFormat={this.props.dateFormat}
-                forceUpdate={this.props.forceUpdate}
                 globalData={this.props.data}
-                imagePrefix={this.props.imagePrefix}
                 index={idx + this.state.iteration}
-                instance={this.props.instance}
-                instanceObj={this.props.instanceObj}
-                isFloatComma={this.props.isFloatComma}
-                onBackEndCommand={this.props.onBackEndCommand}
                 onChange={(attr: string, valueChange: any) => {
                     const newObj: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
                     newObj[idx][attr] = valueChange;
@@ -389,16 +380,11 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                         this.onChangeWrapper(newObj, true);
                     });
                 }}
-                onCommandRunning={this.props.onCommandRunning}
                 onError={(error: string, attr?: string) => this.onError(error, attr)}
                 originalData={this.props.originalData}
                 schema={schemaItem as ConfigItemPanel}
-                socket={this.props.socket}
-                systemConfig={this.props.systemConfig}
                 table
-                theme={this.props.theme}
                 themeName={this.props.themeName}
-                themeType={this.props.themeType}
             />
         );
     }
@@ -682,7 +668,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         const now = new Date();
         el.setAttribute(
             'download',
-            `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${this.props.adapterName}.${this.props.instance}_${this.props.attr}.csv`,
+            `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${this.props.oContext.adapterName}.${this.props.oContext.instance}_${this.props.attr}.csv`,
         );
 
         el.style.display = 'none';
@@ -848,7 +834,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                   currentValue.defaultFunc,
                                   this.props.data,
                                   this.props.customObj,
-                                  this.props.instanceObj,
+                                  this.props.oContext.instanceObj,
                                   newValue.length,
                                   this.props.data,
                               )

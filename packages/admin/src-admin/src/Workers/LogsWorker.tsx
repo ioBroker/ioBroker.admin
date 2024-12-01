@@ -387,8 +387,8 @@ export default class LogsWorker {
 
                 return { logs: this.logs, logSize };
             })
-            .catch(e => {
-                window.alert(`Cannot get logs: ${e}`);
+            .catch((e: unknown): { logs: LogLineSaved[] | null; logSize: number } => {
+                window.alert(`Cannot get logs: ${e as Error}`);
                 return { logs: this.logs, logSize: 0 };
             });
 

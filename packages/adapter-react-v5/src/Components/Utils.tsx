@@ -1714,9 +1714,7 @@ export class Utils {
         const blob = await response.blob();
         return new Promise(resolve => {
             const reader = new FileReader();
-            reader.onload = function () {
-                resolve(this.result?.toString() || '');
-            };
+            reader.onload = (): void => resolve(reader.result?.toString() || '');
             reader.readAsDataURL(blob);
         });
     }

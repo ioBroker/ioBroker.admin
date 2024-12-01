@@ -35,7 +35,7 @@ class ConfigStaticDivider extends ConfigGeneric<ConfigInstanceSelectProps, Confi
             <Box
                 component="hr"
                 sx={Utils.getStyle(
-                    this.props.theme,
+                    this.props.oContext.theme,
                     styles.fullWidth,
                     this.props.schema.color === 'primary'
                         ? styles.primary
@@ -43,7 +43,7 @@ class ConfigStaticDivider extends ConfigGeneric<ConfigInstanceSelectProps, Confi
                           ? styles.secondary
                           : {
                                 backgroundColor:
-                                    this.props.schema.color || (this.props.themeType === 'dark' ? '#333' : '#ddd'),
+                                    this.props.schema.color || (this.props.oContext.themeType === 'dark' ? '#333' : '#ddd'),
                             },
                     {
                         height: this.props.schema.color ? this.props.schema.height || 2 : this.props.schema.height || 1,

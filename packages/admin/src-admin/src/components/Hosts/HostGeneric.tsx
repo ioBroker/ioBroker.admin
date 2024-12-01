@@ -809,8 +809,9 @@ export default abstract class HostGeneric<
                               right: -3,
                               top: 13,
                               padding: '0 4px',
+                              cursor: 'pointer',
                           }
-                        : undefined
+                        : { cursor: 'pointer' }
                 }
                 title={this.props.t('Hosts notifications')}
                 badgeContent={this.state.hostNotifications.warning + this.state.hostNotifications.other}

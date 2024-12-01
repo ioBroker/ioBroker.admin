@@ -224,6 +224,7 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
                 {currentInstance ? (
                     <Paper style={styles.paper}>
                         <Config
+                            expertMode
                             style={styles.iframe}
                             adapter={currentInstance.id.split('.')[0]}
                             instance={parseInt(currentInstance.id.split('.')[1], 10)}

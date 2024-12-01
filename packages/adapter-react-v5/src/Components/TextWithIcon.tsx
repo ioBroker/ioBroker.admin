@@ -154,4 +154,4 @@ export function TextWithIcon(props: TextWithIconProps): React.JSX.Element {
             </div>
         </div>
     );
-};
+}

@@ -28,15 +28,16 @@ class ConfigAlive extends ConfigGeneric<ConfigAliveProps, ConfigAliveState> {
 
         const instance = this.getInstance();
 
-        void this.props.socket
+        void this.props.oContext.socket
             .getState(`${instance}.alive`)
             .then(state => this.setState({ alive: !!(state && state.val), instance }));
     }
 
     getInstance(): string {
-        let instance = this.props.schema.instance || `${this.props.adapterName}.${this.props.instance}`;
+        let instance =
+            this.props.schema.instance || `${this.props.oContext.adapterName}.${this.props.oContext.instance}`;
         if (instance.includes('${')) {
-            instance = this.getPattern(instance);
+            instance = this.getPattern(instance, null, true);
         }
         if (instance && !instance.startsWith('system.adapter.')) {
             instance = `system.adapter.${instance}`;
@@ -49,7 +50,7 @@ class ConfigAlive extends ConfigGeneric<ConfigAliveProps, ConfigAliveState> {
             setTimeout(() => {
                 const instance = this.getInstance();
                 if (instance) {
-                    void this.props.socket
+                    void this.props.oContext.socket
                         .getState(`${instance}.alive`)
                         .then(state => this.setState({ alive: !!(state && state.val), instance }));
                 } else {

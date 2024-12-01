@@ -20,7 +20,7 @@ class ConfigRoom extends ConfigGeneric<ConfigRoomProps, ConfigRoomState> {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        void this.props.socket
+        void this.props.oContext.socket
             .getEnums('rooms')
             .then(enums => {
                 const selectOptions: { value: string; label: string; obj?: ioBroker.EnumObject }[] = Object.keys(
@@ -63,7 +63,7 @@ class ConfigRoom extends ConfigGeneric<ConfigRoomProps, ConfigRoomState> {
                             item.obj ? (
                                 <TextWithIcon
                                     value={item.obj}
-                                    themeType={this.props.themeType}
+                                    themeType={this.props.oContext.themeType}
                                     lang={I18n.getLanguage()}
                                 />
                             ) : (
@@ -88,7 +88,7 @@ class ConfigRoom extends ConfigGeneric<ConfigRoomProps, ConfigRoomState> {
                             {it.obj ? (
                                 <TextWithIcon
                                     value={it.obj}
-                                    themeType={this.props.themeType}
+                                    themeType={this.props.oContext.themeType}
                                     lang={I18n.getLanguage()}
                                 />
                             ) : (

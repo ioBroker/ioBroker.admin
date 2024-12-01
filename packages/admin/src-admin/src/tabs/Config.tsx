@@ -149,6 +149,7 @@ interface ConfigProps {
     instance: number;
     materialize: boolean;
     tab?: boolean;
+    expertMode: boolean;
     jsonConfig: boolean;
     socket: AdminConnection;
     themeName: ThemeName;
@@ -461,6 +462,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         if (this.props.jsonConfig) {
             return (
                 <JsonConfig
+                    expertMode={this.props.expertMode}
                     theme={this.props.theme}
                     width={this.props.width}
                     adapterName={this.props.adapter}

@@ -54,8 +54,8 @@ class ConfigChip extends ConfigGeneric<ConfigChipProps, ConfigGenericState> {
                             }
                         });
                     }}
-                    theme={this.props.theme}
-                    onDelete={(chip, index) => {
+                    theme={this.props.oContext.theme}
+                    onDelete={(_chip, index) => {
                         const newValue = JSON.parse(JSON.stringify(value));
                         newValue.splice(index, 1);
                         this.setState({ value: newValue }, () => {
