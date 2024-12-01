@@ -164,7 +164,7 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
             valueTxt = JSON.stringify(this.props.schema.data);
         } else if (typeof this.props.schema.data === 'number') {
             valueTxt = this.props.schema.data.toString();
-            if (this.props.isFloatComma) {
+            if (this.props.oContext.isFloatComma) {
                 valueTxt = valueTxt.replace('.', ',');
             }
         } else if (!this.props.schema.booleanAsCheckbox || typeof this.props.schema.data !== 'boolean') {
@@ -227,8 +227,8 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
         }
 
         if (this.props.schema.blinkOnUpdate && this.props.schema.blink) {
-            const style1 = valueBlinkOnce(this.props.theme, true, this.props.schema.blinkOnUpdate);
-            const style2 = valueBlink(this.props.theme, this.props.schema.blink);
+            const style1 = valueBlinkOnce(this.props.oContext.theme, true, this.props.schema.blinkOnUpdate);
+            const style2 = valueBlink(this.props.oContext.theme, this.props.schema.blink);
             value = (
                 <Box
                     key={valueTxt}
@@ -238,7 +238,7 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
                 </Box>
             );
         } else if (this.props.schema.blinkOnUpdate) {
-            const style = valueBlinkOnce(this.props.theme, false, this.props.schema.blinkOnUpdate);
+            const style = valueBlinkOnce(this.props.oContext.theme, false, this.props.schema.blinkOnUpdate);
             value = (
                 <Box
                     key={valueTxt}
@@ -248,7 +248,7 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
                 </Box>
             );
         } else if (this.props.schema.blink) {
-            const style = valueBlink(this.props.theme, this.props.schema.blink);
+            const style = valueBlink(this.props.oContext.theme, this.props.schema.blink);
             value = <Box sx={style}>{value}</Box>;
         }
 
@@ -304,7 +304,7 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
         };
         if (this.props.schema.highlight) {
             boxStyle['&:hover'] = {
-                backgroundColor: this.props.themeType === 'dark' ? '#51515180' : '#b8b8b880',
+                backgroundColor: this.props.oContext.themeType === 'dark' ? '#51515180' : '#b8b8b880',
             };
         }
         if (multiLine) {

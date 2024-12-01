@@ -21,7 +21,7 @@ class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
     async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
-        const uuidObj = await this.props.socket.getObject('system.meta.uuid');
+        const uuidObj = await this.props.oContext.socket.getObject('system.meta.uuid');
         this.setState({ uuid: uuidObj?.native?.uuid || 'unknown' });
     }
 

@@ -29,14 +29,12 @@ import {
     DialogConfirm,
     Icon,
     Utils,
-    type AdminConnection,
     I18n,
     type Connection,
     type ThemeType,
     type ThemeName,
-    type IobTheme,
 } from '@iobroker/adapter-react-v5';
-import type { BackEndCommand, ConfigIconType, ConfigItemAny, ConfigItemConfirmData } from '#JC/types';
+import type { ConfigIconType, ConfigItemAny, ConfigItemConfirmData, JsonConfigContext } from '#JC/types';
 
 const DEFAULT_SM_SIZE = window.innerWidth <= 600 ? 12 : undefined;
 
@@ -75,12 +73,10 @@ export interface DeviceManagerPropsProps {
 }
 
 export interface ConfigGenericProps {
-    DeviceManager?: React.FC<DeviceManagerPropsProps>;
-    adapterName: string;
+    oContext: JsonConfigContext;
     alive: boolean;
     arrayIndex?: number;
     attr?: string;
-    changeLanguage?: () => void;
     changed: boolean;
     className?: string;
     style?: Record<string, any>;
@@ -88,40 +84,23 @@ export interface ConfigGenericProps {
     common: Record<string, any>;
     custom?: boolean;
     customObj?: Record<string, any>;
-    customs?: Record<string, typeof ConfigGeneric>;
     data: Record<string, any>;
-    dateFormat: string;
     disabled?: boolean;
-    forceUpdate: (attrs: string[], data: Record<string, any>) => void;
     // filled only by table and represents the obj.native or obj.common.custom['adapter.X'] object
     globalData?: Record<string, any>;
-    imagePrefix?: string;
     // filled only by table
     index?: number;
-    instance: number;
-    instanceObj?: ioBroker.InstanceObject;
-    isFloatComma: boolean;
     isParentTab?: boolean;
-    /** If true, this field edits multiple data points at once and thus contains an array, should not be saved if not changed */
-    multiEdit?: boolean;
     onChange: (attrOrData: string | Record<string, any>, val?: any, cb?: () => void, saveConfig?: boolean) => void;
-    onCommandRunning: (running: boolean) => void;
     onError: (attr: string, error?: string) => void;
-    /** Backend request to refresh data */
-    onBackEndCommand?: (command?: BackEndCommand) => void;
     originalData: Record<string, any>;
-    registerOnForceUpdate?: (attr: string, onUpdate?: (data: Record<string, any>) => void) => void;
     /** This indicates that the component is the very firsts one - root */
     root?: boolean;
     /** Provided props by the specific component */
     schema: ConfigItemAny;
-    socket: AdminConnection;
-    systemConfig?: ioBroker.SystemConfigCommon;
     /** This item is in the table. Maybe some layouts must be changed */
     table?: boolean;
     themeName: ThemeName;
-    themeType: ThemeType;
-    theme: IobTheme;
 }
 
 export interface ConfigGenericState {
@@ -180,7 +159,7 @@ export default class ConfigGeneric<
                           props.schema.defaultFunc,
                           props.data,
                           props.customObj,
-                          props.instanceObj,
+                          props.oContext.instanceObj,
                           props.arrayIndex,
                           props.globalData,
                       )
@@ -202,8 +181,8 @@ export default class ConfigGeneric<
     }
 
     componentDidMount(): void {
-        if (this.props.registerOnForceUpdate) {
-            this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
+        if (this.props.oContext.registerOnForceUpdate) {
+            this.props.oContext.registerOnForceUpdate(this.props.attr, this.onUpdate);
         }
         const LIKE_SELECT = ['select', 'autocomplete', 'autocompleteSendTo'];
         // init default value
@@ -216,12 +195,12 @@ export default class ConfigGeneric<
                 setTimeout(() => {
                     if (this.props.custom) {
                         this.props.onChange(this.props.attr, this.defaultValue, () =>
-                            setTimeout(() => this.props.forceUpdate([this.props.attr], this.props.data), 100),
+                            setTimeout(() => this.props.oContext.forceUpdate([this.props.attr], this.props.data), 100),
                         );
                     } else {
                         ConfigGeneric.setValue(this.props.data, this.props.attr, this.defaultValue);
                         this.props.onChange(this.props.data, undefined, () =>
-                            this.props.forceUpdate([this.props.attr], this.props.data),
+                            this.props.oContext.forceUpdate([this.props.attr], this.props.data),
                         );
                     }
                 }, 100);
@@ -236,7 +215,7 @@ export default class ConfigGeneric<
             this.defaultSendToDone = true;
             let data: any = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
-                const dataStr = this.getPattern(this.props.schema.jsonData);
+                const dataStr = this.getPattern(this.props.schema.jsonData, null, true);
                 try {
                     data = JSON.parse(dataStr);
                 } catch {
@@ -253,18 +232,22 @@ export default class ConfigGeneric<
                 data = null;
             }
 
-            void this.props.socket
-                .sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.defaultSendTo, data)
+            void this.props.oContext.socket
+                .sendTo(
+                    `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
+                    this.props.schema.defaultSendTo,
+                    data,
+                )
                 .then((value: any) => {
                     if (value !== null && value !== undefined) {
                         if (this.props.custom) {
                             this.props.onChange(this.props.attr, value, () =>
-                                this.props.forceUpdate([this.props.attr], this.props.data),
+                                this.props.oContext.forceUpdate([this.props.attr], this.props.data),
                             );
                         } else {
                             ConfigGeneric.setValue(this.props.data, this.props.attr, value);
                             this.props.onChange(this.props.data, undefined, () =>
-                                this.props.forceUpdate([this.props.attr], this.props.data),
+                                this.props.oContext.forceUpdate([this.props.attr], this.props.data),
                             );
                         }
                     }
@@ -273,14 +256,17 @@ export default class ConfigGeneric<
             this.defaultSendToDone = false;
             if (!this.props.schema.allowSaveWithError) {
                 // show error, that instance did not start
-                this.onError(this.props.attr, I18n.t('ra_Instance %s is not alive', this.props.instance.toString()));
+                this.onError(
+                    this.props.attr,
+                    I18n.t('ra_Instance %s is not alive', this.props.oContext.instance.toString()),
+                );
             }
         }
     }
 
     componentWillUnmount(): void {
-        if (this.props.registerOnForceUpdate) {
-            this.props.registerOnForceUpdate(this.props.attr);
+        if (this.props.oContext.registerOnForceUpdate) {
+            this.props.oContext.registerOnForceUpdate(this.props.attr);
         }
         if (this.sendToTimeout) {
             clearTimeout(this.sendToTimeout);
@@ -348,7 +334,7 @@ export default class ConfigGeneric<
         if (typeof text === 'string') {
             const strText = noTranslation ? text : I18n.t(text);
             if (strText.includes('${')) {
-                return this.getPattern(strText);
+                return this.getPattern(strText, null, noTranslation);
             }
             return strText;
         }
@@ -358,9 +344,9 @@ export default class ConfigGeneric<
             if ((text as any).func) {
                 // calculate pattern
                 if (typeof (text as any).func === 'object') {
-                    return this.getPattern((text as any).func[this.lang] || (text as any).func.en || '');
+                    return this.getPattern((text as any).func[this.lang] || (text as any).func.en || '', null, true);
                 }
-                return this.getPattern((text as any).func);
+                return this.getPattern((text as any).func, null, noTranslation);
             }
 
             return text[this.lang] || text.en || '';
@@ -489,7 +475,7 @@ export default class ConfigGeneric<
             if (iconSettings.endsWith('.png') || iconSettings.endsWith('.svg') || iconSettings.endsWith('.jpg')) {
                 // this path is relative to ./adapter/NAME
                 if (!iconSettings.startsWith('http://') && !iconSettings.startsWith('https://')) {
-                    iconSettings = `./adapter/${this.props.adapterName}/${iconSettings}`;
+                    iconSettings = `./adapter/${this.props.oContext.adapterName}/${iconSettings}`;
                 }
             }
 
@@ -601,7 +587,7 @@ export default class ConfigGeneric<
                             dep.onChange.calculateFunc,
                             data,
                             this.props.customObj,
-                            this.props.instanceObj,
+                            this.props.oContext.instanceObj,
                             this.props.arrayIndex,
                             this.props.globalData,
                         );
@@ -658,7 +644,7 @@ export default class ConfigGeneric<
                       this.props.schema.onChange.calculateFunc,
                       data,
                       this.props.customObj,
-                      this.props.instanceObj,
+                      this.props.oContext.instanceObj,
                       this.props.arrayIndex,
                       this.props.globalData,
                   )
@@ -685,7 +671,7 @@ export default class ConfigGeneric<
         } else {
             this.props.onChange(data, undefined, () => {
                 if (changed.length) {
-                    this.props.forceUpdate(changed, data);
+                    this.props.oContext.forceUpdate(changed, data);
                 }
                 if (cb) {
                     cb();
@@ -733,11 +719,11 @@ export default class ConfigGeneric<
             return f(
                 data || this.props.data,
                 this.props.originalData,
-                this.props.systemConfig,
+                this.props.oContext.systemConfig,
                 this.props.alive,
                 this.props.common,
-                this.props.socket,
-                this.props.instance,
+                this.props.oContext.socket,
+                this.props.oContext.instance,
                 arrayIndex,
                 globalData,
                 this.props.changed,
@@ -785,10 +771,10 @@ export default class ConfigGeneric<
             return f(
                 data || this.props.data,
                 this.props.originalData,
-                this.props.systemConfig,
+                this.props.oContext.systemConfig,
                 instanceObj,
                 customObj,
-                this.props.socket,
+                this.props.oContext.socket,
                 arrayIndex,
                 globalData,
                 this.props.changed,
@@ -816,7 +802,7 @@ export default class ConfigGeneric<
                       schema.validator,
                       this.props.data,
                       this.props.customObj,
-                      this.props.instanceObj,
+                      this.props.oContext.instanceObj,
                       this.props.arrayIndex,
                       this.props.globalData,
                   )
@@ -829,7 +815,7 @@ export default class ConfigGeneric<
                           schema.disabled,
                           this.props.data,
                           this.props.customObj,
-                          this.props.instanceObj,
+                          this.props.oContext.instanceObj,
                           this.props.arrayIndex,
                           this.props.globalData,
                       ) as boolean)
@@ -843,7 +829,7 @@ export default class ConfigGeneric<
                           schema.hidden,
                           this.props.data,
                           this.props.customObj,
-                          this.props.instanceObj,
+                          this.props.oContext.instanceObj,
                           this.props.arrayIndex,
                           this.props.globalData,
                       ) as boolean)
@@ -854,7 +840,7 @@ export default class ConfigGeneric<
                       schema.defaultFunc,
                       this.props.data,
                       this.props.customObj,
-                      this.props.instanceObj,
+                      this.props.oContext.instanceObj,
                       this.props.arrayIndex,
                       this.props.globalData,
                   )
@@ -946,7 +932,7 @@ export default class ConfigGeneric<
                 target="_blank"
                 rel="noreferrer"
                 style={{
-                    color: this.props.themeType === 'dark' ? '#a147ff' : '#5b238f',
+                    color: this.props.oContext.themeType === 'dark' ? '#a147ff' : '#5b238f',
                     textDecoration: 'underline',
                 }}
             >
@@ -977,7 +963,7 @@ export default class ConfigGeneric<
         return str;
     }
 
-    getPattern(pattern: string | { func: string }, data?: Record<string, any>): string {
+    getPattern(pattern: string | { func: string }, data?: Record<string, any>, noTranslation?: boolean): string {
         data = data || this.props.data;
         if (!pattern) {
             return '';
@@ -1013,10 +999,10 @@ export default class ConfigGeneric<
                     this.props.originalData,
                     this.props.arrayIndex,
                     this.props.globalData,
-                    this.props.systemConfig,
-                    this.props.instanceObj,
+                    this.props.oContext.systemConfig,
+                    this.props.oContext.instanceObj,
                     this.props.customObj,
-                    this.props.socket,
+                    this.props.oContext.socket,
                     this.props.changed,
                 );
             }
@@ -1033,17 +1019,21 @@ export default class ConfigGeneric<
                 '_changed',
                 `return \`${ConfigGeneric.escapeString(patternStr, data)}\``,
             );
-            return f(
+            const text = f(
                 data,
                 this.props.originalData,
                 this.props.arrayIndex,
                 this.props.globalData,
-                this.props.systemConfig,
+                this.props.oContext.systemConfig,
                 this.props.alive,
                 this.props.common,
-                this.props.socket,
+                this.props.oContext.socket,
                 this.props.changed,
             );
+            if (noTranslation) {
+                return text;
+            }
+            return I18n.t(text);
         } catch (e) {
             console.error(`Cannot execute ${patternStr}: ${e}`);
             return patternStr;
@@ -1054,6 +1044,11 @@ export default class ConfigGeneric<
         const schema = this.props.schema;
 
         if (!schema) {
+            return null;
+        }
+
+        // Do not show this component if expert mode is false
+        if (this.props.oContext.expertMode === false && schema.expertMode) {
             return null;
         }
 
@@ -1091,7 +1086,7 @@ export default class ConfigGeneric<
                             marginBottom: 0 /* marginRight: 8, */,
                             textAlign: 'left',
                             ...schema.style,
-                            ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
+                            ...(this.props.oContext.themeType === 'dark' ? schema.darkStyle : {}),
                         }}
                     />
                 );
@@ -1155,7 +1150,7 @@ export default class ConfigGeneric<
                     textAlign: 'left',
                     width: schema.type === 'divider' || schema.type === 'header' ? schema.width || '100%' : undefined,
                     ...schema.style,
-                    ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
+                    ...(this.props.oContext.themeType === 'dark' ? schema.darkStyle : {}),
                 }}
             >
                 {this.props.schema.defaultSendTo && this.props.schema.button ? (
@@ -1166,6 +1161,7 @@ export default class ConfigGeneric<
                         <Grid2 flex={1}>{renderedItem}</Grid2>
                         <Grid2>
                             <Button
+                                disabled={disabled}
                                 variant="outlined"
                                 onClick={() => this.sendTo()}
                                 title={

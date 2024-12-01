@@ -92,8 +92,8 @@ import { IconOpen } from '../icons/IconOpen';
 import { IconClearFilter } from '../icons/IconClearFilter';
 
 // own
-import type { Router } from './Router';
 import type { ThemeType, ThemeName, IobTheme, Translate } from '../types';
+import type { Router } from './Router';
 import { Connection } from '../Connection';
 import { Icon } from './Icon';
 import { withWidth } from './withWidth';
@@ -230,7 +230,7 @@ interface InputSelectItem {
 
 type ioBrokerObjectForExport = ioBroker.Object & Partial<ioBroker.State>;
 
-interface ObjectBrowserCustomFilter {
+export interface ObjectBrowserCustomFilter {
     type?: ioBroker.ObjectType | ioBroker.ObjectType[];
     common?: {
         type?: ioBroker.CommonType | ioBroker.CommonType[];
@@ -374,7 +374,7 @@ const styles: Record<string, any> = {
         height: 'calc(100% - 38px)',
         overflow: 'auto',
     },
-    tableRow: (theme: IobTheme) => ({
+    tableRow: (theme: IobTheme): any => ({
         pl: 1,
         height: ROW_HEIGHT,
         lineHeight: `${ROW_HEIGHT}px`,
@@ -391,7 +391,7 @@ const styles: Record<string, any> = {
         whiteSpace: 'nowrap',
         flexWrap: 'nowrap',
     }),
-    tableRowLines: (theme: IobTheme) => ({
+    tableRowLines: (theme: IobTheme): any => ({
         borderBottom: `1px solid ${theme.palette.mode === 'dark' ? '#8888882e' : '#8888882e'}`,
         '& > div': {
             borderRight: `1px solid ${theme.palette.mode === 'dark' ? '#8888882e' : '#8888882e'}`,
@@ -406,7 +406,7 @@ const styles: Record<string, any> = {
     tableRowAliasReadWrite: {
         height: ROW_HEIGHT + 22,
     },
-    tableRowFocused: (theme: IobTheme) => ({
+    tableRowFocused: (theme: IobTheme): any => ({
         '&:after': {
             content: '""',
             position: 'absolute',
@@ -455,7 +455,7 @@ const styles: Record<string, any> = {
         // verticalAlign: 'top',
     },
     // This style is used for simple div. Do not migrate it to "secondary.main"
-    cellIdIconFolder: (theme: IobTheme) => ({
+    cellIdIconFolder: (theme: IobTheme): React.CSSProperties => ({
         marginRight: 8,
         width: ROW_HEIGHT - 4,
         height: ROW_HEIGHT - 4,
@@ -533,7 +533,7 @@ const styles: Record<string, any> = {
         opacity: 0.5,
         fontStyle: 'italic',
     },
-    cellIdAlias: (theme: IobTheme) => ({
+    cellIdAlias: (theme: IobTheme): any => ({
         fontStyle: 'italic',
         fontSize: 12,
         opacity: 0.7,
@@ -696,13 +696,13 @@ const styles: Record<string, any> = {
         pt: 0,
         mt: '-2px',
     },
-    cellButtonsButtonWithCustoms: (theme: IobTheme) => ({
+    cellButtonsButtonWithCustoms: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? theme.palette.primary.main : theme.palette.secondary.main,
     }),
     cellButtonsButtonWithoutCustoms: {
         opacity: 0.2,
     },
-    cellButtonsValueButton: (theme: IobTheme) => ({
+    cellButtonsValueButton: (theme: IobTheme): any => ({
         position: 'absolute',
         top: SMALL_BUTTON_SIZE / 2 - 2,
         opacity: 0.7,
@@ -751,7 +751,7 @@ const styles: Record<string, any> = {
     selectNone: {
         opacity: 0.5,
     },
-    itemSelected: (theme: IobTheme) => ({
+    itemSelected: (theme: IobTheme): React.CSSProperties => ({
         background: `${theme.palette.primary.main} !important`,
         color: `${Utils.invertColor(theme.palette.primary.main, true)} !important`,
     }),
@@ -865,7 +865,7 @@ const styles: Record<string, any> = {
         borderRadius: 5,
         backgroundColor: 'background.default',
     },
-    iconDeviceConnected: (theme: IobTheme) => ({
+    iconDeviceConnected: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT,
         opacity: 0.8,
         position: 'absolute',
@@ -873,7 +873,7 @@ const styles: Record<string, any> = {
         right: 32,
         width: 20,
     }),
-    iconDeviceDisconnected: (theme: IobTheme) => ({
+    iconDeviceDisconnected: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? COLOR_NAME_DISCONNECTED_DARK : COLOR_NAME_DISCONNECTED_LIGHT,
         opacity: 0.8,
         position: 'absolute',
@@ -881,7 +881,7 @@ const styles: Record<string, any> = {
         right: 32,
         width: 20,
     }),
-    iconDeviceError: (theme: IobTheme) => ({
+    iconDeviceError: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? COLOR_NAME_ERROR_DARK : COLOR_NAME_ERROR_LIGHT,
         opacity: 0.8,
         position: 'absolute',
@@ -910,37 +910,37 @@ const styles: Record<string, any> = {
             borderRightStyle: 'solid',
         },
     },
-    invertedBackground: (theme: IobTheme) => ({
+    invertedBackground: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#9a9a9a' : '#565656',
         padding: '0 3px',
         borderRadius: '2px 0 0 2px',
     }),
-    invertedBackgroundFlex: (theme: IobTheme) => ({
+    invertedBackgroundFlex: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#9a9a9a' : '#565656',
         borderRadius: '0 2px 2px 0',
     }),
-    contextMenuEdit: (theme: IobTheme) => ({
+    contextMenuEdit: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#ffee48' : '#cbb801',
     }),
-    contextMenuEditValue: (theme: IobTheme) => ({
+    contextMenuEditValue: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#5dff45' : '#1cd301',
     }),
-    contextMenuView: (theme: IobTheme) => ({
+    contextMenuView: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#FFF' : '#000',
     }),
-    contextMenuCustom: (theme: IobTheme) => ({
+    contextMenuCustom: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#42eaff' : '#01bbc2',
     }),
-    contextMenuACL: (theme: IobTheme) => ({
+    contextMenuACL: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#e079ff' : '#500070',
     }),
-    contextMenuRoom: (theme: IobTheme) => ({
+    contextMenuRoom: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#ff9a33' : '#642a00',
     }),
-    contextMenuRole: (theme: IobTheme) => ({
+    contextMenuRole: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#ffdb43' : '#562d00',
     }),
-    contextMenuDelete: (theme: IobTheme) => ({
+    contextMenuDelete: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#ff4f4f' : '#cf0000',
     }),
     contextMenuKeys: {
@@ -1217,16 +1217,7 @@ export function getSelectIdIconFromObjects(
 
 function applyFilter(
     item: TreeItem,
-    filters: {
-        id?: string;
-        name?: string;
-        type?: string;
-        custom?: string;
-        role?: string;
-        room?: string;
-        func?: string;
-        expertMode?: boolean;
-    },
+    filters: ObjectBrowserFilter,
     lang: ioBroker.Languages,
     objects: Record<string, ioBroker.Object>,
     context?: {
@@ -2263,7 +2254,7 @@ interface ScreenWidthOne {
         timestamp?: number;
         lastChange?: number;
     };
-    fields: string[];
+    fields: ObjectBrowserPossibleColumns[];
 }
 
 interface ScreenWidth {
@@ -2478,7 +2469,7 @@ interface ObjectBrowserEditObjectProps {
     width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
-interface ObjectAliasEditorProps {
+export interface ObjectAliasEditorProps {
     t: Translate;
     socket: Connection;
     objects: Record<string, ioBroker.AnyObject>;
@@ -2486,8 +2477,23 @@ interface ObjectAliasEditorProps {
     obj: ioBroker.AnyObject;
     onClose: () => void;
 }
+export type ObjectBrowserColumn = 'name' | 'type' | 'role' | 'room' | 'func' | 'val' | 'buttons';
 
-interface ObjectBrowserProps {
+type ObjectBrowserPossibleColumns =
+    | 'name'
+    | 'type'
+    | 'role'
+    | 'room'
+    | 'func'
+    | 'val'
+    | 'buttons'
+    | 'changedFrom'
+    | 'qualityCode'
+    | 'timestamp'
+    | 'lastChange'
+    | 'id';
+
+export interface ObjectBrowserProps {
     /** where to store settings in localStorage */
     dialogName?: string;
     defaultFilters?: ObjectBrowserFilter;
@@ -2550,7 +2556,7 @@ interface ObjectBrowserProps {
     router?: typeof Router;
     types?: ioBroker.ObjectType[];
     /** Possible columns: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'] */
-    columns?: string[];
+    columns?: ObjectBrowserColumn[];
     /** Shows only elements of this root */
     root?: string;
 
@@ -2596,7 +2602,7 @@ interface ObjectBrowserState {
     roleDialog: null | string;
     statesView: boolean;
     /** ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'] */
-    columns: string[] | null;
+    columns: ObjectBrowserPossibleColumns[] | null;
     columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null;
     columnsSelectorShow: boolean;
     columnsAuto: boolean;
@@ -2674,11 +2680,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private filterTimer: ReturnType<typeof setTimeout> | null = null;
 
-    private readonly visibleCols: string[];
+    private readonly visibleCols: ObjectBrowserPossibleColumns[];
 
     private readonly texts: Record<string, string>;
 
-    private readonly possibleCols: string[];
+    private readonly possibleCols: ObjectBrowserPossibleColumns[];
 
     private readonly imagePrefix: string;
 
@@ -2873,7 +2879,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         this.selectFirst = selected.length && selected[0] ? selected[0] : this.selectFirst;
 
         const columnsStr = this.localStorage.getItem(`${props.dialogName || 'App'}.columns`);
-        let columns: string[] | null;
+        let columns: ObjectBrowserPossibleColumns[] | null;
         try {
             columns = columnsStr ? JSON.parse(columnsStr) : null;
         } catch {
@@ -3662,7 +3668,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                                 onClick={() => {
                                                     if (!this.state.columnsAuto) {
                                                         const columns = [...(this.state.columns || [])];
-                                                        const id = `_${adapter}_${column.path}`;
+                                                        const id: ObjectBrowserPossibleColumns =
+                                                            `_${adapter}_${column.path}` as ObjectBrowserPossibleColumns;
                                                         const pos = columns.indexOf(id);
                                                         if (pos === -1) {
                                                             columns.push(id);
@@ -3686,7 +3693,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                                         edge="start"
                                                         checked={
                                                             !this.state.columnsAuto &&
-                                                            this.state.columns?.includes(`_${adapter}_${column.path}`)
+                                                            this.state.columns?.includes(
+                                                                `_${adapter}_${column.path}` as ObjectBrowserPossibleColumns,
+                                                            )
                                                         }
                                                         disableRipple
                                                     />
@@ -8514,9 +8523,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         }
                     />
                 ),
-                label: this.info.aliasesMap[item.data.id]
-                    ? this.props.t('ra_Edit alias')
-                    : this.props.t('ra_Create alias'),
+                label:
+                    this.info.aliasesMap[item.data.id] || item.data.id.startsWith('alias.0.')
+                        ? this.props.t('ra_Edit alias')
+                        : this.props.t('ra_Create alias'),
                 onClick: () => {
                     if (obj?.common?.alias) {
                         this.setState({ showContextMenu: null, editObjectDialog: item.data.id, editObjectAlias: true });

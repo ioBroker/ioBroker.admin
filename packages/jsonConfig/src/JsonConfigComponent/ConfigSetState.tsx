@@ -27,8 +27,8 @@ class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGene
     async _onClick(): Promise<void> {
         let val = this.props.schema.val;
         if (typeof val === 'string' && val.includes('${')) {
-            val = this.getPattern(val);
-            const obj = await this.props.socket.getObject(this.props.schema.id);
+            val = this.getPattern(val, null, true);
+            const obj = await this.props.oContext.socket.getObject(this.props.schema.id);
             if (obj?.common?.type === 'number') {
                 val = parseFloat(val);
             } else if (obj?.common?.type === 'boolean') {
@@ -37,10 +37,10 @@ class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGene
             }
         }
 
-        const id = (this.props.schema.id || '').replace(/%INSTANCE%/g, (this.props.instance || 0).toString());
+        const id = (this.props.schema.id || '').replace(/%INSTANCE%/g, (this.props.oContext.instance || 0).toString());
 
         try {
-            await this.props.socket.setState(id, { val, ack: !!this.props.schema.ack });
+            await this.props.oContext.socket.setState(id, { val, ack: !!this.props.schema.ack });
             if (this.props.schema.okText) {
                 window.alert(this.getText(this.props.schema.okText));
             }

@@ -24,7 +24,7 @@
     ],
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.2",
-        "@iobroker/i18n": "^0.2.2",
+        "@iobroker/i18n": "^0.3.1",
         "@iobroker/socket-classes": "^1.6.1",
         "@iobroker/webserver": "^1.0.6",
         "@iobroker/ws": "^2.0.0",
@@ -43,27 +43,27 @@
         "semver": "^7.6.3"
     },
     "devDependencies": {
-        "@iobroker/build-tools": "^2.0.6",
+        "@iobroker/build-tools": "^2.0.9",
         "@iobroker/dm-gui-components": "file:../dm-gui-components",
         "@iobroker/json-config": "file:../jsonConfig",
-        "@iobroker/legacy-testing": "^1.0.13",
+        "@iobroker/legacy-testing": "^2.0.1",
         "@iobroker/testing": "^5.0.0",
-        "@types/archiver": "^6.0.2",
+        "@types/archiver": "^6.0.3",
         "@types/body-parser": "^1.19.5",
         "@types/compression": "^1.7.5",
         "@types/connect-flash": "^0.0.40",
-        "@types/cookie-parser": "^1.4.7",
+        "@types/cookie-parser": "^1.4.8",
         "@types/express-fileupload": "^1.5.1",
-        "@types/express-session": "^1.18.0",
+        "@types/express-session": "^1.18.1",
         "@types/mime": "3.0.4",
-        "@types/passport": "^1.0.16",
+        "@types/passport": "^1.0.17",
         "@types/passport-local": "^1.0.38",
         "@types/validator": "^13.12.2",
         "colorette": "^2.0.20",
-        "less": "^4.2.0",
-        "puppeteer": "^23.6.0",
+        "less": "^4.2.1",
+        "puppeteer": "^23.9.0",
         "src-rx": "file:src-admin",
-        "typescript": "^5.6.3"
+        "typescript": "^5.7.2"
     },
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.admin/issues"

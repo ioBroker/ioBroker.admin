@@ -23,7 +23,13 @@ class ConfigPattern extends ConfigGeneric<ConfigPatternProps, ConfigGenericState
                             <IconButton
                                 size="small"
                                 onClick={() => {
-                                    Utils.copyToClipboard(this.getPattern(this.props.schema.pattern));
+                                    Utils.copyToClipboard(
+                                        this.getPattern(
+                                            this.props.schema.pattern,
+                                            null,
+                                            this.props.schema.noTranslation,
+                                        ),
+                                    );
                                     window.alert(I18n.t('ra_Copied'));
                                 }}
                             >
@@ -32,7 +38,7 @@ class ConfigPattern extends ConfigGeneric<ConfigPatternProps, ConfigGenericState
                         ) : undefined,
                     },
                 }}
-                value={this.getPattern(this.props.schema.pattern)}
+                value={this.getPattern(this.props.schema.pattern, null, true)}
                 label={this.getText(this.props.schema.label)}
                 helperText={this.renderHelp(
                     this.props.schema.help,

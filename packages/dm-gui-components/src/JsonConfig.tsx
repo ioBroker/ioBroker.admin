@@ -13,6 +13,7 @@ interface JsonConfigDmProps {
     theme: IobTheme;
     isFloatComma?: boolean;
     dateFormat?: string;
+    expertMode?: boolean;
 }
 
 export default function JsonConfig(props: JsonConfigDmProps): React.JSX.Element | null {
@@ -29,6 +30,7 @@ export default function JsonConfig(props: JsonConfigDmProps): React.JSX.Element 
         <>
             {error && <div>{error}</div>}
             <JsonConfigComponent
+                expertMode={props.expertMode}
                 socket={socket as any as AdminConnection}
                 adapterName={adapterName}
                 instance={parseInt(instance, 10)}

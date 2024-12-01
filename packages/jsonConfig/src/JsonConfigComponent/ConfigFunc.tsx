@@ -20,7 +20,7 @@ class ConfigFunc extends ConfigGeneric<ConfigFuncProps, ConfigFuncState> {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        void this.props.socket.getEnums('functions').then(enums => {
+        void this.props.oContext.socket.getEnums('functions').then(enums => {
             const selectOptions: { value: string; label: string }[] = Object.keys(enums).map(id => ({
                 value: this.props.schema.short ? id.replace('enum.functions.', '') : id,
                 label: this.getText(enums[id].common.name),
@@ -58,7 +58,7 @@ class ConfigFunc extends ConfigGeneric<ConfigFuncProps, ConfigFuncState> {
                             item.obj ? (
                                 <TextWithIcon
                                     value={item.obj}
-                                    themeType={this.props.themeType}
+                                    themeType={this.props.oContext.themeType}
                                     lang={I18n.getLanguage()}
                                 />
                             ) : (
@@ -83,7 +83,7 @@ class ConfigFunc extends ConfigGeneric<ConfigFuncProps, ConfigFuncState> {
                             {it.obj ? (
                                 <TextWithIcon
                                     value={it.obj}
-                                    themeType={this.props.themeType}
+                                    themeType={this.props.oContext.themeType}
                                     lang={I18n.getLanguage()}
                                 />
                             ) : (

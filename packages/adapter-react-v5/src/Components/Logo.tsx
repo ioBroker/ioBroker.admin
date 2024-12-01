@@ -52,9 +52,9 @@ export class Logo extends React.Component<LogoProps> {
         const f = files[0];
 
         if (f) {
-            const r = new window.FileReader();
-            r.onload = () => {
-                const contents: string = r.result?.toString() || '';
+            const reader = new window.FileReader();
+            reader.onload = () => {
+                const contents: string = reader.result?.toString() || '';
                 try {
                     const json = JSON.parse(contents);
                     if (json.native && json.common) {
@@ -70,7 +70,7 @@ export class Logo extends React.Component<LogoProps> {
                     this.props.onError && this.props.onError(err?.toString());
                 }
             };
-            r.readAsText(f);
+            reader.readAsText(f);
         } else {
             alert('Failed to open JSON File');
         }

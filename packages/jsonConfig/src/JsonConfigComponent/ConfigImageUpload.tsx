@@ -13,7 +13,7 @@ interface ConfigImageUploadProps extends ConfigGenericProps {
 
 interface ConfigImageUploadState extends ConfigGenericState {
     image?: string;
-    context?: string;
+    oContext?: string;
 }
 
 class ConfigImageUpload extends ConfigGeneric<ConfigImageUploadProps, ConfigImageUploadState> {
@@ -31,8 +31,8 @@ class ConfigImageUpload extends ConfigGeneric<ConfigImageUploadProps, ConfigImag
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
             this.setState({ value });
         } else {
-            void this.props.socket
-                .fileExists(`${this.props.adapterName}.${this.props.instance}`, this.props.attr)
+            void this.props.oContext.socket
+                .fileExists(`${this.props.oContext.adapterName}.${this.props.oContext.instance}`, this.props.attr)
                 .then(exist => exist && this.loadImage());
         }
     }
@@ -41,7 +41,7 @@ class ConfigImageUpload extends ConfigGeneric<ConfigImageUploadProps, ConfigImag
         if (update) {
             this.index = Date.now();
         }
-        let url = `files/${this.props.adapterName}.${this.props.instance}/${this.props.attr}?t=${this.index}`;
+        let url = `files/${this.props.oContext.adapterName}.${this.props.oContext.instance}/${this.props.attr}?t=${this.index}`;
         if (window.location.port === '3000') {
             url = `${window.location.protocol}//${window.location.hostname}:8081/${url}`;
         }
@@ -87,8 +87,8 @@ class ConfigImageUpload extends ConfigGeneric<ConfigImageUploadProps, ConfigImag
                                 }
                             } else {
                                 // delete file to /instance/attr
-                                void this.props.socket
-                                    .deleteFile(`${this.props.adapterName}.${this.props.instance}`, this.props.attr)
+                                void this.props.oContext.socket
+                                    .deleteFile(`${this.props.oContext.adapterName}.${this.props.oContext.instance}`, this.props.attr)
                                     .catch(e => console.error(e));
                             }
                         })
@@ -104,9 +104,9 @@ class ConfigImageUpload extends ConfigGeneric<ConfigImageUploadProps, ConfigImag
                                 base64 = base64.split(',')[1];
                             }
                             // upload file to /instance/attr
-                            this.props.socket
+                            this.props.oContext.socket
                                 .writeFile64(
-                                    `${this.props.adapterName}.${this.props.instance}`,
+                                    `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
                                     this.props.attr,
                                     base64,
                                 )

@@ -100,7 +100,7 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                     item.hidden,
                     this.props.data,
                     this.props.customObj,
-                    this.props.instanceObj,
+                    this.props.oContext.instanceObj,
                     this.props.arrayIndex,
                     this.props.globalData,
                 );

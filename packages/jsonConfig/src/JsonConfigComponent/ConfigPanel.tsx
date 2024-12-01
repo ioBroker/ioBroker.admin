@@ -165,7 +165,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
             this.setState({
                 expanded:
                     (((window as any)._localStorage as Storage) || window.localStorage).getItem(
-                        `${this.props.adapterName}.${this.props.attr}`,
+                        `${this.props.oContext.adapterName}.${this.props.attr}`,
                     ) === 'true',
             });
         }
@@ -174,19 +174,19 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
     renderItems(items: Record<string, any>, disabled: boolean): JSX.Element[] | null {
         return items
             ? Object.keys(items).map(attr => {
-                  if (this.props.multiEdit && items[attr].noMultiEdit) {
+                  if (this.props.oContext.multiEdit && items[attr].noMultiEdit) {
                       return null;
                   }
 
                   const type = items[attr].type || 'panel';
-                  let ItemComponent: typeof ConfigGeneric<any, any>;
+                  let ItemComponent: typeof ConfigGeneric<ConfigGenericProps, any>;
                   if (type === 'custom') {
                       // name
                       // url
                       if (items[attr].url) {
                           ItemComponent = ConfigCustom;
-                      } else if (this.props.customs && this.props.customs[items[attr].component]) {
-                          ItemComponent = this.props.customs[items[attr].component];
+                      } else if (this.props.oContext.customs && this.props.oContext.customs[items[attr].component]) {
+                          ItemComponent = this.props.oContext.customs[items[attr].component];
                       } else {
                           console.error(`Cannot find custom component: ${items[attr].component}`);
                           ItemComponent = ConfigGeneric;
@@ -199,42 +199,24 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
 
                   return (
                       <ItemComponent
+                          oContext={this.props.oContext}
                           key={`${attr}_${this.props.index === undefined ? '' : this.props.index}`}
                           index={this.props.index}
                           changed={this.props.changed}
                           arrayIndex={this.props.arrayIndex}
-                          globalData={this.props.globalData}
-                          onCommandRunning={this.props.onCommandRunning}
                           commandRunning={this.props.commandRunning}
                           style={styles.panel}
-                          socket={this.props.socket}
-                          adapterName={this.props.adapterName}
-                          instance={this.props.instance}
                           common={this.props.common}
-                          customs={this.props.customs}
                           alive={this.props.alive}
-                          themeType={this.props.themeType}
                           themeName={this.props.themeName}
-                          theme={this.props.theme}
                           data={this.props.data}
                           originalData={this.props.originalData}
-                          systemConfig={this.props.systemConfig}
                           onError={this.props.onError}
                           onChange={this.props.onChange}
-                          onBackEndCommand={this.props.onBackEndCommand}
-                          multiEdit={this.props.multiEdit}
-                          dateFormat={this.props.dateFormat}
-                          isFloatComma={this.props.isFloatComma}
                           disabled={disabled}
-                          imagePrefix={this.props.imagePrefix}
-                          changeLanguage={this.props.changeLanguage}
-                          forceUpdate={this.props.forceUpdate}
-                          registerOnForceUpdate={this.props.registerOnForceUpdate}
                           customObj={this.props.customObj}
-                          instanceObj={this.props.instanceObj}
                           custom={this.props.custom}
                           schema={items[attr]}
-                          DeviceManager={this.props.DeviceManager}
                           attr={attr}
                           table={this.props.table}
                       />
@@ -267,10 +249,10 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                             xl: schema.xl || undefined,
                         }}
                         sx={Utils.getStyle(
-                            this.props.theme,
+                            this.props.oContext.theme,
                             { marginBottom: 0, textAlign: 'left' /* marginRight: 8, */ },
                             schemaStyle,
-                            this.props.themeType === 'dark' && schema.darkStyle,
+                            this.props.oContext.themeType === 'dark' && schema.darkStyle,
                         )}
                     />
                 );
@@ -316,7 +298,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                     expanded={!!this.state.expanded}
                     onChange={() => {
                         (((window as any)._localStorage as Storage) || window.localStorage).setItem(
-                            `${this.props.adapterName}.${this.props.attr}`,
+                            `${this.props.oContext.adapterName}.${this.props.attr}`,
                             this.state.expanded ? 'false' : 'true',
                         );
                         this.setState({ expanded: !this.state.expanded });
@@ -325,9 +307,9 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         sx={Utils.getStyle(
-                            this.props.theme,
+                            this.props.oContext.theme,
                             schemaStyle,
-                            this.props.themeType && schema.darkStyle,
+                            this.props.oContext.themeType && schema.darkStyle,
                             schema.color === 'primary'
                                 ? styles.primary
                                 : schema.color === 'secondary' && styles.secondary,
@@ -355,7 +337,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                     key={`${this.props.attr}_${this.props.index}`}
                     className={this.props.className}
                     sx={Utils.getStyle(
-                        this.props.theme,
+                        this.props.oContext.theme,
                         this.props.style,
                         schemaStyle,
                         { width: '100%' },
@@ -369,7 +351,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                         columnSpacing={2}
                         rowSpacing={1}
                         sx={Utils.getStyle(
-                            this.props.theme,
+                            this.props.oContext.theme,
                             { width: '100%' },
                             this.props.isParentTab && styles.padding,
                             this.props.schema.innerStyle,

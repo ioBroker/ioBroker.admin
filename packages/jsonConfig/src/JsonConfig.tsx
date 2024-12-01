@@ -187,6 +187,7 @@ interface JsonConfigProps {
     theme: IobTheme;
     themeName: ThemeName;
     themeType: ThemeType;
+    expertMode?: boolean;
     /** Translate method */
     t: typeof I18n.t;
     configStored: (notChanged: boolean) => void;
@@ -725,6 +726,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                     dateFormat={this.props.dateFormat}
                     schema={this.state.schema}
                     common={this.state.common}
+                    expertMode={this.props.expertMode}
                     data={this.state.data}
                     updateData={this.state.updateData}
                     onError={error => this.setState({ error })}

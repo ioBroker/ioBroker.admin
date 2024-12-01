@@ -369,6 +369,7 @@ interface DiscoveryDialogProps {
     hosts: CompactHost[];
     onClose: () => void;
     theme: IobTheme;
+    systemConfig: ioBroker.SystemConfigCommon;
 }
 
 function DiscoveryDialog({
@@ -382,6 +383,7 @@ function DiscoveryDialog({
     hosts,
     onClose,
     theme,
+    systemConfig,
 }: DiscoveryDialogProps): JSX.Element {
     const [step, setStep] = useState<number>(0);
     const [listMethods, setListMethods] = useState<Record<string, { type: string; source: string; timeout?: number }>>(
@@ -639,6 +641,7 @@ function DiscoveryDialog({
             themeType={themeType}
             themeName={themeName}
             newInstance={showInputsDialog.obj}
+            systemConfig={systemConfig}
             onClose={params => {
                 const { cb } = showInputsDialog;
                 const { obj } = showInputsDialog;

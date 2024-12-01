@@ -1122,6 +1122,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     <Paper style={styles.paper}>
                         {this.renderFilterDialog()}
                         <Config
+                            expertMode={this.props.expertMode}
                             adapter={instance.id.split('.')[0]}
                             adminInstance={this.props.adminInstance}
                             style={styles.iframe}
