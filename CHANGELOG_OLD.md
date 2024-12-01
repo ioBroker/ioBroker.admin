@@ -1,4 +1,10 @@
 # Older changes
+## 7.3.1 (2024-11-14)
+
+-   (@GermanBluefox) Corrected cloud icon for admin
+-   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
+-   (@GermanBluefox) Corrected the password field in JSON-Config
+
 ## 7.2.6 (2024-10-11)
 
 -   (@GermanBluefox) Trying to fix a GUI build process
