@@ -138,8 +138,8 @@ export default class HostsWorker extends GenericWorker<'host'> {
                 return this.socket
                     .getNotifications(hostId, '')
                     .then((notifications: NotificationAnswer) => ({ [hostId]: notifications || null }))
-                    .catch(e => {
-                        console.warn(`Cannot read notifications from "${hostId}": ${e}`);
+                    .catch((e: unknown): { [hostId: string]: null } => {
+                        console.warn(`Cannot read notifications from "${hostId}": ${e as Error}`);
                         return { [hostId]: null };
                     });
             }

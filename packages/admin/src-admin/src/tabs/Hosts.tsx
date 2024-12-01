@@ -259,9 +259,9 @@ class Hosts extends Component<HostsProps, HostsState> {
                     }
                     this.setState(newState as HostsState);
                 })
-                .catch(e => {
+                .catch((e: unknown): void => {
                     window.alert(`Cannot getRepository: ${e}`);
-                    if (e.toString().includes('timeout')) {
+                    if ((e as Error).toString().includes('timeout')) {
                         this.setState({ showSlowConnectionWarning: true });
                     }
                 }),

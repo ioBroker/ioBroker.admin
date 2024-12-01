@@ -1710,28 +1710,30 @@ class App extends Router<AppProps, AppState> {
 
         const repository: CompactRepository = await this.socket
             .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
-            .catch(e => {
+            .catch((e: unknown): CompactRepository => {
                 window.alert(`Cannot getRepositoryCompact: ${e}`);
-                if (e.toString().includes('timeout')) {
+                if ((e as Error).toString().includes('timeout')) {
                     this.setState({ showSlowConnectionWarning: true });
                 }
-                return {};
+                return {} as CompactRepository;
             });
 
         const installed: CompactInstalledInfo = await this.socket
             .getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
-            .catch(e => {
+            .catch((e: unknown): CompactInstalledInfo => {
                 window.alert(`Cannot getInstalled: ${e}`);
                 if (e.toString().includes('timeout')) {
                     this.setState({ showSlowConnectionWarning: true });
                 }
-                return {};
+                return {} as CompactInstalledInfo;
             });
 
-        const adapters: Record<string, CompactAdapterInfo> = await this.socket.getCompactAdapters(update).catch(e => {
-            window.alert(`Cannot read adapters: ${e}`);
-            return {} as Record<string, CompactAdapterInfo>;
-        });
+        const adapters: Record<string, CompactAdapterInfo> = await this.socket
+            .getCompactAdapters(update)
+            .catch((e: unknown): Record<string, CompactAdapterInfo> => {
+                window.alert(`Cannot read adapters: ${e as Error}`);
+                return {} as Record<string, CompactAdapterInfo>;
+            });
 
         if (installed && adapters) {
             Object.keys(adapters).forEach(id => {
