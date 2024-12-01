@@ -260,7 +260,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                     this.setState(newState as HostsState);
                 })
                 .catch((e: unknown): void => {
-                    window.alert(`Cannot getRepository: ${e}`);
+                    window.alert(`Cannot getRepository: ${e as Error}`);
                     if ((e as Error).toString().includes('timeout')) {
                         this.setState({ showSlowConnectionWarning: true });
                     }
