@@ -95,7 +95,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Added flag expertMode to hide JSON config controls for non-experts
 -   (@GermanBluefox) Corrected cloud icon for admin
 -   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
--
 
 ### 7.4.2 (2024-11-25)
 
