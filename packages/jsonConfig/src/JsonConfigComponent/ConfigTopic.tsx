@@ -25,7 +25,10 @@ class ConfigTopic extends ConfigGeneric<ConfigTopicProps, ConfigGenericState> {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         if (!value && this.props.customObj?._id) {
-            const topic = convertID2Topic(this.props.customObj._id, `${this.props.adapterName}.${this.props.instance}`);
+            const topic = convertID2Topic(
+                this.props.customObj._id,
+                `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
+            );
             this.setState({ value: topic });
         } else {
             this.setState({ value: value || '' });

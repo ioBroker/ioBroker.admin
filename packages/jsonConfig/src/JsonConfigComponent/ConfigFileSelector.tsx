@@ -137,7 +137,7 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
     constructor(props: ConfigFileSelectorProps) {
         super(props);
         this.dropzoneRef = React.createRef();
-        this.imagePrefix = this.props.imagePrefix === undefined ? './files' : this.props.imagePrefix;
+        this.imagePrefix = this.props.oContext.imagePrefix === undefined ? './files' : this.props.oContext.imagePrefix;
     }
 
     componentDidMount(): void {
@@ -145,7 +145,7 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
 
         this.objectID = (this.props.schema.objectID || '0_userdata.0').replace(
             '%INSTANCE%',
-            (this.props.instance || 0).toString(),
+            (this.props.oContext.instance || 0).toString(),
         );
         this.path = this.props.schema.upload;
         if (this.path) {
@@ -173,7 +173,10 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
         filter: string,
     ): Promise<{ name: string; size: string }[]> {
         try {
-            const dirFiles = await this.props.socket.readDir(this.objectID, folderName.replace(/^\//, '') || null);
+            const dirFiles = await this.props.oContext.socket.readDir(
+                this.objectID,
+                folderName.replace(/^\//, '') || null,
+            );
             for (let f = 0; f < dirFiles.length; f++) {
                 const file = dirFiles[f];
                 if (file.isDir) {
@@ -262,7 +265,7 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
                 ),
             )}`;
 
-            this.props.socket
+            this.props.oContext.socket
                 .writeFile64(this.objectID, this.path + file.name, base64)
                 .then(() => this.updateFiles())
                 .catch(e => window.alert(`Cannot upload file: ${e}`));
@@ -284,7 +287,7 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
                     const deleteFile = this.state.deleteFile;
                     this.setState({ deleteFile: '' }, () => {
                         if (isOk) {
-                            this.props.socket
+                            this.props.oContext.socket
                                 .deleteFile(this.objectID, deleteFile)
                                 .then(() => this.updateFiles())
                                 .catch(e => window.alert(`Cannot delete file: ${e}`));
@@ -306,20 +309,20 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
     }
 
     loadFile(): Promise<{ file: string; mimeType: string }> {
-        return this.props.socket.readFile(this.objectID, this.state.value, true);
+        return this.props.oContext.socket.readFile(this.objectID, this.state.value, true);
     }
 
     play(): void {
         void this.loadFile().then(data => {
             if (typeof AudioContext !== 'undefined') {
-                const context = new AudioContext();
+                const oContext = new AudioContext();
                 const buf = ConfigFileSelector.base64ToArrayBuffer(data.file);
-                void context.decodeAudioData(
+                void oContext.decodeAudioData(
                     buf,
                     (buffer: AudioBuffer): void => {
-                        const source = context.createBufferSource(); // creates a sound source
+                        const source = oContext.createBufferSource(); // creates a sound source
                         source.buffer = buffer; // tell the source which sound to play
-                        source.connect(context.destination); // connect the source to the context's destination (the speakers)
+                        source.connect(oContext.destination); // connect the source to the oContext's destination (the speakers)
                         source.start(0);
                     },
                     (err: DOMException): void => window.alert(`Cannot play: ${err.message}`),

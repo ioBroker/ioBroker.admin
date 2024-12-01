@@ -60,7 +60,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
         if (tab === undefined) {
             tab =
                 (((window as any)._localStorage as Storage) || window.localStorage).getItem(
-                    `${this.props.dialogName || 'App'}.${this.props.adapterName}`,
+                    `${this.props.dialogName || 'App'}.${this.props.oContext.adapterName}`,
                 ) || Object.keys(this.props.schema.items)[0];
             if (!Object.keys(this.props.schema.items).includes(tab)) {
                 tab = Object.keys(this.props.schema.items)[0];
@@ -90,7 +90,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
             }
             if (tab !== undefined && tab !== this.state.tab) {
                 (((window as any)._localStorage as Storage) || window.localStorage).setItem(
-                    `${this.props.dialogName || 'App'}.${this.props.adapterName}`,
+                    `${this.props.dialogName || 'App'}.${this.props.oContext.adapterName}`,
                     tab,
                 );
                 this.setState({ tab });
@@ -111,7 +111,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                     value={this.state.tab}
                     onChange={(e, tab) => {
                         (((window as any)._localStorage as Storage) || window.localStorage).setItem(
-                            `${this.props.dialogName || 'App'}.${this.props.adapterName}`,
+                            `${this.props.dialogName || 'App'}.${this.props.oContext.adapterName}`,
                             tab,
                         );
                         this.setState({ tab }, () => {
@@ -132,7 +132,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                                 items[name].hidden,
                                 this.props.data,
                                 this.props.customObj,
-                                this.props.instanceObj,
+                                this.props.oContext.instanceObj,
                                 this.props.index,
                                 this.props.globalData,
                             );
@@ -143,7 +143,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                                 items[name].disabled,
                                 this.props.data,
                                 this.props.customObj,
-                                this.props.instanceObj,
+                                this.props.oContext.instanceObj,
                                 this.props.index,
                                 this.props.globalData,
                             ) as boolean;
@@ -184,47 +184,29 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                     })}
                 </Tabs>
                 <ConfigPanel
+                    oContext={this.props.oContext}
                     isParentTab
                     changed={this.props.changed}
                     key={this.state.tab}
                     index={1001}
                     arrayIndex={this.props.arrayIndex}
                     globalData={this.props.globalData}
-                    onCommandRunning={this.props.onCommandRunning}
                     commandRunning={this.props.commandRunning}
                     style={{
                         ...styles.panel,
                         ...(withIcons ? styles.panelWithIcons : styles.panelWithoutIcons),
                     }}
-                    socket={this.props.socket}
-                    adapterName={this.props.adapterName}
-                    instance={this.props.instance}
                     common={this.props.common}
-                    customs={this.props.customs}
                     alive={this.props.alive}
-                    themeType={this.props.themeType}
                     themeName={this.props.themeName}
                     data={this.props.data}
                     originalData={this.props.originalData}
-                    systemConfig={this.props.systemConfig}
                     onChange={this.props.onChange}
                     onError={this.props.onError}
-                    onBackEndCommand={this.props.onBackEndCommand}
-                    multiEdit={this.props.multiEdit}
-                    dateFormat={this.props.dateFormat}
-                    isFloatComma={this.props.isFloatComma}
-                    // disabled={disabled}
-                    imagePrefix={this.props.imagePrefix}
-                    changeLanguage={this.props.changeLanguage}
-                    forceUpdate={this.props.forceUpdate}
-                    registerOnForceUpdate={this.props.registerOnForceUpdate}
                     customObj={this.props.customObj}
-                    instanceObj={this.props.instanceObj}
                     custom={this.props.custom}
                     schema={items[this.state.tab]}
                     table={this.props.table}
-                    theme={this.props.theme}
-                    DeviceManager={this.props.DeviceManager}
                     withIcons={withIcons}
                 />
             </div>

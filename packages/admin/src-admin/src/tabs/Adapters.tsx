@@ -997,12 +997,14 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     });
                 }
                 const hostData: HostInfo & { 'Active instances': number; location: string; Uptime: number } =
-                    await this.props.socket.getHostInfo(currentHost, update, this.state.readTimeoutMs).catch(e => {
-                        window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`);
-                        if (e.toString().includes('timeout')) {
-                            this.setState({ showSlowConnectionWarning: true });
-                        }
-                    });
+                    await this.props.socket
+                        .getHostInfo(currentHost, update, this.state.readTimeoutMs)
+                        .catch((e: unknown): void => {
+                            window.alert(`Cannot getHostInfo for "${currentHost}": ${e as Error}`);
+                            if ((e as Error).toString().includes('timeout')) {
+                                this.setState({ showSlowConnectionWarning: true });
+                            }
+                        });
 
                 if (this.props.adminGuiConfig.admin.adapters?.allowAdapterRating !== false) {
                     try {
@@ -1015,15 +1017,19 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     ratings = null;
                 }
 
-                const compactInstances = await this.props.socket.getCompactInstances(update).catch(e => {
-                    window.alert(`Cannot read countsOfInstances: ${e}`);
-                    return {};
-                });
+                const compactInstances = await this.props.socket
+                    .getCompactInstances(update)
+                    .catch((e: unknown): Record<string, CompactInstanceInfo> => {
+                        window.alert(`Cannot read countsOfInstances: ${e as Error}`);
+                        return {};
+                    });
 
-                const compactRepositoriesEx = await this.props.socket.getCompactSystemRepositories(update).catch(e => {
-                    window.alert(`Cannot read getCompactSystemRepositories: ${e}`);
-                    return {};
-                });
+                const compactRepositoriesEx = await this.props.socket
+                    .getCompactSystemRepositories(update)
+                    .catch((e: unknown): Record<string, CompactSystemRepository> => {
+                        window.alert(`Cannot read getCompactSystemRepositories: ${e}`);
+                        return {};
+                    });
                 const compactRepositories: CompactSystemRepository = compactRepositoriesEx as CompactSystemRepository;
 
                 await this.calculateInfo(compactInstances || {}, ratings, hostData, compactRepositories);

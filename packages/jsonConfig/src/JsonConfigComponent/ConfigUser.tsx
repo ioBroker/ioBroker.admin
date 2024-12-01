@@ -26,7 +26,7 @@ interface ConfigUserState extends ConfigGenericState {
 class ConfigUser extends ConfigGeneric<ConfigUserProps, ConfigUserState> {
     componentDidMount(): void {
         super.componentDidMount();
-        this.props.socket
+        this.props.oContext.socket
             .getUsers()
             .then(users => {
                 const _users: Record<string, { color?: string; icon?: string; name: string }> = {};
@@ -98,7 +98,7 @@ class ConfigUser extends ConfigGeneric<ConfigUserProps, ConfigUserState> {
                             color: (this.state.users && this.state.users[value]?.color) || undefined,
                             backgroundColor: Utils.getInvertedColor(
                                 this.state.users && this.state.users[value]?.color,
-                                this.props.themeType,
+                                this.props.oContext.themeType,
                             ),
                         }}
                         onChange={e => this.onChange(this.props.attr, e.target.value)}
@@ -110,7 +110,7 @@ class ConfigUser extends ConfigGeneric<ConfigUserProps, ConfigUserState> {
                                         color: this.state.users[id].color || undefined,
                                         backgroundColor: Utils.getInvertedColor(
                                             this.state.users[id].color,
-                                            this.props.themeType,
+                                            this.props.oContext.themeType,
                                         ),
                                     }}
                                     key={id}

@@ -107,38 +107,25 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
 
         return (
             <ConfigPanel
+                oContext={this.props.oContext}
                 index={idx + this.state.iteration}
                 arrayIndex={idx}
                 changed={this.props.changed}
                 globalData={this.props.data}
-                socket={this.props.socket}
-                adapterName={this.props.adapterName}
-                instance={this.props.instance}
                 common={this.props.common}
                 alive={this.props.alive}
-                themeType={this.props.themeType}
                 themeName={this.props.themeName}
                 data={data}
                 custom
                 schema={schemaItem}
-                systemConfig={this.props.systemConfig}
                 originalData={this.props.originalData}
-                customs={this.props.customs}
-                dateFormat={this.props.dateFormat}
-                isFloatComma={this.props.isFloatComma}
-                forceUpdate={this.props.forceUpdate}
-                imagePrefix={this.props.imagePrefix}
-                onCommandRunning={this.props.onCommandRunning}
-                onChange={(attr, valueChange) => {
-                    const newObj = JSON.parse(JSON.stringify(value));
-                    (newObj[idx] as Record<string, any>)[attr as string] = valueChange;
-                    this.setState({ value: newObj }, () => this.onChangeWrapper(newObj));
+                onChange={(attr: string, valueChange: any): void => {
+                    const newObj: Record<string, any> = JSON.parse(JSON.stringify(value));
+                    newObj[idx][attr] = valueChange;
+                    this.setState({ value: newObj } as ConfigAccordionState, () => this.onChangeWrapper(newObj));
                 }}
                 onError={(error, attr) => this.onError(error, attr)}
-                onBackEndCommand={this.props.onBackEndCommand}
                 table={this.props.table}
-                DeviceManager={this.props.DeviceManager}
-                theme={this.props.theme}
             />
         );
     }
@@ -216,7 +203,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                                   currentValue.defaultFunc,
                                   this.props.data,
                                   this.props.customObj,
-                                  this.props.instanceObj,
+                                  this.props.oContext.instanceObj,
                                   newValue.length,
                                   this.props.data,
                               )
@@ -309,12 +296,15 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                     >
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
-                            sx={Utils.getStyle(this.props.theme, styles.fullWidth, styles.accordionSummary)}
+                            sx={Utils.getStyle(this.props.oContext.theme, styles.fullWidth, styles.accordionSummary)}
                         >
                             <Typography style={styles.accordionTitle}>{idx[schema.titleAttr]}</Typography>
                         </AccordionSummary>
                         <AccordionDetails
-                            style={{ ...schema.style, ...(this.props.themeType ? schema.darkStyle : undefined) }}
+                            style={{
+                                ...schema.style,
+                                ...(this.props.oContext.themeType ? schema.darkStyle : undefined),
+                            }}
                         >
                             {this.itemAccordion(value[i], i)}
                             <Toolbar sx={styles.toolbar}>

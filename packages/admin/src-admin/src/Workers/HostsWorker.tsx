@@ -133,18 +133,20 @@ export default class HostsWorker extends GenericWorker<'host'> {
             return this.notificationPromises[hostId];
         }
 
-        this.notificationPromises[hostId] = this.socket.getState(`${hostId}.alive`).then(state => {
-            if (state?.val) {
-                return this.socket
-                    .getNotifications(hostId, '')
-                    .then((notifications: NotificationAnswer) => ({ [hostId]: notifications || null }))
-                    .catch(e => {
-                        console.warn(`Cannot read notifications from "${hostId}": ${e}`);
-                        return { [hostId]: null };
-                    });
-            }
-            return { [hostId]: null };
-        });
+        this.notificationPromises[hostId] = this.socket
+            .getState(`${hostId}.alive`)
+            .then((state: ioBroker.State | null | undefined): Promise<Record<string, NotificationAnswer | null>> => {
+                if (state?.val) {
+                    return this.socket
+                        .getNotifications(hostId, '')
+                        .then((notifications: NotificationAnswer) => ({ [hostId]: notifications || null }))
+                        .catch((e: unknown): Record<string, NotificationAnswer | null> => {
+                            console.warn(`Cannot read notifications from "${hostId}": ${e as Error}`);
+                            return { [hostId]: null };
+                        });
+                }
+                return Promise.resolve({ [hostId]: null });
+            });
 
         return this.notificationPromises[hostId];
     }

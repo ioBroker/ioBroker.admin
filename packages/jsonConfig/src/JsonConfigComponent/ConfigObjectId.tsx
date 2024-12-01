@@ -39,7 +39,8 @@ class ConfigObjectId extends ConfigGeneric<ConfigObjectIdProps, ConfigObjectIdSt
         if (!this.state.initialized) {
             return null;
         }
-        const { schema, socket, attr } = this.props;
+        const socket = this.props.oContext.socket;
+        const { schema, attr } = this.props;
         const { value, showSelectId } = this.state;
 
         return (
@@ -65,6 +66,7 @@ class ConfigObjectId extends ConfigGeneric<ConfigObjectIdProps, ConfigObjectIdSt
                     />
                     <Button
                         color="grey"
+                        disabled={disabled}
                         style={styles.button}
                         size="small"
                         variant="outlined"
@@ -75,11 +77,13 @@ class ConfigObjectId extends ConfigGeneric<ConfigObjectIdProps, ConfigObjectIdSt
                 </div>
                 {showSelectId ? (
                     <DialogSelectID
-                        imagePrefix={this.props.imagePrefix === undefined ? '../..' : this.props.imagePrefix}
-                        dialogName={`admin.${this.props.adapterName}`}
+                        imagePrefix={
+                            this.props.oContext.imagePrefix === undefined ? '../..' : this.props.oContext.imagePrefix
+                        }
+                        dialogName={`admin.${this.props.oContext.adapterName}`}
                         filterFunc={schema.filterFunc}
-                        themeType={this.props.themeType}
-                        theme={this.props.theme}
+                        themeType={this.props.oContext.themeType}
+                        theme={this.props.oContext.theme}
                         types={schema.types ? (Array.isArray(schema.types) ? schema.types : [schema.types]) : undefined}
                         customFilter={schema.customFilter}
                         filters={schema.filters}

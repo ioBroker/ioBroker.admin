@@ -4,7 +4,7 @@ import { LinearProgress } from '@mui/material';
 
 import { type AdminConnection, I18n, type ThemeName, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
 
-import type { BackEndCommand, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
+import type { BackEndCommand, ConfigItemPanel, ConfigItemTabs, JsonConfigContext } from '#JC/types';
 import type ConfigGeneric from '#JC/JsonConfigComponent/ConfigGeneric';
 import { type DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
 import ConfigTabs from './ConfigTabs';
@@ -44,6 +44,7 @@ interface JsonConfigComponentProps {
     DeviceManager?: React.FC<DeviceManagerPropsProps>;
     style?: React.CSSProperties;
     theme: IobTheme;
+    expertMode?: boolean;
 }
 
 interface JsonConfigComponentState {
@@ -63,6 +64,8 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
     private errorTimeout: ReturnType<typeof setTimeout> | null = null;
 
     private errorCached: Record<string, string> | null = null;
+
+    private oContext: JsonConfigContext;
 
     constructor(props: JsonConfigComponentProps) {
         super(props);
@@ -167,18 +170,17 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
             .then(systemConfig =>
                 this.props.socket
                     .getState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`)
-                    .then(state => {
-                        if (this.props.custom) {
-                            this.setState({ systemConfig: systemConfig.common, alive: !!(state && state.val) });
-                        } else {
-                            this.setState({ systemConfig: systemConfig.common, alive: !!(state && state.val) }, () =>
-                                this.props.socket.subscribeState(
+                    .then(state =>
+                        this.setState({ systemConfig: systemConfig.common, alive: !!(state && state.val) }, () => {
+                            this.updateContext(true);
+                            if (!this.props.custom) {
+                                void this.props.socket.subscribeState(
                                     `system.adapter.${this.props.adapterName}.${this.props.instance}.alive`,
                                     this.onAlive,
-                                ),
-                            );
-                        }
-                    }),
+                                );
+                            }
+                        }),
+                    ),
             )
             .catch(e => console.error(`Cannot read system config: ${e}`));
     }
@@ -353,41 +355,58 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         });
     }
 
+    updateContext(forceUpdate?: boolean): void {
+        this.oContext = {
+            DeviceManager: this.props.DeviceManager,
+            adapterName: this.props.adapterName,
+            changeLanguage: this.changeLanguage,
+            common: this.props.common,
+            customs: this.props.customs,
+            dateFormat: this.props.dateFormat,
+            embedded: this.props.embedded,
+            expertMode: this.props.expertMode,
+            forceUpdate: this.forceAttrUpdate,
+            imagePrefix: this.props.imagePrefix,
+            instance: this.props.instance,
+            instanceObj: this.props.instanceObj,
+            isFloatComma: this.props.isFloatComma,
+            multiEdit: this.props.multiEdit,
+            onBackEndCommand: this.props.onBackEndCommand,
+            onCommandRunning: this.onCommandRunning,
+            onValueChange: this.props.onValueChange,
+            registerOnForceUpdate: this.registerOnForceUpdate,
+            socket: this.props.socket,
+            systemConfig: this.state.systemConfig,
+            theme: this.props.theme,
+            // could be changed dynamically
+            themeType: this.props.themeType,
+            _themeName: this.props.themeName,
+            updateData: this.state.updateData,
+        } as JsonConfigContext;
+
+        if (forceUpdate) {
+            this.forceUpdate();
+        }
+    }
+
     renderItem(item: ConfigItemTabs | ConfigItemPanel): JSX.Element | null {
         if (item.type === 'tabs') {
             return (
                 <ConfigTabs
-                    DeviceManager={this.props.DeviceManager}
-                    adapterName={this.props.adapterName}
+                    oContext={this.oContext}
                     alive={this.state.alive}
-                    changeLanguage={this.changeLanguage}
                     changed={this.state.changed}
                     commandRunning={this.state.commandRunning}
                     common={this.props.common}
                     custom={this.props.custom}
                     customObj={this.props.customObj}
-                    customs={this.props.customs}
                     data={this.props.data}
-                    dateFormat={this.props.dateFormat}
-                    forceUpdate={this.forceAttrUpdate}
-                    imagePrefix={this.props.imagePrefix}
-                    instance={this.props.instance}
-                    instanceObj={this.props.instanceObj}
-                    isFloatComma={this.props.isFloatComma}
-                    multiEdit={this.props.multiEdit}
                     onChange={this.onChange}
-                    onCommandRunning={this.onCommandRunning}
                     onError={(attr, error) => this.onError(attr, error)}
-                    onBackEndCommand={this.props.onBackEndCommand}
                     originalData={JSON.parse(this.state.originalData)}
-                    registerOnForceUpdate={this.registerOnForceUpdate}
                     root
                     schema={item}
-                    socket={this.props.socket}
-                    systemConfig={this.state.systemConfig}
-                    theme={this.props.theme}
                     themeName={this.props.themeName}
-                    themeType={this.props.themeType}
                 />
             );
         }
@@ -398,42 +417,26 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         ) {
             return (
                 <ConfigPanel
-                    DeviceManager={this.props.DeviceManager}
-                    adapterName={this.props.adapterName}
+                    oContext={this.oContext}
                     alive={this.state.alive}
-                    changeLanguage={this.changeLanguage}
                     changed={this.state.changed}
                     commandRunning={this.state.commandRunning}
                     common={this.props.common}
                     custom={this.props.custom}
                     customObj={this.props.customObj}
-                    customs={this.props.customs}
                     data={this.props.data}
-                    dateFormat={this.props.dateFormat}
-                    forceUpdate={this.forceAttrUpdate}
-                    imagePrefix={this.props.imagePrefix}
                     index={1000}
-                    instance={this.props.instance}
-                    instanceObj={this.props.instanceObj}
-                    isFloatComma={this.props.isFloatComma}
                     isParentTab={!this.props.embedded}
-                    multiEdit={this.props.multiEdit}
                     onChange={this.onChange}
-                    onCommandRunning={this.onCommandRunning}
                     onError={(attr, error) => this.onError(attr, error)}
-                    onBackEndCommand={this.props.onBackEndCommand}
                     originalData={JSON.parse(this.state.originalData)}
-                    registerOnForceUpdate={this.registerOnForceUpdate}
                     root
                     schema={item}
-                    socket={this.props.socket}
-                    systemConfig={this.state.systemConfig}
-                    theme={this.props.theme}
                     themeName={this.props.themeName}
-                    themeType={this.props.themeType}
                 />
             );
         }
+        console.error(`Unknown item type in root: ${JSON.stringify(item)}`);
 
         return null;
     }
@@ -450,7 +453,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         }
     };
 
-    registerOnForceUpdate = (attr: string, cb: (data: any) => void): void => {
+    registerOnForceUpdate = (attr: string, cb?: ((data: any) => void) | null): void => {
         if (cb) {
             this.forceUpdateHandlers[attr] = cb;
         } else if (this.forceUpdateHandlers[attr]) {
@@ -459,8 +462,13 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
     };
 
     render(): JSX.Element {
-        if (!this.state.systemConfig) {
+        if (!this.state.systemConfig || !this.oContext) {
             return <LinearProgress />;
+        }
+
+        if (this.oContext._themeName !== this.props.themeName) {
+            this.oContext._themeName = this.props.themeName;
+            setTimeout(() => this.updateContext(true), 0);
         }
 
         return (

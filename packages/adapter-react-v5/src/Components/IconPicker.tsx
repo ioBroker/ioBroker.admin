@@ -160,4 +160,4 @@ export function IconPicker(props: IconPickerProps): React.JSX.Element {
             </FormControl>
         </div>
     );
-};
+}

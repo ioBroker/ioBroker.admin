@@ -221,16 +221,19 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             count = rows.length;
 
             if (count && this.props.listOfVisibleAdapter.length > rows.length) {
+                const rest = this.props.listOfVisibleAdapter.length - rows.length;
+                const text =
+                    rest === 1
+                        ? this.props.context.t('Filter adapters to see others. There is %s more', 1)
+                        : this.props.context.t('Filter adapters to see others. There are %s more', rest);
+
                 rows.push(
                     <TableRow key="more">
                         <TableCell
                             colSpan={8}
                             style={{ fontSize: 20, padding: 20, textAlign: 'center' }}
                         >
-                            {this.props.context.t(
-                                'Filter adapters to see others. There is %s more',
-                                this.props.listOfVisibleAdapter.length - rows.length,
-                            )}
+                            {text}
                         </TableCell>
                     </TableRow>,
                 );

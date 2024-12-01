@@ -37,7 +37,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
             _value = '';
         }
 
-        if (Array.isArray(_value) && this.props.multiEdit) {
+        if (Array.isArray(_value) && this.props.oContext.multiEdit) {
             _value = ConfigGeneric.DIFFERENT_VALUE;
             this.setState({ _value, oldValue: _value });
             return;
@@ -58,7 +58,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
         }
         const _value = ConfigGeneric.getValue(props.data, props.attr);
 
-        if (props.multiEdit && state._value === ConfigGeneric.DIFFERENT_VALUE) {
+        if (props.oContext.multiEdit && state._value === ConfigGeneric.DIFFERENT_VALUE) {
             return { _value: ConfigGeneric.DIFFERENT_VALUE };
         }
 

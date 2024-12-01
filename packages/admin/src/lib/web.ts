@@ -154,7 +154,7 @@ async function readFolderRecursive(
             } else {
                 filesOfDir.push({
                     name: url ? `${url}/${fileMeta.file}` : fileMeta.file,
-                    file: Buffer.from(file.file, 'utf-8'),
+                    file: Buffer.from(file.file as string, 'utf-8'),
                 });
             }
         } else {

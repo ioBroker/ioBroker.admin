@@ -23,6 +23,7 @@ import {
 
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import type HostsWorker from '@/Workers/HostsWorker';
+// eslint-disable-next-line no-duplicate-imports
 import type { NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import { blinkClasses } from '@/components/Hosts/HostGeneric';
@@ -95,6 +96,7 @@ const styles: Record<string, any> = {
         fontSize: 12,
         opacity: 0.4,
         display: 'block',
+        whiteSpace: 'nowrap',
     },
     tooltip: {
         pointerEvents: 'none',
@@ -258,9 +260,9 @@ class Hosts extends Component<HostsProps, HostsState> {
                     }
                     this.setState(newState as HostsState);
                 })
-                .catch(e => {
-                    window.alert(`Cannot getRepository: ${e}`);
-                    if (e.toString().includes('timeout')) {
+                .catch((e: unknown): void => {
+                    window.alert(`Cannot getRepository: ${e as Error}`);
+                    if ((e as Error).toString().includes('timeout')) {
                         this.setState({ showSlowConnectionWarning: true });
                     }
                 }),
@@ -518,7 +520,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                 </TabHeader>
                 <TabContent overflow="auto">
                     {!Utils.isStableRepository(this.props.systemConfig.common.activeRepo) ? (
-                        <Box sx={{ marginX: 2, width: 'fit-content', alignSelf: 'center' }}>
+                        <Box sx={{ marginX: 2, width: 'calc(100% - 32px)', alignSelf: 'center' }}>
                             <InfoBox type={'warning'}>
                                 {this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}
                             </InfoBox>

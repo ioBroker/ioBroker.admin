@@ -32,7 +32,7 @@ class ConfigInstanceSelect extends ConfigGeneric<ConfigInstanceSelectProps, Conf
             adapter = undefined;
         }
 
-        void this.props.socket
+        void this.props.oContext.socket
             .getAdapterInstances(adapter, true)
             .then(async instances => {
                 if (this.props.schema.adapter === '_dataSources') {
@@ -81,7 +81,7 @@ class ConfigInstanceSelect extends ConfigGeneric<ConfigInstanceSelectProps, Conf
 
                 this.setState({ value: value || '', selectOptions });
 
-                await this.props.socket.subscribeObject(
+                await this.props.oContext.socket.subscribeObject(
                     `system.adapter.${adapter ? `${adapter}.` : ''}*`,
                     this.onInstancesUpdate,
                 );
@@ -90,7 +90,7 @@ class ConfigInstanceSelect extends ConfigGeneric<ConfigInstanceSelectProps, Conf
     }
 
     componentWillUnmount(): void {
-        void this.props.socket.unsubscribeObject('system.adapter.*', this.onInstancesUpdate).then(() => {});
+        void this.props.oContext.socket.unsubscribeObject('system.adapter.*', this.onInstancesUpdate).then(() => {});
         super.componentWillUnmount();
     }
 
