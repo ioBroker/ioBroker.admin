@@ -4,7 +4,7 @@ import { Grid2, Accordion, AccordionSummary, AccordionDetails, Typography, Box }
 
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 import type { ConfigItemPanel } from '#JC/types';
 
 import ConfigGeneric, { type ConfigGenericState, type ConfigGenericProps } from './ConfigGeneric';
@@ -180,6 +180,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
 
                   const type = items[attr].type || 'panel';
                   let ItemComponent: typeof ConfigGeneric<ConfigGenericProps, any>;
+                  let socket: string | AdminConnection = 'Use this.props.oContext.socket!';
                   if (type === 'custom') {
                       // name
                       // url
@@ -191,6 +192,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                           console.error(`Cannot find custom component: ${items[attr].component}`);
                           ItemComponent = ConfigGeneric;
                       }
+                      socket = this.props.oContext.socket;
                   } else if (type === 'panel') {
                       ItemComponent = ConfigPanel;
                   } else {
@@ -199,6 +201,8 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
 
                   return (
                       <ItemComponent
+                          // @ts-expect-error Temporary work-around, till all custom components will not migrate to oContext
+                          socket={socket}
                           oContext={this.props.oContext}
                           key={`${attr}_${this.props.index === undefined ? '' : this.props.index}`}
                           index={this.props.index}
