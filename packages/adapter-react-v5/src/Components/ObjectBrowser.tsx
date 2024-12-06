@@ -5576,7 +5576,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     from: false,
                     ack: false,
                     q: false,
-                    addID: false,
+                    addId: false,
                     aggregate: 'minmax',
                 })
                 .then(values => {

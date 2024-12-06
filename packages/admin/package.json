@@ -23,7 +23,7 @@
         "setup"
     ],
     "dependencies": {
-        "@iobroker/adapter-core": "^3.2.2",
+        "@iobroker/adapter-core": "^3.2.3",
         "@iobroker/i18n": "^0.3.1",
         "@iobroker/socket-classes": "^1.6.1",
         "@iobroker/webserver": "^1.0.6",
@@ -34,7 +34,7 @@
         "body-parser": "^1.20.3",
         "compression": "^1.7.5",
         "connect-flash": "^0.1.1",
-        "express": "^4.21.1",
+        "express": "^4.21.2",
         "express-fileupload": "^1.5.1",
         "express-session": "^1.18.1",
         "json5": "^2.2.3",

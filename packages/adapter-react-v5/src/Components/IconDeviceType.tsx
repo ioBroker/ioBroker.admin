@@ -32,6 +32,7 @@ import {
     Warning,
     Water,
     WaterDrop,
+    WbIridescent,
     WbSunny,
     Whatshot,
     Window,
@@ -61,6 +62,7 @@ const deviceTypes = [
     'gate',
     'hue',
     'humidity',
+    'illuminance',
     'image',
     'info',
     'instance',
@@ -142,6 +144,9 @@ export function getDeviceIcon(type: DeviceType, props?: IconProps): React.JSX.El
     }
     if (type === 'humidity') {
         SvgComponent = WaterDrop;
+    }
+    if (type === 'illuminance') {
+        SvgComponent = WbIridescent;
     }
     if (type === 'image') {
         SvgComponent = Image;

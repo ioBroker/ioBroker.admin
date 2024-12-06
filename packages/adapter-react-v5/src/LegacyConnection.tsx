@@ -1674,7 +1674,6 @@ export class LegacyConnection {
                 obj._id = newId as ioBroker.ObjectIDs.Group;
                 if (newName !== undefined) {
                     obj.common = obj.common || ({} as ioBroker.GroupCommon);
-                    // @ts-expect-error will be corrected in the next js-controller release
                     obj.common.name = newName;
                 }
 
