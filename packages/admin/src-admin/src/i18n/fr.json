@@ -857,6 +857,7 @@
     "Remove": "Supprimer",
     "Remove attribute %s": "Supprimer l'attribut %s",
     "Remove color": "Supprimer la couleur",
+    "Remove filter for updatable adapters": "Supprimer le filtre pour les adaptateurs actualisables",
     "Remove icon": "Supprimer l'icône",
     "Removed": "Supprimé",
     "Removing of adapter...": "Retrait de l'adaptateur...",

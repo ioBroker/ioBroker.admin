@@ -2,6 +2,7 @@ import React, { Component, Fragment, type JSX } from 'react';
 
 import {
     Box,
+    Button,
     LinearProgress,
     Table,
     TableBody,
@@ -9,8 +10,11 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    Tooltip,
     Typography,
 } from '@mui/material';
+
+import { Update as UpdateIcon } from '@mui/icons-material';
 
 import { TabContent } from '@iobroker/adapter-react-v5';
 
@@ -126,13 +130,14 @@ interface AdaptersListProps {
         adapters: string[];
     }[];
     toggleCategory: (category: string) => void;
-    clearAllFilters: () => void;
+    clearAllFilters: (onlyUpdate?: boolean) => void;
     update: boolean;
     descWidth: number;
     sortByName: boolean;
     sortPopularFirst: boolean;
     sortRecentlyUpdated: boolean;
     commandRunning: boolean;
+    updateListFilter: boolean;
 }
 
 interface AdaptersListState {
@@ -281,16 +286,27 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             return !this.props.update ? (
                 <tr>
                     <td
-                        colSpan={4}
-                        style={{
-                            padding: 16,
-                            fontSize: 18,
-                            cursor: 'pointer',
-                        }}
-                        title={this.props.context.t('Click to clear all filters')}
-                        onClick={() => this.props.clearAllFilters()}
+                        colSpan={8}
+                        style={{ textAlign: 'center' }}
                     >
-                        {this.props.context.t('all items are filtered out')}
+                        <Button
+                            variant="outlined"
+                            title={this.props.context.t('Click to clear all filters')}
+                            onClick={() => this.props.clearAllFilters()}
+                        >
+                            {this.props.context.t('all items are filtered out')}
+                        </Button>
+                        {this.props.updateListFilter ? <br /> : null}
+                        {this.props.updateListFilter ? (
+                            <Button
+                                style={{ marginTop: 16 }}
+                                variant="outlined"
+                                onClick={() => this.props.clearAllFilters(true)}
+                                startIcon={<UpdateIcon />}
+                            >
+                                {this.props.context.t('Remove filter for updatable adapters')}
+                            </Button>
+                        ) : null}
                     </td>
                 </tr>
             ) : null;
@@ -308,13 +324,34 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             return !this.props.update ? (
                 <div
                     style={{
-                        margin: 20,
-                        fontSize: 26,
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: 16,
                     }}
-                    title={this.props.context.t('Click to clear all filters')}
-                    onClick={() => this.props.clearAllFilters()}
                 >
-                    {this.props.context.t('all items are filtered out')}
+                    <Tooltip
+                        title={this.props.context.t('Click to clear all filters')}
+                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    >
+                        <Button
+                            variant="outlined"
+                            onClick={() => this.props.clearAllFilters()}
+                        >
+                            {this.props.context.t('all items are filtered out')}
+                        </Button>
+                    </Tooltip>
+                    {this.props.updateListFilter ? (
+                        <Button
+                            variant="outlined"
+                            onClick={() => this.props.clearAllFilters(true)}
+                            startIcon={<UpdateIcon />}
+                        >
+                            {this.props.context.t('Remove filter for updatable adapters')}
+                        </Button>
+                    ) : null}
                 </div>
             ) : null;
         }
