@@ -1,4 +1,9 @@
 # Older changes
+## 7.3.2 (2024-11-15)
+
+-   (@GermanBluefox) Some GUI packages were updated.
+-   (@GermanBluefox) Improved file viewer. Added icons viewer
+
 ## 7.3.1 (2024-11-14)
 
 -   (@GermanBluefox) Corrected cloud icon for admin

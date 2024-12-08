@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.3",
+    "version": "7.4.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.4": {
+        "en": "Showed value in object edit dialog",
+        "de": "Gezeigter Wert im Objekt bearbeiten Dialog",
+        "ru": "Показано значение в диалоге редактирования объектов",
+        "pt": "Valor mostrado na caixa de diálogo de edição de objeto",
+        "nl": "Waarde getoond in objectbewerkingsdialoog",
+        "fr": "Valeur affichée dans la boîte de dialogue d'édition des objets",
+        "it": "Valore visualizzato nella finestra di dialogo Modifica oggetto",
+        "es": "Valor mostrado en el diálogo de edición de objetos",
+        "pl": "Pokazana wartość w oknie edycji obiektu",
+        "uk": "Показати значення в діалоговому вікні редагування об'єктів",
+        "zh-cn": "在对象编辑对话框中显示的值"
+      },
       "7.4.3": {
         "en": "Changed information box on the hosts tab\nCorrected some errors in JsonConfig library\nAdded flag expertMode to hide JSON config controls for non-experts\nCorrected cloud icon for admin\nAdded old dialog names to adapter-react-v5 again",
         "de": "Geändertes Informationsfeld auf der Registerkarte Hosts\nEinige Fehler in der JsonConfig Bibliothek behoben\nHinzugefügt Flag expertMode JSON config Kontrollen für Nicht-Experten zu verstecken\nKorrigiertes Cloud-Symbol für Admin\nWieder alte Dialognamen zum Adapter-React-v5 hinzugefügt",
@@ -96,19 +109,6 @@
         "pl": "Skorygowana ikona chmur dla admin\nDodano stare nazwy dialogowe do adapter- react- v5 ponownie\nPoprawiono hasło w JSON- Config",
         "uk": "Виправлена хмарна ікона для адміністратора\nДодано старі діалогові імена для адаптера-react-v5 знову\nВиправлено поле пароля в JSON-Config",
         "zh-cn": "管理员的校正云图标\n再次添加旧对话框名称到适配器- react-v5\n更正了 JSON- Config 中的密码字段"
-      },
-      "7.2.0": {
-        "en": "Added the check of well-known passwords for the linux systems\nAdded the history for the installation from URL\nfixed wrongly displayed repository warning",
-        "de": "Hinzugefügt die Überprüfung der bekannten Passwörter für die Linux-Systeme\nDie Geschichte der Installation von URL hinzugefügt\nfalsch angezeigte repository-warnung",
-        "ru": "Добавлена проверка известных паролей для систем linux\nДобавлена история установки из URL\nнеправильное предупреждение о репозитории",
-        "pt": "Adicionado a verificação de senhas bem conhecidas para os sistemas linux\nAdicionado o histórico para a instalação de URL\naviso de repositório exibido incorretamente",
-        "nl": "De controle van bekende wachtwoorden voor de Linux systemen toegevoegd\nDe geschiedenis voor de installatie van URL toegevoegd\nvaste foutief weergegeven repository waarschuwing",
-        "fr": "Ajout de la vérification des mots de passe connus pour les systèmes linux\nAjout de l'historique de l'installation depuis l'URL\ncorrection de l'avertissement du dépôt affiché à tort",
-        "it": "Aggiunto il controllo delle password ben note per i sistemi linux\nAggiunto la storia per l'installazione da URL\nfisso erroneamente visualizzato avviso di repository",
-        "es": "Agregó el cheque de contraseñas conocidas para los sistemas linux\nAñadido la historia para la instalación desde URL\naviso de repositorio mal mostrado",
-        "pl": "Dodano sprawdzanie dobrze znanych haseł dla systemów linux\nDodano historię instalacji z URL\nnieprawidłowo ustawione ostrzeżenie repozytorium",
-        "uk": "Додано перевірку відомих паролів для Linux\nДодано історію установки з URL\nвиправлено неправильно відображається попередження репозиторій",
-        "zh-cn": "添加了对 Linux 系统的著名密码的检查\n从 URL 添加安装历史\n错误显示仓库警告"
       }
     },
     "desc": {

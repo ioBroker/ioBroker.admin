@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.4 (2024-12-08)
 
 -   (@GermanBluefox) Showed value in object edit dialog
 
@@ -111,11 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.4.0 (2024-11-17)
 
 -   (@GermanBluefox) Added new JsonConfig control: staticInfo
-
-### 7.3.2 (2024-11-15)
-
--   (@GermanBluefox) Some GUI packages were updated.
--   (@GermanBluefox) Improved file viewer. Added icons viewer
 
 ## License
 
