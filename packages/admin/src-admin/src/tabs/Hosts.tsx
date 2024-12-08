@@ -388,6 +388,7 @@ class Hosts extends Component<HostsProps, HostsState> {
     }
 
     renderTableHeader(): JSX.Element {
+        const fontSize = window.innerWidth < 100 ? 10 : window.innerWidth < 1200 ? 12 : 14;
         return (
             <div style={styles.tabHeaderWrapper}>
                 <div style={styles.tabHeaderFirstItem}>{this.t('Name:')}</div>
@@ -395,39 +396,39 @@ class Hosts extends Component<HostsProps, HostsState> {
                     {/* <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div> */}
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800, { fontSize })}
                     >
                         CPU
                     </Box>
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800, { fontSize })}
                     >
                         RAM
                     </Box>
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800, { fontSize })}
                     >
                         {this.t('Uptime')}
                     </Box>
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100, { fontSize })}
                     >
                         {this.t('Installed')}
                         <div style={styles.jsController}>js-controller</div>
                     </Box>
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100, { fontSize })}
                     >
                         {this.t('Available')}
                         <div style={styles.jsController}>js-controller</div>
                     </Box>
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600, { fontSize })}
                     >
                         {this.t('Events')}
                     </Box>

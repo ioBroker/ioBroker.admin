@@ -134,6 +134,12 @@ export const genericStyles: Record<string, any> = {
     currentVersionText: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#a3ffa3' : '#009800',
         fontWeight: 'bold',
+        marginLeft: '4px',
+    }),
+    repoVersionText: (theme: IobTheme) => ({
+        color: theme.palette.mode === 'dark' ? '#a3fcff' : '#005498',
+        fontWeight: 'bold',
+        marginLeft: '4px',
     }),
     rating: {},
     containerVersion: {},
@@ -719,6 +725,8 @@ export default abstract class AdapterGeneric<
             return null;
         }
 
+        const repoVersion = this.props.context.repository[this.props.adapterName]?.version;
+
         return (
             <CustomModal
                 title={this.props.context.t('Please select specific version of %s', this.props.adapterName)}
@@ -829,9 +837,13 @@ export default abstract class AdapterGeneric<
                                                 component="span"
                                                 sx={this.styles.currentVersionText}
                                             >{`(${this.props.context.t('current')})`}</Box>
-                                        ) : (
-                                            ''
-                                        )}
+                                        ) : null}
+                                        {repoVersion === version ? (
+                                            <Box
+                                                component="span"
+                                                sx={this.styles.repoVersionText}
+                                            >{`(${this.props.context.t('repository')})`}</Box>
+                                        ) : null}
                                     </Typography>
                                     <Typography
                                         variant="body2"

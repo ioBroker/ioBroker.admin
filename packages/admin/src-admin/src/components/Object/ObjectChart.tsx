@@ -520,7 +520,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                     from: false,
                     ack: false,
                     q: false,
-                    addID: false,
+                    addId: false,
                     aggregate: 'none',
                 })
                 .then((values: { val: ioBroker.StateValue; ts: number }[]) => {
@@ -565,7 +565,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             from: false,
             ack: false,
             q: false,
-            addID: false,
+            addId: false,
             aggregate: 'none',
             returnNewestEntries: true,
         };

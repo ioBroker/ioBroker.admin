@@ -1325,23 +1325,32 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         }, 200);
     };
 
-    clearAllFilters(): void {
-        (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapter.search');
-        (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.installedList');
-        (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.updateList');
-        if (this.inputRef.current) {
-            this.inputRef.current.value = '';
+    clearAllFilters(onlyUpdate?: boolean): void {
+        if (onlyUpdate) {
+            (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.updateList');
+            this.setState(
+                {
+                    updateList: false,
+                },
+                () => this.filterAdapters(),
+            );
+        } else {
+            (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapter.search');
+            (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.installedList');
+            if (this.inputRef.current) {
+                this.inputRef.current.value = '';
+            }
+            this.setState(
+                {
+                    filteredList: null,
+                    updateList: false,
+                    filterConnectionType: false,
+                    installedList: 0,
+                    search: '',
+                },
+                () => this.filterAdapters(),
+            );
         }
-        this.setState(
-            {
-                filteredList: null,
-                updateList: false,
-                filterConnectionType: false,
-                installedList: 0,
-                search: '',
-            },
-            () => this.filterAdapters(),
-        );
     }
 
     getContext(descHidden: boolean): AdaptersContext {
@@ -2053,12 +2062,13 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     tableViewMode={this.state.tableViewMode}
                     oneListView={this.state.oneListView}
                     update={this.state.update}
+                    updateListFilter={this.state.updateList}
                     cachedAdapters={this.cache.adapters}
                     categories={this.state.categories}
                     categoriesExpanded={this.state.categoriesExpanded}
                     listOfVisibleAdapter={this.cache.listOfVisibleAdapter}
                     toggleCategory={category => this.toggleCategory(category)}
-                    clearAllFilters={() => this.clearAllFilters()}
+                    clearAllFilters={(onlyUpdate?: boolean) => this.clearAllFilters(onlyUpdate)}
                     descWidth={this.state.descWidth}
                     sortByName={this.state.filterTiles === 'Name A-Z'}
                     sortPopularFirst={context.sortPopularFirst}

@@ -2045,6 +2045,7 @@ function formatValue(options: FormatValueOptions): {
     if (isCommon?.unit) {
         valText.u = isCommon.unit;
     }
+
     let valFull:
         | {
               /** label */
@@ -5575,7 +5576,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     from: false,
                     ack: false,
                     q: false,
-                    addID: false,
+                    addId: false,
                     aggregate: 'minmax',
                 })
                 .then(values => {

@@ -1265,7 +1265,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                     ) : null}
                 </TableContainer>
                 {schema.help ? (
-                    <FormHelperText>
+                    <FormHelperText style={{ paddingLeft: 16 }}>
                         {this.renderHelp(
                             this.props.schema.help,
                             this.props.schema.helpLink,
