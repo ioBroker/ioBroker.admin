@@ -87,6 +87,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+-   (@GermanBluefox) Corrected the rendering of custom JSON config components
+
 ### 7.4.4 (2024-12-08)
 
 -   (@GermanBluefox) Showed value in object edit dialog
