@@ -1711,7 +1711,7 @@ class App extends Router<AppProps, AppState> {
         const repository: CompactRepository = await this.socket
             .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
             .catch((e: unknown): CompactRepository => {
-                window.alert(`Cannot getRepositoryCompact: ${e}`);
+                window.alert(`Cannot getRepositoryCompact: ${e as Error}`);
                 if ((e as Error).toString().includes('timeout')) {
                     this.setState({ showSlowConnectionWarning: true });
                 }
@@ -1721,8 +1721,8 @@ class App extends Router<AppProps, AppState> {
         const installed: CompactInstalledInfo = await this.socket
             .getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
             .catch((e: unknown): CompactInstalledInfo => {
-                window.alert(`Cannot getInstalled: ${e}`);
-                if (e.toString().includes('timeout')) {
+                window.alert(`Cannot getInstalled: ${e as Error}`);
+                if ((e as Error).toString().includes('timeout')) {
                     this.setState({ showSlowConnectionWarning: true });
                 }
                 return {} as CompactInstalledInfo;
@@ -2411,9 +2411,13 @@ class App extends Router<AppProps, AppState> {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
             return (
                 <div>
-                    {this.state.systemConfig.common.siteName ? (
-                        <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>
-                    ) : null}
+                    {
+                        // @ts-expect-error fixed in js-controller 7
+                        this.state.systemConfig.common.siteName ? (
+                            // @ts-expect-error fixed in js-controller 7
+                            <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>
+                        ) : null
+                    }
 
                     <Box
                         component="div"
@@ -2456,7 +2460,9 @@ class App extends Router<AppProps, AppState> {
                 </div>
             );
         }
+        // @ts-expect-error fixed in js-controller 7
         if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
+            // @ts-expect-error fixed in js-controller 7
             return <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>;
         }
         return null;
