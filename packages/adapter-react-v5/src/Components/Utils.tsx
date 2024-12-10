@@ -787,9 +787,10 @@ export class Utils {
                     );
                 }
 
-                m = text ? text.match(/<a [^<]+<\/a>|<br\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/) : null;
-                if (!m) {
-                    text && result.push(<span key={`a${key++}`}>{text}</span>);
+                m = text ? text.match(/<a [^<]+<\/a>|<br\s?\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/) : null;
+                if (!m && text) {
+                    // put the rest text
+                    result.push(<span key={`a${key++}`}>{text}</span>);
                 }
             } while (m);
 
