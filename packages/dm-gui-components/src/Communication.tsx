@@ -579,6 +579,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 open={!0}
                 onClose={() => this.state.form?.handleClose && this.state.form.handleClose()}
                 hideBackdrop
+                fullWidth
                 maxWidth={this.state.form.maxWidth || 'md'}
             >
                 {this.state.form?.title ? (
