@@ -78,7 +78,7 @@ interface CommunicationForm {
     noTranslation?: boolean; // Do not translate title/label
     schema: JsonFormSchema;
     data?: Record<string, any>;
-    buttons?: (ActionButton | 'apply' | 'cancel')[];
+    buttons?: (ActionButton | 'apply' | 'cancel' | 'close')[];
     maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
@@ -520,7 +520,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         );
     }
 
-    getOkButton(button?: ActionButton | 'apply' | 'cancel'): React.JSX.Element {
+    getOkButton(button?: ActionButton | 'apply' | 'cancel' | 'close'): React.JSX.Element {
         if (typeof button === 'string') {
             button = undefined;
         }
@@ -538,8 +538,10 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         );
     }
 
-    getCancelButton(button?: ActionButton | 'apply' | 'cancel'): React.JSX.Element {
+    getCancelButton(button?: ActionButton | 'apply' | 'cancel' | 'close'): React.JSX.Element {
+        let isClose = false;
         if (typeof button === 'string') {
+            isClose = button === 'close';
             button = undefined;
         }
         return (
@@ -548,7 +550,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 variant={button?.variant || 'contained'}
                 color={button?.color || 'grey'}
                 onClick={() => this.state.form?.handleClose && this.state.form.handleClose()}
-                startIcon={button?.icon ? <Icon src={button?.icon} /> : undefined}
+                startIcon={isClose ? <Close /> : button?.icon ? <Icon src={button?.icon} /> : undefined}
             >
                 {getTranslation(button?.label || 'cancelButtonText', button?.noTranslation)}
             </Button>
@@ -562,7 +564,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         let buttons: React.JSX.Element[];
         if (this.state.form.buttons) {
             buttons = [];
-            this.state.form.buttons.forEach((button: ActionButton | 'apply' | 'cancel'): void => {
+            this.state.form.buttons.forEach((button: ActionButton | 'apply' | 'cancel' | 'close'): void => {
                 if (button === 'apply' || (button as ActionButton).type === 'apply') {
                     buttons.push(this.getOkButton(button));
                 } else {

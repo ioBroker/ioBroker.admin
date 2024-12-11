@@ -248,6 +248,18 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
             return item;
         }
 
-        return <CustomComponent {...this.props} />;
+        return (
+            <CustomComponent
+                {...this.props}
+                // @ts-expect-error BF (2024-12-18) Remove after the 7.4 will be mainstream. All following lines
+                socket={this.props.oContext.socket}
+                theme={this.props.oContext.theme}
+                themeType={this.props.oContext.themeType}
+                instance={this.props.oContext.instance}
+                adapterName={this.props.oContext.adapterName}
+                systemConfig={this.props.oContext.systemConfig}
+                forceUpdate={this.props.oContext.forceUpdate}
+            />
+        );
     }
 }

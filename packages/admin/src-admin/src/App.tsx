@@ -1711,7 +1711,7 @@ class App extends Router<AppProps, AppState> {
         const repository: CompactRepository = await this.socket
             .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
             .catch((e: unknown): CompactRepository => {
-                window.alert(`Cannot getRepositoryCompact: ${e}`);
+                window.alert(`Cannot getRepositoryCompact: ${e as Error}`);
                 if ((e as Error).toString().includes('timeout')) {
                     this.setState({ showSlowConnectionWarning: true });
                 }
@@ -1721,8 +1721,8 @@ class App extends Router<AppProps, AppState> {
         const installed: CompactInstalledInfo = await this.socket
             .getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
             .catch((e: unknown): CompactInstalledInfo => {
-                window.alert(`Cannot getInstalled: ${e}`);
-                if (e.toString().includes('timeout')) {
+                window.alert(`Cannot getInstalled: ${e as Error}`);
+                if ((e as Error).toString().includes('timeout')) {
                     this.setState({ showSlowConnectionWarning: true });
                 }
                 return {} as CompactInstalledInfo;

@@ -13,7 +13,7 @@ If you want to create the configuration page with ReactJS:
     - Change `name` from `src` to `ADAPTERNAME-admin` (Of course replace `ADAPTERNAME` with yours)
     - Add to devDependencies:
         ```json
-        "@iobroker/adapter-react-v5": "^7.4.3",
+        "@iobroker/adapter-react-v5": "^7.4.4",
         ```
         Versions can be higher.
         So your `src/package.json` should look like:
@@ -24,7 +24,7 @@ If you want to create the configuration page with ReactJS:
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@iobroker/adapter-react-v5": "^7.4.3",
+        "@iobroker/adapter-react-v5": "^7.4.4",
         "@iobroker/build-tools": "^1.0.0",
         "babel-eslint": "^10.1.0",
         "react-scripts": "^5.0.1"
