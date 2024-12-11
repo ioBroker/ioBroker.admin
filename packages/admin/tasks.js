@@ -218,7 +218,7 @@ if (process.argv.includes('--patch-webpack')) {
     clean();
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-2-npm')) {
     if (!existsSync(`${src}node_modules`)) {
-        npmInstall(src).catch(e => {
+        npmInstall(src, { clean: true }).catch(e => {
             console.error(e);
             process.exit(1);
         });
@@ -241,7 +241,7 @@ if (process.argv.includes('--patch-webpack')) {
         .then(async () => {
             clean();
             if (!existsSync(`${src}node_modules`)) {
-                await npmInstall(src);
+                await npmInstall(src, { clean: true });
             }
             await configCSS();
             await iobCSS();
