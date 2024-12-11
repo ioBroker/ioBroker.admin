@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.5 (2024-12-11)
 
 -   (@GermanBluefox) Corrected the rendering of custom JSON config components
 -   (@GermanBluefox) Corrected the news dialog for multi-line messages
@@ -112,10 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.4.1 (2024-11-19)
 
 -   (@GermanBluefox) Made improvement for JSONConfig components
-
-### 7.4.0 (2024-11-17)
-
--   (@GermanBluefox) Added new JsonConfig control: staticInfo
 
 ## License
 
