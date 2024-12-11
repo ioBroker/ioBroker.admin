@@ -520,7 +520,6 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                     from: false,
                     ack: false,
                     q: false,
-                    // @ts-expect-error fixed in js-controller 7
                     addId: false,
                     aggregate: 'none',
                 })
@@ -566,7 +565,6 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             from: false,
             ack: false,
             q: false,
-            // @ts-expect-error fixed in js-controller 7
             addId: false,
             aggregate: 'none',
             returnNewestEntries: true,
