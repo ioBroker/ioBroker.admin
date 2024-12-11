@@ -655,7 +655,6 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                                     variant="standard"
                                     id="siteName"
                                     label={this.props.t('Site name')}
-                                    // @ts-expect-error Fixed in js-controller 7
                                     value={this.props.data.common.siteName || ''}
                                     onChange={e => this.doChange('siteName', e.target.value)}
                                     helperText={this.props.t(
@@ -663,7 +662,6 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                                     )}
                                     slotProps={{
                                         input: {
-                                            // @ts-expect-error Fixed in js-controller 7
                                             endAdornment: this.props.data.common.siteName ? (
                                                 <InputAdornment position="end">
                                                     <IconButton
