@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.5",
+    "version": "7.4.6",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.6": {
+        "en": "Corrected the rendering of custom JSON config components\nCorrected the news dialog for multi-line messages",
+        "de": "Korrektur des Renderns von benutzerdefinierten JSON config Komponenten\nKorrektur des Nachrichtendialogs für Multi-Line-Nachrichten",
+        "ru": "Исправлено отображение пользовательских компонентов конфигурации JSON\nИсправлен диалог новостей для многолинейных сообщений",
+        "pt": "Corrigido a renderização de componentes de configuração JSON personalizados\nCorrigido o diálogo de notícias para mensagens multilinhas",
+        "nl": "De weergave van aangepaste JSON config componenten gecorrigeerd\nHet dialoogvenster Nieuws voor meerregelige berichten corrigeren",
+        "fr": "Correction du rendu des composants de configuration JSON personnalisés\nCorrection de la boîte de dialogue de nouvelles pour les messages multilignes",
+        "it": "Corretto il rendering dei componenti di configurazione JSON personalizzati\nCorretto la finestra di dialogo delle notizie per i messaggi multi-linea",
+        "es": "Corregido el renderizado de componentes de configuración personalizados JSON\nCorregido el diálogo de noticias para mensajes multilínea",
+        "pl": "Poprawiono renderowanie niestandardowych komponentów konfiguracyjnych JSON\nPoprawiono okno dialogowe wiadomości dla wiadomości wieloliniowych",
+        "uk": "Виправлено відображення компонентів користувацького налаштування JSON\nВиправлено діалогове вікно новин для багатоканальних повідомлень",
+        "zh-cn": "纠正自定义 JSON 配置组件的渲染\n更正多行消息的新闻对话框"
+      },
       "7.4.4": {
         "en": "Showed value in object edit dialog",
         "de": "Gezeigter Wert im Objekt bearbeiten Dialog",
