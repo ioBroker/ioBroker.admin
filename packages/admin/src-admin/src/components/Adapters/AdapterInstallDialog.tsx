@@ -7,12 +7,59 @@ import { checkCondition, type CompactInstanceInfo } from '@/dialogs/AdapterUpdat
 
 import AddInstanceDialog, { type AdapterDependencies } from '@/dialogs/AddInstanceDialog';
 import LicenseDialog from '@/dialogs/LicenseDialog';
-import type { AdapterInformation } from '@iobroker/js-controller-common-db/build/esm/lib/common/tools';
+// import type { AdapterInformation } from '@iobroker/js-controller-common-db/build/esm/lib/common/tools';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 import type HostAdapterWorker from '@/Workers/HostAdapterWorker';
 import { extractUrlLink, type RepoAdapterObject } from './Utils';
+
+// TODO: Placed here from @iobroker/js-controller-common-db/build/esm/lib/common/tools
+interface Multilingual {
+    en: string;
+    de?: string;
+    ru?: string;
+    pt?: string;
+    nl?: string;
+    fr?: string;
+    it?: string;
+    es?: string;
+    pl?: string;
+    uk?: string;
+    'zh-cn'?: string;
+}
+
+// TODO: Placed here from @iobroker/js-controller-common-db/build/esm/lib/common/tools
+export interface AdapterInformation {
+    /** this flag is only true for the js-controller */
+    controller: boolean;
+    /** adapter version */
+    version: string;
+    /** path to icon of the adapter */
+    icon: string;
+    /** path to local icon of the adapter */
+    localIcon?: string;
+    /** title of the adapter */
+    title: string;
+    /** title of the adapter in multiple languages */
+    titleLang: Multilingual;
+    /** description of the adapter in multiple languages */
+    desc: Multilingual;
+    /** platform of the adapter */
+    platform: 'Javascript/Node.js';
+    /** keywords of the adapter */
+    keywords: string[];
+    /** path to readme file */
+    readme: string;
+    /** The installed adapter version, not existing on controller */
+    runningVersion?: string;
+    /** type of the adapter */
+    type: string;
+    /** license of the adapter */
+    license: string;
+    /** url to license information */
+    licenseUrl?: string;
+}
 
 export type AdapterRating = {
     rating?: { r: number; c: number };
