@@ -43,7 +43,7 @@
         "semver": "^7.6.3"
     },
     "devDependencies": {
-        "@iobroker/build-tools": "^2.0.11",
+        "@iobroker/build-tools": "^2.0.12",
         "@iobroker/dm-gui-components": "file:../dm-gui-components",
         "@iobroker/json-config": "file:../jsonConfig",
         "@iobroker/legacy-testing": "^2.0.1",
