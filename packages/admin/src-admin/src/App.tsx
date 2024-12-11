@@ -2411,13 +2411,9 @@ class App extends Router<AppProps, AppState> {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
             return (
                 <div>
-                    {
-                        // @ts-expect-error fixed in js-controller 7
-                        this.state.systemConfig.common.siteName ? (
-                            // @ts-expect-error fixed in js-controller 7
-                            <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>
-                        ) : null
-                    }
+                    {this.state.systemConfig.common.siteName ? (
+                        <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>
+                    ) : null}
 
                     <Box
                         component="div"
