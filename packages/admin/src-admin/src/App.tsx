@@ -2456,9 +2456,7 @@ class App extends Router<AppProps, AppState> {
                 </div>
             );
         }
-        // @ts-expect-error fixed in js-controller 7
         if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
-            // @ts-expect-error fixed in js-controller 7
             return <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>;
         }
         return null;
