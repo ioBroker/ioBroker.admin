@@ -522,6 +522,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 from: true,
                 ack: true,
                 q: true,
+                // @ts-expect-error fixed in js-controller 7
                 addId: false,
                 aggregate: 'none',
                 returnNewestEntries: true,
@@ -633,6 +634,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 from: false,
                 ack: false,
                 q: false,
+                // @ts-expect-error fixed in js-controller 7
                 addId: false,
                 aggregate: 'none',
             })
