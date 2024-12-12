@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.7 (2024-12-12)
 
 -   (@GermanBluefox) Corrected the rendering of custom JSON config components
 -   (@GermanBluefox) Corrected the news dialog for multi-line messages
