@@ -15,6 +15,8 @@
         "@alcalzone/release-script-plugin-iobroker": "^3.7.2",
         "@alcalzone/release-script-plugin-license": "^3.7.0",
         "@alcalzone/release-script-plugin-lerna": "^3.7.0",
+        "@iobroker/types": "^7.0.6",
+        "@iobroker/dm-utils": "^0.6.11",
         "lerna": "^8.1.9"
     },
     "scripts": {

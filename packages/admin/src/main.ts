@@ -1949,7 +1949,6 @@ class Admin extends Adapter {
             );
             this.changedPasswords.push(found);
 
-            // @ts-expect-error types defined in js-controller 7
             await this.registerNotification('admin', 'wellKnownPassword', I18n.translate('User: %s', found.login), {
                 contextData: {
                     admin: {

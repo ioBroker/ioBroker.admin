@@ -23,7 +23,7 @@
         "setup"
     ],
     "dependencies": {
-        "@iobroker/adapter-core": "^3.2.2",
+        "@iobroker/adapter-core": "^3.2.3",
         "@iobroker/i18n": "^0.3.1",
         "@iobroker/socket-classes": "^1.6.2",
         "@iobroker/webserver": "^1.0.6",
@@ -43,7 +43,7 @@
         "semver": "^7.6.3"
     },
     "devDependencies": {
-        "@iobroker/build-tools": "^2.0.11",
+        "@iobroker/build-tools": "^2.0.12",
         "@iobroker/dm-gui-components": "file:../dm-gui-components",
         "@iobroker/json-config": "file:../jsonConfig",
         "@iobroker/legacy-testing": "^2.0.1",
