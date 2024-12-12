@@ -1674,7 +1674,6 @@ export class LegacyConnection {
                 obj._id = newId as ioBroker.ObjectIDs.Group;
                 if (newName !== undefined) {
                     obj.common = obj.common || ({} as ioBroker.GroupCommon);
-                    // @ts-expect-error fixed in js-controller 7
                     obj.common.name = newName;
                 }
 
@@ -2848,7 +2847,7 @@ export class LegacyConnection {
     getHistoryEx(
         id: string,
         options: ioBroker.GetHistoryOptions,
-    ): Promise<{ values: ioBroker.GetHistoryResult; sessionId: string; stepIgnore: number }> {
+    ): Promise<{ values: ioBroker.GetHistoryResult; sessionId: string; step: number }> {
         if (!this.connected) {
             return Promise.reject(new Error(NOT_CONNECTED));
         }
@@ -2858,8 +2857,8 @@ export class LegacyConnection {
                 'getHistory',
                 id,
                 options,
-                (err: string | null, values: ioBroker.GetHistoryResult, stepIgnore: number, sessionId: string) =>
-                    err ? reject(new Error(err)) : resolve({ values, sessionId, stepIgnore }),
+                (err: string | null, values: ioBroker.GetHistoryResult, step: number, sessionId: string) =>
+                    err ? reject(new Error(err)) : resolve({ values, sessionId, step }),
             );
         });
     }
