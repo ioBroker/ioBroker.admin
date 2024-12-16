@@ -128,7 +128,7 @@ const LANGUAGES = [
         title: 'Українська',
     },
     {
-        id: 'zh-ch',
+        id: 'zh-cn',
         title: '简体中文',
     },
 ];

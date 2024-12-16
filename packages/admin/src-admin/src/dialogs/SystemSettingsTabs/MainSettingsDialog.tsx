@@ -150,7 +150,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                         title: 'Polski',
                     },
                     {
-                        id: 'zh-ch',
+                        id: 'zh-cn',
                         title: '简体中文',
                     },
                 ],
