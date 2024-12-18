@@ -44,9 +44,11 @@ import {
     Utils,
 } from '@iobroker/adapter-react-v5';
 import type AdaptersWorker from '@/Workers/AdaptersWorker';
+// eslint-disable-next-line no-duplicate-imports
 import { type AdapterEvent } from '@/Workers/AdaptersWorker';
 import type InstancesWorker from '@/Workers/InstancesWorker';
-import type { InstanceEvent } from '@/Workers/InstancesWorker';
+// eslint-disable-next-line no-duplicate-imports
+import { type InstanceEvent } from '@/Workers/InstancesWorker';
 import HostAdapterWorker, { type HostAdapterEvent } from '@/Workers/HostAdapterWorker';
 import type { CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
@@ -1027,7 +1029,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 const compactRepositoriesEx = await this.props.socket
                     .getCompactSystemRepositories(update)
                     .catch((e: unknown): Record<string, CompactSystemRepository> => {
-                        window.alert(`Cannot read getCompactSystemRepositories: ${e}`);
+                        window.alert(`Cannot read getCompactSystemRepositories: ${e as Error}`);
                         return {};
                     });
                 const compactRepositories: CompactSystemRepository = compactRepositoriesEx as CompactSystemRepository;
@@ -1337,6 +1339,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         } else {
             (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapter.search');
             (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.installedList');
+            (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.updateList');
             if (this.inputRef.current) {
                 this.inputRef.current.value = '';
             }
@@ -2063,6 +2066,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     oneListView={this.state.oneListView}
                     update={this.state.update}
                     updateListFilter={this.state.updateList}
+                    searchFilter={this.state.search}
+                    installedListFilter={this.state.installedList}
                     cachedAdapters={this.cache.adapters}
                     categories={this.state.categories}
                     categoriesExpanded={this.state.categoriesExpanded}
