@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.8 (2024-12-21)
 
 -   (@GermanBluefox) Show latest/stable labels by updating/downgrading of adapters
 -   (@GermanBluefox) Corrected selection of chinese language
@@ -113,10 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 -   (@GermanBluefox) Made improvement for JSONConfig components
 -   (@GermanBluefox) Added clear button to text area JSON config component
-
-### 7.4.1 (2024-11-19)
-
--   (@GermanBluefox) Made improvement for JSONConfig components
 
 ## License
 

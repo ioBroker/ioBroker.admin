@@ -1,4 +1,8 @@
 # Older changes
+## 7.4.1 (2024-11-19)
+
+-   (@GermanBluefox) Made improvement for JSONConfig components
+
 ## 7.4.0 (2024-11-17)
 
 -   (@GermanBluefox) Added new JsonConfig control: staticInfo
