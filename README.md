@@ -87,6 +87,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+-   (@GermanBluefox) Show latest/stable labels by updating/downgrading of adapters
+-   (@GermanBluefox) Corrected selection of chinese language
+
 ### 7.4.7 (2024-12-12)
 
 -   (@GermanBluefox) Corrected the rendering of custom JSON config components

@@ -40,6 +40,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import type HostsWorker from '@/Workers/HostsWorker';
+// eslint-disable-next-line no-duplicate-imports
 import { type NotificationAnswer } from '@/Workers/HostsWorker';
 import AdapterUpdateDialog, { type News } from '@/dialogs/AdapterUpdateDialog';
 import JsControllerUpdater from '@/dialogs/JsControllerUpdater';

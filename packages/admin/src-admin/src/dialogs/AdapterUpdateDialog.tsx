@@ -3,6 +3,7 @@ import semver from 'semver';
 import moment from 'moment';
 
 import {
+    Box,
     Button,
     Dialog,
     DialogActions,
@@ -127,6 +128,16 @@ const styles: Record<string, any> = {
     dialogPaper: {
         maxWidth: 880,
     },
+    repoStableVersionText: (theme: IobTheme) => ({
+        color: theme.palette.mode === 'dark' ? '#8dff7a' : '#2b9800',
+        fontWeight: 'bold',
+        marginLeft: '4px',
+    }),
+    repoLatestVersionText: (theme: IobTheme) => ({
+        color: theme.palette.mode === 'dark' ? '#a3fcff' : '#005498',
+        fontWeight: 'bold',
+        marginLeft: '4px',
+    }),
 };
 
 export interface Message {
@@ -348,6 +359,7 @@ interface AdapterUpdateDialogProps {
     textInstruction?: string;
     instances?: Record<string, CompactInstanceInfo>;
     theme: IobTheme;
+    isStable?: boolean;
 }
 
 interface AdapterUpdateDialogState {
@@ -457,6 +469,18 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
     getNews(): JSX.Element[] {
         const result: JSX.Element[] = [];
 
+        let stableVersion: string | undefined;
+        let latestVersion: string | undefined;
+        if (this.props.isStable !== undefined) {
+            if (this.props.isStable) {
+                stableVersion = this.props.adapterObject.version;
+                latestVersion = this.props.adapterObject.latestVersion;
+            } else {
+                stableVersion = this.props.adapterObject.stable;
+                latestVersion = this.props.adapterObject.version;
+            }
+        }
+
         this.props.news?.forEach(entry => {
             const news: string[] = (entry.news ? entry.news.split('\n') : [])
                 .map((line: string) =>
@@ -482,13 +506,25 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 <Grid2 key={entry.version}>
                     <Typography sx={styles.version}>
                         {entry.version}
+                        {latestVersion && latestVersion === entry.version ? (
+                            <Box
+                                component="span"
+                                sx={styles.repoLatestVersionText}
+                            >
+                                (latest)
+                            </Box>
+                        ) : null}
+                        {stableVersion && stableVersion === entry.version ? (
+                            <Box
+                                component="span"
+                                sx={styles.repoStableVersionText}
+                            >{`(${I18n.t('stable')})`}</Box>
+                        ) : null}
                         {this.props.adapterObject?.version === entry.version ? (
                             <span style={styles.versionTime}>
                                 ({moment(this.props.adapterObject.versionDate).fromNow()})
                             </span>
-                        ) : (
-                            ''
-                        )}
+                        ) : null}
                     </Typography>
                     {news.map((value, index) => (
                         <Typography

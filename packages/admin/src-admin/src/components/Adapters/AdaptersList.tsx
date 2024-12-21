@@ -138,6 +138,10 @@ interface AdaptersListProps {
     sortRecentlyUpdated: boolean;
     commandRunning: boolean;
     updateListFilter: boolean;
+    /** Filter as string */
+    searchFilter: string;
+    /** Filter: show only installed */
+    installedListFilter: number;
 }
 
 interface AdaptersListState {
@@ -289,14 +293,18 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                         colSpan={8}
                         style={{ textAlign: 'center' }}
                     >
-                        <Button
-                            variant="outlined"
-                            title={this.props.context.t('Click to clear all filters')}
-                            onClick={() => this.props.clearAllFilters()}
-                        >
-                            {this.props.context.t('all items are filtered out')}
-                        </Button>
-                        {this.props.updateListFilter ? <br /> : null}
+                        {this.props.searchFilter || this.props.installedListFilter ? (
+                            <Button
+                                variant="outlined"
+                                title={this.props.context.t('Click to clear all filters')}
+                                onClick={() => this.props.clearAllFilters()}
+                            >
+                                {this.props.context.t('all items are filtered out')}
+                            </Button>
+                        ) : null}
+                        {this.props.updateListFilter && (this.props.searchFilter || this.props.installedListFilter) ? (
+                            <br />
+                        ) : null}
                         {this.props.updateListFilter ? (
                             <Button
                                 style={{ marginTop: 16 }}
@@ -332,17 +340,19 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                         gap: 16,
                     }}
                 >
-                    <Tooltip
-                        title={this.props.context.t('Click to clear all filters')}
-                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
-                    >
-                        <Button
-                            variant="outlined"
-                            onClick={() => this.props.clearAllFilters()}
+                    {this.props.searchFilter || this.props.installedListFilter ? (
+                        <Tooltip
+                            title={this.props.context.t('Click to clear all filters')}
+                            slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                         >
-                            {this.props.context.t('all items are filtered out')}
-                        </Button>
-                    </Tooltip>
+                            <Button
+                                variant="outlined"
+                                onClick={() => this.props.clearAllFilters()}
+                            >
+                                {this.props.context.t('all items are filtered out')}
+                            </Button>
+                        </Tooltip>
+                    ) : null}
                     {this.props.updateListFilter ? (
                         <Button
                             variant="outlined"

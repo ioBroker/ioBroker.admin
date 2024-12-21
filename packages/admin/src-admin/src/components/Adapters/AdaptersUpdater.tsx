@@ -26,7 +26,7 @@ import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import { checkCondition } from '@/dialogs/AdapterUpdateDialog';
-import type { RepoAdapterObject } from '@/components/Adapters/Utils';
+import type { RepoAdapterObject, RepoInfo } from '@/components/Adapters/Utils';
 
 interface GetNewsResultEntry {
     version: string;
@@ -87,6 +87,16 @@ const styles: Record<string, any> = {
         pl: '10px',
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
+    }),
+    repoStableVersionText: (theme: IobTheme) => ({
+        color: theme.palette.mode === 'dark' ? '#8dff7a' : '#2b9800',
+        fontWeight: 'bold',
+        marginLeft: '4px',
+    }),
+    repoLatestVersionText: (theme: IobTheme) => ({
+        color: theme.palette.mode === 'dark' ? '#a3fcff' : '#005498',
+        fontWeight: 'bold',
+        marginLeft: '4px',
     }),
 };
 
@@ -333,6 +343,17 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         fromVersion = fromVersion || installed.version;
         const result: JSX.Element[] = [];
 
+        let stableVersion: string;
+        let latestVersion: string;
+        const repoInfo: RepoInfo = this.props.repository._repoInfo as unknown as RepoInfo;
+        if (repoInfo?.stable) {
+            stableVersion = this.props.repository[adapter]?.version;
+            latestVersion = this.props.repository[adapter]?.latestVersion;
+        } else {
+            stableVersion = this.props.repository[adapter]?.stable;
+            latestVersion = this.props.repository[adapter]?.version;
+        }
+
         if (installed && adapterObj?.news) {
             Object.keys(adapterObj.news).forEach(version => {
                 try {
@@ -355,7 +376,23 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
 
                         result.push(
                             <Grid2 key={version}>
-                                <Typography sx={styles.versionHeader}>{version}</Typography>
+                                <Typography sx={styles.versionHeader}>
+                                    {version}
+                                    {latestVersion === version ? (
+                                        <Box
+                                            component="span"
+                                            sx={styles.repoLatestVersionText}
+                                        >
+                                            (latest)
+                                        </Box>
+                                    ) : null}
+                                    {stableVersion === version ? (
+                                        <Box
+                                            component="span"
+                                            sx={styles.repoStableVersionText}
+                                        >{`(${I18n.t('stable')})`}</Box>
+                                    ) : null}
+                                </Typography>
                                 {news.map((value, index) => (
                                     <Typography
                                         key={`${version}-${index}`}
