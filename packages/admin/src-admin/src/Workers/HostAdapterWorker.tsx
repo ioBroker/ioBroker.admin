@@ -1,11 +1,11 @@
 import { type AdminConnection } from '@iobroker/adapter-react-v5';
-import GenericWorker, { type EventType, type GenericEvent } from './GenericWorker';
+import { GenericWorker, type EventType, type GenericEvent } from './GenericWorker';
 
 export type HostAdapterEventType = EventType;
 
 export type HostAdapterEvent = GenericEvent<'adapter'>;
 
-export default class HostAdapterWorker extends GenericWorker<'adapter'> {
+export class HostAdapterWorker extends GenericWorker<'adapter'> {
     private readonly host: string;
     private readonly prefix: string;
 

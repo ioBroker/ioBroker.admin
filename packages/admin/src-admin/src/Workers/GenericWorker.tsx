@@ -56,7 +56,7 @@ export type GenericEvent<T extends ioBroker.ObjectType> = {
     oldObj?: GetObjectFromType<T>;
 };
 
-export default class GenericWorker<T extends ioBroker.ObjectType> {
+export class GenericWorker<T extends ioBroker.ObjectType> {
     protected readonly socket: AdminConnection;
 
     protected readonly handlers: ((events: GenericEvent<T>[]) => void)[] = [];

@@ -14,7 +14,7 @@ import {
     type BackEndCommand,
     type BackEndCommandOpenLink,
     type ConfigItemPanel,
-    ConfigItemTabs,
+    type ConfigItemTabs,
     JsonConfigComponent,
 } from '@iobroker/json-config';
 

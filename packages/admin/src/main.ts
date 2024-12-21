@@ -951,8 +951,8 @@ class Admin extends Adapter {
     async updateNews(): Promise<void> {
         if (this.timerNews) {
             clearTimeout(this.timerNews);
+            this.timerNews = null;
         }
-        this.timerNews = null;
 
         this.checkNodeJsVersion().catch(e => this.log.warn(`Cannot check node.js versions: ${e}`));
 

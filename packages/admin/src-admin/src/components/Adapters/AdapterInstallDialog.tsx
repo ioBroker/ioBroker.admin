@@ -8,10 +8,10 @@ import { checkCondition, type CompactInstanceInfo } from '@/dialogs/AdapterUpdat
 import AddInstanceDialog, { type AdapterDependencies } from '@/dialogs/AddInstanceDialog';
 import LicenseDialog from '@/dialogs/LicenseDialog';
 // import type { AdapterInformation } from '@iobroker/js-controller-common-db/build/esm/lib/common/tools';
-import type InstancesWorker from '@/Workers/InstancesWorker';
-import type HostsWorker from '@/Workers/HostsWorker';
+import type { InstancesWorker } from '@/Workers/InstancesWorker';
+import type { HostsWorker } from '@/Workers/HostsWorker';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
-import type HostAdapterWorker from '@/Workers/HostAdapterWorker';
+import type { HostAdapterWorker } from '@/Workers/HostAdapterWorker';
 import { extractUrlLink, type RepoAdapterObject } from './Utils';
 
 // TODO: Placed here from @iobroker/js-controller-common-db/build/esm/lib/common/tools

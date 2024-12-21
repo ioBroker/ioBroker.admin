@@ -1,6 +1,6 @@
 import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import type { FilteredNotificationInformation } from '@iobroker/socket-client';
-import GenericWorker, { type EventType, type GenericEvent } from './GenericWorker';
+import { GenericWorker, type EventType, type GenericEvent } from './GenericWorker';
 
 export type HostEventType = EventType;
 
@@ -14,7 +14,7 @@ export interface HostAliveEvent {
     type: HostEventType;
 }
 
-export default class HostsWorker extends GenericWorker<'host'> {
+export class HostsWorker extends GenericWorker<'host'> {
     private readonly aliveHandlers: (((events: HostAliveEvent[]) => void) | false)[] = [];
 
     private readonly notificationsHandlers: ((notifications: Record<string, NotificationAnswer>) => void)[] = [];

@@ -6,12 +6,12 @@ import React, { type JSX } from 'react';
 import * as ace from 'ace-builds';
 import 'ace-builds/src-noconflict/ext-modelist';
 
-import { withWidth, FileViewerClass } from '@iobroker/adapter-react-v5';
+import { withWidth, FileViewerClass, type FileViewerProps } from '@iobroker/adapter-react-v5';
 
 import Editor from './Editor';
-import type { FileViewerProps } from '@iobroker/adapter-react-v5';
 
-const modelist = ace.require('ace/ext/modelist');
+// @ts-expect-error try this too
+const modelist = ace.require ? ace.require('ace/ext/modelist') : ace.acequire('ace/ext/modelist');
 
 class FileEditorClass extends FileViewerClass {
     constructor(props: FileViewerProps) {

@@ -28,7 +28,7 @@ import {
     type TreeItemData,
 } from '@iobroker/adapter-react-v5';
 
-import type ObjectsWorker from '@/Workers/ObjectsWorker';
+import type { ObjectsWorker } from '@/Workers/ObjectsWorker';
 
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
 import ObjectBrowserValue from '../components/Object/ObjectBrowserValue';

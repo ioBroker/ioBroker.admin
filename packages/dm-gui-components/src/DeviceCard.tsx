@@ -494,7 +494,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         const titleStyle: React.CSSProperties = {
             fontSize: 16,
             fontWeight: 'bold',
-            whiteSpace: 'nowrap',
+            // whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
         };

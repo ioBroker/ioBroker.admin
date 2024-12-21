@@ -55,7 +55,7 @@ import AdapterInstallDialog, {
 import AutoUpgradeConfigDialog, { ICONS } from '@/dialogs/AutoUpgradeConfigDialog';
 
 import IsVisible from '../IsVisible';
-import { extractUrlLink } from './Utils';
+import { extractUrlLink, type RepoInfo } from './Utils';
 import sentryIcon from '../../assets/sentry.svg';
 
 export const genericStyles: Record<string, any> = {
@@ -136,7 +136,12 @@ export const genericStyles: Record<string, any> = {
         fontWeight: 'bold',
         marginLeft: '4px',
     }),
-    repoVersionText: (theme: IobTheme) => ({
+    repoStableVersionText: (theme: IobTheme) => ({
+        color: theme.palette.mode === 'dark' ? '#8dff7a' : '#2b9800',
+        fontWeight: 'bold',
+        marginLeft: '4px',
+    }),
+    repoLatestVersionText: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#a3fcff' : '#005498',
         fontWeight: 'bold',
         marginLeft: '4px',
@@ -676,6 +681,7 @@ export default abstract class AdapterGeneric<
                 onUpdate={version =>
                     this.setState({ showUpdateDialog: false, showDialog: false }, () => this.update(version))
                 }
+                isStable={(this.props.context.repository._repoInfo as unknown as RepoInfo).stable}
                 onIgnore={ignoreVersion =>
                     this.setState({ showUpdateDialog: false, showDialog: false }, () =>
                         this.props.context.socket
@@ -724,8 +730,16 @@ export default abstract class AdapterGeneric<
         if (!this.state.showInstallVersion) {
             return null;
         }
-
-        const repoVersion = this.props.context.repository[this.props.adapterName]?.version;
+        let stableVersion: string;
+        let latestVersion: string;
+        const repoInfo: RepoInfo = this.props.context.repository._repoInfo as unknown as RepoInfo;
+        if (repoInfo?.stable) {
+            stableVersion = this.props.context.repository[this.props.adapterName]?.version;
+            latestVersion = this.props.context.repository[this.props.adapterName]?.latestVersion;
+        } else {
+            stableVersion = this.props.context.repository[this.props.adapterName]?.stable;
+            latestVersion = this.props.context.repository[this.props.adapterName]?.version;
+        }
 
         return (
             <CustomModal
@@ -838,11 +852,19 @@ export default abstract class AdapterGeneric<
                                                 sx={this.styles.currentVersionText}
                                             >{`(${this.props.context.t('current')})`}</Box>
                                         ) : null}
-                                        {repoVersion === version ? (
+                                        {latestVersion === version ? (
                                             <Box
                                                 component="span"
-                                                sx={this.styles.repoVersionText}
-                                            >{`(${this.props.context.t('repository')})`}</Box>
+                                                sx={this.styles.repoLatestVersionText}
+                                            >
+                                                (latest)
+                                            </Box>
+                                        ) : null}
+                                        {stableVersion === version ? (
+                                            <Box
+                                                component="span"
+                                                sx={this.styles.repoStableVersionText}
+                                            >{`(${this.props.context.t('stable')})`}</Box>
                                         ) : null}
                                     </Typography>
                                     <Typography

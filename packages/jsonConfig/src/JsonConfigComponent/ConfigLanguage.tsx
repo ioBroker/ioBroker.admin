@@ -49,7 +49,7 @@ const LANGUAGES = [
         label: 'Український',
     },
     {
-        value: 'zh-ch',
+        value: 'zh-cn',
         label: '简体中文',
     },
 ] as const;

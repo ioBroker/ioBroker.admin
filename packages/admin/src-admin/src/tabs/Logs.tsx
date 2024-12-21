@@ -57,8 +57,7 @@ import {
     TabContent,
 } from '@iobroker/adapter-react-v5';
 
-import type LogsWorker from '@/Workers/LogsWorker';
-import type { LogLineSaved } from '@/Workers/LogsWorker';
+import type { LogLineSaved, LogsWorker } from '@/Workers/LogsWorker';
 import type { CompactAdapterInfo, CompactHost } from '@/types';
 
 import AdminUtils from '../helpers/AdminUtils';

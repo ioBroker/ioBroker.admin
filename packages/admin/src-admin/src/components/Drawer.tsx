@@ -33,10 +33,9 @@ import {
 
 import { getHref } from '@/tabs/CustomTab';
 import AdminUtils from '@/helpers/AdminUtils';
-import type InstancesWorker from '@/Workers/InstancesWorker';
-import type HostsWorker from '@/Workers/HostsWorker';
-import { type NotificationAnswer } from '@/Workers/HostsWorker';
-import type LogsWorker from '@/Workers/LogsWorker';
+import type { InstancesWorker } from '@/Workers/InstancesWorker';
+import type { HostsWorker, NotificationAnswer } from '@/Workers/HostsWorker';
+import type { LogsWorker } from '@/Workers/LogsWorker';
 import type { NotificationsCount } from '@/types';
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';

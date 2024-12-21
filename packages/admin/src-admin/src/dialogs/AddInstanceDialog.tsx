@@ -20,8 +20,8 @@ import { Close as CloseIcon, Add as AddIcon, Public as IconWeb, Language as Lang
 
 import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
-import type HostsWorker from '@/Workers/HostsWorker';
-import type InstancesWorker from '@/Workers/InstancesWorker';
+import type { HostsWorker } from '@/Workers/HostsWorker';
+import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import { checkCondition, type CompactInstanceInfo, type Message } from '@/dialogs/AdapterUpdateDialog';
 import HostSelectors from '@/components/HostSelectors';
 
