@@ -30,8 +30,8 @@ import {
     Brightness6,
     LinearScale,
     Help,
+    type SvgIconComponent,
 } from '@mui/icons-material';
-import { type SvgIconComponent } from '@mui/icons-material';
 
 const ICON_CACHE: Record<string, Promise<ioBroker.AdapterObject>> = {};
 

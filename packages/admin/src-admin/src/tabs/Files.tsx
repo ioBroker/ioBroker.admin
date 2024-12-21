@@ -9,9 +9,10 @@ import {
     type Translate,
     TabContainer,
     TabContent,
+    FileBrowser,
+    type FileBrowserClass,
+    type MetaObject,
 } from '@iobroker/adapter-react-v5';
-
-import { FileBrowser, type FileBrowserClass, type MetaObject } from '@iobroker/adapter-react-v5';
 
 import { FileEditor } from '../components/FileEditor';
 import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';

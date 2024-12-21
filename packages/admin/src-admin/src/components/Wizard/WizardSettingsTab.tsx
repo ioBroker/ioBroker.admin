@@ -1,8 +1,7 @@
 import React, { Component, type JSX } from 'react';
 
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
-import { Marker } from 'leaflet';
-import type { DragEndEvent, LatLngTuple, Map } from 'leaflet';
+import { Marker, type DragEndEvent, type LatLngTuple, type Map } from 'leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import {

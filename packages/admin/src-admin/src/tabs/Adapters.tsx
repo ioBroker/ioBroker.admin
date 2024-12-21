@@ -43,18 +43,14 @@ import {
     TabContainer,
     Utils,
 } from '@iobroker/adapter-react-v5';
-import type AdaptersWorker from '@/Workers/AdaptersWorker';
-// eslint-disable-next-line no-duplicate-imports
-import { type AdapterEvent } from '@/Workers/AdaptersWorker';
-import type InstancesWorker from '@/Workers/InstancesWorker';
-// eslint-disable-next-line no-duplicate-imports
-import { type InstanceEvent } from '@/Workers/InstancesWorker';
-import HostAdapterWorker, { type HostAdapterEvent } from '@/Workers/HostAdapterWorker';
+import type { AdaptersWorker, AdapterEvent } from '@/Workers/AdaptersWorker';
+import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
+import { HostAdapterWorker, type HostAdapterEvent } from '@/Workers/HostAdapterWorker';
 import type { CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 
 import type { Ratings, AdapterCacheEntry } from '@/components/Adapters/AdapterGeneric';
-import type HostsWorker from '@/Workers/HostsWorker';
+import type { HostsWorker } from '@/Workers/HostsWorker';
 import GitHubInstallDialog from '@/dialogs/GitHubInstallDialog';
 import AdapterInstallDialog, {
     type AdapterRatingInfo,

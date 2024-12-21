@@ -1,11 +1,11 @@
 import { type AdminConnection } from '@iobroker/adapter-react-v5';
-import GenericWorker, { type EventType, type GenericEvent } from './GenericWorker';
+import { GenericWorker, type EventType, type GenericEvent } from './GenericWorker';
 
 export type AdapterEventType = EventType;
 
 export type AdapterEvent = GenericEvent<'adapter'>;
 
-export default class AdaptersWorker extends GenericWorker<'adapter'> {
+export class AdaptersWorker extends GenericWorker<'adapter'> {
     private readonly repositoryHandlers: (() => void)[];
 
     private repoTimer: ReturnType<typeof setTimeout> | null;

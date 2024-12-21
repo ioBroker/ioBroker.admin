@@ -3,7 +3,7 @@ import { LinearProgress } from '@mui/material';
 
 import { withWidth, type ThemeType, Router } from '@iobroker/adapter-react-v5';
 
-import type InstancesWorker from '@/Workers/InstancesWorker';
+import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import AdminUtils from '@/helpers/AdminUtils';
 import { replaceLink } from '@/helpers/utils';
 

@@ -22,9 +22,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
-import type HostsWorker from '@/Workers/HostsWorker';
-// eslint-disable-next-line no-duplicate-imports
-import type { NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
+import type { HostsWorker, NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import { blinkClasses } from '@/components/Hosts/HostGeneric';
 import HostCard from '../components/Hosts/HostCard';

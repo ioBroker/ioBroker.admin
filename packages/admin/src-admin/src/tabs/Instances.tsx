@@ -35,7 +35,7 @@ import {
 
 import AdminUtils from '@/helpers/AdminUtils';
 import { replaceLink } from '@/helpers/utils';
-import type InstancesWorker from '@/Workers/InstancesWorker';
+import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import type { InstanceLink } from '@/components/Instances/LinksDialog';
 import Config from './Config';
 import InstanceGeneric, {

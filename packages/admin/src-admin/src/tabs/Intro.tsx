@@ -21,15 +21,13 @@ import {
     TabContent,
 } from '@iobroker/adapter-react-v5';
 
-import type InstancesWorker from '@/Workers/InstancesWorker';
-import type HostsWorker from '@/Workers/HostsWorker';
-import { type HostAliveEvent, type HostEvent } from '@/Workers/HostsWorker';
+import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
+import type { HostsWorker, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import AdminUtils from '@/helpers/AdminUtils';
 import { replaceLink } from '@/helpers/utils';
 import IntroCard from '@/components/Intro/IntroCard';
 import EditIntroLinkDialog from '@/components/Intro/EditIntroLinkDialog';
 
-import { type InstanceEvent } from '@/Workers/InstancesWorker';
 import NodeUpdateDialog from '@/dialogs/NodeUpdateDialog';
 import IntroCardCamera from '@/components/Intro/IntroCardCamera';
 
