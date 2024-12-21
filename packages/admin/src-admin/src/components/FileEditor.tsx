@@ -10,10 +10,8 @@ import { withWidth, FileViewerClass, type FileViewerProps } from '@iobroker/adap
 
 import Editor from './Editor';
 
-const modelist = ace.require
-    ? ace.require('ace/ext/modelist')
-    : // @ts-expect-error try this too
-      ace.acequire('ace/ext/modelist');
+// @ts-expect-error try this too
+const modelist = ace.require ? ace.require('ace/ext/modelist') : ace.acequire('ace/ext/modelist');
 
 class FileEditorClass extends FileViewerClass {
     constructor(props: FileViewerProps) {
