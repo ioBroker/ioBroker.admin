@@ -1,3 +1,14 @@
+export interface RepoInfo {
+    stable?: boolean;
+    name?: ioBroker.Translated;
+    repoTime: string;
+    recommendedVersions?: {
+        nodeJsAccepted: number[];
+        nodeJsRecommended: number;
+        npmRecommended: number;
+    };
+}
+
 export interface RepoAdapterObject extends ioBroker.AdapterCommon {
     versionDate: string;
     controller?: boolean;
@@ -8,6 +19,8 @@ export interface RepoAdapterObject extends ioBroker.AdapterCommon {
     allowAdapterDelete?: boolean;
     allowAdapterReadme?: boolean;
     allowAdapterRating?: boolean;
+    stable?: string;
+    latestVersion?: string;
 }
 
 export function extractUrlLink(adapterRepo: RepoAdapterObject): string {
