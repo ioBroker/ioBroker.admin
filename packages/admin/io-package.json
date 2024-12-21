@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.7",
+    "version": "7.4.8",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.8": {
+        "en": "Show latest/stable labels by updating/downgrading of adapters\nCorrected selection of chinese language",
+        "de": "Neueste/stabile Etiketten durch Aktualisierung/Abbau von Adaptern anzeigen\nKorrigierte Auswahl der chinesischen Sprache",
+        "ru": "Показать последние/стабильные этикетки путем обновления/снизуглубления адаптеров\nИсправленный выбор китайского языка",
+        "pt": "Mostrar etiquetas mais recentes/estáveis, atualizando/atualizando os adaptadores\nSeleção correta de língua chinesa",
+        "nl": "Nieuwste/stabiele labels tonen door adapters te updaten/downgraden\nGecorrigeerde selectie van Chinese taal",
+        "fr": "Afficher les étiquettes les plus récentes/stables par mise à jour/réduction des adaptateurs\nSélection corrigée de la langue chinoise",
+        "it": "Mostra le etichette più recenti/stable aggiornando/downgrading degli adattatori\nSelezione corretta della lingua cinese",
+        "es": "Mostrar etiquetas más recientes / estables mediante la actualización/redefinición de adaptadores\nSelección corregida del idioma chino",
+        "pl": "Pokaż najnowsze / stabilne etykiety poprzez aktualizację / obniżenie klasyfikacji adapterów\nPoprawiony wybór języka chińskiego",
+        "uk": "Показати останні / розкладні етикетки шляхом оновлення / оновлення адаптерів\nПравильний вибір китайської мови",
+        "zh-cn": "通过适配器的更新/降级显示最新的/稳定的标签\n更正中国语言选择"
+      },
       "7.4.7": {
         "en": "Corrected the rendering of custom JSON config components\nCorrected the news dialog for multi-line messages",
         "de": "Korrektur des Renderns von benutzerdefinierten JSON config Komponenten\nKorrektur des Nachrichtendialogs für Multi-Line-Nachrichten",
@@ -96,19 +109,6 @@
         "pl": "Dodano nowy sterownik JsonConfig: statyczny Informacja",
         "uk": "Додано новий JsonConfig control: статичний Новини",
         "zh-cn": "添加新的 Jsonconfig 控件: 静态 资讯"
-      },
-      "7.3.2": {
-        "en": "Some GUI packages were updated.\nImproved file viewer. Added icons viewer",
-        "de": "Einige GUI-Pakete wurden aktualisiert.\nVerbesserte Dateiansicht. Icons Viewer hinzugefügt",
-        "ru": "Некоторые пакеты GUI были обновлены.\nУлучшен просмотрщик файлов. Добавлен значок",
-        "pt": "Alguns pacotes GUI foram atualizados.\nVisualizador de arquivo melhorado. Visualizador de ícones adicionado",
-        "nl": "Sommige GUI-pakketten werden bijgewerkt.\nVerbeterde bestandsviewer. Pictogrammenviewer toegevoegd",
-        "fr": "Certains paquets GUI ont été mis à jour.\nVisualiseur de fichiers amélioré. Affichage des icônes ajoutées",
-        "it": "Alcuni pacchetti GUI sono stati aggiornati.\nVisualizzatore di file migliorato. Aggiunto icone viewer",
-        "es": "Algunos paquetes GUI fueron actualizados.\nMejorado visor de archivos. Añadido iconos visor",
-        "pl": "Niektóre pakiety GUI zostały zaktualizowane.\nUlepszona przeglądarka plików. Dodano przeglądarkę ikon",
-        "uk": "Деякі пакети GUI були оновлено.\nПоліпшення перегляду файлів. Перегляд іконок",
-        "zh-cn": "一些图形用户界面软件包已经更新.\n改进的文件查看器 。 添加图标查看器"
       }
     },
     "desc": {
