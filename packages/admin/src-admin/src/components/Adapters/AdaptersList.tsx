@@ -142,6 +142,7 @@ interface AdaptersListProps {
     searchFilter: string;
     /** Filter: show only installed */
     installedListFilter: number;
+    noTranslation: boolean;
 }
 
 interface AdaptersListState {
@@ -160,6 +161,7 @@ interface AdaptersListState {
     renderCounter: number;
     expertMode: boolean;
     commandRunning: boolean;
+    noTranslation: boolean;
 }
 
 class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
@@ -184,6 +186,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             listOfVisibleAdapter: JSON.stringify(props.listOfVisibleAdapter),
             expertMode: props.context.expertMode,
             commandRunning: props.commandRunning,
+            noTranslation: props.noTranslation,
         };
     }
 
@@ -197,6 +200,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                     adapterName={adapterName}
                     cached={cached}
                     commandRunning={this.state.commandRunning}
+                    noTranslation={this.state.noTranslation}
                 />
             );
         }
@@ -381,6 +385,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                     adapterName={adapterName}
                     cached={cached}
                     commandRunning={this.state.commandRunning}
+                    noTranslation={this.state.noTranslation}
                 />,
             );
         }
@@ -545,6 +550,10 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             console.log('Render because of commandRunning');
             changed = true;
         }
+        if (props.noTranslation !== state.noTranslation) {
+            console.log('Render because of commandRunning');
+            changed = true;
+        }
         if (changed) {
             return {
                 descWidth: props.descWidth,
@@ -562,13 +571,14 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 renderCounter: state.renderCounter + 1,
                 expertMode: props.context.expertMode,
                 commandRunning: props.commandRunning,
+                noTranslation: props.noTranslation,
             };
         }
 
         return null;
     }
 
-    shouldComponentUpdate(nextProps: Readonly<AdaptersListProps>, nextState: Readonly<AdaptersListState>): boolean {
+    shouldComponentUpdate(_nextProps: Readonly<AdaptersListProps>, nextState: Readonly<AdaptersListState>): boolean {
         if (this.lastRenderCounter !== nextState.renderCounter) {
             this.lastRenderCounter = nextState.renderCounter;
             return true;

@@ -84,7 +84,6 @@ export type AdaptersContext = {
     socket: AdminConnection;
     removeUpdateAvailable: (adapterName: string) => void;
     toggleTranslation: () => void;
-    noTranslation: boolean;
     rightDependenciesFunc: (adapterName: string) => boolean;
     lang: ioBroker.Languages;
     uuid: string;
@@ -127,6 +126,10 @@ export type AdaptersContext = {
     hostAdapterWorker: HostAdapterWorker;
 };
 
+export interface AdapterInstallDialogProps {
+    noTranslation: boolean;
+}
+
 export interface AdapterInstallDialogState {
     showLicenseDialog: {
         url: string;
@@ -140,10 +143,10 @@ export interface AdapterInstallDialogState {
     showDialog: boolean;
 }
 
-export default abstract class AdapterInstallDialog<TProps, TState extends AdapterInstallDialogState> extends Component<
-    TProps,
-    TState
-> {
+export default abstract class AdapterInstallDialog<
+    TProps extends AdapterInstallDialogProps,
+    TState extends AdapterInstallDialogState,
+> extends Component<TProps, TState> {
     protected constructor(props: TProps) {
         super(props);
 
@@ -394,7 +397,7 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
                 adapterObject={context.repository[this.state.addInstanceDialog]}
                 instances={context.compactInstances}
                 toggleTranslation={context.toggleTranslation}
-                noTranslation={context.noTranslation}
+                noTranslation={this.props.noTranslation}
                 expertMode={context.expertMode}
                 theme={context.theme}
             />
