@@ -280,6 +280,10 @@ class Admin extends Adapter {
             );
         } else if (obj.command.startsWith('admin:')) {
             return this.processNotificationsGui(obj);
+        } else if (obj.command.startsWith('test:')) {
+            // just for test
+            this.log.info(`test: ${JSON.stringify(obj.message)}`);
+            return;
         }
 
         socket?.sendCommand(obj);

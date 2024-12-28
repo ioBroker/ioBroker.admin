@@ -358,6 +358,7 @@ Text component
 | `min`    | minimal value |
 | `max`    | maximal value |
 | `step`   | step          |
+| `unit`   | unit          |
 
 ### `color`
 
