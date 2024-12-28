@@ -257,7 +257,7 @@ class ConfigStaticInfo extends ConfigGeneric<ConfigStaticInfoProps, ConfigGeneri
                 <div style={styles.valueAndUnit}>
                     {value}
                     <div style={{ ...styles.unit, ...(this.props.schema.styleUnit || undefined) }}>
-                        {this.getText(this.props.schema.unit)}
+                        {this.getText(this.props.schema.unit, this.props.schema.noTranslation)}
                     </div>
                 </div>
             );

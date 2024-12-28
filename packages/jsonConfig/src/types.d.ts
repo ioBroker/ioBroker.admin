@@ -309,6 +309,8 @@ export interface ConfigItemNumber extends ConfigItem {
     max?: number;
     step?: number;
     readOnly?: boolean;
+    /** Unit */
+    unit?: string;
 }
 
 export interface ConfigItemQrCode extends ConfigItem {

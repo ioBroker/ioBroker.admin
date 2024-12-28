@@ -157,6 +157,11 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                                     ...params.inputProps,
                                     readOnly: this.props.schema.readOnly || false,
                                 },
+                                input: {
+                                    endAdornment: this.props.schema.unit
+                                        ? this.getText(this.props.schema.unit, this.props.schema.noTranslation)
+                                        : undefined,
+                                },
                             }}
                             error={!!error}
                             placeholder={this.getText(this.props.schema.placeholder)}
@@ -193,6 +198,11 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                             max: this.props.schema.max,
                             step: this.props.schema.step,
                             readOnly: this.props.schema.readOnly || false,
+                        },
+                        input: {
+                            endAdornment: this.props.schema.unit
+                                ? this.getText(this.props.schema.unit, this.props.schema.noTranslation)
+                                : undefined,
                         },
                     }}
                     value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
