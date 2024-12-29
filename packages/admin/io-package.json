@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.8",
+    "version": "7.4.9",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.9": {
+        "en": "Corrected JSON-Config tables\nCorrected translation on the update adapter dialog",
+        "de": "Korrektur der JSON-Config-Tabellen\nKorrigierte Übersetzung im Update Adapter Dialog",
+        "ru": "Исправленные таблицы JSON-Config\nИсправлен перевод на диалог адаптера обновления",
+        "pt": "Tabelas corretas de JSON-Config\nTradução correta na caixa de diálogo do adaptador de atualização",
+        "nl": "Gecorrigeerde JSON-config tabellen\nGecorrigeerde vertaling in het dialoogvenster Updateadapter",
+        "fr": "Tableaux JSON-Config corrigés\nTraduction corrigée sur la boîte de dialogue de l'adaptateur de mise à jour",
+        "it": "Tavoli JSON-Config corretti\nTraduzione corretta sulla finestra di dialogo dell'adattatore di aggiornamento",
+        "es": "Cuadros JSON-Config corregidos\nTraducción corregida en el diálogo del adaptador de actualización",
+        "pl": "Poprawione tabele JSON- Config\nPoprawione tłumaczenie w oknie aktualizacji adaptera",
+        "uk": "Виправлені JSON-Config таблиці\nВиправлений переклад на діалоговому вікні адаптера оновлення",
+        "zh-cn": "更正的 JSON 图表\n在更新适配器对话框上更正的翻译"
+      },
       "7.4.8": {
         "en": "Show latest/stable labels by updating/downgrading of adapters\nCorrected selection of chinese language",
         "de": "Neueste/stabile Etiketten durch Aktualisierung/Abbau von Adaptern anzeigen\nKorrigierte Auswahl der chinesischen Sprache",
@@ -96,19 +109,6 @@
         "pl": "Poprawiono komponenty JSONConfig",
         "uk": "Виготовлено вдосконалення компонентів JSONConfig",
         "zh-cn": "改进JSONConfig组件"
-      },
-      "7.4.0": {
-        "en": "Added new JsonConfig control: staticInfo",
-        "de": "Neue JsonConfig Steuerung hinzugefügt: statische Info",
-        "ru": "Добавлено новое управление JsonConfig: Информация",
-        "pt": "Adicionado novo JsonConfig control: static Info",
-        "nl": "Toegevoegd nieuwe JsonConfig controle: statisch Informatie",
-        "fr": "Ajout du nouveau contrôle JsonConfig : statique Informations",
-        "it": "Aggiunto il nuovo controllo JsonConfig: static Info",
-        "es": "Nuevo control JsonConfig: estática Info",
-        "pl": "Dodano nowy sterownik JsonConfig: statyczny Informacja",
-        "uk": "Додано новий JsonConfig control: статичний Новини",
-        "zh-cn": "添加新的 Jsonconfig 控件: 静态 资讯"
       }
     },
     "desc": {
