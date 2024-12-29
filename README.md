@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.9 (2024-12-29)
 
 -   (@GermanBluefox) Corrected JSON-Config tables
 -   (@GermanBluefox) Corrected translation on the update adapter dialog
@@ -113,11 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Added flag expertMode to hide JSON config controls for non-experts
 -   (@GermanBluefox) Corrected cloud icon for admin
 -   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
-
-### 7.4.2 (2024-11-25)
-
--   (@GermanBluefox) Made improvement for JSONConfig components
--   (@GermanBluefox) Added clear button to text area JSON config component
 
 ## License
 

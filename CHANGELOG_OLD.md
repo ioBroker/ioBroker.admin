@@ -1,4 +1,9 @@
 # Older changes
+## 7.4.2 (2024-11-25)
+
+-   (@GermanBluefox) Made improvement for JSONConfig components
+-   (@GermanBluefox) Added clear button to text area JSON config component
+
 ## 7.4.1 (2024-11-19)
 
 -   (@GermanBluefox) Made improvement for JSONConfig components
