@@ -179,10 +179,13 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
     }
 
     positionReady(position: { coords: { latitude: number; longitude: number } }): void {
+        const latitude = parseFloat(position.coords.latitude.toFixed(8));
+        const longitude = parseFloat(position.coords.longitude.toFixed(8));
+
         this.setState(
             {
-                latitude: parseFloat(position.coords.latitude.toFixed(8)),
-                longitude: parseFloat(position.coords.longitude.toFixed(8)),
+                latitude: isNaN(latitude) ? '' : latitude,
+                longitude: isNaN(longitude) ? '' : longitude,
             },
             () => this.changeMapPosition(),
         );
@@ -207,8 +210,8 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                 country: systemConfig.common.country,
                 city: systemConfig.common.city,
                 address: '',
-                longitude: systemConfig.common.longitude,
-                latitude: systemConfig.common.latitude,
+                longitude: systemConfig.common.longitude || '',
+                latitude: systemConfig.common.latitude || '',
                 firstDayOfWeek: systemConfig.common.firstDayOfWeek || 'monday',
             },
             () => this.getBrowserCoordinates(),
@@ -263,9 +266,9 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
     onChangePosition = (evt: { target: { value: string } }, id: string): void => {
         const value = evt.target.value;
         if (id === 'latitude') {
-            this.setState({ latitude: value });
+            this.setState({ latitude: value || '' });
         } else {
-            this.setState({ longitude: value });
+            this.setState({ longitude: value || '' });
         }
 
         this.changeMapPosition();
@@ -806,7 +809,11 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         variant="standard"
                                         label={this.props.t('Longitude')}
                                         style={styles.controlItem}
-                                        value={this.state.longitude}
+                                        value={
+                                            this.state.longitude === undefined || this.state.longitude === null
+                                                ? ''
+                                                : this.state.longitude
+                                        }
                                         onChange={e => this.onChangePosition(e, 'longitude')}
                                         slotProps={{
                                             input: {
@@ -829,7 +836,11 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                         variant="standard"
                                         label={this.props.t('Latitude')}
                                         style={styles.controlItem}
-                                        value={this.state.latitude}
+                                        value={
+                                            this.state.latitude === undefined || this.state.latitude === null
+                                                ? ''
+                                                : this.state.latitude
+                                        }
                                         onChange={e => this.onChangePosition(e, 'latitude')}
                                         slotProps={{
                                             input: {

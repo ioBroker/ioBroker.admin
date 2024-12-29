@@ -17,6 +17,19 @@ declare global {
     }
 }
 
+type LogMessage = {
+    /** Log message */
+    message: string;
+    /** origin */
+    from: string;
+    /** timestamp in ms */
+    ts: number;
+    /** Log message */
+    severity: ioBroker.LogLevel;
+    /** unique ID of the message */
+    _id: number;
+};
+
 export type Severity = 'info' | 'notify' | 'alert';
 
 type DockerInformation =
@@ -178,7 +191,7 @@ interface ConnectionProps {
     /** Ready callback. */
     onReady?: (objects: Record<string, ioBroker.Object>) => void;
     /** Log callback. */
-    onLog?: (text: string) => void;
+    onLog?: (message: LogMessage) => void;
     /** Error callback. */
     onError?: (error: any) => void;
     /** Object change callback. */
