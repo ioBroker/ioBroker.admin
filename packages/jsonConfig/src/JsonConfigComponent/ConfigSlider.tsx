@@ -56,7 +56,9 @@ class ConfigSlider extends ConfigGeneric<ConfigSliderProps, ConfigSliderState> {
     renderItem(error: string, disabled: boolean /* , defaultValue */): JSX.Element {
         const min = this.props.schema.min || 0;
         const max = this.props.schema.max || 100;
-        const unit = this.props.schema.unit || '';
+        const unit = this.props.schema.unit
+            ? this.getText(this.props.schema.unit, this.props.schema.noTranslation)
+            : '';
 
         const marks = [
             { value: min, label: min + unit },

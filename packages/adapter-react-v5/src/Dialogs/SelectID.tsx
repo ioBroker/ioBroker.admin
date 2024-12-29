@@ -80,7 +80,7 @@ interface DialogSelectIDProps {
     /** Close handler that is always called when the dialog is closed. */
     onClose: () => void;
     /** Handler that is called when the user presses OK. */
-    onOk: (selected: string | string[] | undefined, name: string) => void;
+    onOk: (selected: string | string[] | undefined, name: string | null) => void;
     /**
      * Function to filter out all unnecessary objects. Can be string or function.
      * It cannot be used together with "types".
@@ -92,11 +92,13 @@ interface DialogSelectIDProps {
     filters?: SelectIDFilters;
     /** Show elements only of this root ID */
     root?: string;
+    /** Allow selection of non-objects (virtual branches) */
+    allowNonObjects?: boolean;
 }
 
 interface DialogSelectIDState {
     selected: string[];
-    name: string;
+    name: string | null;
 }
 
 export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectIDState> {
@@ -260,6 +262,7 @@ export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectI
                         themeType={this.props.themeType}
                         theme={this.props.theme}
                         customFilter={this.props.customFilter}
+                        allowNonObjects={this.props.allowNonObjects}
                         onFilterChanged={(filterConfig: ObjectBrowserFilter) => {
                             this.filters = filterConfig;
                             ((window as any)._localStorage || window.localStorage).setItem(
@@ -267,7 +270,7 @@ export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectI
                                 JSON.stringify(filterConfig),
                             );
                         }}
-                        onSelect={(_selected: string | string[], name: string, isDouble?: boolean) => {
+                        onSelect={(_selected: string | string[], name: string | null, isDouble?: boolean) => {
                             let selected: string[];
                             if (!Array.isArray(_selected)) {
                                 selected = [_selected];

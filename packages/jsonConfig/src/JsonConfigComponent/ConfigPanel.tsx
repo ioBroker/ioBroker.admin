@@ -203,6 +203,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                       <ItemComponent
                           // @ts-expect-error Temporary work-around, till all custom components will not migrate to oContext
                           socket={socket}
+                          globalData={this.props.globalData}
                           oContext={this.props.oContext}
                           key={`${attr}_${this.props.index === undefined ? '' : this.props.index}`}
                           index={this.props.index}

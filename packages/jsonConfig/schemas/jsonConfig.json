@@ -106,6 +106,10 @@
                     "description": "Step size for increase and decrease buttons",
                     "type": "number"
                 },
+                "unit": {
+                    "description": "Unit (could be multi-language)",
+                    "type": ["object", "string"]
+                },
                 "label": true,
                 "type": true,
                 "defaultSendTo": true,
@@ -779,8 +783,8 @@
                     "type": "boolean"
                 },
                 "unit": {
-                    "description": "Add unit to the value",
-                    "type": "string"
+                    "description": "Unit (could be multi-language)",
+                    "type": ["object", "string"]
                 },
                 "trueText": {
                     "description": "This text will be shown if the value is true",
@@ -2600,6 +2604,10 @@
                                     "description": "Step size for increase and decrease buttons",
                                     "type": "number"
                                 },
+                                "unit": {
+                                    "description": "Unit (could be multi-language)",
+                                    "type": ["object", "string"]
+                                },
                                 "label": true,
                                 "type": true,
                                 "defaultSendTo": true,
@@ -3665,7 +3673,7 @@
                                     "type": ["object", "string", "number", "boolean"]
                                 },
                                 "unit": {
-                                    "description": "unit (could be multi-language)",
+                                    "description": "Unit (could be multi-language)",
                                     "type": ["object", "string"]
                                 },
                                 "narrow": {
@@ -5351,6 +5359,10 @@
                                                 "type": "number",
                                                 "default": 1
                                             },
+                                            "unit": {
+                                                "description": "Unit (could be multi-language)",
+                                                "type": ["object", "string"]
+                                            },
                                             "label": true,
                                             "type": true,
                                             "defaultSendTo": true,
@@ -6196,7 +6208,7 @@
                                                 "type": ["object", "string", "number", "boolean"]
                                             },
                                             "unit": {
-                                                "description": "unit (could be multi-language)",
+                                                "description": "Unit (could be multi-language)",
                                                 "type": ["object", "string"]
                                             },
                                             "narrow": {

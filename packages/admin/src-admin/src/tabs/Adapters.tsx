@@ -56,7 +56,7 @@ import AdapterInstallDialog, {
     type AdapterRatingInfo,
     type InstalledInfo,
     type AdaptersContext,
-    type AdapterInstallDialogState,
+    type AdapterInstallDialogState, AdapterInstallDialogProps,
 } from '@/components/Adapters/AdapterInstallDialog';
 import AdaptersList, { SUM } from '@/components/Adapters/AdaptersList';
 import type { AdminGuiConfig } from '@/types';
@@ -175,7 +175,7 @@ const FILTERS: { name: string; notByList?: boolean }[] = [
     { name: 'Recently updated', notByList: true },
 ];
 
-interface AdaptersProps {
+interface AdaptersProps extends AdapterInstallDialogProps {
     t: Translate;
     /** The host ID of the admin adapter, like system.host.test */
     adminHost: string;
@@ -202,7 +202,6 @@ interface AdaptersProps {
     commandRunning: boolean;
     onSetCommandRunning: (commandRunning: boolean) => void;
     toggleTranslation: () => void;
-    noTranslation: boolean;
     menuOpened: boolean;
     menuClosed: boolean;
     currentAdminVersion: string;
@@ -1366,7 +1365,6 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 }
             },
             toggleTranslation: this.props.toggleTranslation,
-            noTranslation: this.props.noTranslation,
             rightDependenciesFunc: this.rightDependencies,
             lang: this.props.lang,
             uuid: this.uuid,
@@ -2057,6 +2055,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     stableRepo={stableRepo}
                     repoName={repoName}
                     context={context}
+                    noTranslation={this.props.noTranslation}
                     systemConfig={this.props.systemConfig}
                     tableViewMode={this.state.tableViewMode}
                     oneListView={this.state.oneListView}

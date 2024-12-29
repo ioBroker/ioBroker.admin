@@ -2499,7 +2499,7 @@ export interface ObjectBrowserProps {
     dialogName?: string;
     defaultFilters?: ObjectBrowserFilter;
     selected?: string | string[];
-    onSelect?: (selected: string | string[], name: string, isDouble?: boolean) => void;
+    onSelect?: (selected: string | string[], name: string | null, isDouble?: boolean) => void;
     onFilterChanged?: (newFilter: ObjectBrowserFilter) => void;
     socket: Connection;
     showExpertButton?: boolean;
@@ -2519,6 +2519,8 @@ export interface ObjectBrowserProps {
     isFloatComma?: boolean;
     dateFormat?: string;
     levelPadding?: number;
+    /** Allow selection of non-objects (virtual branches) */
+    allowNonObjects?: boolean;
 
     // components
     objectCustomDialog?: React.FC<ObjectCustomDialogProps>;
@@ -2532,6 +2534,7 @@ export interface ObjectBrowserProps {
     /** modal Edit Of Access Control */
     modalEditOfAccessControl: (oBrowser: ObjectBrowserClass, data: TreeItemData) => JSX.Element;
     onObjectDelete?: (id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) => void;
+
     /**
      * Optional filter
      *   `{common: {custom: true}}` - show only objects with some custom settings
@@ -3264,6 +3267,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 });
                 if (this.props.onSelect) {
                     this.props.onSelect(this.state.selected, name, isDouble);
+                }
+            } else if (this.state.selected.length === 1 && this.props.allowNonObjects) {
+                if (this.props.onSelect) {
+                    this.props.onSelect(this.state.selected, null, isDouble);
                 }
             }
         } else {

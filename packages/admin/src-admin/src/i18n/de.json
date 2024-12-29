@@ -1541,7 +1541,7 @@
     "signal-cmb wizard description": "Mit dem ioBroker Signal-CMB Adapter kannst du über den CallMeBot Service Nachrichten über den Messenger Signal versenden. Dabei werden sowohl textuelle Inhalte als auch Emojis unterstützt, um deine Nachrichten lebendiger zu gestalten. Nutzer können sich so bequem über Ereignisse in ihrem Smart Home informieren lassen und bleiben stets auf dem Laufenden, selbst unterwegs.",
     "silly": "Alles",
     "sql wizard description": "Mit dem ioBroker SQL Adapter kannst du Daten aufzeichnen, um sie im Laufe der Zeit zu visualisieren oder historische Analysen durchzuführen. Der SQL Adapter schreibt diese Daten in eine externe SQL-Datenbank, die auf dem gleichen oder einem anderen Host laufen kann. Dabei werden auch SQLite-Datenbanken unterstützt. Wenn es um die Aufzeichnung größerer Datenmengen geht, ist SQL der bessere Weg im Vergleich zum History Adapter, obwohl ein manuelles Setup erforderlich ist.",
-    "stable": "stabil",
+    "stable": "stable",
     "state": "Datenpunkt/Zustand",
     "state permissions": "Zustands-Rechte",
     "stepStart": "Schritte",

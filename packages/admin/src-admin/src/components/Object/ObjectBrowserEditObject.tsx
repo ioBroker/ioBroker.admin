@@ -203,9 +203,7 @@ const styles: Record<string, any> = {
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
-        '&:hover': {
-            backgroundColor: '#00000030',
-        },
+        padding: 3,
     },
     stateTitle: {
         minWidth: 150,
@@ -1017,7 +1015,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
         if (typeof this.state.value !== 'object') {
             return (
-                <div>
+                <div style={{ maxWidth: 700 }}>
                     <div>{this.props.t('State is invalid')}</div>
                     <div>
                         <pre>{JSON.stringify(this.state.value, null, 4)}</pre>
@@ -1100,14 +1098,21 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         Object.assign(styleValue, valueBlink(this.props.theme, styleValue.color));
 
         return (
-            <div
+            <Box
                 style={{
                     ...styles.divWithoutTitle,
                     padding: '24px 24px 0 24px',
                     fontSize: 16,
+                    maxWidth: 400,
+                }}
+                sx={{
+                    '& .value-line:hover': {
+                        backgroundColor: '#00000030',
+                    },
                 }}
             >
                 <div
+                    className="value-line"
                     style={{
                         ...styles.stateRow,
                         marginBottom: 24,
@@ -1126,11 +1131,17 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         ) : null}
                     </Box>
                 </div>
-                <div style={styles.stateRow}>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
                     <div style={styles.stateTitle}>{I18n.t('Type')}:</div>
                     <div style={styles.stateValue}>{type}</div>
                 </div>
-                <div style={styles.stateRow}>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
                     <div style={styles.stateTitle}>{I18n.t('ra_tooltip_ts')}:</div>
                     <Tooltip
                         title={new Date(this.state.value.ts).toLocaleString()}
@@ -1141,7 +1152,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         </div>
                     </Tooltip>
                 </div>
-                <div style={styles.stateRow}>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
                     <div style={styles.stateTitle}>{I18n.t('ra_tooltip_ack')}:</div>
                     <div
                         style={{
@@ -1153,7 +1167,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         {this.state.value.ack ? ' (true)' : ' (false)'}
                     </div>
                 </div>
-                <div style={styles.stateRow}>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
                     <div style={styles.stateTitle}>{I18n.t('ra_tooltip_lc')}:</div>
                     <Tooltip
                         title={new Date(this.state.value.lc).toLocaleString()}
@@ -1164,20 +1181,32 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         </div>
                     </Tooltip>
                 </div>
-                <div style={styles.stateRow}>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
                     <div style={styles.stateTitle}>{I18n.t('ra_tooltip_quality')}:</div>
                     <div style={styles.stateValue}>{Utils.quality2text(this.state.value.q || 0).join(', ')}</div>
                 </div>
-                <div style={styles.stateRow}>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
                     <div style={styles.stateTitle}>{I18n.t('ra_tooltip_from')}:</div>
                     <div style={styles.stateValue}>{this.state.value.from}</div>
                 </div>
-                <div style={styles.stateRow}>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
                     <div style={styles.stateTitle}>{I18n.t('ra_tooltip_user')}:</div>
                     <div style={styles.stateValue}>{this.state.value.user || '--'}</div>
                 </div>
                 {this.state.value.expire ? (
-                    <div style={styles.stateRow}>
+                    <div
+                        style={styles.stateRow}
+                        className="value-line"
+                    >
                         <div style={styles.stateTitle}>{I18n.t('ra_tooltip_expire')}:</div>
                         <div style={styles.stateValue}>
                             {this.state.value.expire} {I18n.t('sc_seconds')}
@@ -1185,16 +1214,19 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     </div>
                 ) : null}
                 {this.state.value.c ? (
-                    <div style={styles.stateRow}>
+                    <div
+                        style={styles.stateRow}
+                        className="value-line"
+                    >
                         <div style={styles.stateTitle}>{I18n.t('ra_tooltip_comment')}:</div>
                         <div style={styles.stateValue}>{this.state.value.c}</div>
                     </div>
                 ) : null}
-            </div>
+            </Box>
         );
     }
 
-    onStateChange = (id: string, state: ioBroker.State | null | undefined): void => {
+    onStateChange = (_id: string, state: ioBroker.State | null | undefined): void => {
         if (JSON.stringify(state) !== JSON.stringify(this.state.value)) {
             this.setState({ value: state });
         }
@@ -2093,7 +2125,6 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         const obj = this.props.obj;
 
         const withAlias = obj._id.startsWith('alias.0') && obj.type === 'state';
-        const fullWidth = obj.type !== 'state' || (obj.common.type !== 'number' && obj.common.type !== 'boolean');
 
         let dialogStyle = styles.dialog;
         if (window.innerWidth > 1920) {
@@ -2112,7 +2143,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 sx={{ '& .MuiPaper-root': dialogStyle }}
                 open={!0}
                 maxWidth="xl"
-                fullWidth={fullWidth}
+                fullWidth
                 fullScreen={false}
                 onClose={() => this.props.onClose()}
                 aria-labelledby="edit-value-dialog-title"
