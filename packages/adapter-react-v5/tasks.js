@@ -38,6 +38,7 @@ function copyAllFiles() {
             'build/assets',
         );
         copyFiles(['src/i18n/*.json'], 'i18n');
+        copyFiles(['src/index.css'], './');
         // copyFiles(['README.md', 'LICENSE'], 'build');
         // copyFileSync('tasksExample.js', 'build/tasks.js');
         copyFiles(['src/*.css'], 'build');
