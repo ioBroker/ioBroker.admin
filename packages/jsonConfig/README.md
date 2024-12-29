@@ -353,12 +353,12 @@ Text component
 
 ### `number`
 
-| Property | Description   |
-|----------|---------------|
-| `min`    | minimal value |
-| `max`    | maximal value |
-| `step`   | step          |
-| `unit`   | unit          |
+| Property | Description   | Remark         |          
+|----------|---------------|----------------|
+| `min`    | minimal value |                |
+| `max`    | maximal value |                |
+| `step`   | step          |                |
+| `unit`   | unit          | admin >= 7.4.9 |
 
 ### `color`
 
@@ -1114,7 +1114,7 @@ Special input for ports. It checks automatically if port is used by other instan
 
 ### `staticInfo`
 
-(admin >= 7.3.3) Shows static information in preformatted form, like "Title: value unit"
+Shows static information in preformatted form, like "Title: value unit" (admin >= 7.3.3)
 This control is used mostly in dynamic forms 
 
 | Property            | Description                                                                                                                                     |
