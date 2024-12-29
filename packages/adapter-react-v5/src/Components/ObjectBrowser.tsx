@@ -3277,9 +3277,29 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.localStorage.removeItem(`${this.props.dialogName || 'App'}.objectSelected`);
 
             if (this.state.selected.length) {
-                this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
+                this.setState({ selected: [] }, () => {
+                    if (this.props.onSelect) {
+                        if (this.state.focused && this.props.allowNonObjects) {
+                            // remove a task to select the pre-selected item if now we want to see another object
+                            if (this.selectFirst && this.selectFirst !== this.state.selected[0]) {
+                                this.selectFirst = '';
+                            }
+                            this.props.onSelect([this.state.focused], null, isDouble);
+                        } else {
+                            this.props.onSelect([], '');
+                        }
+                    }
+                });
             } else if (this.props.onSelect) {
-                this.props.onSelect([], '');
+                if (this.state.focused && this.props.allowNonObjects) {
+                    // remove a task to select the pre-selected item if now we want to see another object
+                    if (this.selectFirst && this.selectFirst !== this.state.selected[0]) {
+                        this.selectFirst = '';
+                    }
+                    this.props.onSelect([this.state.focused], null, isDouble);
+                } else {
+                    this.props.onSelect([], '');
+                }
             }
         }
     }

@@ -7,6 +7,19 @@ import type Router from './Components/Router';
 
 export type Translate = (key: string, ...args: (string | number | boolean)[]) => string;
 
+export type LogMessage = {
+    /** Log message */
+    message: string;
+    /** origin */
+    from: string;
+    /** timestamp in ms */
+    ts: number;
+    /** Log message */
+    severity: ioBroker.LogLevel;
+    /** unique ID of the message */
+    _id: number;
+};
+
 /**
  * Properties for the connection to the admin or web instance.
  */
@@ -34,7 +47,7 @@ export interface ConnectionProps {
     /** Ready callback. */
     onReady?: (objects: Record<string, ioBroker.Object>) => void;
     /** Log callback. */
-    onLog?: (text: string) => void;
+    onLog?: (text: LogMessage) => void;
     /** Error callback. */
     onError?: (error: any) => void;
     /** Object change callback. */
