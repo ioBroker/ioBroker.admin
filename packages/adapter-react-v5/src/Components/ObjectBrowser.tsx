@@ -262,7 +262,7 @@ export interface TreeItem {
 interface TreeInfo {
     funcEnums: string[];
     roomEnums: string[];
-    roles: string[];
+    roles: { role: string; type: ioBroker.CommonType }[];
     ids: string[];
     types: string[];
     objects: Record<string, ioBroker.Object>;
@@ -1045,6 +1045,28 @@ function filterObject(
     });
 }
 
+export function filterRoles(
+    roleArray: { role: string; type: ioBroker.CommonType }[],
+    type: ioBroker.CommonType,
+    defaultRoles?: { role: string; type: ioBroker.CommonType }[],
+): string[] {
+    const bigRoleArray: string[] = [];
+    roleArray.forEach(
+        role =>
+            (role.type === 'mixed' || role.type) === type &&
+            !bigRoleArray.includes(role.role) &&
+            bigRoleArray.push(role.role),
+    );
+    defaultRoles.forEach(
+        role =>
+            (role.type === 'mixed' || role.type) === type &&
+            !bigRoleArray.includes(role.role) &&
+            bigRoleArray.push(role.role),
+    );
+    bigRoleArray.sort();
+    return bigRoleArray;
+}
+
 /**
  * Function to generate a json-file for an object and trigger download it
  */
@@ -1606,9 +1628,9 @@ function buildTree(
 
         if (obj) {
             const common = obj.common;
-            const role = common && common.role;
-            if (role && !info.roles.includes(role)) {
-                info.roles.push(role);
+            const role = common?.role;
+            if (role && !info.roles.find(it => it.role === role)) {
+                info.roles.push({ role, type: common.type });
             } else if (id.startsWith('enum.rooms.')) {
                 info.roomEnums.push(id);
                 info.enums.push(id);
@@ -1786,7 +1808,7 @@ function buildTree(
         }
         return 0;
     });
-    info.roles.sort();
+    info.roles.sort((a, b) => a.role.localeCompare(b.role));
     info.types.sort();
 
     return { info, root };
@@ -2383,11 +2405,12 @@ interface AdapterColumn {
 }
 
 interface ObjectBrowserEditRoleProps {
-    roles: string[];
+    roleArray: { role: string; type: ioBroker.CommonType }[];
     id: string;
     socket: Connection;
     onClose: (obj?: ioBroker.Object | null) => void;
     t: Translate;
+    commonType: ioBroker.CommonType;
 }
 
 interface ObjectViewFileDialogProps {
@@ -2455,7 +2478,7 @@ interface ObjectBrowserValueProps {
 interface ObjectBrowserEditObjectProps {
     socket: Connection;
     obj: ioBroker.AnyObject;
-    roleArray: string[];
+    roleArray: { role: string; type: ioBroker.CommonType }[];
     expertMode: boolean;
     themeType: ThemeType;
     theme: IobTheme;
@@ -2472,6 +2495,7 @@ interface ObjectBrowserEditObjectProps {
 
 export interface ObjectAliasEditorProps {
     t: Translate;
+    roleArray: { role: string; type: ioBroker.CommonType }[];
     socket: Connection;
     objects: Record<string, ioBroker.AnyObject>;
     onRedirect: (id: string, delay?: number) => void;
@@ -4309,7 +4333,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     }
 
     private getFilterSelectRole(): JSX.Element {
-        return this.getFilterSelect('role', this.info.roles);
+        return this.getFilterSelect(
+            'role',
+            this.info.roles.map(it => it.role),
+        );
     }
 
     private getFilterSelectRoom(): JSX.Element {
@@ -6046,7 +6073,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     id={this.state.roleDialog}
                     socket={this.props.socket}
                     t={this.props.t}
-                    roles={this.info.roles}
+                    roleArray={this.info.roles}
+                    commonType={this.info.objects[this.state.roleDialog]?.common?.type}
                     onClose={(obj?: ioBroker.Object | null) => {
                         if (obj) {
                             this.info.objects[this.state.roleDialog] = obj;
@@ -8242,6 +8270,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             <ObjectBrowserAliasEditor
                 key="editAlias"
                 obj={this.objects[this.state.showAliasEditor]}
+                roleArray={this.info.roles}
                 objects={this.objects}
                 socket={this.props.socket}
                 t={this.props.t}

@@ -31,30 +31,30 @@ import {
 
 // MUI Icons
 import {
-    Refresh as RefreshIcon,
-    Close as CloseIcon,
+    ArrowBack as IconBack,
+    AudioFile as TypeIconAudio,
     Bookmark as JsonIcon,
     BookmarkBorder as CssIcon,
+    Brightness6 as Brightness5Icon,
+    Close as CloseIcon,
+    Code as JSIcon,
+    CreateNewFolder as AddFolderIcon,
+    Delete as DeleteIcon,
     Description as HtmlIcon,
     Edit as EditIcon,
-    Code as JSIcon,
-    InsertDriveFile as FileIcon,
-    Publish as UploadIcon,
-    MusicNote as MusicIcon,
-    SaveAlt as DownloadIcon,
-    CreateNewFolder as AddFolderIcon,
     FolderOpen as EmptyFilterIcon,
-    List as IconList,
-    ViewModule as IconTile,
-    ArrowBack as IconBack,
-    Delete as DeleteIcon,
-    Brightness6 as Brightness5Icon,
-    Image as TypeIconImages,
-    FontDownload as TypeIconTxt,
-    AudioFile as TypeIconAudio,
-    Videocam as TypeIconVideo,
-    KeyboardReturn as EnterIcon,
     FolderSpecial as RestrictedIcon,
+    FontDownload as TypeIconTxt,
+    Image as TypeIconImages,
+    InsertDriveFile as FileIcon,
+    KeyboardReturn as EnterIcon,
+    List as IconList,
+    MusicNote as MusicIcon,
+    Publish as UploadIcon,
+    Refresh as RefreshIcon,
+    SaveAlt as DownloadIcon,
+    Videocam as TypeIconVideo,
+    ViewModule as IconTile,
 } from '@mui/icons-material';
 
 import type { Connection } from '@iobroker/socket-client';
@@ -109,7 +109,7 @@ const styles: Record<string, any> = {
         position: 'relative',
     },
     filesDiv: {
-        width: 'calc(100% - 16px)',
+        width: 'calc(100% - 8px)',
         overflowX: 'hidden',
         overflowY: 'auto',
         padding: 8,
@@ -175,7 +175,7 @@ const styles: Record<string, any> = {
         top: 22,
         left: 18,
         zIndex: 1,
-        color: theme.palette.mode === 'dark' ? '#FFF' : '#000',
+        color: theme.palette.mode === 'dark' ? '#FFF' : '#FFF',
     }),
     itemSizeTile: {
         width: '100%',
@@ -392,6 +392,8 @@ const styles: Record<string, any> = {
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         backgroundColor: theme.palette.secondary.main,
+        color: theme.palette.secondary.contrastText,
+        borderRadius: '4px 4px 0 0',
     }),
     pathDivInput: {
         width: '100%',
@@ -400,12 +402,15 @@ const styles: Record<string, any> = {
         pl: '2px',
         pr: '2px',
         cursor: 'pointer',
+        color: 'white',
         '&:hover': {
-            background: theme.palette.primary.main,
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
         },
     }),
     pathDivBreadcrumbSelected: {
         // todo: add style
+        color: '#FFF',
     },
     backgroundImageLight: {
         background: 'white',
@@ -545,7 +550,7 @@ function sortFolders(a: FolderOrFileItem, b: FolderOrFileItem): number {
 }
 
 interface FileBrowserState {
-    viewType: string;
+    viewType: 'Table' | 'Tile';
     folders: Folders;
     filterEmpty: boolean;
     expanded: string[];
@@ -613,11 +618,17 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
     private readonly localStorage: Storage;
 
+    private readonly scrollPositions: Record<string, number> = {};
+
+    private readonly refFileDiv: React.RefObject<HTMLDivElement>;
+
     constructor(props: FileBrowserProps) {
         super(props);
 
         this.localStorage = (window as any)._localStorage || window.localStorage;
         const expandedStr = this.localStorage.getItem('files.expanded') || '[]';
+
+        this.refFileDiv = React.createRef();
 
         if (this.props.limitPath) {
             const parts = this.props.limitPath.split('/');
@@ -643,9 +654,9 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             expanded = [];
         }
 
-        let viewType;
+        let viewType: 'Tile' | 'Table';
         if (this.props.showViewTypeButton) {
-            viewType = this.localStorage.getItem('files.viewType') || TABLE;
+            viewType = (this.localStorage.getItem('files.viewType') as 'Tile' | 'Table') || TABLE;
         } else {
             viewType = TABLE;
         }
@@ -1169,6 +1180,11 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             _folder = '';
         }
 
+        // remember scroll position for this folder
+        if (this.state.viewType === 'Tile' && this.refFileDiv.current?.scrollTop) {
+            this.scrollPositions[this.state.currentDir] = this.refFileDiv.current.scrollTop;
+        }
+
         this.localStorage.setItem('files.currentDir', _folder);
 
         if (folder && e && (e.altKey || e.shiftKey || e.ctrlKey || e.metaKey)) {
@@ -1202,7 +1218,19 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 path: _folder,
                 pathFocus: false,
             },
-            () => this.props.onSelect && this.props.onSelect(''),
+            () => {
+                if (this.props.onSelect) {
+                    this.props.onSelect('');
+                }
+                // scroll to previous position
+                if (this.state.viewType === 'Tile' && this.scrollPositions[this.state.currentDir]) {
+                    const pos = this.scrollPositions[this.state.currentDir];
+                    delete this.scrollPositions[this.state.currentDir];
+                    if (this.refFileDiv.current) {
+                        this.refFileDiv.current.scrollTop = pos;
+                    }
+                }
+            },
         );
     }
 
@@ -1245,9 +1273,9 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
     renderFolder(item: FolderOrFileItem, expanded?: boolean): JSX.Element | null {
         if (
-            this.state.viewType === TABLE &&
+            // this.state.viewType === TABLE &&
             this.state.filterEmpty &&
-            (!this.state.folders[item.id] || !this.state.folders[item.id].length) &&
+            !this.state.folders[item.id]?.length && // if the folder is empty
             item.id !== USER_DATA &&
             !item.temp
         ) {
@@ -1268,7 +1296,11 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 component="div"
                 key={item.id}
                 id={item.id}
-                style={this.state.viewType === TABLE ? { marginLeft: padding, width: `calc(100% - ${padding}px` } : {}}
+                style={
+                    this.state.viewType === TABLE
+                        ? { marginLeft: padding, width: `calc(100% - ${padding}px` }
+                        : undefined
+                }
                 onClick={e => (this.state.viewType === TABLE ? this.select(item.id, e) : this.changeFolder(e, item.id))}
                 onDoubleClick={e => this.state.viewType === TABLE && this.toggleFolder(item, e)}
                 title={this.getText(item.title)}
@@ -1522,7 +1554,11 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     }
                 }}
                 onClick={e => this.select(item.id, e)}
-                style={this.state.viewType === TABLE ? { marginLeft: padding, width: `calc(100% - ${padding}px)` } : {}}
+                style={
+                    this.state.viewType === TABLE
+                        ? { marginLeft: padding, width: `calc(100% - ${padding}px)` }
+                        : undefined
+                }
                 className="browserItem"
                 sx={Utils.getStyle(
                     this.props.theme,
@@ -1656,7 +1692,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
     }
 
     renderItems(folderId: string): JSX.Element | (JSX.Element | null)[] {
-        if (this.state.folders && this.state.folders[folderId]) {
+        if (this.state.folders?.[folderId]) {
             // tile
             if (this.state.viewType === TILE) {
                 const res: (JSX.Element | null)[] = [];
@@ -1678,6 +1714,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 return res;
             }
 
+            // table
             const totalResult: (JSX.Element | null)[] = [];
             this.state.folders[folderId].forEach(item => {
                 if (item.folder) {
@@ -2437,7 +2474,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             : `/${this.state.currentDir}`.split('/');
         const p: string[] = [];
         return (
-            <Breadcrumbs style={{ paddingLeft: 8 }}>
+            <Breadcrumbs style={{ paddingLeft: 8, color: '#FFF' }}>
                 {parts.map((part, i) => {
                     if (part) {
                         p.push(part);
@@ -2542,6 +2579,8 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                             }
                         }
                     }}
+                    id="dev"
+                    ref={this.refFileDiv}
                 >
                     {this.state.viewType === TABLE
                         ? this.renderItems('/')
