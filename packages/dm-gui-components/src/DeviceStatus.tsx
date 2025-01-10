@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 
 import {
     Link as LinkIcon,
@@ -17,9 +17,17 @@ import {
     BatteryCharging50 as BatteryCharging50Icon,
 } from '@mui/icons-material';
 
-import type { DeviceStatus } from '@iobroker/dm-utils';
+import type { DeviceStatus, DeviceAction, ActionBase } from '@iobroker/dm-utils';
+import type { IobTheme } from '@iobroker/adapter-react-v5';
 
 import { getTranslation } from './Utils';
+import Switch from './Switch';
+
+export const ACTIONS = {
+    STATUS: 'status',
+    DISABLE: 'disable',
+    ENABLE: 'enable',
+};
 
 const styles: Record<string, React.CSSProperties> = {
     tooltip: {
@@ -29,26 +37,32 @@ const styles: Record<string, React.CSSProperties> = {
 
 interface DeviceStatusProps {
     status: DeviceStatus | null;
+    deviceId: string;
+    statusAction?: DeviceAction;
+    disableEnableAction?: DeviceAction;
+    deviceHandler: (deviceId: string, action: ActionBase, refresh: () => void) => () => void;
+    refresh: () => void;
+    theme: IobTheme;
 }
 /**
  * Device Status component
  *
- * @param params - Parameters
- * @param params.status - Status object, e.g. { connection: 'connected', battery: 100, rssi: -50 }
+ * @param props - Parameters
+ * @param props.status - Status object, e.g. { connection: 'connected', battery: 100, rssi: -50 }
  */
-export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Element | null {
-    if (!params.status) {
+export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Element | null {
+    if (!props.status) {
         return null;
     }
 
     let status: DeviceStatus;
 
-    if (typeof params.status === 'string') {
+    if (typeof props.status === 'string') {
         status = {
-            connection: params.status,
+            connection: props.status,
         };
     } else {
-        status = params.status;
+        status = props.status;
     }
 
     const iconStyleOK = {
@@ -82,120 +96,159 @@ export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Eleme
         }
     }
 
-    return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-            {status.connection === 'connected' && (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Tooltip
-                        title={getTranslation('connectedIconTooltip')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
-                    >
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <LinkIcon style={iconStyleOK} />
-                        </div>
-                    </Tooltip>
-                </div>
-            )}
+    const disability = props.disableEnableAction ? (
+        <>
+            <div style={{ flexGrow: 1 }} />
+            {
+                <Tooltip
+                    title={
+                        props.disableEnableAction.id === ACTIONS.DISABLE
+                            ? getTranslation('disableIconTooltip')
+                            : getTranslation('enableIconTooltip')
+                    }
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Switch
+                            size="small"
+                            checked={props.disableEnableAction.id === ACTIONS.DISABLE}
+                            onChange={() =>
+                                props.disableEnableAction &&
+                                props.deviceHandler(props.deviceId, props.disableEnableAction, props.refresh)()
+                            }
+                            theme={props.theme}
+                        />
+                    </div>
+                </Tooltip>
+            }
+        </>
+    ) : null;
 
-            {status.connection === 'disconnected' && (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Tooltip
-                        title={getTranslation('disconnectedIconTooltip')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
+    const connectionIcon =
+        status.connection === 'connected' || status.connection === 'disconnected' ? (
+            <Tooltip
+                title={
+                    status.connection === 'connected'
+                        ? getTranslation('connectedIconTooltip')
+                        : getTranslation('disconnectedIconTooltip')
+                }
+                slotProps={{ popper: { sx: styles.tooltip } }}
+            >
+                {props.statusAction && props.deviceHandler ? (
+                    <IconButton
+                        onClick={e => {
+                            if (props.statusAction && props.deviceHandler) {
+                                e.stopPropagation();
+                                props.deviceHandler(props.deviceId, props.statusAction, props.refresh)();
+                            }
+                        }}
                     >
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {status.connection === 'connected' ? (
+                            <LinkIcon style={iconStyleOK} />
+                        ) : (
                             <LinkOffIcon style={iconStyleNotOK} />
-                        </div>
-                    </Tooltip>
-                </div>
-            )}
+                        )}
+                    </IconButton>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {status.connection === 'connected' ? (
+                            <LinkIcon style={iconStyleOK} />
+                        ) : (
+                            <LinkOffIcon style={iconStyleNotOK} />
+                        )}
+                    </div>
+                )}
+            </Tooltip>
+        ) : null;
+
+    return (
+        <div
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                cursor: props.statusAction ? 'pointer' : undefined,
+                width: props.disableEnableAction ? '100%' : undefined,
+                gap: 8,
+            }}
+        >
+            {connectionIcon}
 
             {status.rssi && (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Tooltip
-                        title="RSSI"
-                        slotProps={{ popper: { sx: styles.tooltip } }}
-                    >
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <NetworkCheckIcon />
-                            <p style={{ fontSize: 'small', margin: 0 }}>{status.rssi}</p>
-                        </div>
-                    </Tooltip>
-                </div>
+                <Tooltip
+                    title="RSSI"
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <NetworkCheckIcon />
+                        <p style={{ fontSize: 'small', margin: 0 }}>{status.rssi}</p>
+                    </div>
+                </Tooltip>
             )}
 
             {typeof status.battery === 'number' && (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Tooltip
-                        title={getTranslation('batteryTooltip')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
-                    >
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            {batteryIconTooltip}
-                            <p style={{ fontSize: 'small', margin: 0 }}>{status.battery}%</p>
-                        </div>
-                    </Tooltip>
-                </div>
+                <Tooltip
+                    title={getTranslation('batteryTooltip')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {batteryIconTooltip}
+                        <p style={{ fontSize: 'small', margin: 0 }}>{status.battery}%</p>
+                    </div>
+                </Tooltip>
             )}
 
             {typeof status.battery === 'string' && (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Tooltip
-                        title={getTranslation('batteryTooltip')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
-                    >
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            {status.battery === 'charging' ? <BatteryCharging50Icon /> : <BatteryFullIcon />}
-                            {status.battery !== 'charging' ? (
-                                status.battery.includes('V') || status.battery.includes('mV') ? (
-                                    <p style={{ fontSize: 'small', margin: 0 }}>{status.battery}</p>
-                                ) : (
-                                    <p style={{ fontSize: 'small', margin: 0 }}>
-                                        <span style={{ marginRight: 4 }}>{status.battery}</span>
-                                        mV
-                                    </p>
-                                )
-                            ) : null}
-                        </div>
-                    </Tooltip>
-                </div>
+                <Tooltip
+                    title={getTranslation('batteryTooltip')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {status.battery === 'charging' ? <BatteryCharging50Icon /> : <BatteryFullIcon />}
+                        {status.battery !== 'charging' ? (
+                            status.battery.includes('V') || status.battery.includes('mV') ? (
+                                <p style={{ fontSize: 'small', margin: 0 }}>{status.battery}</p>
+                            ) : (
+                                <p style={{ fontSize: 'small', margin: 0 }}>
+                                    <span style={{ marginRight: 4 }}>{status.battery}</span>
+                                    mV
+                                </p>
+                            )
+                        ) : null}
+                    </div>
+                </Tooltip>
             )}
 
             {typeof status.battery === 'boolean' && (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Tooltip
-                        title={getTranslation('batteryTooltip')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
-                    >
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            {status.battery ? (
-                                <BatteryFullIcon style={iconStyleOK} />
-                            ) : (
-                                <BatteryAlertIcon style={iconStyleNotOK} />
-                            )}
-                        </div>
-                    </Tooltip>
+                <Tooltip
+                    title={getTranslation('batteryTooltip')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {status.battery ? (
+                            <BatteryFullIcon style={iconStyleOK} />
+                        ) : (
+                            <BatteryAlertIcon style={iconStyleNotOK} />
+                        )}
+                    </div>
+                </Tooltip>
+            )}
+
+            {status.warning && (typeof status.warning === 'string' || typeof status.warning === 'object') ? (
+                <Tooltip
+                    title={getTranslation(status.warning)}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <WarningIcon style={iconStyleWarning} />
+                    </div>
+                </Tooltip>
+            ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <WarningIcon style={iconStyleWarning} />
                 </div>
             )}
 
-            {status.warning && (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {typeof status.warning === 'string' || typeof status.warning === 'object' ? (
-                        <Tooltip
-                            title={getTranslation(status.warning)}
-                            slotProps={{ popper: { sx: styles.tooltip } }}
-                        >
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                <WarningIcon style={iconStyleWarning} />
-                            </div>
-                        </Tooltip>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <WarningIcon style={iconStyleWarning} />
-                        </div>
-                    )}
-                </div>
-            )}
+            {disability}
         </div>
     );
 }

@@ -28,7 +28,14 @@ import {
     type IobTheme,
     IconDeviceType,
 } from '@iobroker/adapter-react-v5';
-import type { DeviceDetails, DeviceInfo, ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils';
+import {
+    type DeviceDetails,
+    type DeviceInfo,
+    type ActionBase,
+    type ControlBase,
+    type ControlState,
+    ACTIONS,
+} from '@iobroker/dm-utils';
 
 import DeviceActionButton from './DeviceActionButton';
 import DeviceControlComponent from './DeviceControl';
@@ -283,7 +290,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             (firstControl.type === 'icon' || firstControl.type === 'switch') &&
             !firstControl.label
         ) {
-            // control can be placed in button icon
+            // control can be placed in the button icon
             return (
                 <DeviceControlComponent
                     disabled={!this.props.alive}
@@ -313,8 +320,12 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
     }
 
     renderActions(): JSX.Element[] | null {
-        return this.props.device.actions?.length
-            ? this.props.device.actions.map(a => (
+        const actions = this.props.device.actions?.filter(
+            a => a.id !== ACTIONS.STATUS && a.id !== ACTIONS.DISABLE && a.id !== ACTIONS.ENABLE,
+        );
+
+        return actions?.length
+            ? actions.map(a => (
                   <DeviceActionButton
                       disabled={!this.props.alive}
                       key={a.id}
@@ -421,6 +432,14 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                                 <DeviceStatusComponent
                                     key={i}
                                     status={s}
+                                    deviceId={this.props.device.id}
+                                    statusAction={this.props.device.actions?.find(a => a.id === ACTIONS.STATUS)}
+                                    disableEnableAction={this.props.device.actions?.find(
+                                        a => a.id === ACTIONS.DISABLE || a.id === ACTIONS.ENABLE,
+                                    )}
+                                    deviceHandler={this.props.deviceHandler}
+                                    refresh={this.refresh}
+                                    theme={this.props.theme}
                                 />
                             ))}
                         </div>
@@ -511,7 +530,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             height: 133,
         };
         const statusStyle: React.CSSProperties = {
-            padding: '15px 15px 0 15px',
+            padding: '15px 25px 0 15px',
             height: 41,
         };
         const status = !this.props.device.status
@@ -585,7 +604,15 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                     {status.map((s, i) => (
                         <DeviceStatusComponent
                             key={i}
+                            deviceId={this.props.device.id}
                             status={s}
+                            statusAction={this.props.device.actions?.find(a => a.id === ACTIONS.STATUS)}
+                            disableEnableAction={this.props.device.actions?.find(
+                                a => a.id === ACTIONS.DISABLE || a.id === ACTIONS.ENABLE,
+                            )}
+                            deviceHandler={this.props.deviceHandler}
+                            refresh={this.refresh}
+                            theme={this.props.theme}
                         />
                     ))}
                 </div>

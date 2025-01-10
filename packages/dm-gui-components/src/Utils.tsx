@@ -38,7 +38,7 @@ import {
 import { I18n, Icon } from '@iobroker/adapter-react-v5';
 
 /**
- * Get Icon by font-awesome name. Do not use these name, use names from getIconByName
+ * Get Icon by font-awesome name. Do not use these names, use names from getIconByName
  *
  * @param icon font-awesome icon name
  * Only following font-awesome icons are supported:

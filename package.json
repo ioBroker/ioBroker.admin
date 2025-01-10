@@ -31,6 +31,6 @@
         "release-major": "release-script major --yes --no-update-lockfile --publishAll",
         "prettier": "cd packages/admin && npm run prettier && cd src-admin && npm run prettier && cd ../../dm-gui-components && npm run prettier && cd ../jsonConfig && npm run prettier",
         "lint": "cd packages/admin && npm run lint-backend && cd src-admin && npm run lint && cd ../../dm-gui-components && npm run lint && cd ../jsonConfig && npm run lint",
-        "update-packages": "ncu --upgrade && cd packages/adapter-react-v5 && ncu --upgrade && cd packages/admin && ncu --upgrade && cd src-admin && ncu --upgrade && cd ../../dm-gui-components && ncu --upgrade && cd ../jsonConfig && ncu --upgrade"
+        "update-packages": "npx -y npm-check-updates --upgrade && cd packages/adapter-react-v5 && npx -y npm-check-updates --upgrade && cd packages/admin && npx -y npm-check-updates --upgrade && cd src-admin && npx -y npm-check-updates --upgrade && cd ../../dm-gui-components && npx -y npm-check-updates --upgrade && cd ../jsonConfig && npx -y npm-check-updates --upgrade"
     }
 }

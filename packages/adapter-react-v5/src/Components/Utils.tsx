@@ -1348,7 +1348,7 @@ export class Utils {
         if (themeName) {
             return themeName;
         }
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
 
     /**

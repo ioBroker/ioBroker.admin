@@ -56,7 +56,8 @@ import AdapterInstallDialog, {
     type AdapterRatingInfo,
     type InstalledInfo,
     type AdaptersContext,
-    type AdapterInstallDialogState, AdapterInstallDialogProps,
+    type AdapterInstallDialogState,
+    type AdapterInstallDialogProps,
 } from '@/components/Adapters/AdapterInstallDialog';
 import AdaptersList, { SUM } from '@/components/Adapters/AdaptersList';
 import type { AdminGuiConfig } from '@/types';
