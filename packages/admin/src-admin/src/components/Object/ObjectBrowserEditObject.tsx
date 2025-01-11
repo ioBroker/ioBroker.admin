@@ -505,14 +505,14 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'weather.title.short', type: 'string', w: false },
     { role: 'weather.type', type: 'number', w: false },
     { role: 'weather.type', type: 'string', w: false },
-] as const;
+];
 
 interface EditSchemaTab {
     json: ConfigItemPanel | ConfigItemTabs;
     label?: ioBroker.StringOrTranslated;
     /** Do not translate label */
     noTranslation?: boolean;
-    path?: string; // path in object, like common or native.json
+    path?: string; // path in an object, like common or native.json
     icon?: IobUri;
     color?: string;
     order?: number;
