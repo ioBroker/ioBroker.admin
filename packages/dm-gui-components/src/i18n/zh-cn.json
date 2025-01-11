@@ -13,6 +13,7 @@
     "instanceNotAlive": "实例不存在",
     "manufacturer": "制造商",
     "model": "型号",
+    "moreInformation": "点击获取更多信息",
     "noButtonText": "不",
     "noDevicesFoundText": "未找到设备",
     "noInstanceSelectedText": "请选择实例",

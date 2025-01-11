@@ -13,6 +13,7 @@
     "instanceNotAlive": "Примірник не живий",
     "manufacturer": "Виробник",
     "model": "Модель",
+    "moreInformation": "Натисніть, щоб отримати більше інформації",
     "noButtonText": "Немає",
     "noDevicesFoundText": "Пристроїв не знайдено",
     "noInstanceSelectedText": "Виберіть екземпляр",
