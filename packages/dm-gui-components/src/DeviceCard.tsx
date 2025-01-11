@@ -321,7 +321,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
 
     renderActions(): JSX.Element[] | null {
         const actions = this.props.device.actions?.filter(
-            a => a.id !== ACTIONS.STATUS && a.id !== ACTIONS.DISABLE && a.id !== ACTIONS.ENABLE,
+            a => a.id !== ACTIONS.STATUS && a.id !== ACTIONS.ENABLE_DISABLE,
         );
 
         return actions?.length
@@ -432,10 +432,11 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                                 <DeviceStatusComponent
                                     key={i}
                                     status={s}
+                                    enabled={this.props.device.enabled}
                                     deviceId={this.props.device.id}
                                     statusAction={this.props.device.actions?.find(a => a.id === ACTIONS.STATUS)}
                                     disableEnableAction={this.props.device.actions?.find(
-                                        a => a.id === ACTIONS.DISABLE || a.id === ACTIONS.ENABLE,
+                                        a => a.id === ACTIONS.ENABLE_DISABLE,
                                     )}
                                     deviceHandler={this.props.deviceHandler}
                                     refresh={this.refresh}
@@ -606,10 +607,9 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                             key={i}
                             deviceId={this.props.device.id}
                             status={s}
+                            enabled={this.props.device.enabled}
                             statusAction={this.props.device.actions?.find(a => a.id === ACTIONS.STATUS)}
-                            disableEnableAction={this.props.device.actions?.find(
-                                a => a.id === ACTIONS.DISABLE || a.id === ACTIONS.ENABLE,
-                            )}
+                            disableEnableAction={this.props.device.actions?.find(a => a.id === ACTIONS.ENABLE_DISABLE)}
                             deviceHandler={this.props.deviceHandler}
                             refresh={this.refresh}
                             theme={this.props.theme}

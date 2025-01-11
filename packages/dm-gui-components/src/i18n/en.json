@@ -13,6 +13,7 @@
     "instanceNotAlive": "Instance is not alive",
     "manufacturer": "Manufacturer",
     "model": "Model",
+    "moreInformation": "Click to get more information",
     "noButtonText": "No",
     "noDevicesFoundText": "No devices found",
     "noInstanceSelectedText": "Please select instance",

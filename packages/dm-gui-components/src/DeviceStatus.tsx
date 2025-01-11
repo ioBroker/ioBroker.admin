@@ -39,6 +39,7 @@ interface DeviceStatusProps {
     status: DeviceStatus | null;
     deviceId: string;
     statusAction?: DeviceAction;
+    enabled?: boolean;
     disableEnableAction?: DeviceAction;
     deviceHandler: (deviceId: string, action: ActionBase, refresh: () => void) => () => void;
     refresh: () => void;
@@ -96,48 +97,51 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
         }
     }
 
-    const disability = props.disableEnableAction ? (
-        <>
-            <div style={{ flexGrow: 1 }} />
-            {
-                <Tooltip
-                    title={
-                        props.disableEnableAction.id === ACTIONS.DISABLE
-                            ? getTranslation('disableIconTooltip')
-                            : getTranslation('enableIconTooltip')
-                    }
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <Switch
-                            size="small"
-                            checked={props.disableEnableAction.id === ACTIONS.DISABLE}
-                            onChange={() =>
-                                props.disableEnableAction &&
-                                props.deviceHandler(props.deviceId, props.disableEnableAction, props.refresh)()
-                            }
-                            theme={props.theme}
-                        />
-                    </div>
-                </Tooltip>
-            }
-        </>
-    ) : null;
+    const disability =
+        typeof props.enabled === 'boolean' ? (
+            <>
+                <div style={{ flexGrow: 1 }} />
+                {
+                    <Tooltip
+                        title={
+                            props.enabled ? getTranslation('disableIconTooltip') : getTranslation('enableIconTooltip')
+                        }
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <Switch
+                                size="small"
+                                checked={props.enabled}
+                                disabled={!props.disableEnableAction}
+                                onChange={() =>
+                                    props.disableEnableAction &&
+                                    props.deviceHandler(props.deviceId, props.disableEnableAction, props.refresh)()
+                                }
+                                theme={props.theme}
+                            />
+                        </div>
+                    </Tooltip>
+                }
+            </>
+        ) : null;
 
     const connectionIcon =
         status.connection === 'connected' || status.connection === 'disconnected' ? (
             <Tooltip
                 title={
-                    status.connection === 'connected'
+                    (status.connection === 'connected'
                         ? getTranslation('connectedIconTooltip')
-                        : getTranslation('disconnectedIconTooltip')
+                        : getTranslation('disconnectedIconTooltip')) +
+                    (props.statusAction
+                        ? `. ${getTranslation(props.statusAction.description || 'moreInformation')}`
+                        : '')
                 }
                 slotProps={{ popper: { sx: styles.tooltip } }}
             >
-                {props.statusAction && props.deviceHandler ? (
+                {props.statusAction ? (
                     <IconButton
                         onClick={e => {
-                            if (props.statusAction && props.deviceHandler) {
+                            if (props.statusAction) {
                                 e.stopPropagation();
                                 props.deviceHandler(props.deviceId, props.statusAction, props.refresh)();
                             }
@@ -148,6 +152,7 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
                         ) : (
                             <LinkOffIcon style={iconStyleNotOK} />
                         )}
+                        <div style={{ position: 'absolute', top: 0, left: 0, color: 'grey' }}>*</div>
                     </IconButton>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -233,20 +238,22 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
                 </Tooltip>
             )}
 
-            {status.warning && (typeof status.warning === 'string' || typeof status.warning === 'object') ? (
-                <Tooltip
-                    title={getTranslation(status.warning)}
-                    slotProps={{ popper: { sx: styles.tooltip } }}
-                >
+            {status.warning ? (
+                typeof status.warning === 'string' || typeof status.warning === 'object' ? (
+                    <Tooltip
+                        title={getTranslation(status.warning)}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <WarningIcon style={iconStyleWarning} />
+                        </div>
+                    </Tooltip>
+                ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <WarningIcon style={iconStyleWarning} />
                     </div>
-                </Tooltip>
-            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <WarningIcon style={iconStyleWarning} />
-                </div>
-            )}
+                )
+            ) : null}
 
             {disability}
         </div>

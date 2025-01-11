@@ -31,7 +31,6 @@ import {
     Visibility,
     WbIncandescent,
     Wifi,
-    WifiFind,
     WifiOff,
 } from '@mui/icons-material';
 
@@ -223,9 +222,6 @@ function getIconByName(name: string, altName?: string, color?: string): React.JS
     }
     if (name === 'qrcode' || altName === 'qrcode') {
         return <QrCode style={{ color }} />;
-    }
-    if (name === 'identify' || altName === 'identify') {
-        return <WifiFind style={{ color }} />;
     }
     if (name === 'info' || altName === 'info') {
         return <Info style={{ color }} />;

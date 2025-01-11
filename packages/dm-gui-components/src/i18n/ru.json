@@ -13,6 +13,7 @@
     "instanceNotAlive": "Экземпляр не жив",
     "manufacturer": "Производитель",
     "model": "Модель",
+    "moreInformation": "Нажмите, чтобы получить больше информации",
     "noButtonText": "Нет",
     "noDevicesFoundText": "Устройства не найдены",
     "noInstanceSelectedText": "Пожалуйста, выберите экземпляр",
