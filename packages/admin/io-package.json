@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.11",
+    "version": "7.4.12",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.12": {
+        "en": "Analyze the new role and set read/write flags according to the role\nAdded min/max/role by alias creation\nImproved files browser in the tile mode",
+        "de": "Analysieren Sie die neue Rolle und setzen Sie Lese- / Schreib-Flags nach der Rolle\nMin/max/rol durch Alias Kreation hinzugefügt\nVerbesserte Dateien Browser im Fliesenmodus",
+        "ru": "Проанализируйте новую роль и установите флаги чтения/записи в соответствии с ролью\nДобавить min/max/role по псевдонимам\nУлучшен браузер файлов в режиме плитки",
+        "pt": "Analisar o novo papel e definir bandeiras de leitura / gravação de acordo com o papel\nAdicionado min/max/role por alias criação\nMelhor navegador de arquivos no modo de telha",
+        "nl": "Analyseer de nieuwe rol en stel lees-/schrijfvlaggen in volgens de rol\nToegevoegd min/max/role door alias creatie\nVerbeterde bestandenbrowser in de tegelmodus",
+        "fr": "Analyser le nouveau rôle et définir les drapeaux de lecture/écriture selon le rôle\nAjouté min/max/role par création d'alias\nNavigateur de fichiers amélioré en mode carrelage",
+        "it": "Analizzare il nuovo ruolo e impostare le bandiere di lettura / scrittura secondo il ruolo\nAggiunto min/max/role da alias creazione\nBrowser di file migliorati nella modalità piastrelle",
+        "es": "Analizar el nuevo papel y establecer banderas de lectura/escritura según el papel\nAñadido min/max/role por alias creación\nMejorado navegador de archivos en el modo de azulejo",
+        "pl": "Analizować nową rolę i ustawić flagi odczytu / zapisu w zależności od roli\nDodano min / max / rola przez tworzenie aliasów\nUlepszona przeglądarka plików w trybie płytek",
+        "uk": "Проаналізуйте нову роль та встановіть прапорці читання/запису відповідно до ролі\nДодано min/max/role by aliasтворіння\nПокращений браузер файлів в режимі плитки",
+        "zh-cn": "分析新角色,并根据角色设置读/写标记\n通过别名创建添加分钟/马克/作用\n砖块模式下改进的文件浏览器"
+      },
       "7.4.11": {
         "en": "Analyze the new role and set read/write flags according to the role\nAdded min/max/role by alias creation\nImproved files browser in the tile mode",
         "de": "Analysieren Sie die neue Rolle und setzen Sie Lese- / Schreib-Flags nach der Rolle\nMin/max/rol durch Alias Kreation hinzugefügt\nVerbesserte Dateien Browser im Fliesenmodus",
@@ -96,19 +109,6 @@
         "pl": "Zmienione pole informacyjne na karcie hosts\nNaprawiono kilka błędów w bibliotece JsonConfig\nDodano expertMode flagi do ukrycia kontroli JSON dla nie-ekspertów\nSkorygowana ikona chmur dla admin\nDodano stare nazwy dialogowe do adapter- react- v5 ponownie",
         "uk": "Змінена інформаційна коробка на вкладці хостів\nВиправлено помилки в бібліотеки JsonConfig\nДодано прапорець експертMode, щоб приховати JSON конфігураційні елементи для невибагливих\nВиправлена хмарна ікона для адміністратора\nДодано старі діалогові імена для адаптера-react-v5 знову",
         "zh-cn": "更改主机标签上的信息框\n更正了 JsonConfig 库中的一些错误\n为非专家隐藏 JSON 配置控制而添加的旗舰专家模式\n管理员的校正云图标\n再次添加旧对话框名称到适配器- react-v5"
-      },
-      "7.4.2": {
-        "en": "Made improvement for JSONConfig components\nAdded clear button to text area JSON config component",
-        "de": "Hergestellte Verbesserung für JSONConfig Komponenten\nHinzugefügt klare Schaltfläche zum Textbereich JSON config Komponente",
-        "ru": "Сделано улучшение для компонентов JSONConfig\nДобавление четкой кнопки в текстовый компонент конфигурации JSON",
-        "pt": "Melhoria feita para componentes JSONConfig\nAdicionado botão claro para área de texto JSON config componente",
-        "nl": "Verbeterd voor JSONConfig componenten\nDuidelijke knop toegevoegd aan tekstgebied JSON config component",
-        "fr": "Amélioration des composants JSONConfig\nAjout d'un bouton clair au composant de configuration JSON",
-        "it": "Miglioramento fatto per i componenti JSONConfig\nAggiunto il pulsante chiaro all'area testo JSON config componente",
-        "es": "Mejorado para componentes JSONConfig\nAñadido botón claro para el componente de configuración JSON",
-        "pl": "Poprawiono komponenty JSONConfig\nDodano jasny przycisk do obszaru tekstowego komponentu konfiguracyjnego JSON",
-        "uk": "Виготовлено вдосконалення компонентів JSONConfig\nДодано чітку кнопку до текстового компонента JSON config",
-        "zh-cn": "改进JSONConfig组件\n添加到文本区域 JSON 配置组件的清晰按钮"
       }
     },
     "desc": {
