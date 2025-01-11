@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.4.11 (2025-01-11)
+### **WORK IN PROGRESS**
 
 -   (@GermanBluefox) Analyze the new role and set read/write flags according to the role
 -   (@GermanBluefox) Added min/max/role by alias creation
