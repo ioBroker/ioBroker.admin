@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.11 (2025-01-11)
 
 -   (@GermanBluefox) Analyze the new role and set read/write flags according to the role
 -   (@GermanBluefox) Added min/max/role by alias creation
@@ -111,14 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.4.4 (2024-12-08)
 
 -   (@GermanBluefox) Showed value in object edit dialog
-
-### 7.4.3 (2024-12-01)
-
--   (@GermanBluefox) Changed information box on the hosts tab
--   (@GermanBluefox) Corrected some errors in JsonConfig library
--   (@GermanBluefox) Added flag expertMode to hide JSON config controls for non-experts
--   (@GermanBluefox) Corrected cloud icon for admin
--   (@GermanBluefox) Added old dialog names to adapter-react-v5 again
 
 ## License
 

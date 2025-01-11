@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.10",
+    "version": "7.4.11",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.11": {
+        "en": "Analyze the new role and set read/write flags according to the role\nAdded min/max/role by alias creation\nImproved files browser in the tile mode",
+        "de": "Analysieren Sie die neue Rolle und setzen Sie Lese- / Schreib-Flags nach der Rolle\nMin/max/rol durch Alias Kreation hinzugefügt\nVerbesserte Dateien Browser im Fliesenmodus",
+        "ru": "Проанализируйте новую роль и установите флаги чтения/записи в соответствии с ролью\nДобавить min/max/role по псевдонимам\nУлучшен браузер файлов в режиме плитки",
+        "pt": "Analisar o novo papel e definir bandeiras de leitura / gravação de acordo com o papel\nAdicionado min/max/role por alias criação\nMelhor navegador de arquivos no modo de telha",
+        "nl": "Analyseer de nieuwe rol en stel lees-/schrijfvlaggen in volgens de rol\nToegevoegd min/max/role door alias creatie\nVerbeterde bestandenbrowser in de tegelmodus",
+        "fr": "Analyser le nouveau rôle et définir les drapeaux de lecture/écriture selon le rôle\nAjouté min/max/role par création d'alias\nNavigateur de fichiers amélioré en mode carrelage",
+        "it": "Analizzare il nuovo ruolo e impostare le bandiere di lettura / scrittura secondo il ruolo\nAggiunto min/max/role da alias creazione\nBrowser di file migliorati nella modalità piastrelle",
+        "es": "Analizar el nuevo papel y establecer banderas de lectura/escritura según el papel\nAñadido min/max/role por alias creación\nMejorado navegador de archivos en el modo de azulejo",
+        "pl": "Analizować nową rolę i ustawić flagi odczytu / zapisu w zależności od roli\nDodano min / max / rola przez tworzenie aliasów\nUlepszona przeglądarka plików w trybie płytek",
+        "uk": "Проаналізуйте нову роль та встановіть прапорці читання/запису відповідно до ролі\nДодано min/max/role by aliasтворіння\nПокращений браузер файлів в режимі плитки",
+        "zh-cn": "分析新角色,并根据角色设置读/写标记\n通过别名创建添加分钟/马克/作用\n砖块模式下改进的文件浏览器"
+      },
       "7.4.10": {
         "en": "Corrected JSON-Config tables\nCorrected translation on the update adapter dialog",
         "de": "Korrektur der JSON-Config-Tabellen\nKorrigierte Übersetzung im Update Adapter Dialog",
@@ -96,19 +109,6 @@
         "pl": "Poprawiono komponenty JSONConfig\nDodano jasny przycisk do obszaru tekstowego komponentu konfiguracyjnego JSON",
         "uk": "Виготовлено вдосконалення компонентів JSONConfig\nДодано чітку кнопку до текстового компонента JSON config",
         "zh-cn": "改进JSONConfig组件\n添加到文本区域 JSON 配置组件的清晰按钮"
-      },
-      "7.4.1": {
-        "en": "Made improvement for JSONConfig components",
-        "de": "Hergestellte Verbesserung für JSONConfig Komponenten",
-        "ru": "Сделано улучшение для компонентов JSONConfig",
-        "pt": "Melhoria feita para componentes JSONConfig",
-        "nl": "Verbeterd voor JSONConfig componenten",
-        "fr": "Amélioration des composants JSONConfig",
-        "it": "Miglioramento fatto per i componenti JSONConfig",
-        "es": "Mejorado para componentes JSONConfig",
-        "pl": "Poprawiono komponenty JSONConfig",
-        "uk": "Виготовлено вдосконалення компонентів JSONConfig",
-        "zh-cn": "改进JSONConfig组件"
       }
     },
     "desc": {
