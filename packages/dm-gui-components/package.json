@@ -18,7 +18,7 @@
     "scripts": {
         "prepublishOnly": "npm run build",
         "clean": "rimraf build",
-        "build": "tsc && tsc-alias",
+        "build": "tsc && tsc-alias && node tasks",
         "check-ts": "tsc --noEmit --checkJS false",
         "lint": "eslint -c eslint.config.mjs src",
         "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"
