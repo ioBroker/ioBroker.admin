@@ -434,7 +434,6 @@ interface AppState {
     drawerState: 0 | 1 | 2;
     editMenuList: boolean;
     tab: any;
-    allStored: boolean;
     dataNotStoredDialog: boolean;
     dataNotStoredTab: {
         tab: string;
@@ -487,6 +486,8 @@ interface AppState {
 
 class App extends Router<AppProps, AppState> {
     private readonly translations: Record<ioBroker.Languages, Record<string, string>>;
+
+    private _tempAllStored = true;
 
     /** Seconds before logout to show warning */
     private readonly EXPIRE_WARNING_THRESHOLD: number = 120;
@@ -610,8 +611,9 @@ class App extends Router<AppProps, AppState> {
                 get: () => this.state.configNotSaved,
                 set: configNotSaved => {
                     const allStored = !configNotSaved;
-                    if (allStored !== this.state.allStored) {
-                        this.setState({ allStored });
+                    if (allStored !== this._tempAllStored) {
+                        this._tempAllStored = allStored;
+                        this.forceUpdate();
                     }
                 },
                 configurable: true,
@@ -655,7 +657,6 @@ class App extends Router<AppProps, AppState> {
                 editMenuList: false,
 
                 tab: null,
-                allStored: true,
                 dataNotStoredDialog: false,
                 dataNotStoredTab: null,
 
@@ -2202,7 +2203,7 @@ class App extends Router<AppProps, AppState> {
 
     handleNavigation = (tab: string, subTab?: string, param?: string): void => {
         if (tab) {
-            if (this.state.allStored) {
+            if (this._tempAllStored) {
                 Router.doNavigate(tab, subTab, param);
 
                 this.setState({ currentTab: Router.getLocation() });
@@ -2224,9 +2225,10 @@ class App extends Router<AppProps, AppState> {
     };
 
     allStored(value: boolean): void {
-        this.setState({
-            allStored: value,
-        });
+        if (this._tempAllStored !== value) {
+            this._tempAllStored = value;
+            this.forceUpdate();
+        }
     }
 
     closeDataNotStoredDialog(): void {
@@ -2234,10 +2236,10 @@ class App extends Router<AppProps, AppState> {
     }
 
     confirmDataNotStored(): void {
+        this._tempAllStored = true;
         this.setState(
             {
                 dataNotStoredDialog: false,
-                allStored: true,
             },
             () =>
                 this.handleNavigation(
@@ -2475,6 +2477,9 @@ class App extends Router<AppProps, AppState> {
     }
 
     renderDialogConfirm(): JSX.Element | null {
+        if (!this.state.dataNotStoredDialog) {
+            return null;
+        }
         /* return <DialogConfirm
             onClose={() => this.closeDataNotStoredDialog()}
             open={this.state.dataNotStoredDialog}
@@ -2484,15 +2489,15 @@ class App extends Router<AppProps, AppState> {
         >
             {I18n.t('Some data are not stored. Discard?')}
         </DialogConfirm>; */
-        return this.state.dataNotStoredDialog ? (
+        return (
             <DialogConfirm
-                title={I18n.t('Please confirm')}
-                text={I18n.t('Some data are not stored. Discard?')}
-                ok={I18n.t('Ok')}
-                cancel={I18n.t('Cancel')}
+                title={I18n.t('ra_Please confirm')}
+                text={I18n.t('ra_Some data are not stored. Discard?')}
+                ok={I18n.t('ra_Discard')}
+                cancel={I18n.t('ra_Cancel')}
                 onClose={(isYes: boolean) => (isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog())}
             />
-        ) : null;
+        );
     }
 
     renderExpertDialog(): JSX.Element | null {

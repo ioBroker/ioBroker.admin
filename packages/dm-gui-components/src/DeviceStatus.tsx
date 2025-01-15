@@ -15,10 +15,19 @@ import {
     BatteryAlert as BatteryAlertIcon,
     Warning as WarningIcon,
     BatteryCharging50 as BatteryCharging50Icon,
+    Cable as IconConnectionLan,
+    Wifi as IconConnectionWifi,
+    WifiOff as IconConnectionNoWifi,
+    Bluetooth as IconConnectionBluetooth,
+    BluetoothDisabled as IconConnectionNoBluetooth,
 } from '@mui/icons-material';
 
-import type { DeviceStatus, DeviceAction, ActionBase } from '@iobroker/dm-utils';
-import type { IobTheme } from '@iobroker/adapter-react-v5';
+import type { DeviceStatus, DeviceAction, ActionBase, ConfigConnectionType } from '@iobroker/dm-utils';
+import { Icon, type IobTheme } from '@iobroker/adapter-react-v5';
+
+import ZWaveIcon from './assets/z-wave.svg';
+import ZigBeeIcon from './assets/zigbee.svg';
+import ThreadIcon from './assets/thread.svg';
 
 import { getTranslation } from './Utils';
 import Switch from './Switch';
@@ -38,6 +47,7 @@ const styles: Record<string, React.CSSProperties> = {
 interface DeviceStatusProps {
     status: DeviceStatus | null;
     deviceId: string;
+    connectionType?: ConfigConnectionType;
     statusAction?: DeviceAction;
     enabled?: boolean;
     disableEnableAction?: DeviceAction;
@@ -74,6 +84,9 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
     };
     const iconStyleWarning = {
         fill: '#ff9900',
+    };
+    const iconStyleUnknown = {
+        fill: '#8a8a8a',
     };
 
     let batteryIconTooltip: React.ReactNode = null;
@@ -124,6 +137,96 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
                 }
             </>
         ) : null;
+    let connectionSymbol: React.JSX.Element | null;
+    if (props.connectionType === 'wifi') {
+        connectionSymbol =
+            status.connection === 'connected' ? (
+                <IconConnectionWifi style={iconStyleOK} />
+            ) : status.connection === 'disconnected' ? (
+                <IconConnectionNoWifi style={iconStyleNotOK} />
+            ) : (
+                <IconConnectionWifi style={iconStyleUnknown} />
+            );
+    } else if (props.connectionType === 'bluetooth') {
+        connectionSymbol =
+            status.connection === 'connected' ? (
+                <IconConnectionBluetooth style={iconStyleOK} />
+            ) : status.connection === 'disconnected' ? (
+                <IconConnectionNoBluetooth style={iconStyleNotOK} />
+            ) : (
+                <IconConnectionBluetooth style={iconStyleUnknown} />
+            );
+    } else if (props.connectionType === 'lan') {
+        connectionSymbol =
+            status.connection === 'connected' ? (
+                <IconConnectionLan style={iconStyleOK} />
+            ) : status.connection === 'disconnected' ? (
+                <IconConnectionLan style={iconStyleNotOK} />
+            ) : (
+                <IconConnectionLan style={iconStyleUnknown} />
+            );
+    } else if (props.connectionType === 'thread') {
+        connectionSymbol =
+            status.connection === 'connected' ? (
+                <Icon
+                    src={ThreadIcon}
+                    style={iconStyleOK}
+                />
+            ) : status.connection === 'disconnected' ? (
+                <Icon
+                    src={ThreadIcon}
+                    style={iconStyleNotOK}
+                />
+            ) : (
+                <Icon
+                    src={ThreadIcon}
+                    style={iconStyleUnknown}
+                />
+            );
+    } else if (props.connectionType === 'z-wave') {
+        connectionSymbol =
+            status.connection === 'connected' ? (
+                <Icon
+                    src={ZWaveIcon}
+                    style={iconStyleOK}
+                />
+            ) : status.connection === 'disconnected' ? (
+                <Icon
+                    src={ZWaveIcon}
+                    style={iconStyleNotOK}
+                />
+            ) : (
+                <Icon
+                    src={ZWaveIcon}
+                    style={iconStyleUnknown}
+                />
+            );
+    } else if (props.connectionType === 'zigbee') {
+        connectionSymbol =
+            status.connection === 'connected' ? (
+                <Icon
+                    src={ZigBeeIcon}
+                    style={iconStyleOK}
+                />
+            ) : status.connection === 'disconnected' ? (
+                <Icon
+                    src={ZigBeeIcon}
+                    style={iconStyleNotOK}
+                />
+            ) : (
+                <Icon
+                    src={ZigBeeIcon}
+                    style={iconStyleUnknown}
+                />
+            );
+    } else {
+        connectionSymbol =
+            status.connection === 'connected' ? (
+                <LinkIcon style={iconStyleOK} />
+            ) : status.connection === 'disconnected' ? (
+                <LinkOffIcon style={iconStyleNotOK} />
+            ) : null;
+    }
 
     const connectionIcon =
         status.connection === 'connected' || status.connection === 'disconnected' ? (
@@ -147,24 +250,18 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
                             }
                         }}
                     >
-                        {status.connection === 'connected' ? (
-                            <LinkIcon style={iconStyleOK} />
-                        ) : (
-                            <LinkOffIcon style={iconStyleNotOK} />
-                        )}
+                        {connectionSymbol}
                         <div style={{ position: 'absolute', top: 0, left: 0, color: 'grey' }}>*</div>
                     </IconButton>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        {status.connection === 'connected' ? (
-                            <LinkIcon style={iconStyleOK} />
-                        ) : (
-                            <LinkOffIcon style={iconStyleNotOK} />
-                        )}
+                        {connectionSymbol}
                     </div>
                 )}
             </Tooltip>
-        ) : null;
+        ) : (
+            connectionSymbol
+        );
 
     return (
         <div

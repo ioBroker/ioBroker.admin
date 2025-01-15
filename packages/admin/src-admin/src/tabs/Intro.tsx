@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import semver from 'semver';
 
-import { Fab, Snackbar, Tooltip, Grid2, LinearProgress, Skeleton } from '@mui/material';
+import { Fab, Snackbar, Tooltip, LinearProgress, Skeleton } from '@mui/material';
 
 import {
     Add as AddIcon,
@@ -18,7 +18,6 @@ import {
     type IobTheme,
     type Translate,
     TabContainer,
-    TabContent,
 } from '@iobroker/adapter-react-v5';
 
 import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
@@ -120,6 +119,12 @@ const styles: Record<string, any> = {
     },
     tooltip: {
         pointerEvents: 'none',
+    },
+    viewModeDiv: {
+        display: 'flex',
+        flexFlow: 'wrap',
+        overflow: 'auto',
+        justifyContent: 'left',
     },
 };
 
@@ -1500,7 +1505,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 hostData && typeof hostData === 'object'
                     ? Object.keys(hostData).reduce(
                           (acom: string, item: string) =>
-                              `${acom}${this.t(item)}:${formatInfo[item] ? formatInfo[item](hostData[item] as number, this.t) : (typeof hostData[item] === 'object' ? JSON.stringify(hostData[item]) : hostData[item] as string) || '--'}\n`,
+                              `${acom}${this.t(item)}:${formatInfo[item] ? formatInfo[item](hostData[item] as number, this.t) : (typeof hostData[item] === 'object' ? JSON.stringify(hostData[item]) : (hostData[item] as string)) || '--'}\n`,
                       )
                     : '',
         };
@@ -1580,21 +1585,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         {...this.state.nodeUpdateDialog}
                     />
                 ) : null}
-                <TabContent style={styles.container}>
-                    {/* This fragment is required here
-                to split directives of Grid2 in TabContent and Grid2 directives in Intro */}
-                    <>
-                        <Grid2
-                            container
-                            spacing={2}
-                        >
-                            {this.getInstancesCards()}
-                            {this.getLinkCards()}
-                        </Grid2>
-                    </>
-                    {this.getButtons()}
-                    {this.editLinkCard()}
-                </TabContent>
+                <div style={styles.viewModeDiv}>
+                    {this.getInstancesCards()}
+                    {this.getLinkCards()}
+                </div>
+                {this.getButtons()}
+                {this.editLinkCard()}
             </TabContainer>
         );
     }

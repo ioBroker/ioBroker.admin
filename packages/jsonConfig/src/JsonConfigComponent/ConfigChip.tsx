@@ -5,6 +5,7 @@ import { FormHelperText, FormControl } from '@mui/material';
 import type { ConfigItemChip } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ChipInput from './ChipInput';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 interface ConfigChipProps extends ConfigGenericProps {
     schema: ConfigItemChip;
@@ -71,6 +72,7 @@ class ConfigChip extends ConfigGeneric<ConfigChipProps, ConfigGenericState> {
                         });
                     }}
                 />
+                <FormHelperText>{I18n.t('ra_Press ENTER Key to add new item')}</FormHelperText>
                 {this.props.schema.help ? (
                     <FormHelperText>
                         {this.renderHelp(

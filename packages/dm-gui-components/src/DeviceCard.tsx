@@ -432,6 +432,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                                 <DeviceStatusComponent
                                     key={i}
                                     status={s}
+                                    connectionType={this.props.device.connectionType}
                                     enabled={this.props.device.enabled}
                                     deviceId={this.props.device.id}
                                     statusAction={this.props.device.actions?.find(a => a.id === ACTIONS.STATUS)}
@@ -606,6 +607,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                         <DeviceStatusComponent
                             key={i}
                             deviceId={this.props.device.id}
+                            connectionType={this.props.device.connectionType}
                             status={s}
                             enabled={this.props.device.enabled}
                             statusAction={this.props.device.actions?.find(a => a.id === ACTIONS.STATUS)}
