@@ -1,4 +1,8 @@
 # Older changes
+## 7.4.4 (2024-12-08)
+
+-   (@GermanBluefox) Showed value in object edit dialog
+
 ## 7.4.3 (2024-12-01)
 
 -   (@GermanBluefox) Changed information box on the hosts tab
