@@ -503,7 +503,7 @@ export default abstract class AdapterGeneric<
 
     renderInstalledVersion(isRow?: boolean): JSX.Element | null {
         const installed = this.props.context.installed[this.props.adapterName];
-        const installedFrom = installed?.installedFrom;
+        const installedFrom = this.props.context.adapters[`system.adapter.${this.props.adapterName}`]?.common?.installedFrom;
         const { adapterName } = this.props;
 
         if (isRow) {
