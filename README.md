@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.4.13 (2025-01-15)
+### **WORK IN PROGRESS**
 
 -   (@GermanBluefox) Extended DM with device type
 -   (@GermanBluefox) Corrected Save&Close button for the instance configs
