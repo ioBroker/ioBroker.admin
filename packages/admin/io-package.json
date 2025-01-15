@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.13",
+    "version": "7.4.14",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.14": {
+        "en": "Extended DM with device type\nCorrected Save&Close button for the instance configs\nChanged layout on intro page",
+        "de": "Erweiterte DM mit Gerätetyp\nBehobene Sparen und Schließen Taste für die Instanz configs\nÄnderung des Layouts auf der Einführungsseite",
+        "ru": "Расширенный DM с типом устройства\nИсправлено Сохранить Закрыть кнопку для настройки экземпляра\nИзменение макета на странице intro",
+        "pt": "DM estendido com tipo de dispositivo\nEconomização correta > Fechar botão para as configurações de instância\nLayout alterado na página intro",
+        "nl": "Uitgebreide DM met apparaattype\nGecorrigeerd opslaan& Knop sluiten voor de instantieconfiguraties\nGewijzigde indeling op intro pagina",
+        "fr": "DM étendu avec type de périphérique\nEnregistrement corrigé et Fermer le bouton pour les configurations d'instance\nMise en page modifiée sur la page d'introduction",
+        "it": "DM esteso con tipo di dispositivo\nCorretto Save& Chiudi pulsante per le configurazioni dell'istanza\nModificato il layout sulla pagina intro",
+        "es": "DM extendido con tipo de dispositivo\nCorreccionales Guardar Cierre botón para los configs de instancia\nDiseño cambiado en página intro",
+        "pl": "Rozszerzony DM z typem urządzenia\nSprostowanie Zapisz & Zamknij przycisk dla instancji configs\nZmieniony układ na stronie intro",
+        "uk": "Розширений DM з типом пристрою\nВиправлено Save& Закрита кнопка для налаштування екземпляра\nЗмінено макет на сторінці intro",
+        "zh-cn": "设备类型的扩展DM\n已更正保存( C) 关闭实例配置的按钮\n内部页面上更改的布局"
+      },
       "7.4.12": {
         "en": "Analyze the new role and set read/write flags according to the role\nAdded min/max/role by alias creation\nImproved files browser in the tile mode",
         "de": "Analysieren Sie die neue Rolle und setzen Sie Lese- / Schreib-Flags nach der Rolle\nMin/max/rol durch Alias Kreation hinzugefügt\nVerbesserte Dateien Browser im Fliesenmodus",
