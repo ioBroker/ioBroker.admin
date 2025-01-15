@@ -1062,7 +1062,7 @@ export default class ConfigGeneric<
         const { error, disabled, hidden, defaultValue } = this.calculate(schema);
 
         if (hidden) {
-            // Remove all errors if element is hidden
+            // Remove all errors if an element is hidden
             if (Object.keys(this.isError).length) {
                 setTimeout(
                     isError => Object.keys(isError).forEach(attr => this.props.onError(attr)),
@@ -1146,7 +1146,6 @@ export default class ConfigGeneric<
                 }}
                 style={{
                     marginBottom: 0,
-                    // marginRight: 8,
                     textAlign: 'left',
                     width: schema.type === 'divider' || schema.type === 'header' ? schema.width || '100%' : undefined,
                     ...schema.style,

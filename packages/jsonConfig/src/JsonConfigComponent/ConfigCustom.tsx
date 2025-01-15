@@ -211,44 +211,9 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
 
     render(): JSX.Element {
         const CustomComponent: React.FC<ConfigGenericProps> = this.state.Component;
+        const schema = this.props.schema || ({} as ConfigItemCustom);
 
-        // render temporary placeholder
-        if (!CustomComponent) {
-            const schema = this.props.schema || ({} as ConfigItemCustom);
-
-            const item = (
-                <Grid2
-                    size={{
-                        xs: schema.xs || undefined,
-                        sm: schema.sm || undefined,
-                        md: schema.md || undefined,
-                        lg: schema.lg || undefined,
-                        xl: schema.xl || undefined,
-                    }}
-                    style={{
-                        marginBottom: 0,
-                        // marginRight: 8,
-                        textAlign: 'left',
-                        ...schema.style,
-                        ...(this.props.oContext.themeType === 'dark' ? schema.darkStyle : {}),
-                    }}
-                >
-                    {this.state.error ? <div>{this.state.error}</div> : <LinearProgress />}
-                </Grid2>
-            );
-
-            if (schema.newLine) {
-                return (
-                    <>
-                        <div style={{ flexBasis: '100%', height: 0 }} />
-                        {item}
-                    </>
-                );
-            }
-            return item;
-        }
-
-        return (
+        let item = CustomComponent ? (
             <CustomComponent
                 {...this.props}
                 // @ts-expect-error BF (2024-12-18) Remove after the 7.4 will be mainstream. All following lines
@@ -260,6 +225,44 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                 systemConfig={this.props.oContext.systemConfig}
                 forceUpdate={this.props.oContext.forceUpdate}
             />
+        ) : this.state.error ? (
+            <div>{this.state.error}</div>
+        ) : (
+            <LinearProgress />
         );
+
+        // If any widths are defined
+        if (schema.xs || schema.sm || schema.md || schema.lg || schema.xl) {
+            item = (
+                <Grid2
+                    size={{
+                        xs: schema.xs || 12,
+                        sm: schema.sm || undefined,
+                        md: schema.md || undefined,
+                        lg: schema.lg || undefined,
+                        xl: schema.xl || undefined,
+                    }}
+                    style={{
+                        marginBottom: 0,
+                        textAlign: 'left',
+                        ...schema.style,
+                        ...(this.props.oContext.themeType === 'dark' ? schema.darkStyle : {}),
+                    }}
+                >
+                    {item}
+                </Grid2>
+            );
+        }
+
+        if (schema.newLine) {
+            return (
+                <>
+                    <div style={{ flexBasis: '100%', height: 0 }} />
+                    {item}
+                </>
+            );
+        }
+
+        return item;
     }
 }
