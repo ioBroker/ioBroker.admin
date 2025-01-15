@@ -155,15 +155,19 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
 
     const iconStyleOK = {
         fill: '#00ac00',
+        color: '#00ac00',
     };
     const iconStyleNotOK = {
         fill: '#ff0000',
+        color: '#ff0000',
     };
     const iconStyleWarning = {
         fill: '#ff9900',
+        color: '#ff9900',
     };
     const iconStyleUnknown = {
         fill: '#8a8a8a',
+        color: '#8a8a8a',
     };
 
     let batteryIconTooltip: React.ReactNode = null;
