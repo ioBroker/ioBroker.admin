@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.12",
+    "version": "7.4.13",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.13": {
+        "en": "Extended DM with device type\nCorrected Save&Close button for the instance configs\nChanged layout on intro page",
+        "de": "Erweiterte DM mit Gerätetyp\nBehobene Sparen und Schließen Taste für die Instanz configs\nÄnderung des Layouts auf der Einführungsseite",
+        "ru": "Расширенный DM с типом устройства\nИсправлено Сохранить Закрыть кнопку для настройки экземпляра\nИзменение макета на странице intro",
+        "pt": "DM estendido com tipo de dispositivo\nEconomização correta > Fechar botão para as configurações de instância\nLayout alterado na página intro",
+        "nl": "Uitgebreide DM met apparaattype\nGecorrigeerd opslaan& Knop sluiten voor de instantieconfiguraties\nGewijzigde indeling op intro pagina",
+        "fr": "DM étendu avec type de périphérique\nEnregistrement corrigé et Fermer le bouton pour les configurations d'instance\nMise en page modifiée sur la page d'introduction",
+        "it": "DM esteso con tipo di dispositivo\nCorretto Save& Chiudi pulsante per le configurazioni dell'istanza\nModificato il layout sulla pagina intro",
+        "es": "DM extendido con tipo de dispositivo\nCorreccionales Guardar Cierre botón para los configs de instancia\nDiseño cambiado en página intro",
+        "pl": "Rozszerzony DM z typem urządzenia\nSprostowanie Zapisz & Zamknij przycisk dla instancji configs\nZmieniony układ na stronie intro",
+        "uk": "Розширений DM з типом пристрою\nВиправлено Save& Закрита кнопка для налаштування екземпляра\nЗмінено макет на сторінці intro",
+        "zh-cn": "设备类型的扩展DM\n已更正保存( C) 关闭实例配置的按钮\n内部页面上更改的布局"
+      },
       "7.4.12": {
         "en": "Analyze the new role and set read/write flags according to the role\nAdded min/max/role by alias creation\nImproved files browser in the tile mode",
         "de": "Analysieren Sie die neue Rolle und setzen Sie Lese- / Schreib-Flags nach der Rolle\nMin/max/rol durch Alias Kreation hinzugefügt\nVerbesserte Dateien Browser im Fliesenmodus",
@@ -96,19 +109,6 @@
         "pl": "Pokazana wartość w oknie edycji obiektu",
         "uk": "Показати значення в діалоговому вікні редагування об'єктів",
         "zh-cn": "在对象编辑对话框中显示的值"
-      },
-      "7.4.3": {
-        "en": "Changed information box on the hosts tab\nCorrected some errors in JsonConfig library\nAdded flag expertMode to hide JSON config controls for non-experts\nCorrected cloud icon for admin\nAdded old dialog names to adapter-react-v5 again",
-        "de": "Geändertes Informationsfeld auf der Registerkarte Hosts\nEinige Fehler in der JsonConfig Bibliothek behoben\nHinzugefügt Flag expertMode JSON config Kontrollen für Nicht-Experten zu verstecken\nKorrigiertes Cloud-Symbol für Admin\nWieder alte Dialognamen zum Adapter-React-v5 hinzugefügt",
-        "ru": "Измененное информационное поле на вкладке хостов\nИсправлены некоторые ошибки в библиотеке JsonConfig\nДобавлен флажок ExpertMode, чтобы скрыть настройки JSON для неспециалистов\nИсправлена значок облака для администратора\nДобавлены старые диалоговые имена для адаптер-реакт-v5",
-        "pt": "Caixa de informações alterada no separador hosts\nCorrigido alguns erros na biblioteca JsonConfig\nAdicionado especialista de bandeiraMode para esconder controles de configuração JSON para não-experts\nÍcone de nuvem corrigido para admin\nAdicionados nomes de diálogo antigos para adaptador-react-v5 novamente",
-        "nl": "Veranderd informatieveld op het tabblad hosts\nEnkele fouten in de JsonConfig-bibliotheek gecorrigeerd\nToegevoegd vlag expertMode om JSON config controls te verbergen voor niet-experts\nGecorrigeerde cloudpictogram voor admin\nOude dialoognamen weer toegevoegd aan adapter-react-v5",
-        "fr": "Boîte d'information modifiée dans l'onglet hôtes\nCorrection de certaines erreurs dans la bibliothèque JsonConfig\nAjouté expert du drapeauMode pour cacher les contrôles de configuration JSON pour les non-experts\nIcône cloud corrigée pour admin\nAjout d'anciens noms de dialogue à adaptateur-réaction-v5 à nouveau",
-        "it": "Cambiato casella di informazioni sulla scheda host\nCorretto alcuni errori nella libreria JsonConfig\nAggiunto esperto di bandieraMode per nascondere i controlli di configurazione JSON per i non-esperti\nIcona cloud corretta per admin\nAggiunto vecchi nomi di dialogo per adattatore-react-v5 di nuovo",
-        "es": "Cambiar el cuadro de información en la pestaña hosts\nCorregido algunos errores en la biblioteca JsonConfig\nAñadido experto en banderaMode para ocultar los controles de configuración de JSON para no expertos\nIcono de nube corregido para admin\nAñadido viejos nombres de diálogo para adaptar-react-v5 de nuevo",
-        "pl": "Zmienione pole informacyjne na karcie hosts\nNaprawiono kilka błędów w bibliotece JsonConfig\nDodano expertMode flagi do ukrycia kontroli JSON dla nie-ekspertów\nSkorygowana ikona chmur dla admin\nDodano stare nazwy dialogowe do adapter- react- v5 ponownie",
-        "uk": "Змінена інформаційна коробка на вкладці хостів\nВиправлено помилки в бібліотеки JsonConfig\nДодано прапорець експертMode, щоб приховати JSON конфігураційні елементи для невибагливих\nВиправлена хмарна ікона для адміністратора\nДодано старі діалогові імена для адаптера-react-v5 знову",
-        "zh-cn": "更改主机标签上的信息框\n更正了 JsonConfig 库中的一些错误\n为非专家隐藏 JSON 配置控制而添加的旗舰专家模式\n管理员的校正云图标\n再次添加旧对话框名称到适配器- react-v5"
       }
     },
     "desc": {
