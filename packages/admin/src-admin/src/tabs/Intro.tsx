@@ -1500,7 +1500,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 hostData && typeof hostData === 'object'
                     ? Object.keys(hostData).reduce(
                           (acom: string, item: string) =>
-                              `${acom}${this.t(item)}:${formatInfo[item] ? formatInfo[item](hostData[item] as number, this.t) : (typeof hostData[item] === 'object' ? JSON.stringify(hostData[item]) : hostData[item] as string) || '--'}\n`,
+                              `${acom}${this.t(item)}:${formatInfo[item] ? formatInfo[item](hostData[item] as number, this.t) : (typeof hostData[item] === 'object' ? JSON.stringify(hostData[item]) : (hostData[item] as string)) || '--'}\n`,
                       )
                     : '',
         };

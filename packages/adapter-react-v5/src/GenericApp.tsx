@@ -803,8 +803,9 @@ export class GenericApp<
                     // ignore
                 }
 
-                this.setState({ changed: false });
-                isClose && GenericApp.onClose();
+                this.setState({ changed: false }, () => {
+                    isClose && GenericApp.onClose();
+                });
             })
             .catch(e => console.error(`Cannot save configuration: ${e}`));
     }
