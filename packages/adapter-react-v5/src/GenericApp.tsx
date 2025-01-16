@@ -361,7 +361,7 @@ export class GenericApp<
                             });
                         }
 
-                        waitPromise = (waitPromise instanceof Promise) ? waitPromise : Promise.resolve();
+                        waitPromise = waitPromise instanceof Promise ? waitPromise : Promise.resolve();
 
                         void waitPromise.then(() => {
                             if (instanceObj) {
@@ -803,8 +803,9 @@ export class GenericApp<
                     // ignore
                 }
 
-                this.setState({ changed: false });
-                isClose && GenericApp.onClose();
+                this.setState({ changed: false }, () => {
+                    isClose && GenericApp.onClose();
+                });
             })
             .catch(e => console.error(`Cannot save configuration: ${e}`));
     }
@@ -929,14 +930,15 @@ export class GenericApp<
                             this.state.width === 'xs' || this.state.width === 'sm' || this.state.width === 'md'
                         }
                         changed={this.state.changed}
-                        onSave={isClose => this.onSave(isClose)}
-                        onClose={() => {
+                        onSave={(isClose: boolean): void => this.onSave(isClose)}
+                        onClose={(): void => {
                             if (this.state.changed) {
                                 this.setState({ confirmClose: true });
                             } else {
                                 GenericApp.onClose();
                             }
                         }}
+                        error={!!this.state.isConfigurationError}
                     />
                 ) : null}
                 {this.state.confirmClose ? (
@@ -945,7 +947,9 @@ export class GenericApp<
                         text={I18n.t('ra_Some data are not stored. Discard?')}
                         ok={I18n.t('ra_Discard')}
                         cancel={I18n.t('ra_Cancel')}
-                        onClose={isYes => this.setState({ confirmClose: false }, () => isYes && GenericApp.onClose())}
+                        onClose={(isYes: boolean): void =>
+                            this.setState({ confirmClose: false }, () => isYes && GenericApp.onClose())
+                        }
                     />
                 ) : null}
             </>

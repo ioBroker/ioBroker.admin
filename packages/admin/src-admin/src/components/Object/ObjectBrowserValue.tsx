@@ -562,7 +562,9 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                 {this.props.expertMode ? (
                                                     <Grid2>
                                                         <FormControl style={styles.formControl}>
-                                                            <InputLabel>{this.props.t('Value type')}</InputLabel>
+                                                            <InputLabel style={{ marginTop: 10, marginLeft: -14 }}>
+                                                                {this.props.t('Value type')}
+                                                            </InputLabel>
                                                             <Select
                                                                 variant="standard"
                                                                 value={this.state.type}
@@ -674,10 +676,12 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                 autoFocus
                                                 error={!this.state.valid}
                                                 type="number"
-                                                inputProps={{
-                                                    step: this.props.object.common.step,
-                                                    min: this.props.object.common.min,
-                                                    max: this.props.object.common.max,
+                                                slotProps={{
+                                                    htmlInput: {
+                                                        step: this.props.object.common.step,
+                                                        min: this.props.object.common.min,
+                                                        max: this.props.object.common.max,
+                                                    },
                                                 }}
                                                 inputRef={this.inputRef}
                                                 helperText={this.props.t(
@@ -790,7 +794,11 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                 sx={{ '&.MuiTextField-root': styles.expire }}
                                                 label={this.props.t('Expire')}
                                                 type="number"
-                                                inputProps={{ min: 0 }}
+                                                slotProps={{
+                                                    htmlInput: {
+                                                        min: 0,
+                                                    },
+                                                }}
                                                 helperText={this.props.t('in seconds')}
                                                 defaultValue={this.expire}
                                                 onChange={e => (this.expire = Number(e.target.value))}

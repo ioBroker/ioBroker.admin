@@ -1,30 +1,11 @@
-const fs = require('node:fs');
 const path = require('node:path');
 const setup = require('@iobroker/legacy-testing');
+const { deleteFoldersRecursive } = require('@iobroker/build-tools');
 
 let rootDir = path.join(__dirname, '../');
 let objects = null;
 let states = null;
 let onStateChanged = null;
-
-function deleteFoldersRecursive(path) {
-    if (path.endsWith('/')) {
-        path = path.substring(0, path.length - 1);
-    }
-    if (fs.existsSync(path)) {
-        const files = fs.readdirSync(path);
-        for (const file of files) {
-            const curPath = `${path}/${file}`;
-            const stat = fs.statSync(curPath);
-            if (stat.isDirectory()) {
-                deleteFoldersRecursive(curPath);
-                fs.rmdirSync(curPath);
-            } else {
-                fs.unlinkSync(curPath);
-            }
-        }
-    }
-}
 
 function startIoBroker(options) {
     options = options || {};

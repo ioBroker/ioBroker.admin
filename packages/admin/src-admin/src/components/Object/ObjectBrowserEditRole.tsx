@@ -4,13 +4,15 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, A
 
 import { Close as IconCancel, Check as IconCheck } from '@mui/icons-material';
 import type { AdminConnection, Translate } from '@iobroker/adapter-react-v5';
+import { DEFAULT_ROLES } from '@/components/Object/ObjectBrowserEditObject';
 
 interface ObjectBrowserEditRoleProps {
-    roles: string[];
+    roleArray: { role: string; type: ioBroker.CommonType }[];
     id: string;
     socket: AdminConnection;
     onClose: (obj?: ioBroker.Object) => void;
     t: Translate;
+    commonType: ioBroker.CommonType;
 }
 
 interface ObjectBrowserEditRoleState {
@@ -49,6 +51,24 @@ class ObjectBrowserEditRole extends Component<ObjectBrowserEditRoleProps, Object
         void this.props.socket.setObject(this.object._id, this.object).then(() => this.props.onClose(this.object));
     }
 
+    static filterRoles(roleArray: { role: string; type: ioBroker.CommonType }[], type: ioBroker.CommonType): string[] {
+        const bigRoleArray: string[] = [];
+        roleArray.forEach(
+            role =>
+                (role.type === 'mixed' || role.type) === type &&
+                !bigRoleArray.includes(role.role) &&
+                bigRoleArray.push(role.role),
+        );
+        DEFAULT_ROLES.forEach(
+            role =>
+                (role.type === 'mixed' || role.type) === type &&
+                !bigRoleArray.includes(role.role) &&
+                bigRoleArray.push(role.role),
+        );
+        bigRoleArray.sort();
+        return bigRoleArray;
+    }
+
     render(): JSX.Element {
         return (
             <Dialog
@@ -66,7 +86,7 @@ class ObjectBrowserEditRole extends Component<ObjectBrowserEditRoleProps, Object
                 <DialogContent>
                     <Autocomplete
                         freeSolo
-                        options={this.props.roles}
+                        options={ObjectBrowserEditRole.filterRoles(this.props.roleArray, this.props.commonType)}
                         style={{ width: '100%' }}
                         value={this.state.role}
                         onChange={(event, role) => this.setState({ role, roleInput: role })}

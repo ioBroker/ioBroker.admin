@@ -50,12 +50,13 @@ import AdapterInstallDialog, {
     type AdapterInstallDialogState,
     type AdapterRating,
     type AdapterRatingInfo,
+    type AdapterInstallDialogProps,
     type AdaptersContext,
 } from '@/components/Adapters/AdapterInstallDialog';
 import AutoUpgradeConfigDialog, { ICONS } from '@/dialogs/AutoUpgradeConfigDialog';
 
 import IsVisible from '../IsVisible';
-import { extractUrlLink } from './Utils';
+import { extractUrlLink, type RepoInfo } from './Utils';
 import sentryIcon from '../../assets/sentry.svg';
 
 export const genericStyles: Record<string, any> = {
@@ -134,6 +135,17 @@ export const genericStyles: Record<string, any> = {
     currentVersionText: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#a3ffa3' : '#009800',
         fontWeight: 'bold',
+        marginLeft: '4px',
+    }),
+    repoStableVersionText: (theme: IobTheme) => ({
+        color: theme.palette.mode === 'dark' ? '#8dff7a' : '#2b9800',
+        fontWeight: 'bold',
+        marginLeft: '4px',
+    }),
+    repoLatestVersionText: (theme: IobTheme) => ({
+        color: theme.palette.mode === 'dark' ? '#a3fcff' : '#005498',
+        fontWeight: 'bold',
+        marginLeft: '4px',
     }),
     rating: {},
     containerVersion: {},
@@ -161,13 +173,14 @@ export type AdapterCacheEntry = {
     daysAgoText: string;
 };
 
-export interface AdapterGenericProps {
+export interface AdapterGenericProps extends AdapterInstallDialogProps {
     /** adapter name id without 'system.adapter.' */
     adapterName: string;
     /** Same information for every adapter */
     context: AdaptersContext;
     cached: AdapterCacheEntry;
     commandRunning: boolean;
+    noTranslation: boolean;
 }
 
 export interface AdapterGenericState extends AdapterInstallDialogState {
@@ -490,7 +503,7 @@ export default abstract class AdapterGeneric<
 
     renderInstalledVersion(isRow?: boolean): JSX.Element | null {
         const installed = this.props.context.installed[this.props.adapterName];
-        const installedFrom = installed?.installedFrom;
+        const installedFrom = this.props.context.adapters[`system.adapter.${this.props.adapterName}`]?.common?.installedFrom;
         const { adapterName } = this.props;
 
         if (isRow) {
@@ -665,25 +678,37 @@ export default abstract class AdapterGeneric<
                 rightDependencies={this.props.context.rightDependenciesFunc(this.props.adapterName)}
                 news={this.getNews()}
                 toggleTranslation={this.props.context.toggleTranslation}
-                noTranslation={this.props.context.noTranslation}
+                noTranslation={this.props.noTranslation}
                 installedVersion={this.installedVersion}
                 onUpdate={version =>
                     this.setState({ showUpdateDialog: false, showDialog: false }, () => this.update(version))
                 }
+                isStable={(this.props.context.repository._repoInfo as unknown as RepoInfo).stable}
                 onIgnore={ignoreVersion =>
                     this.setState({ showUpdateDialog: false, showDialog: false }, () =>
                         this.props.context.socket
                             .getObject(`system.adapter.${this.props.adapterName}`)
-                            .then(obj => {
-                                if (obj?.common) {
-                                    (obj.common as any).ignoreVersion = ignoreVersion;
-                                    this.props.context.socket
-                                        .setObject(obj._id, obj)
-                                        .catch(error => window.alert(`Cannot write object: ${error}`));
-                                } else {
-                                    window.alert(`Adapter "${this.props.adapterName}" does not exist!`);
-                                }
-                            })
+                            .then(
+                                (
+                                    obj:
+                                        | ioBroker.AdapterObject
+                                        | ioBroker.StateObject
+                                        | ioBroker.InstanceObject
+                                        | null
+                                        | undefined,
+                                ): void => {
+                                    if (obj?.common) {
+                                        (obj.common as ioBroker.AdapterCommon).ignoreVersion = ignoreVersion;
+                                        this.props.context.socket
+                                            .setObject(obj._id, obj)
+                                            .catch((error: unknown): void =>
+                                                window.alert(`Cannot write object: ${error as Error}`),
+                                            );
+                                    } else {
+                                        window.alert(`Adapter "${this.props.adapterName}" does not exist!`);
+                                    }
+                                },
+                            )
                             .then(() => this.props.context.removeUpdateAvailable(this.props.adapterName)),
                     )
                 }
@@ -718,6 +743,16 @@ export default abstract class AdapterGeneric<
         if (!this.state.showInstallVersion) {
             return null;
         }
+        let stableVersion: string;
+        let latestVersion: string;
+        const repoInfo: RepoInfo = this.props.context.repository._repoInfo as unknown as RepoInfo;
+        if (repoInfo?.stable) {
+            stableVersion = this.props.context.repository[this.props.adapterName]?.version;
+            latestVersion = this.props.context.repository[this.props.adapterName]?.latestVersion;
+        } else {
+            stableVersion = this.props.context.repository[this.props.adapterName]?.stable;
+            latestVersion = this.props.context.repository[this.props.adapterName]?.version;
+        }
 
         return (
             <CustomModal
@@ -732,7 +767,7 @@ export default abstract class AdapterGeneric<
                 }
                 theme={this.props.context.theme}
                 toggleTranslation={this.props.context.toggleTranslation}
-                noTranslation={this.props.context.noTranslation}
+                noTranslation={this.props.noTranslation}
             >
                 <div style={{ height: '100%', overflowY: 'hidden' }}>
                     <div style={this.styles.containerSpecificVersion}>
@@ -829,9 +864,21 @@ export default abstract class AdapterGeneric<
                                                 component="span"
                                                 sx={this.styles.currentVersionText}
                                             >{`(${this.props.context.t('current')})`}</Box>
-                                        ) : (
-                                            ''
-                                        )}
+                                        ) : null}
+                                        {latestVersion === version ? (
+                                            <Box
+                                                component="span"
+                                                sx={this.styles.repoLatestVersionText}
+                                            >
+                                                (latest)
+                                            </Box>
+                                        ) : null}
+                                        {stableVersion === version ? (
+                                            <Box
+                                                component="span"
+                                                sx={this.styles.repoStableVersionText}
+                                            >{`(${this.props.context.t('stable')})`}</Box>
+                                        ) : null}
                                     </Typography>
                                     <Typography
                                         variant="body2"
@@ -906,7 +953,7 @@ export default abstract class AdapterGeneric<
                     if (semver.gt(version, installed.version) || all) {
                         let text: string;
                         if (typeof adapter.news[version] === 'object') {
-                            text = this.props.context.noTranslation
+                            text = this.props.noTranslation
                                 ? adapter.news[version].en
                                 : adapter.news[version][this.props.context.lang] || adapter.news[version].en;
                         } else {

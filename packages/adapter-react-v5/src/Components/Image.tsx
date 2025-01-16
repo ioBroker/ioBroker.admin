@@ -116,7 +116,7 @@ export class Image extends Component<ImageProps, ImageState> {
         src = src.substring(len.length);
         try {
             src = atob(src);
-            const svg = getElementFromSource(src) as HTMLElement;
+            const svg: HTMLElement = getElementFromSource(src);
             const inner = svg.innerHTML;
             const svgProps = serializeAttrs(svg.attributes);
 

@@ -1,7 +1,7 @@
 {
     "name": "@iobroker/json-config",
     "description": "This package contains the ioBroker JSON config UI components",
-    "version": "7.2.6",
+    "version": "7.4.14",
     "main": "./build/index.js",
     "types": "./build/index.d.ts",
     "scripts": {
@@ -10,21 +10,24 @@
         "prepublishOnly": "npm run build",
         "build:ts": "tsc -p tsconfig.json",
         "lint": "eslint -c eslint.config.mjs src",
-        "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"
+        "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}",
+        "test": "tsc -p test/tsconfig.build.json && node test/testSchema.js",
+        "tsc-test": "tsc -p test/tsconfig.build.json"
     },
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
         "@iobroker/adapter-react-v5": "file:../adapter-react-v5",
-        "@mui/x-date-pickers": "^7.22.0",
+        "@mui/x-date-pickers": "^7.23.0",
         "crypto-js": "^4.2.0",
-        "react-ace": "^12.0.0",
+        "react-ace": "^13.0.0",
         "react-qr-code": "^2.0.15"
     },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
         "@types/crypto-js": "^4.2.2",
+        "ajv": "^8.17.1",
         "tsc-alias": "^1.8.10"
     },
     "files": [

@@ -49,7 +49,7 @@ const LANGUAGES = [
         label: 'Український',
     },
     {
-        value: 'zh-ch',
+        value: 'zh-cn',
         label: '简体中文',
     },
 ] as const;
@@ -124,11 +124,11 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
                                         return;
                                     }
                                     I18n.setLanguage(value);
-                                    if (this.props.changeLanguage) {
-                                        this.props.changeLanguage();
+                                    if (this.props.oContext.changeLanguage) {
+                                        this.props.oContext.changeLanguage();
                                     }
                                 } else {
-                                    void this.props.socket
+                                    void this.props.oContext.socket
                                         .getSystemConfig()
                                         .then((systemConfig: ioBroker.SystemConfigObject) => {
                                             if (systemConfig.common.language === I18n.getLanguage()) {
@@ -136,8 +136,8 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
                                             }
                                             if (systemConfig.common.language) {
                                                 I18n.setLanguage(systemConfig.common.language);
-                                                if (this.props.changeLanguage) {
-                                                    this.props.changeLanguage();
+                                                if (this.props.oContext.changeLanguage) {
+                                                    this.props.oContext.changeLanguage();
                                                 }
                                             }
                                         })

@@ -11,7 +11,7 @@ import {
     type Theme,
 } from '@mui/material';
 
-import convertCronToText from './cronText';
+import { convertCronToText } from './cronText';
 
 import { I18n } from '../../i18n';
 

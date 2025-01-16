@@ -14,10 +14,10 @@ class ConfigStaticImage extends ConfigGeneric<ConfigInstanceSelectProps, ConfigG
             src &&
             !src.startsWith('.') &&
             !src.startsWith('http') &&
-            !src.startsWith(`adapter/${this.props.adapterName}/`) &&
-            !src.startsWith(`./adapter/${this.props.adapterName}/`)
+            !src.startsWith(`adapter/${this.props.oContext.adapterName}/`) &&
+            !src.startsWith(`./adapter/${this.props.oContext.adapterName}/`)
         ) {
-            src = `adapter/${this.props.adapterName}/${src}`;
+            src = `adapter/${this.props.oContext.adapterName}/${src}`;
         }
 
         return (

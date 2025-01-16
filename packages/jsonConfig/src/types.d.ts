@@ -1,5 +1,12 @@
 import type React from 'react';
-import type { ObjectBrowserCustomFilter, ObjectBrowserType } from '@iobroker/adapter-react-v5';
+import type {
+    AdminConnection,
+    IobTheme,
+    ObjectBrowserCustomFilter,
+    ObjectBrowserType,
+    ThemeType,
+} from '@iobroker/adapter-react-v5';
+import type { ConfigGeneric, DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
 
 declare module '@mui/material/Button' {
     interface ButtonPropsColorOverrides {
@@ -32,6 +39,7 @@ export type ConfigItemType =
     | 'pattern'
     | 'sendto'
     | 'setState'
+    | 'staticInfo'
     | 'staticText'
     | 'staticLink'
     | 'staticImage'
@@ -167,6 +175,8 @@ export interface ConfigItem {
         ignoreOwnChanges?: boolean;
     };
     doNotSave?: boolean;
+    /** If the control should be shown ONLY in the expert mode */
+    expertMode?: boolean;
     noMultiEdit?: boolean;
     confirm?: ConfigItemConfirmData;
     icon?: ConfigIconType;
@@ -263,6 +273,8 @@ export interface ConfigItemText extends ConfigItem {
     max?: number;
     /** read-only field */
     readOnly?: boolean;
+    /** show copy to clipboard button, but only if disabled or read-only */
+    copyToClipboard?: boolean;
     /** default is true. Set this attribute to `false` if trim is not desired. */
     trim?: boolean;
     /** default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row. */
@@ -297,6 +309,8 @@ export interface ConfigItemNumber extends ConfigItem {
     max?: number;
     step?: number;
     readOnly?: boolean;
+    /** Unit */
+    unit?: string;
 }
 
 export interface ConfigItemQrCode extends ConfigItem {
@@ -418,7 +432,7 @@ export interface ConfigItemStaticImage extends ConfigItem {
 export interface ConfigItemStaticText extends Omit<ConfigItem, 'button'> {
     type: 'staticText';
     /** multi-language text */
-    text: string;
+    text: ioBroker.StringOrTranslated;
     /** @deprecated use text */
     label?: ioBroker.StringOrTranslated;
     /** link. Link could be dynamic like `#tab-objects/customs/${data.parentId} */
@@ -436,7 +450,41 @@ export interface ConfigItemStaticText extends Omit<ConfigItem, 'button'> {
     /** if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (it starts with `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`) . (Request via issue if you need more icons) */
     icon?: ConfigIconType;
     /** styles for the button */
-    controlStyle: CustomCSSProperties;
+    controlStyle?: CustomCSSProperties;
+}
+
+export interface ConfigItemStaticInfo extends Omit<ConfigItem, 'data'> {
+    type: 'staticInfo';
+    /** multi-language text or value */
+    data: ioBroker.StringOrTranslated | number | boolean;
+    /** Base64 icon */
+    labelIcon?: string;
+    /** Unit */
+    unit?: ioBroker.StringOrTranslated;
+    /** Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label*/
+    narrow?: boolean;
+    /** Add to label the colon at the end if not exist in label */
+    addColon?: boolean;
+    /** Value should blink when updated (true or color) */
+    blinkOnUpdate?: boolean | string;
+    /** Value should blink continuously (true or color) */
+    blink?: boolean | string;
+    /** Show copy to clipboard button for value */
+    copyToClipboard?: boolean;
+    /** Label style */
+    styleLabel?: CustomCSSProperties;
+    /** Value style */
+    styleValue?: CustomCSSProperties;
+    /** Unit style */
+    styleUnit?: CustomCSSProperties;
+    /** Font size */
+    size?: number | 'small' | 'normal' | 'large';
+    /** Highlight line on mouse over */
+    highlight?: boolean;
+    /** Show boolean values as checkbox */
+    booleanAsCheckbox?: boolean;
+    /** Show string values as HTML */
+    html?: boolean;
 }
 
 export interface ConfigItemRoom extends ConfigItem {
@@ -621,9 +669,11 @@ export interface ConfigItemSendTo extends Omit<ConfigItem, 'data'> {
 
 export interface ConfigItemState extends ConfigItem {
     type: 'state';
-    /** Describes, which object ID should be taken for the controlling. The ID is without "adapter.X." prefix */
+    /** Describes, which object ID should be taken for the controlling. The ID is without `ADAPTER.I.` prefix */
     oid: string;
-    /** If true, the state will be taken from system.adapter.XX.I. and not from XX.I */
+    /** The `oid` is absolute and no need to add `ADAPTER.I` or `system.adapter.ADAPTER.I.` to oid */
+    foreign?: boolean;
+    /** If true, the state will be taken from `system.adapter.ADAPTER.I` and not from `ADAPTER.I` */
     system?: boolean;
     /** How the value of the state should be shown */
     control?: 'text' | 'html' | 'input' | 'slider' | 'select' | 'button' | 'switch' | 'number';
@@ -655,6 +705,16 @@ export interface ConfigItemState extends ConfigItem {
     variant?: 'contained' | 'outlined' | 'text';
     /** Defines if the control is read-only. Applied only to 'input', 'slider', 'select', 'button', 'switch', 'number' */
     readOnly?: boolean;
+    /** Base64 icon */
+    labelIcon?: string;
+    /** Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label*/
+    narrow?: boolean;
+    /** Add to label the colon at the end if not exist in label */
+    addColon?: boolean;
+    /** Value should blink when updated (true or color) */
+    blinkOnUpdate?: boolean | string;
+    /** Font size */
+    size?: number | 'small' | 'normal' | 'large';
 }
 
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {
@@ -940,11 +1000,39 @@ export type ConfigItemAny =
     | ConfigItemSetState
     | ConfigItemStaticDivider
     | ConfigItemStaticHeader
+    | ConfigItemStaticInfo
     | ConfigItemStaticImage
     | ConfigItemStaticText
     | ConfigItemTopic
     | ConfigItemObjectId
     | ConfigItemQrCode;
+
+export type JsonConfigContext = {
+    DeviceManager?: React.FC<DeviceManagerPropsProps>;
+    adapterName: string;
+    changeLanguage?: () => void;
+    customs?: Record<string, typeof ConfigGeneric>;
+    dateFormat: string;
+    embedded?: boolean;
+    expertMode?: boolean;
+    forceUpdate: (attr: string | string[], data: any) => void;
+    imagePrefix?: string;
+    instance: number;
+    instanceObj?: ioBroker.InstanceObject;
+    isFloatComma: boolean;
+    /** If true, this field edits multiple data points at once and thus contains an array, should not be saved if not changed */
+    multiEdit?: boolean;
+    /** Backend request to refresh data */
+    onBackEndCommand?: (command?: BackEndCommand) => void;
+    onCommandRunning: (commandRunning: boolean) => void;
+    onValueChange?: (attr: string, value: any, saveConfig: boolean) => void;
+    registerOnForceUpdate?: (attr: string, cb?: (data: any) => void) => void;
+    socket: AdminConnection;
+    systemConfig: ioBroker.SystemConfigCommon;
+    theme: IobTheme;
+    themeType: ThemeType;
+    _themeName: ThemeName;
+};
 
 // Notification GUI
 
@@ -953,7 +1041,7 @@ export type BackEndCommandType = 'nop' | 'refresh' | 'link' | 'message';
 export interface BackEndCommandGeneric {
     command: BackEndCommandType;
     /** New GUI schema */
-    schema?: ConfigItemPanel;
+    schema?: ConfigItemPanel | ConfigItemTabs;
     /** New GUI data */
     data?: Record<string, any>;
     refresh?: boolean;

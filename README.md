@@ -69,7 +69,7 @@ And with rest-api instance: `https://iobroker.mydomain.com/ioBrokerAPI/ => http:
 You can add the following lines into Reverse Proxy tab to let Intro tab run behind reverse proxy properly:
 
 | Global path       | Instance      | Instance path behind proxy |
-| ----------------- | ------------- | -------------------------- |
+|-------------------|---------------|----------------------------|
 | `/ioBrokerAdmin/` | `web.0`       | `/ioBrokerWeb/`            |
 |                   | `rest-api.0`  | `/ioBrokerAPI/`            |
 |                   | `admin.0`     | `/ioBrokerAdmin/`          |
@@ -87,39 +87,35 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
--   (@GermanBluefox) Corrected cloud icon for admin
+### 7.4.14 (2025-01-15)
 
-### 7.2.6 (2024-10-11)
+-   (@GermanBluefox) Extended DM with device type
+-   (@GermanBluefox) Corrected Save&Close button for the instance configs
+-   (@GermanBluefox) Changed layout on intro page
 
--   (@GermanBluefox) Trying to fix a GUI build process
--   (@GermanBluefox) Changed license icon
+### 7.4.12 (2025-01-11)
 
-### 7.2.4 (2024-10-08)
+-   (@GermanBluefox) Analyze the new role and set read/write flags according to the role
+-   (@GermanBluefox) Added min/max/role by alias creation
+-   (@GermanBluefox) Improved files browser in the tile mode
 
--   (@GermanBluefox) Corrected some GUI errors
--   (@GermanBluefox) Ignore error by opening `0_userdata.0`
+### 7.4.10 (2024-12-29)
 
-### 7.2.0 (2024-10-01)
+-   (@GermanBluefox) Corrected JSON-Config tables
+-   (@GermanBluefox) Corrected translation on the update adapter dialog
 
--   (@GermanBluefox) Added the check of well-known passwords for the linux systems
--   (@GermanBluefox) Added the history for the installation from URL
--   (@foxriver76) fixed wrongly displayed repository warning
+### 7.4.8 (2024-12-21)
 
-### 7.1.5 (2024-09-26)
+-   (@GermanBluefox) Show latest/stable labels by updating/downgrading of adapters
+-   (@GermanBluefox) Corrected selection of chinese language
 
--   (bluefox) Added the read-only flag to the `state` JSON Config component
+### 7.4.7 (2024-12-12)
 
-### 7.1.3 (2024-09-20)
-
--   (@foxriver76) improve appearance and standardization of some warning messages
--   (@foxriver76) indicate `alert` warnings by the badge color on the notification button
--   (@foxriver76) allow distinguishing between alert notifications and others for host notifications
--   (@foxriver76) do not automatically open the notification dialog without user interaction
--   (@foxriver76) fixed logging as a socket client is now throwing real errors
+-   (@GermanBluefox) Corrected the rendering of custom JSON config components
+-   (@GermanBluefox) Corrected the news dialog for multi-line messages
 
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2025 bluefox <dogafox@gmail.com>

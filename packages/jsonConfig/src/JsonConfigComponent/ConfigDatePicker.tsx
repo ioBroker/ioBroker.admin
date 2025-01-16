@@ -36,7 +36,7 @@ export default class ConfigDatePicker extends ConfigGeneric<ConfigDatePickerProp
                         transform: 'translate(0px, -9px) scale(0.75)',
                     },
                 })}
-                format={this.props.systemConfig.dateFormat.toLowerCase().replace('mm', 'MM')}
+                format={this.props.oContext.systemConfig.dateFormat.toLowerCase().replace('mm', 'MM')}
                 disabled={!!disabled}
                 value={this.state.value as never}
                 onChange={value => {

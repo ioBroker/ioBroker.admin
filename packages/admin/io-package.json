@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.2.6",
+    "version": "7.4.14",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,83 +19,96 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.2.6": {
-        "en": "Trying to fix a GUI build process\nChanged license icon",
-        "de": "Versuchen, einen GUI-Building-Prozess zu beheben\nGeändertes Lizenzsymbol",
-        "ru": "Попытка исправить процесс построения графического интерфейса\nИзменение иконки лицензии",
-        "pt": "Tentando corrigir um processo de compilação GUI\nÍcone de licença alterado",
-        "nl": "Proberen een GUI build proces te repareren\nGewijzigd licentiepictogram",
-        "fr": "Essayer de réparer un processus de construction d'interface graphique\nIcône de licence modifiée",
-        "it": "Cercare di risolvere un processo di costruzione GUI\nIcona di licenza modificata",
-        "es": "Tratando de arreglar un proceso de construcción GUI\nIcono de licencia cambiado",
-        "pl": "Próbuje naprawić proces budowania GUI\nZmieniona ikona licencji",
-        "uk": "Спробуйте виправити процес побудови GUI\nЗміна іконки ліцензії",
-        "zh-cn": "试图修正图形界面构建进程\n更改许可证图标"
+      "7.4.14": {
+        "en": "Extended DM with device type\nCorrected Save&Close button for the instance configs\nChanged layout on intro page",
+        "de": "Erweiterte DM mit Gerätetyp\nBehobene Sparen und Schließen Taste für die Instanz configs\nÄnderung des Layouts auf der Einführungsseite",
+        "ru": "Расширенный DM с типом устройства\nИсправлено Сохранить Закрыть кнопку для настройки экземпляра\nИзменение макета на странице intro",
+        "pt": "DM estendido com tipo de dispositivo\nEconomização correta > Fechar botão para as configurações de instância\nLayout alterado na página intro",
+        "nl": "Uitgebreide DM met apparaattype\nGecorrigeerd opslaan& Knop sluiten voor de instantieconfiguraties\nGewijzigde indeling op intro pagina",
+        "fr": "DM étendu avec type de périphérique\nEnregistrement corrigé et Fermer le bouton pour les configurations d'instance\nMise en page modifiée sur la page d'introduction",
+        "it": "DM esteso con tipo di dispositivo\nCorretto Save& Chiudi pulsante per le configurazioni dell'istanza\nModificato il layout sulla pagina intro",
+        "es": "DM extendido con tipo de dispositivo\nCorreccionales Guardar Cierre botón para los configs de instancia\nDiseño cambiado en página intro",
+        "pl": "Rozszerzony DM z typem urządzenia\nSprostowanie Zapisz & Zamknij przycisk dla instancji configs\nZmieniony układ na stronie intro",
+        "uk": "Розширений DM з типом пристрою\nВиправлено Save& Закрита кнопка для налаштування екземпляра\nЗмінено макет на сторінці intro",
+        "zh-cn": "设备类型的扩展DM\n已更正保存( C) 关闭实例配置的按钮\n内部页面上更改的布局"
       },
-      "7.2.0": {
-        "en": "Added the check of well-known passwords for the linux systems\nAdded the history for the installation from URL\nfixed wrongly displayed repository warning",
-        "de": "Hinzugefügt die Überprüfung der bekannten Passwörter für die Linux-Systeme\nDie Geschichte der Installation von URL hinzugefügt\nfalsch angezeigte repository-warnung",
-        "ru": "Добавлена проверка известных паролей для систем linux\nДобавлена история установки из URL\nнеправильное предупреждение о репозитории",
-        "pt": "Adicionado a verificação de senhas bem conhecidas para os sistemas linux\nAdicionado o histórico para a instalação de URL\naviso de repositório exibido incorretamente",
-        "nl": "De controle van bekende wachtwoorden voor de Linux systemen toegevoegd\nDe geschiedenis voor de installatie van URL toegevoegd\nvaste foutief weergegeven repository waarschuwing",
-        "fr": "Ajout de la vérification des mots de passe connus pour les systèmes linux\nAjout de l'historique de l'installation depuis l'URL\ncorrection de l'avertissement du dépôt affiché à tort",
-        "it": "Aggiunto il controllo delle password ben note per i sistemi linux\nAggiunto la storia per l'installazione da URL\nfisso erroneamente visualizzato avviso di repository",
-        "es": "Agregó el cheque de contraseñas conocidas para los sistemas linux\nAñadido la historia para la instalación desde URL\naviso de repositorio mal mostrado",
-        "pl": "Dodano sprawdzanie dobrze znanych haseł dla systemów linux\nDodano historię instalacji z URL\nnieprawidłowo ustawione ostrzeżenie repozytorium",
-        "uk": "Додано перевірку відомих паролів для Linux\nДодано історію установки з URL\nвиправлено неправильно відображається попередження репозиторій",
-        "zh-cn": "添加了对 Linux 系统的著名密码的检查\n从 URL 添加安装历史\n错误显示仓库警告"
+      "7.4.12": {
+        "en": "Analyze the new role and set read/write flags according to the role\nAdded min/max/role by alias creation\nImproved files browser in the tile mode",
+        "de": "Analysieren Sie die neue Rolle und setzen Sie Lese- / Schreib-Flags nach der Rolle\nMin/max/rol durch Alias Kreation hinzugefügt\nVerbesserte Dateien Browser im Fliesenmodus",
+        "ru": "Проанализируйте новую роль и установите флаги чтения/записи в соответствии с ролью\nДобавить min/max/role по псевдонимам\nУлучшен браузер файлов в режиме плитки",
+        "pt": "Analisar o novo papel e definir bandeiras de leitura / gravação de acordo com o papel\nAdicionado min/max/role por alias criação\nMelhor navegador de arquivos no modo de telha",
+        "nl": "Analyseer de nieuwe rol en stel lees-/schrijfvlaggen in volgens de rol\nToegevoegd min/max/role door alias creatie\nVerbeterde bestandenbrowser in de tegelmodus",
+        "fr": "Analyser le nouveau rôle et définir les drapeaux de lecture/écriture selon le rôle\nAjouté min/max/role par création d'alias\nNavigateur de fichiers amélioré en mode carrelage",
+        "it": "Analizzare il nuovo ruolo e impostare le bandiere di lettura / scrittura secondo il ruolo\nAggiunto min/max/role da alias creazione\nBrowser di file migliorati nella modalità piastrelle",
+        "es": "Analizar el nuevo papel y establecer banderas de lectura/escritura según el papel\nAñadido min/max/role por alias creación\nMejorado navegador de archivos en el modo de azulejo",
+        "pl": "Analizować nową rolę i ustawić flagi odczytu / zapisu w zależności od roli\nDodano min / max / rola przez tworzenie aliasów\nUlepszona przeglądarka plików w trybie płytek",
+        "uk": "Проаналізуйте нову роль та встановіть прапорці читання/запису відповідно до ролі\nДодано min/max/role by aliasтворіння\nПокращений браузер файлів в режимі плитки",
+        "zh-cn": "分析新角色,并根据角色设置读/写标记\n通过别名创建添加分钟/马克/作用\n砖块模式下改进的文件浏览器"
       },
-      "7.1.5": {
-        "en": "Added the read-only flag to the `state` JSON Config component",
-        "de": "Die Nur-Lese-Flagge zur \"state\" hinzugefügt JSON Config Komponente",
-        "ru": "Добавить флаг только для чтения в \"государство\" Компонент JSON Config",
-        "pt": "Adicionado a bandeira somente leitura para o `state` Componente JSON Config",
-        "nl": "De alleen-lezen vlag toegevoegd aan de staat JSON Config component",
-        "fr": "Ajout du drapeau en lecture seule à l'état Composant JSON Config",
-        "it": "Aggiunto la bandiera di sola lettura al `state` Componente JSON Config",
-        "es": "Se agregó la bandera de sólo lectura al estado Componente de Config JSON",
-        "pl": "Dodano flagę read- only do 'stanu' Składnik konfiguracyjny JSON",
-        "uk": "Додано прапор `state` JSON Конфіг компонент",
-        "zh-cn": "将只读的旗帜添加到“国家”中 JSON 配置组件"
+      "7.4.11": {
+        "en": "Analyze the new role and set read/write flags according to the role\nAdded min/max/role by alias creation\nImproved files browser in the tile mode",
+        "de": "Analysieren Sie die neue Rolle und setzen Sie Lese- / Schreib-Flags nach der Rolle\nMin/max/rol durch Alias Kreation hinzugefügt\nVerbesserte Dateien Browser im Fliesenmodus",
+        "ru": "Проанализируйте новую роль и установите флаги чтения/записи в соответствии с ролью\nДобавить min/max/role по псевдонимам\nУлучшен браузер файлов в режиме плитки",
+        "pt": "Analisar o novo papel e definir bandeiras de leitura / gravação de acordo com o papel\nAdicionado min/max/role por alias criação\nMelhor navegador de arquivos no modo de telha",
+        "nl": "Analyseer de nieuwe rol en stel lees-/schrijfvlaggen in volgens de rol\nToegevoegd min/max/role door alias creatie\nVerbeterde bestandenbrowser in de tegelmodus",
+        "fr": "Analyser le nouveau rôle et définir les drapeaux de lecture/écriture selon le rôle\nAjouté min/max/role par création d'alias\nNavigateur de fichiers amélioré en mode carrelage",
+        "it": "Analizzare il nuovo ruolo e impostare le bandiere di lettura / scrittura secondo il ruolo\nAggiunto min/max/role da alias creazione\nBrowser di file migliorati nella modalità piastrelle",
+        "es": "Analizar el nuevo papel y establecer banderas de lectura/escritura según el papel\nAñadido min/max/role por alias creación\nMejorado navegador de archivos en el modo de azulejo",
+        "pl": "Analizować nową rolę i ustawić flagi odczytu / zapisu w zależności od roli\nDodano min / max / rola przez tworzenie aliasów\nUlepszona przeglądarka plików w trybie płytek",
+        "uk": "Проаналізуйте нову роль та встановіть прапорці читання/запису відповідно до ролі\nДодано min/max/role by aliasтворіння\nПокращений браузер файлів в режимі плитки",
+        "zh-cn": "分析新角色,并根据角色设置读/写标记\n通过别名创建添加分钟/马克/作用\n砖块模式下改进的文件浏览器"
       },
-      "7.1.3": {
-        "en": "improve appearance and standardization of some warning messages\nindicate `alert` warnings by the badge color on the notification button\nallow to distinguish between alert notifications and others for host notifications\ndo not automatically open the notification dialog without user interaction\nfixed logging as socket client is now throwing real errors",
-        "de": "verbesserung des aussehens und der standardisierung einiger warnmeldungen\n`alert` warnungen durch die abzeichenfarbe auf der benachrichtigungstaste anzeigen\nermöglichen, zwischen alarmmeldungen und anderen für host-benachrichtigungen zu unterscheiden\nnicht automatisch den benachrichtigungsdialog ohne benutzerinteraktion öffnen\nfeste protokollierung als buchsen-client ist jetzt werfen reale fehler",
-        "ru": "улучшить внешний вид и стандартизацию некоторых предупреждающих сообщений\nуведомление\nпозволяет проводить различие между уведомлениями о оповещении и другими уведомлениями о размещении\nне открывать автоматически диалог уведомления без взаимодействия пользователя\nфиксированная регистрация как клиент сокета теперь бросает реальные ошибки",
-        "pt": "melhorar a aparência e padronização de algumas mensagens de aviso\nindicar avisos `alert` pela cor do crachá no botão de notificação\npermitir distinguir entre notificações de alerta e outros para notificações de host\nnão abra automaticamente a caixa de diálogo de notificação sem interação do usuário\nlog fixo como cliente soquete está agora jogando erros reais",
-        "nl": "verbetering van het uiterlijk en de standaardisatie van sommige waarschuwingsberichten\nde waarschuwingen van de badge op de meldingsknop aangeven\nhet mogelijk maken onderscheid te maken tussen alarmmeldingen en andere meldingen van ontvangst\nhet meldingsvenster niet automatisch openen zonder gebruikersinteractie\nvaste logging als socket client gooit nu echte fouten",
-        "fr": "améliorer l'apparence et la normalisation de certains messages d'avertissement\nindiquer les avertissements `alerte` par la couleur du badge sur le bouton de notification\npermettre de distinguer les notifications d'alerte des autres notifications d'hôte\nn'ouvrez pas automatiquement la boîte de dialogue de notification sans interaction utilisateur\nlogage fixe en tant que client socket lance maintenant des erreurs réelles",
-        "it": "migliorare l'aspetto e la standardizzazione di alcuni messaggi di avviso\nindicare `allerta` avvisi dal colore del distintivo sul pulsante di notifica\nconsentire di distinguere tra le notifiche di avviso e altre per le notifiche host\nnon aprire automaticamente la finestra di dialogo di notifica senza interazione dell'utente\nregistrazione fissa come client socket sta ora lanciando errori reali",
-        "es": "mejorar la apariencia y estandarización de algunos mensajes de advertencia\nindicar advertencias por el color de la placa en el botón de notificación\npermitir distinguir entre las notificaciones de alerta y otras para las notificaciones de host\nno abrir automáticamente el diálogo de notificación sin interacción del usuario\nregistro fijo como cliente de socket está lanzando errores reales",
-        "pl": "poprawić wygląd i standaryzację niektórych komunikatów ostrzegawczych\nw przycisku powiadomienia należy wskazać ostrzeżenia \"alert\" za pomocą koloru odznaki\numożliwić rozróżnienie powiadomień o ostrzeżeniach od innych powiadomień o przyjmowaniu\nnie otwieraj automatycznie okna powiadomień bez interakcji z użytkownikiem\nstałe logowanie jako klient gniazda jest teraz rzucanie prawdziwych błędów",
-        "uk": "поліпшення зовнішнього вигляду та стандартизації деяких попереджувальних повідомлень\nвкажіть попередження `alert` за кольором значка на кнопках повідомлення\nдозволяє відрізнити повідомлення про оповіщення та інші повідомлення про хост\nне автоматично відкрийте діалогове вікно повідомлення без взаємодії користувача\nвиправлений вхід як клієнт розетки тепер кидає реальні помилки",
-        "zh-cn": "改进一些警告信息的外观和标准化\n以通知按钮上的徽章颜色表示“警告”\n允许区分提醒通知和主机通知的其他通知\n没有用户交互, 不自动打开通知对话框\n当套接字客户端现在丢出真实错误时, 固定记录"
+      "7.4.10": {
+        "en": "Corrected JSON-Config tables\nCorrected translation on the update adapter dialog",
+        "de": "Korrektur der JSON-Config-Tabellen\nKorrigierte Übersetzung im Update Adapter Dialog",
+        "ru": "Исправленные таблицы JSON-Config\nИсправлен перевод на диалог адаптера обновления",
+        "pt": "Tabelas corretas de JSON-Config\nTradução correta na caixa de diálogo do adaptador de atualização",
+        "nl": "Gecorrigeerde JSON-config tabellen\nGecorrigeerde vertaling in het dialoogvenster Updateadapter",
+        "fr": "Tableaux JSON-Config corrigés\nTraduction corrigée sur la boîte de dialogue de l'adaptateur de mise à jour",
+        "it": "Tavoli JSON-Config corretti\nTraduzione corretta sulla finestra di dialogo dell'adattatore di aggiornamento",
+        "es": "Cuadros JSON-Config corregidos\nTraducción corregida en el diálogo del adaptador de actualización",
+        "pl": "Poprawione tabele JSON- Config\nPoprawione tłumaczenie w oknie aktualizacji adaptera",
+        "uk": "Виправлені JSON-Config таблиці\nВиправлений переклад на діалоговому вікні адаптера оновлення",
+        "zh-cn": "更正的 JSON 图表\n在更新适配器对话框上更正的翻译"
       },
-      "7.1.2": {
-        "en": "fixed host base settings dialog",
-        "de": "feste host-basiseinstellungen dialog",
-        "ru": "диалог параметров базы фиксированного хоста",
-        "pt": "diálogo de configurações de base do host fixo",
-        "nl": "dialoogvenster met vaste basis-hostinstellingen",
-        "fr": "boîte de dialogue des paramètres de base de l'hôte fixe",
-        "it": "finestra di dialogo impostazioni base host fisso",
-        "es": "diálogo de configuración de base de host fijo",
-        "pl": "stałe okno ustawień bazy hosta",
-        "uk": "виправлені налаштування бази хост діалог",
-        "zh-cn": "固定主机基础设置对话框"
+      "7.4.8": {
+        "en": "Show latest/stable labels by updating/downgrading of adapters\nCorrected selection of chinese language",
+        "de": "Neueste/stabile Etiketten durch Aktualisierung/Abbau von Adaptern anzeigen\nKorrigierte Auswahl der chinesischen Sprache",
+        "ru": "Показать последние/стабильные этикетки путем обновления/снизуглубления адаптеров\nИсправленный выбор китайского языка",
+        "pt": "Mostrar etiquetas mais recentes/estáveis, atualizando/atualizando os adaptadores\nSeleção correta de língua chinesa",
+        "nl": "Nieuwste/stabiele labels tonen door adapters te updaten/downgraden\nGecorrigeerde selectie van Chinese taal",
+        "fr": "Afficher les étiquettes les plus récentes/stables par mise à jour/réduction des adaptateurs\nSélection corrigée de la langue chinoise",
+        "it": "Mostra le etichette più recenti/stable aggiornando/downgrading degli adattatori\nSelezione corretta della lingua cinese",
+        "es": "Mostrar etiquetas más recientes / estables mediante la actualización/redefinición de adaptadores\nSelección corregida del idioma chino",
+        "pl": "Pokaż najnowsze / stabilne etykiety poprzez aktualizację / obniżenie klasyfikacji adapterów\nPoprawiony wybór języka chińskiego",
+        "uk": "Показати останні / розкладні етикетки шляхом оновлення / оновлення адаптерів\nПравильний вибір китайської мови",
+        "zh-cn": "通过适配器的更新/降级显示最新的/稳定的标签\n更正中国语言选择"
       },
-      "7.1.1": {
-        "en": "Showed the context menu under cursor position in the object browser\nAdded links to aliases in the object browser\nAdded confirmation for CRON dialog if set to triggering every minute",
-        "de": "Das Kontextmenü unter Cursorposition im Objektbrowser angezeigt\nLinks zu Aliases im Objektbrowser hinzugefügt\nBestätigung für CRON-Dialog hinzugefügt, wenn Sie jede Minute auslösen",
-        "ru": "Показать контекстное меню в позиции курсора в браузере объекта\nДобавлены ссылки на псевдонимы в объектном браузере\nДобавлено подтверждение для диалога CRON, если он настроен на запуск каждую минуту",
-        "pt": "Mostrou o menu de contexto na posição do cursor no navegador objeto\nAdicionados links para aliases no navegador objeto\nAdicionado confirmação para CRON diálogo se definido para acionar cada minuto",
-        "nl": "Het contextmenu getoond onder cursorpositie in de objectbrowser\nLinks naar aliassen toegevoegd in de objectbrowser\nBevestiging voor CRON-dialoog toegevoegd indien ingesteld om elke minuut te activeren",
-        "fr": "Affiche le menu contextuel sous la position du curseur dans le navigateur objet\nAjout de liens vers des alias dans le navigateur objet\nAjout de la confirmation pour la boîte de dialogue CRON si elle est configurée pour déclencher chaque minute",
-        "it": "Mostrato il menu contestuale sotto posizione cursore nel browser oggetto\nAggiunto link a alias nel browser oggetto\nAggiunto la conferma per CRON finestra di dialogo se impostato per attivare ogni minuto",
-        "es": "Muestra el menú contextual bajo la posición del cursor en el navegador objeto\nAñadidos a alias en el navegador objeto\nConfirmación agregada para el diálogo CRON si se establece para activar cada minuto",
-        "pl": "Pokazane menu kontekstowe w pozycji kursora w przeglądarce obiektu\nDodano linki do pseudonimów w przeglądarce obiektu\nDodano potwierdzenie dla okna CRON, jeśli ustawiono na uruchamianie co minutę",
-        "uk": "Показати контекстне меню під назвою курсора в браузері об'єкта\nДодано посилання на псевдоніми в браузері об'єкта\nДодано підтвердження для діалогу CRON, якщо встановити, щоб викликати кожну хвилину",
-        "zh-cn": "在对象浏览器中光标位置下显示上下文菜单\n在对象浏览器中添加的链接\n如果设定为每分钟触发 CRON 对话框, 则添加确认"
+      "7.4.7": {
+        "en": "Corrected the rendering of custom JSON config components\nCorrected the news dialog for multi-line messages",
+        "de": "Korrektur des Renderns von benutzerdefinierten JSON config Komponenten\nKorrektur des Nachrichtendialogs für Multi-Line-Nachrichten",
+        "ru": "Исправлено отображение пользовательских компонентов конфигурации JSON\nИсправлен диалог новостей для многолинейных сообщений",
+        "pt": "Corrigido a renderização de componentes de configuração JSON personalizados\nCorrigido o diálogo de notícias para mensagens multilinhas",
+        "nl": "De weergave van aangepaste JSON config componenten gecorrigeerd\nHet dialoogvenster Nieuws voor meerregelige berichten corrigeren",
+        "fr": "Correction du rendu des composants de configuration JSON personnalisés\nCorrection de la boîte de dialogue de nouvelles pour les messages multilignes",
+        "it": "Corretto il rendering dei componenti di configurazione JSON personalizzati\nCorretto la finestra di dialogo delle notizie per i messaggi multi-linea",
+        "es": "Corregido el renderizado de componentes de configuración personalizados JSON\nCorregido el diálogo de noticias para mensajes multilínea",
+        "pl": "Poprawiono renderowanie niestandardowych komponentów konfiguracyjnych JSON\nPoprawiono okno dialogowe wiadomości dla wiadomości wieloliniowych",
+        "uk": "Виправлено відображення компонентів користувацького налаштування JSON\nВиправлено діалогове вікно новин для багатоканальних повідомлень",
+        "zh-cn": "纠正自定义 JSON 配置组件的渲染\n更正多行消息的新闻对话框"
+      },
+      "7.4.4": {
+        "en": "Showed value in object edit dialog",
+        "de": "Gezeigter Wert im Objekt bearbeiten Dialog",
+        "ru": "Показано значение в диалоге редактирования объектов",
+        "pt": "Valor mostrado na caixa de diálogo de edição de objeto",
+        "nl": "Waarde getoond in objectbewerkingsdialoog",
+        "fr": "Valeur affichée dans la boîte de dialogue d'édition des objets",
+        "it": "Valore visualizzato nella finestra di dialogo Modifica oggetto",
+        "es": "Valor mostrado en el diálogo de edición de objetos",
+        "pl": "Pokazana wartość w oknie edycji obiektu",
+        "uk": "Показати значення в діалоговому вікні редагування об'єктів",
+        "zh-cn": "在对象编辑对话框中显示的值"
       }
     },
     "desc": {
@@ -402,31 +415,31 @@
         {
           "category": "wellKnownPassword",
           "name": {
-            "en": "Well known password",
-            "de": "Bekanntes Passwort",
-            "ru": "Известный пароль",
-            "pt": "Senha bem conhecida",
-            "nl": "Bekend wachtwoord",
-            "fr": "Mot de passe bien connu",
-            "it": "Password ben nota",
-            "es": "Contraseña bien conocida",
-            "pl": "Znane hasło",
-            "uk": "Відомий пароль",
-            "zh-cn": "众所周知的密码"
+            "en": "Unchanged default password",
+            "de": "Unverändertes Standardpasswort",
+            "ru": "Неизмененный пароль по умолчанию",
+            "pt": "Senha padrão inalterada",
+            "nl": "Onveranderd standaardwachtwoord",
+            "fr": "Mot de passe par défaut inchangé",
+            "it": "Password predefinita non modificata",
+            "es": "Contraseña predeterminada sin cambios",
+            "pl": "Niezmienione domyślne hasło",
+            "uk": "Незмінений пароль за замовчуванням",
+            "zh-cn": "未更改的默认密码"
           },
           "severity": "alert",
           "description": {
-            "en": "Your Linux system uses a user with a well-known password. This can lead to the system being hacked from the outside. It is strongly recommended to change the password.",
-            "de": "Ihr Linux-System verwendet einen Benutzer mit einem bekannten Passwort. Dies kann dazu führen, dass das System von außen gehackt wird. Es wird dringend empfohlen, das Passwort zu ändern.",
-            "ru": "Ваша Linux система использует пользователя с хорошо известным паролем. Это может стать причиной взлома системы извне. Настоятельно рекомендуется сменить пароль.",
-            "pt": "Seu sistema Linux usa um usuário com uma senha bem conhecida. Isso pode levar ao hackeamento do sistema de fora. É altamente recomendável mudar a senha.",
-            "nl": "Uw Linux-systeem gebruikt een gebruiker met een bekend wachtwoord. Dit kan ertoe leiden dat het systeem van buitenaf wordt gehackt. Het wordt sterk aanbevolen om het wachtwoord te wijzigen.",
-            "fr": "Votre système Linux utilise un utilisateur avec un mot de passe bien connu. Cela peut entraîner le piratage du système de l'extérieur. Il est fortement recommandé de changer le mot de passe.",
-            "it": "Il tuo sistema Linux utilizza un utente con una password ben nota. Questo può portare a un attacco al sistema dall'esterno. Si consiglia vivamente di cambiare la password.",
-            "es": "Su sistema Linux utiliza un usuario con una contraseña bien conocida. Esto puede llevar a que el sistema sea hackeado desde el exterior. Se recomienda encarecidamente cambiar la contraseña.",
-            "pl": "Twój system Linux używa użytkownika ze znanym hasłem. Może to prowadzić do włamania do systemu z zewnątrz. Zaleca się zmianę hasła.",
-            "uk": "Ваша Linux система використовує користувача з добре відомим паролем. Це може призвести до злому системи ззовні. Настійно рекомендується змінити пароль.",
-            "zh-cn": "您的 Linux 系统使用众所周知的密码。 这可能导致系统被外部黑客攻击。 强烈建议更改密码。"
+            "en": "Your Linux system uses a user with the unchanged default password. This can lead to the system being hacked from the outside. It is strongly recommended to change the password.",
+            "de": "Ihr Linux-System verwendet einen Benutzer mit unverändertem Standardpasswort. Dies kann dazu führen, dass das System von außen gehackt wird. Es wird dringend empfohlen, das Passwort zu ändern.",
+            "ru": "Ваша система Linux использует пользователя с неизмененным паролем по умолчанию. Это может привести к взлому системы извне. Настоятельно рекомендуется изменить пароль.",
+            "pt": "Seu sistema Linux usa um usuário com a senha padrão inalterada. Isso pode levar ao sistema ser hackeado de fora. É altamente recomendável alterar a senha.",
+            "nl": "Uw Linux-systeem gebruikt een gebruiker met het ongewijzigde standaardwachtwoord. Dit kan ertoe leiden dat het systeem van buitenaf wordt gehackt. Het wordt sterk aanbevolen om het wachtwoord te wijzigen.",
+            "fr": "Votre système Linux utilise un utilisateur avec le mot de passe par défaut inchangé. Cela peut entraîner le piratage du système depuis l'extérieur. Il est fortement recommandé de changer le mot de passe.",
+            "it": "Il tuo sistema Linux utilizza un utente con la password predefinita non modificata. Questo può portare al sistema che viene hackerato dall'esterno. Si consiglia vivamente di cambiare la password.",
+            "es": "Su sistema Linux utiliza un usuario con la contraseña predeterminada sin cambios. Esto puede llevar a que el sistema sea hackeado desde el exterior. Se recomienda encarecidamente cambiar la contraseña.",
+            "pl": "Twój system Linux używa użytkownika z niezmienionym domyślnym hasłem. Może to prowadzić do włamania do systemu z zewnątrz. Zaleca się zmianę hasła.",
+            "uk": "Ваша система Linux використовує користувача з незміненим паролем за замовчуванням. Це може призвести до взлому системи ззовні. Настійно рекомендується змінити пароль.",
+            "zh-cn": "您的 Linux 系统使用具有未更改的默认密码的用户。 这可能导致系统被从外部黑客攻击。 强烈建议更改密码。"
           },
           "regex": [],
           "limit": 1
@@ -610,5 +623,190 @@
       },
       "native": {}
     }
-  ]
+  ],
+  "schemas": {
+    "systemConfig": {
+      "label": "System config",
+      "path": "common",
+      "json": {
+        "type": "panel",
+        "items": {
+          "city": {
+            "newLine": true,
+            "type": "text",
+            "label": "City",
+            "sm": 12,
+            "md": 6,
+            "lg": 3
+          },
+          "country": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "max-length": 2,
+            "type": "text",
+            "label": "Country"
+          },
+          "address": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Address"
+          },
+          "longitude": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "number",
+            "label": "Longitude"
+          },
+          "latitude": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "number",
+            "label": "Latitude"
+          },
+          "language": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "language",
+            "label": "Language"
+          },
+          "tempUnit": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "noTranslation": true,
+            "options": [
+              {
+                "label": "°C",
+                "value": "°C"
+              },
+              {
+                "label": "°F",
+                "value": "°F"
+              }
+            ],
+            "label": "Temperature unit"
+          },
+          "currency": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Currency"
+          },
+          "dateFormat": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Date format"
+          },
+          "isFloatComma": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "checkbox",
+            "label": "Float divider sign"
+          },
+          "defaultHistory": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "instance",
+            "adapter": "_dataSources",
+            "label": "Default History"
+          },
+          "defaultLogLevel": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "noTranslation": true,
+            "options": [
+              {
+                "label": "silly",
+                "value": "silly"
+              },
+              {
+                "label": "debug",
+                "value": "debug"
+              },
+              {
+                "label": "info",
+                "value": "info"
+              },
+              {
+                "label": "warn",
+                "value": "warn"
+              },
+              {
+                "label": "error",
+                "value": "error"
+              }
+            ],
+            "label": "Default log level"
+          },
+          "diag": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "options": [
+              {
+                "value": "none",
+                "label": "diag-type-note-none"
+              },
+              {
+                "value": "normal",
+                "label": "diag-type-note-normal"
+              },
+              {
+                "value": "no-city",
+                "label": "diag-type-note-no-city"
+              },
+              {
+                "value": "extended",
+                "label": "diag-type-note-extended"
+              }
+            ],
+            "label": "Diagnostics level"
+          },
+          "firstDayOfWeek": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "options": [
+              {
+                "label": "monday",
+                "value": "monday"
+              },
+              {
+                "label": "sunday",
+                "value": "sunday"
+              }
+            ],
+            "label": "First day of week"
+          },
+          "siteName": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Site name"
+          }
+        }
+      }
+    }
+  }
 }

@@ -150,13 +150,13 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
         let hostname = window.location.hostname;
         if (this.props.schema.openUrl) {
             // read admin host
-            const adminInstance = await this.props.socket.getCurrentInstance();
-            const instanceObj = await this.props.socket.getObject(
+            const adminInstance = await this.props.oContext.socket.getCurrentInstance();
+            const instanceObj = await this.props.oContext.socket.getObject(
                 `system.adapter.${adminInstance}` as ioBroker.ObjectIDs.Instance,
             );
 
             if (instanceObj) {
-                const hostObj = await this.props.socket.getObject(`system.host.${instanceObj?.common?.host}`);
+                const hostObj = await this.props.oContext.socket.getObject(`system.host.${instanceObj?.common?.host}`);
                 if (hostObj) {
                     const ip = findNetworkAddressOfHost(hostObj, window.location.hostname);
                     if (ip) {
@@ -205,7 +205,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
     }
 
     _onClick(): void {
-        this.props.onCommandRunning(true);
+        this.props.oContext.onCommandRunning(true);
         this.setState({ running: true });
 
         const _origin = `${window.location.protocol}//${window.location.host}${window.location.pathname.replace(/\/index\.html$/, '')}`;
@@ -217,7 +217,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                 _origin,
                 _originIp,
                 ...this.props.data,
-            });
+            }, true);
 
             try {
                 data = JSON.parse(dataStr);
@@ -238,15 +238,19 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
         if (this.props.schema.timeout) {
             timeout = setTimeout(
                 () => {
-                    this.props.onCommandRunning(false);
+                    this.props.oContext.onCommandRunning(false);
                     this.setState({ _error: I18n.t('ra_Request timed out'), running: false });
                 },
                 parseInt(this.props.schema.timeout as any as string, 10) || 10000,
             );
         }
 
-        void this.props.socket
-            .sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
+        void this.props.oContext.socket
+            .sendTo(
+                `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
+                this.props.schema.command || 'send',
+                data,
+            )
             .then(async (response: Record<string, any>) => {
                 if (timeout) {
                     clearTimeout(timeout);
@@ -265,8 +269,8 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                 } else {
                     if (response?.command) {
                         // If backend requested to refresh the config
-                        if (this.props.onBackEndCommand) {
-                            this.props.onBackEndCommand(response.command);
+                        if (this.props.oContext.onBackEndCommand) {
+                            this.props.oContext.onBackEndCommand(response.command);
                         }
                         return;
                     }
@@ -291,7 +295,10 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                             await this.onChangeAsync(attr, val);
                         }
 
-                        setTimeout(() => this.props.forceUpdate(Object.keys(response.native), this.props.data), 300);
+                        setTimeout(
+                            () => this.props.oContext.forceUpdate(Object.keys(response.native), this.props.data),
+                            300,
+                        );
                     } else if (response?.result) {
                         window.alert(
                             typeof response.result === 'object' ? JSON.stringify(response.result) : response.result,
@@ -313,7 +320,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                 }
             })
             .then(() => {
-                this.props.onCommandRunning(false);
+                this.props.oContext.onCommandRunning(false);
                 this.setState({ running: false });
             });
     }

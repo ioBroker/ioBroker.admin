@@ -43,13 +43,13 @@ const styles: Record<string, any> = {
     licValue: {
         fontWeight: 'normal',
     },
-    errorTitle: (theme: IobTheme) => ({
+    errorTitle: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#e39191' : '#b62020',
     }),
-    okTitle: (theme: IobTheme) => ({
+    okTitle: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#6fd56f' : '#007c00',
     }),
-    errorText: (theme: IobTheme) => ({
+    errorText: (theme: IobTheme): any => ({
         color: theme.palette.mode === 'dark' ? '#e39191' : '#b62020',
         mb: '30px',
     }),
@@ -367,7 +367,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
 
     async findInLicenseManager(adapterName: string): Promise<LicenseResult[]> {
         // read if the license manager is supported
-        const licenses = await this.props.socket.getObject('system.licenses');
+        const licenses = await this.props.oContext.socket.getObject('system.licenses');
         const errors: LicenseResult[] = [];
         if (licenses?.native?.licenses?.length) {
             // enable license manager
@@ -376,12 +376,12 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
 
             let uuid: string;
             if (this.props.schema.uuid) {
-                const uuidObj = await this.props.socket.getObject('system.meta.uuid');
+                const uuidObj = await this.props.oContext.socket.getObject('system.meta.uuid');
                 uuid = uuidObj?.native?.uuid;
             }
             let version: string;
             if (this.props.schema.version) {
-                const aObj = await this.props.socket.getObject(`system.adapter.${adapterName}`);
+                const aObj = await this.props.oContext.socket.getObject(`system.adapter.${adapterName}`);
                 version = aObj?.common?.version;
             }
 
@@ -431,12 +431,12 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
     async checkLicense(license: string, adapterName: string): Promise<void> {
         let uuid;
         if (this.props.schema.uuid) {
-            const uuidObj = await this.props.socket.getObject('system.meta.uuid');
+            const uuidObj = await this.props.oContext.socket.getObject('system.meta.uuid');
             uuid = uuidObj?.native?.uuid;
         }
         let version;
         if (this.props.schema.version) {
-            const aObj = await this.props.socket.getObject(`system.adapter.${adapterName}`);
+            const aObj = await this.props.oContext.socket.getObject(`system.adapter.${adapterName}`);
             version = aObj?.common?.version;
         }
 
@@ -659,7 +659,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                         this.setState({ askForUpdate: false });
                         try {
                             // updateLicense is available only in AdminConnection
-                            await this.props.socket.updateLicenses(null, null);
+                            await this.props.oContext.socket.updateLicenses(null, null);
                         } catch (e) {
                             window.alert(I18n.t('ra_Cannot read licenses: %s', e));
                             return;
@@ -674,7 +674,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
     }
 
     async _onClick(secondRun?: boolean): Promise<void> {
-        const adapterName = this.props.adapterName === 'vis-2' ? 'vis' : this.props.adapterName;
+        const adapterName = this.props.oContext.adapterName === 'vis-2' ? 'vis' : this.props.oContext.adapterName;
         this.setState({ running: true });
         let license;
         let licenses;

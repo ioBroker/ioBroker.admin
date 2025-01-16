@@ -4,7 +4,7 @@ import { Autocomplete, TextField, TextareaAutosize, InputAdornment, IconButton }
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n, IconCopy, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemText } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -15,7 +15,8 @@ const styles: Record<string, React.CSSProperties> = {
     },
     label: {
         width: '100%',
-        fontSize: 16,
+        fontSize: 14,
+        marginBottom: 2,
     },
     helper: {
         width: '100%',
@@ -44,7 +45,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
         super.componentDidMount();
         let value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        if (Array.isArray(value) && this.props.multiEdit) {
+        if (Array.isArray(value) && this.props.oContext.multiEdit) {
             value = ConfigGeneric.DIFFERENT_VALUE;
             this.setState({ value, oldValue: value, jsonError: false });
             return;
@@ -70,7 +71,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
     }
 
     static getDerivedStateFromProps(props: ConfigTextProps, state: ConfigTextState): Partial<ConfigTextState> | null {
-        if (props.multiEdit && state.value === ConfigGeneric.DIFFERENT_VALUE) {
+        if (props.oContext.multiEdit && state.value === ConfigGeneric.DIFFERENT_VALUE) {
             return { value: ConfigGeneric.DIFFERENT_VALUE };
         }
 
@@ -193,6 +194,57 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                 />
             );
         }
+
+        let actionButton: React.JSX.Element | undefined;
+        let actionButtonStyle: React.CSSProperties | undefined;
+        if ((this.props.schema.readOnly || disabled) && this.props.schema.copyToClipboard) {
+            if (this.props.schema.minRows > 1) {
+                actionButtonStyle = {
+                    position: 'absolute',
+                    right: 3,
+                    top: 20,
+                    zIndex: 1000,
+                };
+            }
+            actionButton = (
+                <IconButton
+                    style={actionButtonStyle}
+                    size="small"
+                    onClick={() => {
+                        Utils.copyToClipboard(this.state.value);
+                        window.alert(I18n.t('ra_Copied'));
+                    }}
+                >
+                    <IconCopy />
+                </IconButton>
+            );
+        } else if (!this.props.schema.readOnly && !disabled && this.state.value && !this.props.schema.noClearButton) {
+            if (this.props.schema.minRows > 1) {
+                actionButtonStyle = {
+                    position: 'absolute',
+                    right: 3,
+                    top: 20,
+                    zIndex: 1000,
+                };
+            }
+            actionButton = (
+                <IconButton
+                    style={actionButtonStyle}
+                    size="small"
+                    onClick={() =>
+                        this.setState({ value: '', oldValue: this.state.value }, () =>
+                            this.onChange(this.props.attr, ''),
+                        )
+                    }
+                >
+                    <CloseIcon />
+                </IconButton>
+            );
+            if (this.props.schema.minRows <= 1) {
+                actionButton = <InputAdornment position="end">{actionButton}</InputAdornment>;
+            }
+        }
+
         if (this.props.schema.minRows > 1) {
             const helper = this.renderHelp(
                 this.props.schema.help,
@@ -200,7 +252,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                 this.props.schema.noTranslation,
             );
             return (
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', position: 'relative' }}>
                     {this.props.schema.label ? (
                         <div style={styles.label}>{this.getText(this.props.schema.label)}</div>
                     ) : null}
@@ -209,8 +261,8 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                         style={{
                             width: '100%',
                             resize: 'vertical',
-                            backgroundColor: this.props.themeType === 'dark' ? '#363636' : '#cccccc',
-                            color: this.props.themeType === 'dark' ? '#fff' : '#111',
+                            backgroundColor: this.props.oContext.themeType === 'dark' ? '#363636' : '#cccccc',
+                            color: this.props.oContext.themeType === 'dark' ? '#fff' : '#111',
                         }}
                         minRows={this.props.schema.minRows}
                         maxRows={this.props.schema.maxRows}
@@ -234,6 +286,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                 </div>
             );
         }
+
         return (
             <TextField
                 variant="standard"
@@ -247,24 +300,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                         readOnly: this.props.schema.readOnly || false,
                     },
                     input: {
-                        endAdornment:
-                            !this.props.schema.readOnly &&
-                            !disabled &&
-                            this.state.value &&
-                            !this.props.schema.noClearButton ? (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() =>
-                                            this.setState({ value: '', oldValue: this.state.value }, () =>
-                                                this.onChange(this.props.attr, ''),
-                                            )
-                                        }
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment>
-                            ) : null,
+                        endAdornment: actionButton,
                     },
                 }}
                 onChange={e => {

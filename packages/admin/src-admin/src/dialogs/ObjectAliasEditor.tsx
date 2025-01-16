@@ -18,14 +18,22 @@ import {
     InputLabel,
     Select,
     FormControl,
+    Autocomplete,
 } from '@mui/material';
 
 // Icons
 import { Close, Link as IconLink, AddLink, Close as IconClose } from '@mui/icons-material';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
+import {
+    withWidth,
+    I18n,
+    IconFx,
+    type IobTheme,
+    type AdminConnection,
+    type Translate,
+} from '@iobroker/adapter-react-v5';
 
-import { I18n, IconFx, type IobTheme, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
+import { DEFAULT_ROLES } from '../components/Object/ObjectBrowserEditObject';
 
 import type { ioBrokerObject } from '@/types';
 
@@ -65,6 +73,7 @@ interface ObjectAliasEditorProps {
     onRedirect: (id: string, timeout?: number) => void;
     obj: ioBrokerObject;
     onClose: () => void;
+    roleArray: { role: string; type: ioBroker.CommonType }[];
 }
 
 interface ObjectAliasEditorState {
@@ -72,16 +81,19 @@ interface ObjectAliasEditorState {
     showAddNewAlias: boolean;
     newAliasId: string;
     newAliasName: string;
-    newAliasRead: boolean;
-    newAliasWrite: boolean;
-    newAliasUnit: string;
+    newAliasRead?: boolean;
+    newAliasRole: string;
+    newAliasWrite?: boolean;
+    newAliasUnit?: string;
     newAliasDesc: string;
-    newAliasType: string;
+    newAliasType: ioBroker.CommonType;
     newAliasUseFormula: boolean;
     newAliasReadFormula: string;
     newAliasWriteFormula: string;
     newAliasColor: string;
     newAliasIcon: string;
+    newAliasMin?: string;
+    newAliasMax?: string;
 }
 
 class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEditorState> {
@@ -109,12 +121,17 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
             usedInAliases,
             showAddNewAlias: !usedInAliases.length,
             newAliasId: this.props.obj._id,
-            newAliasName: ObjectAliasEditor.getText(this.props.obj.common.name || this.props.obj._id),
-            newAliasRead: this.props.obj.common.read,
-            newAliasWrite: this.props.obj.common.write,
+            newAliasName: ObjectAliasEditor.getText(this.props.obj.common.name || this.props.obj._id) || '',
+            newAliasRole: this.props.obj.common.role || '',
+            newAliasRead: this.props.obj.common.read as undefined | boolean,
+            newAliasWrite: this.props.obj.common.write as undefined | boolean,
             newAliasUnit: this.props.obj.common.unit,
-            newAliasDesc: ObjectAliasEditor.getText(this.props.obj.common.desc),
+            newAliasDesc: ObjectAliasEditor.getText(this.props.obj.common.desc) || '',
             newAliasType: this.props.obj.common.type,
+            newAliasMin:
+                this.props.obj.common.min === undefined ? '' : (this.props.obj.common.min as number).toString(),
+            newAliasMax:
+                this.props.obj.common.max === undefined ? '' : (this.props.obj.common.max as number).toString(),
             newAliasUseFormula: false,
             newAliasReadFormula: 'val',
             newAliasWriteFormula: 'val',
@@ -133,10 +150,30 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
         return text.toString();
     }
 
+    static filterRoles(roleArray: { role: string; type: ioBroker.CommonType }[], type: ioBroker.CommonType): string[] {
+        const bigRoleArray: string[] = [];
+        DEFAULT_ROLES.forEach(
+            role =>
+                (role.type === 'mixed' || role.type === type) &&
+                !bigRoleArray.includes(role.role) &&
+                bigRoleArray.push(role.role),
+        );
+        roleArray.forEach(
+            role =>
+                (role.type === 'mixed' || role.type) === type &&
+                !bigRoleArray.includes(role.role) &&
+                bigRoleArray.push(role.role),
+        );
+
+        bigRoleArray.sort();
+        return bigRoleArray;
+    }
+
     renderAddNewAlias(): JSX.Element | null {
         if (!this.state.showAddNewAlias) {
             return null;
         }
+
         return (
             <Dialog
                 open={!0}
@@ -219,7 +256,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                         <Select
                             variant="standard"
                             value={this.state.newAliasType}
-                            onChange={e => this.setState({ newAliasType: e.target.value })}
+                            onChange={e => this.setState({ newAliasType: e.target.value as ioBroker.CommonType })}
                         >
                             {stateTypeArray.map(el => (
                                 <MenuItem
@@ -232,28 +269,53 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                             ))}
                         </Select>
                     </FormControl>
-                    <TextField
-                        style={styles.formControlLabel}
-                        variant="standard"
-                        value={this.state.newAliasUnit}
-                        slotProps={{
-                            input: {
-                                endAdornment: this.state.newAliasUnit ? (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => this.setState({ newAliasUnit: '' })}
-                                        >
-                                            <IconClose />
-                                        </IconButton>
-                                    </InputAdornment>
-                                ) : null,
-                            },
-                        }}
-                        onChange={e => this.setState({ newAliasUnit: e.target.value })}
-                        label={I18n.t('Alias units')}
-                        fullWidth
-                    />
+                    {this.state.newAliasType === 'number' ? (
+                        <TextField
+                            style={styles.formControlLabel}
+                            variant="standard"
+                            value={this.state.newAliasUnit || ''}
+                            slotProps={{
+                                input: {
+                                    endAdornment: this.state.newAliasUnit ? (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.setState({ newAliasUnit: '' })}
+                                            >
+                                                <IconClose />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ) : null,
+                                },
+                            }}
+                            onChange={e => this.setState({ newAliasUnit: e.target.value })}
+                            label={I18n.t('Alias units')}
+                            fullWidth
+                        />
+                    ) : null}
+                    {this.state.newAliasType === 'number' ? (
+                        <TextField
+                            variant="standard"
+                            value={this.state.newAliasMin}
+                            type="number"
+                            error={this.state.newAliasMin ? isNaN(parseFloat(this.state.newAliasMin)) : false}
+                            onChange={e => this.setState({ newAliasMin: e.target.value })}
+                            label={I18n.t('Min')}
+                            style={{ width: 'calc(50% - 4px)', marginBottom: 16, marginRight: 8 }}
+                        />
+                    ) : null}
+                    {this.state.newAliasType === 'number' ? (
+                        <TextField
+                            variant="standard"
+                            value={this.state.newAliasMax}
+                            type="number"
+                            error={this.state.newAliasMax ? isNaN(parseFloat(this.state.newAliasMax)) : false}
+                            onChange={e => this.setState({ newAliasMax: e.target.value })}
+                            label={I18n.t('Max')}
+                            fullWidth
+                            style={{ width: 'calc(50% - 4px)', marginBottom: 16 }}
+                        />
+                    ) : null}
                     <TextField
                         variant="standard"
                         style={{ ...styles.formControlLabel, ...styles.color }}
@@ -261,6 +323,60 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                         type="color"
                         value={this.state.newAliasColor}
                         onChange={e => this.setState({ newAliasColor: e.target.value })}
+                    />
+                    <Autocomplete
+                        style={{ ...styles.formControlLabel }}
+                        fullWidth
+                        value={this.state.newAliasRole}
+                        onChange={(_, e: string): void => {
+                            const role = DEFAULT_ROLES.find(r => r.role === e);
+                            if (role) {
+                                if (role.w !== undefined && role.r !== undefined) {
+                                    this.setState({ newAliasRole: e, newAliasRead: role.r, newAliasWrite: role.w });
+                                    return;
+                                }
+                                if (role.w !== undefined) {
+                                    this.setState({ newAliasRole: e, newAliasWrite: role.w });
+                                    return;
+                                }
+                                if (role.r !== undefined) {
+                                    this.setState({ newAliasRole: e, newAliasRead: role.r });
+                                    return;
+                                }
+                            }
+
+                            if (
+                                e.startsWith('value') ||
+                                e.startsWith('indicator') ||
+                                e.startsWith('sensor') ||
+                                e.startsWith('weather')
+                            ) {
+                                if (this.state.newAliasWrite) {
+                                    this.setState({ newAliasRole: e, newAliasWrite: false });
+                                    return;
+                                }
+                            } else if (e.startsWith('level') || e.startsWith('switch')) {
+                                if (!this.state.newAliasWrite) {
+                                    this.setState({ newAliasRole: e, newAliasWrite: true });
+                                    return;
+                                }
+                            } else if (e.startsWith('button')) {
+                                if (this.state.newAliasRead) {
+                                    this.setState({ newAliasRole: e, newAliasRead: false });
+                                    return;
+                                }
+                            }
+
+                            this.setState({ newAliasRole: e });
+                        }}
+                        options={ObjectAliasEditor.filterRoles(this.props.roleArray, this.state.newAliasType)}
+                        renderInput={params => (
+                            <TextField
+                                variant="standard"
+                                {...params}
+                                label={I18n.t('Role')}
+                            />
+                        )}
                     />
                     <FormControlLabel
                         style={{ ...styles.formControlLabel, marginLeft: 16 }}
@@ -402,8 +518,20 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                             if (this.state.newAliasType) {
                                 obj.common.type = this.state.newAliasType;
                             }
-                            if (this.state.newAliasUnit) {
+                            if (this.state.newAliasType === 'number' && this.state.newAliasUnit) {
                                 obj.common.unit = this.state.newAliasUnit;
+                            }
+                            if (this.state.newAliasRole) {
+                                obj.common.role = this.state.newAliasRole;
+                            }
+                            if (this.state.newAliasType === 'number' && this.state.newAliasMin) {
+                                obj.common.min = parseFloat(this.state.newAliasMin);
+                            }
+                            if (this.state.newAliasType === 'number' && this.state.newAliasMax) {
+                                obj.common.max = parseFloat(this.state.newAliasMax);
+                            }
+                            if (this.state.newAliasRole) {
+                                obj.common.role = this.state.newAliasRole;
                             }
                             if (this.state.newAliasRead !== undefined && this.state.newAliasRead !== null) {
                                 obj.common.read = this.state.newAliasRead;

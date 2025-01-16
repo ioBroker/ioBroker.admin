@@ -1,9 +1,24 @@
 import type { JSX, CSSProperties } from 'react';
 import type { Theme as MuiTheme, Palette as MuiPalette } from '@mui/material/styles';
 import type { AdminConnection, Connection } from '@iobroker/socket-client';
+
 import type { LegacyConnection } from './LegacyConnection';
+import type Router from './Components/Router';
 
 export type Translate = (key: string, ...args: (string | number | boolean)[]) => string;
+
+export type LogMessage = {
+    /** Log message */
+    message: string;
+    /** origin */
+    from: string;
+    /** timestamp in ms */
+    ts: number;
+    /** Log message */
+    severity: ioBroker.LogLevel;
+    /** unique ID of the message */
+    _id: number;
+};
 
 /**
  * Properties for the connection to the admin or web instance.
@@ -32,7 +47,7 @@ export interface ConnectionProps {
     /** Ready callback. */
     onReady?: (objects: Record<string, ioBroker.Object>) => void;
     /** Log callback. */
-    onLog?: (text: string) => void;
+    onLog?: (text: LogMessage) => void;
     /** Error callback. */
     onError?: (error: any) => void;
     /** Object change callback. */
@@ -138,4 +153,82 @@ export interface GenericAppState {
     _alertType: 'info' | 'warning' | 'error' | 'success';
     _alertMessage: string | JSX.Element;
     common?: Record<string, any>;
+}
+
+export interface ObjectBrowserTableFilter {
+    id?: string;
+    name?: string;
+    room?: string;
+    func?: string;
+    role?: string;
+    expertMode?: boolean;
+}
+
+export interface ObjectBrowserCustomFilter {
+    readonly type?: string | string[];
+    readonly common?: {
+        readonly type?: string | string[];
+        readonly role?: string | string[];
+        // If "_" - no custom set
+        // If "_dataSources" - only data sources (history, sql, influxdb, ...)
+        // Else "telegram." or something like this
+        // `true` - If common.custom not empty
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+        readonly custom?: '_' | '_dataSources' | true | string;
+    };
+}
+
+export type ObjectBrowserType = 'state' | 'instance' | 'channel' | 'device' | 'chart';
+
+export interface ObjectBrowserProps {
+    /** The title of the dialog. */
+    title: string;
+    /** The key to store state in the browser (default: 'App') */
+    key?: string;
+    /** The CSS classes. */
+    classes: Record<string, any>;
+    /** Default filters to be applied to the object table. */
+    defaultFilters?: ObjectBrowserTableFilter;
+    /** The selected ID or IDs. */
+    selected?: string | string[];
+    /** Callback when object is selected. */
+    onSelect?: (selectedItems: string[], name: string, isDouble?: boolean) => void;
+    /** The socket connection. */
+    socket: Connection;
+    /** Show the expert button? */
+    showExpertButton?: boolean;
+    /** Is expert mode enabled? (default: false) */
+    expertMode?: boolean;
+    /** Prefix (default: '.') */
+    imagePrefix?: string;
+    /** Theme name. */
+    themeName?: string;
+    /** Translation function. */
+    t: Translate;
+    /** The selected language. */
+    lang: ioBroker.Languages;
+    /** Allow to select multiple objects? (default: false) */
+    multiSelect?: boolean;
+    /** Can't objects be edited? (default: false) */
+    notEditable?: boolean;
+    /** Show folders first? (default: false) */
+    foldersFirst?: boolean;
+    /** Disable the column selector? (default: false) */
+    disableColumnSelector?: boolean;
+    /** The custom dialog React component to use */
+    objectCustomDialog?: any;
+    /** Custom filter. Optional {common: {custom: true}} or {common: {custom: 'sql.0'}} */
+    customFilter?: ObjectBrowserCustomFilter;
+    /** Custom value React component to use */
+    objectBrowserValue?: any;
+    /** Custom object editor React component to use */
+    objectBrowserEditObject?: any;
+    /** Router */
+    router?: Router;
+    /** Object types to show */
+    types?: ObjectBrowserType[];
+    /** Columns to display */
+    columns?: ObjectBrowserColumn[];
+    /** The width of the dialog. */
+    width?: Width;
 }

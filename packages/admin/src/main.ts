@@ -170,15 +170,11 @@ class Admin extends Adapter {
      * @param state the changed state value
      */
     onStateChange(id: string, state: ioBroker.State | null | undefined): void {
-        if (socket) {
-            socket.stateChange(id, state);
-        }
+        socket?.stateChange(id, state);
     }
 
     onFileChange(id: string, fileName: string, size: number): void {
-        if (socket) {
-            socket.fileChange(id, fileName, size);
-        }
+        socket?.fileChange(id, fileName, size);
     }
 
     /**
@@ -284,11 +280,13 @@ class Admin extends Adapter {
             );
         } else if (obj.command.startsWith('admin:')) {
             return this.processNotificationsGui(obj);
+        } else if (obj.command.startsWith('test:')) {
+            // just for test
+            this.log.info(`test: ${JSON.stringify(obj.message)}`);
+            return;
         }
 
-        if (socket) {
-            socket.sendCommand(obj);
-        }
+        socket?.sendCommand(obj);
     }
 
     processNotificationsGui(obj: ioBroker.Message): void {
@@ -957,8 +955,8 @@ class Admin extends Adapter {
     async updateNews(): Promise<void> {
         if (this.timerNews) {
             clearTimeout(this.timerNews);
+            this.timerNews = null;
         }
-        this.timerNews = null;
 
         this.checkNodeJsVersion().catch(e => this.log.warn(`Cannot check node.js versions: ${e}`));
 
@@ -1955,7 +1953,6 @@ class Admin extends Adapter {
             );
             this.changedPasswords.push(found);
 
-            // @ts-expect-error types defined in js-controller 7
             await this.registerNotification('admin', 'wellKnownPassword', I18n.translate('User: %s', found.login), {
                 contextData: {
                     admin: {

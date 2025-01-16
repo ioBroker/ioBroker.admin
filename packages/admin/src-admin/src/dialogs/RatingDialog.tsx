@@ -128,7 +128,7 @@ const LANGUAGES = [
         title: 'Українська',
     },
     {
-        id: 'zh-ch',
+        id: 'zh-cn',
         title: '简体中文',
     },
 ];
@@ -234,7 +234,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
         rating: number,
         comment: string,
         lang: string,
-    ): Promise<RatingDialogRepository> {
+    ): Promise<RatingDialogRepository | null> {
         return fetch('https://rating.iobroker.net/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -254,8 +254,8 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                 delete update.adapter;
                 return update;
             })
-            .catch(e => {
-                window.alert(`Cannot vote: ${e}`);
+            .catch((e: unknown): null => {
+                window.alert(`Cannot vote: ${e as Error}`);
                 return null;
             });
     }

@@ -30,32 +30,11 @@ jobs:
               with:
                   node-version: 20.x
 
-            - name: 'Install'
-              run: |
-                  npm i -f
-
-            - name: 'Install Adapter'
-              run: npm i -w packages/admin -f
-
-            - name: 'Install FE'
-              run: |
-                  cd packages/admin/src-admin
-                  npm i -f
-
-            - name: 'Lint Backend'
-              run: npm run lint-backend -w packages/admin
+            - name: Install Dependencies
+              run: npm run install-monorepo
 
             - name: 'Build backend'
               run: npm run build:backend -w packages/admin
-
-            - name: 'Build adapter-react-v5'
-              run: npm run build -w packages/adapter-react-v5
-
-            - name: 'Build JsonConfig'
-              run: npm run build -w packages/jsonConfig
-
-            - name: 'Build dm-gui-components'
-              run: npm run build -w packages/dm-gui-components
 
             - name: Check TypeScript files
               run: |
@@ -64,10 +43,8 @@ jobs:
               # Wait till js-controller 7 types are available
               continue-on-error: true
 
-            - name: 'Build'
-              run: |
-                  npm run clean
-                  NODE_OPTIONS=--max_old_space_size=4096 npm run build
+            - name: Build
+              run: NODE_OPTIONS=--max_old_space_size=8192 npm run build
 
     # Runs adapter tests on all supported node versions and OSes
     adapter-tests:

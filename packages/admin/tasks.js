@@ -19,7 +19,24 @@ const src = `${__dirname}/${srcRx}`;
 const rootFolder = join(__dirname, '..', '..');
 const dest = 'adminWww/';
 
+// We have a problem with webpack
+function patchModuleFederationPlugin() {
+    const path = require.resolve('webpack');
+    // path = C:\pWork\ioBroker.admin\node_modules\webpack\lib\index.js
+    const fileName = `${path.replace('index.js', '')}/container/ModuleFederationPlugin.js`;
+    let file = readFileSync(fileName).toString('utf8');
+    if (!file.includes('if (!(compilation instanceof Compilation)) {')) {
+        return;
+    }
+    file = file.replace(
+        'if (!(compilation instanceof Compilation)) {',
+        'if (false && !(compilation instanceof Compilation)) {',
+    );
+    writeFileSync(fileName, file);
+}
+
 async function build() {
+    patchModuleFederationPlugin();
     const socketNew = readFileSync(`${__dirname}/../../node_modules/@iobroker/ws/dist/esm/socket.io.min.js`).toString();
     const socketOld = readFileSync(`${__dirname}/src-admin/public/lib/js/socket.io.js`).toString();
     if (socketNew !== socketOld) {
@@ -112,6 +129,20 @@ function copyAllFiles() {
     copyFiles(`${srcRx}build/static/js/**/*.js`, `${dest}static/js`, {
         replace: [{ find: 's.p+"static/media', text: '"./static/media' }],
     });
+    copyFiles(
+        [
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-json.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-html.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-xml.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-yaml.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-javascript.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/worker-css.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/snippets/html.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/snippets/css.js`,
+            `${srcRx}node_modules/ace-builds/src-min-noconflict/snippets/javascript.js`,
+        ],
+        `${dest}static/js`,
+    );
 }
 
 async function configCSS() {
@@ -161,7 +192,9 @@ function clean() {
     deleteFoldersRecursive(`${__dirname}/${srcRx}/build`);
 }
 
-if (process.argv.includes('--backend-i18n')) {
+if (process.argv.includes('--patch-webpack')) {
+    patchModuleFederationPlugin();
+} else if (process.argv.includes('--backend-i18n')) {
     copyFiles(['src/i18n/*'], 'build-backend/i18n');
     syncUtils();
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-configCSS')) {

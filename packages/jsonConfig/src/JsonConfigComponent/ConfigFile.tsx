@@ -55,7 +55,7 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
     componentDidMount(): void {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        this.imagePrefix = this.props.imagePrefix === undefined ? './files' : this.props.imagePrefix;
+        this.imagePrefix = this.props.oContext.imagePrefix === undefined ? './files' : this.props.oContext.imagePrefix;
         this.setState({ value: value ?? '' });
     }
 
@@ -76,7 +76,7 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
         if (pos !== -1) {
             const adapter = this.state.value.substring(0, pos);
             const path = this.state.value.substring(pos + 1);
-            return this.props.socket.readFile(adapter, path, true);
+            return this.props.oContext.socket.readFile(adapter, path, true);
         }
 
         return Promise.resolve(null);
@@ -85,14 +85,14 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
     play(): void {
         void this.loadFile().then(data => {
             if (typeof AudioContext !== 'undefined' && data?.file) {
-                const context = new AudioContext();
+                const oContext = new AudioContext();
                 const buf = ConfigFileSelector.base64ToArrayBuffer(data.file);
-                void context.decodeAudioData(
+                void oContext.decodeAudioData(
                     buf,
                     (buffer: AudioBuffer): void => {
-                        const source = context.createBufferSource(); // creates a sound source
+                        const source = oContext.createBufferSource(); // creates a sound source
                         source.buffer = buffer; // tell the source which sounds to play
-                        source.connect(context.destination); // connect the source to the context's destination (the speakers)
+                        source.connect(oContext.destination); // connect the source to the oContext's destination (the speakers)
                         source.start(0);
                     },
                     (err: DOMException): void => window.alert(`Cannot play: ${err.message}`),
@@ -143,8 +143,8 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
         }
         return (
             <DialogSelectFile
-                imagePrefix={this.props.imagePrefix}
-                socket={this.props.socket}
+                imagePrefix={this.props.oContext.imagePrefix}
+                socket={this.props.oContext.socket}
                 selected={this.state.value}
                 onClose={() => this.setState({ showFileBrowser: false })}
                 onOk={_value => {
@@ -160,7 +160,7 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
                 allowView={this.props.schema.allowView}
                 showToolbar={this.props.schema.showToolbar}
                 limitPath={this.props.schema.limitPath}
-                theme={this.props.theme}
+                theme={this.props.oContext.theme}
             />
         );
     }
@@ -201,6 +201,7 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
                     )}
                 />
                 <Button
+                    disabled={disabled}
                     variant="outlined"
                     onClick={() => this.setState({ showFileBrowser: true })}
                 >

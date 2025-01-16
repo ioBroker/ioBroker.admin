@@ -92,8 +92,8 @@ import { IconOpen } from '../icons/IconOpen';
 import { IconClearFilter } from '../icons/IconClearFilter';
 
 // own
-import type { Router } from './Router';
 import type { ThemeType, ThemeName, IobTheme, Translate } from '../types';
+import type { Router } from './Router';
 import { Connection } from '../Connection';
 import { Icon } from './Icon';
 import { withWidth } from './withWidth';
@@ -230,7 +230,7 @@ interface InputSelectItem {
 
 type ioBrokerObjectForExport = ioBroker.Object & Partial<ioBroker.State>;
 
-interface ObjectBrowserCustomFilter {
+export interface ObjectBrowserCustomFilter {
     type?: ioBroker.ObjectType | ioBroker.ObjectType[];
     common?: {
         type?: ioBroker.CommonType | ioBroker.CommonType[];
@@ -262,7 +262,7 @@ export interface TreeItem {
 interface TreeInfo {
     funcEnums: string[];
     roomEnums: string[];
-    roles: string[];
+    roles: { role: string; type: ioBroker.CommonType }[];
     ids: string[];
     types: string[];
     objects: Record<string, ioBroker.Object>;
@@ -374,7 +374,7 @@ const styles: Record<string, any> = {
         height: 'calc(100% - 38px)',
         overflow: 'auto',
     },
-    tableRow: (theme: IobTheme) => ({
+    tableRow: (theme: IobTheme): any => ({
         pl: 1,
         height: ROW_HEIGHT,
         lineHeight: `${ROW_HEIGHT}px`,
@@ -391,7 +391,7 @@ const styles: Record<string, any> = {
         whiteSpace: 'nowrap',
         flexWrap: 'nowrap',
     }),
-    tableRowLines: (theme: IobTheme) => ({
+    tableRowLines: (theme: IobTheme): any => ({
         borderBottom: `1px solid ${theme.palette.mode === 'dark' ? '#8888882e' : '#8888882e'}`,
         '& > div': {
             borderRight: `1px solid ${theme.palette.mode === 'dark' ? '#8888882e' : '#8888882e'}`,
@@ -406,7 +406,7 @@ const styles: Record<string, any> = {
     tableRowAliasReadWrite: {
         height: ROW_HEIGHT + 22,
     },
-    tableRowFocused: (theme: IobTheme) => ({
+    tableRowFocused: (theme: IobTheme): any => ({
         '&:after': {
             content: '""',
             position: 'absolute',
@@ -455,7 +455,7 @@ const styles: Record<string, any> = {
         // verticalAlign: 'top',
     },
     // This style is used for simple div. Do not migrate it to "secondary.main"
-    cellIdIconFolder: (theme: IobTheme) => ({
+    cellIdIconFolder: (theme: IobTheme): React.CSSProperties => ({
         marginRight: 8,
         width: ROW_HEIGHT - 4,
         height: ROW_HEIGHT - 4,
@@ -533,7 +533,7 @@ const styles: Record<string, any> = {
         opacity: 0.5,
         fontStyle: 'italic',
     },
-    cellIdAlias: (theme: IobTheme) => ({
+    cellIdAlias: (theme: IobTheme): any => ({
         fontStyle: 'italic',
         fontSize: 12,
         opacity: 0.7,
@@ -696,13 +696,13 @@ const styles: Record<string, any> = {
         pt: 0,
         mt: '-2px',
     },
-    cellButtonsButtonWithCustoms: (theme: IobTheme) => ({
+    cellButtonsButtonWithCustoms: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? theme.palette.primary.main : theme.palette.secondary.main,
     }),
     cellButtonsButtonWithoutCustoms: {
         opacity: 0.2,
     },
-    cellButtonsValueButton: (theme: IobTheme) => ({
+    cellButtonsValueButton: (theme: IobTheme): any => ({
         position: 'absolute',
         top: SMALL_BUTTON_SIZE / 2 - 2,
         opacity: 0.7,
@@ -751,7 +751,7 @@ const styles: Record<string, any> = {
     selectNone: {
         opacity: 0.5,
     },
-    itemSelected: (theme: IobTheme) => ({
+    itemSelected: (theme: IobTheme): React.CSSProperties => ({
         background: `${theme.palette.primary.main} !important`,
         color: `${Utils.invertColor(theme.palette.primary.main, true)} !important`,
     }),
@@ -865,7 +865,7 @@ const styles: Record<string, any> = {
         borderRadius: 5,
         backgroundColor: 'background.default',
     },
-    iconDeviceConnected: (theme: IobTheme) => ({
+    iconDeviceConnected: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT,
         opacity: 0.8,
         position: 'absolute',
@@ -873,7 +873,7 @@ const styles: Record<string, any> = {
         right: 32,
         width: 20,
     }),
-    iconDeviceDisconnected: (theme: IobTheme) => ({
+    iconDeviceDisconnected: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? COLOR_NAME_DISCONNECTED_DARK : COLOR_NAME_DISCONNECTED_LIGHT,
         opacity: 0.8,
         position: 'absolute',
@@ -881,7 +881,7 @@ const styles: Record<string, any> = {
         right: 32,
         width: 20,
     }),
-    iconDeviceError: (theme: IobTheme) => ({
+    iconDeviceError: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? COLOR_NAME_ERROR_DARK : COLOR_NAME_ERROR_LIGHT,
         opacity: 0.8,
         position: 'absolute',
@@ -910,37 +910,37 @@ const styles: Record<string, any> = {
             borderRightStyle: 'solid',
         },
     },
-    invertedBackground: (theme: IobTheme) => ({
+    invertedBackground: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#9a9a9a' : '#565656',
         padding: '0 3px',
         borderRadius: '2px 0 0 2px',
     }),
-    invertedBackgroundFlex: (theme: IobTheme) => ({
+    invertedBackgroundFlex: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#9a9a9a' : '#565656',
         borderRadius: '0 2px 2px 0',
     }),
-    contextMenuEdit: (theme: IobTheme) => ({
+    contextMenuEdit: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#ffee48' : '#cbb801',
     }),
-    contextMenuEditValue: (theme: IobTheme) => ({
+    contextMenuEditValue: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#5dff45' : '#1cd301',
     }),
-    contextMenuView: (theme: IobTheme) => ({
+    contextMenuView: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#FFF' : '#000',
     }),
-    contextMenuCustom: (theme: IobTheme) => ({
+    contextMenuCustom: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#42eaff' : '#01bbc2',
     }),
-    contextMenuACL: (theme: IobTheme) => ({
+    contextMenuACL: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#e079ff' : '#500070',
     }),
-    contextMenuRoom: (theme: IobTheme) => ({
+    contextMenuRoom: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#ff9a33' : '#642a00',
     }),
-    contextMenuRole: (theme: IobTheme) => ({
+    contextMenuRole: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#ffdb43' : '#562d00',
     }),
-    contextMenuDelete: (theme: IobTheme) => ({
+    contextMenuDelete: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#ff4f4f' : '#cf0000',
     }),
     contextMenuKeys: {
@@ -1043,6 +1043,28 @@ function filterObject(
         }
         result[key] = isObject ? filterObject(value, filterKeys, excludeTranslations) : value;
     });
+}
+
+export function filterRoles(
+    roleArray: { role: string; type: ioBroker.CommonType }[],
+    type: ioBroker.CommonType,
+    defaultRoles?: { role: string; type: ioBroker.CommonType }[],
+): string[] {
+    const bigRoleArray: string[] = [];
+    roleArray.forEach(
+        role =>
+            (role.type === 'mixed' || role.type) === type &&
+            !bigRoleArray.includes(role.role) &&
+            bigRoleArray.push(role.role),
+    );
+    defaultRoles.forEach(
+        role =>
+            (role.type === 'mixed' || role.type) === type &&
+            !bigRoleArray.includes(role.role) &&
+            bigRoleArray.push(role.role),
+    );
+    bigRoleArray.sort();
+    return bigRoleArray;
 }
 
 /**
@@ -1217,16 +1239,7 @@ export function getSelectIdIconFromObjects(
 
 function applyFilter(
     item: TreeItem,
-    filters: {
-        id?: string;
-        name?: string;
-        type?: string;
-        custom?: string;
-        role?: string;
-        room?: string;
-        func?: string;
-        expertMode?: boolean;
-    },
+    filters: ObjectBrowserFilter,
     lang: ioBroker.Languages,
     objects: Record<string, ioBroker.Object>,
     context?: {
@@ -1615,9 +1628,9 @@ function buildTree(
 
         if (obj) {
             const common = obj.common;
-            const role = common && common.role;
-            if (role && !info.roles.includes(role)) {
-                info.roles.push(role);
+            const role = common?.role;
+            if (role && !info.roles.find(it => it.role === role)) {
+                info.roles.push({ role, type: common.type });
             } else if (id.startsWith('enum.rooms.')) {
                 info.roomEnums.push(id);
                 info.enums.push(id);
@@ -1795,7 +1808,7 @@ function buildTree(
         }
         return 0;
     });
-    info.roles.sort();
+    info.roles.sort((a, b) => a.role.localeCompare(b.role));
     info.types.sort();
 
     return { info, root };
@@ -2054,6 +2067,7 @@ function formatValue(options: FormatValueOptions): {
     if (isCommon?.unit) {
         valText.u = isCommon.unit;
     }
+
     let valFull:
         | {
               /** label */
@@ -2263,7 +2277,7 @@ interface ScreenWidthOne {
         timestamp?: number;
         lastChange?: number;
     };
-    fields: string[];
+    fields: ObjectBrowserPossibleColumns[];
 }
 
 interface ScreenWidth {
@@ -2391,11 +2405,12 @@ interface AdapterColumn {
 }
 
 interface ObjectBrowserEditRoleProps {
-    roles: string[];
+    roleArray: { role: string; type: ioBroker.CommonType }[];
     id: string;
     socket: Connection;
     onClose: (obj?: ioBroker.Object | null) => void;
     t: Translate;
+    commonType: ioBroker.CommonType;
 }
 
 interface ObjectViewFileDialogProps {
@@ -2463,7 +2478,7 @@ interface ObjectBrowserValueProps {
 interface ObjectBrowserEditObjectProps {
     socket: Connection;
     obj: ioBroker.AnyObject;
-    roleArray: string[];
+    roleArray: { role: string; type: ioBroker.CommonType }[];
     expertMode: boolean;
     themeType: ThemeType;
     theme: IobTheme;
@@ -2478,21 +2493,37 @@ interface ObjectBrowserEditObjectProps {
     width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
-interface ObjectAliasEditorProps {
+export interface ObjectAliasEditorProps {
     t: Translate;
+    roleArray: { role: string; type: ioBroker.CommonType }[];
     socket: Connection;
     objects: Record<string, ioBroker.AnyObject>;
     onRedirect: (id: string, delay?: number) => void;
     obj: ioBroker.AnyObject;
     onClose: () => void;
 }
+export type ObjectBrowserColumn = 'name' | 'type' | 'role' | 'room' | 'func' | 'val' | 'buttons';
 
-interface ObjectBrowserProps {
+type ObjectBrowserPossibleColumns =
+    | 'name'
+    | 'type'
+    | 'role'
+    | 'room'
+    | 'func'
+    | 'val'
+    | 'buttons'
+    | 'changedFrom'
+    | 'qualityCode'
+    | 'timestamp'
+    | 'lastChange'
+    | 'id';
+
+export interface ObjectBrowserProps {
     /** where to store settings in localStorage */
     dialogName?: string;
     defaultFilters?: ObjectBrowserFilter;
     selected?: string | string[];
-    onSelect?: (selected: string | string[], name: string, isDouble?: boolean) => void;
+    onSelect?: (selected: string | string[], name: string | null, isDouble?: boolean) => void;
     onFilterChanged?: (newFilter: ObjectBrowserFilter) => void;
     socket: Connection;
     showExpertButton?: boolean;
@@ -2512,6 +2543,8 @@ interface ObjectBrowserProps {
     isFloatComma?: boolean;
     dateFormat?: string;
     levelPadding?: number;
+    /** Allow selection of non-objects (virtual branches) */
+    allowNonObjects?: boolean;
 
     // components
     objectCustomDialog?: React.FC<ObjectCustomDialogProps>;
@@ -2525,6 +2558,7 @@ interface ObjectBrowserProps {
     /** modal Edit Of Access Control */
     modalEditOfAccessControl: (oBrowser: ObjectBrowserClass, data: TreeItemData) => JSX.Element;
     onObjectDelete?: (id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) => void;
+
     /**
      * Optional filter
      *   `{common: {custom: true}}` - show only objects with some custom settings
@@ -2550,7 +2584,7 @@ interface ObjectBrowserProps {
     router?: typeof Router;
     types?: ioBroker.ObjectType[];
     /** Possible columns: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'] */
-    columns?: string[];
+    columns?: ObjectBrowserColumn[];
     /** Shows only elements of this root */
     root?: string;
 
@@ -2596,7 +2630,7 @@ interface ObjectBrowserState {
     roleDialog: null | string;
     statesView: boolean;
     /** ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'] */
-    columns: string[] | null;
+    columns: ObjectBrowserPossibleColumns[] | null;
     columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null;
     columnsSelectorShow: boolean;
     columnsAuto: boolean;
@@ -2674,11 +2708,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private filterTimer: ReturnType<typeof setTimeout> | null = null;
 
-    private readonly visibleCols: string[];
+    private readonly visibleCols: ObjectBrowserPossibleColumns[];
 
     private readonly texts: Record<string, string>;
 
-    private readonly possibleCols: string[];
+    private readonly possibleCols: ObjectBrowserPossibleColumns[];
 
     private readonly imagePrefix: string;
 
@@ -2873,7 +2907,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         this.selectFirst = selected.length && selected[0] ? selected[0] : this.selectFirst;
 
         const columnsStr = this.localStorage.getItem(`${props.dialogName || 'App'}.columns`);
-        let columns: string[] | null;
+        let columns: ObjectBrowserPossibleColumns[] | null;
         try {
             columns = columnsStr ? JSON.parse(columnsStr) : null;
         } catch {
@@ -3258,14 +3292,38 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 if (this.props.onSelect) {
                     this.props.onSelect(this.state.selected, name, isDouble);
                 }
+            } else if (this.state.selected.length === 1 && this.props.allowNonObjects) {
+                if (this.props.onSelect) {
+                    this.props.onSelect(this.state.selected, null, isDouble);
+                }
             }
         } else {
             this.localStorage.removeItem(`${this.props.dialogName || 'App'}.objectSelected`);
 
             if (this.state.selected.length) {
-                this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
+                this.setState({ selected: [] }, () => {
+                    if (this.props.onSelect) {
+                        if (this.state.focused && this.props.allowNonObjects) {
+                            // remove a task to select the pre-selected item if now we want to see another object
+                            if (this.selectFirst && this.selectFirst !== this.state.selected[0]) {
+                                this.selectFirst = '';
+                            }
+                            this.props.onSelect([this.state.focused], null, isDouble);
+                        } else {
+                            this.props.onSelect([], '');
+                        }
+                    }
+                });
             } else if (this.props.onSelect) {
-                this.props.onSelect([], '');
+                if (this.state.focused && this.props.allowNonObjects) {
+                    // remove a task to select the pre-selected item if now we want to see another object
+                    if (this.selectFirst && this.selectFirst !== this.state.selected[0]) {
+                        this.selectFirst = '';
+                    }
+                    this.props.onSelect([this.state.focused], null, isDouble);
+                } else {
+                    this.props.onSelect([], '');
+                }
             }
         }
     }
@@ -3662,7 +3720,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                                 onClick={() => {
                                                     if (!this.state.columnsAuto) {
                                                         const columns = [...(this.state.columns || [])];
-                                                        const id = `_${adapter}_${column.path}`;
+                                                        const id: ObjectBrowserPossibleColumns =
+                                                            `_${adapter}_${column.path}` as ObjectBrowserPossibleColumns;
                                                         const pos = columns.indexOf(id);
                                                         if (pos === -1) {
                                                             columns.push(id);
@@ -3686,7 +3745,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                                         edge="start"
                                                         checked={
                                                             !this.state.columnsAuto &&
-                                                            this.state.columns?.includes(`_${adapter}_${column.path}`)
+                                                            this.state.columns?.includes(
+                                                                `_${adapter}_${column.path}` as ObjectBrowserPossibleColumns,
+                                                            )
                                                         }
                                                         disableRipple
                                                     />
@@ -4272,7 +4333,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     }
 
     private getFilterSelectRole(): JSX.Element {
-        return this.getFilterSelect('role', this.info.roles);
+        return this.getFilterSelect(
+            'role',
+            this.info.roles.map(it => it.role),
+        );
     }
 
     private getFilterSelectRoom(): JSX.Element {
@@ -5566,7 +5630,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     from: false,
                     ack: false,
                     q: false,
-                    addID: false,
+                    addId: false,
                     aggregate: 'minmax',
                 })
                 .then(values => {
@@ -6009,7 +6073,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     id={this.state.roleDialog}
                     socket={this.props.socket}
                     t={this.props.t}
-                    roles={this.info.roles}
+                    roleArray={this.info.roles}
+                    commonType={this.info.objects[this.state.roleDialog]?.common?.type}
                     onClose={(obj?: ioBroker.Object | null) => {
                         if (obj) {
                             this.info.objects[this.state.roleDialog] = obj;
@@ -8205,6 +8270,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             <ObjectBrowserAliasEditor
                 key="editAlias"
                 obj={this.objects[this.state.showAliasEditor]}
+                roleArray={this.info.roles}
                 objects={this.objects}
                 socket={this.props.socket}
                 t={this.props.t}
@@ -8514,9 +8580,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         }
                     />
                 ),
-                label: this.info.aliasesMap[item.data.id]
-                    ? this.props.t('ra_Edit alias')
-                    : this.props.t('ra_Create alias'),
+                label:
+                    this.info.aliasesMap[item.data.id] || item.data.id.startsWith('alias.0.')
+                        ? this.props.t('ra_Edit alias')
+                        : this.props.t('ra_Create alias'),
                 onClick: () => {
                     if (obj?.common?.alias) {
                         this.setState({ showContextMenu: null, editObjectDialog: item.data.id, editObjectAlias: true });

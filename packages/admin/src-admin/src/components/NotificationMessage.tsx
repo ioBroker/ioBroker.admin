@@ -11,9 +11,10 @@ import {
     Utils,
 } from '@iobroker/adapter-react-v5';
 import {
-    type BackEndCommandGeneric,
+    type BackEndCommand,
     type BackEndCommandOpenLink,
     type ConfigItemPanel,
+    type ConfigItemTabs,
     JsonConfigComponent,
 } from '@iobroker/json-config';
 
@@ -126,7 +127,7 @@ interface NotificationMessageProps {
 interface NotificationMessageState {
     alive: boolean;
     data: Record<string, any> | null;
-    schema: ConfigItemPanel | null;
+    schema: ConfigItemPanel | ConfigItemTabs | null;
     error?: boolean;
     updateData: number;
 }
@@ -233,16 +234,19 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                     data={this.state.data}
                     onError={(error?: boolean) => this.setState({ error })}
                     onChange={(data: Record<string, any>) => this.setState({ data })}
-                    onBackEndCommand={(command?: BackEndCommandGeneric) => {
+                    onBackEndCommand={(command?: BackEndCommand) => {
                         if (command.schema) {
-                            this.setState({ schema: command.schema, data: command.data || this.state.data });
+                            this.setState({
+                                schema: command.schema,
+                                data: command.data || this.state.data,
+                            });
                         }
 
                         if (command.command === 'refresh' || command.refresh) {
                             this.getGui();
                         }
                         if (command.command === 'link') {
-                            this.props.onLink(command as BackEndCommandOpenLink);
+                            this.props.onLink(command);
                         }
                     }}
                     embedded

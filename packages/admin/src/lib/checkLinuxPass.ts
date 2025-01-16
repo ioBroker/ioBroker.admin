@@ -30,20 +30,36 @@ function checkLinuxPassword(login: string, password: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
         try {
             const su = spawn('su', [login]);
+            let closed = false;
             let result = false;
-            let responseTimeout = setTimeout(() => {
+            let responseTimeout: NodeJS.Timeout | null = setTimeout(() => {
+                closed = true;
                 responseTimeout = null;
                 su.kill();
             }, 3000);
 
             function _checkPassword(data: string): void {
+                if (!responseTimeout || closed) {
+                    return;
+                }
                 data = data.replace(/\r/g, ' ').replace(/\n/g, ' ').trim();
                 console.log(`[STDX] "${data}"`);
                 if (data.endsWith(':')) {
-                    su.stdin.write(`${password}\n`);
+                    try {
+                        su.stdin?.write(`${password}\n`);
+                    } catch {
+                        return;
+                    }
                     setTimeout(() => {
+                        if (!responseTimeout || closed) {
+                            return;
+                        }
                         console.log(`[LOG] write whoami`);
-                        su.stdin.write(`whoami\n`);
+                        try {
+                            su.stdin?.write(`whoami\n`);
+                        } catch {
+                            // ignore
+                        }
                     }, 50);
                 } else if (data === login) {
                     result = true;
@@ -53,23 +69,62 @@ function checkLinuxPassword(login: string, password: string): Promise<boolean> {
                     su.kill();
                 }
             }
+            su.stdin?.on('error', (): void => {
+                closed = true;
+            });
+            su.stdout?.on('error', (): void => {
+                closed = true;
+            });
+            su.stderr?.on('error', (): void => {
+                closed = true;
+            });
+            su.stdin?.on('finish', (): void => {
+                closed = true;
+            });
+            su.stdout?.on('finish', (): void => {
+                closed = true;
+            });
+            su.stderr?.on('finish', (): void => {
+                closed = true;
+            });
+            su.stdin?.on('close', (): void => {
+                closed = true;
+            });
+            su.stdout?.on('close', (): void => {
+                closed = true;
+            });
+            su.stderr?.on('close', (): void => {
+                closed = true;
+            });
 
             // Listen for data on stdout
-            su.stdout.on('data', data => _checkPassword(data.toString()));
+            su.stdout.on('data', data => {
+                if (data && responseTimeout) {
+                    _checkPassword(data.toString());
+                }
+            });
 
             // Listen for data on stderr
-            su.stderr.on('data', data => _checkPassword(data.toString()));
+            su.stderr.on('data', data => {
+                if (data && responseTimeout) {
+                    _checkPassword(data.toString());
+                }
+            });
 
             // Listen for the close event
             su.on('close', () => {
+                closed = true;
                 console.log(`[LOG] -------- closed with result: ${result}\n`);
-                responseTimeout && clearTimeout(responseTimeout);
-                responseTimeout = null;
+                if (responseTimeout) {
+                    clearTimeout(responseTimeout);
+                    responseTimeout = null;
+                }
                 resolve(result);
             });
-        } catch (e: any) {
-            console.error(`[LOG] -------- Error by execution: ${e.message}\n`);
-            reject(new Error(e));
+        } catch (e: unknown) {
+            closed = true;
+            console.error(`[LOG] -------- Error by execution: ${(e as Error).message}\n`);
+            reject(new Error(e as string));
         }
     });
 }

@@ -43,22 +43,21 @@ import {
     TabContainer,
     Utils,
 } from '@iobroker/adapter-react-v5';
-import type AdaptersWorker from '@/Workers/AdaptersWorker';
-import { type AdapterEvent } from '@/Workers/AdaptersWorker';
-import type InstancesWorker from '@/Workers/InstancesWorker';
-import type { InstanceEvent } from '@/Workers/InstancesWorker';
-import HostAdapterWorker, { type HostAdapterEvent } from '@/Workers/HostAdapterWorker';
+import type { AdaptersWorker, AdapterEvent } from '@/Workers/AdaptersWorker';
+import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
+import { HostAdapterWorker, type HostAdapterEvent } from '@/Workers/HostAdapterWorker';
 import type { CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 
 import type { Ratings, AdapterCacheEntry } from '@/components/Adapters/AdapterGeneric';
-import type HostsWorker from '@/Workers/HostsWorker';
+import type { HostsWorker } from '@/Workers/HostsWorker';
 import GitHubInstallDialog from '@/dialogs/GitHubInstallDialog';
 import AdapterInstallDialog, {
     type AdapterRatingInfo,
     type InstalledInfo,
     type AdaptersContext,
     type AdapterInstallDialogState,
+    type AdapterInstallDialogProps,
 } from '@/components/Adapters/AdapterInstallDialog';
 import AdaptersList, { SUM } from '@/components/Adapters/AdaptersList';
 import type { AdminGuiConfig } from '@/types';
@@ -177,7 +176,7 @@ const FILTERS: { name: string; notByList?: boolean }[] = [
     { name: 'Recently updated', notByList: true },
 ];
 
-interface AdaptersProps {
+interface AdaptersProps extends AdapterInstallDialogProps {
     t: Translate;
     /** The host ID of the admin adapter, like system.host.test */
     adminHost: string;
@@ -204,7 +203,6 @@ interface AdaptersProps {
     commandRunning: boolean;
     onSetCommandRunning: (commandRunning: boolean) => void;
     toggleTranslation: () => void;
-    noTranslation: boolean;
     menuOpened: boolean;
     menuClosed: boolean;
     currentAdminVersion: string;
@@ -997,12 +995,14 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     });
                 }
                 const hostData: HostInfo & { 'Active instances': number; location: string; Uptime: number } =
-                    await this.props.socket.getHostInfo(currentHost, update, this.state.readTimeoutMs).catch(e => {
-                        window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`);
-                        if (e.toString().includes('timeout')) {
-                            this.setState({ showSlowConnectionWarning: true });
-                        }
-                    });
+                    await this.props.socket
+                        .getHostInfo(currentHost, update, this.state.readTimeoutMs)
+                        .catch((e: unknown): void => {
+                            window.alert(`Cannot getHostInfo for "${currentHost}": ${e as Error}`);
+                            if ((e as Error).toString().includes('timeout')) {
+                                this.setState({ showSlowConnectionWarning: true });
+                            }
+                        });
 
                 if (this.props.adminGuiConfig.admin.adapters?.allowAdapterRating !== false) {
                     try {
@@ -1015,15 +1015,19 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     ratings = null;
                 }
 
-                const compactInstances = await this.props.socket.getCompactInstances(update).catch(e => {
-                    window.alert(`Cannot read countsOfInstances: ${e}`);
-                    return {};
-                });
+                const compactInstances = await this.props.socket
+                    .getCompactInstances(update)
+                    .catch((e: unknown): Record<string, CompactInstanceInfo> => {
+                        window.alert(`Cannot read countsOfInstances: ${e as Error}`);
+                        return {};
+                    });
 
-                const compactRepositoriesEx = await this.props.socket.getCompactSystemRepositories(update).catch(e => {
-                    window.alert(`Cannot read getCompactSystemRepositories: ${e}`);
-                    return {};
-                });
+                const compactRepositoriesEx = await this.props.socket
+                    .getCompactSystemRepositories(update)
+                    .catch((e: unknown): Record<string, CompactSystemRepository> => {
+                        window.alert(`Cannot read getCompactSystemRepositories: ${e as Error}`);
+                        return {};
+                    });
                 const compactRepositories: CompactSystemRepository = compactRepositoriesEx as CompactSystemRepository;
 
                 await this.calculateInfo(compactInstances || {}, ratings, hostData, compactRepositories);
@@ -1319,23 +1323,33 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         }, 200);
     };
 
-    clearAllFilters(): void {
-        (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapter.search');
-        (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.installedList');
-        (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.updateList');
-        if (this.inputRef.current) {
-            this.inputRef.current.value = '';
+    clearAllFilters(onlyUpdate?: boolean): void {
+        if (onlyUpdate) {
+            (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.updateList');
+            this.setState(
+                {
+                    updateList: false,
+                },
+                () => this.filterAdapters(),
+            );
+        } else {
+            (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapter.search');
+            (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.installedList');
+            (((window as any)._localStorage as Storage) || window.localStorage).removeItem('Adapters.updateList');
+            if (this.inputRef.current) {
+                this.inputRef.current.value = '';
+            }
+            this.setState(
+                {
+                    filteredList: null,
+                    updateList: false,
+                    filterConnectionType: false,
+                    installedList: 0,
+                    search: '',
+                },
+                () => this.filterAdapters(),
+            );
         }
-        this.setState(
-            {
-                filteredList: null,
-                updateList: false,
-                filterConnectionType: false,
-                installedList: 0,
-                search: '',
-            },
-            () => this.filterAdapters(),
-        );
     }
 
     getContext(descHidden: boolean): AdaptersContext {
@@ -1352,7 +1366,6 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 }
             },
             toggleTranslation: this.props.toggleTranslation,
-            noTranslation: this.props.noTranslation,
             rightDependenciesFunc: this.rightDependencies,
             lang: this.props.lang,
             uuid: this.uuid,
@@ -2043,16 +2056,20 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     stableRepo={stableRepo}
                     repoName={repoName}
                     context={context}
+                    noTranslation={this.props.noTranslation}
                     systemConfig={this.props.systemConfig}
                     tableViewMode={this.state.tableViewMode}
                     oneListView={this.state.oneListView}
                     update={this.state.update}
+                    updateListFilter={this.state.updateList}
+                    searchFilter={this.state.search}
+                    installedListFilter={this.state.installedList}
                     cachedAdapters={this.cache.adapters}
                     categories={this.state.categories}
                     categoriesExpanded={this.state.categoriesExpanded}
                     listOfVisibleAdapter={this.cache.listOfVisibleAdapter}
                     toggleCategory={category => this.toggleCategory(category)}
-                    clearAllFilters={() => this.clearAllFilters()}
+                    clearAllFilters={(onlyUpdate?: boolean) => this.clearAllFilters(onlyUpdate)}
                     descWidth={this.state.descWidth}
                     sortByName={this.state.filterTiles === 'Name A-Z'}
                     sortPopularFirst={context.sortPopularFirst}

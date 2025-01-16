@@ -1,6 +1,6 @@
 import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import type { FilteredNotificationInformation } from '@iobroker/socket-client';
-import GenericWorker, { type EventType, type GenericEvent } from './GenericWorker';
+import { GenericWorker, type EventType, type GenericEvent } from './GenericWorker';
 
 export type HostEventType = EventType;
 
@@ -14,7 +14,7 @@ export interface HostAliveEvent {
     type: HostEventType;
 }
 
-export default class HostsWorker extends GenericWorker<'host'> {
+export class HostsWorker extends GenericWorker<'host'> {
     private readonly aliveHandlers: (((events: HostAliveEvent[]) => void) | false)[] = [];
 
     private readonly notificationsHandlers: ((notifications: Record<string, NotificationAnswer>) => void)[] = [];
@@ -133,18 +133,20 @@ export default class HostsWorker extends GenericWorker<'host'> {
             return this.notificationPromises[hostId];
         }
 
-        this.notificationPromises[hostId] = this.socket.getState(`${hostId}.alive`).then(state => {
-            if (state?.val) {
-                return this.socket
-                    .getNotifications(hostId, '')
-                    .then((notifications: NotificationAnswer) => ({ [hostId]: notifications || null }))
-                    .catch(e => {
-                        console.warn(`Cannot read notifications from "${hostId}": ${e}`);
-                        return { [hostId]: null };
-                    });
-            }
-            return { [hostId]: null };
-        });
+        this.notificationPromises[hostId] = this.socket
+            .getState(`${hostId}.alive`)
+            .then((state: ioBroker.State | null | undefined): Promise<Record<string, NotificationAnswer | null>> => {
+                if (state?.val) {
+                    return this.socket
+                        .getNotifications(hostId, '')
+                        .then((notifications: NotificationAnswer) => ({ [hostId]: notifications || null }))
+                        .catch((e: unknown): Record<string, NotificationAnswer | null> => {
+                            console.warn(`Cannot read notifications from "${hostId}": ${e as Error}`);
+                            return { [hostId]: null };
+                        });
+                }
+                return Promise.resolve({ [hostId]: null });
+            });
 
         return this.notificationPromises[hostId];
     }

@@ -17,6 +17,19 @@ declare global {
     }
 }
 
+type LogMessage = {
+    /** Log message */
+    message: string;
+    /** origin */
+    from: string;
+    /** timestamp in ms */
+    ts: number;
+    /** Log message */
+    severity: ioBroker.LogLevel;
+    /** unique ID of the message */
+    _id: number;
+};
+
 export type Severity = 'info' | 'notify' | 'alert';
 
 type DockerInformation =
@@ -132,7 +145,6 @@ export const PROGRESS = {
 
 const PERMISSION_ERROR = 'permissionError';
 const NOT_CONNECTED = 'notConnectedError';
-const TIMEOUT_FOR_ADMIN4 = 1300;
 
 export const ERRORS = {
     PERMISSION_ERROR,
@@ -140,68 +152,6 @@ export const ERRORS = {
 };
 
 export type BinaryStateChangeHandler = (id: string, base64: string | null) => void;
-
-function fixAdminUI(obj: ioBroker.AdapterObject): ioBroker.AdapterObject {
-    // @ts-expect-error it is deprecated, but still could appear
-    if (obj?.common && !obj.common.adminUI) {
-        if (obj.common.noConfig) {
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI = obj.common.adminUI || {};
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI.config = 'none';
-            // @ts-expect-error it is deprecated, but still could appear
-        } else if (obj.common.jsonConfig) {
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI = obj.common.adminUI || {};
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI.config = 'json';
-        } else if (obj.common.materialize) {
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI = obj.common.adminUI || {};
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI.config = 'materialize';
-        } else {
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI = obj.common.adminUI || {};
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI.config = 'html';
-        }
-
-        // @ts-expect-error it is deprecated, but still could appear
-        if (obj.common.jsonCustom) {
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI = obj.common.adminUI || {};
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI.custom = 'json';
-        } else if (obj.common.supportCustoms) {
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI = obj.common.adminUI || {};
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI.custom = 'json';
-        }
-
-        if (obj.common.materializeTab && obj.common.adminTab) {
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI = obj.common.adminUI || {};
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI.tab = 'materialize';
-        } else if (obj.common.adminTab) {
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI = obj.common.adminUI || {};
-            // @ts-expect-error it is deprecated, but still could appear
-            obj.common.adminUI.tab = 'html';
-        }
-
-        // @ts-expect-error it is deprecated, but still could appear
-        if (obj.common.adminUI) {
-            console.debug(
-                // @ts-expect-error it is deprecated, but still could appear
-                `Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`,
-            );
-        }
-    }
-    return obj;
-}
 
 /** Converts ioB pattern into regex */
 export function pattern2RegEx(pattern: string): string {
@@ -241,15 +191,13 @@ interface ConnectionProps {
     /** Ready callback. */
     onReady?: (objects: Record<string, ioBroker.Object>) => void;
     /** Log callback. */
-    onLog?: (text: string) => void;
+    onLog?: (message: LogMessage) => void;
     /** Error callback. */
     onError?: (error: any) => void;
     /** Object change callback. */
     onObjectChange?: ioBroker.ObjectChangeHandler;
     /** Gets called when the system language is determined */
     onLanguage?: (lang: ioBroker.Languages) => void;
-    /** Forces the use of the Compact Methods, wich only exists in admin 5 UI. */
-    admin5only?: boolean;
     /** The device UUID with which the communication must be established */
     uuid?: string;
     /** Authentication token (used only in cloud) */
@@ -337,7 +285,7 @@ export class LegacyConnection {
 
     private props: ConnectionProps;
 
-    private doNotLoadAllObjects: boolean;
+    private readonly doNotLoadAllObjects: boolean;
 
     private readonly doNotLoadACL: boolean;
 
@@ -396,8 +344,6 @@ export class LegacyConnection {
 
     private loadCounter: number = 0;
 
-    private admin5only: boolean;
-
     private ignoreState: string = '';
 
     private readonly simStates: Record<string, ioBroker.State> = {};
@@ -455,7 +401,6 @@ export class LegacyConnection {
                           id: string;
                       },
             ) => console.error(err));
-        this.admin5only = this.props.admin5only || false;
 
         this.startSocket();
     }
@@ -774,13 +719,10 @@ export class LegacyConnection {
         }
 
         // Read system configuration
-        let data: ioBroker.SystemConfigObject | null;
+        let systemConfig: ioBroker.SystemConfigObject | null;
         try {
-            if (this.admin5only && !window.vendorPrefix) {
-                data = await this.getCompactSystemConfig();
-            } else {
-                data = await this.getSystemConfig();
-            }
+            systemConfig = await this.getSystemConfig();
+
             if (this.doNotLoadACL) {
                 if (this.loaded) {
                     return;
@@ -793,7 +735,7 @@ export class LegacyConnection {
                 this.firstConnect = false;
             }
 
-            this.systemConfig = data;
+            this.systemConfig = systemConfig;
             if (this.systemConfig && this.systemConfig.common) {
                 this.systemLang = this.systemConfig.common.language;
             } else {
@@ -814,7 +756,7 @@ export class LegacyConnection {
                 this.onProgress(PROGRESS.READY);
                 this.props.onReady && this.objects && this.props.onReady(this.objects);
             } else {
-                this.objects = this.admin5only ? {} : { 'system.config': data };
+                this.objects = { 'system.config': systemConfig };
                 this.onProgress(PROGRESS.READY);
                 this.props.onReady && this.props.onReady(this.objects);
             }
@@ -841,11 +783,11 @@ export class LegacyConnection {
      * @param binary Set to true if the given state is binary and requires Base64 decoding
      * @param cb The callback
      */
-    subscribeState(
+    async subscribeState(
         id: string | string[],
         binary: boolean | ioBroker.StateChangeHandler | BinaryStateChangeHandler,
         cb?: ioBroker.StateChangeHandler | BinaryStateChangeHandler,
-    ): void {
+    ): Promise<void> {
         if (typeof binary === 'function') {
             cb = binary;
             binary = false;
@@ -859,7 +801,7 @@ export class LegacyConnection {
         }
         if (!cb) {
             console.error('No callback found for subscribeState');
-            return;
+            return Promise.reject(new Error('No callback found for subscribeState'));
         }
         const toSubscribe = [];
         for (let i = 0; i < ids.length; i++) {
@@ -895,20 +837,39 @@ export class LegacyConnection {
         }
 
         if (binary) {
+            let base64: string | undefined;
             for (let i = 0; i < ids.length; i++) {
-                this.getBinaryState(ids[i])
-                    .then((base64: string) => cb && (cb as BinaryStateChangeHandler)(ids[i], base64))
-                    .catch(e => console.error(`Cannot getBinaryState "${ids[i]}": ${JSON.stringify(e)}`));
+                try {
+                    // deprecated, but we still support it
+                    base64 = await this.getBinaryState(ids[i]);
+                } catch (e) {
+                    console.error(`Cannot getBinaryState "${ids[i]}": ${JSON.stringify(e)}`);
+                    base64 = undefined;
+                }
+                if (base64 !== undefined && cb) {
+                    (cb as BinaryStateChangeHandler)(ids[i], base64);
+                }
             }
         } else {
-            this._socket.emit(
-                LegacyConnection.isWeb() ? 'getStates' : 'getForeignStates',
-                id,
-                (err: string | null, states: Record<string, ioBroker.State>) => {
-                    err && console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(err)}`);
-                    states && Object.keys(states).forEach(_id => (cb as ioBroker.StateChangeHandler)(_id, states[_id]));
-                },
-            );
+            return new Promise((resolve: () => void, reject: (error: unknown) => void): void => {
+                this._socket.emit(
+                    LegacyConnection.isWeb() ? 'getStates' : 'getForeignStates',
+                    ids,
+                    (err: string | null, states: Record<string, ioBroker.State>) => {
+                        if (err) {
+                            console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(err)}`);
+                            reject(new Error(err));
+                        } else {
+                            if (states) {
+                                Object.keys(states).forEach(_id =>
+                                    (cb as ioBroker.StateChangeHandler)(_id, states[_id]),
+                                );
+                            }
+                            resolve();
+                        }
+                    },
+                );
+            });
         }
     }
 
@@ -1573,7 +1534,7 @@ export class LegacyConnection {
     /**
      * Gets the object with the given id from the server.
      */
-    getObject(id: string): Promise<ioBroker.Object> {
+    getObject<T = ioBroker.Object>(id: string): Promise<T> {
         if (!this.connected) {
             return Promise.reject(new Error(NOT_CONNECTED));
         }
@@ -1589,12 +1550,12 @@ export class LegacyConnection {
                     role: 'state',
                 },
                 native: {},
-            });
+            } as T);
         }
 
         return new Promise((resolve, reject) => {
             this._socket.emit('getObject', id, (err: string | null, obj: ioBroker.Object) =>
-                err ? reject(new Error(err)) : resolve(obj),
+                err ? reject(new Error(err)) : resolve(obj as T),
             );
         });
     }
@@ -1612,7 +1573,7 @@ export class LegacyConnection {
         }
         adapter = adapter || '';
 
-        if (!update && this._promises[`instances_${adapter}`]) {
+        if (!update && this._promises[`instances_${adapter}`] instanceof Promise) {
             return this._promises[`instances_${adapter}`] as Promise<ioBroker.InstanceObject[]>;
         }
 
@@ -1621,29 +1582,11 @@ export class LegacyConnection {
         }
 
         this._promises[`instances_${adapter}`] = new Promise((resolve, reject) => {
-            let timeout: ReturnType<typeof setTimeout> | null = setTimeout(() => {
-                timeout = null;
-                this.getObjectView(
-                    `system.adapter.${adapter ? `${adapter}.` : ''}`,
-                    `system.adapter.${adapter ? `${adapter}.` : ''}\u9999`,
-                    'instance',
-                )
-                    .then(items =>
-                        resolve(Object.keys(items).map(id => fixAdminUI(items[id] as ioBroker.AdapterObject))),
-                    )
-                    .catch(e => reject(new Error(e)));
-            }, TIMEOUT_FOR_ADMIN4);
-
             this._socket.emit(
                 'getAdapterInstances',
                 adapter,
-                (err: string | null, instances: ioBroker.InstanceObject[]) => {
-                    if (timeout) {
-                        clearTimeout(timeout);
-                        timeout = null;
-                        err ? reject(new Error(err)) : resolve(instances);
-                    }
-                },
+                (err: string | null, instances: ioBroker.InstanceObject[]) =>
+                    err ? reject(new Error(err)) : resolve(instances),
             );
         });
 
@@ -1668,7 +1611,7 @@ export class LegacyConnection {
 
         adapter = adapter || '';
 
-        if (!update && this._promises[`adapter_${adapter}`]) {
+        if (!update && this._promises[`adapter_${adapter}`] instanceof Promise) {
             return this._promises[`adapter_${adapter}`] as Promise<ioBroker.AdapterObject[]>;
         }
 
@@ -1676,24 +1619,13 @@ export class LegacyConnection {
             return Promise.reject(new Error(NOT_CONNECTED));
         }
 
-        this._promises[`adapter_${adapter}`] = new Promise((resolve, reject) => {
-            let timeout: ReturnType<typeof setTimeout> | null = setTimeout(() => {
-                timeout = null;
-                this.getObjectView(`system.adapter.${adapter}.`, `system.adapter.${adapter}.\u9999`, 'adapter')
-                    .then(items => {
-                        resolve(Object.keys(items).map(id => fixAdminUI(items[id] as ioBroker.AdapterObject)));
-                    })
-                    .catch(e => reject(new Error(e)));
-            }, TIMEOUT_FOR_ADMIN4);
-
-            this._socket.emit('getAdapters', adapter, (err: string | null, adapters: ioBroker.AdapterObject[]) => {
-                if (timeout) {
-                    clearTimeout(timeout);
-                    timeout = null;
+        this._promises[`adapter_${adapter}`] = new Promise(
+            (resolve: (adapters: ioBroker.AdapterObject[]) => void, reject) => {
+                this._socket.emit('getAdapters', adapter, (err: string | null, adapters: ioBroker.AdapterObject[]) => {
                     err ? reject(new Error(err)) : resolve(adapters);
-                }
-            });
-        });
+                });
+            },
+        );
 
         return this._promises[`adapter_${adapter}`] as Promise<ioBroker.AdapterObject[]>;
     }
@@ -1711,7 +1643,7 @@ export class LegacyConnection {
                 return;
             }
             const oldId = obj._id;
-            obj._id = obj.newId as ioBroker.ObjectIDs.Group;
+            obj._id = obj.newId;
             delete obj.newId;
 
             this.setObject(obj._id, obj)
@@ -1755,7 +1687,6 @@ export class LegacyConnection {
                 obj._id = newId as ioBroker.ObjectIDs.Group;
                 if (newName !== undefined) {
                     obj.common = obj.common || ({} as ioBroker.GroupCommon);
-                    // @ts-expect-error will be corrected in the next js-controller release
                     obj.common.name = newName;
                 }
 
@@ -1899,7 +1830,7 @@ export class LegacyConnection {
         /** Force update. */
         update?: boolean,
     ): Promise<Record<string, ioBroker.EnumObject>> {
-        if (!update && this._promises[`enums_${_enum || 'all'}`]) {
+        if (!update && this._promises[`enums_${_enum || 'all'}`] instanceof Promise) {
             return this._promises[`enums_${_enum || 'all'}`] as Promise<Record<string, ioBroker.EnumObject>>;
         }
 
@@ -1983,12 +1914,12 @@ export class LegacyConnection {
      * @param start The start ID.
      * @param end The end ID.
      */
-    getObjectViewSystem(
+    getObjectViewSystem<T = ioBroker.Object>(
         type: ioBroker.ObjectType,
         start: string,
         end?: string,
-    ): Promise<Record<string, ioBroker.Object>> {
-        return this.getObjectViewCustom('system', type, start, end);
+    ): Promise<Record<string, T>> {
+        return this.getObjectViewCustom('system', type, start, end) as Promise<Record<string, T>>;
     }
 
     /**
@@ -2019,7 +1950,7 @@ export class LegacyConnection {
             return Promise.reject(new Error('Allowed only in admin'));
         }
 
-        if (this._promises.cert && !update) {
+        if (this._promises.cert instanceof Promise && !update) {
             return this._promises.cert;
         }
 
@@ -2263,7 +2194,7 @@ export class LegacyConnection {
         if (LegacyConnection.isWeb()) {
             return Promise.reject(new Error('Allowed only in admin'));
         }
-        if (!update && this._promises.hosts) {
+        if (!update && this._promises.hosts instanceof Promise) {
             return this._promises.hosts;
         }
 
@@ -2299,7 +2230,7 @@ export class LegacyConnection {
         if (LegacyConnection.isWeb()) {
             return Promise.reject(new Error('Allowed only in admin'));
         }
-        if (!update && this._promises.users) {
+        if (!update && this._promises.users instanceof Promise) {
             return this._promises.users;
         }
         if (!this.connected) {
@@ -2331,7 +2262,7 @@ export class LegacyConnection {
      * @param update Force update.
      */
     getGroups(update?: boolean): Promise<ioBroker.GroupObject[]> {
-        if (!update && this._promises.groups) {
+        if (!update && this._promises.groups instanceof Promise) {
             return this._promises.groups;
         }
         if (!this.connected) {
@@ -2372,8 +2303,8 @@ export class LegacyConnection {
             host += `system.host.${host}`;
         }
 
-        if (!update && this._promises[`hostInfo_${host}`]) {
-            return this._promises[`hostInfo_${host}`] as Promise<HostInfo>;
+        if (!update && this._promises[`hostInfo_${host}`] instanceof Promise) {
+            return this._promises[`hostInfo_${host}`];
         }
 
         if (!this.connected) {
@@ -2403,7 +2334,7 @@ export class LegacyConnection {
             });
         });
 
-        return this._promises[`hostInfo_${host}`] as Promise<HostInfo>;
+        return this._promises[`hostInfo_${host}`];
     }
 
     /**
@@ -2420,8 +2351,8 @@ export class LegacyConnection {
         if (!host.startsWith('system.host.')) {
             host += `system.host.${host}`;
         }
-        if (!update && this._promises[`hostInfoShort_${host}`]) {
-            return this._promises[`hostInfoShort_${host}`] as Promise<HostInfo>;
+        if (!update && this._promises[`hostInfoShort_${host}`] instanceof Promise) {
+            return this._promises[`hostInfoShort_${host}`];
         }
 
         if (!this.connected) {
@@ -2451,7 +2382,7 @@ export class LegacyConnection {
             });
         });
 
-        return this._promises[`hostInfoShort_${host}`] as Promise<HostInfo>;
+        return this._promises[`hostInfoShort_${host}`];
     }
 
     /**
@@ -2471,7 +2402,7 @@ export class LegacyConnection {
         if (LegacyConnection.isWeb()) {
             return Promise.reject(new Error('Allowed only in admin'));
         }
-        if (!update && this._promises.repo) {
+        if (!update && this._promises.repo instanceof Promise) {
             return this._promises.repo;
         }
 
@@ -2529,8 +2460,8 @@ export class LegacyConnection {
 
         this._promises.installed = this._promises.installed || {};
 
-        if (!update && this._promises.installed[host]) {
-            return this._promises.installed[host] as Promise<Record<string, ioBroker.AdapterObject>>;
+        if (!update && this._promises.installed[host] instanceof Promise) {
+            return this._promises.installed[host];
         }
 
         if (!this.connected) {
@@ -2570,7 +2501,7 @@ export class LegacyConnection {
             );
         });
 
-        return this._promises.installed[host] as Promise<Record<string, ioBroker.AdapterObject>>;
+        return this._promises.installed[host];
     }
 
     /**
@@ -2669,8 +2600,8 @@ export class LegacyConnection {
         /** Force update. */
         update?: boolean,
     ): Promise<boolean> {
-        if (!update && this._promises[`supportedFeatures_${feature}`]) {
-            return this._promises[`supportedFeatures_${feature}`] as Promise<boolean>;
+        if (!update && this._promises[`supportedFeatures_${feature}`] instanceof Promise) {
+            return this._promises[`supportedFeatures_${feature}`];
         }
 
         if (!this.connected) {
@@ -2683,7 +2614,7 @@ export class LegacyConnection {
             );
         });
 
-        return this._promises[`supportedFeatures_${feature}`] as Promise<boolean>;
+        return this._promises[`supportedFeatures_${feature}`];
     }
 
     /**
@@ -2872,7 +2803,7 @@ export class LegacyConnection {
      * @param update Force update.
      */
     getSystemConfig(update?: boolean): Promise<ioBroker.SystemConfigObject> {
-        if (!update && this._promises.systemConfig) {
+        if (!update && this._promises.systemConfig instanceof Promise) {
             return this._promises.systemConfig;
         }
 
@@ -2929,7 +2860,7 @@ export class LegacyConnection {
     getHistoryEx(
         id: string,
         options: ioBroker.GetHistoryOptions,
-    ): Promise<{ values: ioBroker.GetHistoryResult; sessionId: string; stepIgnore: number }> {
+    ): Promise<{ values: ioBroker.GetHistoryResult; sessionId: string; step: number }> {
         if (!this.connected) {
             return Promise.reject(new Error(NOT_CONNECTED));
         }
@@ -2939,8 +2870,8 @@ export class LegacyConnection {
                 'getHistory',
                 id,
                 options,
-                (err: string | null, values: ioBroker.GetHistoryResult, stepIgnore: number, sessionId: string) =>
-                    err ? reject(new Error(err)) : resolve({ values, sessionId, stepIgnore }),
+                (err: string | null, values: ioBroker.GetHistoryResult, step: number, sessionId: string) =>
+                    err ? reject(new Error(err)) : resolve({ values, sessionId, step }),
             );
         });
     }
@@ -2974,12 +2905,12 @@ export class LegacyConnection {
             host = `system.host.${host}`;
         }
 
-        if (!update && this._promises[`IPs_${host}`]) {
-            return this._promises[`IPs_${host}`] as Promise<string[]>;
+        if (!update && this._promises[`IPs_${host}`] instanceof Promise) {
+            return this._promises[`IPs_${host}`];
         }
         this._promises[`IPs_${host}`] = this.getObject(host).then(obj => (obj?.common ? obj.common.address || [] : []));
 
-        return this._promises[`IPs_${host}`] as Promise<string[]>;
+        return this._promises[`IPs_${host}`];
     }
 
     /**
@@ -2997,13 +2928,13 @@ export class LegacyConnection {
             ipOrHostName = ipOrHostName.replace(/^system\.host\./, '');
         }
 
-        if (!update && this._promises[`rIPs_${ipOrHostName}`]) {
+        if (!update && this._promises[`rIPs_${ipOrHostName}`] instanceof Promise) {
             return this._promises[`rIPs_${ipOrHostName}`] as Promise<
                 { name: string; address: string; family: 'ipv4' | 'ipv6' }[]
             >;
         }
         this._promises[`rIPs_${ipOrHostName}`] = new Promise(resolve => {
-            this._socket.emit('getHostByIp', ipOrHostName, (ip: string, host: any) => {
+            this._socket.emit('getHostByIp', ipOrHostName, (_ip: string, host: any) => {
                 const IPs4: {
                     name: string;
                     address: string;
@@ -3080,22 +3011,20 @@ export class LegacyConnection {
      * Gets the version.
      */
     getVersion(update?: boolean): Promise<{ version: string; serverName: string }> {
-        if (update && this._promises.version) {
-            delete this._promises.version;
+        if (!update && this._promises.version instanceof Promise) {
+            return this._promises.version;
         }
 
-        this._promises.version =
-            this._promises.version ||
-            new Promise((resolve, reject) => {
-                this._socket.emit('getVersion', (err: string | null, version: string, serverName: string) => {
-                    // support of old socket.io
-                    if (err && !version && typeof err === 'string' && err.match(/\d+\.\d+\.\d+/)) {
-                        resolve({ version: err, serverName: 'socketio' });
-                    } else {
-                        err ? reject(new Error(err)) : resolve({ version, serverName });
-                    }
-                });
+        this._promises.version = new Promise((resolve, reject) => {
+            this._socket.emit('getVersion', (err: string | null, version: string, serverName: string) => {
+                // support of old socket.io
+                if (err && !version && typeof err === 'string' && err.match(/\d+\.\d+\.\d+/)) {
+                    resolve({ version: err, serverName: 'socketio' });
+                } else {
+                    err ? reject(new Error(err)) : resolve({ version, serverName });
+                }
             });
+        });
 
         return this._promises.version;
     }
@@ -3104,13 +3033,15 @@ export class LegacyConnection {
      * Gets the web server name.
      */
     getWebServerName(): Promise<string> {
-        this._promises.webName =
-            this._promises.webName ||
-            new Promise((resolve, reject) => {
-                this._socket.emit('getAdapterName', (err: string | null, name: string) =>
-                    err ? reject(new Error(err)) : resolve(name),
-                );
-            });
+        if (this._promises.webName instanceof Promise) {
+            return this._promises.webName;
+        }
+
+        this._promises.webName = new Promise((resolve, reject) => {
+            this._socket.emit('getAdapterName', (err: string | null, name: string) =>
+                err ? reject(new Error(err)) : resolve(name),
+            );
+        });
 
         return this._promises.webName;
     }
@@ -3294,7 +3225,7 @@ export class LegacyConnection {
         }
 
         return new Promise(resolve => {
-            this._socket.emit('authEnabled', (isSecure: boolean, user: string) => resolve(user));
+            this._socket.emit('authEnabled', (_isSecure: boolean, user: string) => resolve(user));
         });
     }
 
@@ -3352,13 +3283,15 @@ export class LegacyConnection {
             return Promise.reject(new Error(NOT_CONNECTED));
         }
 
-        this._promises.currentInstance =
-            this._promises.currentInstance ||
-            new Promise((resolve, reject) => {
-                this._socket.emit('getCurrentInstance', (err: string | null, namespace: string) =>
-                    err ? reject(new Error(err)) : resolve(namespace),
-                );
-            });
+        if (this._promises.currentInstance instanceof Promise) {
+            return this._promises.currentInstance;
+        }
+
+        this._promises.currentInstance = new Promise((resolve, reject) => {
+            this._socket.emit('getCurrentInstance', (err: string | null, namespace: string) =>
+                err ? reject(new Error(err)) : resolve(namespace),
+            );
+        });
 
         return this._promises.currentInstance;
     }
@@ -3368,7 +3301,7 @@ export class LegacyConnection {
         if (LegacyConnection.isWeb()) {
             return Promise.reject(new Error('Allowed only in admin'));
         }
-        if (!update && this._promises.compactAdapters) {
+        if (!update && this._promises.compactAdapters instanceof Promise) {
             return this._promises.compactAdapters;
         }
         if (!this.connected) {
@@ -3396,7 +3329,7 @@ export class LegacyConnection {
         if (LegacyConnection.isWeb()) {
             return Promise.reject(new Error('Allowed only in admin'));
         }
-        if (!update && this._promises.compactInstances) {
+        if (!update && this._promises.compactInstances instanceof Promise) {
             return this._promises.compactInstances;
         }
         if (!this.connected) {
@@ -3435,8 +3368,8 @@ export class LegacyConnection {
 
         this._promises.installedCompact = this._promises.installedCompact || {};
 
-        if (!update && this._promises.installedCompact[host]) {
-            return this._promises.installedCompact[host] as Promise<Record<string, ioBroker.AdapterObject>>;
+        if (!update && this._promises.installedCompact[host] instanceof Promise) {
+            return this._promises.installedCompact[host];
         }
 
         if (!this.connected) {
@@ -3470,7 +3403,7 @@ export class LegacyConnection {
             });
         });
 
-        return this._promises.installedCompact[host] as Promise<Record<string, ioBroker.AdapterObject>>;
+        return this._promises.installedCompact[host];
     }
 
     // returns very optimized information for adapters to minimize a connection load.
@@ -3480,7 +3413,7 @@ export class LegacyConnection {
             return Promise.reject(new Error('Allowed only in admin'));
         }
 
-        if (!update && this._promises.getCompactSystemRepositories) {
+        if (!update && this._promises.getCompactSystemRepositories instanceof Promise) {
             return this._promises.getCompactSystemRepositories;
         }
 
@@ -3516,7 +3449,7 @@ export class LegacyConnection {
 
     // returns very optimized information for adapters to minimize a connection load
     getCompactSystemConfig(update?: boolean): Promise<ioBroker.SystemConfigObject> {
-        if (!update && this._promises.systemConfigPromise) {
+        if (!update && this._promises.systemConfigPromise instanceof Promise) {
             return this._promises.systemConfigPromise;
         }
 
@@ -3551,7 +3484,7 @@ export class LegacyConnection {
             return Promise.reject(new Error('Allowed only in admin'));
         }
 
-        if (!update && this._promises.repoCompact) {
+        if (!update && this._promises.repoCompact instanceof Promise) {
             return this._promises.repoCompact;
         }
 
@@ -3605,7 +3538,7 @@ export class LegacyConnection {
         if (LegacyConnection.isWeb()) {
             return Promise.reject(new Error('Allowed only in admin'));
         }
-        if (!update && this._promises.hostsCompact) {
+        if (!update && this._promises.hostsCompact instanceof Promise) {
             return this._promises.hostsCompact;
         }
 
@@ -3626,7 +3559,7 @@ export class LegacyConnection {
      * Get uuid
      */
     getUuid(): Promise<string | undefined> {
-        if (this._promises.uuid) {
+        if (this._promises.uuid instanceof Promise) {
             return this._promises.uuid;
         }
 

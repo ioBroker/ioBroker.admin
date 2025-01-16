@@ -2,6 +2,7 @@ import React, { Component, Fragment, type JSX } from 'react';
 
 import {
     Box,
+    Button,
     LinearProgress,
     Table,
     TableBody,
@@ -9,8 +10,11 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    Tooltip,
     Typography,
 } from '@mui/material';
+
+import { Update as UpdateIcon } from '@mui/icons-material';
 
 import { TabContent } from '@iobroker/adapter-react-v5';
 
@@ -126,13 +130,19 @@ interface AdaptersListProps {
         adapters: string[];
     }[];
     toggleCategory: (category: string) => void;
-    clearAllFilters: () => void;
+    clearAllFilters: (onlyUpdate?: boolean) => void;
     update: boolean;
     descWidth: number;
     sortByName: boolean;
     sortPopularFirst: boolean;
     sortRecentlyUpdated: boolean;
     commandRunning: boolean;
+    updateListFilter: boolean;
+    /** Filter as string */
+    searchFilter: string;
+    /** Filter: show only installed */
+    installedListFilter: number;
+    noTranslation: boolean;
 }
 
 interface AdaptersListState {
@@ -151,6 +161,7 @@ interface AdaptersListState {
     renderCounter: number;
     expertMode: boolean;
     commandRunning: boolean;
+    noTranslation: boolean;
 }
 
 class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
@@ -175,6 +186,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             listOfVisibleAdapter: JSON.stringify(props.listOfVisibleAdapter),
             expertMode: props.context.expertMode,
             commandRunning: props.commandRunning,
+            noTranslation: props.noTranslation,
         };
     }
 
@@ -188,6 +200,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                     adapterName={adapterName}
                     cached={cached}
                     commandRunning={this.state.commandRunning}
+                    noTranslation={this.state.noTranslation}
                 />
             );
         }
@@ -221,16 +234,19 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             count = rows.length;
 
             if (count && this.props.listOfVisibleAdapter.length > rows.length) {
+                const rest = this.props.listOfVisibleAdapter.length - rows.length;
+                const text =
+                    rest === 1
+                        ? this.props.context.t('Filter adapters to see others. There is %s more', 1)
+                        : this.props.context.t('Filter adapters to see others. There are %s more', rest);
+
                 rows.push(
                     <TableRow key="more">
                         <TableCell
                             colSpan={8}
                             style={{ fontSize: 20, padding: 20, textAlign: 'center' }}
                         >
-                            {this.props.context.t(
-                                'Filter adapters to see others. There is %s more',
-                                this.props.listOfVisibleAdapter.length - rows.length,
-                            )}
+                            {text}
                         </TableCell>
                     </TableRow>,
                 );
@@ -278,16 +294,31 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             return !this.props.update ? (
                 <tr>
                     <td
-                        colSpan={4}
-                        style={{
-                            padding: 16,
-                            fontSize: 18,
-                            cursor: 'pointer',
-                        }}
-                        title={this.props.context.t('Click to clear all filters')}
-                        onClick={() => this.props.clearAllFilters()}
+                        colSpan={8}
+                        style={{ textAlign: 'center' }}
                     >
-                        {this.props.context.t('all items are filtered out')}
+                        {this.props.searchFilter || this.props.installedListFilter ? (
+                            <Button
+                                variant="outlined"
+                                title={this.props.context.t('Click to clear all filters')}
+                                onClick={() => this.props.clearAllFilters()}
+                            >
+                                {this.props.context.t('all items are filtered out')}
+                            </Button>
+                        ) : null}
+                        {this.props.updateListFilter && (this.props.searchFilter || this.props.installedListFilter) ? (
+                            <br />
+                        ) : null}
+                        {this.props.updateListFilter ? (
+                            <Button
+                                style={{ marginTop: 16 }}
+                                variant="outlined"
+                                onClick={() => this.props.clearAllFilters(true)}
+                                startIcon={<UpdateIcon />}
+                            >
+                                {this.props.context.t('Remove filter for updatable adapters')}
+                            </Button>
+                        ) : null}
                     </td>
                 </tr>
             ) : null;
@@ -305,13 +336,36 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             return !this.props.update ? (
                 <div
                     style={{
-                        margin: 20,
-                        fontSize: 26,
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: 16,
                     }}
-                    title={this.props.context.t('Click to clear all filters')}
-                    onClick={() => this.props.clearAllFilters()}
                 >
-                    {this.props.context.t('all items are filtered out')}
+                    {this.props.searchFilter || this.props.installedListFilter ? (
+                        <Tooltip
+                            title={this.props.context.t('Click to clear all filters')}
+                            slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                        >
+                            <Button
+                                variant="outlined"
+                                onClick={() => this.props.clearAllFilters()}
+                            >
+                                {this.props.context.t('all items are filtered out')}
+                            </Button>
+                        </Tooltip>
+                    ) : null}
+                    {this.props.updateListFilter ? (
+                        <Button
+                            variant="outlined"
+                            onClick={() => this.props.clearAllFilters(true)}
+                            startIcon={<UpdateIcon />}
+                        >
+                            {this.props.context.t('Remove filter for updatable adapters')}
+                        </Button>
+                    ) : null}
                 </div>
             ) : null;
         }
@@ -331,6 +385,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                     adapterName={adapterName}
                     cached={cached}
                     commandRunning={this.state.commandRunning}
+                    noTranslation={this.state.noTranslation}
                 />,
             );
         }
@@ -495,6 +550,10 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             console.log('Render because of commandRunning');
             changed = true;
         }
+        if (props.noTranslation !== state.noTranslation) {
+            console.log('Render because of commandRunning');
+            changed = true;
+        }
         if (changed) {
             return {
                 descWidth: props.descWidth,
@@ -512,13 +571,14 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 renderCounter: state.renderCounter + 1,
                 expertMode: props.context.expertMode,
                 commandRunning: props.commandRunning,
+                noTranslation: props.noTranslation,
             };
         }
 
         return null;
     }
 
-    shouldComponentUpdate(nextProps: Readonly<AdaptersListProps>, nextState: Readonly<AdaptersListState>): boolean {
+    shouldComponentUpdate(_nextProps: Readonly<AdaptersListProps>, nextState: Readonly<AdaptersListState>): boolean {
         if (this.lastRenderCounter !== nextState.renderCounter) {
             this.lastRenderCounter = nextState.renderCounter;
             return true;

@@ -13,7 +13,7 @@ export interface LogLineSaved extends LogLine {
     key?: number;
 }
 
-export default class LogsWorker {
+export class LogsWorker {
     private readonly socket: AdminConnection;
 
     private readonly handlers: ((events: LogLineSaved[], messageSize: number) => void)[];
@@ -387,8 +387,8 @@ export default class LogsWorker {
 
                 return { logs: this.logs, logSize };
             })
-            .catch(e => {
-                window.alert(`Cannot get logs: ${e}`);
+            .catch((e: unknown): { logs: LogLineSaved[] | null; logSize: number } => {
+                window.alert(`Cannot get logs: ${e as Error}`);
                 return { logs: this.logs, logSize: 0 };
             });
 

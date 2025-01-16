@@ -56,7 +56,7 @@ export type GenericEvent<T extends ioBroker.ObjectType> = {
     oldObj?: GetObjectFromType<T>;
 };
 
-export default class GenericWorker<T extends ioBroker.ObjectType> {
+export class GenericWorker<T extends ioBroker.ObjectType> {
     protected readonly socket: AdminConnection;
 
     protected readonly handlers: ((events: GenericEvent<T>[]) => void)[] = [];
@@ -170,8 +170,8 @@ export default class GenericWorker<T extends ioBroker.ObjectType> {
 
                 return this.objects;
             })
-            .catch(e => {
-                window.alert(`Cannot get objects of type ${this.objectType}, with root "${this.root}": ${e}`);
+            .catch((e: unknown): null => {
+                window.alert(`Cannot get objects of type ${this.objectType}, with root "${this.root}": ${e as Error}`);
                 return null;
             });
 

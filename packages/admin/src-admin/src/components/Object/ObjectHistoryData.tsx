@@ -522,7 +522,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 from: true,
                 ack: true,
                 q: true,
-                addID: false,
+                addId: false,
                 aggregate: 'none',
                 returnNewestEntries: true,
             })
@@ -633,7 +633,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 from: false,
                 ack: false,
                 q: false,
-                addID: false,
+                addId: false,
                 aggregate: 'none',
             })
             .then((values: ioBroker.GetHistoryResult) => {

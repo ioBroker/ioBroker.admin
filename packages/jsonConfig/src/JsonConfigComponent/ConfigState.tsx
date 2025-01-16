@@ -1,12 +1,42 @@
 import React, { type JSX } from 'react';
 
-import { TextField, IconButton, Button, Switch, Slider } from '@mui/material';
+import { TextField, IconButton, Button, Switch, Slider, Box } from '@mui/material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n, Icon, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemState } from '#JC/types';
 import getIconByName from './Icons';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
+
+function valueBlinkOnce(theme: IobTheme, color?: string | boolean): any {
+    if (typeof color === 'string') {
+        return {
+            '@keyframes newStateAnimationOnceColor': {
+                '0%': {
+                    color,
+                },
+                '100%': {
+                    color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+                },
+            },
+            animation: 'newStateAnimationOnceColor 2s ease-in-out',
+        };
+    }
+    return {
+        '@keyframes newStateAnimationOnce': {
+            '0%': {
+                color: '#00f900',
+            },
+            '80%': {
+                color: theme.palette.mode === 'dark' ? '#518851' : '#008000',
+            },
+            '100%': {
+                color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+            },
+        },
+        animation: 'newStateAnimationOnce 2s ease-in-out',
+    };
+}
 
 interface ConfigStateProps extends ConfigGenericProps {
     schema: ConfigItemState;
@@ -27,26 +57,29 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
     };
 
     getObjectID(): string {
-        return `${this.props.schema.system ? 'system.adapter.' : ''}${this.props.adapterName}.${this.props.instance}.${this.props.schema.oid}`;
+        if (this.props.schema.foreign) {
+            return this.props.schema.oid;
+        }
+        return `${this.props.schema.system ? 'system.adapter.' : ''}${this.props.oContext.adapterName}.${this.props.oContext.instance}.${this.props.schema.oid}`;
     }
 
     async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        const obj: ioBroker.StateObject = (await this.props.socket.getObject(
+        const obj: ioBroker.StateObject = (await this.props.oContext.socket.getObject(
             this.getObjectID(),
         )) as ioBroker.StateObject;
         const controlType = this.props.schema.control || this.detectType(obj);
 
-        const state = await this.props.socket.getState(this.getObjectID());
+        const state = await this.props.oContext.socket.getState(this.getObjectID());
 
         this.setState({ stateValue: state ? state.val : null, controlType, obj }, async () => {
-            await this.props.socket.subscribeState(this.getObjectID(), this.onStateChanged);
+            await this.props.oContext.socket.subscribeState(this.getObjectID(), this.onStateChanged);
         });
     }
 
     componentWillUnmount(): void {
         super.componentWillUnmount();
-        this.props.socket.unsubscribeState(this.getObjectID(), this.onStateChanged);
+        this.props.oContext.socket.unsubscribeState(this.getObjectID(), this.onStateChanged);
         if (this.delayedUpdate.timer) {
             clearTimeout(this.delayedUpdate.timer);
             this.delayedUpdate.timer = null;
@@ -55,7 +88,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         if (this.controlTimeout) {
             clearTimeout(this.controlTimeout);
             this.controlTimeout = null;
-            this.props.socket
+            this.props.oContext.socket
                 .setState(this.getObjectID(), this.state.stateValue, false)
                 .catch(e => console.error(`Cannot control value: ${e}`));
         }
@@ -124,7 +157,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         return 'text';
     }
 
-    renderItem(/* error, disabled, defaultValue */): JSX.Element {
+    renderItem(_error: string, disabled: boolean/*, defaultValue */): JSX.Element {
         if (!this.state.obj) {
             return null;
         }
@@ -137,9 +170,11 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 icon = getIconByName(this.props.schema.falseImage);
             }
 
-            const text =
-                this.getText(this.props.schema.falseText, this.props.schema.noTranslation) ||
-                this.getText(this.props.schema.label, this.props.schema.noTranslation);
+            const text = this.getText(
+                this.props.schema.falseText || this.props.schema.label,
+                this.props.schema.noTranslation,
+            );
+
             if (!text && icon) {
                 content = (
                     <IconButton
@@ -151,12 +186,12 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                                     confirmDialog: true,
                                     confirmCallback: async (result: boolean) => {
                                         if (result) {
-                                            await this.props.socket.setState(this.getObjectID(), true, false);
+                                            await this.props.oContext.socket.setState(this.getObjectID(), true, false);
                                         }
                                     },
                                 });
                             } else {
-                                await this.props.socket.setState(this.getObjectID(), true, false);
+                                await this.props.oContext.socket.setState(this.getObjectID(), true, false);
                             }
                         }}
                     >
@@ -169,166 +204,24 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         variant={this.props.schema.variant || 'contained'}
                         startIcon={icon}
                         style={this.props.schema.falseTextStyle}
-                        disabled={!!this.props.schema.readOnly}
+                        disabled={disabled || !!this.props.schema.readOnly}
                         onClick={async () => {
                             if (this.props.schema.confirm) {
                                 this.setState({
                                     confirmDialog: true,
                                     confirmCallback: async (result: boolean) => {
                                         if (result) {
-                                            await this.props.socket.setState(this.getObjectID(), true, false);
+                                            await this.props.oContext.socket.setState(this.getObjectID(), true, false);
                                         }
                                     },
                                 });
                             } else {
-                                await this.props.socket.setState(this.getObjectID(), true, false);
+                                await this.props.oContext.socket.setState(this.getObjectID(), true, false);
                             }
                         }}
                     >
                         {text || this.getObjectID().split('.').pop()}
                     </Button>
-                );
-            }
-        } else if (this.state.controlType === 'switch') {
-            let iconFalse: JSX.Element | null = null;
-            const textFalse = this.getText(this.props.schema.falseText, this.props.schema.noTranslation);
-            if (this.props.schema.falseImage) {
-                iconFalse = getIconByName(this.props.schema.falseImage, textFalse ? { marginLeft: 8 } : undefined);
-            }
-            let iconTrue: JSX.Element | null = null;
-            const textTrue = this.getText(this.props.schema.trueText, this.props.schema.noTranslation);
-            if (this.props.schema.trueImage) {
-                iconTrue = getIconByName(this.props.schema.trueImage, textTrue ? { marginRight: 8 } : undefined);
-            }
-
-            content = (
-                <Switch
-                    checked={!!this.state.stateValue}
-                    disabled={!!this.props.schema.readOnly}
-                    onChange={async () => {
-                        if (this.props.schema.confirm) {
-                            this.setState({
-                                confirmDialog: true,
-                                confirmCallback: async (result: boolean) => {
-                                    if (result) {
-                                        await this.props.socket.setState(
-                                            this.getObjectID(),
-                                            !this.state.stateValue,
-                                            false,
-                                        );
-                                    }
-                                },
-                            });
-                        } else {
-                            await this.props.socket.setState(this.getObjectID(), !this.state.stateValue, false);
-                        }
-                    }}
-                />
-            );
-
-            if (textFalse || iconFalse || textTrue || iconTrue) {
-                content = (
-                    <div style={{ display: 'flex', alignItems: 'center', fontSize: 14 }}>
-                        <span style={this.props.schema.falseTextStyle}>
-                            {textFalse}
-                            {iconFalse}
-                        </span>
-                        {content}
-                        <span style={this.props.schema.trueTextStyle}>
-                            {iconTrue}
-                            {textTrue}
-                        </span>
-                    </div>
-                );
-            }
-
-            const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
-            if (label) {
-                content = (
-                    <div style={{ display: 'flex', alignItems: 'center', fontSize: '1rem' }}>
-                        <span style={{ marginRight: 8 }}>{label}</span>
-                        {content}
-                    </div>
-                );
-            }
-        } else if (this.state.controlType === 'slider') {
-            let iconFalse: JSX.Element | null = null;
-            const textFalse = this.getText(this.props.schema.falseText, this.props.schema.noTranslation);
-            if (this.props.schema.falseImage) {
-                iconFalse = getIconByName(this.props.schema.falseImage, textFalse ? { marginLeft: 8 } : undefined);
-            }
-            let iconTrue: JSX.Element | null = null;
-            const textTrue = this.getText(this.props.schema.trueText, this.props.schema.noTranslation);
-            if (this.props.schema.trueImage) {
-                iconTrue = getIconByName(this.props.schema.trueImage, textTrue ? { marginRight: 8 } : undefined);
-            }
-
-            const min = this.props.schema.min === undefined ? this.state.obj.common.min || 0 : this.props.schema.min;
-            const max =
-                this.props.schema.max === undefined
-                    ? this.state.obj.common.max === undefined
-                        ? 100
-                        : this.state.obj.common.max
-                    : this.props.schema.max;
-            const step =
-                this.props.schema.step === undefined ? this.state.obj.common.step || 1 : this.props.schema.step;
-
-            content = (
-                <Slider
-                    style={{ width: '100%', flexGrow: 1 }}
-                    min={min}
-                    max={max}
-                    disabled={!!this.props.schema.readOnly}
-                    step={step}
-                    value={this.state.stateValue as number}
-                    valueLabelDisplay="auto"
-                    valueLabelFormat={(value: number) =>
-                        `${value}${this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || ''}`
-                    }
-                    onChange={(_e: Event, value: number) => {
-                        this.setState({ stateValue: value }, (): void => {
-                            if (this.controlTimeout) {
-                                clearTimeout(this.controlTimeout);
-                            }
-                            this.controlTimeout = setTimeout(async () => {
-                                console.log(`${Date.now()} Send new value: ${this.state.stateValue}`);
-                                this.controlTimeout = null;
-                                await this.props.socket.setState(this.getObjectID(), this.state.stateValue, false);
-                            }, this.props.schema.controlDelay || 0);
-                        });
-                    }}
-                />
-            );
-
-            if (textFalse || iconFalse || textTrue || iconTrue) {
-                content = (
-                    <div
-                        style={{
-                            display: 'flex',
-                            width: '100%',
-                            flexGrow: 1,
-                            alignItems: 'center',
-                        }}
-                    >
-                        <span style={{ marginRight: 16, ...this.props.schema.falseTextStyle }}>
-                            {textFalse}
-                            {iconFalse}
-                        </span>
-                        {content}
-                        <span style={{ marginLeft: 16, ...this.props.schema.trueTextStyle }}>
-                            {iconTrue}
-                            {textTrue}
-                        </span>
-                    </div>
-                );
-            }
-            const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
-            if (label) {
-                content = (
-                    <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
-                        <span style={{ whiteSpace: 'nowrap', marginRight: 8, fontSize: '1rem' }}>{label}</span>
-                        {content}
-                    </div>
                 );
             }
         } else if (this.state.controlType === 'input') {
@@ -355,7 +248,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                             }
                             this.controlTimeout = setTimeout(async () => {
                                 this.controlTimeout = null;
-                                await this.props.socket.setState(this.getObjectID(), this.state.stateValue, false);
+                                await this.props.oContext.socket.setState(this.getObjectID(), this.state.stateValue, false);
                             }, this.props.schema.controlDelay || 0);
                         });
                     }}
@@ -401,11 +294,11 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                             this.controlTimeout = setTimeout(async () => {
                                 this.controlTimeout = null;
                                 const val = parseFloat(this.state.stateValue as unknown as string);
-                                await this.props.socket.setState(this.getObjectID(), val, false);
+                                await this.props.oContext.socket.setState(this.getObjectID(), val, false);
                             }, this.props.schema.controlDelay || 0);
                         });
                     }}
-                    label={this.getText(this.props.schema.label)}
+                    label={this.getText(this.props.schema.label, this.props.schema.noTranslation)}
                     helperText={this.renderHelp(
                         this.props.schema.help,
                         this.props.schema.helpLink,
@@ -413,56 +306,273 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                     )}
                 />
             );
-        } else if (this.state.obj.common.type === 'boolean') {
-            let icon: JSX.Element | null = null;
-            let text: string;
-            let style: React.CSSProperties | undefined;
-            if (!this.state.stateValue) {
-                text = this.getText(this.props.schema.falseText, this.props.schema.noTranslation);
-                if (this.props.schema.falseImage) {
-                    icon = getIconByName(this.props.schema.falseImage, text ? { marginLeft: 8 } : undefined);
-                }
-                style = this.props.schema.falseTextStyle;
-            } else {
-                text = this.getText(this.props.schema.trueText, this.props.schema.noTranslation);
-                if (this.props.schema.trueImage) {
-                    icon = getIconByName(this.props.schema.falseImage, text ? { marginRight: 8 } : undefined);
-                }
-                style = this.props.schema.trueTextStyle;
-            }
-            const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
-            content = (
-                <div style={{ fontSize: '1rem', ...style }}>
-                    {label}
-                    {label ? <span style={{ marginRight: 8 }}>:</span> : null}
-                    {icon}
-                    {text || (this.state.stateValue ? I18n.t('ra_true') : I18n.t('ra_false'))}
-                </div>
-            );
         } else {
-            // text or HTML
-            const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
-            const unit =
-                this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit;
-            let value;
-            if (this.state.controlType === 'html') {
-                value = <span dangerouslySetInnerHTML={{ __html: this.state.stateValue as string }} />;
-            } else if (this.state.stateValue === null) {
-                value = 'null';
-            } else if (this.state.stateValue === undefined) {
-                value = 'undefined';
-            } else {
-                value = this.state.stateValue;
+            let fontSize: number | undefined;
+            if (this.props.schema.size === 'normal') {
+                fontSize = 16;
+            } else if (this.props.schema.size === 'large') {
+                fontSize = 20;
+            } else if (typeof this.props.schema.size === 'number') {
+                fontSize = this.props.schema.size;
+            }
+            let label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
+
+            const divStyle: React.CSSProperties = {
+                display: 'flex',
+                alignItems: 'center',
+                fontSize: fontSize || '1rem',
+                gap: 8,
+            };
+
+            if (!this.props.schema.narrow) {
+                divStyle.width = '100%';
+                divStyle.justifyContent = 'space-between';
             }
 
-            content = (
-                <div style={{ fontSize: '1rem' }}>
-                    {label}
-                    {label ? <span style={{ marginRight: 8 }}>:</span> : null}
-                    {value}
-                    {unit ? <span style={{ opacity: 0.7 }}>{unit}</span> : null}
-                </div>
-            );
+            if (label.trim()) {
+                if (!label.trim().endsWith(':') && this.props.schema.addColon) {
+                    label = `${label.trim()}:`;
+                }
+            }
+
+            let blinkStyle: React.CSSProperties | undefined;
+            if (this.props.schema.blinkOnUpdate) {
+                blinkStyle = valueBlinkOnce(this.props.oContext.theme, this.props.schema.blinkOnUpdate);
+            }
+
+            let labelIcon: React.JSX.Element | undefined;
+            if (this.props.schema.labelIcon) {
+                labelIcon = (
+                    <Icon
+                        src={this.props.schema.labelIcon}
+                        style={{ marginRight: 4 }}
+                    />
+                );
+            }
+
+            let labelControl: React.JSX.Element | undefined;
+            if (label && labelIcon) {
+                labelControl = (
+                    <div style={{ whiteSpace: 'nowrap' }}>
+                        {labelIcon}
+                        {label}
+                    </div>
+                );
+            } else if (label) {
+                labelControl = <div style={{ whiteSpace: 'nowrap' }}>{label}</div>;
+            } else if (labelIcon) {
+                labelControl = labelIcon;
+            }
+
+            if (this.state.controlType === 'switch') {
+                let iconFalse: JSX.Element | null = null;
+                const textFalse = this.getText(this.props.schema.falseText, this.props.schema.noTranslation);
+                if (this.props.schema.falseImage) {
+                    iconFalse = getIconByName(this.props.schema.falseImage, textFalse ? { marginLeft: 8 } : undefined);
+                }
+                let iconTrue: JSX.Element | null = null;
+                const textTrue = this.getText(this.props.schema.trueText, this.props.schema.noTranslation);
+                if (this.props.schema.trueImage) {
+                    iconTrue = getIconByName(this.props.schema.trueImage, textTrue ? { marginRight: 8 } : undefined);
+                }
+
+                content = (
+                    <Switch
+                        checked={!!this.state.stateValue}
+                        disabled={!!this.props.schema.readOnly}
+                        onChange={async () => {
+                            if (this.props.schema.confirm) {
+                                this.setState({
+                                    confirmDialog: true,
+                                    confirmCallback: async (result: boolean) => {
+                                        if (result) {
+                                            await this.props.oContext.socket.setState(
+                                                this.getObjectID(),
+                                                !this.state.stateValue,
+                                                false,
+                                            );
+                                        }
+                                    },
+                                });
+                            } else {
+                                await this.props.oContext.socket.setState(this.getObjectID(), !this.state.stateValue, false);
+                            }
+                        }}
+                    />
+                );
+
+                if (textFalse || iconFalse || textTrue || iconTrue) {
+                    content = (
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: 14 }}>
+                            <span style={this.props.schema.falseTextStyle}>
+                                {textFalse}
+                                {iconFalse}
+                            </span>
+                            {content}
+                            <span style={this.props.schema.trueTextStyle}>
+                                {iconTrue}
+                                {textTrue}
+                            </span>
+                        </div>
+                    );
+                }
+
+                if (labelControl) {
+                    content = (
+                        <div style={divStyle}>
+                            {labelControl}
+                            {content}
+                        </div>
+                    );
+                }
+            } else if (this.state.controlType === 'slider') {
+                let iconFalse: JSX.Element | null = null;
+                const textFalse = this.getText(this.props.schema.falseText, this.props.schema.noTranslation);
+                if (this.props.schema.falseImage) {
+                    iconFalse = getIconByName(this.props.schema.falseImage, textFalse ? { marginLeft: 8 } : undefined);
+                }
+                let iconTrue: JSX.Element | null = null;
+                const textTrue = this.getText(this.props.schema.trueText, this.props.schema.noTranslation);
+                if (this.props.schema.trueImage) {
+                    iconTrue = getIconByName(this.props.schema.trueImage, textTrue ? { marginRight: 8 } : undefined);
+                }
+
+                const min =
+                    this.props.schema.min === undefined ? this.state.obj.common.min || 0 : this.props.schema.min;
+                const max =
+                    this.props.schema.max === undefined
+                        ? this.state.obj.common.max === undefined
+                            ? 100
+                            : this.state.obj.common.max
+                        : this.props.schema.max;
+                const step =
+                    this.props.schema.step === undefined ? this.state.obj.common.step || 1 : this.props.schema.step;
+
+                content = (
+                    <Slider
+                        style={{ width: '100%', flexGrow: 1 }}
+                        min={min}
+                        max={max}
+                        disabled={!!this.props.schema.readOnly}
+                        step={step}
+                        value={this.state.stateValue as number}
+                        valueLabelDisplay="auto"
+                        valueLabelFormat={(value: number) =>
+                            `${value}${this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || ''}`
+                        }
+                        onChange={(_e: Event, value: number) => {
+                            this.setState({ stateValue: value }, (): void => {
+                                if (this.controlTimeout) {
+                                    clearTimeout(this.controlTimeout);
+                                }
+                                this.controlTimeout = setTimeout(async () => {
+                                    console.log(`${Date.now()} Send new value: ${this.state.stateValue}`);
+                                    this.controlTimeout = null;
+                                    await this.props.oContext.socket.setState(this.getObjectID(), this.state.stateValue, false);
+                                }, this.props.schema.controlDelay || 0);
+                            });
+                        }}
+                    />
+                );
+
+                if (textFalse || iconFalse || textTrue || iconTrue) {
+                    content = (
+                        <div
+                            style={{
+                                display: 'flex',
+                                width: '100%',
+                                flexGrow: 1,
+                                alignItems: 'center',
+                            }}
+                        >
+                            <span style={{ marginRight: 16, ...this.props.schema.falseTextStyle }}>
+                                {textFalse}
+                                {iconFalse}
+                            </span>
+                            {content}
+                            <span style={{ marginLeft: 16, ...this.props.schema.trueTextStyle }}>
+                                {iconTrue}
+                                {textTrue}
+                            </span>
+                        </div>
+                    );
+                }
+                if (labelControl) {
+                    content = (
+                        <div style={divStyle}>
+                            {labelControl}
+                            {content}
+                        </div>
+                    );
+                }
+            } else if (this.state.obj.common.type === 'boolean') {
+                let icon: JSX.Element | null = null;
+                let text: string;
+                let style: React.CSSProperties | undefined;
+                if (!this.state.stateValue) {
+                    text = this.getText(this.props.schema.falseText, this.props.schema.noTranslation);
+                    if (this.props.schema.falseImage) {
+                        icon = getIconByName(this.props.schema.falseImage, text ? { marginLeft: 8 } : undefined);
+                    }
+                    style = this.props.schema.falseTextStyle;
+                } else {
+                    text = this.getText(this.props.schema.trueText, this.props.schema.noTranslation);
+                    if (this.props.schema.trueImage) {
+                        icon = getIconByName(this.props.schema.falseImage, text ? { marginRight: 8 } : undefined);
+                    }
+                    style = this.props.schema.trueTextStyle;
+                }
+                style = Object.assign(divStyle, style);
+
+                content = (
+                    <div style={style}>
+                        {labelControl}
+                        <Box
+                            style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                            sx={blinkStyle}
+                            key={this.props.schema.blinkOnUpdate ? text : undefined}
+                        >
+                            {icon}
+                            {text || (this.state.stateValue ? I18n.t('ra_true') : I18n.t('ra_false'))}
+                        </Box>
+                    </div>
+                );
+            } else {
+                // text or HTML
+                const unit =
+                    this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit;
+
+                let value;
+                let key: string;
+                if (this.state.controlType === 'html') {
+                    key = (this.state.stateValue || '').toString();
+                    value = <span dangerouslySetInnerHTML={{ __html: this.state.stateValue as string }} />;
+                } else if (this.state.stateValue === null) {
+                    value = 'null';
+                    key = value;
+                } else if (this.state.stateValue === undefined) {
+                    value = 'undefined';
+                    key = value;
+                } else {
+                    value = this.state.stateValue.toString();
+                    key = value;
+                }
+
+                content = (
+                    <div style={divStyle}>
+                        {labelControl}
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                            <Box
+                                sx={blinkStyle}
+                                key={this.props.schema.blinkOnUpdate ? key : undefined}
+                            >
+                                {value}
+                            </Box>
+                            {unit ? <span style={{ opacity: 0.7, fontSize: 'smaller' }}>{unit}</span> : null}
+                        </div>
+                    </div>
+                );
+            }
         }
 
         return content;

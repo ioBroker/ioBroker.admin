@@ -1,27 +1,39 @@
 import React, { Component, type JSX } from 'react';
+import moment from 'moment';
+
+import 'moment/locale/de';
+import 'moment/locale/es';
+import 'moment/locale/fr';
+import 'moment/locale/it';
+import 'moment/locale/nl';
+import 'moment/locale/pl';
+import 'moment/locale/pt';
+import 'moment/locale/ru';
+import 'moment/locale/uk';
+import 'moment/locale/zh-cn';
 
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
+    Autocomplete,
+    Box,
     Button,
-    Tabs,
-    Tab,
-    TextField,
-    Grid2,
-    InputAdornment,
     Checkbox,
-    FormControlLabel,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Fab,
-    IconButton,
     FormControl,
+    FormControlLabel,
+    Grid2,
+    IconButton,
+    InputAdornment,
     InputLabel,
     MenuItem,
     Select,
+    Tab,
+    Tabs,
+    TextField,
     Tooltip,
-    Autocomplete,
-    Box,
 } from '@mui/material';
 
 import { Close as IconClose, Check as IconCheck, Add as IconAdd, FileCopy as IconCopy } from '@mui/icons-material';
@@ -35,10 +47,18 @@ import {
     IconFx,
     UploadImage,
     type Connection,
+    type AdminConnection,
     type Translate,
     type ThemeType,
     type IobTheme,
+    Icon,
+    iobUriParse,
+    iobUriRead,
+    type IobUri,
+    setAttrInObject,
+    getAttrInObject,
 } from '@iobroker/adapter-react-v5';
+import { JsonConfigComponent, type ConfigItemPanel, type ConfigItemTabs } from '@iobroker/json-config';
 
 import Editor from '../Editor';
 
@@ -87,6 +107,7 @@ const styles: Record<string, any> = {
     commonTabWrapper: {
         flexFlow: 'wrap',
         display: 'flex',
+        gap: 8,
     },
     commonWrapper: {
         width: 500,
@@ -178,268 +199,333 @@ const styles: Record<string, any> = {
     tooltip: {
         pointerEvents: 'none',
     },
+    stateRow: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: 3,
+    },
+    stateTitle: {
+        minWidth: 150,
+        fontWeight: 'bold',
+    },
+    stateUnit: {
+        opacity: 0.7,
+        marginLeft: 4,
+    },
+    stateValue: {
+        animation: 'newStateEditorAnimation 2s ease-in-out',
+    },
+    stateTime: {
+        fontStyle: 'italic',
+    },
+    stateImage: {
+        maxWidth: 200,
+        maxHeight: 200,
+    },
 };
 
-const DEFAULT_ROLES = [
-    'button',
-    'button.close.blind',
-    'button.fastforward',
-    'button.forward',
-    'button.long',
-    'button.mode',
-    'button.mode.auto',
-    'button.mode.silent',
-    'button.next',
-    'button.open.blind',
-    'button.open.door',
-    'button.pause',
-    'button.stop',
-    'button.stop.tilt',
-    'button.volume.up',
-    'chart',
-    'date',
-    'date.end',
-    'date.forecast.1',
-    'date.start',
-    'date.sunrise',
-    'date.sunset',
-    'dayofweek',
-    'html',
-    'indicator',
-    'indicator.alarm',
-    'indicator.alarm.fire',
-    'indicator.alarm.flood',
-    'indicator.alarm.health',
-    'indicator.alarm.secure',
-    'indicator.connected',
-    'indicator.maintenance',
-    'indicator.maintenance.alarm',
-    'indicator.maintenance.lowbat',
-    'indicator.maintenance.waste',
-    'indicator.reachable',
-    'info.address',
-    'info.display',
-    'info.firmware',
-    'info.hardware',
-    'info.ip',
-    'info.mac',
-    'info.name',
-    'info.port',
-    'info.serial',
-    'info.standby',
-    'info.status',
-    'json',
-    'level',
-    'level.bass',
-    'level.blind',
-    'level.color.blue',
-    'level.color.hue',
-    'level.color.luminance',
-    'level.color.red',
-    'level.color.saturation',
-    'level.curtain',
-    'level.mode.airconditioner',
-    'level.mode.cleanup',
-    'level.mode.fan',
-    'level.mode.swing',
-    'level.mode.thermostat',
-    'level.mode.work',
-    'level.temperature',
-    'level.tilt',
-    'level.timer',
-    'level.treble',
-    'level.valve',
-    'level.volume',
-    'level.volume.group',
-    'list',
-    'location',
-    'media.add',
-    'media.bitrate',
-    'media.broadcastDate',
-    'media.browser',
-    'media.clear',
-    'media.content',
-    'media.cover',
-    'media.cover.big',
-    'media.cover.small',
-    'media.date',
-    'media.duration',
-    'media.duration.text',
-    'media.elapsed',
-    'media.elapsed.text',
-    'media.episode',
-    'media.genre',
-    'media.input',
-    'media.jump',
-    'media.link',
-    'media.mode.repeat',
-    'media.mode.shuffle',
-    'media.mute',
-    'media.mute.group',
-    'media.playid',
-    'media.playlist',
-    'media.season',
-    'media.seek',
-    'media.state',
-    'media.titel',
-    'media.track',
-    'media.tts',
-    'media.url',
-    'media.url.announcement',
-    'medien.artist',
-    'sensor.alarm',
-    'sensor.alarm.fire',
-    'sensor.alarm.flood',
-    'sensor.alarm.power',
-    'sensor.alarm.secure',
-    'sensor.door',
-    'sensor.light',
-    'sensor.lock',
-    'sensor.motion',
-    'sensor.noise',
-    'sensor.rain',
-    'sensor.window',
-    'state',
-    'switch',
-    'switch.enable',
-    'switch.gate',
-    'switch.gate',
-    'switch.light',
-    'switch.lock.door',
-    'switch.lock.window',
-    'switch.mode',
-    'switch.mode.auto',
-    'switch.mode.boost',
-    'switch.mode.color',
-    'switch.mode.manual',
-    'switch.mode.moonlight',
-    'switch.mode.party',
-    'switch.mode.silent',
-    'switch.power',
-    'switch.power.zone',
-    'text',
-    'text.phone',
-    'text.url',
-    'url',
-    'url.audio',
-    'url.blank',
-    'url.cam',
-    'url.same',
-    'value',
-    'value.battery',
-    'value.blind',
-    'value.blood.sugar',
-    'value.brightness',
-    'value.clouds',
-    'value.current',
-    'value.curtain',
-    'value.default',
-    'value.direction',
-    'value.direction.max.wind',
-    'value.direction.min.wind',
-    'value.direction.wind',
-    'value.direction.wind.forecast.0',
-    'value.direction.wind.forecast.1',
-    'value.distance',
-    'value.fill',
-    'value.gate',
-    'value.gps',
-    'value.gps.accuracy',
-    'value.gps.elevation',
-    'value.gps.latitude',
-    'value.gps.longitude',
-    'value.gps.radius',
-    'value.health.bmi',
-    'value.health.bpm',
-    'value.health.calories',
-    'value.health.fat',
-    'value.health.steps',
-    'value.health.weight',
-    'value.humidity',
-    'value.humidity',
-    'value.humidity.max',
-    'value.humidity.min',
-    'value.interval',
-    'value.lock',
-    'value.min',
-    'value.position',
-    'value.power',
-    'value.power.consumption',
-    'value.power.production',
-    'value.power.reactive',
-    'value.precipitation',
-    'value.precipitation.chance',
-    'value.precipitation.day.forecast.0',
-    'value.precipitation.forecast.0',
-    'value.precipitation.hour',
-    'value.precipitation.night.forecast.0',
-    'value.precipitation.today',
-    'value.precipitation.type',
-    'value.prepitation.forecast.0',
-    'value.prepitation.forecast.1',
-    'value.prepitation.forecast.1',
-    'value.pressure',
-    'value.pressure.forecast.0',
-    'value.pressure.forecast.1',
-    'value.radiation',
-    'value.rain',
-    'value.rain.hour',
-    'value.rain.today',
-    'value.severity',
-    'value.snow',
-    'value.snow.hour',
-    'value.snow.today',
-    'value.snowline',
-    'value.speed',
-    'value.speed.max.wind',
-    'value.speed.min.wind',
-    'value.speed.wind',
-    'value.speed.wind.forecast.0',
-    'value.speed.wind.gust',
-    'value.state',
-    'value.sun.azimuth',
-    'value.sun.elevation',
-    'value.temperature',
-    'value.temperature',
-    'value.temperature.dewpoint',
-    'value.temperature.feelslike',
-    'value.temperature.max',
-    'value.temperature.max.forecast.0',
-    'value.temperature.min',
-    'value.temperature.min.forecast.0',
-    'value.temperature.min.forecast.1',
-    'value.temperature.windchill',
-    'value.tilt',
-    'value.time',
-    'value.uv',
-    'value.valve',
-    'value.voltage',
-    'value.warning',
-    'value.waste',
-    'value.water',
-    'waether.title',
-    'weather.chart.url',
-    'weather.chart.url.forecast',
-    'weather.direction.wind',
-    'weather.direction.wind.forecast.0',
-    'weather.html',
-    'weather.icon',
-    'weather.icon.forecast.1',
-    'weather.icon.name',
-    'weather.icon.wind',
-    'weather.json',
-    'weather.state',
-    'weather.state.forecast.0',
-    'weather.state.forecast.1',
-    'weather.title.forecast.0',
-    'weather.title.short',
-    'weather.type',
-] as const;
+function valueBlink(theme: IobTheme, color: string): any {
+    return {
+        '@keyframes newStateEditorAnimation': {
+            '0%': {
+                color: theme.palette.mode === 'dark' ? '#27cf00' : '#174e00',
+            },
+            '100%': {
+                color: color || (theme.palette.mode === 'dark' ? '#ffffff' : '#000000'),
+            },
+        },
+    };
+}
+
+export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: boolean; r?: boolean }[] = [
+    { role: 'button', type: 'boolean', r: false, w: true },
+    { role: 'button.close.blind', type: 'boolean', r: false, w: true },
+    { role: 'button.fastforward', type: 'boolean', r: false, w: true },
+    { role: 'button.forward', type: 'boolean', r: false, w: true },
+    { role: 'button.long', type: 'boolean', r: false, w: true },
+    { role: 'button.mode', type: 'boolean', r: false, w: true },
+    { role: 'button.mode.auto', type: 'boolean', r: false, w: true },
+    { role: 'button.mode.silent', type: 'boolean', r: false, w: true },
+    { role: 'button.next', type: 'boolean', r: false, w: true },
+    { role: 'button.open.blind', type: 'boolean', r: false, w: true },
+    { role: 'button.open.door', type: 'boolean', r: false, w: true },
+    { role: 'button.pause', type: 'boolean', r: false, w: true },
+    { role: 'button.stop', type: 'boolean', r: false, w: true },
+    { role: 'button.stop.tilt', type: 'boolean', r: false, w: true },
+    { role: 'button.volume.up', type: 'boolean', r: false, w: true },
+    { role: 'chart', type: 'string' },
+    { role: 'date', type: 'string' },
+    { role: 'date', type: 'number' },
+    { role: 'date.end', type: 'string' },
+    { role: 'date.end', type: 'number' },
+    { role: 'date.forecast.1', type: 'string' },
+    { role: 'date.start', type: 'string' },
+    { role: 'date.start', type: 'number' },
+    { role: 'date.sunrise', type: 'string' },
+    { role: 'date.sunrise', type: 'number' },
+    { role: 'date.sunset', type: 'string' },
+    { role: 'date.sunset', type: 'number' },
+    { role: 'dayofweek', type: 'number' },
+    { role: 'html', type: 'string' },
+    { role: 'indicator', type: 'boolean', w: false },
+    { role: 'indicator.alarm', type: 'boolean', w: false },
+    { role: 'indicator.alarm.fire', type: 'boolean', w: false },
+    { role: 'indicator.alarm.flood', type: 'boolean', w: false },
+    { role: 'indicator.alarm.health', type: 'boolean', w: false },
+    { role: 'indicator.alarm.secure', type: 'boolean', w: false },
+    { role: 'indicator.connected', type: 'boolean', w: false },
+    { role: 'indicator.maintenance', type: 'boolean', w: false },
+    { role: 'indicator.maintenance.alarm', type: 'boolean', w: false },
+    { role: 'indicator.maintenance.lowbat', type: 'boolean', w: false },
+    { role: 'indicator.maintenance.waste', type: 'boolean', w: false },
+    { role: 'indicator.reachable', type: 'boolean', w: false },
+    { role: 'info.address', type: 'string', w: false },
+    { role: 'info.display', type: 'string', w: false },
+    { role: 'info.firmware', type: 'string', w: false },
+    { role: 'info.hardware', type: 'string', w: false },
+    { role: 'info.ip', type: 'string', w: false },
+    { role: 'info.mac', type: 'string', w: false },
+    { role: 'info.name', type: 'string', w: false },
+    { role: 'info.port', type: 'string', w: false },
+    { role: 'info.port', type: 'number', w: false },
+    { role: 'info.serial', type: 'string', w: false },
+    { role: 'info.standby', type: 'string', w: false },
+    { role: 'info.status', w: false },
+    { role: 'json', type: 'string' },
+    { role: 'level', type: 'number', w: true },
+    { role: 'level.bass', type: 'number', w: true },
+    { role: 'level.blind', type: 'number', w: true },
+    { role: 'level.color.blue', type: 'number', w: true },
+    { role: 'level.color.hue', type: 'number', w: true },
+    { role: 'level.color.luminance', type: 'number', w: true },
+    { role: 'level.color.red', type: 'number', w: true },
+    { role: 'level.color.saturation', type: 'number', w: true },
+    { role: 'level.curtain', type: 'number', w: true },
+    { role: 'level.mode.airconditioner', type: 'number', w: true },
+    { role: 'level.mode.cleanup', type: 'number', w: true },
+    { role: 'level.mode.fan', type: 'number', w: true },
+    { role: 'level.mode.swing', type: 'number', w: true },
+    { role: 'level.mode.thermostat', type: 'number', w: true },
+    { role: 'level.mode.work', type: 'number', w: true },
+    { role: 'level.temperature', type: 'number', w: true },
+    { role: 'level.tilt', type: 'number', w: true },
+    { role: 'level.timer', type: 'number', w: true },
+    { role: 'level.treble', type: 'number', w: true },
+    { role: 'level.valve', type: 'number', w: true },
+    { role: 'level.volume', type: 'number', w: true },
+    { role: 'level.volume.group', type: 'number', w: true },
+    { role: 'list', type: 'string' },
+    { role: 'list', type: 'array' },
+    { role: 'location', type: 'string' },
+    { role: 'media.add', type: 'string' },
+    { role: 'media.bitrate', type: 'string' },
+    { role: 'media.bitrate', type: 'number' },
+    { role: 'media.broadcastDate', type: 'string' },
+    { role: 'media.browser', type: 'string' },
+    { role: 'media.clear', type: 'boolean' },
+    { role: 'media.content', type: 'string' },
+    { role: 'media.cover', type: 'string' },
+    { role: 'media.cover.big', type: 'string' },
+    { role: 'media.cover.small', type: 'string' },
+    { role: 'media.date', type: 'string' },
+    { role: 'media.duration', type: 'number' },
+    { role: 'media.duration', type: 'string' },
+    { role: 'media.duration.text', type: 'string' },
+    { role: 'media.elapsed', type: 'number' },
+    { role: 'media.elapsed', type: 'string' },
+    { role: 'media.elapsed.text', type: 'string' },
+    { role: 'media.episode', type: 'number' },
+    { role: 'media.episode', type: 'string' },
+    { role: 'media.genre', type: 'string' },
+    { role: 'media.input', type: 'string' },
+    { role: 'media.jump', type: 'string' },
+    { role: 'media.link', type: 'string' },
+    { role: 'media.mode.repeat', type: 'string' },
+    { role: 'media.mode.shuffle', type: 'string' },
+    { role: 'media.mute', type: 'string' },
+    { role: 'media.mute.group', type: 'string' },
+    { role: 'media.playid', type: 'string' },
+    { role: 'media.playlist', type: 'string' },
+    { role: 'media.season', type: 'string' },
+    { role: 'media.seek', type: 'string' },
+    { role: 'media.state', type: 'string' },
+    { role: 'media.titel', type: 'string' },
+    { role: 'media.track', type: 'string' },
+    { role: 'media.tts', type: 'string' },
+    { role: 'media.url', type: 'string' },
+    { role: 'media.url.announcement', type: 'string' },
+    { role: 'medien.artist', type: 'string' },
+    { role: 'sensor.alarm', type: 'boolean', w: false },
+    { role: 'sensor.alarm.fire', type: 'boolean', w: false },
+    { role: 'sensor.alarm.flood', type: 'boolean', w: false },
+    { role: 'sensor.alarm.power', type: 'boolean', w: false },
+    { role: 'sensor.alarm.secure', type: 'boolean', w: false },
+    { role: 'sensor.door', type: 'boolean', w: false },
+    { role: 'sensor.light', type: 'boolean', w: false },
+    { role: 'sensor.lock', type: 'boolean', w: false },
+    { role: 'sensor.motion', type: 'boolean', w: false },
+    { role: 'sensor.noise', type: 'boolean', w: false },
+    { role: 'sensor.rain', type: 'boolean', w: false },
+    { role: 'sensor.window', type: 'boolean', w: false },
+    { role: 'state', type: 'mixed' },
+    { role: 'switch', type: 'boolean', w: true },
+    { role: 'switch.enable', type: 'boolean', w: true },
+    { role: 'switch.gate', type: 'boolean', w: true },
+    { role: 'switch.gate', type: 'boolean', w: true },
+    { role: 'switch.light', type: 'boolean', w: true },
+    { role: 'switch.lock.door', type: 'boolean', w: true },
+    { role: 'switch.lock.window', type: 'boolean', w: true },
+    { role: 'switch.mode', type: 'boolean', w: true },
+    { role: 'switch.mode.auto', type: 'boolean', w: true },
+    { role: 'switch.mode.boost', type: 'boolean', w: true },
+    { role: 'switch.mode.color', type: 'boolean', w: true },
+    { role: 'switch.mode.manual', type: 'boolean', w: true },
+    { role: 'switch.mode.moonlight', type: 'boolean', w: true },
+    { role: 'switch.mode.party', type: 'boolean', w: true },
+    { role: 'switch.mode.silent', type: 'boolean', w: true },
+    { role: 'switch.power', type: 'boolean', w: true },
+    { role: 'switch.power.zone', type: 'boolean', w: true },
+    { role: 'text', type: 'string' },
+    { role: 'text.phone', type: 'string' },
+    { role: 'text.url', type: 'string' },
+    { role: 'url', type: 'string' },
+    { role: 'url.audio', type: 'string' },
+    { role: 'url.blank', type: 'string' },
+    { role: 'url.cam', type: 'string' },
+    { role: 'url.same', type: 'string' },
+    { role: 'value', type: 'number', w: false },
+    { role: 'value.battery', type: 'number', w: false },
+    { role: 'value.blind', type: 'number', w: false },
+    { role: 'value.blood.sugar', type: 'number', w: false },
+    { role: 'value.brightness', type: 'number', w: false },
+    { role: 'value.clouds', type: 'number', w: false },
+    { role: 'value.current', type: 'number', w: false },
+    { role: 'value.curtain', type: 'number', w: false },
+    { role: 'value.default', type: 'number', w: false },
+    { role: 'value.direction', type: 'number', w: false },
+    { role: 'value.direction.max.wind', type: 'number', w: false },
+    { role: 'value.direction.min.wind', type: 'number', w: false },
+    { role: 'value.direction.wind', type: 'number', w: false },
+    { role: 'value.direction.wind.forecast.0', type: 'number', w: false },
+    { role: 'value.direction.wind.forecast.1', type: 'number', w: false },
+    { role: 'value.distance', type: 'number', w: false },
+    { role: 'value.fill', type: 'number', w: false },
+    { role: 'value.gate', type: 'number', w: false },
+    { role: 'value.gps', type: 'number', w: false },
+    { role: 'value.gps.accuracy', type: 'number', w: false },
+    { role: 'value.gps.elevation', type: 'number', w: false },
+    { role: 'value.gps.latitude', type: 'number', w: false },
+    { role: 'value.gps.longitude', type: 'number', w: false },
+    { role: 'value.gps.radius', type: 'number', w: false },
+    { role: 'value.health.bmi', type: 'number', w: false },
+    { role: 'value.health.bpm', type: 'number', w: false },
+    { role: 'value.health.calories', type: 'number', w: false },
+    { role: 'value.health.fat', type: 'number', w: false },
+    { role: 'value.health.steps', type: 'number', w: false },
+    { role: 'value.health.weight', type: 'number', w: false },
+    { role: 'value.humidity', type: 'number', w: false },
+    { role: 'value.humidity', type: 'number', w: false },
+    { role: 'value.humidity.max', type: 'number', w: false },
+    { role: 'value.humidity.min', type: 'number', w: false },
+    { role: 'value.interval', type: 'number', w: false },
+    { role: 'value.lock', type: 'number', w: false },
+    { role: 'value.min', type: 'number', w: false },
+    { role: 'value.position', type: 'number', w: false },
+    { role: 'value.power', type: 'number', w: false },
+    { role: 'value.power.consumption', type: 'number', w: false },
+    { role: 'value.power.production', type: 'number', w: false },
+    { role: 'value.power.reactive', type: 'number', w: false },
+    { role: 'value.precipitation', type: 'number', w: false },
+    { role: 'value.precipitation.chance', type: 'number', w: false },
+    { role: 'value.precipitation.day.forecast.0', type: 'number', w: false },
+    { role: 'value.precipitation.forecast.0', type: 'number', w: false },
+    { role: 'value.precipitation.hour', type: 'number', w: false },
+    { role: 'value.precipitation.night.forecast.0', type: 'number', w: false },
+    { role: 'value.precipitation.today', type: 'number', w: false },
+    { role: 'value.precipitation.type', type: 'number', w: false },
+    { role: 'value.prepitation.forecast.0', type: 'number', w: false },
+    { role: 'value.prepitation.forecast.1', type: 'number', w: false },
+    { role: 'value.prepitation.forecast.1', type: 'number', w: false },
+    { role: 'value.pressure', type: 'number', w: false },
+    { role: 'value.pressure.forecast.0', type: 'number', w: false },
+    { role: 'value.pressure.forecast.1', type: 'number', w: false },
+    { role: 'value.radiation', type: 'number', w: false },
+    { role: 'value.rain', type: 'number', w: false },
+    { role: 'value.rain.hour', type: 'number', w: false },
+    { role: 'value.rain.today', type: 'number', w: false },
+    { role: 'value.severity', type: 'number', w: false },
+    { role: 'value.snow', type: 'number', w: false },
+    { role: 'value.snow.hour', type: 'number', w: false },
+    { role: 'value.snow.today', type: 'number', w: false },
+    { role: 'value.snowline', type: 'number', w: false },
+    { role: 'value.speed', type: 'number', w: false },
+    { role: 'value.speed.max.wind', type: 'number', w: false },
+    { role: 'value.speed.min.wind', type: 'number', w: false },
+    { role: 'value.speed.wind', type: 'number', w: false },
+    { role: 'value.speed.wind.forecast.0', type: 'number', w: false },
+    { role: 'value.speed.wind.gust', type: 'number', w: false },
+    { role: 'value.state', type: 'number', w: false },
+    { role: 'value.sun.azimuth', type: 'number', w: false },
+    { role: 'value.sun.elevation', type: 'number', w: false },
+    { role: 'value.temperature', type: 'number', w: false },
+    { role: 'value.temperature', type: 'number', w: false },
+    { role: 'value.temperature.dewpoint', type: 'number', w: false },
+    { role: 'value.temperature.feelslike', type: 'number', w: false },
+    { role: 'value.temperature.max', type: 'number', w: false },
+    { role: 'value.temperature.max.forecast.0', type: 'number', w: false },
+    { role: 'value.temperature.min', type: 'number', w: false },
+    { role: 'value.temperature.min.forecast.0', type: 'number', w: false },
+    { role: 'value.temperature.min.forecast.1', type: 'number', w: false },
+    { role: 'value.temperature.windchill', type: 'number', w: false },
+    { role: 'value.tilt', type: 'number', w: false },
+    { role: 'value.time', type: 'number', w: false },
+    { role: 'value.uv', type: 'number', w: false },
+    { role: 'value.valve', type: 'number', w: false },
+    { role: 'value.voltage', type: 'number', w: false },
+    { role: 'value.warning', type: 'number', w: false },
+    { role: 'value.waste', type: 'number', w: false },
+    { role: 'value.water', type: 'number', w: false },
+    { role: 'waether.title', type: 'string', w: false },
+    { role: 'weather.chart.url', type: 'string', w: false },
+    { role: 'weather.chart.url.forecast', type: 'string', w: false },
+    { role: 'weather.direction.wind', type: 'number', w: false },
+    { role: 'weather.direction.wind.forecast.0', type: 'number', w: false },
+    { role: 'weather.html', type: 'string', w: false },
+    { role: 'weather.icon', type: 'string', w: false },
+    { role: 'weather.icon.forecast.1', type: 'string', w: false },
+    { role: 'weather.icon.name', type: 'string', w: false },
+    { role: 'weather.icon.wind', type: 'string', w: false },
+    { role: 'weather.json', type: 'string', w: false },
+    { role: 'weather.state', type: 'number', w: false },
+    { role: 'weather.state', type: 'string', w: false },
+    { role: 'weather.state.forecast.0', type: 'string', w: false },
+    { role: 'weather.state.forecast.1', type: 'string', w: false },
+    { role: 'weather.title.forecast.0', type: 'string', w: false },
+    { role: 'weather.title.short', type: 'string', w: false },
+    { role: 'weather.type', type: 'number', w: false },
+    { role: 'weather.type', type: 'string', w: false },
+];
+
+interface EditSchemaTab {
+    json: ConfigItemPanel | ConfigItemTabs;
+    label?: ioBroker.StringOrTranslated;
+    /** Do not translate label */
+    noTranslation?: boolean;
+    path?: string; // path in an object, like common or native.json
+    icon?: IobUri;
+    color?: string;
+    order?: number;
+}
+
+interface EditSchemaTabEditor extends EditSchemaTab {
+    key?: string;
+}
 
 interface ObjectBrowserEditObjectProps {
     socket: Connection;
     obj: ioBroker.AnyObject;
-    roleArray: string[];
+    roleArray: { role: string; type: ioBroker.CommonType }[];
     expertMode: boolean;
     themeType: ThemeType;
     theme: IobTheme;
@@ -457,6 +543,7 @@ interface ObjectBrowserEditObjectProps {
 interface ObjectBrowserEditObjectState {
     text: string;
     error: boolean;
+    customError: boolean;
     changed: boolean;
     readError: string;
     writeError: string;
@@ -468,11 +555,16 @@ interface ObjectBrowserEditObjectState {
     selectRead: boolean;
     selectWrite: boolean;
     newId: string;
+    customEditTabs?: EditSchemaTabEditor[];
+    lang: ioBroker.Languages;
+    value: ioBroker.State | null | undefined;
 }
 
 class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, ObjectBrowserEditObjectState> {
     /** Original object stringified */
     private originalObj: string;
+    private subscribed = false;
+    private updateTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(props: ObjectBrowserEditObjectProps) {
         super(props);
@@ -501,6 +593,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         this.state = {
             text: JSON.stringify(this.props.obj, null, 2),
             error: false,
+            customError: false,
             changed: false,
             readError: this.checkFunction(aliasRead, false),
             writeError: this.checkFunction(aliasWrite, true),
@@ -511,20 +604,115 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             selectRead: false,
             selectWrite: false,
             newId: '',
+            lang: I18n.getLanguage(),
+            value: undefined,
         };
+
+        moment.locale(this.state.lang);
 
         this.originalObj = JSON.stringify(this.props.obj, null, 2);
     }
 
-    componentDidMount(): void {
+    async componentDidMount(): Promise<void> {
+        // editSchemas is like 'iobobject://system.adapter.admin/native.schemas.specificObject'
+
+        const editSchemas: Record<string, IobUri> | undefined =
+            // @ts-expect-error fixed in js-controller
+            (this.props.obj?.common?.editSchemas as Record<string, IobUri>) ||
+            // @ts-expect-error fixed in js-controller
+            (this.props.obj?.editSchemas as Record<string, IobUri>);
+
+        const customEditTabs: EditSchemaTabEditor[] = [];
+
+        if (editSchemas) {
+            if (typeof editSchemas === 'object') {
+                const schemas = Object.keys(editSchemas);
+                for (let i = 0; i < schemas.length; i++) {
+                    try {
+                        const schema: EditSchemaTabEditor | undefined = (await iobUriRead(
+                            editSchemas[schemas[i]],
+                            this.props.socket,
+                        )) as EditSchemaTab;
+                        schema.key = schemas[i];
+                        if (schema && typeof schema === 'object') {
+                            // we expect { json: ..., title: {}, icon?, color? }
+                            customEditTabs.push(schema);
+                        }
+                        if (schema.icon) {
+                            try {
+                                const parsed = iobUriParse(schema.icon);
+                                if (parsed.type !== 'base64' && parsed.type !== 'http') {
+                                    const icon = await iobUriRead(parsed, this.props.socket);
+                                    if (icon) {
+                                        schema.icon = icon;
+                                    }
+                                }
+                            } catch (e) {
+                                console.warn(`Cannot get icon for schema from "${schema.icon}": ${e}`);
+                                schema.icon = undefined;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(`Cannot get edit schema for "${editSchemas[schemas[i]]}": ${e}`);
+                    }
+                }
+                if (customEditTabs.length) {
+                    customEditTabs.sort((a, b) => {
+                        if (a.order !== undefined && b.order !== undefined) {
+                            return a.order - b.order;
+                        }
+                        if (a.order !== undefined) {
+                            return -1;
+                        }
+                        if (b.order !== undefined) {
+                            return 1;
+                        }
+                        return a.key > b.key ? 1 : -1;
+                    });
+                    this.setState({ customEditTabs });
+                }
+            } else {
+                console.warn(
+                    `Invalid edit schema for "${editSchemas}": expected object, but got ${typeof editSchemas}`,
+                );
+            }
+        }
+
+        if (
+            this.state.tab === 'alias' &&
+            (!this.props.obj._id.startsWith('alias.0') || this.props.obj.type !== 'state')
+        ) {
+            this.setState({ tab: 'object' });
+        } else if (this.state.tab === 'state' && this.props.obj.type !== 'state') {
+            this.setState({ tab: 'object' });
+        } else if (
+            this.state.tab !== 'object' &&
+            this.state.tab !== 'common' &&
+            this.state.tab !== 'alias' &&
+            this.state.tab !== 'state' &&
+            !customEditTabs.find(tab => tab.key === this.state.tab)
+        ) {
+            this.setState({ tab: 'object' });
+        }
+
+        if (this.state.tab === 'state') {
+            this.subscribeOnState(true);
+        }
+
         void this.props.socket.subscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
     componentWillUnmount(): void {
+        if (this.updateTimer) {
+            clearInterval(this.updateTimer);
+            this.updateTimer = null;
+        }
+        this.subscribeOnState(false);
+
         void this.props.socket.unsubscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
-    onObjectUpdated = (id: string, obj: ioBroker.AnyObject): void => {
+    onObjectUpdated = (_id: string, obj: ioBroker.AnyObject): void => {
         if (this.originalObj !== JSON.stringify(obj, null, 2)) {
             this.originalObj = JSON.stringify(obj, null, 2);
             if (!this.state.changed) {
@@ -710,12 +898,383 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
     }
 
-    renderTabs(): JSX.Element {
+    static getPartOfObject(text: string, path?: string): any {
+        if (path) {
+            return getAttrInObject(JSON.parse(text), path.split('.'));
+        }
+        return JSON.parse(text);
+    }
+
+    static setPartOfObject(text: string, value: any, path?: string): string {
+        let data: any = JSON.parse(text);
+        if (data === undefined) {
+            return text;
+        }
+        data = setAttrInObject(data, path.split('.'), value);
+        return JSON.stringify(data, null, 2);
+    }
+
+    renderCustomPanel(): JSX.Element | null {
+        const tab = this.state.customEditTabs?.find(it => it.key === this.state.tab);
+        if (!tab) {
+            return null;
+        }
+        let data: Record<string, any>;
+        try {
+            data = ObjectBrowserEditObject.getPartOfObject(this.state.text, tab.path);
+        } catch (e) {
+            console.error(`Cannot get data for ${tab.path}: ${e}`);
+            return <div>{I18n.t('Cannot get data for %s: %s', tab.path, e)}</div>;
+        }
+
+        if (!data) {
+            return <div>{I18n.t('Cannot get data for %s', tab.path)}</div>;
+        }
+
+        return (
+            <JsonConfigComponent
+                theme={this.props.theme}
+                socket={this.props.socket as unknown as AdminConnection}
+                themeName={this.props.theme.palette.mode}
+                themeType={this.props.theme.palette.mode}
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
+                schema={tab.json}
+                data={data}
+                onChange={data => {
+                    try {
+                        const text = ObjectBrowserEditObject.setPartOfObject(this.state.text, data, tab.path);
+                        this.onChange(text);
+                    } catch (e) {
+                        console.error(`Cannot set data for ${tab.path}: ${e}`);
+                    }
+                }}
+                adapterName={''}
+                instance={0}
+                onError={(error: boolean): void => {
+                    console.warn(`Error in JSON editor: ${error}`);
+                    if (this.state.customError !== error) {
+                        this.setState({ customError: error });
+                    }
+                }}
+            />
+        );
+    }
+
+    renderCustomTab(tab: EditSchemaTabEditor, parsedObj: ioBroker.Object | null | undefined): JSX.Element {
+        let style: React.CSSProperties | undefined;
+        if (!parsedObj) {
+            return null;
+        }
+        if (!getAttrInObject(parsedObj, tab.path?.split('.'))) {
+            // no part in object found
+            return null;
+        }
+
+        if (tab.color) {
+            style = {
+                backgroundColor: tab.color,
+                color: Utils.invertColor(tab.color, true),
+            };
+        }
+
+        const label: string | React.JSX.Element =
+            tab.label && typeof tab.label === 'object'
+                ? tab.label[this.state.lang] || tab.label.en
+                : tab.noTranslation
+                  ? (tab.label as string) || tab.key
+                  : this.props.t((tab.label as string) || tab.key);
+
+        return (
+            <Tab
+                disabled={this.state.error || this.state.customError}
+                value={tab.key}
+                label={label}
+                style={style}
+                iconPosition="start"
+                icon={
+                    tab.icon ? (
+                        <Icon
+                            src={tab.icon}
+                            style={styles.funcIcon}
+                        />
+                    ) : undefined
+                }
+            />
+        );
+    }
+
+    renderStateTab(): JSX.Element | null {
+        if (
+            this.props.obj.type !== 'state' ||
+            // @ts-expect-error file is deprecated, but could appear
+            this.props.obj.common.type === 'file'
+        ) {
+            return null;
+        }
+
+        return (
+            <Tab
+                disabled={this.state.customError || this.state.error}
+                value="state"
+                label={this.props.t('State')}
+            />
+        );
+    }
+
+    renderStatePanel(): JSX.Element {
+        if (this.state.value === undefined || this.state.value === null) {
+            return <div>{this.props.t('State does not exist')}</div>;
+        }
+        if (typeof this.state.value !== 'object') {
+            return (
+                <div style={{ maxWidth: 700 }}>
+                    <div>{this.props.t('State is invalid')}</div>
+                    <div>
+                        <pre>{JSON.stringify(this.state.value, null, 4)}</pre>
+                    </div>
+                </div>
+            );
+        }
+
+        let strVal: string | React.JSX.Element | undefined;
+        const styleValue: React.CSSProperties = {};
+        const v = this.state.value.val;
+        const type = typeof v;
+
+        if (v === undefined) {
+            strVal = '[undef]';
+            styleValue.color = '#bc6400';
+            styleValue.fontStyle = 'italic';
+        } else if (v === null) {
+            strVal = '(null)';
+            styleValue.color = '#0047b1';
+            styleValue.fontStyle = 'italic';
+        } else if (
+            typeof this.props.obj.common.role === 'string' &&
+            this.props.obj.common.role.match(/^value\.time|^date/)
+        ) {
+            // if timestamp
+            if (v && type === 'string') {
+                if (Utils.isStringInteger(v as string)) {
+                    // we assume a unix ts
+                    strVal = new Date(parseInt(v as string, 10)).toString();
+                } else {
+                    // check if parsable by new date
+                    try {
+                        const parsedDate = new Date(v as string);
+
+                        if (Utils.isValidDate(parsedDate)) {
+                            strVal = parsedDate.toString();
+                        }
+                    } catch {
+                        // ignore
+                    }
+                }
+            } else if (v && type === 'number') {
+                if ((v as number) > 946681200 && (v as number) < 946681200000) {
+                    // '2000-01-01T00:00:00' => 946681200000
+                    strVal = new Date((v as number) * 1_000).toString(); // maybe the time is in seconds (UNIX time)
+                } else if ((v as number) > 946681200000000) {
+                    // "null" and undefined could not be here. See `let v = (isCommon && isCommon.type === 'file') ....` above
+                    strVal = new Date(v as number).toString();
+                }
+            }
+        }
+
+        if (!strVal) {
+            if (type === 'number') {
+                if (!Number.isInteger(v)) {
+                    strVal = (Math.round((v as number) * 1_000_000_000) / 1_000_000_000).toString(); // remove 4.00000000000000001
+                    if (this.props.isFloatComma) {
+                        strVal = strVal.toString().replace('.', ',');
+                    }
+                }
+            } else if (type === 'boolean') {
+                strVal = v ? I18n.t('true') : I18n.t('false');
+                styleValue.color = v ? '#139800' : '#cd6b55';
+            } else if (type === 'object') {
+                strVal = JSON.stringify(v);
+            } else if (type === 'string' && (v as string).startsWith('data:image/')) {
+                strVal = (
+                    <img
+                        src={v as string}
+                        alt="img"
+                        style={styles.stateImage}
+                    />
+                );
+            } else {
+                strVal = v.toString();
+            }
+        }
+
+        Object.assign(styleValue, valueBlink(this.props.theme, styleValue.color));
+
+        return (
+            <Box
+                style={{
+                    ...styles.divWithoutTitle,
+                    padding: '24px 24px 0 24px',
+                    fontSize: 16,
+                    maxWidth: 400,
+                }}
+                sx={{
+                    '& .value-line:hover': {
+                        backgroundColor: '#00000030',
+                    },
+                }}
+            >
+                <div
+                    className="value-line"
+                    style={{
+                        ...styles.stateRow,
+                        marginBottom: 24,
+                    }}
+                >
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_value')}:</div>
+                    <Box
+                        component="div"
+                        key={typeof strVal === 'string' ? strVal : 'image'}
+                        sx={styleValue}
+                        style={styles.stateValue}
+                    >
+                        {strVal}
+                        {(this.props.obj.common as ioBroker.StateCommon)?.unit ? (
+                            <span style={styles.stateUnit}>{(this.props.obj.common as ioBroker.StateCommon).unit}</span>
+                        ) : null}
+                    </Box>
+                </div>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
+                    <div style={styles.stateTitle}>{I18n.t('Type')}:</div>
+                    <div style={styles.stateValue}>{type}</div>
+                </div>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_ts')}:</div>
+                    <Tooltip
+                        title={new Date(this.state.value.ts).toLocaleString()}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <div style={styles.stateValue}>
+                            <span style={styles.stateTime}>{moment(this.state.value.ts).fromNow()}</span>
+                        </div>
+                    </Tooltip>
+                </div>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_ack')}:</div>
+                    <div
+                        style={{
+                            ...styles.stateValue,
+                            color: this.state.value.ack ? 'green' : 'red',
+                        }}
+                    >
+                        {this.state.value.ack ? I18n.t('Acknowledged') : I18n.t('Command')}
+                        {this.state.value.ack ? ' (true)' : ' (false)'}
+                    </div>
+                </div>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_lc')}:</div>
+                    <Tooltip
+                        title={new Date(this.state.value.lc).toLocaleString()}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <div style={styles.stateValue}>
+                            <span style={styles.stateTime}>{moment(this.state.value.lc).fromNow()}</span>
+                        </div>
+                    </Tooltip>
+                </div>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_quality')}:</div>
+                    <div style={styles.stateValue}>{Utils.quality2text(this.state.value.q || 0).join(', ')}</div>
+                </div>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_from')}:</div>
+                    <div style={styles.stateValue}>{this.state.value.from}</div>
+                </div>
+                <div
+                    style={styles.stateRow}
+                    className="value-line"
+                >
+                    <div style={styles.stateTitle}>{I18n.t('ra_tooltip_user')}:</div>
+                    <div style={styles.stateValue}>{this.state.value.user || '--'}</div>
+                </div>
+                {this.state.value.expire ? (
+                    <div
+                        style={styles.stateRow}
+                        className="value-line"
+                    >
+                        <div style={styles.stateTitle}>{I18n.t('ra_tooltip_expire')}:</div>
+                        <div style={styles.stateValue}>
+                            {this.state.value.expire} {I18n.t('sc_seconds')}
+                        </div>
+                    </div>
+                ) : null}
+                {this.state.value.c ? (
+                    <div
+                        style={styles.stateRow}
+                        className="value-line"
+                    >
+                        <div style={styles.stateTitle}>{I18n.t('ra_tooltip_comment')}:</div>
+                        <div style={styles.stateValue}>{this.state.value.c}</div>
+                    </div>
+                ) : null}
+            </Box>
+        );
+    }
+
+    onStateChange = (_id: string, state: ioBroker.State | null | undefined): void => {
+        if (JSON.stringify(state) !== JSON.stringify(this.state.value)) {
+            this.setState({ value: state });
+        }
+    };
+
+    subscribeOnState(enable: boolean): void {
+        if (enable) {
+            if (!this.subscribed) {
+                if (!this.updateTimer) {
+                    this.updateTimer = setInterval(() => {
+                        // update times
+                        this.forceUpdate();
+                    }, 5000);
+                }
+                this.subscribed = true;
+                void this.props.socket.subscribeState(this.props.obj._id, this.onStateChange);
+            }
+        } else {
+            if (this.subscribed) {
+                if (this.updateTimer) {
+                    clearInterval(this.updateTimer);
+                    this.updateTimer = null;
+                }
+                this.subscribed = false;
+                void this.props.socket.unsubscribeState(this.props.obj._id, this.onStateChange);
+            }
+        }
+    }
+
+    renderTabs(parsedObj: ioBroker.Object | null | undefined): JSX.Element {
         return (
             <Tabs
                 style={styles.tabsPadding}
                 value={this.state.tab}
-                onChange={(e, tab) => {
+                onChange={(_e, tab) => {
                     ((window as any)._localStorage || window.localStorage).setItem(
                         `${this.props.dialogName || 'App'}.editTab`,
                         tab,
@@ -743,6 +1302,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         } catch {
                             // ignore
                         }
+                        this.subscribeOnState(false);
+                    } else if (tab === 'state') {
+                        this.subscribeOnState(true);
+                    } else {
+                        this.subscribeOnState(false);
                     }
 
                     this.setState({ tab });
@@ -750,18 +1314,23 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             >
                 <Tab
                     value="common"
+                    disabled={this.state.customError || this.state.error}
                     label={this.props.t('Common')}
                 />
                 <Tab
                     value="object"
+                    disabled={this.state.customError}
                     label={this.props.t('Object data')}
                 />
+                {this.renderStateTab()}
                 {this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' && (
                     <Tab
+                        disabled={this.state.customError || this.state.error}
                         value="alias"
                         label={this.props.t('Alias')}
                     />
                 )}
+                {this.state.customEditTabs?.map(tab => this.renderCustomTab(tab, parsedObj))}
             </Tabs>
         );
     }
@@ -890,19 +1459,35 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
+    static filterRoles(roleArray: { role: string; type: ioBroker.CommonType }[], type: ioBroker.CommonType): string[] {
+        const bigRoleArray: string[] = [];
+        roleArray.forEach(
+            role =>
+                (role.type === 'mixed' || role.type) === type &&
+                !bigRoleArray.includes(role.role) &&
+                bigRoleArray.push(role.role),
+        );
+        DEFAULT_ROLES.forEach(
+            role =>
+                (role.type === 'mixed' || role.type) === type &&
+                !bigRoleArray.includes(role.role) &&
+                bigRoleArray.push(role.role),
+        );
+        bigRoleArray.sort();
+        return bigRoleArray;
+    }
+
     renderCommonEdit(): JSX.Element {
         try {
             const json = JSON.parse(this.state.text);
             const stateTypeArray: ioBroker.CommonType[] = ['number', 'string', 'boolean', 'array', 'object', 'mixed'];
             const disabled = false;
-            const { t, roleArray, obj } = this.props;
+            const { t, obj } = this.props;
             const checkState = obj.type === 'state';
             const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
 
             // add default roles to roleArray
-            const bigRoleArray: string[] = [...DEFAULT_ROLES];
-            roleArray.forEach(role => !bigRoleArray.includes(role) && bigRoleArray.push(role));
-            bigRoleArray.sort();
+            const bigRoleArray: string[] = ObjectBrowserEditObject.filterRoles(this.props.roleArray, json.common.type);
 
             let iconPath;
 
@@ -936,7 +1521,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             ...styles.commonWrapper,
                             width: this.props.width === 'xs' ? '100%' : undefined,
                             minWidth: this.props.width === 'xs' ? '100%' : undefined,
-                            gap: this.props.width === 'xs' ? '10px' : undefined,
+                            gap: this.props.width === 'xs' ? 10 : 8,
                             display: this.props.width === 'xs' ? 'flex' : undefined,
                             flexDirection: this.props.width === 'xs' ? 'column' : undefined,
                         }}
@@ -946,7 +1531,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 variant="standard"
                                 disabled={disabled}
                                 label={t('Name')}
-                                style={{ ...styles.marginBlock, ...styles.textField }}
+                                style={{ ...styles.textField, marginTop: 8 }}
                                 fullWidth
                                 value={Utils.getObjectNameFromObj(json, I18n.getLanguage(), {}, false, true)}
                                 onChange={el => this.setCommonItem(json, 'name', el.target.value)}
@@ -1058,8 +1643,50 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         fullWidth
                                         disabled={disabled}
                                         value={json.common.role}
-                                        onChange={(_, e) => this.setCommonItem(json, 'role', e)}
-                                        options={roleArray}
+                                        onChange={(_, e) => {
+                                            const role = DEFAULT_ROLES.find(r => r.role === e);
+                                            if (role) {
+                                                if (role.w !== undefined && role.r !== undefined) {
+                                                    this.setCommonItem(json, 'write', role.w);
+                                                    this.setCommonItem(json, 'read', role.r);
+                                                } else if (role.w !== undefined) {
+                                                    this.setCommonItem(json, 'write', role.w);
+                                                } else if (role.r !== undefined) {
+                                                    this.setCommonItem(json, 'read', role.r);
+                                                }
+                                            }
+
+                                            if (
+                                                e.startsWith('level') ||
+                                                e.startsWith('indicator') ||
+                                                e.startsWith('sensor') ||
+                                                e.startsWith('weather')
+                                            ) {
+                                                if (json.common.write) {
+                                                    this.setCommonItem(json, 'write', false);
+                                                }
+                                            } else if (
+                                                e.startsWith('value') ||
+                                                e.startsWith('indicator') ||
+                                                e.startsWith('sensor') ||
+                                                e.startsWith('weather')
+                                            ) {
+                                                if (json.common.write) {
+                                                    this.setCommonItem(json, 'write', false);
+                                                }
+                                            } else if (e.startsWith('level') || e.startsWith('switch')) {
+                                                if (json.common.write) {
+                                                    this.setCommonItem(json, 'write', true);
+                                                }
+                                            } else if (e.startsWith('button')) {
+                                                if (json.common.read) {
+                                                    this.setCommonItem(json, 'read', false);
+                                                }
+                                            }
+
+                                            this.setCommonItem(json, 'role', e);
+                                        }}
+                                        options={bigRoleArray}
                                         renderInput={params => (
                                             <TextField
                                                 variant="standard"
@@ -1536,18 +2163,58 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
+    renderPanelObject(withAlias: boolean): React.JSX.Element {
+        return (
+            <div
+                style={{
+                    ...styles.divWithoutTitle,
+                    ...(withAlias ? styles.divWithoutTitleAndTab : undefined),
+                    ...(this.state.error ? styles.error : undefined),
+                }}
+                onKeyDown={e => {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.onUpdate();
+                    }
+                }}
+            >
+                <Editor
+                    value={this.state.text}
+                    onChange={newValue => this.onChange(newValue)}
+                    name="UNIQUE_ID_OF_DIV"
+                    themeType={this.props.themeType}
+                />
+                {this.state.showCommonDeleteMessage ? (
+                    <div style={styles.commonDeleteTip}>{I18n.t('common_delete_tip')}</div>
+                ) : null}
+            </div>
+        );
+    }
+
     render(): JSX.Element {
         const obj = this.props.obj;
 
         const withAlias = obj._id.startsWith('alias.0') && obj.type === 'state';
-        const fullWidth = obj.type !== 'state' || (obj.common.type !== 'number' && obj.common.type !== 'boolean');
+
+        let dialogStyle = styles.dialog;
+        if (window.innerWidth > 1920) {
+            dialogStyle = { ...dialogStyle, maxWidth: 'calc(100% - 150px)' };
+        }
+
+        let parsedObj: ioBroker.Object;
+        try {
+            parsedObj = JSON.parse(this.state.text);
+        } catch {
+            // ignore
+        }
 
         return (
             <Dialog
-                sx={{ '& .MuiPaper-root': styles.dialog }}
+                sx={{ '& .MuiPaper-root': dialogStyle }}
                 open={!0}
-                maxWidth="lg"
-                fullWidth={fullWidth}
+                maxWidth="xl"
+                fullWidth
                 fullScreen={false}
                 onClose={() => this.props.onClose()}
                 aria-labelledby="edit-value-dialog-title"
@@ -1571,46 +2238,34 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     </Box>
                 </DialogTitle>
 
-                {this.renderTabs()}
+                {this.renderTabs(parsedObj)}
                 {this.renderCopyDialog()}
 
                 <DialogContent
                     sx={{
-                        p: this.props.width === 'xs' && this.state.tab === 'object' ? '6px' : undefined,
+                        p:
+                            this.props.width === 'xs' && this.state.tab === 'object'
+                                ? '6px'
+                                : this.state.tab === 'object' ||
+                                    this.state.tab === 'common' ||
+                                    this.state.tab === 'alias'
+                                  ? '0 24px'
+                                  : '0 6px',
+                        overflow:
+                            this.state.tab === 'object' || this.state.tab === 'common' || this.state.tab === 'alias'
+                                ? undefined
+                                : 'hidden',
                     }}
                 >
-                    {this.state.tab === 'object' ? (
-                        <div
-                            style={{
-                                ...styles.divWithoutTitle,
-                                ...(withAlias ? styles.divWithoutTitleAndTab : undefined),
-                                ...(this.state.error ? styles.error : undefined),
-                            }}
-                            onKeyDown={e => {
-                                if (e.ctrlKey && e.key === 'Enter') {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    this.onUpdate();
-                                }
-                            }}
-                        >
-                            <Editor
-                                value={this.state.text}
-                                onChange={newValue => this.onChange(newValue)}
-                                name="UNIQUE_ID_OF_DIV"
-                                themeType={this.props.themeType}
-                            />
-                            {this.state.showCommonDeleteMessage ? (
-                                <div style={styles.commonDeleteTip}>{I18n.t('common_delete_tip')}</div>
-                            ) : null}
-                        </div>
-                    ) : null}
+                    {this.state.tab === 'object' ? this.renderPanelObject(withAlias) : null}
                     {this.state.tab === 'alias' &&
                     this.props.obj._id.startsWith('alias.0') &&
                     this.props.obj.type === 'state'
                         ? this.renderAliasEdit()
                         : null}
                     {this.state.tab === 'common' ? this.renderCommonEdit() : null}
+                    {this.state.tab === 'state' ? this.renderStatePanel() : null}
+                    {this.renderCustomPanel()}
                     {this.renderSelectDialog()}
                 </DialogContent>
                 <DialogActions sx={styles.wrapperButton}>
@@ -1640,7 +2295,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     )}
                     <Button
                         variant="contained"
-                        disabled={this.state.error || !this.state.changed}
+                        disabled={this.state.error || !this.state.changed || this.state.customError}
                         onClick={() => this.onUpdate()}
                         startIcon={this.props.width === 'xs' ? undefined : <IconCheck />}
                         color="primary"

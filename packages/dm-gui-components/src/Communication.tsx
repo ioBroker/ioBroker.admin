@@ -29,8 +29,15 @@ import {
 
 import { Close, Check } from '@mui/icons-material';
 
-import type { Connection, AdminConnection, ThemeName, ThemeType, IobTheme } from '@iobroker/adapter-react-v5';
-import { type ConfigItemPanel } from '@iobroker/json-config';
+import {
+    type Connection,
+    type AdminConnection,
+    type ThemeName,
+    type ThemeType,
+    type IobTheme,
+    I18n,
+    Icon,
+} from '@iobroker/adapter-react-v5';
 import type {
     ActionBase,
     ControlBase,
@@ -38,7 +45,10 @@ import type {
     DeviceInfo,
     DeviceRefresh,
     InstanceDetails,
+    JsonFormSchema,
+    ActionButton,
 } from '@iobroker/dm-utils';
+import type { ConfigItemPanel, ConfigItemTabs } from '@iobroker/json-config';
 
 import { getTranslation } from './Utils';
 import JsonConfig from './JsonConfig';
@@ -63,10 +73,19 @@ export type CommunicationProps = {
 };
 
 interface CommunicationForm {
-    title?: string | null | undefined;
-    schema?: ConfigItemPanel;
+    title?: ioBroker.StringOrTranslated | null | undefined;
+    label?: ioBroker.StringOrTranslated | null | undefined; // same as title
+    noTranslation?: boolean; // Do not translate title/label
+    schema: JsonFormSchema;
     data?: Record<string, any>;
+    buttons?: (ActionButton | 'apply' | 'cancel' | 'close')[];
+    maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+}
+
+interface CommunicationFormInState extends CommunicationForm {
     handleClose?: (data?: Record<string, any>) => void;
+    originalData: string;
+    changed: boolean;
 }
 
 interface InputAction extends ActionBase {
@@ -87,7 +106,7 @@ export type CommunicationState = {
         message: string;
         handleClose: (confirmation?: boolean) => void;
     } | null;
-    form: CommunicationForm | null;
+    form: CommunicationFormInState | null;
     progress: {
         open: boolean;
         progress: number;
@@ -135,7 +154,7 @@ interface DmActionResponse extends DmResponse {
     };
     message?: string;
     confirm?: string;
-    form?: any;
+    form?: CommunicationForm;
     progress?: {
         open: boolean;
         progress: number;
@@ -146,6 +165,8 @@ interface DmActionResponse extends DmResponse {
  * Device List Component
  */
 class Communication<P extends CommunicationProps, S extends CommunicationState> extends Component<P, S> {
+    private responseTimeout: ReturnType<typeof setTimeout> | null = null;
+
     // eslint-disable-next-line react/no-unused-class-component-methods
     instanceHandler: (action: ActionBase) => () => void;
 
@@ -221,6 +242,13 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         }
     }
 
+    componentWillUnmount(): void {
+        if (this.responseTimeout) {
+            clearTimeout(this.responseTimeout);
+            this.responseTimeout = null;
+        }
+    }
+
     // eslint-disable-next-line class-methods-use-this
     loadData(): void {
         console.error('loadData not implemented');
@@ -229,11 +257,21 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
     sendActionToInstance = (command: `dm:${string}`, messageToSend: Message, refresh?: () => void): void => {
         const send = async (): Promise<void> => {
             this.setState({ showSpinner: true });
+            this.responseTimeout = setTimeout(() => {
+                this.setState({ showSpinner: false });
+                window.alert(I18n.t('ra_No response from the backend'));
+            }, 5000);
+
             const response: DmActionResponse = await this.props.socket.sendTo(
                 this.props.selectedInstance,
                 command,
                 messageToSend,
             );
+
+            if (this.responseTimeout) {
+                clearTimeout(this.responseTimeout);
+                this.responseTimeout = null;
+            }
 
             const type: string = response.type;
             console.log(`Response: ${response.type}`);
@@ -253,6 +291,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                         ),
                                     ),
                             },
+                            showSpinner: false,
                         });
                     }
                     break;
@@ -275,6 +314,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                         ),
                                     ),
                             },
+                            showSpinner: false,
                         });
                     }
                     break;
@@ -282,9 +322,22 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 case 'form':
                     console.log('Form received');
                     if (response.form) {
+                        const data: Record<string, any> | undefined = response.form.data;
+                        const originalData: Record<string, any> = {};
+                        if (data) {
+                            Object.keys(data).forEach(key => {
+                                if (data[key] !== undefined) {
+                                    originalData[key] = data[key];
+                                }
+                            });
+                        }
+                        response.form.data = JSON.parse(JSON.stringify(originalData)) as Record<string, any>;
+
                         this.setState({
                             form: {
                                 ...response.form,
+                                changed: false,
+                                originalData: JSON.stringify(originalData),
                                 handleClose: (data: any) =>
                                     this.setState({ form: null }, () => {
                                         console.log(`Form ${JSON.stringify(data)}`);
@@ -298,6 +351,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                         );
                                     }),
                             },
+                            showSpinner: false,
                         });
                     }
                     break;
@@ -306,9 +360,9 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     if (response.progress) {
                         if (this.state.progress) {
                             const progress = { ...this.state.progress, ...response.progress };
-                            this.setState({ progress });
+                            this.setState({ progress, showSpinner: false });
                         } else {
-                            this.setState({ progress: response.progress });
+                            this.setState({ progress: response.progress, showSpinner: false });
                         }
                     }
                     this.sendActionToInstance('dm:actionProgress', { origin: response.origin }, refresh);
@@ -335,9 +389,10 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     }
                     if (response.result.error) {
                         console.error(`Error: ${response.result.error.message}`);
-                        this.setState({ showToast: response.result.error.message });
+                        this.setState({ showToast: response.result.error.message, showSpinner: false });
+                    } else {
+                        this.setState({ showSpinner: false });
                     }
-                    this.setState({ showSpinner: false });
                     break;
 
                 default:
@@ -465,28 +520,90 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         );
     }
 
+    getOkButton(button?: ActionButton | 'apply' | 'cancel' | 'close'): React.JSX.Element {
+        if (typeof button === 'string') {
+            button = undefined;
+        }
+        return (
+            <Button
+                key="apply"
+                disabled={!this.state.form?.changed}
+                variant={button?.variant || 'contained'}
+                color={button?.color || 'primary'}
+                onClick={() => this.state.form?.handleClose && this.state.form.handleClose(this.state.form?.data)}
+                startIcon={button?.icon ? <Icon src={button?.icon} /> : undefined}
+            >
+                {getTranslation(button?.label || 'okButtonText', button?.noTranslation)}
+            </Button>
+        );
+    }
+
+    getCancelButton(button?: ActionButton | 'apply' | 'cancel' | 'close'): React.JSX.Element {
+        let isClose = false;
+        if (typeof button === 'string') {
+            isClose = button === 'close';
+            button = undefined;
+        }
+        return (
+            <Button
+                key="cancel"
+                variant={button?.variant || 'contained'}
+                color={button?.color || 'grey'}
+                onClick={() => this.state.form?.handleClose && this.state.form.handleClose()}
+                startIcon={isClose ? <Close /> : button?.icon ? <Icon src={button?.icon} /> : undefined}
+            >
+                {getTranslation(button?.label || 'cancelButtonText', button?.noTranslation)}
+            </Button>
+        );
+    }
+
     renderFormDialog(): React.JSX.Element | null {
-        if (!this.state.form || !this.state.form.schema || !this.state.form.data) {
+        if (!this.state.form || !this.state.form.schema) {
             return null;
+        }
+        let buttons: React.JSX.Element[];
+        if (this.state.form.buttons) {
+            buttons = [];
+            this.state.form.buttons.forEach((button: ActionButton | 'apply' | 'cancel' | 'close'): void => {
+                if (button === 'apply' || (button as ActionButton).type === 'apply') {
+                    buttons.push(this.getOkButton(button));
+                } else {
+                    buttons.push(this.getCancelButton(button));
+                }
+            });
+        } else {
+            buttons = [this.getOkButton(), this.getCancelButton()];
         }
         return (
             <Dialog
                 open={!0}
                 onClose={() => this.state.form?.handleClose && this.state.form.handleClose()}
                 hideBackdrop
+                fullWidth
+                maxWidth={this.state.form.maxWidth || 'md'}
             >
-                {this.state.form?.title ? <DialogTitle>{getTranslation(this.state.form?.title)}</DialogTitle> : null}
+                {this.state.form?.title ? (
+                    <DialogTitle>
+                        {getTranslation(
+                            this.state.form?.label || this.state.form?.title,
+                            this.state.form.noTranslation,
+                        )}
+                    </DialogTitle>
+                ) : null}
                 <DialogContent>
                     <JsonConfig
                         instanceId={this.props.selectedInstance}
-                        schema={this.state.form.schema}
-                        data={this.state.form.data}
+                        schema={this.state.form.schema as ConfigItemPanel | ConfigItemTabs}
+                        data={this.state.form.data || {}}
                         socket={this.props.socket as AdminConnection}
                         onChange={(data: Record<string, any>) => {
                             console.log('handleFormChange', { data });
-                            const form: CommunicationForm | null | undefined = { ...this.state.form };
+                            const form: CommunicationFormInState = {
+                                ...(this.state.form as CommunicationFormInState),
+                            };
                             if (form) {
                                 form.data = data;
+                                form.changed = JSON.stringify(data) !== form.originalData;
                                 this.setState({ form });
                             }
                         }}
@@ -497,25 +614,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                         dateFormat={this.props.dateFormat}
                     />
                 </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() =>
-                            this.state.form?.handleClose && this.state.form.handleClose(this.state.form?.data)
-                        }
-                        autoFocus
-                    >
-                        {getTranslation('okButtonText')}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="grey"
-                        onClick={() => this.state.form?.handleClose && this.state.form.handleClose()}
-                    >
-                        {getTranslation('cancelButtonText')}
-                    </Button>
-                </DialogActions>
+                <DialogActions>{buttons}</DialogActions>
             </Dialog>
         );
     }
@@ -545,13 +644,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
     }
 
     renderSpinner(): React.JSX.Element | null {
-        if (
-            !this.state.showSpinner &&
-            !this.state.progress?.open &&
-            !this.state.message &&
-            !this.state.confirm &&
-            !this.state.form
-        ) {
+        if (!this.state.showSpinner) {
             return null;
         }
         return (
@@ -620,6 +713,42 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         );
     }
 
+    onShowInputOk(): void {
+        if (!this.state.showInput) {
+            return;
+        }
+
+        const showInput = this.state.showInput;
+        this.setState({ showInput: null }, () => {
+            if (showInput.deviceId) {
+                this.sendActionToInstance(
+                    'dm:deviceAction',
+                    {
+                        actionId: showInput.id,
+                        deviceId: showInput.deviceId,
+                        value:
+                            showInput.inputBefore?.type === 'checkbox'
+                                ? !!this.state.inputValue
+                                : showInput.inputBefore?.type === 'number'
+                                  ? parseFloat(this.state.inputValue as string) || 0
+                                  : this.state.inputValue,
+                    },
+                    showInput.refresh,
+                );
+            } else {
+                this.sendActionToInstance('dm:instanceAction', {
+                    actionId: showInput.id,
+                    value:
+                        showInput.inputBefore?.type === 'checkbox'
+                            ? !!this.state.inputValue
+                            : showInput.inputBefore?.type === 'number'
+                              ? parseFloat(this.state.inputValue as string) || 0
+                              : this.state.inputValue,
+                });
+            }
+        });
+    }
+
     renderInputDialog(): React.JSX.Element | null {
         if (!this.state.showInput || !this.state.showInput.inputBefore) {
             return null;
@@ -679,6 +808,11 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                             fullWidth
                             value={this.state.inputValue}
                             onChange={e => this.setState({ inputValue: e.target.value })}
+                            onKeyUp={(e: React.KeyboardEvent) => {
+                                if (e.key === 'Enter') {
+                                    this.onShowInputOk();
+                                }
+                            }}
                         />
                     ) : null}
                     {this.state.showInput.inputBefore.type === 'checkbox' ? (
@@ -725,7 +859,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                 <Grid2>
                                     <Slider
                                         value={typeof this.state.inputValue === 'number' ? this.state.inputValue : 0}
-                                        onChange={(event: Event, newValue: number) =>
+                                        onChange={(_event: Event, newValue: number) =>
                                             this.setState({ inputValue: newValue })
                                         }
                                     />
@@ -782,41 +916,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                         variant="contained"
                         disabled={okDisabled}
                         color="primary"
-                        onClick={() => {
-                            if (!this.state.showInput) {
-                                return;
-                            }
-
-                            const showInput = this.state.showInput;
-                            this.setState({ showInput: null }, () => {
-                                if (showInput.deviceId) {
-                                    this.sendActionToInstance(
-                                        'dm:deviceAction',
-                                        {
-                                            actionId: showInput.id,
-                                            deviceId: showInput.deviceId,
-                                            value:
-                                                showInput.inputBefore?.type === 'checkbox'
-                                                    ? !!this.state.inputValue
-                                                    : showInput.inputBefore?.type === 'number'
-                                                      ? parseFloat(this.state.inputValue as string) || 0
-                                                      : this.state.inputValue,
-                                        },
-                                        showInput.refresh,
-                                    );
-                                } else {
-                                    this.sendActionToInstance('dm:instanceAction', {
-                                        actionId: showInput.id,
-                                        value:
-                                            showInput.inputBefore?.type === 'checkbox'
-                                                ? !!this.state.inputValue
-                                                : showInput.inputBefore?.type === 'number'
-                                                  ? parseFloat(this.state.inputValue as string) || 0
-                                                  : this.state.inputValue,
-                                    });
-                                }
-                            });
-                        }}
+                        onClick={() => this.onShowInputOk()}
                         startIcon={<Check />}
                     >
                         {getTranslation('yesButtonText')}
@@ -839,13 +939,13 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
             <>
                 {this.renderSnackbar()}
                 {this.renderContent()}
-                {this.renderSpinner()}
                 {this.renderConfirmDialog()}
                 {this.renderMessageDialog()}
                 {this.renderFormDialog()}
                 {this.renderProgressDialog()}
                 {this.renderConfirmationDialog()}
                 {this.renderInputDialog()}
+                {this.renderSpinner()}
             </>
         );
     }

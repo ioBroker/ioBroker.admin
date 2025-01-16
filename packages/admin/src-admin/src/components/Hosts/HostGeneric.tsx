@@ -39,8 +39,7 @@ import {
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
-import type HostsWorker from '@/Workers/HostsWorker';
-import { type NotificationAnswer } from '@/Workers/HostsWorker';
+import type { HostsWorker, NotificationAnswer } from '@/Workers/HostsWorker';
 import AdapterUpdateDialog, { type News } from '@/dialogs/AdapterUpdateDialog';
 import JsControllerUpdater from '@/dialogs/JsControllerUpdater';
 import JsControllerDialog from '@/dialogs/JsControllerDialog';
@@ -809,8 +808,9 @@ export default abstract class HostGeneric<
                               right: -3,
                               top: 13,
                               padding: '0 4px',
+                              cursor: 'pointer',
                           }
-                        : undefined
+                        : { cursor: 'pointer' }
                 }
                 title={this.props.t('Hosts notifications')}
                 badgeContent={this.state.hostNotifications.warning + this.state.hostNotifications.other}

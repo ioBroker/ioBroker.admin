@@ -21,14 +21,21 @@ import { MoreVert as MoreVertIcon, VideogameAsset as ControlIcon, Close as Close
 
 import {
     Utils,
-    Icon,
     type Connection,
     I18n,
     type ThemeName,
     type ThemeType,
     type IobTheme,
+    IconDeviceType,
 } from '@iobroker/adapter-react-v5';
-import type { DeviceDetails, DeviceInfo, ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils';
+import {
+    type DeviceDetails,
+    type DeviceInfo,
+    type ActionBase,
+    type ControlBase,
+    type ControlState,
+    ACTIONS,
+} from '@iobroker/dm-utils';
 
 import DeviceActionButton from './DeviceActionButton';
 import DeviceControlComponent from './DeviceControl';
@@ -36,6 +43,7 @@ import DeviceStatusComponent from './DeviceStatus';
 import JsonConfig from './JsonConfig';
 import DeviceImageUpload from './DeviceImageUpload';
 import { getTranslation } from './Utils';
+import type { ConfigItemPanel, ConfigItemTabs } from '@iobroker/json-config';
 
 function NoImageIcon(props: { style?: React.CSSProperties; className?: string }): JSX.Element {
     return (
@@ -206,7 +214,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                     <JsonConfig
                         instanceId={this.props.instanceId}
                         socket={this.props.socket}
-                        schema={this.state.details.schema}
+                        schema={this.state.details.schema as ConfigItemPanel | ConfigItemTabs}
                         data={this.state.data}
                         onChange={(data: Record<string, any>) => this.setState({ data })}
                         themeName={this.props.themeName}
@@ -282,7 +290,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             (firstControl.type === 'icon' || firstControl.type === 'switch') &&
             !firstControl.label
         ) {
-            // control can be placed in button icon
+            // control can be placed in the button icon
             return (
                 <DeviceControlComponent
                     disabled={!this.props.alive}
@@ -312,8 +320,12 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
     }
 
     renderActions(): JSX.Element[] | null {
-        return this.props.device.actions?.length
-            ? this.props.device.actions.map(a => (
+        const actions = this.props.device.actions?.filter(
+            a => a.id !== ACTIONS.STATUS && a.id !== ACTIONS.ENABLE_DISABLE,
+        );
+
+        return actions?.length
+            ? actions.map(a => (
                   <DeviceActionButton
                       disabled={!this.props.alive}
                       key={a.id}
@@ -334,6 +346,8 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
               ? this.props.device.status
               : [this.props.device.status];
 
+        const icon = this.state.icon ? <IconDeviceType src={this.state.icon} /> : <NoImageIcon />;
+
         return (
             <Card
                 sx={{
@@ -343,10 +357,18 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             >
                 <CardHeader
                     sx={theme => ({
-                        backgroundColor: this.props.device.color || theme.palette.secondary.main,
-                        color: this.props.device.color
-                            ? Utils.invertColor(this.props.device.color, true)
-                            : theme.palette.secondary.contrastText,
+                        backgroundColor:
+                            this.props.device.color === 'primary'
+                                ? theme.palette.primary.main
+                                : theme.palette.secondary.main === 'secondary'
+                                  ? theme.palette.secondary.main
+                                  : this.props.device.color || theme.palette.secondary.main,
+                        color:
+                            this.props.device.color &&
+                            this.props.device.color !== 'primary' &&
+                            this.props.device.color !== 'secondary'
+                                ? Utils.invertColor(this.props.device.color, true)
+                                : theme.palette.secondary.contrastText,
                         maxWidth: 345,
                     })}
                     avatar={
@@ -365,7 +387,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                                     socket={this.props.socket}
                                 />
                             ) : null}
-                            {this.state.icon ? <Icon src={this.state.icon} /> : <NoImageIcon />}
+                            {icon}
                         </div>
                     }
                     action={
@@ -410,6 +432,16 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                                 <DeviceStatusComponent
                                     key={i}
                                     status={s}
+                                    connectionType={this.props.device.connectionType}
+                                    enabled={this.props.device.enabled}
+                                    deviceId={this.props.device.id}
+                                    statusAction={this.props.device.actions?.find(a => a.id === ACTIONS.STATUS)}
+                                    disableEnableAction={this.props.device.actions?.find(
+                                        a => a.id === ACTIONS.ENABLE_DISABLE,
+                                    )}
+                                    deviceHandler={this.props.deviceHandler}
+                                    refresh={this.refresh}
+                                    theme={this.props.theme}
                                 />
                             ))}
                         </div>
@@ -459,32 +491,31 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         };
         const headerStyle: React.CSSProperties = {
             display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            paddingLeft: 8,
+            paddingRight: 8,
             position: 'relative',
-            justifyContent: 'space-between',
             minHeight: 60,
             color: '#000',
-            padding: '0 10px 0 10px',
-            borderRadius: '4px 4px 0 0',
         };
         const imgAreaStyle: React.CSSProperties = {
             height: 45,
             width: 45,
-            margin: 'auto',
             justifyContent: 'center',
-            display: 'grid',
+            display: 'flex',
+            alignItems: 'center',
         };
         const imgStyle: React.CSSProperties = {
             zIndex: 2,
             maxWidth: '100%',
             maxHeight: '100%',
+            color: '#FFF',
         };
         const titleStyle: React.CSSProperties = {
-            width: '100%',
             fontSize: 16,
             fontWeight: 'bold',
-            paddingTop: 16,
-            paddingLeft: 8,
-            whiteSpace: 'nowrap',
+            // whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
         };
@@ -501,7 +532,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             height: 133,
         };
         const statusStyle: React.CSSProperties = {
-            padding: '15px 15px 0 15px',
+            padding: '15px 25px 0 15px',
             height: 41,
         };
         const status = !this.props.device.status
@@ -509,6 +540,17 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             : Array.isArray(this.props.device.status)
               ? this.props.device.status
               : [this.props.device.status];
+
+        const icon = this.state.icon ? (
+            <IconDeviceType
+                src={this.state.icon}
+                style={imgStyle}
+            />
+        ) : (
+            <NoImageIcon style={imgStyle} />
+        );
+
+        const title: string = this.state.details?.data?.name || this.props.title || '';
 
         return (
             <Paper
@@ -534,13 +576,11 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                                 socket={this.props.socket}
                             />
                         ) : null}
-                        <Icon
-                            src={this.state.icon}
-                            style={imgStyle}
-                        />
+                        {icon}
                     </div>
                     <Box
                         style={titleStyle}
+                        title={title.length > 20 ? title : undefined}
                         sx={theme => ({ color: theme.palette.secondary.contrastText })}
                     >
                         {this.state.details?.data?.name || this.props.title}
@@ -566,7 +606,15 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                     {status.map((s, i) => (
                         <DeviceStatusComponent
                             key={i}
+                            deviceId={this.props.device.id}
+                            connectionType={this.props.device.connectionType}
                             status={s}
+                            enabled={this.props.device.enabled}
+                            statusAction={this.props.device.actions?.find(a => a.id === ACTIONS.STATUS)}
+                            disableEnableAction={this.props.device.actions?.find(a => a.id === ACTIONS.ENABLE_DISABLE)}
+                            deviceHandler={this.props.deviceHandler}
+                            refresh={this.refresh}
+                            theme={this.props.theme}
                         />
                     ))}
                 </div>

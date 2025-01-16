@@ -17,20 +17,16 @@ jobs:
     publish-config:
         runs-on: ubuntu-20.04
 
-        strategy:
-            matrix:
-                node: [20.x] # This should be LTS
-
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
               with:
                   fetch-depth: 0 # Fetch the history, or this action won't work
 
-            - name: Use Node.js ${{ matrix.node }}
+            - name: Use Node.js 20.x
               uses: actions/setup-node@v4
               with:
-                  node-version: ${{ matrix.node }}
+                  node-version: 20.x
 
             - name: Install dependencies
               run: npm ci -f

@@ -19,8 +19,7 @@ import {
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import { Marker } from 'leaflet';
-import type { DragEndEvent, LatLngTuple, Map } from 'leaflet';
+import { Marker, type DragEndEvent, type LatLngTuple, type Map } from 'leaflet';
 
 import { DialogConfirm, withWidth, I18n, type Translate } from '@iobroker/adapter-react-v5';
 import { type AdminGuiConfig } from '@/types';
@@ -151,7 +150,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                         title: 'Polski',
                     },
                     {
-                        id: 'zh-ch',
+                        id: 'zh-cn',
                         title: '简体中文',
                     },
                 ],
@@ -656,7 +655,6 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                                     variant="standard"
                                     id="siteName"
                                     label={this.props.t('Site name')}
-                                    // @ts-expect-error Fixed in js-controller 7
                                     value={this.props.data.common.siteName || ''}
                                     onChange={e => this.doChange('siteName', e.target.value)}
                                     helperText={this.props.t(
@@ -664,7 +662,6 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                                     )}
                                     slotProps={{
                                         input: {
-                                            // @ts-expect-error Fixed in js-controller 7
                                             endAdornment: this.props.data.common.siteName ? (
                                                 <InputAdornment position="end">
                                                     <IconButton

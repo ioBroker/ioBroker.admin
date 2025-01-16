@@ -787,9 +787,10 @@ export class Utils {
                     );
                 }
 
-                m = text ? text.match(/<a [^<]+<\/a>|<br\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/) : null;
-                if (!m) {
-                    text && result.push(<span key={`a${key++}`}>{text}</span>);
+                m = text ? text.match(/<a [^<]+<\/a>|<br\s?\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/) : null;
+                if (!m && text) {
+                    // put the rest text
+                    result.push(<span key={`a${key++}`}>{text}</span>);
                 }
             } while (m);
 
@@ -1347,7 +1348,7 @@ export class Utils {
         if (themeName) {
             return themeName;
         }
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
 
     /**
@@ -1714,9 +1715,7 @@ export class Utils {
         const blob = await response.blob();
         return new Promise(resolve => {
             const reader = new FileReader();
-            reader.onload = function () {
-                resolve(this.result?.toString() || '');
-            };
+            reader.onload = (): void => resolve(reader.result?.toString() || '');
             reader.readAsDataURL(blob);
         });
     }

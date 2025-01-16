@@ -86,7 +86,7 @@ const styles: Record<string, React.CSSProperties> = {
         display: 'flex',
         justifyContent: 'space-between',
     },
-    // highlight: (theme: IobTheme) => (theme.palette.mode === 'light'
+    // highlight: (theme: IobTheme): React.CSSProperties => (theme.palette.mode === 'light'
     //     ? {
     //         color: theme.palette.secondary.main,
     //         // backgroundColor: lighten(theme.palette.secondary.light, 0.85),
@@ -319,7 +319,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         }
 
         if (this.props.schema.encryptedAttributes) {
-            const systemConfig = await this.props.socket.getCompactSystemConfig();
+            const systemConfig = await this.props.oContext.socket.getCompactSystemConfig();
             this.secret = systemConfig?.native.secret || this.secret;
 
             _value.forEach((el: Record<string, any>) => {
@@ -369,31 +369,15 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
         return (
             <ConfigPanel
-                index={idx + this.state.iteration}
+                oContext={this.props.oContext}
+                alive={this.props.alive}
                 arrayIndex={idx}
                 changed={this.props.changed}
-                globalData={this.props.data}
-                socket={this.props.socket}
-                adapterName={this.props.adapterName}
-                instance={this.props.instance}
                 common={this.props.common}
-                alive={this.props.alive}
-                themeType={this.props.themeType}
-                themeName={this.props.themeName}
-                data={data}
-                table
                 custom
-                schema={schemaItem as ConfigItemPanel}
-                systemConfig={this.props.systemConfig}
-                dateFormat={this.props.dateFormat}
-                isFloatComma={this.props.isFloatComma}
-                imagePrefix={this.props.imagePrefix}
-                onCommandRunning={this.props.onCommandRunning}
-                forceUpdate={this.props.forceUpdate}
-                originalData={this.props.originalData}
-                customs={this.props.customs}
-                theme={this.props.theme}
-                DeviceManager={this.props.DeviceManager}
+                data={data}
+                globalData={this.props.data}
+                index={idx + this.state.iteration}
                 onChange={(attr: string, valueChange: any) => {
                     const newObj: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
                     newObj[idx][attr] = valueChange;
@@ -403,7 +387,10 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                     });
                 }}
                 onError={(error: string, attr?: string) => this.onError(error, attr)}
-                onBackEndCommand={this.props.onBackEndCommand}
+                originalData={this.props.originalData}
+                schema={schemaItem as ConfigItemPanel}
+                table
+                themeName={this.props.themeName}
             />
         );
     }
@@ -688,7 +675,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         const now = new Date();
         el.setAttribute(
             'download',
-            `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${this.props.adapterName}.${this.props.instance}_${this.props.attr}.csv`,
+            `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${this.props.oContext.adapterName}.${this.props.oContext.instance}_${this.props.attr}.csv`,
         );
 
         el.style.display = 'none';
@@ -854,7 +841,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                   currentValue.defaultFunc,
                                   this.props.data,
                                   this.props.customObj,
-                                  this.props.instanceObj,
+                                  this.props.oContext.instanceObj,
                                   newValue.length,
                                   this.props.data,
                               )
@@ -1672,7 +1659,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                     ) : null}
                 </TableContainer>
                 {schema.help ? (
-                    <FormHelperText>
+                    <FormHelperText style={{ paddingLeft: 16 }}>
                         {this.renderHelp(
                             this.props.schema.help,
                             this.props.schema.helpLink,

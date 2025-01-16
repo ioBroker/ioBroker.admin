@@ -10,7 +10,7 @@ export interface ObjectEvent {
     oldObj?: ioBroker.Object;
 }
 
-export default class ObjectsWorker {
+export class ObjectsWorker {
     private readonly socket: AdminConnection;
 
     private readonly handlers: ((events: ObjectEvent[]) => void)[];

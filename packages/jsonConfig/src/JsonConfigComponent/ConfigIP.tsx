@@ -18,7 +18,7 @@ interface ConfigIPState extends ConfigGenericState {
 class ConfigIP extends ConfigGeneric<ConfigIPProps, ConfigIPState> {
     componentDidMount(): void {
         super.componentDidMount();
-        this.props.socket
+        this.props.oContext.socket
             .getHostByIp(this.props.common.host)
             .then(ips => {
                 // [{name, address, family}]

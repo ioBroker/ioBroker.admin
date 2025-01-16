@@ -2,7 +2,13 @@ import React, { Component, type JSX } from 'react';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-min-noconflict/mode-json';
+import 'ace-builds/src-min-noconflict/mode-json5';
+import 'ace-builds/src-min-noconflict/mode-xml';
+import 'ace-builds/src-min-noconflict/mode-html';
 import 'ace-builds/src-min-noconflict/worker-json';
+import 'ace-builds/src-min-noconflict/worker-javascript';
+import 'ace-builds/src-min-noconflict/worker-xml';
+import 'ace-builds/src-min-noconflict/worker-html';
 import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-min-noconflict/theme-chrome';
 import 'ace-builds/src-min-noconflict/ext-language_tools';

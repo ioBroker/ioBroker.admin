@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { TextField, IconButton } from '@mui/material';
 
-import { Icon, IconCopy, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, Icon, IconCopy, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemSendTo } from '#JC/types';
 import getIconByName from './Icons';
@@ -35,13 +35,13 @@ interface Response {
 class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSendToState> {
     private initialized = false;
 
-    private _context: string | undefined;
+    private localContext: string | undefined;
 
     askInstance(): void {
         if (this.props.alive) {
             let data: Record<string, any> | undefined = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
-                const dataStr: string = this.getPattern(this.props.schema.jsonData);
+                const dataStr: string = this.getPattern(this.props.schema.jsonData, null, true);
                 try {
                     data = JSON.parse(dataStr);
                 } catch {
@@ -53,8 +53,12 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
                 data = null;
             }
 
-            void this.props.socket
-                .sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
+            void this.props.oContext.socket
+                .sendTo(
+                    `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
+                    this.props.schema.command || 'send',
+                    data,
+                )
                 .then(result => {
                     if (typeof result === 'object') {
                         const _data: Response = result;
@@ -72,21 +76,21 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
         }
     }
 
-    getContext(): string {
-        const context: Record<string, any> = {};
+    getLocalContext(): string {
+        const localContext: Record<string, any> = {};
         if (Array.isArray(this.props.schema.alsoDependsOn)) {
             this.props.schema.alsoDependsOn.forEach(
-                attr => (context[attr] = ConfigGeneric.getValue(this.props.data, attr)),
+                attr => (localContext[attr] = ConfigGeneric.getValue(this.props.data, attr)),
             );
         }
-        return JSON.stringify(context);
+        return JSON.stringify(localContext);
     }
 
     renderItem(/* error, disabled, defaultValue */): JSX.Element {
         if (this.props.alive) {
-            const context = this.getContext();
-            if (context !== this._context || !this.initialized) {
-                this._context = context;
+            const localContext = this.getLocalContext();
+            if (localContext !== this.localContext || !this.initialized) {
+                this.localContext = localContext;
                 setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
                 this.initialized = true;
             }
@@ -124,7 +128,7 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
                                     size="small"
                                     onClick={() => {
                                         Utils.copyToClipboard(this.state.text);
-                                        window.alert('Copied');
+                                        window.alert(I18n.t('ra_Copied'));
                                     }}
                                 >
                                     <IconCopy />

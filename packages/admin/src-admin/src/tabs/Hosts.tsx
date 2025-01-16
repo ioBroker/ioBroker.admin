@@ -22,8 +22,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
-import type HostsWorker from '@/Workers/HostsWorker';
-import type { NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
+import type { HostsWorker, NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import { blinkClasses } from '@/components/Hosts/HostGeneric';
 import HostCard from '../components/Hosts/HostCard';
@@ -95,6 +94,7 @@ const styles: Record<string, any> = {
         fontSize: 12,
         opacity: 0.4,
         display: 'block',
+        whiteSpace: 'nowrap',
     },
     tooltip: {
         pointerEvents: 'none',
@@ -258,9 +258,9 @@ class Hosts extends Component<HostsProps, HostsState> {
                     }
                     this.setState(newState as HostsState);
                 })
-                .catch(e => {
-                    window.alert(`Cannot getRepository: ${e}`);
-                    if (e.toString().includes('timeout')) {
+                .catch((e: unknown): void => {
+                    window.alert(`Cannot getRepository: ${e as Error}`);
+                    if ((e as Error).toString().includes('timeout')) {
                         this.setState({ showSlowConnectionWarning: true });
                     }
                 }),
@@ -386,6 +386,7 @@ class Hosts extends Component<HostsProps, HostsState> {
     }
 
     renderTableHeader(): JSX.Element {
+        const fontSize = window.innerWidth < 100 ? 10 : window.innerWidth < 1200 ? 12 : 14;
         return (
             <div style={styles.tabHeaderWrapper}>
                 <div style={styles.tabHeaderFirstItem}>{this.t('Name:')}</div>
@@ -393,39 +394,39 @@ class Hosts extends Component<HostsProps, HostsState> {
                     {/* <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div> */}
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800, { fontSize })}
                     >
                         CPU
                     </Box>
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800, { fontSize })}
                     >
                         RAM
                     </Box>
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800, { fontSize })}
                     >
                         {this.t('Uptime')}
                     </Box>
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100, { fontSize })}
                     >
                         {this.t('Installed')}
                         <div style={styles.jsController}>js-controller</div>
                     </Box>
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100, { fontSize })}
                     >
                         {this.t('Available')}
                         <div style={styles.jsController}>js-controller</div>
                     </Box>
                     <Box
                         component="div"
-                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600)}
+                        sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600, { fontSize })}
                     >
                         {this.t('Events')}
                     </Box>
@@ -518,7 +519,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                 </TabHeader>
                 <TabContent overflow="auto">
                     {!Utils.isStableRepository(this.props.systemConfig.common.activeRepo) ? (
-                        <Box sx={{ marginX: 2, width: 'fit-content', alignSelf: 'center' }}>
+                        <Box sx={{ marginX: 2, width: 'calc(100% - 32px)', alignSelf: 'center' }}>
                             <InfoBox type={'warning'}>
                                 {this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}
                             </InfoBox>

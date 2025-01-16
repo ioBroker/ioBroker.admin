@@ -2,10 +2,9 @@ import React, { type JSX } from 'react';
 
 import { Box } from '@mui/material';
 
-import { type IobTheme } from '@iobroker/adapter-react-v5';
+import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemStaticDivider } from '#JC/types';
-import Utils from '#JC/Utils';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: {
@@ -13,15 +12,15 @@ const styles: {
     primary: (theme: IobTheme) => React.CSSProperties;
     secondary: (theme: IobTheme) => React.CSSProperties;
 } = {
-    fullWidth: (theme: IobTheme) => ({
+    fullWidth: (theme: IobTheme): React.CSSProperties => ({
         width: '100%',
         backgroundColor: theme.palette.mode === 'dark' ? '#FFF' : '#000',
         borderStyle: 'hidden',
     }),
-    primary: (theme: IobTheme) => ({
+    primary: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.primary.main,
     }),
-    secondary: (theme: IobTheme) => ({
+    secondary: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.secondary.main,
     }),
 };
@@ -36,7 +35,7 @@ class ConfigStaticDivider extends ConfigGeneric<ConfigInstanceSelectProps, Confi
             <Box
                 component="hr"
                 sx={Utils.getStyle(
-                    this.props.theme,
+                    this.props.oContext.theme,
                     styles.fullWidth,
                     this.props.schema.color === 'primary'
                         ? styles.primary
@@ -44,7 +43,7 @@ class ConfigStaticDivider extends ConfigGeneric<ConfigInstanceSelectProps, Confi
                           ? styles.secondary
                           : {
                                 backgroundColor:
-                                    this.props.schema.color || (this.props.themeType === 'dark' ? '#333' : '#ddd'),
+                                    this.props.schema.color || (this.props.oContext.themeType === 'dark' ? '#333' : '#ddd'),
                             },
                     {
                         height: this.props.schema.color ? this.props.schema.height || 2 : this.props.schema.height || 1,
