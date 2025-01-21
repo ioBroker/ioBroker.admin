@@ -1368,7 +1368,7 @@ export default abstract class InstanceGeneric<
         return (
             <InstanceInfo
                 icon={<ImportExportIcon />}
-                tooltip={this.props.context.t('events')}
+                // tooltip={this.props.context.t('events')}
             >
                 <div style={this.styles.displayFlex}>
                     <Tooltip
