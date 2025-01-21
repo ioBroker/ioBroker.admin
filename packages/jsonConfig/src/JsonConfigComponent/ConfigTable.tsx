@@ -2,11 +2,16 @@ import React, { createRef, type JSX, type RefObject } from 'react';
 import Dropzone from 'react-dropzone';
 
 import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Button,
+    Card,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
+    Grid2,
     IconButton,
     InputAdornment,
     Paper,
@@ -37,6 +42,7 @@ import {
     Warning as ErrorIcon,
     UploadFile as ImportIcon,
     Close as IconClose,
+    ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
@@ -448,14 +454,15 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
     handleRequestSort = (property: string, orderCheck: boolean = false): void => {
         const { order, orderBy } = this.state;
-        if (orderBy) {
-            const isAsc = orderBy === property && order === 'asc';
-            const newOrder = orderCheck ? order : isAsc ? 'desc' : 'asc';
-            const newValue = this.stableSort(newOrder, property);
-            this.setState({ order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 }, () =>
-                this.applyFilter(false, newValue),
-            );
-        }
+        //if (orderBy || 'asc') {
+        const isAsc = orderBy === property && order === 'asc';
+        const newOrder = orderCheck ? order : isAsc ? 'desc' : 'asc';
+        const newValue = this.stableSort(newOrder, property);
+        this.setState(
+            { value: newValue, order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 },
+            () => this.applyFilter(false, newValue),
+        );
+        //}
     };
 
     stableSort = (order: 'desc' | 'asc', orderBy: string): Record<string, any>[] => {
@@ -1087,14 +1094,401 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             </Dialog>
         );
     }
-
-    renderItem(/* error, disabled, defaultValue */): JSX.Element | null {
+    iobUseMediaQuery(key: any): boolean {
+        let query = this.props.theme.breakpoints.only(key);
+        query = query.replace(/^@media( ?)/m, '');
+        return window.matchMedia(query).matches;
+    }
+    enhancedFilterCard(/* buttonsWidth: number, doAnyFilterSet: boolean */): JSX.Element {
+        const { schema } = this.props;
+        const { order, orderBy } = this.state;
+        let tdStyle: React.CSSProperties | undefined;
+        if (this.props.schema.compact) {
+            tdStyle = { paddingTop: 1, paddingBottom: 1 };
+        }
+        return (
+            <Grid2
+                /* key={`filterkey`} */
+                size={{
+                    xs: schema.xs || 12, // if xs is not defined, take the full width
+                    sm: schema.sm || undefined,
+                    md: schema.md || undefined,
+                    lg: schema.lg || undefined,
+                    xl: schema.xl || undefined,
+                }}
+            >
+                <Card>
+                    <Paper style={styles.paper}>
+                        <Accordion style={styles.paper}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                            >
+                                <Typography>Filter and Data Actions</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Table>
+                                    <TableBody>
+                                        {schema.items &&
+                                            schema.items.map((headCell: ConfigItemTableIndexed, i: number) => (
+                                                <TableRow key={`${headCell.attr}_${i}`}>
+                                                    <TableCell
+                                                        style={tdStyle}
+                                                        align="left"
+                                                        sortDirection={orderBy === headCell.attr ? order : false}
+                                                    >
+                                                        <div
+                                                            style={{
+                                                                ...styles.flex,
+                                                                ...(schema.showFirstAddOnTop
+                                                                    ? { flexDirection: 'column' }
+                                                                    : undefined),
+                                                            }}
+                                                        >
+                                                            {headCell.sort && (
+                                                                <TableSortLabel
+                                                                    active
+                                                                    style={
+                                                                        orderBy !== headCell.attr
+                                                                            ? styles.silver
+                                                                            : undefined
+                                                                    }
+                                                                    direction={
+                                                                        orderBy === headCell.attr ? order : 'asc'
+                                                                    }
+                                                                    onClick={() =>
+                                                                        this.handleRequestSort(headCell.attr)
+                                                                    }
+                                                                />
+                                                            )}
+                                                            {headCell.filter &&
+                                                            this.state.filterOn.includes(headCell.attr) ? (
+                                                                <TextField
+                                                                    variant="standard"
+                                                                    ref={this.filterRefs[headCell.attr]}
+                                                                    onChange={() => this.applyFilter()}
+                                                                    title={I18n.t(
+                                                                        'ra_You can filter entries by entering here some text',
+                                                                    )}
+                                                                    slotProps={{
+                                                                        input: {
+                                                                            endAdornment: ConfigTable.getFilterValue(
+                                                                                this.filterRefs[headCell.attr],
+                                                                            ) && (
+                                                                                <InputAdornment position="end">
+                                                                                    <IconButton
+                                                                                        size="small"
+                                                                                        onClick={() => {
+                                                                                            ConfigTable.setFilterValue(
+                                                                                                this.filterRefs[
+                                                                                                    headCell.attr
+                                                                                                ],
+                                                                                                '',
+                                                                                            );
+                                                                                            this.applyFilter();
+                                                                                        }}
+                                                                                    >
+                                                                                        <CloseIcon />
+                                                                                    </IconButton>
+                                                                                </InputAdornment>
+                                                                            ),
+                                                                        },
+                                                                    }}
+                                                                    fullWidth
+                                                                    placeholder={this.getText(headCell.title)}
+                                                                />
+                                                            ) : (
+                                                                <span style={styles.headerText}>
+                                                                    {this.getText(headCell.title)}
+                                                                </span>
+                                                            )}
+                                                            {headCell.filter ? (
+                                                                <IconButton
+                                                                    title={I18n.t('ra_Show/hide filter input')}
+                                                                    size="small"
+                                                                    onClick={() => {
+                                                                        const filterOn = [...this.state.filterOn];
+                                                                        const pos = this.state.filterOn.indexOf(
+                                                                            headCell.attr,
+                                                                        );
+                                                                        if (pos === -1) {
+                                                                            filterOn.push(headCell.attr);
+                                                                        } else {
+                                                                            filterOn.splice(pos, 1);
+                                                                        }
+                                                                        this.setState({ filterOn }, () => {
+                                                                            if (
+                                                                                pos &&
+                                                                                ConfigTable.getFilterValue(
+                                                                                    this.filterRefs[headCell.attr],
+                                                                                )
+                                                                            ) {
+                                                                                ConfigTable.setFilterValue(
+                                                                                    this.filterRefs[headCell.attr],
+                                                                                    '',
+                                                                                );
+                                                                                this.applyFilter();
+                                                                            }
+                                                                        });
+                                                                    }}
+                                                                >
+                                                                    {this.state.filterOn.includes(headCell.attr) ? (
+                                                                        <IconFilterOff />
+                                                                    ) : (
+                                                                        <IconFilterOn />
+                                                                    )}
+                                                                </IconButton>
+                                                            ) : null}
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        <TableRow key={`filter_actionsrow`}>
+                                            <TableCell
+                                                key={`actionshead_filter`}
+                                                align="left"
+                                                style={tdStyle}
+                                            >
+                                                <span style={styles.headerText}>{this.getText('Actions')}</span>
+                                            </TableCell>
+                                            <TableCell style={tdStyle}>
+                                                {!schema.noDelete && schema.import ? (
+                                                    <Tooltip
+                                                        title={I18n.t('Import data from %s file', 'CSV')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <IconButton
+                                                            /* style={{ marginRight: 10 }} */
+                                                            size="small"
+                                                            onClick={() => this.setState({ showImportDialog: true })}
+                                                            /* title={I18n.t('ra_import data from %s file', 'CSV')} */
+                                                        >
+                                                            <ImportIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                ) : null}
+                                                {schema.export ? (
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Export data to %s file', 'CSV')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <IconButton
+                                                            /* style={{ marginRight: 10 }} */
+                                                            size="small"
+                                                            onClick={() => this.onExport()}
+                                                            /* title={I18n.t('ra_Export data to %s file', 'CSV')} */
+                                                        >
+                                                            <ExportIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                ) : null}
+                                                <IconButton
+                                                    disabled
+                                                    size="small"
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Paper>
+                </Card>
+            </Grid2>
+        );
+    }
+    enhancedBottomCard(): JSX.Element {
+        const { schema } = this.props;
+        let tdStyle: React.CSSProperties | undefined;
+        if (this.props.schema.compact) {
+            tdStyle = { paddingTop: 1, paddingBottom: 1 };
+        }
+        const doAnyFilterSet = this.isAnyFilterSet();
+        return (
+            <Grid2
+                key={`filterkey`}
+                size={{
+                    xs: schema.xs || 12, // if xs is not defined, take the full width
+                    sm: schema.sm || undefined,
+                    md: schema.md || undefined,
+                    lg: schema.lg || undefined,
+                    xl: schema.xl || undefined,
+                }}
+            >
+                <Card>
+                    <Paper style={styles.paper}>
+                        <Table>
+                            <TableBody>
+                                <TableRow key={`filter_actionsrow`}>
+                                    <TableCell
+                                        colSpan={schema.items.length + 1}
+                                        style={tdStyle}
+                                    >
+                                        <Tooltip
+                                            title={
+                                                doAnyFilterSet
+                                                    ? I18n.t('ra_Cannot add items with set filter')
+                                                    : I18n.t('ra_Add row')
+                                            }
+                                            slotProps={{ popper: { sx: styles.tooltip } }}
+                                        >
+                                            <span>
+                                                <IconButton
+                                                    size="small"
+                                                    color="primary"
+                                                    disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter}
+                                                    onClick={this.onAdd}
+                                                >
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </span>
+                                        </Tooltip>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </Paper>
+                </Card>
+            </Grid2>
+        );
+    }
+    renderCard(): JSX.Element | null {
         const { schema } = this.props;
         let { visibleValue } = this.state;
-
-        if (!this.state.value || !Array.isArray(this.state.value)) {
-            return null;
+        let tdStyle: React.CSSProperties | undefined;
+        if (this.props.schema.compact) {
+            tdStyle = { paddingTop: 1, paddingBottom: 1 };
         }
+        visibleValue = visibleValue || this.state.value.map((_, i) => i);
+
+        const doAnyFilterSet = this.isAnyFilterSet();
+
+        return (
+            <Grid2 container>
+                {this.showImportDialog()}
+                {this.showTypeOfImportDialog()}
+                {this.enhancedFilterCard(/* 0, doAnyFilterSet */)}
+                {visibleValue.map((idx, i) => (
+                    <Grid2
+                        key={`${idx}_${i}`}
+                        size={{
+                            xs: schema.xs || 12, // if xs is not defined, take the full width
+                            sm: schema.sm || undefined,
+                            md: schema.md || undefined,
+                            lg: schema.lg || undefined,
+                            xl: schema.xl || undefined,
+                        }}
+                    >
+                        <Card>
+                            <Paper style={styles.paper}>
+                                <Table>
+                                    <TableBody>
+                                        {schema.items &&
+                                            schema.items.map((headCell: ConfigItemTableIndexed) => (
+                                                <TableRow key={`${headCell.attr}_${idx}`}>
+                                                    <TableCell
+                                                        align="left"
+                                                        style={tdStyle}
+                                                    >
+                                                        <span style={styles.headerText}>
+                                                            {this.getText(headCell.title)}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell
+                                                        align="left"
+                                                        style={tdStyle}
+                                                    >
+                                                        {this.itemTable(headCell.attr, this.state.value[idx], idx)}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        <TableRow key={`${idx}_actionsrow`}>
+                                            <TableCell
+                                                key={`actionshead_${idx}`}
+                                                align="left"
+                                                style={tdStyle}
+                                            >
+                                                <span style={styles.headerText}>{this.getText('Actions')}</span>
+                                            </TableCell>
+                                            <TableCell
+                                                key={`actionscontent_${idx}`}
+                                                align="left"
+                                                style={tdStyle}
+                                            >
+                                                {!doAnyFilterSet && !this.state.orderBy ? (
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Move up')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <span>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => this.onMoveUp(idx)}
+                                                                disabled={i === 0}
+                                                            >
+                                                                <UpIcon />
+                                                            </IconButton>
+                                                        </span>
+                                                    </Tooltip>
+                                                ) : null}
+                                                {!doAnyFilterSet && !this.state.orderBy ? (
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Move down')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <span>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => this.onMoveDown(idx)}
+                                                                disabled={i === visibleValue.length - 1}
+                                                            >
+                                                                <DownIcon />
+                                                            </IconButton>
+                                                        </span>
+                                                    </Tooltip>
+                                                ) : null}
+                                                <Tooltip
+                                                    title={I18n.t('ra_Delete current row')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
+                                                >
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={this.onDelete(idx)}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                {this.props.schema.clone ? (
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Clone current row')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={this.onClone(idx)}
+                                                        >
+                                                            <CopyContentIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                ) : null}
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </Paper>
+                        </Card>
+                    </Grid2>
+                ))}
+                {this.enhancedBottomCard()}
+            </Grid2>
+        );
+    }
+    renderTable(): JSX.Element | null {
+        const { schema } = this.props;
+        let { visibleValue } = this.state;
 
         visibleValue = visibleValue || this.state.value.map((_, i) => i);
 
@@ -1281,6 +1675,30 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 ) : null}
             </Paper>
         );
+    }
+    renderItem(/* error, disabled, defaultValue */): JSX.Element | null {
+        const { schema } = this.props;
+
+        if (!this.state.value || !Array.isArray(this.state.value)) {
+            return null;
+        }
+
+        const isBreakpoint = this.iobUseMediaQuery('xs')
+            ? 'XS'
+            : this.iobUseMediaQuery('sm')
+              ? 'SM'
+              : this.iobUseMediaQuery('md')
+                ? 'MD'
+                : this.iobUseMediaQuery('lg')
+                  ? 'LG'
+                  : this.iobUseMediaQuery('xl')
+                    ? 'XL'
+                    : '';
+
+        if (schema.usecardfor && schema.usecardfor.map(el => el.toUpperCase()).includes(isBreakpoint)) {
+            return this.renderCard();
+        }
+        return this.renderTable();
     }
 }
 
