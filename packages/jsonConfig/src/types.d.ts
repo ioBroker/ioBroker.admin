@@ -781,7 +781,7 @@ export interface ConfigItemTable extends ConfigItem {
     /** These items will be encrypted before saving with simple (not SHA) encryption method */
     encryptedAttributes?: string[];
     /** Breakpoint that will be rendered as cards */
-    usecardfor?: string[];
+    useCardFor?: ('xs' | 'sm' | 'md' | 'lg' | 'xl')[];
 }
 
 export interface ConfigItemTimePicker extends ConfigItem {
