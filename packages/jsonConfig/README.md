@@ -1434,5 +1434,8 @@ The following variables are available in JS function in custom settings:
 
 You can find examples in [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) adapter.
 
+## Report a schema error
+Create an issue here: https://github.com/ioBroker/adapter-react-v5/issues
+
 ## For maintainer
 To update location of JsonConfig schema, create pull request to this file: https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json
