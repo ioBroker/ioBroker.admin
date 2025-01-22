@@ -91,6 +91,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 -   (@oweitman) Implemented better table view
 -   (@GermanBluefox) Extended DM with device type
+-   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as menu 
 
 ### 7.4.14 (2025-01-15)
 

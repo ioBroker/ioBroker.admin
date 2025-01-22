@@ -742,6 +742,7 @@
     "Node.js update failed: %s": "Node.js-update mislukt: %s",
     "Node.js update successful, restarting controller now!": "Node.js-update succesvol, controller nu opnieuw opgestart!",
     "Node.js upgrade": "Node.js-upgrade",
+    "Non-NPM-Version": "Niet-NPM-versie",
     "Non-allowed duplicate entry \"%s\" in column \"%s\"": "Niet-toegestane dubbele invoer \"%s\" in kolom \"%s\"",
     "None": "Geen",
     "Norfolk Island": "Norfolk Island",

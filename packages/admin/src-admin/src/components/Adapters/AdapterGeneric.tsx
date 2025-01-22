@@ -503,7 +503,8 @@ export default abstract class AdapterGeneric<
 
     renderInstalledVersion(isRow?: boolean): JSX.Element | null {
         const installed = this.props.context.installed[this.props.adapterName];
-        const installedFrom = this.props.context.adapters[`system.adapter.${this.props.adapterName}`]?.common?.installedFrom;
+        const installedFrom =
+            this.props.context.adapters[`system.adapter.${this.props.adapterName}`]?.common?.installedFrom;
         const { adapterName } = this.props;
 
         if (isRow) {
@@ -528,7 +529,7 @@ export default abstract class AdapterGeneric<
                     {installedFrom && !installedFrom.startsWith(`iobroker.${adapterName}@`) && (
                         <Grid2 container>
                             <Tooltip
-                                title={this.props.context.t('Non-NPM-Version: ') + installedFrom}
+                                title={`${this.props.context.t('Non-NPM-Version')}: ${installedFrom}`}
                                 slotProps={{ popper: { sx: this.styles.tooltip } }}
                             >
                                 <GitHubIcon
@@ -551,7 +552,7 @@ export default abstract class AdapterGeneric<
                 <div style={this.styles.cardContentFlex}>
                     {installedFrom && !installedFrom.startsWith(`iobroker.${adapterName}@`) && (
                         <Tooltip
-                            title={this.props.context.t('Non-NPM-Version: ') + installedFrom}
+                            title={`${this.props.context.t('Non-NPM-Version')}: ${installedFrom}`}
                             slotProps={{ popper: { sx: this.styles.tooltip } }}
                         >
                             <GitHubIcon

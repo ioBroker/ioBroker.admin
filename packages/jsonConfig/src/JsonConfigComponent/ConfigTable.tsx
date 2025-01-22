@@ -259,6 +259,7 @@ interface ConfigTableState extends ConfigGenericState {
     customObj: Record<string, any>;
     uploadFile: boolean | 'dragging';
     icon: boolean;
+    width: number;
 }
 
 function encrypt(secret: string, value: string): string {
@@ -282,7 +283,11 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
     private typingTimer: ReturnType<typeof setTimeout> | null = null;
 
+    private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+
     private secret: string = 'Zgfr56gFe87jJOM';
+
+    private readonly refDiv: React.RefObject<HTMLDivElement>;
 
     constructor(props: ConfigTableProps) {
         super(props);
@@ -293,6 +298,8 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 this.filterRefs[el.attr] = createRef();
             }
         });
+
+        this.refDiv = React.createRef();
     }
 
     /**
@@ -340,6 +347,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 order: 'asc',
                 iteration: 0,
                 filterOn: [],
+                width: 0,
             },
             () => this.validateUniqueProps(),
         );
@@ -349,6 +357,10 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         if (this.typingTimer) {
             clearTimeout(this.typingTimer);
             this.typingTimer = null;
+        }
+        if (this.resizeTimeout) {
+            clearTimeout(this.resizeTimeout);
+            this.resizeTimeout = null;
         }
         super.componentWillUnmount();
     }
@@ -1056,12 +1068,6 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         );
     }
 
-    iobUseMediaQuery(breakPoint: 'xs' | 'sm' | 'md' | 'lg' | 'xl'): boolean {
-        let query = this.props.oContext.theme.breakpoints.only(breakPoint);
-        query = query.replace(/^@media( ?)/m, '');
-        return window.matchMedia(query).matches;
-    }
-
     renderOneFilter(props: {
         schema: ConfigItemTable;
         doAnyFilterSet: boolean;
@@ -1534,6 +1540,37 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         );
     }
 
+    componentDidUpdate(): void {
+        if (this.refDiv.current?.clientWidth && this.refDiv.current.clientWidth !== this.state.width) {
+            if (this.resizeTimeout) {
+                clearTimeout(this.resizeTimeout);
+            }
+            this.resizeTimeout = setTimeout(() => {
+                this.resizeTimeout = null;
+                this.setState({ width: this.refDiv.current?.clientWidth });
+            }, 50);
+        }
+    }
+
+    getCurrentBreakpoint(): 'xs' | 'sm' | 'md' | 'lg' | 'xl' {
+        if (!this.state.width) {
+            return 'md';
+        }
+        if (this.state.width < 600) {
+            return 'xs';
+        }
+        if (this.state.width < 900) {
+            return 'sm';
+        }
+        if (this.state.width < 1200) {
+            return 'md';
+        }
+        if (this.state.width < 1536) {
+            return 'lg';
+        }
+        return 'xl';
+    }
+
     renderItem(/* error, disabled, defaultValue */): JSX.Element | null {
         const { schema } = this.props;
 
@@ -1541,23 +1578,23 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             return null;
         }
 
-        const currentBreakpoint = this.iobUseMediaQuery('xs')
-            ? 'xs'
-            : this.iobUseMediaQuery('sm')
-              ? 'sm'
-              : this.iobUseMediaQuery('md')
-                ? 'md'
-                : this.iobUseMediaQuery('lg')
-                  ? 'lg'
-                  : this.iobUseMediaQuery('xl')
-                    ? 'xl'
-                    : '';
+        const currentBreakpoint = this.getCurrentBreakpoint();
+        let content: React.JSX.Element;
 
         if (currentBreakpoint && (schema.useCardFor || ['xs']).includes(currentBreakpoint)) {
-            return this.renderCards();
+            content = this.renderCards();
+        } else {
+            content = this.renderTable();
         }
 
-        return this.renderTable();
+        return (
+            <div
+                ref={this.refDiv}
+                style={{ width: '100%' }}
+            >
+                {content}
+            </div>
+        );
     }
 }
 

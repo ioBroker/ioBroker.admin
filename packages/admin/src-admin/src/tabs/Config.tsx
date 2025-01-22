@@ -22,6 +22,8 @@ import {
     DialogContent,
     DialogActions,
     Button,
+    Box,
+    Menu,
 } from '@mui/material';
 
 import {
@@ -31,6 +33,7 @@ import {
     Refresh as RefreshIcon,
     Edit as EditIcon,
     ArrowBack,
+    MoreVert,
 } from '@mui/icons-material';
 
 import {
@@ -77,7 +80,6 @@ const styles: Record<string, any> = {
         verticalAlign: 'middle',
     },
     button: {
-        marginRight: 5,
         width: 36,
         height: 36,
     },
@@ -188,6 +190,7 @@ interface ConfigState {
     adapterDocLangs?: ioBroker.Languages[];
     extension?: boolean | null;
     showLogLevelDialog: boolean;
+    showMore: HTMLButtonElement | null;
 }
 
 class Config extends Component<ConfigProps, ConfigState> {
@@ -211,6 +214,7 @@ class Config extends Component<ConfigProps, ConfigState> {
             logLevelValue: 'info',
             tempLogLevel: 'info',
             showLogLevelDialog: false,
+            showMore: null,
         };
 
         this.refIframe = null;
@@ -425,34 +429,23 @@ class Config extends Component<ConfigProps, ConfigState> {
     renderHelpButton(): JSX.Element | null {
         if (this.props.jsonConfig) {
             return (
-                <div
-                    style={{
-                        display: 'inline-block',
-                        position: 'absolute',
-                        right: 0,
-                        top: 5,
-                    }}
+                <Tooltip
+                    title={this.props.t('Show help for this adapter')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
                 >
-                    <Tooltip
-                        title={this.props.t('Show help for this adapter')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    <Fab
+                        sx={{ '&.MuiFab-root': styles.button }}
+                        onClick={() => {
+                            const lang = this.state.adapterDocLangs?.includes(this.props.lang) ? this.props.lang : 'en';
+                            window.open(
+                                AdminUtils.getDocsLinkForAdapter({ lang, adapterName: this.props.adapter }),
+                                'help',
+                            );
+                        }}
                     >
-                        <Fab
-                            sx={{ '&.MuiFab-root': styles.button }}
-                            onClick={() => {
-                                const lang = this.state.adapterDocLangs?.includes(this.props.lang)
-                                    ? this.props.lang
-                                    : 'en';
-                                window.open(
-                                    AdminUtils.getDocsLinkForAdapter({ lang, adapterName: this.props.adapter }),
-                                    'help',
-                                );
-                            }}
-                        >
-                            <HelpIcon />
-                        </Fab>
-                    </Tooltip>
-                </div>
+                        <HelpIcon />
+                    </Fab>
+                </Tooltip>
             );
         }
         return null;
@@ -605,6 +598,124 @@ class Config extends Component<ConfigProps, ConfigState> {
     }
 
     render(): JSX.Element {
+        const buttons = [
+            this.props.version ? (
+                <span
+                    key="version"
+                    style={{
+                        ...styles.version,
+                        ...styles[this.getInstanceStatus()],
+                    }}
+                >
+                    v{this.props.version}
+                </span>
+            ) : null,
+            <Tooltip
+                key="start"
+                title={this.props.t('Start/stop')}
+                slotProps={{ popper: { sx: styles.tooltip } }}
+            >
+                <span>
+                    <IconButton
+                        size="small"
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            if (
+                                this.state.running &&
+                                `${this.props.adapter}.${this.props.instance}` === this.props.adminInstance
+                            ) {
+                                this.setState({ showStopAdminDialog: true, showMore: null });
+                            } else {
+                                this.setState({ showMore: null });
+                                this.props.socket
+                                    .extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, {
+                                        common: { enabled: !this.state.running },
+                                    })
+                                    .catch(error => window.alert(`Cannot set log level: ${error}`));
+                            }
+                        }}
+                        onFocus={event => event.stopPropagation()}
+                        sx={{
+                            ...styles.buttonControl,
+                            ...(this.state.canStart
+                                ? this.state.running
+                                    ? styles.enabled
+                                    : styles.disabled
+                                : styles.hide),
+                        }}
+                    >
+                        {this.state.running ? <PauseIcon /> : <PlayArrowIcon />}
+                    </IconButton>
+                </span>
+            </Tooltip>,
+            <Tooltip
+                key="restart"
+                title={this.props.t('Restart')}
+                slotProps={{ popper: { sx: styles.tooltip } }}
+            >
+                <span>
+                    <IconButton
+                        size="small"
+                        onClick={event => {
+                            this.setState({ showMore: null });
+                            event.stopPropagation();
+                            this.props.socket
+                                .extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, {})
+                                .catch(error => window.alert(`Cannot set log level: ${error}`));
+                        }}
+                        onFocus={event => event.stopPropagation()}
+                        style={{
+                            ...styles.buttonControl,
+                            ...(!this.state.canStart ? styles.hide : undefined),
+                        }}
+                        disabled={!this.state.running}
+                    >
+                        <RefreshIcon />
+                    </IconButton>
+                </span>
+            </Tooltip>,
+            this.state.tempLogLevel !== this.state.logLevel ? (
+                <Tooltip
+                    key="log"
+                    title={this.props.t('temporary log level')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <span style={styles.logLevel}>{this.state.tempLogLevel}</span>
+                </Tooltip>
+            ) : null,
+            <Tooltip
+                title={this.props.t('log level')}
+                slotProps={{ popper: { sx: styles.tooltip } }}
+                key="logLevel"
+            >
+                <span style={styles.logLevel}>
+                    {this.state.tempLogLevel !== this.state.logLevel ? `/ ${this.state.logLevel}` : this.state.logLevel}
+                </span>
+            </Tooltip>,
+            <Tooltip
+                title={this.props.t('Edit log level rule for %s', `${this.props.adapter}.${this.props.instance}`)}
+                key="editLog"
+            >
+                <IconButton
+                    size="small"
+                    onClick={event => {
+                        event.stopPropagation();
+                        this.setState({ showLogLevelDialog: true, showMore: null });
+                    }}
+                    onFocus={event => event.stopPropagation()}
+                    style={{
+                        ...styles.buttonControl,
+                        ...(!this.state.canStart ? styles.hide : undefined),
+                        width: 34,
+                        height: 34,
+                    }}
+                >
+                    <EditIcon style={{ width: 20, height: 20 }} />
+                </IconButton>
+            </Tooltip>,
+        ];
+
         return (
             <Paper style={styles.root}>
                 <AppBar
@@ -613,11 +724,12 @@ class Config extends Component<ConfigProps, ConfigState> {
                 >
                     <Toolbar
                         variant="dense"
-                        style={{ marginLeft: 8 }}
+                        style={{ marginLeft: 8, paddingRight: 6 }}
                     >
                         <Typography
                             variant="h6"
                             color="inherit"
+                            style={{ display: 'flex', alignItems: 'center' }}
                         >
                             <IconButton
                                 size="small"
@@ -641,124 +753,52 @@ class Config extends Component<ConfigProps, ConfigState> {
                                     style={styles.instanceIcon}
                                 />
                             ) : null}
-                            {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
-                            {this.props.version ? (
-                                <span
-                                    style={{
-                                        ...styles.version,
-                                        ...styles[this.getInstanceStatus()],
-                                    }}
-                                >
-                                    v{this.props.version}
-                                </span>
-                            ) : null}
-                            <Tooltip
-                                title={this.props.t('Start/stop')}
-                                slotProps={{ popper: { sx: styles.tooltip } }}
+                            <Box
+                                component="span"
+                                sx={(theme: IobTheme): any => ({
+                                    [theme.breakpoints.down('md')]: {
+                                        display: 'none',
+                                    },
+                                    marginRight: '8px',
+                                })}
                             >
-                                <span>
-                                    <IconButton
-                                        size="small"
-                                        onClick={event => {
-                                            event.stopPropagation();
-                                            event.preventDefault();
-                                            if (
-                                                this.state.running &&
-                                                `${this.props.adapter}.${this.props.instance}` ===
-                                                    this.props.adminInstance
-                                            ) {
-                                                this.setState({ showStopAdminDialog: true });
-                                            } else {
-                                                this.props.socket
-                                                    .extendObject(
-                                                        `system.adapter.${this.props.adapter}.${this.props.instance}`,
-                                                        { common: { enabled: !this.state.running } },
-                                                    )
-                                                    .catch(error => window.alert(`Cannot set log level: ${error}`));
-                                            }
-                                        }}
-                                        onFocus={event => event.stopPropagation()}
-                                        sx={{
-                                            ...styles.buttonControl,
-                                            ...(this.state.canStart
-                                                ? this.state.running
-                                                    ? styles.enabled
-                                                    : styles.disabled
-                                                : styles.hide),
-                                        }}
-                                    >
-                                        {this.state.running ? <PauseIcon /> : <PlayArrowIcon />}
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
-                            <Tooltip
-                                title={this.props.t('Restart')}
-                                slotProps={{ popper: { sx: styles.tooltip } }}
+                                {`${this.props.t('Instance settings')}:`}
+                            </Box>
+                            {`${this.props.adapter}.${this.props.instance}`}
+                            <Box
+                                component="div"
+                                sx={(theme: IobTheme): any => ({
+                                    [theme.breakpoints.down('sm')]: {
+                                        display: 'none',
+                                    },
+                                })}
                             >
-                                <span>
-                                    <IconButton
-                                        size="small"
-                                        onClick={event => {
-                                            event.stopPropagation();
-                                            this.props.socket
-                                                .extendObject(
-                                                    `system.adapter.${this.props.adapter}.${this.props.instance}`,
-                                                    {},
-                                                )
-                                                .catch(error => window.alert(`Cannot set log level: ${error}`));
-                                        }}
-                                        onFocus={event => event.stopPropagation()}
-                                        style={{
-                                            ...styles.buttonControl,
-                                            ...(!this.state.canStart ? styles.hide : undefined),
-                                        }}
-                                        disabled={!this.state.running}
-                                    >
-                                        <RefreshIcon />
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
-                            {this.state.tempLogLevel !== this.state.logLevel ? (
-                                <Tooltip
-                                    title={this.props.t('temporary log level')}
-                                    slotProps={{ popper: { sx: styles.tooltip } }}
-                                >
-                                    <span style={styles.logLevel}>{this.state.tempLogLevel}</span>
-                                </Tooltip>
-                            ) : null}
-                            <Tooltip
-                                title={this.props.t('log level')}
-                                slotProps={{ popper: { sx: styles.tooltip } }}
-                            >
-                                <span style={styles.logLevel}>
-                                    {this.state.tempLogLevel !== this.state.logLevel
-                                        ? `/ ${this.state.logLevel}`
-                                        : this.state.logLevel}
-                                </span>
-                            </Tooltip>
-                            <Tooltip
-                                title={this.props.t(
-                                    'Edit log level rule for %s',
-                                    `${this.props.adapter}.${this.props.instance}`,
-                                )}
+                                {buttons}
+                            </Box>
+                            <Box
+                                component="span"
+                                sx={(theme: IobTheme): any => ({
+                                    [theme.breakpoints.up('sm')]: {
+                                        display: 'none',
+                                    },
+                                })}
                             >
                                 <IconButton
-                                    size="small"
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        this.setState({ showLogLevelDialog: true });
-                                    }}
-                                    onFocus={event => event.stopPropagation()}
-                                    style={{
-                                        ...styles.buttonControl,
-                                        ...(!this.state.canStart ? styles.hide : undefined),
-                                        width: 34,
-                                        height: 34,
-                                    }}
+                                    style={{ marginLeft: 8 }}
+                                    onClick={e => this.setState({ showMore: e.currentTarget })}
                                 >
-                                    <EditIcon style={{ width: 20, height: 20 }} />
+                                    <MoreVert />
                                 </IconButton>
-                            </Tooltip>
+                                {this.state.showMore ? (
+                                    <Menu
+                                        open={!0}
+                                        anchorEl={this.state.showMore}
+                                        onClose={() => this.setState({ showMore: null })}
+                                    >
+                                        {buttons}
+                                    </Menu>
+                                ) : null}
+                            </Box>
                             {/* <IsVisible config={item} name="allowInstanceLink">
                             <Tooltip title={this.props.t('Instance link %s', this.props.instanceItem?.id)}>
                                 <span>
@@ -785,6 +825,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                             </Tooltip>
                         </IsVisible> */}
                         </Typography>
+                        <div style={{ flexGrow: 1 }} />
                         {this.renderHelpButton()}
                     </Toolbar>
                 </AppBar>

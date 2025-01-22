@@ -742,6 +742,7 @@
     "Node.js update failed: %s": "Не вдалося оновити Node.js: %s",
     "Node.js update successful, restarting controller now!": "Оновлення Node.js успішне, перезапуск контролера зараз!",
     "Node.js upgrade": "Оновлення Node.js",
+    "Non-NPM-Version": "Не-NPM-версія",
     "Non-allowed duplicate entry \"%s\" in column \"%s\"": "Недозволений повторюваний запис \"%s\" у стовпці \"%s\"",
     "None": "Жодного",
     "Norfolk Island": "Острів Норфолк",
