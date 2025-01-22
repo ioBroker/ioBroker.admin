@@ -1630,7 +1630,11 @@ function buildTree(
             const common = obj.common;
             const role = common?.role;
             if (role && !info.roles.find(it => it.role === role)) {
-                info.roles.push({ role, type: common.type });
+                if (typeof role !== 'string') {
+                    console.warn(`Invalid role type "${typeof role}" in "${obj._id}"`);
+                } else {
+                    info.roles.push({ role, type: common.type });
+                }
             } else if (id.startsWith('enum.rooms.')) {
                 info.roomEnums.push(id);
                 info.enums.push(id);
