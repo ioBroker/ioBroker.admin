@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.14",
+    "version": "7.4.15",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.15": {
+        "en": "Implemented better table view\nExtended DM with device type\nShowed the tabs in JSONConfig on narrow displays as menu",
+        "de": "Ergänzte bessere Tischansicht\nErweiterte DM mit Gerätetyp\nZeigte die Registerkarten in JSONConfig auf schmalen Anzeigen als Menü",
+        "ru": "Улучшенный вид таблицы\nРасширенный DM с типом устройства\nПоказать вкладки в JSONConfig на узких дисплеях в меню",
+        "pt": "Vista de mesa melhor implementada\nDM estendido com tipo de dispositivo\nMostrou as abas em JSONConfig em telas estreitas como menu",
+        "nl": "Betere tabelweergave geïmplementeerd\nUitgebreide DM met apparaattype\nToonde de tabbladen in JSONConfig op smalle displays als menu",
+        "fr": "Amélioration de la vue des tableaux\nDM étendu avec type de périphérique\nAffiche les onglets dans JSONConfig sur les écrans étroits comme menu",
+        "it": "Implementato migliore vista della tabella\nDM esteso con tipo di dispositivo\nMostrato le schede in JSONConfig su schermi stretti come menu",
+        "es": "Aplicación de una mejor vista del cuadro\nDM extendido con tipo de dispositivo\nMuestra las pestañas en JSONConfig en pantallas estrechas como menú",
+        "pl": "Wdrożenie lepszego widoku tabeli\nRozszerzony DM z typem urządzenia\nPokazane karty w JSONConfig na wąskich wyświetlaczach jako menu",
+        "uk": "Реалізовано кращий вигляд таблиці\nРозширений DM з типом пристрою\nПоказати вкладки в JSONConfig на вузькі дисплеї як меню",
+        "zh-cn": "已执行的更好表视图\n设备类型的扩展DM\n在狭义显示上显示 JSONConfig 中的标签为菜单"
+      },
       "7.4.14": {
         "en": "Extended DM with device type\nCorrected Save&Close button for the instance configs\nChanged layout on intro page",
         "de": "Erweiterte DM mit Gerätetyp\nBehobene Sparen und Schließen Taste für die Instanz configs\nÄnderung des Layouts auf der Einführungsseite",
@@ -96,19 +109,6 @@
         "pl": "Poprawiono renderowanie niestandardowych komponentów konfiguracyjnych JSON\nPoprawiono okno dialogowe wiadomości dla wiadomości wieloliniowych",
         "uk": "Виправлено відображення компонентів користувацького налаштування JSON\nВиправлено діалогове вікно новин для багатоканальних повідомлень",
         "zh-cn": "纠正自定义 JSON 配置组件的渲染\n更正多行消息的新闻对话框"
-      },
-      "7.4.4": {
-        "en": "Showed value in object edit dialog",
-        "de": "Gezeigter Wert im Objekt bearbeiten Dialog",
-        "ru": "Показано значение в диалоге редактирования объектов",
-        "pt": "Valor mostrado na caixa de diálogo de edição de objeto",
-        "nl": "Waarde getoond in objectbewerkingsdialoog",
-        "fr": "Valeur affichée dans la boîte de dialogue d'édition des objets",
-        "it": "Valore visualizzato nella finestra di dialogo Modifica oggetto",
-        "es": "Valor mostrado en el diálogo de edición de objetos",
-        "pl": "Pokazana wartość w oknie edycji obiektu",
-        "uk": "Показати значення в діалоговому вікні редагування об'єктів",
-        "zh-cn": "在对象编辑对话框中显示的值"
       }
     },
     "desc": {

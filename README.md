@@ -87,11 +87,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.15 (2025-01-22)
 
 -   (@oweitman) Implemented better table view
 -   (@GermanBluefox) Extended DM with device type
--   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as menu 
+-   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as menu
 
 ### 7.4.14 (2025-01-15)
 
@@ -114,11 +114,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 -   (@GermanBluefox) Show latest/stable labels by updating/downgrading of adapters
 -   (@GermanBluefox) Corrected selection of chinese language
-
-### 7.4.7 (2024-12-12)
-
--   (@GermanBluefox) Corrected the rendering of custom JSON config components
--   (@GermanBluefox) Corrected the news dialog for multi-line messages
 
 ## License
 
