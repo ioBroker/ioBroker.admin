@@ -2787,21 +2787,20 @@ class App extends Router<AppProps, AppState> {
 
                 {this.state.drawerState !== DrawerStates.opened &&
                     !this.state.expertMode &&
-                    window.innerWidth > 400 && (
+                    window.innerWidth > 450 && (
                         <Grid
                             container
                             style={{
-                                ...(this.state.drawerState !== DrawerStates.opened ? styles.avatarVisible : undefined),
                                 ...styles.avatarNotVisible,
+                                ...(this.state.drawerState !== DrawerStates.opened ? styles.avatarVisible : undefined),
                             }}
                             spacing={1}
                             alignItems="center"
                         >
-                            {(!this.state.user || this.props.width === 'xs' || this.props.width === 'sm') && (
+                            {!this.state.user ? (
                                 <Box
                                     component="div"
                                     style={styles.wrapperName}
-                                    sx={{ display: { md: 'inline-block', xs: 'none' } }}
                                 >
                                     <Typography>admin</Typography>
                                     {!this.adminGuiConfig.icon && this.state.versionAdmin && (
@@ -2815,7 +2814,7 @@ class App extends Router<AppProps, AppState> {
                                         </Typography>
                                     )}
                                 </Box>
-                            )}
+                            ) : null}
                             <Grid>
                                 <a
                                     href="/#easy"

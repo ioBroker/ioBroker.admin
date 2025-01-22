@@ -742,6 +742,7 @@
     "Node.js update failed: %s": "Node.js 更新失败：%s",
     "Node.js update successful, restarting controller now!": "Node.js 更新成功，立即重启控制器！",
     "Node.js upgrade": "Node.js 升级",
+    "Non-NPM-Version": "非 NPM 版本",
     "Non-allowed duplicate entry \"%s\" in column \"%s\"": "“%s”列中不允许出现重复条目“%s”",
     "None": "没有",
     "Norfolk Island": "诺福克岛",

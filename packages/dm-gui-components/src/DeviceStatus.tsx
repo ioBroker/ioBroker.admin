@@ -23,7 +23,7 @@ import {
 } from '@mui/icons-material';
 
 import type { DeviceStatus, DeviceAction, ActionBase, ConfigConnectionType } from '@iobroker/dm-utils';
-import { type IobTheme } from '@iobroker/adapter-react-v5';
+import { type IobTheme, ThemeType } from '@iobroker/adapter-react-v5';
 
 import { getTranslation } from './Utils';
 import Switch from './Switch';
@@ -130,6 +130,20 @@ interface DeviceStatusProps {
     deviceHandler: (deviceId: string, action: ActionBase, refresh: () => void) => () => void;
     refresh: () => void;
     theme: IobTheme;
+}
+
+function rssiColor(signal: number, themeType: ThemeType): string {
+    if (signal < -80) {
+        return themeType === 'dark' ? '#ff5c5c' : '#aa0000';
+    }
+    if (signal < -60) {
+        return themeType === 'dark' ? '#fa8547' : '#ae5c00';
+    }
+    if (signal < -50) {
+        return themeType === 'dark' ? '#cdff4f' : '#7b9500';
+    }
+
+    return themeType === 'dark' ? '#5cff5c' : '#008500';
 }
 
 /**
@@ -335,7 +349,7 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
                     slotProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <NetworkCheckIcon />
+                        <NetworkCheckIcon style={{ color: rssiColor(status.rssi, props.theme.palette.mode) }} />
                         <p style={{ fontSize: 'small', margin: 0 }}>{status.rssi}</p>
                     </div>
                 </Tooltip>

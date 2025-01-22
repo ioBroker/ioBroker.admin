@@ -2,11 +2,16 @@ import React, { createRef, type JSX, type RefObject } from 'react';
 import Dropzone from 'react-dropzone';
 
 import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Button,
+    Card,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
+    Grid2,
     IconButton,
     InputAdornment,
     Paper,
@@ -37,6 +42,7 @@ import {
     Warning as ErrorIcon,
     UploadFile as ImportIcon,
     Close as IconClose,
+    ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
@@ -253,6 +259,7 @@ interface ConfigTableState extends ConfigGenericState {
     customObj: Record<string, any>;
     uploadFile: boolean | 'dragging';
     icon: boolean;
+    width: number;
 }
 
 function encrypt(secret: string, value: string): string {
@@ -262,6 +269,7 @@ function encrypt(secret: string, value: string): string {
     }
     return result;
 }
+
 function decrypt(secret: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
@@ -275,7 +283,11 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
     private typingTimer: ReturnType<typeof setTimeout> | null = null;
 
+    private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+
     private secret: string = 'Zgfr56gFe87jJOM';
+
+    private readonly refDiv: React.RefObject<HTMLDivElement>;
 
     constructor(props: ConfigTableProps) {
         super(props);
@@ -286,6 +298,8 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 this.filterRefs[el.attr] = createRef();
             }
         });
+
+        this.refDiv = React.createRef();
     }
 
     /**
@@ -333,6 +347,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 order: 'asc',
                 iteration: 0,
                 filterOn: [],
+                width: 0,
             },
             () => this.validateUniqueProps(),
         );
@@ -342,6 +357,10 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         if (this.typingTimer) {
             clearTimeout(this.typingTimer);
             this.typingTimer = null;
+        }
+        if (this.resizeTimeout) {
+            clearTimeout(this.resizeTimeout);
+            this.resizeTimeout = null;
         }
         super.componentWillUnmount();
     }
@@ -448,14 +467,15 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
     handleRequestSort = (property: string, orderCheck: boolean = false): void => {
         const { order, orderBy } = this.state;
-        if (orderBy) {
-            const isAsc = orderBy === property && order === 'asc';
-            const newOrder = orderCheck ? order : isAsc ? 'desc' : 'asc';
-            const newValue = this.stableSort(newOrder, property);
-            this.setState({ order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 }, () =>
-                this.applyFilter(false, newValue),
-            );
-        }
+        //if (orderBy || 'asc') {
+        const isAsc = orderBy === property && order === 'asc';
+        const newOrder = orderCheck ? order : isAsc ? 'desc' : 'asc';
+        const newValue = this.stableSort(newOrder, property);
+        this.setState(
+            { value: newValue, order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 },
+            () => this.applyFilter(false, newValue),
+        );
+        //}
     };
 
     stableSort = (order: 'desc' | 'asc', orderBy: string): Record<string, any>[] => {
@@ -474,127 +494,112 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         return stabilizedThis.map(el => el.el);
     };
 
+    renderShowHideFilter(headCell: ConfigItemTableIndexed): React.JSX.Element | null {
+        if (!headCell.filter) {
+            return null;
+        }
+        return (
+            <IconButton
+                title={I18n.t('ra_Show/hide filter input')}
+                size="small"
+                onClick={() => {
+                    const filterOn = [...this.state.filterOn];
+                    const pos = this.state.filterOn.indexOf(headCell.attr);
+                    if (pos === -1) {
+                        filterOn.push(headCell.attr);
+                    } else {
+                        filterOn.splice(pos, 1);
+                    }
+                    this.setState({ filterOn }, () => {
+                        if (pos && ConfigTable.getFilterValue(this.filterRefs[headCell.attr])) {
+                            ConfigTable.setFilterValue(this.filterRefs[headCell.attr], '');
+                            this.applyFilter();
+                        }
+                    });
+                }}
+            >
+                {this.state.filterOn.includes(headCell.attr) ? <IconFilterOff /> : <IconFilterOn />}
+            </IconButton>
+        );
+    }
+
+    renderImportExportButtons(schema: ConfigItemTable): React.JSX.Element {
+        return (
+            <>
+                {!schema.noDelete && schema.import ? (
+                    <Tooltip
+                        title={I18n.t('ra_Import data from %s file', 'CSV')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            size="small"
+                            onClick={() => this.setState({ showImportDialog: true })}
+                        >
+                            <ImportIcon />
+                        </IconButton>
+                    </Tooltip>
+                ) : null}
+                {schema.export ? (
+                    <Tooltip
+                        title={I18n.t('ra_Export data to %s file', 'CSV')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            size="small"
+                            onClick={() => this.onExport()}
+                        >
+                            <ExportIcon />
+                        </IconButton>
+                    </Tooltip>
+                ) : null}
+                <IconButton
+                    disabled
+                    size="small"
+                >
+                    <DeleteIcon />
+                </IconButton>
+            </>
+        );
+    }
+
+    renderAddButton(doAnyFilterSet: boolean): React.JSX.Element {
+        return (
+            <Tooltip
+                title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}
+                slotProps={{ popper: { sx: styles.tooltip } }}
+            >
+                <span>
+                    <IconButton
+                        size="small"
+                        color="primary"
+                        disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter}
+                        onClick={this.onAdd}
+                    >
+                        <AddIcon />
+                    </IconButton>
+                </span>
+            </Tooltip>
+        );
+    }
+
     enhancedTableHead(buttonsWidth: number, doAnyFilterSet: boolean): JSX.Element {
         const { schema } = this.props;
         const { order, orderBy } = this.state;
         return (
             <TableHead>
                 <TableRow>
-                    {schema.items &&
-                        schema.items.map((headCell: ConfigItemTableIndexed, i: number) => (
-                            <TableCell
-                                style={{
-                                    width:
-                                        typeof headCell.width === 'string' && headCell.width.endsWith('%')
-                                            ? headCell.width
-                                            : headCell.width,
-                                }}
-                                key={`${headCell.attr}_${i}`}
-                                align="left"
-                                sortDirection={orderBy === headCell.attr ? order : false}
-                            >
-                                <div
-                                    style={{
-                                        ...styles.flex,
-                                        ...(schema.showFirstAddOnTop ? { flexDirection: 'column' } : undefined),
-                                    }}
-                                >
-                                    {!i && !schema.noDelete ? (
-                                        <Tooltip
-                                            title={
-                                                doAnyFilterSet
-                                                    ? I18n.t('ra_Cannot add items with set filter')
-                                                    : I18n.t('ra_Add row')
-                                            }
-                                            slotProps={{ popper: { sx: styles.tooltip } }}
-                                        >
-                                            <span>
-                                                <IconButton
-                                                    size="small"
-                                                    color="primary"
-                                                    disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter}
-                                                    onClick={this.onAdd}
-                                                >
-                                                    <AddIcon />
-                                                </IconButton>
-                                            </span>
-                                        </Tooltip>
-                                    ) : null}
-                                    {headCell.sort && (
-                                        <TableSortLabel
-                                            active
-                                            style={orderBy !== headCell.attr ? styles.silver : undefined}
-                                            direction={orderBy === headCell.attr ? order : 'asc'}
-                                            onClick={() => this.handleRequestSort(headCell.attr)}
-                                        />
-                                    )}
-                                    {headCell.filter && this.state.filterOn.includes(headCell.attr) ? (
-                                        <TextField
-                                            variant="standard"
-                                            ref={this.filterRefs[headCell.attr]}
-                                            onChange={() => this.applyFilter()}
-                                            title={I18n.t('ra_You can filter entries by entering here some text')}
-                                            slotProps={{
-                                                input: {
-                                                    endAdornment: ConfigTable.getFilterValue(
-                                                        this.filterRefs[headCell.attr],
-                                                    ) && (
-                                                        <InputAdornment position="end">
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() => {
-                                                                    ConfigTable.setFilterValue(
-                                                                        this.filterRefs[headCell.attr],
-                                                                        '',
-                                                                    );
-                                                                    this.applyFilter();
-                                                                }}
-                                                            >
-                                                                <CloseIcon />
-                                                            </IconButton>
-                                                        </InputAdornment>
-                                                    ),
-                                                },
-                                            }}
-                                            fullWidth
-                                            placeholder={this.getText(headCell.title)}
-                                        />
-                                    ) : (
-                                        <span style={styles.headerText}>{this.getText(headCell.title)}</span>
-                                    )}
-                                    {headCell.filter ? (
-                                        <IconButton
-                                            title={I18n.t('ra_Show/hide filter input')}
-                                            size="small"
-                                            onClick={() => {
-                                                const filterOn = [...this.state.filterOn];
-                                                const pos = this.state.filterOn.indexOf(headCell.attr);
-                                                if (pos === -1) {
-                                                    filterOn.push(headCell.attr);
-                                                } else {
-                                                    filterOn.splice(pos, 1);
-                                                }
-                                                this.setState({ filterOn }, () => {
-                                                    if (
-                                                        pos &&
-                                                        ConfigTable.getFilterValue(this.filterRefs[headCell.attr])
-                                                    ) {
-                                                        ConfigTable.setFilterValue(this.filterRefs[headCell.attr], '');
-                                                        this.applyFilter();
-                                                    }
-                                                });
-                                            }}
-                                        >
-                                            {this.state.filterOn.includes(headCell.attr) ? (
-                                                <IconFilterOff />
-                                            ) : (
-                                                <IconFilterOn />
-                                            )}
-                                        </IconButton>
-                                    ) : null}
-                                </div>
-                            </TableCell>
-                        ))}
+                    {schema.items?.map((headCell: ConfigItemTableIndexed, i: number) =>
+                        this.renderOneFilter({
+                            schema,
+                            style: { width: headCell.width },
+                            showAddButton: !i && !schema.noDelete,
+                            headCell,
+                            order,
+                            orderBy,
+                            index: i,
+                            doAnyFilterSet,
+                        }),
+                    )}
                     {!schema.noDelete && (
                         <TableCell
                             style={{
@@ -605,32 +610,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                             }}
                             padding="checkbox"
                         >
-                            {schema.import ? (
-                                <IconButton
-                                    style={{ marginRight: 10 }}
-                                    size="small"
-                                    onClick={() => this.setState({ showImportDialog: true })}
-                                    title={I18n.t('ra_import data from %s file', 'CSV')}
-                                >
-                                    <ImportIcon />
-                                </IconButton>
-                            ) : null}
-                            {schema.export ? (
-                                <IconButton
-                                    style={{ marginRight: 10 }}
-                                    size="small"
-                                    onClick={() => this.onExport()}
-                                    title={I18n.t('ra_Export data to %s file', 'CSV')}
-                                >
-                                    <ExportIcon />
-                                </IconButton>
-                            ) : null}
-                            <IconButton
-                                disabled
-                                size="small"
-                            >
-                                <DeleteIcon />
-                            </IconButton>
+                            {this.renderImportExportButtons(schema)}
                         </TableCell>
                     )}
                 </TableRow>
@@ -1088,13 +1068,309 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         );
     }
 
-    renderItem(/* error, disabled, defaultValue */): JSX.Element | null {
+    renderOneFilter(props: {
+        schema: ConfigItemTable;
+        doAnyFilterSet: boolean;
+        headCell: ConfigItemTableIndexed;
+        index: number;
+        orderBy: string;
+        order: 'asc' | 'desc';
+        showAddButton: boolean;
+        style: React.CSSProperties;
+    }): React.JSX.Element {
+        return (
+            <TableCell
+                key={`${props.headCell.attr}_${props.index}`}
+                style={props.style}
+                align="left"
+                sortDirection={props.orderBy === props.headCell.attr ? props.order : false}
+            >
+                <div
+                    style={{
+                        ...styles.flex,
+                        ...(props.schema.showFirstAddOnTop ? { flexDirection: 'column' } : undefined),
+                    }}
+                >
+                    {props.showAddButton ? this.renderAddButton(props.doAnyFilterSet) : null}
+                    {props.headCell.sort && (
+                        <TableSortLabel
+                            active
+                            style={props.orderBy !== props.headCell.attr ? styles.silver : undefined}
+                            direction={props.orderBy === props.headCell.attr ? props.order : 'asc'}
+                            onClick={() => this.handleRequestSort(props.headCell.attr)}
+                        />
+                    )}
+                    {props.headCell.filter && this.state.filterOn.includes(props.headCell.attr) ? (
+                        <TextField
+                            variant="standard"
+                            ref={this.filterRefs[props.headCell.attr]}
+                            onChange={() => this.applyFilter()}
+                            title={I18n.t('ra_You can filter entries by entering here some text')}
+                            slotProps={{
+                                input: {
+                                    endAdornment: ConfigTable.getFilterValue(this.filterRefs[props.headCell.attr]) && (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => {
+                                                    ConfigTable.setFilterValue(
+                                                        this.filterRefs[props.headCell.attr],
+                                                        '',
+                                                    );
+                                                    this.applyFilter();
+                                                }}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                },
+                            }}
+                            fullWidth
+                            placeholder={this.getText(props.headCell.title)}
+                        />
+                    ) : (
+                        <span style={styles.headerText}>{this.getText(props.headCell.title)}</span>
+                    )}
+                    {this.renderShowHideFilter(props.headCell)}
+                </div>
+            </TableCell>
+        );
+    }
+
+    enhancedFilterCard(): JSX.Element {
+        const { schema } = this.props;
+        const { order, orderBy } = this.state;
+        let tdStyle: React.CSSProperties | undefined;
+        if (this.props.schema.compact) {
+            tdStyle = { paddingTop: 1, paddingBottom: 1 };
+        }
+
+        return (
+            <Grid2
+                size={{
+                    xs: schema.xs || 12, // if xs is not defined, take the full width
+                    sm: schema.sm || undefined,
+                    md: schema.md || undefined,
+                    lg: schema.lg || undefined,
+                    xl: schema.xl || undefined,
+                }}
+            >
+                <Card>
+                    <Paper style={styles.paper}>
+                        <Accordion style={styles.paper}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <Typography>{I18n.t('ra_Filter and Data Actions')}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Table>
+                                    <TableBody>
+                                        {schema.items?.map(
+                                            (headCell: ConfigItemTableIndexed, i: number): React.JSX.Element => (
+                                                <TableRow key={`${headCell.attr}_${i}`}>
+                                                    {this.renderOneFilter({
+                                                        schema,
+                                                        style: tdStyle,
+                                                        showAddButton: false,
+                                                        headCell,
+                                                        order,
+                                                        orderBy,
+                                                        index: i,
+                                                        doAnyFilterSet: false,
+                                                    })}
+                                                </TableRow>
+                                            ),
+                                        )}
+                                        <TableRow>
+                                            <TableCell
+                                                align="left"
+                                                style={tdStyle}
+                                            >
+                                                <span style={styles.headerText}>{I18n.t('ra_Actions')}</span>
+                                            </TableCell>
+                                            <TableCell style={tdStyle}>
+                                                {this.renderImportExportButtons(schema)}
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Paper>
+                </Card>
+            </Grid2>
+        );
+    }
+
+    enhancedBottomCard(): JSX.Element {
+        const { schema } = this.props;
+        let tdStyle: React.CSSProperties | undefined;
+        if (this.props.schema.compact) {
+            tdStyle = { paddingTop: 1, paddingBottom: 1 };
+        }
+        const doAnyFilterSet = this.isAnyFilterSet();
+        return (
+            <Grid2
+                size={{
+                    xs: schema.xs || 12, // if xs is not defined, take the full width
+                    sm: schema.sm || undefined,
+                    md: schema.md || undefined,
+                    lg: schema.lg || undefined,
+                    xl: schema.xl || undefined,
+                }}
+            >
+                <Card>
+                    <Paper style={styles.paper}>
+                        <Table>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={schema.items.length + 1}
+                                        style={tdStyle}
+                                    >
+                                        {this.renderAddButton(doAnyFilterSet)}
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </Paper>
+                </Card>
+            </Grid2>
+        );
+    }
+
+    renderCards(): JSX.Element | null {
         const { schema } = this.props;
         let { visibleValue } = this.state;
-
-        if (!this.state.value || !Array.isArray(this.state.value)) {
-            return null;
+        let tdStyle: React.CSSProperties | undefined;
+        if (this.props.schema.compact) {
+            tdStyle = { paddingTop: 1, paddingBottom: 1 };
         }
+        visibleValue = visibleValue || this.state.value.map((_, i) => i);
+
+        const doAnyFilterSet = this.isAnyFilterSet();
+
+        return (
+            <Grid2 container>
+                {this.showImportDialog()}
+                {this.showTypeOfImportDialog()}
+                {this.enhancedFilterCard()}
+                {visibleValue.map((idx, i) => (
+                    <Grid2
+                        key={`${idx}_${i}`}
+                        size={{
+                            xs: schema.xs || 12, // if xs is not defined, take the full width
+                            sm: schema.sm || undefined,
+                            md: schema.md || undefined,
+                            lg: schema.lg || undefined,
+                            xl: schema.xl || undefined,
+                        }}
+                    >
+                        <Card>
+                            <Paper style={styles.paper}>
+                                <Table>
+                                    <TableBody>
+                                        {schema.items?.map((headCell: ConfigItemTableIndexed) => (
+                                            <TableRow key={`${headCell.attr}_${idx}`}>
+                                                <TableCell
+                                                    align="left"
+                                                    style={tdStyle}
+                                                >
+                                                    <span style={styles.headerText}>
+                                                        {this.getText(headCell.title)}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell
+                                                    align="left"
+                                                    style={tdStyle}
+                                                >
+                                                    {this.itemTable(headCell.attr, this.state.value[idx], idx)}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                        <TableRow>
+                                            <TableCell
+                                                align="left"
+                                                style={tdStyle}
+                                            >
+                                                <span style={styles.headerText}>{this.getText('Actions')}</span>
+                                            </TableCell>
+                                            <TableCell
+                                                align="left"
+                                                style={tdStyle}
+                                            >
+                                                {!doAnyFilterSet && !this.state.orderBy ? (
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Move up')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <span>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => this.onMoveUp(idx)}
+                                                                disabled={i === 0}
+                                                            >
+                                                                <UpIcon />
+                                                            </IconButton>
+                                                        </span>
+                                                    </Tooltip>
+                                                ) : null}
+                                                {!doAnyFilterSet && !this.state.orderBy ? (
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Move down')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <span>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => this.onMoveDown(idx)}
+                                                                disabled={i === visibleValue.length - 1}
+                                                            >
+                                                                <DownIcon />
+                                                            </IconButton>
+                                                        </span>
+                                                    </Tooltip>
+                                                ) : null}
+                                                <Tooltip
+                                                    title={I18n.t('ra_Delete current row')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
+                                                >
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={this.onDelete(idx)}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                {this.props.schema.clone ? (
+                                                    <Tooltip
+                                                        title={I18n.t('ra_Clone current row')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={this.onClone(idx)}
+                                                        >
+                                                            <CopyContentIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                ) : null}
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </Paper>
+                        </Card>
+                    </Grid2>
+                ))}
+                {this.enhancedBottomCard()}
+            </Grid2>
+        );
+    }
+
+    renderTable(): JSX.Element | null {
+        const { schema } = this.props;
+        let { visibleValue } = this.state;
 
         visibleValue = visibleValue || this.state.value.map((_, i) => i);
 
@@ -1138,16 +1414,15 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                     hover
                                     key={`${idx}_${i}`}
                                 >
-                                    {schema.items &&
-                                        schema.items.map((headCell: ConfigItemTableIndexed) => (
-                                            <TableCell
-                                                key={`${headCell.attr}_${idx}`}
-                                                align="left"
-                                                style={tdStyle}
-                                            >
-                                                {this.itemTable(headCell.attr, this.state.value[idx], idx)}
-                                            </TableCell>
-                                        ))}
+                                    {schema.items?.map((headCell: ConfigItemTableIndexed) => (
+                                        <TableCell
+                                            key={`${headCell.attr}_${idx}`}
+                                            align="left"
+                                            style={tdStyle}
+                                        >
+                                            {this.itemTable(headCell.attr, this.state.value[idx], idx)}
+                                        </TableCell>
+                                    ))}
                                     {!schema.noDelete && (
                                         <TableCell
                                             align="left"
@@ -1221,25 +1496,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                         colSpan={schema.items.length + 1}
                                         style={{ ...tdStyle }}
                                     >
-                                        <Tooltip
-                                            title={
-                                                doAnyFilterSet
-                                                    ? I18n.t('ra_Cannot add items with set filter')
-                                                    : I18n.t('ra_Add row')
-                                            }
-                                            slotProps={{ popper: { sx: styles.tooltip } }}
-                                        >
-                                            <span>
-                                                <IconButton
-                                                    size="small"
-                                                    color="primary"
-                                                    disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter}
-                                                    onClick={this.onAdd}
-                                                >
-                                                    <AddIcon />
-                                                </IconButton>
-                                            </span>
-                                        </Tooltip>
+                                        {this.renderAddButton(doAnyFilterSet)}
                                     </TableCell>
                                 </TableRow>
                             ) : null}
@@ -1280,6 +1537,63 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                     </div>
                 ) : null}
             </Paper>
+        );
+    }
+
+    componentDidUpdate(): void {
+        if (this.refDiv.current?.clientWidth && this.refDiv.current.clientWidth !== this.state.width) {
+            if (this.resizeTimeout) {
+                clearTimeout(this.resizeTimeout);
+            }
+            this.resizeTimeout = setTimeout(() => {
+                this.resizeTimeout = null;
+                this.setState({ width: this.refDiv.current?.clientWidth });
+            }, 50);
+        }
+    }
+
+    getCurrentBreakpoint(): 'xs' | 'sm' | 'md' | 'lg' | 'xl' {
+        if (!this.state.width) {
+            return 'md';
+        }
+        if (this.state.width < 600) {
+            return 'xs';
+        }
+        if (this.state.width < 900) {
+            return 'sm';
+        }
+        if (this.state.width < 1200) {
+            return 'md';
+        }
+        if (this.state.width < 1536) {
+            return 'lg';
+        }
+        return 'xl';
+    }
+
+    renderItem(/* error, disabled, defaultValue */): JSX.Element | null {
+        const { schema } = this.props;
+
+        if (!this.state.value || !Array.isArray(this.state.value)) {
+            return null;
+        }
+
+        const currentBreakpoint = this.getCurrentBreakpoint();
+        let content: React.JSX.Element;
+
+        if (currentBreakpoint && (schema.useCardFor || ['xs']).includes(currentBreakpoint)) {
+            content = this.renderCards();
+        } else {
+            content = this.renderTable();
+        }
+
+        return (
+            <div
+                ref={this.refDiv}
+                style={{ width: '100%' }}
+            >
+                {content}
+            </div>
         );
     }
 }

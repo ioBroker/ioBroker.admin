@@ -1,6 +1,7 @@
 import React, { type JSX } from 'react';
 
-import { Tabs, Tab } from '@mui/material';
+import { Tabs, Tab, IconButton, Toolbar, Menu, MenuItem, ListItemIcon } from '@mui/material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 
 import type { ConfigItemTabs } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -30,9 +31,15 @@ interface ConfigTabsProps extends ConfigGenericProps {
 
 interface ConfigTabsState extends ConfigGenericState {
     tab?: string;
+    width: number;
+    openMenu: HTMLButtonElement | null;
 }
 
 class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
+    private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    private readonly refDiv: React.RefObject<HTMLDivElement>;
+
     constructor(props: ConfigTabsProps) {
         super(props);
         let tab: string | undefined;
@@ -66,11 +73,16 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 tab = Object.keys(this.props.schema.items)[0];
             }
         }
+        this.refDiv = React.createRef();
 
-        Object.assign(this.state, { tab });
+        Object.assign(this.state, { tab, width: 0, openMenu: null });
     }
 
     componentWillUnmount(): void {
+        if (this.resizeTimeout) {
+            clearTimeout(this.resizeTimeout);
+            this.resizeTimeout = null;
+        }
         window.removeEventListener('hashchange', this.onHashTabsChanged, false);
         super.componentWillUnmount();
     }
@@ -98,91 +110,180 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
         }
     };
 
+    getCurrentBreakpoint(): 'xs' | 'sm' | 'md' | 'lg' | 'xl' {
+        if (!this.state.width) {
+            return 'md';
+        }
+        if (this.state.width < 600) {
+            return 'xs';
+        }
+        if (this.state.width < 900) {
+            return 'sm';
+        }
+        if (this.state.width < 1200) {
+            return 'md';
+        }
+        if (this.state.width < 1536) {
+            return 'lg';
+        }
+        return 'xl';
+    }
+
+    componentDidUpdate(): void {
+        if (this.refDiv.current?.clientWidth && this.refDiv.current.clientWidth !== this.state.width) {
+            if (this.resizeTimeout) {
+                clearTimeout(this.resizeTimeout);
+            }
+            this.resizeTimeout = setTimeout(() => {
+                this.resizeTimeout = null;
+                this.setState({ width: this.refDiv.current?.clientWidth });
+            }, 50);
+        }
+    }
+
+    onMenuChange(tab: string): void {
+        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+            `${this.props.dialogName || 'App'}.${this.props.oContext.adapterName}`,
+            tab,
+        );
+        this.setState({ tab }, () => {
+            if (this.props.root) {
+                const hash = (window.location.hash || '').split('/');
+                if (hash.length >= 3 && hash[1] === 'config') {
+                    hash[3] = this.state.tab;
+                    window.location.hash = hash.join('/');
+                }
+            }
+        });
+    }
+
     render(): JSX.Element {
         const items = this.props.schema.items;
         let withIcons = false;
+        const elements: { icon: React.JSX.Element | null; label: string; name: string; disabled: boolean }[] = [];
 
-        return (
-            <div style={styles.tabs}>
+        Object.keys(items).map(name => {
+            let disabled: boolean;
+            if (this.props.custom) {
+                const hidden = this.executeCustom(
+                    items[name].hidden,
+                    this.props.data,
+                    this.props.customObj,
+                    this.props.oContext.instanceObj,
+                    this.props.index,
+                    this.props.globalData,
+                );
+                if (hidden) {
+                    return;
+                }
+                disabled = this.executeCustom(
+                    items[name].disabled,
+                    this.props.data,
+                    this.props.customObj,
+                    this.props.oContext.instanceObj,
+                    this.props.index,
+                    this.props.globalData,
+                ) as boolean;
+            } else {
+                const hidden: boolean = this.execute(
+                    items[name].hidden,
+                    false,
+                    this.props.data,
+                    this.props.index,
+                    this.props.globalData,
+                ) as boolean;
+                if (hidden) {
+                    return;
+                }
+                disabled = this.execute(
+                    items[name].disabled,
+                    false,
+                    this.props.data,
+                    this.props.index,
+                    this.props.globalData,
+                ) as boolean;
+            }
+            const icon = this.getIcon(items[name].icon);
+            withIcons = withIcons || !!icon;
+            elements.push({ icon, disabled, label: this.getText(items[name].label), name });
+        });
+
+        const currentBreakpoint = this.getCurrentBreakpoint();
+        let tabs: React.JSX.Element;
+        if (currentBreakpoint === 'xs' || currentBreakpoint === 'sm') {
+            tabs = (
+                <Toolbar
+                    style={{
+                        width: '100%',
+                        backgroundColor: this.props.oContext.themeType === 'dark' ? '#222' : '#DDD',
+                    }}
+                    variant="dense"
+                >
+                    <IconButton
+                        onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
+                            this.setState({ openMenu: event.currentTarget })
+                        }
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    {this.state.openMenu ? (
+                        <Menu
+                            open={!0}
+                            anchorEl={this.state.openMenu}
+                            onClose={() => this.setState({ openMenu: null })}
+                        >
+                            {elements.map(el => {
+                                return (
+                                    <MenuItem
+                                        disabled={el.disabled}
+                                        key={el.name}
+                                        onClick={() => {
+                                            this.setState({ openMenu: null }, () => this.onMenuChange(el.name));
+                                        }}
+                                        selected={el.name === this.state.tab}
+                                    >
+                                        {withIcons ? <ListItemIcon>{el.icon}</ListItemIcon> : null}
+                                        {el.label}
+                                    </MenuItem>
+                                );
+                            })}
+                        </Menu>
+                    ) : null}
+                </Toolbar>
+            );
+        } else {
+            tabs = (
                 <Tabs
                     variant="scrollable"
                     scrollButtons="auto"
                     style={this.props.schema.tabsStyle}
                     value={this.state.tab}
-                    onChange={(e, tab) => {
-                        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
-                            `${this.props.dialogName || 'App'}.${this.props.oContext.adapterName}`,
-                            tab,
-                        );
-                        this.setState({ tab }, () => {
-                            if (this.props.root) {
-                                const hash = (window.location.hash || '').split('/');
-                                if (hash.length >= 3 && hash[1] === 'config') {
-                                    hash[3] = this.state.tab;
-                                    window.location.hash = hash.join('/');
-                                }
-                            }
-                        });
-                    }}
+                    onChange={(_e, tab: string): void => this.onMenuChange(tab)}
                 >
-                    {Object.keys(items).map(name => {
-                        let disabled: boolean;
-                        if (this.props.custom) {
-                            const hidden = this.executeCustom(
-                                items[name].hidden,
-                                this.props.data,
-                                this.props.customObj,
-                                this.props.oContext.instanceObj,
-                                this.props.index,
-                                this.props.globalData,
-                            );
-                            if (hidden) {
-                                return null;
-                            }
-                            disabled = this.executeCustom(
-                                items[name].disabled,
-                                this.props.data,
-                                this.props.customObj,
-                                this.props.oContext.instanceObj,
-                                this.props.index,
-                                this.props.globalData,
-                            ) as boolean;
-                        } else {
-                            const hidden: boolean = this.execute(
-                                items[name].hidden,
-                                false,
-                                this.props.data,
-                                this.props.index,
-                                this.props.globalData,
-                            ) as boolean;
-                            if (hidden) {
-                                return null;
-                            }
-                            disabled = this.execute(
-                                items[name].disabled,
-                                false,
-                                this.props.data,
-                                this.props.index,
-                                this.props.globalData,
-                            ) as boolean;
-                        }
-                        const icon = this.getIcon(items[name].icon);
-                        withIcons = withIcons || !!icon;
-
+                    {elements.map(el => {
                         return (
                             <Tab
-                                id={name}
+                                id={el.name}
                                 wrapped
-                                disabled={disabled}
-                                key={name}
-                                value={name}
+                                disabled={el.disabled}
+                                key={el.name}
+                                value={el.name}
                                 iconPosition={this.props.schema.iconPosition || 'start'}
-                                icon={icon}
-                                label={this.getText(items[name].label)}
+                                icon={el.icon}
+                                label={el.label}
                             />
                         );
                     })}
                 </Tabs>
+            );
+        }
+
+        return (
+            <div
+                style={styles.tabs}
+                ref={this.refDiv}
+            >
+                {tabs}
                 <ConfigPanel
                     oContext={this.props.oContext}
                     isParentTab

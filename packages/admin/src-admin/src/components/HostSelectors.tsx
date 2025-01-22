@@ -43,7 +43,6 @@ const styles: Record<string, any> = {
         height: 30,
         margin: 'auto 0',
         position: 'relative',
-        marginRight: 10,
         borderRadius: 3,
         background: '#FFFFFF',
         padding: 2,
@@ -61,6 +60,7 @@ const styles: Record<string, any> = {
         '@media screen and (max-width: 710px)': {
             display: 'none',
         },
+        marginLeft: '8px',
     },
     width: {
         width: '100%',

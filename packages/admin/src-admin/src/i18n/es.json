@@ -742,6 +742,7 @@
     "Node.js update failed: %s": "Error en la actualización de Node.js: %s",
     "Node.js update successful, restarting controller now!": "Actualización de Node.js exitosa, reiniciando el controlador ahora.",
     "Node.js upgrade": "Actualización de Node.js",
+    "Non-NPM-Version": "Versión no NPM",
     "Non-allowed duplicate entry \"%s\" in column \"%s\"": "Entrada duplicada no permitida \"%s\" en la columna \"%s\"",
     "None": "Ninguno",
     "Norfolk Island": "Isla de Norfolk",

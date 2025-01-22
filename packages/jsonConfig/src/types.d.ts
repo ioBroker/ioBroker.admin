@@ -5,6 +5,7 @@ import type {
     ObjectBrowserCustomFilter,
     ObjectBrowserType,
     ThemeType,
+    ThemeName,
 } from '@iobroker/adapter-react-v5';
 import type { ConfigGeneric, DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
 
@@ -779,6 +780,8 @@ export interface ConfigItemTable extends ConfigItem {
     uniqueColumns?: string[];
     /** These items will be encrypted before saving with simple (not SHA) encryption method */
     encryptedAttributes?: string[];
+    /** Breakpoint that will be rendered as cards */
+    useCardFor?: ('xs' | 'sm' | 'md' | 'lg' | 'xl')[];
 }
 
 export interface ConfigItemTimePicker extends ConfigItem {
@@ -1006,18 +1009,24 @@ export type ConfigItemAny =
     | ConfigItemQrCode;
 
 export type JsonConfigContext = {
-    DeviceManager?: React.FC<DeviceManagerPropsProps>;
     adapterName: string;
+    dateFormat: string;
+    forceUpdate: (attr: string | string[], data: any) => void;
+    instance: number;
+    isFloatComma: boolean;
+    socket: AdminConnection;
+    systemConfig: ioBroker.SystemConfigCommon;
+    theme: IobTheme;
+    themeType: ThemeType;
+    _themeName: ThemeName;
+
+    DeviceManager?: React.FC<DeviceManagerPropsProps>;
     changeLanguage?: () => void;
     customs?: Record<string, typeof ConfigGeneric>;
-    dateFormat: string;
     embedded?: boolean;
     expertMode?: boolean;
-    forceUpdate: (attr: string | string[], data: any) => void;
     imagePrefix?: string;
-    instance: number;
     instanceObj?: ioBroker.InstanceObject;
-    isFloatComma: boolean;
     /** If true, this field edits multiple data points at once and thus contains an array, should not be saved if not changed */
     multiEdit?: boolean;
     /** Backend request to refresh data */
@@ -1025,11 +1034,6 @@ export type JsonConfigContext = {
     onCommandRunning: (commandRunning: boolean) => void;
     onValueChange?: (attr: string, value: any, saveConfig: boolean) => void;
     registerOnForceUpdate?: (attr: string, cb?: (data: any) => void) => void;
-    socket: AdminConnection;
-    systemConfig: ioBroker.SystemConfigCommon;
-    theme: IobTheme;
-    themeType: ThemeType;
-    _themeName: ThemeName;
 };
 
 // Notification GUI

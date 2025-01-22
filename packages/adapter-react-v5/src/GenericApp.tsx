@@ -43,7 +43,7 @@ declare global {
         SocketClient: any;
         adapterName: undefined | string;
         socketUrl: undefined | string;
-        oldAlert: any;
+        iobOldAlert: any;
         changed: boolean;
         $iframeDialog: {
             close?: () => void;
@@ -272,13 +272,15 @@ export class GenericApp<
 
         this.alertDialogRendered = false;
 
-        window.oldAlert = window.alert;
+        if (!window.iobOldAlert) {
+            window.iobOldAlert = window.alert;
+        }
         window.alert = message => {
             if (!this.alertDialogRendered) {
-                window.oldAlert(message);
+                window.iobOldAlert(message);
                 return;
             }
-            if (message && message.toString().toLowerCase().includes('error')) {
+            if (message?.toString().toLowerCase().includes('error')) {
                 console.error(message);
                 this.showAlert(message.toString(), 'error');
             } else {
@@ -468,6 +470,13 @@ export class GenericApp<
     componentWillUnmount(): void {
         window.removeEventListener('resize', this.onResize, true);
         window.removeEventListener('message', this.onReceiveMessage, false);
+
+        // restore window.alert
+        if (window.iobOldAlert) {
+            window.alert = window.iobOldAlert;
+            delete window.iobOldAlert;
+        }
+
         super.componentWillUnmount();
     }
 
