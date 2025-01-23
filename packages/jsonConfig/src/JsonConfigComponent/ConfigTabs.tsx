@@ -210,11 +210,11 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
 
         const currentBreakpoint = this.getCurrentBreakpoint();
         let tabs: React.JSX.Element;
-        if (currentBreakpoint === 'xs' || currentBreakpoint === 'sm') {
+        if (currentBreakpoint === 'xs') {
             tabs = (
                 <Toolbar
                     style={{
-                        width: '100%',
+                        width: 'calc(100% - 48px)',
                         backgroundColor: this.props.oContext.themeType === 'dark' ? '#222' : '#DDD',
                     }}
                     variant="dense"
