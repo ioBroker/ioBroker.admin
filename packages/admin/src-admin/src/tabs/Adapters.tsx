@@ -1056,7 +1056,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         let result = true;
 
         if (adapter) {
-            const dependencies = adapter.dependencies;
+            let dependencies = adapter.dependencies;
             const nodeVersion = adapter.node;
 
             if (dependencies) {
@@ -1109,6 +1109,38 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                         `[ADAPTERS] Invalid dependencies for ${adapterName}: ${JSON.stringify(dependencies)}`,
                     );
                 }
+            }
+
+            // @ts-expect-error Types implemented in js-controller
+            dependencies = adapter.ifInstalledDependencies as ioBroker.AdapterCommon['dependencies'];
+
+            if (dependencies instanceof Array) {
+                dependencies.forEach(dependency => {
+                    if (typeof dependency !== 'object') {
+                        console.warn(`Invalid version check in ifInstalledDependencies for "${adapterName}"`);
+                        return;
+                    }
+                    const keys = Object.keys(dependency);
+                    if (keys.length !== 1) {
+                        console.warn(`Invalid version check in ifInstalledDependencies for "${adapterName}"`);
+                        return;
+                    }
+                    const name = keys[0];
+
+                    if (result && name) {
+                        const installed = this.state.installed[name];
+
+                        try {
+                            result = installed
+                                ? semver.satisfies(installed.version, dependency[name], {
+                                      includePrerelease: true,
+                                  })
+                                : true;
+                        } catch {
+                            result = true;
+                        }
+                    }
+                });
             }
 
             if (result && nodeVersion) {

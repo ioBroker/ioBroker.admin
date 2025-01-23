@@ -274,7 +274,7 @@ export default abstract class AdapterInstallDialog<
                     entry.name = !checkVersion ? dependency : keys ? keys[0] : null;
                     entry.version = checkVersion ? dependency[entry.name] : null;
 
-                    if (result && entry.name) {
+                    if (entry.name) {
                         const installed = context.installed[entry.name];
 
                         entry.installed = !!installed;
@@ -309,7 +309,7 @@ export default abstract class AdapterInstallDialog<
                     entry.name = !checkVersion ? dependency : keys ? keys[0] : null;
                     entry.version = checkVersion ? dependency[entry.name] : null;
 
-                    if (result && entry.name) {
+                    if (entry.name) {
                         const installed = context.installedGlobal[entry.name];
 
                         entry.installed = !!installed;
@@ -320,6 +320,51 @@ export default abstract class AdapterInstallDialog<
                                     ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
                                     : true
                                 : false;
+                        } catch {
+                            entry.rightVersion = true;
+                        }
+                    }
+
+                    result.push(entry);
+                }
+            }
+
+            const dependencies: ioBroker.AdapterCommon['dependencies'] =
+                // @ts-expect-error Types implemented in js-controller
+                adapter.ifInstalledDependencies as ioBroker.AdapterCommon['dependencies'];
+
+            if (dependencies?.length) {
+                for (const dependency of dependencies) {
+                    const entry: AdapterDependencies = {
+                        name: '',
+                        version: null,
+                        installed: false,
+                        installedVersion: null,
+                        rightVersion: false,
+                    };
+
+                    if (typeof dependency !== 'object') {
+                        console.warn(`Invalid version check in ifInstalledDependencies for "${adapterName}"`);
+                        continue;
+                    }
+
+                    const keys = Object.keys(dependency);
+                    if (keys.length !== 1) {
+                        console.warn(`Invalid version check in ifInstalledDependencies for "${adapterName}"`);
+                        continue;
+                    }
+                    entry.name = keys[0];
+                    entry.version = dependency[entry.name];
+
+                    if (entry.name) {
+                        const installed = context.installedGlobal[entry.name];
+
+                        entry.installed = !!installed;
+                        entry.installedVersion = installed ? installed.version : null;
+                        try {
+                            entry.rightVersion = installed
+                                ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
+                                : true;
                         } catch {
                             entry.rightVersion = true;
                         }
