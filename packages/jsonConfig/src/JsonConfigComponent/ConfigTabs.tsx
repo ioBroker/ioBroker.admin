@@ -210,7 +210,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
 
         const currentBreakpoint = this.getCurrentBreakpoint();
         let tabs: React.JSX.Element;
-        if (currentBreakpoint === 'xs') {
+        if (currentBreakpoint === 'xs' && elements.length > 2) {
             tabs = (
                 <Toolbar
                     style={{
