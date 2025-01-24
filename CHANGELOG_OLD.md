@@ -1,4 +1,9 @@
 # Older changes
+## 7.4.8 (2024-12-21)
+
+-   (@GermanBluefox) Show latest/stable labels by updating/downgrading of adapters
+-   (@GermanBluefox) Corrected selection of chinese language
+
 ## 7.4.7 (2024-12-12)
 
 -   (@GermanBluefox) Corrected the rendering of custom JSON config components

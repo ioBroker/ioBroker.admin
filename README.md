@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.16 (2025-01-24)
 -   (@GermanBluefox) Fixing Tabs in JSON Config
 
 ### 7.4.15 (2025-01-22)
@@ -112,11 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 -   (@GermanBluefox) Corrected JSON-Config tables
 -   (@GermanBluefox) Corrected translation on the update adapter dialog
-
-### 7.4.8 (2024-12-21)
-
--   (@GermanBluefox) Show latest/stable labels by updating/downgrading of adapters
--   (@GermanBluefox) Corrected selection of chinese language
 
 ## License
 
