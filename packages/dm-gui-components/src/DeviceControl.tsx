@@ -83,7 +83,6 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
                             if (min === undefined) {
                                 max = 100;
                             }
-                            // @ts-expect-error types are implemented in dm-utils
                             let step: number | undefined = this.props.control.step;
                             if (step === undefined) {
                                 step = obj.common.step;
@@ -111,7 +110,6 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
                     this.setState({
                         min,
                         max,
-                        // @ts-expect-error types are implemented in dm-utils
                         step: this.props.control.step === undefined ? (max - min) / 100 : this.props.control.step,
                         unit: this.props.control.unit || '',
                     });
