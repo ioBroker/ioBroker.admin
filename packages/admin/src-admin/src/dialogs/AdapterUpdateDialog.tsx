@@ -42,6 +42,7 @@ import 'moment/locale/pt';
 import 'moment/locale/ru';
 import 'moment/locale/uk';
 import 'moment/locale/zh-cn';
+import type { AdapterDependencies } from '@/dialogs/AddInstanceDialog';
 
 const styles: Record<string, any> = {
     closeButton: (theme: IobTheme) => ({
@@ -344,7 +345,7 @@ export function checkCondition(
 interface AdapterUpdateDialogProps {
     adapter: string;
     adapterObject: RepoAdapterObject;
-    dependencies?: Record<string, any>[];
+    dependencies?: AdapterDependencies[];
     news: News[];
     noTranslation: boolean;
     toggleTranslation: () => void;
@@ -450,20 +451,14 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
     }
 
     getDependencies(): JSX.Element[] {
-        const result: JSX.Element[] = [];
-
-        this.props.dependencies?.forEach(dependency => {
-            result.push(
-                <State
-                    key={dependency.name}
-                    state={dependency.rightVersion}
-                >
-                    {`${dependency.name}${dependency.version ? ` (${dependency.version})` : ''}: ${dependency.installed ? dependency.installedVersion : '-'}`}
-                </State>,
-            );
-        });
-
-        return result;
+        return (this.props.dependencies || []).map(dependency => (
+            <State
+                key={dependency.name}
+                state={dependency.rightVersion}
+            >
+                {`${dependency.name}${dependency.version ? ` (${dependency.version})` : ''}: ${dependency.installed ? dependency.installedVersion : '-'}`}
+            </State>
+        ));
     }
 
     getNews(): JSX.Element[] {

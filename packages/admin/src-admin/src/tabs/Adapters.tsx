@@ -1056,7 +1056,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         let result = true;
 
         if (adapter) {
-            const dependencies = adapter.dependencies;
+            let dependencies = adapter.dependencies;
             const nodeVersion = adapter.node;
 
             if (dependencies) {
@@ -1109,6 +1109,29 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                         `[ADAPTERS] Invalid dependencies for ${adapterName}: ${JSON.stringify(dependencies)}`,
                     );
                 }
+            }
+
+            // @ts-expect-error Types implemented in js-controller
+            const ifDependencies: Record<string, string> = adapter.ifInstalledDependencies as Record<string, string>;
+
+            if (ifDependencies && typeof ifDependencies === 'object' && !Array.isArray(ifDependencies)) {
+                const adapters = Object.keys(ifDependencies);
+
+                adapters.forEach(name => {
+                    if (result && name) {
+                        const installed = this.state.installed[name];
+
+                        try {
+                            result = installed
+                                ? semver.satisfies(installed.version, ifDependencies[name], {
+                                      includePrerelease: true,
+                                  })
+                                : true;
+                        } catch {
+                            result = true;
+                        }
+                    }
+                });
             }
 
             if (result && nodeVersion) {

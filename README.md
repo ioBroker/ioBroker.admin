@@ -87,11 +87,14 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Fixing Tabs in JSON Config
+
 ### 7.4.15 (2025-01-22)
 
 -   (@oweitman) Implemented better table view
 -   (@GermanBluefox) Extended DM with device type
--   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as menu
+-   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as a menu
 
 ### 7.4.14 (2025-01-15)
 
