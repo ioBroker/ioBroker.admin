@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.16",
+    "version": "7.4.17",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.17": {
+        "en": "Fixing Tabs in JSON Config\nAdded support of `ifInstallDependencies` flag in adapter",
+        "de": "Registerkarten in JSON Config\nUnterstützung von `ifInstallDependencies`-Flag im Adapter hinzugefügt",
+        "ru": "Fixing Tabs in JSON Config\nДобавлена поддержка флага \"ifInstallDependence\" в адаптере",
+        "pt": "Fixação de guias em JSON Config\nAdicionado suporte de `ifInstallDependencies` bandeira em adaptador",
+        "nl": "Tabbladen in JSON instellen\nToegevoegde ondersteuning van de vlag \"InstallDependents\" in de adapter",
+        "fr": "Correction des onglets dans JSON Config\nAjout du support du drapeau `ifInstallDependences` dans l`adaptateur",
+        "it": "Fissare le schede in JSON Config\nAggiunto il supporto di `ifInstallDependencies` bandiera in adattatore",
+        "es": "Fijación de pestañas en JSON Config\nAgregado soporte de bandera 'siInstallDependencies` en adaptador",
+        "pl": "Fixing Tabs in JSON Config\nDodano wsparcie flagi 'ifInstallation Dependences' w adapterze",
+        "uk": "Виправлення вкладок в JSON Config\nДодано підтримку прапора `ifInstallDepencies` в адаптері",
+        "zh-cn": "在 JSON 配置中修复标签\n在适配器中添加“ifInstallDependency”旗的支持"
+      },
       "7.4.15": {
         "en": "Implemented better table view\nExtended DM with device type\nShowed the tabs in JSONConfig on narrow displays as menu",
         "de": "Ergänzte bessere Tischansicht\nErweiterte DM mit Gerätetyp\nZeigte die Registerkarten in JSONConfig auf schmalen Anzeigen als Menü",
