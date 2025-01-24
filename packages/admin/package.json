@@ -43,11 +43,11 @@
         "semver": "^7.6.3"
     },
     "devDependencies": {
-        "@iobroker/build-tools": "^2.0.12",
+        "@iobroker/build-tools": "^2.0.14",
         "@iobroker/dm-gui-components": "file:../dm-gui-components",
         "@iobroker/json-config": "file:../jsonConfig",
-        "@iobroker/legacy-testing": "^2.0.1",
-        "@iobroker/testing": "^5.0.0",
+        "@iobroker/legacy-testing": "^2.0.2",
+        "@iobroker/testing": "^5.0.3",
         "@types/archiver": "^6.0.3",
         "@types/body-parser": "^1.19.5",
         "@types/compression": "^1.7.5",
@@ -60,10 +60,10 @@
         "@types/passport-local": "^1.0.38",
         "@types/validator": "^13.12.2",
         "colorette": "^2.0.20",
-        "less": "^4.2.1",
-        "puppeteer": "^23.10.1",
+        "less": "^4.2.2",
+        "puppeteer": "^24.1.1",
         "src-rx": "file:src-admin",
-        "typescript": "^5.7.2"
+        "typescript": "^5.7.3"
     },
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.admin/issues"
