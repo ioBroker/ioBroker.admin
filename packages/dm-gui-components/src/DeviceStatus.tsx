@@ -349,7 +349,7 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
         <div
             style={{
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'baseline',
                 cursor: props.statusAction ? 'pointer' : undefined,
                 width: props.disableEnableAction ? '100%' : undefined,
                 gap: 8,

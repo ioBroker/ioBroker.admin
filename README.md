@@ -87,8 +87,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.4.16 (2025-01-24)
+### **WORK IN PROGRESS**
 -   (@GermanBluefox) Fixing Tabs in JSON Config
+-   (@GermanBluefox) Added support of `ifInstallDependencies` flag in adapter
 
 ### 7.4.15 (2025-01-22)
 
