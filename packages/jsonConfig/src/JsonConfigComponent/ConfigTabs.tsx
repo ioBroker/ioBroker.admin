@@ -214,7 +214,8 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
             tabs = (
                 <Toolbar
                     style={{
-                        width: 'calc(100% - 48px)',
+                        width: '100%',
+                        top: 2,
                         backgroundColor: this.props.oContext.themeType === 'dark' ? '#222' : '#DDD',
                     }}
                     variant="dense"
