@@ -416,15 +416,16 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                         backgroundColor:
                             this.props.device.color === 'primary'
                                 ? theme.palette.primary.main
-                                : theme.palette.secondary.main === 'secondary'
+                                : this.props.device.color === 'secondary'
                                   ? theme.palette.secondary.main
                                   : this.props.device.color || theme.palette.secondary.main,
                         color:
-                            this.props.device.color &&
+                            this.props.device.headerTextColor ||
+                            (this.props.device.color &&
                             this.props.device.color !== 'primary' &&
                             this.props.device.color !== 'secondary'
                                 ? Utils.invertColor(this.props.device.color, true)
-                                : theme.palette.secondary.contrastText,
+                                : theme.palette.secondary.contrastText),
                         maxWidth: 345,
                     })}
                     avatar={
@@ -565,15 +566,16 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                         backgroundColor:
                             this.props.device.color === 'primary'
                                 ? theme.palette.primary.main
-                                : theme.palette.secondary.main === 'secondary'
+                                : this.props.device.color === 'secondary'
                                   ? theme.palette.secondary.main
                                   : this.props.device.color || theme.palette.secondary.main,
                         color:
-                            this.props.device.color &&
+                            this.props.device.headerTextColor ||
+                            (this.props.device.color &&
                             this.props.device.color !== 'primary' &&
                             this.props.device.color !== 'secondary'
                                 ? Utils.invertColor(this.props.device.color, true)
-                                : theme.palette.secondary.contrastText,
+                                : theme.palette.secondary.contrastText),
                         maxWidth: 345,
                     })}
                     style={styles.headerStyle}

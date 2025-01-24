@@ -19,19 +19,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.4.16": {
-        "en": "Fixing Tabs in JSON Config",
-        "de": "Registerkarten in JSON Config",
-        "ru": "Fixing Tabs in JSON Config",
-        "pt": "Fixação de guias em JSON Config",
-        "nl": "Tabbladen in JSON instellen",
-        "fr": "Correction des onglets dans JSON Config",
-        "it": "Fissare le schede in JSON Config",
-        "es": "Fijación de pestañas en JSON Config",
-        "pl": "Fixing Tabs in JSON Config",
-        "uk": "Виправлення вкладок в JSON Config",
-        "zh-cn": "在 JSON 配置中修复标签"
-      },
       "7.4.15": {
         "en": "Implemented better table view\nExtended DM with device type\nShowed the tabs in JSONConfig on narrow displays as menu",
         "de": "Ergänzte bessere Tischansicht\nErweiterte DM mit Gerätetyp\nZeigte die Registerkarten in JSONConfig auf schmalen Anzeigen als Menü",
