@@ -1112,27 +1112,18 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             }
 
             // @ts-expect-error Types implemented in js-controller
-            dependencies = adapter.ifInstalledDependencies as ioBroker.AdapterCommon['dependencies'];
+            const ifDependencies: Record<string, string> = adapter.ifInstalledDependencies as Record<string, string>;
 
-            if (dependencies instanceof Array) {
-                dependencies.forEach(dependency => {
-                    if (typeof dependency !== 'object') {
-                        console.warn(`Invalid version check in ifInstalledDependencies for "${adapterName}"`);
-                        return;
-                    }
-                    const keys = Object.keys(dependency);
-                    if (keys.length !== 1) {
-                        console.warn(`Invalid version check in ifInstalledDependencies for "${adapterName}"`);
-                        return;
-                    }
-                    const name = keys[0];
+            if (ifDependencies && typeof ifDependencies === 'object' && !Array.isArray(ifDependencies)) {
+                const adapters = Object.keys(ifDependencies);
 
+                adapters.forEach(name => {
                     if (result && name) {
                         const installed = this.state.installed[name];
 
                         try {
                             result = installed
-                                ? semver.satisfies(installed.version, dependency[name], {
+                                ? semver.satisfies(installed.version, ifDependencies[name], {
                                       includePrerelease: true,
                                   })
                                 : true;

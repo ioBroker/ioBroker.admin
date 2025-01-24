@@ -329,32 +329,20 @@ export default abstract class AdapterInstallDialog<
                 }
             }
 
-            const dependencies: ioBroker.AdapterCommon['dependencies'] =
+            const dependencies: Record<string, string> =
                 // @ts-expect-error Types implemented in js-controller
-                adapter.ifInstalledDependencies as ioBroker.AdapterCommon['dependencies'];
+                adapter.ifInstalledDependencies as Record<string, string>;
 
-            if (dependencies?.length) {
-                for (const dependency of dependencies) {
+            if (dependencies && typeof dependencies === 'object' && !Array.isArray(dependencies)) {
+                const adapters = Object.keys(dependencies);
+                for (const a of adapters) {
                     const entry: AdapterDependencies = {
-                        name: '',
-                        version: null,
+                        name: a,
+                        version: dependencies[a],
                         installed: false,
                         installedVersion: null,
                         rightVersion: false,
                     };
-
-                    if (typeof dependency !== 'object') {
-                        console.warn(`Invalid version check in ifInstalledDependencies for "${adapterName}"`);
-                        continue;
-                    }
-
-                    const keys = Object.keys(dependency);
-                    if (keys.length !== 1) {
-                        console.warn(`Invalid version check in ifInstalledDependencies for "${adapterName}"`);
-                        continue;
-                    }
-                    entry.name = keys[0];
-                    entry.version = dependency[entry.name];
 
                     if (entry.name) {
                         const installed = context.installedGlobal[entry.name];
