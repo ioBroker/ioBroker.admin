@@ -1,4 +1,9 @@
 # Older changes
+## 7.4.7 (2024-12-12)
+
+-   (@GermanBluefox) Corrected the rendering of custom JSON config components
+-   (@GermanBluefox) Corrected the news dialog for multi-line messages
+
 ## 7.4.4 (2024-12-08)
 
 -   (@GermanBluefox) Showed value in object edit dialog
