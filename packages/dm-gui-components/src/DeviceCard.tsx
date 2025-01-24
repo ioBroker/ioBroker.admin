@@ -412,22 +412,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                 }}
             >
                 <CardHeader
-                    sx={theme => ({
-                        backgroundColor:
-                            this.props.device.color === 'primary'
-                                ? theme.palette.primary.main
-                                : this.props.device.color === 'secondary'
-                                  ? theme.palette.secondary.main
-                                  : this.props.device.color || theme.palette.secondary.main,
-                        color:
-                            this.props.device.headerTextColor ||
-                            (this.props.device.color &&
-                            this.props.device.color !== 'primary' &&
-                            this.props.device.color !== 'secondary'
-                                ? Utils.invertColor(this.props.device.color, true)
-                                : theme.palette.secondary.contrastText),
-                        maxWidth: 345,
-                    })}
+                    sx={(theme: IobTheme): React.CSSProperties => this.getCardHeaderStyle(theme, 345)}
                     avatar={
                         <div>
                             {this.props.uploadImagesToInstance ? (
@@ -538,6 +523,43 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         );
     }
 
+    getCardHeaderStyle(theme: IobTheme, maxWidth?: number): React.CSSProperties {
+        const backgroundColor =
+            this.props.device.backgroundColor === 'primary'
+                ? theme.palette.primary.main
+                : this.props.device.backgroundColor === 'secondary'
+                  ? theme.palette.secondary.main
+                  : this.props.device.backgroundColor || theme.palette.secondary.main;
+        let color;
+        if (
+            this.props.device.color &&
+            this.props.device.color !== 'primary' &&
+            this.props.device.color !== 'secondary'
+        ) {
+            // Color was directly defined
+            color = this.props.device.color;
+        } else if (this.props.device.color === 'primary') {
+            color = theme.palette.primary.main;
+        } else if (this.props.device.color === 'secondary') {
+            color = theme.palette.secondary.main;
+        } else {
+            // Color was not defined
+            if (this.props.device.backgroundColor === 'primary') {
+                color = theme.palette.primary.contrastText;
+            } else if (this.props.device.backgroundColor === 'secondary' || !this.props.device.backgroundColor) {
+                color = theme.palette.secondary.contrastText;
+            } else {
+                color = Utils.invertColor(backgroundColor, true);
+            }
+        }
+
+        return {
+            backgroundColor,
+            color,
+            maxWidth,
+        };
+    }
+
     renderBig(): JSX.Element {
         const status = !this.props.device.status
             ? []
@@ -562,22 +584,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                 key={this.props.id}
             >
                 <Box
-                    sx={theme => ({
-                        backgroundColor:
-                            this.props.device.color === 'primary'
-                                ? theme.palette.primary.main
-                                : this.props.device.color === 'secondary'
-                                  ? theme.palette.secondary.main
-                                  : this.props.device.color || theme.palette.secondary.main,
-                        color:
-                            this.props.device.headerTextColor ||
-                            (this.props.device.color &&
-                            this.props.device.color !== 'primary' &&
-                            this.props.device.color !== 'secondary'
-                                ? Utils.invertColor(this.props.device.color, true)
-                                : theme.palette.secondary.contrastText),
-                        maxWidth: 345,
-                    })}
+                    sx={(theme: IobTheme): React.CSSProperties => this.getCardHeaderStyle(theme)}
                     style={styles.headerStyle}
                 >
                     <div style={styles.imgAreaStyle}>
