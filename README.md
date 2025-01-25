@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.18 (2025-01-25)
 -   (@GermanBluefox) Changes are only for device manager.
 -   (@GermanBluefox) Do not show values longer than 40 chars in Object Browser
 
@@ -112,11 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Analyze the new role and set read/write flags according to the role
 -   (@GermanBluefox) Added min/max/role by alias creation
 -   (@GermanBluefox) Improved files browser in the tile mode
-
-### 7.4.10 (2024-12-29)
-
--   (@GermanBluefox) Corrected JSON-Config tables
--   (@GermanBluefox) Corrected translation on the update adapter dialog
 
 ## License
 

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.17",
+    "version": "7.4.18",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.18": {
+        "en": "Changes are only for device manager.\nDo not show values longer than 40 chars in Object Browser",
+        "de": "Änderungen sind nur für Gerätemanager.\nNicht mehr als 40 Zeichen im Object Browser anzeigen",
+        "ru": "Изменения только для диспетчера устройств.\nНе отображайте значения дольше 40 чар в браузере объекта",
+        "pt": "As mudanças são apenas para o gerenciador de dispositivos.\nNão mostre valores mais de 40 chars no navegador de objetos",
+        "nl": "Wijzigingen zijn alleen voor apparaatbeheer.\nToon waarden niet langer dan 40 tekens in objectbrowser",
+        "fr": "Les changements sont uniquement pour le gestionnaire de périphérique.\nNe pas afficher de valeurs supérieures à 40 caractères dans le navigateur Objet",
+        "it": "Le modifiche sono solo per il gestore di dispositivi.\nNon mostrare valori più lunghi di 40 caratteri in Object Browser",
+        "es": "Los cambios son sólo para el administrador del dispositivo.\nNo mostrar valores más de 40 chars en Object Browser",
+        "pl": "Zmiany są tylko dla menedżera urządzeń.\nNie pokazuj wartości dłuższych niż 40 znaków w przeglądarce obiektów",
+        "uk": "Зміни тільки для диспетчера пристроїв.\nНе показувати значення довше 40 chars у браузері Об'єкт",
+        "zh-cn": "更改只针对设备管理器 .\n在对象浏览器中不显示超过40个字符的值"
+      },
       "7.4.17": {
         "en": "Fixing Tabs in JSON Config\nAdded support of `ifInstallDependencies` flag in adapter",
         "de": "Registerkarten in JSON Config\nUnterstützung von `ifInstallDependencies`-Flag im Adapter hinzugefügt",
@@ -96,19 +109,6 @@
         "pl": "Poprawione tabele JSON- Config\nPoprawione tłumaczenie w oknie aktualizacji adaptera",
         "uk": "Виправлені JSON-Config таблиці\nВиправлений переклад на діалоговому вікні адаптера оновлення",
         "zh-cn": "更正的 JSON 图表\n在更新适配器对话框上更正的翻译"
-      },
-      "7.4.8": {
-        "en": "Show latest/stable labels by updating/downgrading of adapters\nCorrected selection of chinese language",
-        "de": "Neueste/stabile Etiketten durch Aktualisierung/Abbau von Adaptern anzeigen\nKorrigierte Auswahl der chinesischen Sprache",
-        "ru": "Показать последние/стабильные этикетки путем обновления/снизуглубления адаптеров\nИсправленный выбор китайского языка",
-        "pt": "Mostrar etiquetas mais recentes/estáveis, atualizando/atualizando os adaptadores\nSeleção correta de língua chinesa",
-        "nl": "Nieuwste/stabiele labels tonen door adapters te updaten/downgraden\nGecorrigeerde selectie van Chinese taal",
-        "fr": "Afficher les étiquettes les plus récentes/stables par mise à jour/réduction des adaptateurs\nSélection corrigée de la langue chinoise",
-        "it": "Mostra le etichette più recenti/stable aggiornando/downgrading degli adattatori\nSelezione corretta della lingua cinese",
-        "es": "Mostrar etiquetas más recientes / estables mediante la actualización/redefinición de adaptadores\nSelección corregida del idioma chino",
-        "pl": "Pokaż najnowsze / stabilne etykiety poprzez aktualizację / obniżenie klasyfikacji adapterów\nPoprawiony wybór języka chińskiego",
-        "uk": "Показати останні / розкладні етикетки шляхом оновлення / оновлення адаптерів\nПравильний вибір китайської мови",
-        "zh-cn": "通过适配器的更新/降级显示最新的/稳定的标签\n更正中国语言选择"
       }
     },
     "desc": {
