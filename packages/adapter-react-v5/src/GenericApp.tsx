@@ -843,7 +843,6 @@ export class GenericApp<
                         key="close"
                         aria-label="Close"
                         color="inherit"
-                        className={this.props.classes?.close}
                         onClick={() => this.setState({ toast: '' })}
                         size="large"
                     >

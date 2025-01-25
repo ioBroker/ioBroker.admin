@@ -404,6 +404,8 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
 
         const icon = this.state.icon ? <IconDeviceType src={this.state.icon} /> : <NoImageIcon />;
 
+        const headerStyle = this.getCardHeaderStyle(this.props.theme, 345);
+
         return (
             <Card
                 sx={{
@@ -412,7 +414,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                 }}
             >
                 <CardHeader
-                    sx={(theme: IobTheme): React.CSSProperties => this.getCardHeaderStyle(theme, 345)}
+                    style={headerStyle}
                     avatar={
                         <div>
                             {this.props.uploadImagesToInstance ? (
@@ -575,6 +577,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         ) : (
             <NoImageIcon style={styles.imgStyle} />
         );
+        const headerStyle = this.getCardHeaderStyle(this.props.theme);
 
         const title: string = this.state.details?.data?.name || this.props.title || '';
 
@@ -584,7 +587,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                 key={this.props.id}
             >
                 <Box
-                    sx={(theme: IobTheme): React.CSSProperties => this.getCardHeaderStyle(theme)}
+                    sx={headerStyle}
                     style={styles.headerStyle}
                 >
                     <div style={styles.imgAreaStyle}>
@@ -607,7 +610,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                     <Box
                         style={styles.titleStyle}
                         title={title.length > 20 ? title : undefined}
-                        sx={theme => ({ color: theme.palette.secondary.contrastText })}
+                        sx={theme => ({ color: headerStyle.color || theme.palette.secondary.contrastText })}
                     >
                         {this.state.details?.data?.name || this.props.title}
                     </Box>
