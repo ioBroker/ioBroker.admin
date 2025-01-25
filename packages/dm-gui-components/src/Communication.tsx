@@ -81,6 +81,8 @@ interface CommunicationForm {
     data?: Record<string, any>;
     buttons?: (ActionButton | 'apply' | 'cancel' | 'close')[];
     maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    /** Minimal width of the dialog */
+    minWidth?: number;
 }
 
 interface CommunicationFormInState extends CommunicationForm {
@@ -635,9 +637,14 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         return (
             <Dialog
                 open={!0}
-                onClose={() => this.state.form?.handleClose && this.state.form.handleClose()}
+                onClose={() => this.state.form!.handleClose && this.state.form!.handleClose()}
                 hideBackdrop
                 fullWidth
+                sx={{
+                    '& .MuiDialog-paper': {
+                        minWidth: this.state.form.minWidth || undefined,
+                    },
+                }}
                 maxWidth={this.state.form.maxWidth || 'md'}
             >
                 {this.state.form?.title ? (
