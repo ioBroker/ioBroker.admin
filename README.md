@@ -87,6 +87,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Changes are only for device manager.
+-   (@GermanBluefox) Do not show values longer than 40 chars in Object Browser
+
 ### 7.4.17 (2025-01-24)
 -   (@GermanBluefox) Fixing Tabs in JSON Config
 -   (@GermanBluefox) Added support of `ifInstallDependencies` flag in adapter
