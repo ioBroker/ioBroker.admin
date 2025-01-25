@@ -1,4 +1,9 @@
 # Older changes
+## 7.4.10 (2024-12-29)
+
+-   (@GermanBluefox) Corrected JSON-Config tables
+-   (@GermanBluefox) Corrected translation on the update adapter dialog
+
 ## 7.4.8 (2024-12-21)
 
 -   (@GermanBluefox) Show latest/stable labels by updating/downgrading of adapters
