@@ -813,6 +813,7 @@ horizontal line
 | `simple`  | show simple CRON settings                     |
 
 ### `fileSelector`
+Select a file from one folder as drop down menu. And if you want you can upload a new file to this folder.
 
 only Admin6
 
@@ -830,9 +831,8 @@ only Admin6
 | `noSize`     | Do not show size of files                                                                                                                                                                                |
 
 ### `file`
-
+Input field with file selector. It will be shown as a text field with a button aside to open the dialog. 
 only Admin6.
-Input field with file selector
 
 | Property            | Description                                                                              |
 |---------------------|------------------------------------------------------------------------------------------|
