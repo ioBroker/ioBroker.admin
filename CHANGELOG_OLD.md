@@ -1,4 +1,10 @@
 # Older changes
+## 7.4.12 (2025-01-11)
+
+-   (@GermanBluefox) Analyze the new role and set read/write flags according to the role
+-   (@GermanBluefox) Added min/max/role by alias creation
+-   (@GermanBluefox) Improved files browser in the tile mode
+
 ## 7.4.10 (2024-12-29)
 
 -   (@GermanBluefox) Corrected JSON-Config tables
