@@ -65,6 +65,7 @@
         "@mui/material": "^6.4.1",
         "@sentry/browser": "^8.51.0",
         "cronstrue": "^2.53.0",
+        "file-selector": "^2.1.2",
         "react-color": "^2.19.3",
         "react-colorful": "^5.6.1",
         "react-cropper": "^2.3.3",

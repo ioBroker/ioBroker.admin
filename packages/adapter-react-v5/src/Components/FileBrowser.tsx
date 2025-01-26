@@ -27,6 +27,8 @@ import {
     Input,
     Breadcrumbs,
     Box,
+    Checkbox,
+    FormControlLabel,
 } from '@mui/material';
 
 // MUI Icons
@@ -559,6 +561,7 @@ interface FileBrowserState {
     addFolder: boolean;
     uploadFile: boolean | 'dragging';
     deleteItem: string;
+    suppressDeleteConfirm: boolean;
     viewer: string;
     formatEditFile: string | null;
     path: string;
@@ -715,6 +718,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             showTypesMenu: null,
             restrictToFolder: props.restrictToFolder || '',
             pathFocus: false,
+            suppressDeleteConfirm: false,
         };
 
         this.imagePrefix = this.props.imagePrefix || './files/';
@@ -2283,8 +2287,11 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
     deleteItem(deleteItem: string): void {
         deleteItem = deleteItem || this.state.deleteItem;
+        if (this.state.suppressDeleteConfirm) {
+            this.suppressDeleteConfirm = Date.now() + 60000 * 5;
+        }
 
-        this.setState({ deleteItem: '' }, () =>
+        this.setState({ deleteItem: '', suppressDeleteConfirm: false }, () =>
             this.deleteRecursive(deleteItem).then(() => {
                 const newState: Partial<FileBrowserState> = {};
                 const pos = this.state.expanded.indexOf(deleteItem);
@@ -2341,18 +2348,19 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>{this.props.t('ra_Are you sure?')}</DialogContentText>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={this.state.suppressDeleteConfirm}
+                                    onChange={() => {
+                                        this.setState({ suppressDeleteConfirm: !this.state.suppressDeleteConfirm });
+                                    }}
+                                />
+                            }
+                            label={this.props.t('ra_no confirm for 5 mins')}
+                        />
                     </DialogContent>
                     <DialogActions>
-                        <Button
-                            color="grey"
-                            variant="contained"
-                            onClick={() => {
-                                this.suppressDeleteConfirm = Date.now() + 60000 * 5;
-                                this.deleteItem('');
-                            }}
-                        >
-                            {this.props.t('ra_Delete (no confirm for 5 mins)')}
-                        </Button>
                         <Button
                             variant="contained"
                             onClick={() => this.deleteItem('')}
