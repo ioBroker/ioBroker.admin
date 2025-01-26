@@ -66,6 +66,7 @@ const deviceTypes = [
     'image',
     'info',
     'instance',
+    'invalid',
     'light',
     'location',
     'lock',
@@ -235,7 +236,7 @@ export function getDeviceIcon(type: DeviceType, props?: IconProps): React.JSX.El
     if (type === 'vacuumCleaner') {
         SvgComponent = IconVacuum as SvgIconComponent;
     }
-    if (type === 'warning') {
+    if (type === 'warning' || type === 'invalid') {
         SvgComponent = Warning;
     }
 

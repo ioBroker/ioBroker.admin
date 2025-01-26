@@ -79,7 +79,7 @@
         "LICENSE"
     ],
     "scripts": {
-        "npm": "npm i -f",
+        "npm": "npm i -f && cd src-admin && npm i -f",
         "start": "cd src-admin && npm run start",
         "test": "npm run test:package && npm run test:unit",
         "test:package": "mocha test/package --exit",
