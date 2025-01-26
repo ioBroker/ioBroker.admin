@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.19 (2025-01-26)
 -   (@GermanBluefox) Corrected file upload in File Browser and in JSON Config
 
 ### 7.4.18 (2025-01-25)
@@ -109,12 +109,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Extended DM with device type
 -   (@GermanBluefox) Corrected Save&Close button for the instance configs
 -   (@GermanBluefox) Changed layout on intro page
-
-### 7.4.12 (2025-01-11)
-
--   (@GermanBluefox) Analyze the new role and set read/write flags according to the role
--   (@GermanBluefox) Added min/max/role by alias creation
--   (@GermanBluefox) Improved files browser in the tile mode
 
 ## License
 

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.18",
+    "version": "7.4.19",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.19": {
+        "en": "Corrected file upload in File Browser and in JSON Config",
+        "de": "Korrigierte Datei hochgeladen in Datei Browser und in JSON Config",
+        "ru": "Исправленная загрузка файла в File Browser и в JSON Config",
+        "pt": "Upload de arquivo corrigido no navegador de arquivo e no JSON Config",
+        "nl": "Gecorrigeerd bestand uploaden in bestandsverkenner en in JSON configuratie",
+        "fr": "Téléchargement de fichier corrigé dans le navigateur de fichiers et dans JSON Config",
+        "it": "Caricamento file corretto in File Browser e in JSON Config",
+        "es": "Carga de archivos corregida en File Browser y en JSON Config",
+        "pl": "Poprawiono wysyłanie pliku w przeglądarce plików i w konfiguracji JSON",
+        "uk": "Виправлено завантаження файлів у браузері файлів та в налаштуваннях JSON",
+        "zh-cn": "在文件浏览器和 JSON 配置中更正文件上传"
+      },
       "7.4.18": {
         "en": "Changes are only for device manager.\nDo not show values longer than 40 chars in Object Browser",
         "de": "Änderungen sind nur für Gerätemanager.\nNicht mehr als 40 Zeichen im Object Browser anzeigen",
@@ -96,19 +109,6 @@
         "pl": "Analizować nową rolę i ustawić flagi odczytu / zapisu w zależności od roli\nDodano min / max / rola przez tworzenie aliasów\nUlepszona przeglądarka plików w trybie płytek",
         "uk": "Проаналізуйте нову роль та встановіть прапорці читання/запису відповідно до ролі\nДодано min/max/role by aliasтворіння\nПокращений браузер файлів в режимі плитки",
         "zh-cn": "分析新角色,并根据角色设置读/写标记\n通过别名创建添加分钟/马克/作用\n砖块模式下改进的文件浏览器"
-      },
-      "7.4.10": {
-        "en": "Corrected JSON-Config tables\nCorrected translation on the update adapter dialog",
-        "de": "Korrektur der JSON-Config-Tabellen\nKorrigierte Übersetzung im Update Adapter Dialog",
-        "ru": "Исправленные таблицы JSON-Config\nИсправлен перевод на диалог адаптера обновления",
-        "pt": "Tabelas corretas de JSON-Config\nTradução correta na caixa de diálogo do adaptador de atualização",
-        "nl": "Gecorrigeerde JSON-config tabellen\nGecorrigeerde vertaling in het dialoogvenster Updateadapter",
-        "fr": "Tableaux JSON-Config corrigés\nTraduction corrigée sur la boîte de dialogue de l'adaptateur de mise à jour",
-        "it": "Tavoli JSON-Config corretti\nTraduzione corretta sulla finestra di dialogo dell'adattatore di aggiornamento",
-        "es": "Cuadros JSON-Config corregidos\nTraducción corregida en el diálogo del adaptador de actualización",
-        "pl": "Poprawione tabele JSON- Config\nPoprawione tłumaczenie w oknie aktualizacji adaptera",
-        "uk": "Виправлені JSON-Config таблиці\nВиправлений переклад на діалоговому вікні адаптера оновлення",
-        "zh-cn": "更正的 JSON 图表\n在更新适配器对话框上更正的翻译"
       }
     },
     "desc": {
