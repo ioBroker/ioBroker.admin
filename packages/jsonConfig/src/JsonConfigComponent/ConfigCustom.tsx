@@ -79,8 +79,8 @@ function loadComponent(
     return async (): Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }> => {
         const container = await getOrLoadRemote(remote, sharedScope, url);
         // eslint-disable-next-line @typescript-eslint/await-thenable
-        // const factory = await container.get(module);
-        // return factory();
+        const factory = await container.get(module);
+        return factory();
     };
 }
 
