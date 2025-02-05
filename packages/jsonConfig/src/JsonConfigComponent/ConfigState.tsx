@@ -157,7 +157,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         return 'text';
     }
 
-    renderItem(_error: string, disabled: boolean/*, defaultValue */): JSX.Element {
+    renderItem(_error: string, disabled: boolean /*, defaultValue */): JSX.Element {
         if (!this.state.obj) {
             return null;
         }
@@ -248,7 +248,11 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                             }
                             this.controlTimeout = setTimeout(async () => {
                                 this.controlTimeout = null;
-                                await this.props.oContext.socket.setState(this.getObjectID(), this.state.stateValue, false);
+                                await this.props.oContext.socket.setState(
+                                    this.getObjectID(),
+                                    this.state.stateValue,
+                                    false,
+                                );
                             }, this.props.schema.controlDelay || 0);
                         });
                     }}
@@ -395,7 +399,11 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                                     },
                                 });
                             } else {
-                                await this.props.oContext.socket.setState(this.getObjectID(), !this.state.stateValue, false);
+                                await this.props.oContext.socket.setState(
+                                    this.getObjectID(),
+                                    !this.state.stateValue,
+                                    false,
+                                );
                             }
                         }}
                     />
@@ -468,7 +476,11 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                                 this.controlTimeout = setTimeout(async () => {
                                     console.log(`${Date.now()} Send new value: ${this.state.stateValue}`);
                                     this.controlTimeout = null;
-                                    await this.props.oContext.socket.setState(this.getObjectID(), this.state.stateValue, false);
+                                    await this.props.oContext.socket.setState(
+                                        this.getObjectID(),
+                                        this.state.stateValue,
+                                        false,
+                                    );
                                 }, this.props.schema.controlDelay || 0);
                             });
                         }}
