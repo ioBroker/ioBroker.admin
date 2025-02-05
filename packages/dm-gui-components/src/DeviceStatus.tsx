@@ -23,7 +23,7 @@ import {
 } from '@mui/icons-material';
 
 import type { DeviceStatus, DeviceAction, ActionBase, ConfigConnectionType } from '@iobroker/dm-utils';
-import { type IobTheme, ThemeType } from '@iobroker/adapter-react-v5';
+import type { IobTheme, ThemeType } from '@iobroker/adapter-react-v5';
 
 import { getTranslation } from './Utils';
 import Switch from './Switch';

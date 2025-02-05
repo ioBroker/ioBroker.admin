@@ -1056,7 +1056,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         let result = true;
 
         if (adapter) {
-            let dependencies = adapter.dependencies;
+            const dependencies = adapter.dependencies;
             const nodeVersion = adapter.node;
 
             if (dependencies) {

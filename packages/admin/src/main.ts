@@ -194,7 +194,9 @@ class Admin extends Adapter {
             if (!systemConfig.native.secret) {
                 randomBytes(24, (_ex, buf) => {
                     this.secret = buf.toString('hex');
-                    this.extendForeignObject('system.config', { native: { secret: this.secret } });
+                    this.extendForeignObject('system.config', { native: { secret: this.secret } }).catch(e =>
+                        this.log.error(`Cannot set secret: ${e}`),
+                    );
                     this.init();
                 });
             } else {
@@ -1849,7 +1851,7 @@ class Admin extends Adapter {
                     },
                 } as ioBroker.MetaObject;
 
-                this.setForeignObject(userData._id, userData);
+                await this.setForeignObject(userData._id, userData);
             }
         }
     }

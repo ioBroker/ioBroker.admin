@@ -213,11 +213,15 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
 
         let data: Record<string, any> = this.props.schema.data;
         if (data === undefined && this.props.schema.jsonData) {
-            const dataStr = this.getPattern(this.props.schema.jsonData, {
-                _origin,
-                _originIp,
-                ...this.props.data,
-            }, true);
+            const dataStr = this.getPattern(
+                this.props.schema.jsonData,
+                {
+                    _origin,
+                    _originIp,
+                    ...this.props.data,
+                },
+                true,
+            );
 
             try {
                 data = JSON.parse(dataStr);
