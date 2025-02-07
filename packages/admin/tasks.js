@@ -60,7 +60,7 @@ async function build() {
     writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, readFileSync(`${ace}worker-json.js`));
     writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`, readFileSync(`${ace}ext-searchbox.js`));
 
-    await buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true, exec: true });
+    await buildReact(src, { rootDir: __dirname, ramSize: 8192, craco: true, exec: true });
     if (existsSync(`${__dirname}/adminWww/index.html`)) {
         throw new Error('Front-end was not build to end!');
     }

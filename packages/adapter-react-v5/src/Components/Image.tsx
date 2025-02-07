@@ -1,5 +1,4 @@
-import React, { type JSX } from 'react';
-import { Component } from 'react';
+import React, { type JSX, Component } from 'react';
 
 import { IconNoIcon } from '../icons/IconNoIcon';
 

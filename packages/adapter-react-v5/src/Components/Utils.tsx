@@ -1715,6 +1715,7 @@ export class Utils {
         const blob = await response.blob();
         return new Promise(resolve => {
             const reader = new FileReader();
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
             reader.onload = (): void => resolve(reader.result?.toString() || '');
             reader.readAsDataURL(blob);
         });
