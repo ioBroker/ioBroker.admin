@@ -723,14 +723,14 @@ class Admin extends Adapter {
         if (!objects['system.config'] || !objects['system.config'].common) {
             return this.log.warn('Repository cannot be read. Invalid "system.config" object.');
         }
-        const activeRepo: string[] | undefined = (objects['system.config'] as unknown as ioBroker.SystemConfigObject)
+        const activeRepo: string[] | string | undefined = (objects['system.config'] as ioBroker.SystemConfigObject)
             .common?.activeRepo;
         const systemRepos = objects['system.repositories'];
 
         if (!sources) {
             sources = {};
 
-            // If multi-repo case
+            // If multi-repo case. Actual case
             if (Array.isArray(activeRepo)) {
                 if (systemRepos?.native?.repositories) {
                     for (const repo of activeRepo) {
@@ -750,7 +750,8 @@ class Admin extends Adapter {
                         }
                     }
                 }
-            } else if (systemRepos?.native?.repositories?.[activeRepo]?.json) {
+            } else if (activeRepo && systemRepos?.native?.repositories?.[activeRepo]?.json) {
+                // This is deprecated and must be deleted after a couple of years: BF 2025.02.07
                 sources = systemRepos.native.repositories[activeRepo].json;
             }
         }
@@ -780,15 +781,15 @@ class Admin extends Adapter {
                         }. Active repo(s): "${activeRepo.join('", "')}"`,
                     );
                 }
-            } else if (systemRepos?.native?.repositories?.[activeRepo as unknown as string]) {
-                this.log.warn(`Repository cannot be read. Active repo: "${activeRepo as unknown as string}"`);
+            } else if (activeRepo && systemRepos?.native?.repositories?.[activeRepo]) {
+                this.log.warn(`Repository cannot be read. Active repo: ${JSON.stringify(activeRepo)}`);
             } else {
                 this.log.warn(
                     `No repository source configured. Possible values: ${
                         systemRepos?.native?.repositories
                             ? Object.keys(systemRepos.native.repositories).join(', ')
                             : 'none'
-                    }. Active repo: "${activeRepo as unknown as string}"`,
+                    }. Active repo: ${JSON.stringify(activeRepo)}`,
                 );
             }
             return;
@@ -1664,15 +1665,24 @@ class Admin extends Adapter {
                 npm: CURRENT_MAX_MAJOR_NPM,
             };
         }
-        const repository = await this.sendToHostAsync(this.host, 'getRepository', {});
+        const repository: Record<string, ioBroker.RepositoryJsonAdapterContent> = (await this.sendToHostAsync(
+            this.host,
+            'getRepository',
+            {},
+        )) as unknown as Record<string, ioBroker.RepositoryJsonAdapterContent>;
         const repoInfo: {
             repoTime: string;
             recommendedVersions: {
                 nodeJsRecommended: number;
                 npmRecommended: number;
             };
-            // @ts-expect-error fix later
-        } = (repository as unknown)?._repoInfo;
+        } = repository?._repoInfo as unknown as {
+            repoTime: string;
+            recommendedVersions: {
+                nodeJsRecommended: number;
+                npmRecommended: number;
+            };
+        };
 
         if (repoInfo?.recommendedVersions) {
             return {
@@ -1747,8 +1757,10 @@ class Admin extends Adapter {
                                 update: true,
                             },
                             _repository => {
-                                // @ts-expect-error fix later
-                                if (_repository === ERROR_PERMISSION) {
+                                if (
+                                    (typeof _repository === 'string' || _repository instanceof Error) &&
+                                    _repository.toString().includes(ERROR_PERMISSION)
+                                ) {
                                     this.log.error('May not read "getRepository"');
                                 } else {
                                     this.log.info('Repository received successfully.');

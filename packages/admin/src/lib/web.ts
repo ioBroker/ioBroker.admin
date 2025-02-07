@@ -168,11 +168,11 @@ async function readFolderRecursive(
 function MemoryWriteStream(): void {
     Transform.call(this);
     this._chunks = [];
-    this._transform = (chunk: unknown, enc: unknown, cb: () => void): void => {
+    this._transform = (chunk: Buffer, _enc: string, cb: () => void): void => {
         this._chunks.push(chunk);
         cb();
     };
-    this.collect = (): unknown => {
+    this.collect = (): Buffer<ArrayBuffer> => {
         const result = Buffer.concat(this._chunks);
         this._chunks = [];
         return result;
@@ -241,7 +241,11 @@ class Web {
     constructor(
         settings: AdminAdapterConfig,
         adapter: AdminAdapter,
-        onReady: (server: unknown, store: unknown, adapter: AdminAdapter) => void,
+        onReady: (
+            server: Server & { __server: { app: null | Express; server: null | Server } },
+            store: Store,
+            adapter: AdminAdapter,
+        ) => void,
         options: WebOptions,
     ) {
         this.settings = settings;
@@ -612,7 +616,7 @@ class Web {
                         resave: true,
                         cookie: { maxAge: this.settings.ttl * 1000 },
                         // rolling: true, // The expiration is reset to the original maxAge, resetting the expiration countdown.
-                        store: this.store as Store,
+                        store: this.store,
                     }),
                 );
                 this.server.app.use(passport.initialize());
@@ -901,7 +905,7 @@ class Web {
                 }
             });
 
-            const appOptions: Record<string, unknown> = {};
+            const appOptions: { maxAge?: number } = {};
             if (this.settings.cache) {
                 appOptions.maxAge = 30_758_400_000;
             }
