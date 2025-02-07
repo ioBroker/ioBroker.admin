@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.20",
+    "version": "7.4.21",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.21": {
+        "en": "Corrected the device manager in `hm-rpc` and other adapters",
+        "de": "Korrektur des Gerätemanagers in `hm-rpc` und anderen Adaptern",
+        "ru": "Исправлен менеджер устройства в `hm-rpc' и других адаптерах",
+        "pt": "Corrigido o gerenciador de dispositivos em `hm-rpc` e outros adaptadores",
+        "nl": "De apparaatbeheerder is gecorrigeerd in ",
+        "fr": "Corrigé le gestionnaire de périphérique dans `hm-rpc` et autres adaptateurs",
+        "it": "Corretto il gestore del dispositivo in `hm-rpc` e altri adattatori",
+        "es": "Corregido el administrador del dispositivo en `hm-rpc` y otros adaptadores",
+        "pl": "Poprawiono menedżera urządzenia w 'hm- rpc' i innych adapterach",
+        "uk": "Виправлено диспетчер пристроїв у `hm-rpc` та інших адаптерах",
+        "zh-cn": "纠正了“hm-rpc”和其他适配器中的设备管理器"
+      },
       "7.4.19": {
         "en": "Corrected file upload in File Browser and in JSON Config",
         "de": "Korrigierte Datei hochgeladen in Datei Browser und in JSON Config",
