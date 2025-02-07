@@ -752,7 +752,7 @@ Example:
 
 ### `certificateCollection`
 
-select certificate collection or just use all collections or don't use let's encrypt at all.
+select a certificate collection or just use all collections or don't use let's encrypt at all.
 
 | Property           | Description                        |
 |--------------------|------------------------------------|
@@ -762,11 +762,12 @@ select certificate collection or just use all collections or don't use let's enc
 
 only Admin6
 
-| Property | Description                                                                                                                    |
-|----------|--------------------------------------------------------------------------------------------------------------------------------|
-| `name`   | Component name that will be provided via props, like `ComponentInstancesEditor`                                                |
-| `url`    | Location of the component                                                                                                      |
-| `i18n`   | true if `i18n/xx.json` files are located in the same directory as component, or translation object `{"text1": {"en": Text1"}}` |
+| Property      | Description                                                                                                                    |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `name`        | Component name that will be provided via props, like `ComponentInstancesEditor`                                                |
+| `url`         | Location of the component                                                                                                      |
+| `i18n`        | true if `i18n/xx.json` files are located in the same directory as component, or translation object `{"text1": {"en": Text1"}}` |
+| `bundlerType` | If module written with TypeScript, set it to `module`. From Admin 7.5.x                                                        |
 
 #### Example for url
 

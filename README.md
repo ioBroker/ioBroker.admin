@@ -87,6 +87,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Used socket classes with TypeScript
+
 ### 7.4.20 (2025-02-05)
 -   (@GermanBluefox) Corrected the device manager in `hm-rpc` and other adapters
 

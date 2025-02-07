@@ -14,12 +14,10 @@ import { readFileSync, existsSync } from 'node:fs';
 import { platform } from 'node:os';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
-import type { Server as HTTPServer } from 'node:http';
-import type { Server as HTTPSServer } from 'node:https';
 
 import { Adapter, type AdapterOptions, commonTools, controllerDir } from '@iobroker/adapter-core';
 import I18n from '@iobroker/i18n';
-import { SocketAdmin } from '@iobroker/socket-classes';
+import { SocketAdmin, type Server, type Store } from '@iobroker/socket-classes';
 import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
@@ -37,7 +35,7 @@ const ERROR_PERMISSION = 'permissionError';
 const CURRENT_MAX_MAJOR_NODEJS = 20;
 const CURRENT_MAX_MAJOR_NPM = 8;
 
-let socket: typeof SocketAdmin;
+let socket: SocketAdmin;
 let webServer: Web;
 let lastRepoUpdate: number;
 
@@ -530,7 +528,18 @@ class Admin extends Adapter {
         }
     }
 
-    onLog(obj: Record<string, unknown>): void {
+    onLog(obj: {
+        /** Log message */
+        message: string;
+        /** origin */
+        from: string;
+        /** timestamp in ms */
+        ts: number;
+        /** Log message */
+        severity: ioBroker.LogLevel;
+        /** unique ID of the message */
+        _id: number;
+    }): void {
         socket?.sendLog(obj);
     }
 
@@ -857,18 +866,13 @@ class Admin extends Adapter {
         await this.registerNotification('admin', 'adapterUpdates', textArr.join('\n'));
     }
 
-    initSocket(server: unknown, store: unknown): void {
+    initSocket(server: Server, store: Store): void {
         socket = new SocketAdmin(this.config, this, objects);
-        socket.start(
-            server,
-            // Imitate the old socket.io v2 interface
-            { listen: (server: HTTPServer | HTTPSServer) => new SocketIO(server) },
-            {
-                userKey: 'connect.sid',
-                store,
-                secret: this.secret,
-            },
-        );
+        socket.start(server, SocketIO, {
+            userKey: 'connect.sid',
+            store,
+            secret: this.secret,
+        });
 
         // subscribe on all object changes
         socket.subscribe('objectChange', '*');

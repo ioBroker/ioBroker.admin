@@ -202,7 +202,6 @@ class Web {
         server: null,
     };
 
-    // todo delete after react will be main
     private readonly LOGIN_PAGE = '/index.html?login';
 
     /** URL to the JSON config schema */
@@ -210,7 +209,7 @@ class Web {
         'https://raw.githubusercontent.com/ioBroker/adapter-react-v5/main/schemas/jsonConfig.json';
 
     private bruteForce: Record<string, { errors: number; time?: number }> = {};
-    private store: unknown = null;
+    private store: Store | null = null;
     private indexHTML: string;
     baseDir = join(__dirname, '..', '..');
     dirName = normalize(`${this.baseDir}/admin/`.replace(/\\/g, '/')).replace(/\\/g, '/');
@@ -223,7 +222,11 @@ class Web {
     private settings: AdminAdapterConfig;
     private readonly adapter: AdminAdapter;
     private options: WebOptions;
-    private readonly onReady: (server: unknown, store: unknown, adapter: AdminAdapter) => void;
+    private readonly onReady: (
+        server: Server & { __server: { app: null | Express; server: null | Server } },
+        store: Store,
+        adapter: AdminAdapter,
+    ) => void;
     private systemLanguage: ioBroker.Languages;
     private checkTimeout: ioBroker.Timeout;
 
@@ -528,7 +531,7 @@ class Web {
                         (
                             username: string,
                             password: string,
-                            done: (error: any, user?: string | false) => void,
+                            done: (error: null | string | Error, user?: string | false) => void,
                         ): void => {
                             username = (username || '').toString();
 
