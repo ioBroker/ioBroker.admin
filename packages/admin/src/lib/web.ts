@@ -1,5 +1,5 @@
 import { commonTools, EXIT_CODES } from '@iobroker/adapter-core';
-import * as IoBWebServer from '@iobroker/webserver';
+import { checkPublicIP, WebServer } from '@iobroker/webserver';
 import * as express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
 import type { Server } from 'node:http';
@@ -8,7 +8,7 @@ import { inherits } from 'util';
 import { join, normalize, parse, dirname } from 'node:path';
 import { Transform } from 'node:stream';
 import * as compression from 'compression';
-import * as mime from 'mime';
+import { getType } from 'mime';
 import { gunzipSync } from 'node:zlib';
 import * as archiver from 'archiver';
 import axios from 'axios';
@@ -1000,7 +1000,7 @@ class Web {
                     if (url.startsWith(this.dirName)) {
                         try {
                             if (existsSync(url)) {
-                                res.contentType(mime.getType(url) || 'text/javascript');
+                                res.contentType(getType(url) || 'text/javascript');
                                 createReadStream(url).pipe(res);
                             } else {
                                 res.status(404).send(get404Page(`File not found`));
@@ -1057,7 +1057,7 @@ class Web {
                             res.contentType(mimeType);
                         } else {
                             try {
-                                const _mimeType = mime.getType(url);
+                                const _mimeType = getType(url);
                                 res.contentType(_mimeType || 'text/javascript');
                             } catch {
                                 res.contentType('text/javascript');
@@ -1229,7 +1229,7 @@ class Web {
             });
 
             try {
-                const webserver = new IoBWebServer.WebServer({
+                const webserver = new WebServer({
                     app: this.server.app,
                     adapter: this.adapter,
                     secure: this.settings.secure,
@@ -1339,7 +1339,7 @@ class Web {
                                         this.checkTimeout = this.adapter.setTimeout(async (): Promise<void> => {
                                             this.checkTimeout = null;
                                             try {
-                                                await IoBWebServer.checkPublicIP(
+                                                await checkPublicIP(
                                                     this.settings.port,
                                                     'ioBroker',
                                                     '/iobroker_check.html',
