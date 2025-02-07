@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.20",
+    "version": "7.4.21",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,7 +19,7 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.4.20": {
+      "7.4.21": {
         "en": "Corrected the device manager in `hm-rpc` and other adapters",
         "de": "Korrektur des Gerätemanagers in `hm-rpc` und anderen Adaptern",
         "ru": "Исправлен менеджер устройства в `hm-rpc' и других адаптерах",
