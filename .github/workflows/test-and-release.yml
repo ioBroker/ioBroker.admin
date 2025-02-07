@@ -36,15 +36,15 @@ jobs:
             - name: 'Build backend'
               run: npm run build:backend -w packages/admin
 
-            - name: Check TypeScript files
-              run: |
-                  cd packages/admin/src-admin
-                  npm run check-ts
-              # Wait till js-controller 7 types are available
-              continue-on-error: true
-
             - name: Build
               run: NODE_OPTIONS=--max_old_space_size=8192 npm run build
+
+            - name: Check TypeScript files
+              run: |
+                cd packages/admin/src-admin
+                npm run check-ts
+              # Wait till js-controller 7 types are available
+              continue-on-error: true
 
     # Runs adapter tests on all supported node versions and OSes
     adapter-tests:

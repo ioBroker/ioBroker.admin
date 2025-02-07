@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.4.20 (2025-02-05)
+### **WORK IN PROGRESS**
 -   (@GermanBluefox) Corrected the device manager in `hm-rpc` and other adapters
 
 ### 7.4.19 (2025-01-26)
