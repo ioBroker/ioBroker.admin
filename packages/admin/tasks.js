@@ -19,24 +19,7 @@ const src = `${__dirname}/${srcRx}`;
 const rootFolder = join(__dirname, '..', '..');
 const dest = 'adminWww/';
 
-// We have a problem with webpack
-function patchModuleFederationPlugin() {
-    const path = require.resolve('webpack');
-    // path = C:\pWork\ioBroker.admin\node_modules\webpack\lib\index.js
-    const fileName = `${path.replace('index.js', '')}/container/ModuleFederationPlugin.js`;
-    let file = readFileSync(fileName).toString('utf8');
-    if (!file.includes('if (!(compilation instanceof Compilation)) {')) {
-        return;
-    }
-    file = file.replace(
-        'if (!(compilation instanceof Compilation)) {',
-        'if (false && !(compilation instanceof Compilation)) {',
-    );
-    writeFileSync(fileName, file);
-}
-
 async function build() {
-    patchModuleFederationPlugin();
     const socketNew = readFileSync(`${__dirname}/../../node_modules/@iobroker/ws/dist/esm/socket.io.min.js`).toString();
     const socketOld = readFileSync(`${__dirname}/src-admin/public/lib/js/socket.io.js`).toString();
     if (socketNew !== socketOld) {
@@ -60,7 +43,7 @@ async function build() {
     writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, readFileSync(`${ace}worker-json.js`));
     writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`, readFileSync(`${ace}ext-searchbox.js`));
 
-    await buildReact(src, { rootDir: __dirname, ramSize: 7000, craco: true, exec: true });
+    await buildReact(src, { rootDir: __dirname, vite: true, tsc: true, exec: true });
     if (existsSync(`${__dirname}/adminWww/index.html`)) {
         throw new Error('Front-end was not build to end!');
     }

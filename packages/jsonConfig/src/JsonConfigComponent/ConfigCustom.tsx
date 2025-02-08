@@ -111,7 +111,6 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                         {
                             name: uniqueName,
                             entry: url,
-                            // @ts-expect-error defined in js-controller
                             type: this.props.schema.bundlerType || undefined,
                         },
                     ],
