@@ -4,25 +4,16 @@ import commonjs from 'vite-plugin-commonjs';
 import svgr from 'vite-plugin-svgr';
 import vitetsConfigPaths from 'vite-tsconfig-paths';
 import { federation } from '@module-federation/vite';
-import { shared } from './modulefederation.admin.config';
+import config from '@iobroker/adapter-react-v5/modulefederation.admin.config';
 import path from 'path';
 
-const makeShared = (pkgs: string[]): Record<string, { requiredVersion: '*', singleton: true }> => {
-    const result: Record<string, { requiredVersion: '*', singleton: true }>= {};
-    pkgs.forEach(packageName => {
-        result[packageName] = {
-            requiredVersion: '*',
-            singleton: true,
-        };
-    });
-    return result;
-};
+import * as icons from '@mui/icons-material';
 
 export default defineConfig({
     plugins: [
         federation({
             name: 'iobroker_admin',
-            shared,
+            shared: config.shared,
             exposes: {},
             remotes: {},
             filename: 'remoteEntry.js',
