@@ -601,6 +601,8 @@ export interface ConfigItemCustom extends ConfigItem {
     type: 'custom';
     /** location of Widget, like "custom/customComponents.js" */
     url: string;
+    /* module federation settings */
+    bundlerType?: 'module';
     /** Component name, like "ConfigCustomBackItUpSet/Components/AdapterExist" */
     name: string;
     /** i18n */
