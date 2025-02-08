@@ -7,8 +7,6 @@ import { federation } from '@module-federation/vite';
 import config from '@iobroker/adapter-react-v5/modulefederation.admin.config';
 import path from 'path';
 
-import * as icons from '@mui/icons-material';
-
 export default defineConfig({
     plugins: [
         federation({
