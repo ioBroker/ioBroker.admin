@@ -14,7 +14,7 @@
         "release-patch": "release-script patch --yes --lf",
         "release-minor": "release-script minor --yes --lf",
         "release-major": "release-script major --yes --lf",
-        "update-packages": "ncu --upgrade",
+        "update-packages": "npx -y npm-check-updates --upgrade",
         "0-clean": "node tasks --0-clean",
         "1-build": "tsc -p tsconfig.build.json",
         "2-copy": "node tasks --2-copy",

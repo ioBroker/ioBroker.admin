@@ -19,13 +19,13 @@ function toInt(hex: string): { r: number; g: number; b: number } {
     };
 
     if (hex.length === 7) {
-        rgb.r = parseInt(hex.substr(1, 2), 16);
-        rgb.g = parseInt(hex.substr(3, 2), 16);
-        rgb.b = parseInt(hex.substr(5, 2), 16);
+        rgb.r = parseInt(hex.substring(1, 3), 16);
+        rgb.g = parseInt(hex.substring(3, 5), 16);
+        rgb.b = parseInt(hex.substring(5, 7), 16);
     } else if (hex.length === 4) {
-        const r = hex.substr(1, 1);
-        const g = hex.substr(2, 1);
-        const b = hex.substr(3, 1);
+        const r = hex[1];
+        const g = hex[2];
+        const b = hex[3];
 
         rgb.r = parseInt(r + r, 16);
         rgb.g = parseInt(g + g, 16);

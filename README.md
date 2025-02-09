@@ -87,6 +87,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Used socket classes with TypeScript
+-   (@GermanBluefox) Added support for `plugins.sentry.enabled` flag in adapter
+
 ### 7.4.21 (2025-02-07)
 -   (@GermanBluefox) Corrected the device manager in `hm-rpc` and other adapters
 

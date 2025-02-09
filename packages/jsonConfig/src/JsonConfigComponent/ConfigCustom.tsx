@@ -181,7 +181,14 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
             }
             try {
                 console.log(uniqueName, fileToLoad, componentName);
-                setPromise = loadComponent(uniqueName, 'default', `./${fileToLoad}`, url)();
+                setPromise = loadComponent(
+                    uniqueName,
+                    'default',
+                    fileToLoad.startsWith('http://') || fileToLoad.startsWith('https://') || fileToLoad.startsWith('.')
+                        ? fileToLoad
+                        : `./${fileToLoad}`,
+                    url,
+                )();
                 if (i18nPromise instanceof Promise) {
                     setPromise = Promise.all([setPromise, i18nPromise]).then(result => result[0]);
                 }
