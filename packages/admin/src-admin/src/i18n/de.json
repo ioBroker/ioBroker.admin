@@ -609,7 +609,7 @@
     "Latvia": "Lettland",
     "Lebanon": "Libanon",
     "Lesotho": "Lesotho",
-    "Let's Encrypt settings": "Einstellungen Let's Encrypt",
+    "Let's Encrypt settings": "Let's Encrypt Einstellungen",
     "Let's encrypt SSL": "Let's Encrypt SSL",
     "Level": "Level",
     "Level of messages that this transport should log (default: level set on parent logger)": "Loglevel, der für die Protokollierung für diesen Transport verwendet werden soll. (\"Default\" bedeutet, dass der Loglevel der jeweiligen Adapterinstanz/Host verwendet wird und bei Bedarf dynamisch geändert werden kann, Alle anderen Optionen definieren den Loglevel statisch)",
