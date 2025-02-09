@@ -25,10 +25,10 @@
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.3",
         "@iobroker/i18n": "^0.3.1",
-        "@iobroker/socket-classes": "^2.0.3",
-        "@iobroker/webserver": "^1.0.6",
+        "@iobroker/socket-classes": "^2.0.8",
+        "@iobroker/webserver": "^1.0.8",
         "@iobroker/ws": "^2.0.0",
-        "@iobroker/ws-server": "4.2.2",
+        "@iobroker/ws-server": "^4.2.4",
         "ajv": "^8.17.1",
         "archiver": "^7.0.1",
         "body-parser": "^1.20.3",

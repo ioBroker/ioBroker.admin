@@ -17,7 +17,7 @@ import { randomBytes } from 'node:crypto';
 
 import { Adapter, type AdapterOptions, commonTools, controllerDir } from '@iobroker/adapter-core';
 import I18n from '@iobroker/i18n';
-import { SocketAdmin, type Server, type Store } from '@iobroker/socket-classes';
+import { SocketAdmin, type Server, type Store, type SocketSettings } from '@iobroker/socket-classes';
 import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
@@ -112,13 +112,13 @@ class Admin extends Adapter {
 
         super(options as AdapterOptions);
 
-        this.on('objectChange', this.onObjectChange.bind(this));
-        this.on('stateChange', this.onStateChange.bind(this));
-        this.on('ready', this.onReady.bind(this));
-        this.on('message', this.onMessage.bind(this));
-        this.on('unload', this.onUnload.bind(this));
-        this.on('fileChange', this.onFileChange.bind(this));
-        this.on('log', this.onLog.bind(this));
+        this.on('objectChange', this.onObjectChange);
+        this.on('stateChange', this.onStateChange);
+        this.on('ready', this.onReady);
+        this.on('message', this.onMessage);
+        this.on('unload', this.onUnload);
+        this.on('fileChange', this.onFileChange);
+        this.on('log', this.onLog);
     }
 
     /**
@@ -127,7 +127,7 @@ class Admin extends Adapter {
      * @param id object ID that changed
      * @param obj the changed object value
      */
-    onObjectChange(id: string, obj: ioBroker.Object | null | undefined): void {
+    onObjectChange = (id: string, obj: ioBroker.Object | null | undefined): void => {
         if (obj) {
             objects[id] = obj as ioBroker.StateObject;
 
@@ -158,7 +158,7 @@ class Admin extends Adapter {
 
         // TODO Build in some threshold of messages
         socket?.objectChange(id, obj);
-    }
+    };
 
     /**
      * Is called if a subscribed state was changed
@@ -166,18 +166,22 @@ class Admin extends Adapter {
      * @param id state ID that changed
      * @param state the changed state value
      */
-    onStateChange(id: string, state: ioBroker.State | null | undefined): void {
-        socket?.stateChange(id, state);
-    }
+    onStateChange = (id: string, state: ioBroker.State | null | undefined): void => {
+        if (id === `system.adapter.${this.namespace}.plugins.sentry.enabled`) {
+            webServer.resetIndexHtml();
+        }
 
-    onFileChange(id: string, fileName: string, size: number): void {
+        socket?.stateChange(id, state);
+    };
+
+    onFileChange = (id: string, fileName: string, size: number): void => {
         socket?.fileChange(id, fileName, size);
-    }
+    };
 
     /**
      * Is called when databases are connected and adapter received configuration.
      */
-    async onReady(): Promise<void> {
+    onReady = async (): Promise<void> => {
         const systemConfig = await this.getForeignObjectAsync('system.config');
         if (systemConfig) {
             systemConfig.native = systemConfig.native || {};
@@ -204,7 +208,7 @@ class Admin extends Adapter {
             this.secret = secret;
             this.log.error('Cannot find object system.config');
         }
-    }
+    };
 
     /**
      * Some message was sent to this instance over the message box. Used by email, pushover, text2speech, ...
@@ -212,7 +216,7 @@ class Admin extends Adapter {
      *
      * @param obj the message object
      */
-    onMessage(obj: ioBroker.Message): void {
+    onMessage = (obj: ioBroker.Message): void => {
         if (!obj) {
             return;
         }
@@ -286,7 +290,7 @@ class Admin extends Adapter {
         }
 
         socket?.sendCommand(obj);
-    }
+    };
 
     processNotificationsGui(obj: ioBroker.Message): void {
         if (obj.command === 'admin:getNotificationSchema') {
@@ -497,7 +501,7 @@ class Admin extends Adapter {
      *
      * @param callback Callback after unloading
      */
-    onUnload(callback: () => void): void {
+    onUnload = (callback: () => void): void => {
         if (this.timerRepo) {
             clearTimeout(this.timerRepo);
             this.timerRepo = null;
@@ -526,9 +530,9 @@ class Admin extends Adapter {
         } catch {
             callback();
         }
-    }
+    };
 
-    onLog(obj: {
+    onLog = (obj: {
         /** Log message */
         message: string;
         /** origin */
@@ -539,9 +543,7 @@ class Admin extends Adapter {
         severity: ioBroker.LogLevel;
         /** unique ID of the message */
         _id: number;
-    }): void {
-        socket?.sendLog(obj);
-    }
+    }): void => socket?.sendLog(obj);
 
     async createUpdateInfo(): Promise<void> {
         const promises = [];
@@ -868,7 +870,17 @@ class Admin extends Adapter {
     }
 
     initSocket(server: Server, store: Store): void {
-        socket = new SocketAdmin(this.config, this, objects);
+        const settings: SocketSettings = {
+            language: this.config.language,
+            defaultUser: this.config.defaultUser,
+            ttl: this.config.ttl as number,
+            secure: this.config.secure,
+            auth: this.config.auth,
+            port: this.config.port,
+            secret: this.secret,
+        };
+
+        socket = new SocketAdmin(settings, this, objects);
         socket.start(server, SocketIO, {
             userKey: 'connect.sid',
             store,
@@ -1928,6 +1940,7 @@ class Admin extends Adapter {
         this.updateIcons();
         void this.validateUserData0().catch(e => this.log.error(`Cannot validate 0_userdata: ${e}`));
         void this.checkWellKnownPasswords().catch(e => this.log.error(`Cannot check well known passwords: ${e}`));
+        this.subscribeForeignObjects(`system.adapter.${this.namespace}.plugins.sentry.enabled`);
     }
 
     /**

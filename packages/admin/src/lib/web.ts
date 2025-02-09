@@ -277,17 +277,17 @@ class Web {
         this.server.server?.close();
     }
 
-    prepareIndex(): string {
+    async prepareIndex(): Promise<string> {
         let template = readFileSync(join(this.wwwDir, 'index.html')).toString('utf8');
         const m = template.match(/(["']?@@\w+@@["']?)/g);
-        m.forEach(pattern => {
+        for (let pattern of m) {
             pattern = pattern.replace(/@/g, '').replace(/'/g, '').replace(/"/g, '');
             if (pattern === 'disableDataReporting') {
-                template = template.replace(
-                    /['"]@@disableDataReporting@@["']/g,
-                    // @ts-expect-error deprecated: this is not used on instance objects use system.adapter.xy.plugins.sentry.enabled
-                    this.adapter.common?.disableDataReporting ? 'true' : 'false',
+                // read sentry state
+                const state = await this.adapter.getStateAsync(
+                    `system.adapter.${this.adapter.namespace}.plugins.sentry.enabled`,
                 );
+                template = template.replace(/['"]@@disableDataReporting@@["']/g, state?.val ? 'true' : 'false');
             } else if (pattern === 'loginBackgroundImage') {
                 if (this.adapter.config.loginBackgroundImage) {
                     template = template.replace(
@@ -340,7 +340,7 @@ class Web {
                         : '',
                 );
             }
-        });
+        }
 
         return template;
     }
@@ -449,6 +449,10 @@ class Web {
             res.send(data);
             this.adapter.log.error(`Cannot extract file ${fileName}: ${e}`);
         }
+    }
+
+    resetIndexHtml(): void {
+        this.indexHTML = '';
     }
 
     /**
@@ -968,13 +972,14 @@ class Web {
                     res.status(200).send('');
                 });
 
-                this.server.app.get('/index.html', (_req: Request, res: Response): void => {
-                    this.indexHTML = this.indexHTML || this.prepareIndex();
+                this.server.app.get('/index.html', async (_req: Request, res: Response): Promise<void> => {
+                    this.indexHTML = this.indexHTML || (await this.prepareIndex());
                     res.header('Content-Type', 'text/html');
                     res.status(200).send(this.indexHTML);
                 });
-                this.server.app.get('/', (_req: Request, res: Response): void => {
-                    this.indexHTML = this.indexHTML || this.prepareIndex();
+
+                this.server.app.get('/', async (_req: Request, res: Response): Promise<void> => {
+                    this.indexHTML = this.indexHTML || (await this.prepareIndex());
                     res.header('Content-Type', 'text/html');
                     res.status(200).send(this.indexHTML);
                 });
