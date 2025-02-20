@@ -580,19 +580,19 @@ Additionally, you can protect this property from being served to other adapters 
 
 ### `instance`
 
-| Property          | Description                                                                                                                                     |
-|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `adapter`         | name of adapter. With special name `_dataSources` you can get all adapters with flag `common.getHistory`.                                       |
-| `adapters`        | optional list of adapters, that should be shown. If not defined, all adapters will be shown. Only active if `adapter` attribute is not defined. |
-| `allowDeactivate` | if true. Additional option "deactivate" is shown                                                                                                |
-| `onlyEnabled`     | if true. Only enabled instances will be shown                                                                                                   |
-| `long`            | value will look like `system.adapter.ADAPTER.0` and not `ADAPTER.0`                                                                             |
-| `short`           | value will look like `0` and not `ADAPTER.0`                                                                                                    |
-| `all`             | Add to the options "all" option with value `*`                                                                                                  |
+| Property          | Description                                                                                                                                                         |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `adapter`         | name of adapter. With special name `_dataSources` you can get all adapters with flag `common.getHistory`.                                                           |
+| `adapters`        | optional list of adapters as array of strings, that should be shown. If not defined, all adapters will be shown. Only active if `adapter` attribute is not defined. |
+| `allowDeactivate` | if true. Additional option "deactivate" is shown                                                                                                                    |
+| `onlyEnabled`     | if true. Only enabled instances will be shown                                                                                                                       |
+| `long`            | value will look like `system.adapter.ADAPTER.0` and not `ADAPTER.0`                                                                                                 |
+| `short`           | value will look like `0` and not `ADAPTER.0`                                                                                                                        |
+| `all`             | Add to the options "all" option with value `*`                                                                                                                      |
 
 ### `chips`
 
-User can enter the word, and it will be added (see cloud => services => White list). Output is an array if no `delimiter` defined.
+User can enter the word, and it will be added (see cloud => services => Whitelist). Output is an array if no `delimiter` defined.
 
 | Property    | Description                                                                                                                                                           |
 |-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|

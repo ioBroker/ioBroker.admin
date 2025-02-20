@@ -906,7 +906,7 @@
                     "type": "string"
                 },
                 "adapters": {
-                    "description": "Optional list of adapters, that should be shown. If not defined, all adapters will be shown. Only active if adapter attribute is not defined.",
+                    "description": "Optional list of adapters as array of strings, that should be shown. If not defined, all adapters will be shown. Only active if adapter attribute is not defined.",
                     "type": "array",
                     "items": {
                         "type": "string"
