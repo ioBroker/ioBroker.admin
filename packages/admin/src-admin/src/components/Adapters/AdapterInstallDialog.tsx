@@ -274,7 +274,7 @@ export default abstract class AdapterInstallDialog<
                     entry.name = !checkVersion ? dependency : keys ? keys[0] : null;
                     entry.version = checkVersion ? dependency[entry.name] : null;
 
-                    if (result && entry.name) {
+                    if (entry.name) {
                         const installed = context.installed[entry.name];
 
                         entry.installed = !!installed;
@@ -309,7 +309,7 @@ export default abstract class AdapterInstallDialog<
                     entry.name = !checkVersion ? dependency : keys ? keys[0] : null;
                     entry.version = checkVersion ? dependency[entry.name] : null;
 
-                    if (result && entry.name) {
+                    if (entry.name) {
                         const installed = context.installedGlobal[entry.name];
 
                         entry.installed = !!installed;
@@ -320,6 +320,39 @@ export default abstract class AdapterInstallDialog<
                                     ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
                                     : true
                                 : false;
+                        } catch {
+                            entry.rightVersion = true;
+                        }
+                    }
+
+                    result.push(entry);
+                }
+            }
+
+            const dependencies: Record<string, string> =
+                // @ts-expect-error Types implemented in js-controller
+                adapter.ifInstalledDependencies as Record<string, string>;
+
+            if (dependencies && typeof dependencies === 'object' && !Array.isArray(dependencies)) {
+                const adapters = Object.keys(dependencies);
+                for (const a of adapters) {
+                    const entry: AdapterDependencies = {
+                        name: a,
+                        version: dependencies[a],
+                        installed: false,
+                        installedVersion: null,
+                        rightVersion: false,
+                    };
+
+                    if (entry.name) {
+                        const installed = context.installedGlobal[entry.name];
+
+                        entry.installed = !!installed;
+                        entry.installedVersion = installed ? installed.version : null;
+                        try {
+                            entry.rightVersion = installed
+                                ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
+                                : true;
                         } catch {
                             entry.rightVersion = true;
                         }

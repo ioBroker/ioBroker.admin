@@ -1,7 +1,7 @@
 {
     "name": "iobroker.admin",
     "description": "The adapter opens a webserver for the ioBroker admin UI.",
-    "version": "7.4.15",
+    "version": "7.4.21",
     "contributors": [
         "bluefox <dogafox@gmail.com>",
         "apollon77",
@@ -40,14 +40,14 @@
         "json5": "^2.2.3",
         "mime": "^3.0.0",
         "passport-local": "^1.0.0",
-        "semver": "^7.6.3"
+        "semver": "^7.7.1"
     },
     "devDependencies": {
-        "@iobroker/build-tools": "^2.0.12",
+        "@iobroker/build-tools": "^2.0.15",
         "@iobroker/dm-gui-components": "file:../dm-gui-components",
         "@iobroker/json-config": "file:../jsonConfig",
-        "@iobroker/legacy-testing": "^2.0.1",
-        "@iobroker/testing": "^5.0.0",
+        "@iobroker/legacy-testing": "^2.0.2",
+        "@iobroker/testing": "^5.0.3",
         "@types/archiver": "^6.0.3",
         "@types/body-parser": "^1.19.5",
         "@types/compression": "^1.7.5",
@@ -60,10 +60,10 @@
         "@types/passport-local": "^1.0.38",
         "@types/validator": "^13.12.2",
         "colorette": "^2.0.20",
-        "less": "^4.2.1",
-        "puppeteer": "^23.10.1",
+        "less": "^4.2.2",
+        "puppeteer": "^24.1.1",
         "src-rx": "file:src-admin",
-        "typescript": "^5.7.2"
+        "typescript": "^5.7.3"
     },
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.admin/issues"
@@ -79,7 +79,7 @@
         "LICENSE"
     ],
     "scripts": {
-        "npm": "npm i -f",
+        "npm": "npm i -f && cd src-admin && npm i -f",
         "start": "cd src-admin && npm run start",
         "test": "npm run test:package && npm run test:unit",
         "test:package": "mocha test/package --exit",

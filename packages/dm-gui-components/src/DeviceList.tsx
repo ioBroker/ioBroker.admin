@@ -321,7 +321,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
                 </div>,
             ];
         } else {
-            // build device types list
+            // build a device types list
             let filteredDevices = this.state.filteredDevices;
             if (!this.props.embedded && filteredDevices.find(device => device.group)) {
                 deviceGroups.push({

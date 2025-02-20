@@ -23,7 +23,7 @@ import {
 } from '@mui/icons-material';
 
 import type { DeviceStatus, DeviceAction, ActionBase, ConfigConnectionType } from '@iobroker/dm-utils';
-import { type IobTheme, ThemeType } from '@iobroker/adapter-react-v5';
+import type { IobTheme, ThemeType } from '@iobroker/adapter-react-v5';
 
 import { getTranslation } from './Utils';
 import Switch from './Switch';
@@ -146,6 +146,53 @@ function rssiColor(signal: number, themeType: ThemeType): string {
     return themeType === 'dark' ? '#5cff5c' : '#008500';
 }
 
+const iconStyleOK = {
+    fill: '#00ac00',
+    color: '#00ac00',
+};
+const iconStyleNotOK = {
+    fill: '#ff0000',
+    color: '#ff0000',
+};
+const iconStyleWarning = {
+    fill: '#da8200',
+    color: '#da8200',
+};
+const iconStyleUnknown = {
+    fill: '#8a8a8a',
+    color: '#8a8a8a',
+};
+const iconStylePreWarning = {
+    fill: '#ffcc00',
+    color: '#ffcc00',
+};
+
+function getBatteryIcon(battery: number): React.ReactNode {
+    if (battery > 95) {
+        return <BatteryFullIcon style={iconStyleOK} />;
+    }
+    if (battery > 85 && battery <= 95) {
+        return <Battery90Icon style={iconStyleOK} />;
+    }
+    if (battery > 70 && battery <= 85) {
+        return <Battery80Icon style={iconStyleOK} />;
+    }
+    if (battery > 55 && battery <= 70) {
+        return <Battery60Icon style={iconStyleOK} />;
+    }
+    if (battery > 40 && battery <= 55) {
+        return <Battery50Icon style={iconStylePreWarning} />;
+    }
+    if (battery > 25 && battery <= 40) {
+        return <Battery30Icon style={iconStylePreWarning} />;
+    }
+    if (battery > 10 && battery <= 25) {
+        return <Battery20Icon style={iconStyleWarning} />;
+    }
+
+    return <BatteryAlertIcon style={iconStyleNotOK} />;
+}
+
 /**
  * Device Status component
  *
@@ -167,42 +214,9 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
         status = props.status;
     }
 
-    const iconStyleOK = {
-        fill: '#00ac00',
-        color: '#00ac00',
-    };
-    const iconStyleNotOK = {
-        fill: '#ff0000',
-        color: '#ff0000',
-    };
-    const iconStyleWarning = {
-        fill: '#ff9900',
-        color: '#ff9900',
-    };
-    const iconStyleUnknown = {
-        fill: '#8a8a8a',
-        color: '#8a8a8a',
-    };
-
     let batteryIconTooltip: React.ReactNode = null;
     if (typeof status.battery === 'number') {
-        if (status.battery >= 96 && status.battery <= 100) {
-            batteryIconTooltip = <BatteryFullIcon style={iconStyleOK} />;
-        } else if (status.battery >= 90 && status.battery <= 95) {
-            batteryIconTooltip = <Battery90Icon style={iconStyleOK} />;
-        } else if (status.battery >= 80 && status.battery <= 89) {
-            batteryIconTooltip = <Battery80Icon style={iconStyleOK} />;
-        } else if (status.battery >= 60 && status.battery <= 79) {
-            batteryIconTooltip = <Battery60Icon style={iconStyleOK} />;
-        } else if (status.battery >= 50 && status.battery <= 59) {
-            batteryIconTooltip = <Battery50Icon style={iconStyleOK} />;
-        } else if (status.battery >= 30 && status.battery <= 49) {
-            batteryIconTooltip = <Battery30Icon style={iconStyleOK} />;
-        } else if (status.battery >= 20 && status.battery <= 29) {
-            batteryIconTooltip = <Battery20Icon style={iconStyleNotOK} />;
-        } else {
-            batteryIconTooltip = <BatteryAlertIcon style={iconStyleNotOK} />;
-        }
+        batteryIconTooltip = getBatteryIcon(status.battery);
     }
 
     const disability =
@@ -335,7 +349,7 @@ export default function DeviceStatus(props: DeviceStatusProps): React.JSX.Elemen
         <div
             style={{
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'baseline',
                 cursor: props.statusAction ? 'pointer' : undefined,
                 width: props.disableEnableAction ? '100%' : undefined,
                 gap: 8,

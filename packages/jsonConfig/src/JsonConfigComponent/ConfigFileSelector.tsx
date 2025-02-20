@@ -21,8 +21,8 @@ import {
     Videocam as IconVideo,
     Article as IconText,
     Code as IconCode,
+    UploadFile as UploadIcon,
 } from '@mui/icons-material';
-import { UploadFile as UploadIcon } from '@mui/icons-material';
 
 import { DialogConfirm, Utils, I18n } from '@iobroker/adapter-react-v5';
 
@@ -160,11 +160,30 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
         void this.updateFiles().then(() => {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
             this.setState({ value });
+            // subscribe on this folder
+            this.props.oContext.socket
+                .subscribeFiles(this.objectID, `${this.path}/*`, this.onFolderChanged)
+                .catch(e => console.error(`Cannot subscribe: ${e}`));
         });
     }
 
-    updateFiles(): Promise<void> {
-        return this.readFiles(this.props.schema.pattern).then(files => this.setState({ files }));
+    onFolderChanged = (_id: string, fileName: string): void => {
+        if (this.path && fileName.startsWith(this.path)) {
+            this.updateFiles().catch(e => console.error(`Cannot update files: ${e}`));
+        }
+    };
+
+    componentWillUnmount(): void {
+        this.props.oContext.socket
+            .subscribeFiles(this.objectID, `${this.path}/*`, this.onFolderChanged)
+            .catch(e => console.error(`Cannot subscribe: ${e}`));
+
+        super.componentWillUnmount();
+    }
+
+    async updateFiles(): Promise<void> {
+        const files = await this.readFiles(this.props.schema.pattern);
+        await new Promise<void>(resolve => this.setState({ files }, resolve));
     }
 
     async readFolder(
@@ -247,27 +266,21 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
 
         reader.onabort = () => console.log('file reading was aborted');
         reader.onerror = () => console.log('file reading has failed');
-        reader.onload = () => {
-            let ext = `image/${file.name.split('.').pop().toLowerCase()}`;
-            if (ext === 'image/jpg') {
-                ext = 'image/jpeg';
-            } else if (ext.includes('svg')) {
-                ext = 'image/svg+xml';
-            }
+        reader.onload = (/* e: ProgressEvent<FileReader> */): void => {
             if (file.size > maxSize) {
                 window.alert(I18n.t('File is too big. Max %sk allowed. Try use SVG.', Math.round(maxSize / 1024)));
                 return;
             }
-            const base64 = `data:${ext};base64,${btoa(
-                new Uint8Array(reader.result as ArrayBufferLike).reduce(
-                    (data, byte) => data + String.fromCharCode(byte),
-                    '',
-                ),
-            )}`;
 
             this.props.oContext.socket
-                .writeFile64(this.objectID, this.path + file.name, base64)
+                .writeFile64(this.objectID, this.path + file.name, reader.result as ArrayBufferLike)
                 .then(() => this.updateFiles())
+                .then(() =>
+                    // Automatically select the new uploaded file
+                    this.setState({ value: this.path + file.name }, () =>
+                        this.onChange(this.props.attr, this.path + file.name),
+                    ),
+                )
                 .catch(e => window.alert(`Cannot upload file: ${e}`));
         };
         reader.readAsArrayBuffer(file);
@@ -566,14 +579,7 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
                 onDrop={(acceptedFiles, errors) => {
                     this.setState({ uploadFile: false });
                     if (!acceptedFiles.length) {
-                        window.alert(
-                            (errors &&
-                                errors[0] &&
-                                errors[0].errors &&
-                                errors[0].errors[0] &&
-                                errors[0].errors[0].message) ||
-                                I18n.t('Cannot upload'),
-                        );
+                        window.alert(errors?.[0]?.errors?.[0]?.message || I18n.t('Cannot upload'));
                     } else {
                         this.onDrop(acceptedFiles);
                     }

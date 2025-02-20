@@ -87,33 +87,25 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### 7.4.21 (2025-02-07)
+-   (@GermanBluefox) Corrected the device manager in `hm-rpc` and other adapters
+
+### 7.4.19 (2025-01-26)
+-   (@GermanBluefox) Corrected file upload in File Browser and in JSON Config
+
+### 7.4.18 (2025-01-25)
+-   (@GermanBluefox) Changes are only for device manager.
+-   (@GermanBluefox) Do not show values longer than 40 chars in Object Browser
+
+### 7.4.17 (2025-01-24)
+-   (@GermanBluefox) Fixing Tabs in JSON Config
+-   (@GermanBluefox) Added support of `ifInstallDependencies` flag in adapter
+
 ### 7.4.15 (2025-01-22)
 
 -   (@oweitman) Implemented better table view
 -   (@GermanBluefox) Extended DM with device type
--   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as menu
-
-### 7.4.14 (2025-01-15)
-
--   (@GermanBluefox) Extended DM with device type
--   (@GermanBluefox) Corrected Save&Close button for the instance configs
--   (@GermanBluefox) Changed layout on intro page
-
-### 7.4.12 (2025-01-11)
-
--   (@GermanBluefox) Analyze the new role and set read/write flags according to the role
--   (@GermanBluefox) Added min/max/role by alias creation
--   (@GermanBluefox) Improved files browser in the tile mode
-
-### 7.4.10 (2024-12-29)
-
--   (@GermanBluefox) Corrected JSON-Config tables
--   (@GermanBluefox) Corrected translation on the update adapter dialog
-
-### 7.4.8 (2024-12-21)
-
--   (@GermanBluefox) Show latest/stable labels by updating/downgrading of adapters
--   (@GermanBluefox) Corrected selection of chinese language
+-   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as a menu
 
 ## License
 

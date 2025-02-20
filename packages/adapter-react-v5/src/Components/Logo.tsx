@@ -54,6 +54,7 @@ export class Logo extends React.Component<LogoProps> {
         if (f) {
             const reader = new window.FileReader();
             reader.onload = () => {
+                // eslint-disable-next-line @typescript-eslint/no-base-to-string
                 const contents: string = reader.result?.toString() || '';
                 try {
                     const json = JSON.parse(contents);

@@ -16,7 +16,7 @@
         "@alcalzone/release-script-plugin-license": "^3.7.0",
         "@alcalzone/release-script-plugin-lerna": "^3.7.0",
         "@iobroker/types": "^7.0.6",
-        "@iobroker/dm-utils": "^0.6.11",
+        "@iobroker/dm-utils": "^1.0.9",
         "lerna": "^8.1.9"
     },
     "scripts": {
@@ -31,6 +31,6 @@
         "release-major": "release-script major --yes --no-update-lockfile --publishAll",
         "prettier": "cd packages/admin && npm run prettier && cd src-admin && npm run prettier && cd ../../dm-gui-components && npm run prettier && cd ../jsonConfig && npm run prettier",
         "lint": "cd packages/admin && npm run lint-backend && cd src-admin && npm run lint && cd ../../dm-gui-components && npm run lint && cd ../jsonConfig && npm run lint",
-        "update-packages": "npx -y npm-check-updates --upgrade && cd packages/adapter-react-v5 && npx -y npm-check-updates --upgrade && cd packages/admin && npx -y npm-check-updates --upgrade && cd src-admin && npx -y npm-check-updates --upgrade && cd ../../dm-gui-components && npx -y npm-check-updates --upgrade && cd ../jsonConfig && npx -y npm-check-updates --upgrade"
+        "update-packages": "npx -y npm-check-updates --upgrade && cd packages/adapter-react-v5 && npx -y npm-check-updates --upgrade && cd ../admin && npx -y npm-check-updates --upgrade && cd src-admin && npx -y npm-check-updates --upgrade && cd ../../dm-gui-components && npx -y npm-check-updates --upgrade && cd ../jsonConfig && npx -y npm-check-updates --upgrade"
     }
 }

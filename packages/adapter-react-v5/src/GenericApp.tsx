@@ -103,11 +103,21 @@ body {
 }
 `;
 
+function isIFrame(): boolean {
+    try {
+        return window.self !== window.top;
+    } catch {
+        return true;
+    }
+}
+
 export class GenericApp<
     TProps extends GenericAppProps = GenericAppProps,
     TState extends GenericAppState = GenericAppState,
 > extends Router<TProps, TState> {
     protected socket: AdminConnection;
+
+    protected isIFrame = isIFrame();
 
     protected readonly instance: number;
 
@@ -686,12 +696,11 @@ export class GenericApp<
      */
     onPrepareSave(settings: Record<string, any>): boolean {
         // here you can encode values
-        this.encryptedFields &&
-            this.encryptedFields.forEach(attr => {
-                if (settings[attr]) {
-                    settings[attr] = this.encrypt(settings[attr]);
-                }
-            });
+        this.encryptedFields?.forEach(attr => {
+            if (settings[attr]) {
+                settings[attr] = this.encrypt(settings[attr]);
+            }
+        });
 
         return true;
     }
@@ -705,20 +714,18 @@ export class GenericApp<
      */
     onPrepareLoad(settings: Record<string, any>, encryptedNative?: string[]): void {
         // here you can encode values
-        this.encryptedFields &&
-            this.encryptedFields.forEach(attr => {
-                if (settings[attr]) {
-                    settings[attr] = this.decrypt(settings[attr]);
-                }
-            });
-        encryptedNative &&
-            encryptedNative.forEach(attr => {
-                this.encryptedFields = this.encryptedFields || [];
-                !this.encryptedFields.includes(attr) && this.encryptedFields.push(attr);
-                if (settings[attr]) {
-                    settings[attr] = this.decrypt(settings[attr]);
-                }
-            });
+        this.encryptedFields?.forEach(attr => {
+            if (settings[attr]) {
+                settings[attr] = this.decrypt(settings[attr]);
+            }
+        });
+        encryptedNative?.forEach(attr => {
+            this.encryptedFields = this.encryptedFields || [];
+            !this.encryptedFields.includes(attr) && this.encryptedFields.push(attr);
+            if (settings[attr]) {
+                settings[attr] = this.decrypt(settings[attr]);
+            }
+        });
     }
 
     /**
@@ -843,7 +850,6 @@ export class GenericApp<
                         key="close"
                         aria-label="Close"
                         color="inherit"
-                        className={this.props.classes?.close}
                         onClick={() => this.setState({ toast: '' })}
                         size="large"
                     >

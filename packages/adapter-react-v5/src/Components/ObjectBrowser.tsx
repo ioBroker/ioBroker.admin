@@ -1,5 +1,5 @@
 /**
- * Copyright 2020-2024, Denis Haev <dogafox@gmail.com>
+ * Copyright 2020-2025, Denis Haev <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -2068,6 +2068,10 @@ function formatValue(options: FormatValueOptions): {
         }
     }
 
+    if (valText.v?.length > 40) {
+        valText.v = `${valText.v.substring(0, 40)}...`;
+    }
+
     if (isCommon?.unit) {
         valText.u = isCommon.unit;
     }
@@ -2082,7 +2086,11 @@ function formatValue(options: FormatValueOptions): {
           }[]
         | undefined;
     if (options.full) {
-        valFull = [{ t: texts.value, v }];
+        if (typeof v === 'string' && v.length > 100) {
+            valFull = [{ t: texts.value, v: `${v.substring(0, 100)}...` }];
+        } else {
+            valFull = [{ t: texts.value, v }];
+        }
 
         if (state) {
             if (state.ack !== undefined && state.ack !== null) {

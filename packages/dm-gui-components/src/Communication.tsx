@@ -27,7 +27,7 @@ import {
     Typography,
 } from '@mui/material';
 
-import { Close, Check } from '@mui/icons-material';
+import { Close, Check, ContentCopy } from '@mui/icons-material';
 
 import {
     type Connection,
@@ -37,6 +37,7 @@ import {
     type IobTheme,
     I18n,
     Icon,
+    Utils,
 } from '@iobroker/adapter-react-v5';
 import type {
     ActionBase,
@@ -80,6 +81,8 @@ interface CommunicationForm {
     data?: Record<string, any>;
     buttons?: (ActionButton | 'apply' | 'cancel' | 'close')[];
     maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    /** Minimal width of the dialog */
+    minWidth?: number;
 }
 
 interface CommunicationFormInState extends CommunicationForm {
@@ -529,7 +532,16 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 key="apply"
                 disabled={!this.state.form?.changed}
                 variant={button?.variant || 'contained'}
-                color={button?.color || 'primary'}
+                color={
+                    button?.color === 'primary' ? 'primary' : button?.color === 'secondary' ? 'secondary' : 'primary'
+                }
+                style={{
+                    backgroundColor:
+                        button?.color && button?.color !== 'primary' && button?.color !== 'secondary'
+                            ? button?.color
+                            : undefined,
+                    ...(button?.style || undefined),
+                }}
                 onClick={() => this.state.form?.handleClose && this.state.form.handleClose(this.state.form?.data)}
                 startIcon={button?.icon ? <Icon src={button?.icon} /> : undefined}
             >
@@ -548,7 +560,14 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
             <Button
                 key="cancel"
                 variant={button?.variant || 'contained'}
-                color={button?.color || 'grey'}
+                color={button?.color === 'primary' ? 'primary' : button?.color === 'secondary' ? 'secondary' : 'grey'}
+                style={{
+                    backgroundColor:
+                        button?.color && button?.color !== 'primary' && button?.color !== 'secondary'
+                            ? button?.color
+                            : undefined,
+                    ...(button?.style || undefined),
+                }}
                 onClick={() => this.state.form?.handleClose && this.state.form.handleClose()}
                 startIcon={isClose ? <Close /> : button?.icon ? <Icon src={button?.icon} /> : undefined}
             >
@@ -565,7 +584,47 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         if (this.state.form.buttons) {
             buttons = [];
             this.state.form.buttons.forEach((button: ActionButton | 'apply' | 'cancel' | 'close'): void => {
-                if (button === 'apply' || (button as ActionButton).type === 'apply') {
+                if (typeof button === 'object' && button.type === 'copyToClipboard') {
+                    buttons.push(
+                        <Button
+                            key="copyToClipboard"
+                            variant={button.variant || 'outlined'}
+                            color={
+                                button.color === 'primary'
+                                    ? 'primary'
+                                    : button.color === 'secondary'
+                                      ? 'secondary'
+                                      : undefined
+                            }
+                            style={{
+                                backgroundColor:
+                                    button.color && button.color !== 'primary' && button.color !== 'secondary'
+                                        ? button.color
+                                        : undefined,
+                                ...(button.style || undefined),
+                            }}
+                            onClick={() => {
+                                if (button.copyToClipboardAttr && this.state.form!.data) {
+                                    const val = this.state.form!.data[button.copyToClipboardAttr];
+                                    if (typeof val === 'string') {
+                                        Utils.copyToClipboard(val);
+                                    } else {
+                                        Utils.copyToClipboard(JSON.stringify(val, null, 2));
+                                    }
+                                    window.alert(I18n.t('copied'));
+                                } else if (this.state.form?.data) {
+                                    Utils.copyToClipboard(JSON.stringify(this.state.form.data, null, 2));
+                                    window.alert(I18n.t('copied'));
+                                } else {
+                                    window.alert(I18n.t('nothingToCopy'));
+                                }
+                            }}
+                            startIcon={button?.icon ? <Icon src={button?.icon} /> : <ContentCopy />}
+                        >
+                            {getTranslation(button?.label || 'ctcButtonText', button?.noTranslation)}
+                        </Button>,
+                    );
+                } else if (button === 'apply' || (button as ActionButton).type === 'apply') {
                     buttons.push(this.getOkButton(button));
                 } else {
                     buttons.push(this.getCancelButton(button));
@@ -574,12 +633,18 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         } else {
             buttons = [this.getOkButton(), this.getCancelButton()];
         }
+
         return (
             <Dialog
                 open={!0}
-                onClose={() => this.state.form?.handleClose && this.state.form.handleClose()}
+                onClose={() => this.state.form!.handleClose && this.state.form!.handleClose()}
                 hideBackdrop
                 fullWidth
+                sx={{
+                    '& .MuiDialog-paper': {
+                        minWidth: this.state.form.minWidth || undefined,
+                    },
+                }}
                 maxWidth={this.state.form.maxWidth || 'md'}
             >
                 {this.state.form?.title ? (

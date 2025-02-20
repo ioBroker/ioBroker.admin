@@ -45,6 +45,62 @@ import DeviceImageUpload from './DeviceImageUpload';
 import { getTranslation } from './Utils';
 import type { ConfigItemPanel, ConfigItemTabs } from '@iobroker/json-config';
 
+const styles: Record<string, React.CSSProperties> = {
+    cardStyle: {
+        width: 300,
+        minHeight: 280,
+        margin: 10,
+        overflow: 'hidden',
+        display: 'inline-block',
+    },
+    headerStyle: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        paddingLeft: 8,
+        paddingRight: 8,
+        position: 'relative',
+        minHeight: 60,
+        color: '#000',
+    },
+    imgAreaStyle: {
+        height: 45,
+        width: 45,
+        justifyContent: 'center',
+        display: 'flex',
+        alignItems: 'center',
+    },
+    imgStyle: {
+        zIndex: 2,
+        maxWidth: '100%',
+        maxHeight: '100%',
+        color: '#FFF',
+    },
+    titleStyle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        // whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+    detailsButtonStyle: {
+        right: 20,
+        bottom: -20,
+        position: 'absolute',
+    },
+    bodyStyle: {
+        height: 'calc(100% - 116px)',
+    },
+    deviceInfoStyle: {
+        padding: '20px 16px 0 16px',
+        height: 133,
+    },
+    statusStyle: {
+        padding: '15px 25px 0 15px',
+        height: 41,
+    },
+};
+
 function NoImageIcon(props: { style?: React.CSSProperties; className?: string }): JSX.Element {
     return (
         <svg
@@ -348,6 +404,8 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
 
         const icon = this.state.icon ? <IconDeviceType src={this.state.icon} /> : <NoImageIcon />;
 
+        const headerStyle = this.getCardHeaderStyle(this.props.theme, 345);
+
         return (
             <Card
                 sx={{
@@ -356,21 +414,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                 }}
             >
                 <CardHeader
-                    sx={theme => ({
-                        backgroundColor:
-                            this.props.device.color === 'primary'
-                                ? theme.palette.primary.main
-                                : theme.palette.secondary.main === 'secondary'
-                                  ? theme.palette.secondary.main
-                                  : this.props.device.color || theme.palette.secondary.main,
-                        color:
-                            this.props.device.color &&
-                            this.props.device.color !== 'primary' &&
-                            this.props.device.color !== 'secondary'
-                                ? Utils.invertColor(this.props.device.color, true)
-                                : theme.palette.secondary.contrastText,
-                        maxWidth: 345,
-                    })}
+                    style={headerStyle}
                     avatar={
                         <div>
                             {this.props.uploadImagesToInstance ? (
@@ -481,60 +525,46 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         );
     }
 
+    getCardHeaderStyle(theme: IobTheme, maxWidth?: number): React.CSSProperties {
+        const device: DeviceInfo = this.props.device;
+        if (!device) {
+            return {};
+        }
+
+        const backgroundColor =
+            device.backgroundColor === 'primary'
+                ? theme.palette.primary.main
+                : device.backgroundColor === 'secondary'
+                  ? theme.palette.secondary.main
+                  : device.backgroundColor || theme.palette.secondary.main;
+
+        let color;
+        if (device.color && device.color !== 'primary' && device.color !== 'secondary') {
+            // Color was directly defined
+            color = device.color;
+        } else if (device.color === 'primary') {
+            color = theme.palette.primary.main;
+        } else if (device.color === 'secondary') {
+            color = theme.palette.secondary.main;
+        } else {
+            // Color was not defined
+            if (device.backgroundColor === 'primary') {
+                color = theme.palette.primary.contrastText;
+            } else if (device.backgroundColor === 'secondary' || !device.backgroundColor) {
+                color = theme.palette.secondary.contrastText;
+            } else {
+                color = Utils.invertColor(backgroundColor, true);
+            }
+        }
+
+        return {
+            backgroundColor,
+            color,
+            maxWidth,
+        };
+    }
+
     renderBig(): JSX.Element {
-        const cardStyle: React.CSSProperties = {
-            width: 300,
-            minHeight: 280,
-            margin: 10,
-            overflow: 'hidden',
-            display: 'inline-block',
-        };
-        const headerStyle: React.CSSProperties = {
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            paddingLeft: 8,
-            paddingRight: 8,
-            position: 'relative',
-            minHeight: 60,
-            color: '#000',
-        };
-        const imgAreaStyle: React.CSSProperties = {
-            height: 45,
-            width: 45,
-            justifyContent: 'center',
-            display: 'flex',
-            alignItems: 'center',
-        };
-        const imgStyle: React.CSSProperties = {
-            zIndex: 2,
-            maxWidth: '100%',
-            maxHeight: '100%',
-            color: '#FFF',
-        };
-        const titleStyle: React.CSSProperties = {
-            fontSize: 16,
-            fontWeight: 'bold',
-            // whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-        };
-        const detailsButtonStyle: React.CSSProperties = {
-            right: 20,
-            bottom: -20,
-            position: 'absolute',
-        };
-        const bodyStyle: React.CSSProperties = {
-            height: 'calc(100% - 116px)',
-        };
-        const deviceInfoStyle: React.CSSProperties = {
-            padding: '20px 16px 0 16px',
-            height: 133,
-        };
-        const statusStyle: React.CSSProperties = {
-            padding: '15px 25px 0 15px',
-            height: 41,
-        };
         const status = !this.props.device.status
             ? []
             : Array.isArray(this.props.device.status)
@@ -544,24 +574,25 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         const icon = this.state.icon ? (
             <IconDeviceType
                 src={this.state.icon}
-                style={imgStyle}
+                style={styles.imgStyle}
             />
         ) : (
-            <NoImageIcon style={imgStyle} />
+            <NoImageIcon style={styles.imgStyle} />
         );
+        const headerStyle = this.getCardHeaderStyle(this.props.theme);
 
         const title: string = this.state.details?.data?.name || this.props.title || '';
 
         return (
             <Paper
-                style={cardStyle}
+                style={styles.cardStyle}
                 key={this.props.id}
             >
                 <Box
-                    sx={theme => ({ backgroundColor: theme.palette.secondary.main })}
-                    style={headerStyle}
+                    sx={headerStyle}
+                    style={styles.headerStyle}
                 >
-                    <div style={imgAreaStyle}>
+                    <div style={styles.imgAreaStyle}>
                         {this.props.uploadImagesToInstance ? (
                             <DeviceImageUpload
                                 uploadImagesToInstance={this.props.uploadImagesToInstance}
@@ -579,9 +610,9 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                         {icon}
                     </div>
                     <Box
-                        style={titleStyle}
+                        style={styles.titleStyle}
                         title={title.length > 20 ? title : undefined}
-                        sx={theme => ({ color: theme.palette.secondary.contrastText })}
+                        sx={theme => ({ color: headerStyle.color || theme.palette.secondary.contrastText })}
                     >
                         {this.state.details?.data?.name || this.props.title}
                     </Box>
@@ -589,7 +620,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                         <Fab
                             disabled={!this.props.alive}
                             size="small"
-                            style={detailsButtonStyle}
+                            style={styles.detailsButtonStyle}
                             onClick={() => {
                                 if (!this.state.open) {
                                     this.loadDetails().catch(console.error);
@@ -602,7 +633,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                         </Fab>
                     ) : null}
                 </Box>
-                <div style={statusStyle}>
+                <div style={styles.statusStyle}>
                     {status.map((s, i) => (
                         <DeviceStatusComponent
                             key={i}
@@ -618,10 +649,10 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                         />
                     ))}
                 </div>
-                <div style={bodyStyle}>
+                <div style={styles.bodyStyle}>
                     <Typography
                         variant="body1"
-                        style={deviceInfoStyle}
+                        style={styles.deviceInfoStyle}
                     >
                         <div onClick={this.copyToClipboard}>
                             <b style={{ marginRight: 4 }}>ID:</b>

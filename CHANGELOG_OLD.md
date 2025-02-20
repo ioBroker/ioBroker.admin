@@ -1,4 +1,26 @@
 # Older changes
+## 7.4.14 (2025-01-15)
+
+-   (@GermanBluefox) Extended DM with device type
+-   (@GermanBluefox) Corrected Save&Close button for the instance configs
+-   (@GermanBluefox) Changed layout on intro page
+
+## 7.4.12 (2025-01-11)
+
+-   (@GermanBluefox) Analyze the new role and set read/write flags according to the role
+-   (@GermanBluefox) Added min/max/role by alias creation
+-   (@GermanBluefox) Improved files browser in the tile mode
+
+## 7.4.10 (2024-12-29)
+
+-   (@GermanBluefox) Corrected JSON-Config tables
+-   (@GermanBluefox) Corrected translation on the update adapter dialog
+
+## 7.4.8 (2024-12-21)
+
+-   (@GermanBluefox) Show latest/stable labels by updating/downgrading of adapters
+-   (@GermanBluefox) Corrected selection of chinese language
+
 ## 7.4.7 (2024-12-12)
 
 -   (@GermanBluefox) Corrected the rendering of custom JSON config components
