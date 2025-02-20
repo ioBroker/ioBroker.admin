@@ -526,29 +526,31 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
     }
 
     getCardHeaderStyle(theme: IobTheme, maxWidth?: number): React.CSSProperties {
+        const device: DeviceInfo = this.props.device;
+        if (!device) {
+            return {};
+        }
+
         const backgroundColor =
-            this.props.device.backgroundColor === 'primary'
+            device.backgroundColor === 'primary'
                 ? theme.palette.primary.main
-                : this.props.device.backgroundColor === 'secondary'
+                : device.backgroundColor === 'secondary'
                   ? theme.palette.secondary.main
-                  : this.props.device.backgroundColor || theme.palette.secondary.main;
+                  : device.backgroundColor || theme.palette.secondary.main;
+
         let color;
-        if (
-            this.props.device.color &&
-            this.props.device.color !== 'primary' &&
-            this.props.device.color !== 'secondary'
-        ) {
+        if (device.color && device.color !== 'primary' && device.color !== 'secondary') {
             // Color was directly defined
-            color = this.props.device.color;
-        } else if (this.props.device.color === 'primary') {
+            color = device.color;
+        } else if (device.color === 'primary') {
             color = theme.palette.primary.main;
-        } else if (this.props.device.color === 'secondary') {
+        } else if (device.color === 'secondary') {
             color = theme.palette.secondary.main;
         } else {
             // Color was not defined
-            if (this.props.device.backgroundColor === 'primary') {
+            if (device.backgroundColor === 'primary') {
                 color = theme.palette.primary.contrastText;
-            } else if (this.props.device.backgroundColor === 'secondary' || !this.props.device.backgroundColor) {
+            } else if (device.backgroundColor === 'secondary' || !device.backgroundColor) {
                 color = theme.palette.secondary.contrastText;
             } else {
                 color = Utils.invertColor(backgroundColor, true);

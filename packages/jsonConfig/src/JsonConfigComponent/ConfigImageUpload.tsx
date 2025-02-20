@@ -88,7 +88,10 @@ class ConfigImageUpload extends ConfigGeneric<ConfigImageUploadProps, ConfigImag
                             } else {
                                 // delete file to /instance/attr
                                 void this.props.oContext.socket
-                                    .deleteFile(`${this.props.oContext.adapterName}.${this.props.oContext.instance}`, this.props.attr)
+                                    .deleteFile(
+                                        `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
+                                        this.props.attr,
+                                    )
                                     .catch(e => console.error(e));
                             }
                         })

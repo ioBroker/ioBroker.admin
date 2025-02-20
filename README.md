@@ -87,6 +87,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### 7.4.21 (2025-02-07)
+-   (@GermanBluefox) Corrected the device manager in `hm-rpc` and other adapters
+
 ### 7.4.19 (2025-01-26)
 -   (@GermanBluefox) Corrected file upload in File Browser and in JSON Config
 
@@ -103,12 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@oweitman) Implemented better table view
 -   (@GermanBluefox) Extended DM with device type
 -   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as a menu
-
-### 7.4.14 (2025-01-15)
-
--   (@GermanBluefox) Extended DM with device type
--   (@GermanBluefox) Corrected Save&Close button for the instance configs
--   (@GermanBluefox) Changed layout on intro page
 
 ## License
 

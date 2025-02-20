@@ -33,6 +33,7 @@ import {
     type Connection,
     type ThemeType,
     type ThemeName,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 import type { ConfigIconType, ConfigItemAny, ConfigItemConfirmData, JsonConfigContext } from '#JC/types';
 
@@ -55,6 +56,7 @@ export interface DeviceManagerPropsProps {
     selectedInstance: string; // adapterName.X
     registerHandler?: (handler: null | ((command: string) => void)) => void;
     themeName: ThemeName;
+    theme: IobTheme;
     themeType: ThemeType;
     isFloatComma: boolean;
     dateFormat: string;

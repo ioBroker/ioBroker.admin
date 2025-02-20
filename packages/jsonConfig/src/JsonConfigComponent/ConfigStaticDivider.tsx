@@ -43,7 +43,8 @@ class ConfigStaticDivider extends ConfigGeneric<ConfigInstanceSelectProps, Confi
                           ? styles.secondary
                           : {
                                 backgroundColor:
-                                    this.props.schema.color || (this.props.oContext.themeType === 'dark' ? '#333' : '#ddd'),
+                                    this.props.schema.color ||
+                                    (this.props.oContext.themeType === 'dark' ? '#333' : '#ddd'),
                             },
                     {
                         height: this.props.schema.color ? this.props.schema.height || 2 : this.props.schema.height || 1,

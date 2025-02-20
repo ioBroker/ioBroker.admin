@@ -86,7 +86,7 @@
     .objects-list-table {
         //.new-iob-list-table;
         //.iob-min-table;
-        background:         @iob-background;
+        background:       #fff;
         white-space:        nowrap;
         table-layout:       fixed;
         border-collapse:    collapse;
@@ -257,6 +257,8 @@
             height:         @toolbar-size;
             width:          @toolbar-size;
             color:          #fff;
+            margin-bottom:  5px;
+            background-color: rgb(51, 153, 204);
             position:       relative;
             overflow:       hidden;
             z-index:        1;
@@ -361,6 +363,7 @@
         th {
             border-right: 1px solid #b9b9b9;
             color:      gray;
+            background: rgb(51, 153, 204);
         }
         .filter {
             display:    inline-block;
@@ -458,27 +461,33 @@
 }
 .m {
     #dialog-select-member {
-        width:          calc(~"100% - 2rem");
-        height:         calc(~"90% - 2rem") !important;
-        left:           0.7rem;
-        border:         3px solid #2196f3;
+        width:          calc(100% - 0.3rem) !important;
+        height:         calc(100% - 0.3rem) !important;
+        left:           0px;
         box-sizing:     border-box;
+        border:         none;
+        border-radius:  4px;
+        overflow-x:     hidden;
 
         td,
         th {
             padding:        1px 4px;
         }
         .modal-content {
-            padding:        0.5rem 0.2rem !important;
-            width:          100% !important;
-            overflow:       hidden;
+            padding:    .5rem .2rem !important;
+            width:      100% !important;
+            overflow:   hidden;
 
             .title {
-                padding: 3px 10px;
+                padding:          3px 10px;
+                background:     rgb(51, 153, 204);
+                color:          white;
+                letter-spacing:   .5px;
             }
 
             .grid-main-wob-div {
-                height:         calc(~"100% - 103px");
+                height:             calc(100% - 140px);
+                scrollbar-width:    thin;
             }
         }
         .modal-footer {

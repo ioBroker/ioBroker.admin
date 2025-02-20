@@ -44,10 +44,10 @@
         "@types/ace": "^0.0.52",
         "@types/crypto-js": "^4.2.2",
         "@types/leaflet": "^1.9.16",
-        "@types/less": "^3.0.7",
-        "@types/lodash": "^4.17.14",
+        "@types/less": "^3.0.8",
+        "@types/lodash": "^4.17.15",
         "@types/mocha": "^10.0.10",
-        "@types/node": "^22.10.10",
+        "@types/node": "^22.13.1",
         "@types/react": "^18.3.18",
         "@types/react-color": "^3.0.13",
         "@types/react-dom": "^18.3.5",
@@ -71,18 +71,18 @@
         "react-ace": "^13.0.0",
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",
-        "react-dnd-multi-backend": "^8.1.2",
-        "react-dnd-preview": "^8.1.2",
+        "react-dnd-multi-backend": "^9.0.0",
+        "react-dnd-preview": "^9.0.0",
         "react-dnd-touch-backend": "^16.0.1",
         "react-icons": "^5.4.0",
         "react-leaflet": "^4.2.1",
         "react-markdown": "^9.0.3",
-        "react-monaco-editor": "^0.56.2",
+        "react-monaco-editor": "^0.58.0",
         "react-qr-code": "^2.0.15",
         "react-scripts": "^5.0.1",
         "react-showdown": "^2.3.1",
         "react-sortable-hoc": "^2.0.0",
-        "semver": "^7.6.3",
+        "semver": "^7.7.1",
         "tsconfig-paths-webpack-plugin": "^4.2.0"
     },
     "resolutions": {
@@ -103,5 +103,5 @@
             }
         ]
     ],
-    "version": "7.4.18"
+    "version": "7.4.20"
 }

@@ -1,7 +1,7 @@
 {
     "name": "iobroker.admin",
     "description": "The adapter opens a webserver for the ioBroker admin UI.",
-    "version": "7.4.19",
+    "version": "7.4.21",
     "contributors": [
         "bluefox <dogafox@gmail.com>",
         "apollon77",
@@ -40,10 +40,10 @@
         "json5": "^2.2.3",
         "mime": "^3.0.0",
         "passport-local": "^1.0.0",
-        "semver": "^7.6.3"
+        "semver": "^7.7.1"
     },
     "devDependencies": {
-        "@iobroker/build-tools": "^2.0.14",
+        "@iobroker/build-tools": "^2.0.15",
         "@iobroker/dm-gui-components": "file:../dm-gui-components",
         "@iobroker/json-config": "file:../jsonConfig",
         "@iobroker/legacy-testing": "^2.0.2",
