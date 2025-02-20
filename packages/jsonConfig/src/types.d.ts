@@ -605,6 +605,8 @@ export interface ConfigItemCustom extends ConfigItem {
     name: string;
     /** i18n */
     i18n: boolean | Record<string, string>;
+    /** New format for components written in TypeScript */
+    bundlerType?: 'module';
     /** custom properties */
     [prop: string]: any;
 }
