@@ -6,7 +6,6 @@
     "scripts": {
         "start": "vite --port 3000",
         "lint": "eslint -c eslint.config.mjs src",
-        "patch-webpack": "node ../tasks --patch-webpack",
         "build": "tsc && vite build",
         "preview": "vite preview --port 3000",
         "check-ts": "tsc --noEmit --checkJS false",
