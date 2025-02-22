@@ -1974,6 +1974,8 @@ function formatValue(options: FormatValueOptions): {
         u?: string;
         /** value not replaced by `common.states` */
         s?: string;
+        /** Text for copy to clipboard */
+        c?: string;
     };
     valFull:
         | {
@@ -2057,6 +2059,8 @@ function formatValue(options: FormatValueOptions): {
         u?: string;
         /** value not replaced by `common.states` */
         s?: string;
+        /** Text for copy to clipboard */
+        c?: string;
     } = { v: v as string };
 
     // try to replace number with "common.states"
@@ -2070,6 +2074,7 @@ function formatValue(options: FormatValueOptions): {
 
     if (valText.v?.length > 40) {
         valText.v = `${valText.v.substring(0, 40)}...`;
+        valText.c = valText.v;
     }
 
     if (isCommon?.unit) {
@@ -5795,7 +5800,6 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             const valTextRx: JSX.Element[] = [];
             item.data.state = { valTextRx };
 
-            const copyText = valText.v || '';
             valTextRx.push(
                 <span
                     className={`newValueBrowser-${this.props.themeType || 'light'}`}
@@ -5833,6 +5837,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 );
             }
             if (!narrowStyleWithDetails) {
+                const copyText = valText.c !== undefined ? valText.c : valText.v || '';
                 valTextRx.push(
                     <IconCopy
                         className="copyButton"
@@ -7333,7 +7338,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                                 ? this.systemConfig.common.isFloatComma
                                                 : this.props.isFloatComma,
                                     });
-                                    this.onCopy(e, valText.v.toString());
+                                    this.onCopy(e, valText.c !== undefined ? valText.c : valText.v.toString());
                                 }}
                                 key="cc"
                             />
