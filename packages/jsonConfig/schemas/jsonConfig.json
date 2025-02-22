@@ -876,6 +876,20 @@
                     "description": "Base64 icon for label",
                     "type": "string"
                 },
+                "buttonValue": {
+                    "description": "Optional value, that will be sent for button",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                },
                 "label": true,
                 "type": true,
                 "xs": true,

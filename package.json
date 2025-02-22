@@ -17,7 +17,7 @@
         "@alcalzone/release-script-plugin-lerna": "^3.7.0",
         "@iobroker/types": "^7.0.6",
         "@iobroker/dm-utils": "^1.0.9",
-        "lerna": "^8.1.9"
+        "lerna": "^8.2.0"
     },
     "scripts": {
         "build": "npm run clean && lerna run build",

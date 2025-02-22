@@ -710,7 +710,7 @@ export interface ConfigItemState extends ConfigItem {
     readOnly?: boolean;
     /** Base64 icon */
     labelIcon?: string;
-    /** Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label*/
+    /** Normally, the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label*/
     narrow?: boolean;
     /** Add to label the colon at the end if not exist in label */
     addColon?: boolean;
@@ -718,6 +718,8 @@ export interface ConfigItemState extends ConfigItem {
     blinkOnUpdate?: boolean | string;
     /** Font size */
     size?: number | 'small' | 'normal' | 'large';
+    /** Optional value, that will be sent for button */
+    buttonValue?: ioBroker.StateValue;
 }
 
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {

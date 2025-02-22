@@ -1112,6 +1112,7 @@ Special input for ports. It checks automatically if port is used by other instan
 | `size`           | Font size: small, normal, large or number                                                                                            |
 | `addColon`       | Add to label the colon at the end if not exist in label                                                                              |
 | `labelIcon`      | Base64 icon for label                                                                                                                |
+| `buttonValue`    | Optional value, that will be sent for button                                                                                         |
 
 ### `staticInfo`
 
