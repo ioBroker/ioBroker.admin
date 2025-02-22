@@ -39,3 +39,4 @@ packages/admin/README.md
 /packages/jsonConfig/test/testSchema.js.map
 /packages/adapter-react-v5/i18n/
 /packages/adapter-react-v5/index.css
+/packages/admin/src-admin/.__mf__temp

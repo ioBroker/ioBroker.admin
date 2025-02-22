@@ -418,10 +418,10 @@ export default abstract class AdapterGeneric<
                 href={link}
                 target="_blank"
                 rel="noopener"
-                sx={(theme: IobTheme) => ({
+                sx={((theme: IobTheme) => ({
                     color: theme.palette.mode === 'dark' ? 'white' : 'black',
                     '&:hover': { color: theme.palette.mode === 'dark' ? 'white' : 'black' },
-                })}
+                })) as any}
             >
                 {adapter.licenseInformation?.type === 'paid' ? (
                     <Tooltip
