@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.4.21",
+    "version": "7.4.22",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.4.22": {
+        "en": "Changed Device Manager for control types\nUsed socket classes with TypeScript\nAdded support for `plugins.sentry.enabled` flag in adapter\nUpdated packages",
+        "de": "Geändertes Gerät Manager für Steuerungstypen\nGebrauchte Steckdosenklassen mit TypeScript\nUnterstützung für `plugins.sentry.enabled` Flagge im Adapter hinzugefügt\nAktualisierte Pakete",
+        "ru": "Измененное устройство Менеджер по типам контроля\nКлассы сокетов с TypeScript\nДобавлена поддержка флага «plugins.sentry.enabled» в адаптере\nОбновленные пакеты",
+        "pt": "Dispositivo alterado Gerenciador de tipos de controle\nClasses de soquete usadas com TypeScript\nAdicionado suporte para `plugins.sentry.enabled` bandeira em adaptador\nPacotes atualizados",
+        "nl": "Veranderd apparaat Beheerder voor controletypen\nGebruikte socket klassen met TypeScript\nToegevoegd ondersteuning voor de vlag van de plugins.sentry.enabled\nBijgewerkte pakketten",
+        "fr": "Appareil modifié Gestionnaire pour les types de contrôle\nClasses de socket utilisées avec TypeScript\nAjout du support du drapeau `plugins.sentry.enabled` dans l`adaptateur\nPaquets mis à jour",
+        "it": "Dispositivo modificato Manager per i tipi di controllo\nClassi di socket usati con TypeScript\nAggiunto il supporto per `plugins.sentry.enabled` flag in adattatore\nPacchetti aggiornati",
+        "es": "Dispositivo modificado Manager para tipos de control\nClases de toma de corriente usadas con TipoScript\nAñadido soporte para bandera 'plugins.sentry.enabled` en adaptador\nPaquetes actualizados",
+        "pl": "Zmienione urządzenie Menedżer typów sterowania\nUżywane klasy gniazd z TypeScript\nDodano wsparcie dla flagi 'plugins.sentry.acted' w adapterze\nAktualizacja pakietów",
+        "uk": "Змінений пристрій Менеджер по типам управління\nВикористовуються класи розетки з TypeScript\nДодано підтримку прапора `plugins.sentry.enabled`` у адаптері\nОновлені пакети",
+        "zh-cn": "更改设备 控制类型管理器\n使用带有类型脚本的套接字类\n在适配器中添加对“ 插件. 哨兵. ” 旗帜的支持\n更新软件包"
+      },
       "7.4.21": {
         "en": "Corrected the device manager in `hm-rpc` and other adapters",
         "de": "Korrektur des Gerätemanagers in `hm-rpc` und anderen Adaptern",
@@ -96,19 +109,6 @@
         "pl": "Rozszerzony DM z typem urządzenia\nSprostowanie Zapisz & Zamknij przycisk dla instancji configs\nZmieniony układ na stronie intro",
         "uk": "Розширений DM з типом пристрою\nВиправлено Save& Закрита кнопка для налаштування екземпляра\nЗмінено макет на сторінці intro",
         "zh-cn": "设备类型的扩展DM\n已更正保存( C) 关闭实例配置的按钮\n内部页面上更改的布局"
-      },
-      "7.4.12": {
-        "en": "Analyze the new role and set read/write flags according to the role\nAdded min/max/role by alias creation\nImproved files browser in the tile mode",
-        "de": "Analysieren Sie die neue Rolle und setzen Sie Lese- / Schreib-Flags nach der Rolle\nMin/max/rol durch Alias Kreation hinzugefügt\nVerbesserte Dateien Browser im Fliesenmodus",
-        "ru": "Проанализируйте новую роль и установите флаги чтения/записи в соответствии с ролью\nДобавить min/max/role по псевдонимам\nУлучшен браузер файлов в режиме плитки",
-        "pt": "Analisar o novo papel e definir bandeiras de leitura / gravação de acordo com o papel\nAdicionado min/max/role por alias criação\nMelhor navegador de arquivos no modo de telha",
-        "nl": "Analyseer de nieuwe rol en stel lees-/schrijfvlaggen in volgens de rol\nToegevoegd min/max/role door alias creatie\nVerbeterde bestandenbrowser in de tegelmodus",
-        "fr": "Analyser le nouveau rôle et définir les drapeaux de lecture/écriture selon le rôle\nAjouté min/max/role par création d'alias\nNavigateur de fichiers amélioré en mode carrelage",
-        "it": "Analizzare il nuovo ruolo e impostare le bandiere di lettura / scrittura secondo il ruolo\nAggiunto min/max/role da alias creazione\nBrowser di file migliorati nella modalità piastrelle",
-        "es": "Analizar el nuevo papel y establecer banderas de lectura/escritura según el papel\nAñadido min/max/role por alias creación\nMejorado navegador de archivos en el modo de azulejo",
-        "pl": "Analizować nową rolę i ustawić flagi odczytu / zapisu w zależności od roli\nDodano min / max / rola przez tworzenie aliasów\nUlepszona przeglądarka plików w trybie płytek",
-        "uk": "Проаналізуйте нову роль та встановіть прапорці читання/запису відповідно до ролі\nДодано min/max/role by aliasтворіння\nПокращений браузер файлів в режимі плитки",
-        "zh-cn": "分析新角色,并根据角色设置读/写标记\n通过别名创建添加分钟/马克/作用\n砖块模式下改进的文件浏览器"
       }
     },
     "desc": {

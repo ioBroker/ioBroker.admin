@@ -1,4 +1,10 @@
 # Older changes
+## 7.4.15 (2025-01-22)
+
+-   (@oweitman) Implemented better table view
+-   (@GermanBluefox) Extended DM with device type
+-   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as a menu
+
 ## 7.4.14 (2025-01-15)
 
 -   (@GermanBluefox) Extended DM with device type
