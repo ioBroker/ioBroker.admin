@@ -881,11 +881,7 @@ class Admin extends Adapter {
         };
 
         socket = new SocketAdmin(settings, this, objects);
-        socket.start(server, SocketIO, {
-            userKey: 'connect.sid',
-            store,
-            secret: this.secret,
-        });
+        socket.start(server, SocketIO, { store, oauth2Only: true });
 
         // subscribe on all object changes
         socket.subscribe('objectChange', '*');

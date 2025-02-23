@@ -42,9 +42,15 @@ import {
     SyncDisabled as SyncIconDisabled,
     Close as CancelIcon,
     Notifications as NotificationsIcon,
+    Logout,
 } from '@mui/icons-material';
 
-import { AdminConnection as Connection, type FilteredNotificationInformation, PROGRESS } from '@iobroker/socket-client';
+import {
+    AdminConnection as Connection,
+    type FilteredNotificationInformation,
+    type HostInfo,
+    PROGRESS,
+} from '@iobroker/socket-client';
 
 import {
     LoaderPT,
@@ -456,7 +462,6 @@ interface AppState {
     discoveryAlive: boolean;
     readTimeoutMs: number;
     showSlowConnectionWarning: boolean;
-    expireWarningMode: boolean;
     versionAdmin: string;
     forceUpdateAdapters: number;
     noTranslation: boolean;
@@ -482,6 +487,7 @@ interface AppState {
         checkNews: ShowMessage[];
         lastNewsId: string | undefined;
     } | null;
+    askForTokenRefresh: { expireAt: number; resolve: (prolong: boolean) => void } | null;
 }
 
 class App extends Router<AppProps, AppState> {
@@ -489,26 +495,15 @@ class App extends Router<AppProps, AppState> {
 
     private _tempAllStored = true;
 
-    /** Seconds before logout to show warning */
-    private readonly EXPIRE_WARNING_THRESHOLD: number = 120;
-
     private refConfigIframe: HTMLIFrameElement | null = null;
 
     private readonly refUser: RefObject<HTMLDivElement>;
 
     private readonly refUserDiv: RefObject<HTMLDivElement>;
 
-    private expireInSec: number | null = null;
-
-    private lastExecution: number = 0;
-
-    private pingAuth: ReturnType<typeof setTimeout> | null = null;
-
-    private expireInSecInterval: ReturnType<typeof setTimeout> | null = null;
+    private expireInSecInterval: ReturnType<typeof setInterval> | null = null;
 
     private readonly toggleThemePossible: boolean;
-
-    private readonly expireText: string = I18n.t('Session expire in %s', '%s');
 
     private adminGuiConfig: AdminGuiConfig;
 
@@ -678,9 +673,6 @@ class App extends Router<AppProps, AppState> {
                 readTimeoutMs: SlowConnectionWarningDialogClass.getReadTimeoutMs(),
                 showSlowConnectionWarning: false,
 
-                /** if true, shows the expiry warning (left time and update button) */
-                expireWarningMode: false,
-
                 versionAdmin: '',
 
                 forceUpdateAdapters: 0,
@@ -710,6 +702,7 @@ class App extends Router<AppProps, AppState> {
                 login: false,
                 showHostWarning: null,
                 adapters: {},
+                askForTokenRefresh: null,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -994,6 +987,7 @@ class App extends Router<AppProps, AppState> {
                 port: App.getPort(),
                 autoSubscribes: ['system.adapter.*'], // Do not subscribe on '*' and really we don't need a 'system.adapter.*' too. Every tab must subscribe itself to everything that it needs
                 autoSubscribeLog: true,
+                tokenTimeoutHandler: this.onSessionExpiration,
                 onProgress: progress => {
                     if (progress === PROGRESS.CONNECTING) {
                         this.setState({
@@ -1190,9 +1184,6 @@ class App extends Router<AppProps, AppState> {
                                             invertBackground: this.mustInvertBackground(userObj.common.color),
                                         },
                                     });
-
-                                    // start ping interval
-                                    void this.makePingAuth();
                                 }
                             } catch (e) {
                                 console.error(`Could not determine user to show: ${e.toString()}, ${e.stack}`);
@@ -1265,10 +1256,6 @@ class App extends Router<AppProps, AppState> {
         this.adaptersWorker?.unregisterHandler(this.adaptersChangeHandler);
         this.hostsWorker?.unregisterHandler(this.updateHosts);
 
-        if (this.pingAuth) {
-            clearTimeout(this.pingAuth);
-            this.pingAuth = null;
-        }
         if (this.expireInSecInterval) {
             clearInterval(this.expireInSecInterval);
             this.expireInSecInterval = null;
@@ -1384,72 +1371,68 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    async updateExpireIn(): Promise<void> {
-        const now = Date.now();
-        this.expireInSec = this.expireInSec > 0 ? this.expireInSec - (now - this.lastExecution) / 1_000 : 0;
-
-        const time = Utils.formatTime(this.expireInSec);
-        if (this.refUser.current) {
-            this.refUser.current.title = this.expireText.replace('%s', time);
-        }
-        if (this.expireInSec < this.EXPIRE_WARNING_THRESHOLD && this.refUserDiv.current) {
-            this.refUserDiv.current.innerHTML = time;
-
-            if (!this.state.expireWarningMode) {
-                this.setState({ expireWarningMode: true });
-            }
-        } else if (this.state.expireWarningMode) {
-            this.refUserDiv.current.innerHTML = this.state.user.name;
-            this.setState({ expireWarningMode: false });
+    renderTokenTimeoutDialog(): React.JSX.Element | null {
+        if (!this.state.askForTokenRefresh) {
+            return null;
         }
 
-        this.lastExecution = now;
+        return (
+            <Dialog
+                open={!0}
+                onClose={() => App.logout()}
+            >
+                <DialogContent>
+                    {I18n.t(
+                        'Session will expire in %s seconds. Continue?',
+                        Math.round((this.state.askForTokenRefresh.expireAt - Date.now()) / 1000),
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={() => {
+                            const resolve = this.state.askForTokenRefresh.resolve;
 
-        if (this.expireInSec <= 0) {
-            try {
-                const data = await this.socket.getCurrentSession();
+                            if (this.expireInSecInterval) {
+                                clearInterval(this.expireInSecInterval);
+                                this.expireInSecInterval = null;
+                            }
 
-                if (data?.expireInSec > 0) {
-                    this.expireInSec = data.expireInSec;
-                    this.expireInSecInterval ||= setInterval(() => this.updateExpireIn(), 1_000);
-                    this.lastExecution = Date.now();
-                    void this.updateExpireIn().catch(e => console.error(`Cannot update expireIn: ${e}`));
-                    return;
-                }
-            } catch {
-                console.error('Session timeout');
-            }
-
-            window.alert('Session expired');
-            // reconnect
-            setTimeout(() => window.location.reload(), 1_000);
-        }
+                            this.setState({ askForTokenRefresh: null }, () => resolve(true));
+                        }}
+                        variant="contained"
+                        startIcon={<UpdateIcon />}
+                    >
+                        {I18n.t('ra_Continue')}
+                    </Button>
+                    <Button
+                        onClick={() => App.logout()}
+                        variant="outlined"
+                        color="grey"
+                        startIcon={<Logout />}
+                    >
+                        {I18n.t('ra_Logout')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
-    /**
-     * Start interval to handle logout after the session expires, this also refreshes the session
-     */
-    async makePingAuth(): Promise<void> {
-        if (this.pingAuth) {
-            clearTimeout(this.pingAuth);
-            this.pingAuth = null;
-        }
-
-        try {
-            const data = await this.socket.getCurrentSession();
-
-            if (data) {
-                this.expireInSecInterval ||= setInterval(() => this.updateExpireIn(), 1_000);
-                this.expireInSec = data.expireInSec;
-                this.lastExecution = Date.now();
-                this.updateExpireIn();
-            }
-        } catch (e) {
-            window.alert(`Session timeout: ${e}`);
-            // reconnect
-            setTimeout(() => window.location.reload(), 1_000);
-        }
-    }
+    onSessionExpiration = (expireAt: number): Promise<boolean> => {
+        return new Promise<boolean>(resolve => {
+            this.setState({ askForTokenRefresh: { expireAt, resolve } }, () => {
+                this.expireInSecInterval ||= setInterval(() => {
+                    if (Date.now() >= this.state.askForTokenRefresh.expireAt) {
+                        clearInterval(this.expireInSecInterval);
+                        this.expireInSecInterval = null;
+                        window.location.reload();
+                    } else {
+                        // redraw timer
+                        this.forceUpdate();
+                    }
+                }, 1_000);
+            });
+        });
+    };
 
     onDiscoveryAlive = (_name: string, value?: ioBroker.State | null): void => {
         if (!!value?.val !== this.state.discoveryAlive) {
@@ -1615,26 +1598,9 @@ class App extends Router<AppProps, AppState> {
 
                 if (news?.length && news[0].id !== lastNewsId?.val) {
                     const uuid: string = await this.socket.getUuid();
-                    const info: {
-                        Platform: string;
-                        os: string;
-                        Architecture: string;
-                        CPUs: number;
-                        Speed: number;
-                        Model: string;
-                        RAM: number;
-                        'System uptime': number;
-                        'Node.js': string;
-                        time: number;
-                        timeOffset: number;
-                        NPM: string;
-                        'adapters count': number;
-                        'Disk size': number;
-                        'Disk free': number;
-                        'Active instances': number;
-                        location: string;
-                        Uptime: number;
-                    } | null = await this.socket.getHostInfo(this.state.currentHost).catch((): null => null);
+                    const info: HostInfo | null = await this.socket
+                        .getHostInfo(this.state.currentHost)
+                        .catch((): null => null);
 
                     const instances: Record<string, CompactInstanceInfo> | null = await this.socket
                         .getCompactInstances()
@@ -2450,22 +2416,11 @@ class App extends Router<AppProps, AppState> {
                             ref={this.refUserDiv}
                             style={{
                                 ...styles.userText,
-                                color: this.state.expireWarningMode ? '#F44' : this.state.user?.color || undefined,
+                                color: this.state.user?.color || undefined,
                             }}
                         >
                             {this.state.user.name}
                         </div>
-
-                        {this.state.expireWarningMode ? (
-                            <IconButton
-                                onClick={async () => {
-                                    await this.socket.getCurrentSession();
-                                    await this.makePingAuth();
-                                }}
-                            >
-                                <UpdateIcon />
-                            </IconButton>
-                        ) : null}
                     </Box>
                 </div>
             );
@@ -3114,7 +3069,7 @@ class App extends Router<AppProps, AppState> {
                                 instancesWorker={this.instancesWorker}
                                 hostsWorker={this.hostsWorker}
                                 logsWorker={this.logsWorker}
-                                logoutTitle={I18n.t('Logout')}
+                                logoutTitle={I18n.t('ra_Logout')}
                                 isSecure={this.socket.isSecure}
                                 versionAdmin={this.state.versionAdmin}
                                 t={I18n.t}
@@ -3155,6 +3110,7 @@ class App extends Router<AppProps, AppState> {
                         </Paper>
                         {this.renderAlertSnackbar()}
                     </Paper>
+                    {this.renderTokenTimeoutDialog()}
                     {this.renderExpertDialog()}
                     {this.getCurrentDialog()}
                     {this.renderDialogConfirm()}

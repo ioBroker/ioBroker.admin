@@ -1,9 +1,10 @@
 /**
- * Copyright 2020-2024, Denis Haev (bluefox) <dogafox@gmail.com>
+ * Copyright 2020-2025, Denis Haev (bluefox) <dogafox@gmail.com>
  *
  * MIT License
  *
  */
+import type { InstalledInfo, HostInfo } from '@iobroker/socket-client';
 import type { IoBJson } from '@iobroker/types/build/config';
 
 declare global {
@@ -32,51 +33,6 @@ type LogMessage = {
 
 export type Severity = 'info' | 'notify' | 'alert';
 
-type DockerInformation =
-    | {
-          /** If it is a Docker installation */
-          isDocker: boolean;
-          /** If it is the official Docker image */
-          isOfficial: true;
-          /** Semver string for official Docker image */
-          officialVersion: string;
-      }
-    | {
-          /** If it is a Docker installation */
-          isDocker: boolean;
-          /** If it is the official Docker image */
-          isOfficial: false;
-      };
-export interface HostInfo {
-    /** Converted OS for human readability */
-    Platform: NodeJS.Platform | 'docker' | 'Windows' | 'OSX';
-    /** The underlying OS */
-    os: NodeJS.Platform;
-    /** Information about the docker installation */
-    dockerInformation?: DockerInformation;
-    /** Host architecture */
-    Architecture: string;
-    /** Number of CPUs */
-    CPUs: number | null;
-    /** CPU speed */
-    Speed: number | null;
-    /** CPU model */
-    Model: string | null;
-    /** Total RAM of host */
-    RAM: number;
-    /** System uptime in seconds */
-    'System uptime': number;
-    /** Node.JS version */
-    'Node.js': string;
-    /** Current time to compare to local time */
-    time: number;
-    /** Timezone offset to compare to local time */
-    timeOffset: number;
-    /** Number of available adapters */
-    'adapters count': number;
-    /** NPM version */
-    NPM: string;
-}
 interface NotificationMessageObject {
     message: string;
     ts: number;
@@ -233,7 +189,7 @@ interface Promises {
         [host: string]: Promise<Record<string, ioBroker.AdapterObject>> | null;
     } | null;
     installed?: {
-        [host: string]: Promise<Record<string, ioBroker.AdapterObject>> | null;
+        [host: string]: Promise<InstalledInfo> | null;
     } | null;
     systemConfig?: Promise<ioBroker.SystemConfigObject> | null;
     hosts?: Promise<ioBroker.HostObject[]> | null;
@@ -242,7 +198,7 @@ interface Promises {
     repoCompact?: Promise<any> | null;
     version?: Promise<{ version: string; serverName: string }> | null;
     groups?: Promise<ioBroker.GroupObject[]> | null;
-    repo?: Promise<Record<string, ioBroker.AdapterObject>> | null;
+    repo?: Promise<Record<string, ioBroker.AdapterCommon>> | null;
     cert?: Promise<{ name: string; type: 'public' | 'private' | 'chained' | '' }[]> | null;
     webName?: Promise<string> | null;
     compactInstances?: Promise<Record<string, ioBroker.InstanceObject>> | null;
@@ -2398,7 +2354,7 @@ export class LegacyConnection {
         options?: { update: boolean; repo: string } | string,
         update?: boolean,
         timeoutMs?: number,
-    ): Promise<Record<string, ioBroker.AdapterObject>> {
+    ): Promise<Record<string, ioBroker.AdapterCommon>> {
         if (LegacyConnection.isWeb()) {
             return Promise.reject(new Error('Allowed only in admin'));
         }
@@ -2427,7 +2383,7 @@ export class LegacyConnection {
                 host,
                 'getRepository',
                 options,
-                (data: string | Record<string, ioBroker.AdapterObject>) => {
+                (data: string | Record<string, ioBroker.AdapterCommon>) => {
                     if (timeout) {
                         clearTimeout(timeout);
                         timeout = null;
@@ -2453,7 +2409,7 @@ export class LegacyConnection {
      * @param update Force update.
      * @param cmdTimeout Timeout in ms.
      */
-    getInstalled(host: string, update?: boolean, cmdTimeout?: number): Promise<Record<string, ioBroker.AdapterObject>> {
+    getInstalled(host: string, update?: boolean, cmdTimeout?: number): Promise<InstalledInfo> {
         if (LegacyConnection.isWeb()) {
             return Promise.reject(new Error('Allowed only in admin'));
         }
@@ -2480,25 +2436,19 @@ export class LegacyConnection {
                 }
             }, cmdTimeout || this.props.cmdTimeout);
 
-            this._socket.emit(
-                'sendToHost',
-                host,
-                'getInstalled',
-                null,
-                (data: string | Record<string, ioBroker.AdapterObject>) => {
-                    if (timeout) {
-                        clearTimeout(timeout);
-                        timeout = null;
-                        if (data === PERMISSION_ERROR) {
-                            reject(new Error('May not read "getInstalled"'));
-                        } else if (!data || typeof data !== 'object') {
-                            reject(new Error('Cannot read "getInstalled"'));
-                        } else {
-                            resolve(data);
-                        }
+            this._socket.emit('sendToHost', host, 'getInstalled', null, (data: string | InstalledInfo) => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject(new Error('May not read "getInstalled"'));
+                    } else if (!data || typeof data !== 'object') {
+                        reject(new Error('Cannot read "getInstalled"'));
+                    } else {
+                        resolve(data);
                     }
-                },
-            );
+                }
+            });
         });
 
         return this._promises.installed[host];

@@ -5316,7 +5316,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     }
 
     private toggleExpanded(id: string): void {
-        const expanded = JSON.parse(JSON.stringify(this.state.expanded));
+        const expanded: string[] = JSON.parse(JSON.stringify(this.state.expanded));
         const pos = expanded.indexOf(id);
         if (pos === -1) {
             expanded.push(id);
@@ -5926,7 +5926,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 const pos = this.info.objects[enumId].common.members.indexOf(id);
                 if (pos !== -1 && !newArray.includes(enumId)) {
                     // delete it from members
-                    const obj = JSON.parse(JSON.stringify(this.info.objects[enumId]));
+                    const obj: ioBroker.Object = JSON.parse(JSON.stringify(this.info.objects[enumId]));
                     obj.common.members.splice(pos, 1);
                     promises.push(
                         this.props.socket
@@ -5940,7 +5940,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             // add to it
             if (newArray.includes(enumId) && !this.info.objects[enumId].common.members?.includes(id)) {
                 // add to object
-                const obj = JSON.parse(JSON.stringify(this.info.objects[enumId]));
+                const obj: ioBroker.Object = JSON.parse(JSON.stringify(this.info.objects[enumId]));
                 obj.common.members = obj.common.members || [];
                 obj.common.members.push(id);
                 obj.common.members.sort();
@@ -6047,7 +6047,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 key={id}
                                 onClick={() => {
                                     const pos = itemEnums.indexOf(id);
-                                    const enumDialogEnums = JSON.parse(JSON.stringify(this.state.enumDialogEnums));
+                                    const enumDialogEnums: string[] = JSON.parse(
+                                        JSON.stringify(this.state.enumDialogEnums),
+                                    );
                                     if (pos === -1) {
                                         enumDialogEnums.push(id);
                                         enumDialogEnums.sort();
@@ -7746,9 +7748,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     };
 
     resizerMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
-        this.storedWidths =
-            this.storedWidths ||
-            (JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width || 'lg'])) as ScreenWidthOne);
+        this.storedWidths ||= JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width || 'lg'])) as ScreenWidthOne;
 
         this.resizerCurrentWidths = this.resizerCurrentWidths || {};
         this.resizerActiveDiv = (e.target as HTMLDivElement).parentNode as HTMLDivElement;

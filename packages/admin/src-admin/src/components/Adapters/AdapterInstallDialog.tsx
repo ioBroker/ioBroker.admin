@@ -49,7 +49,7 @@ export interface AdapterInformation {
     platform: 'Javascript/Node.js';
     /** keywords of the adapter */
     keywords: string[];
-    /** path to readme file */
+    /** path to a readme file */
     readme: string;
     /** The installed adapter version, not existing on controller */
     runningVersion?: string;

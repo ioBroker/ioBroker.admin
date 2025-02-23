@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
+import type { HostInfo } from '@iobroker/socket-client';
 import CustomSelectButton from '@/components/CustomSelectButton';
 import AdaptersUpdaterDialog from '@/dialogs/AdaptersUpdaterDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
@@ -43,6 +44,7 @@ import {
     TabContainer,
     Utils,
 } from '@iobroker/adapter-react-v5';
+
 import type { AdaptersWorker, AdapterEvent } from '@/Workers/AdaptersWorker';
 import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
 import { HostAdapterWorker, type HostAdapterEvent } from '@/Workers/HostAdapterWorker';
@@ -63,65 +65,6 @@ import AdaptersList, { SUM } from '@/components/Adapters/AdaptersList';
 import type { AdminGuiConfig } from '@/types';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdminUpdater from '@/dialogs/AdminUpdater';
-
-type DockerInformation =
-    | {
-          /** If it is a Docker installation */
-          isDocker: boolean;
-          /** If it is the official Docker image */
-          isOfficial: true;
-          /** Semver string for official Docker image */
-          officialVersion: string;
-      }
-    | {
-          /** If it is a Docker installation */
-          isDocker: boolean;
-          /** If it is the official Docker image */
-          isOfficial: false;
-      };
-type Platform =
-    | 'aix'
-    | 'android'
-    | 'darwin'
-    | 'freebsd'
-    | 'haiku'
-    | 'linux'
-    | 'openbsd'
-    | 'sunos'
-    | 'win32'
-    | 'cygwin'
-    | 'netbsd';
-
-type HostInfo = {
-    /** Converted OS for human readability */
-    Platform: Platform | 'docker' | 'Windows' | 'OSX';
-    /** The underlying OS */
-    os: Platform;
-    /** Information about the docker installation */
-    dockerInformation?: DockerInformation;
-    /** Host architecture */
-    Architecture: string;
-    /** Number of CPUs */
-    CPUs: number | null;
-    /** CPU speed */
-    Speed: number | null;
-    /** CPU model */
-    Model: string | null;
-    /** Total RAM of host */
-    RAM: number;
-    /** System uptime in seconds */
-    'System uptime': number;
-    /** Node.JS version */
-    'Node.js': string;
-    /** Current time to compare to local time */
-    time: number;
-    /** Timezone offset to compare to local time */
-    timeOffset: number;
-    /** Number of available adapters */
-    'adapters count': number;
-    /** NPM version */
-    NPM: string;
-};
 
 export type CompactSystemRepository = {
     _id: string;
@@ -615,12 +558,12 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
 
         let repository: Record<string, RepoAdapterObject>;
         try {
-            repository = await this.props.socket.getRepository(
+            repository = (await this.props.socket.getRepository(
                 currentHost,
                 { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate || indicateUpdate },
                 update,
                 this.state.readTimeoutMs,
-            );
+            )) as unknown as Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }>;
         } catch (e) {
             window.alert(`Cannot getRepository: ${e}`);
             if (e.toString().includes('timeout')) {
@@ -755,7 +698,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     calculateInfo(
         compactInstances: Record<string, CompactInstanceInfo>,
         ratings?: Ratings | null,
-        hostData?: (HostInfo & { 'Active instances': number; location: string; Uptime: number }) | null,
+        hostData?: HostInfo,
         compactRepositories?: CompactSystemRepository | null,
     ): Promise<void> {
         hostData = hostData || this.state.hostData;
@@ -994,15 +937,15 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                         this.setState({ update: true }, () => resolve());
                     });
                 }
-                const hostData: HostInfo & { 'Active instances': number; location: string; Uptime: number } =
-                    await this.props.socket
-                        .getHostInfo(currentHost, update, this.state.readTimeoutMs)
-                        .catch((e: unknown): void => {
-                            window.alert(`Cannot getHostInfo for "${currentHost}": ${e as Error}`);
-                            if ((e as Error).toString().includes('timeout')) {
-                                this.setState({ showSlowConnectionWarning: true });
-                            }
-                        });
+                const hostData: HostInfo | undefined = await this.props.socket
+                    .getHostInfo(currentHost, update, this.state.readTimeoutMs)
+                    .catch((e: unknown): undefined => {
+                        window.alert(`Cannot getHostInfo for "${currentHost}": ${e as Error}`);
+                        if ((e as Error).toString().includes('timeout')) {
+                            this.setState({ showSlowConnectionWarning: true });
+                        }
+                        return undefined;
+                    });
 
                 if (this.props.adminGuiConfig.admin.adapters?.allowAdapterRating !== false) {
                     try {
@@ -1421,7 +1364,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             sortRecentlyUpdated: !this.state.tableViewMode && this.state.filterTiles === 'Recently updated',
             isTileView: !this.state.tableViewMode,
             updateRating: (adapter: string, rating: RatingDialogRepository) => {
-                const repository = JSON.parse(JSON.stringify(this.state.repository));
+                const repository: Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }> = JSON.parse(
+                    JSON.stringify(this.state.repository),
+                );
                 Object.assign(repository[adapter].rating, rating);
                 this.setState({ repository });
             },

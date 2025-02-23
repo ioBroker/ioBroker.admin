@@ -2257,7 +2257,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     const adapter = parts.shift();
                     void this.props.socket.deleteFolder(adapter || '', parts.join('/')).then(() => {
                         // remove this folder
-                        const folders = JSON.parse(JSON.stringify(this.state.folders));
+                        const folders: Folders = JSON.parse(JSON.stringify(this.state.folders));
                         delete folders[item.id];
                         // delete folder from parent item
                         const parentId = getParentDir(item.id);
@@ -2418,7 +2418,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
     // used in tabs/Files
     // eslint-disable-next-line react/no-unused-class-component-methods
     updateItemsAcl(info: FolderOrFileItem[]): void {
-        this.cacheFolders = this.cacheFolders || JSON.parse(JSON.stringify(this.state.folders));
+        this.cacheFolders ||= JSON.parse(JSON.stringify(this.state.folders));
         let changed;
 
         info.forEach(it => {

@@ -1007,7 +1007,7 @@ export class GenericApp<
      * @param cb Callback which will be called upon completion.
      */
     updateNativeValue(attr: string, value: any, cb?: () => void): void {
-        const native = JSON.parse(JSON.stringify(this.state.native));
+        const native: Record<string, any> = JSON.parse(JSON.stringify(this.state.native));
         if (this._updateNativeValue(native, attr, value)) {
             const changed = this.getIsChanged(native);
 
