@@ -1,6 +1,6 @@
 import React, { Component, type JSX } from 'react';
 import cronstrue from 'cronstrue';
-import parser from 'cron-parser';
+import { CronExpressionParser } from 'cron-parser';
 
 import 'cronstrue/locales/en';
 import 'cronstrue/locales/de';
@@ -1096,7 +1096,7 @@ export default abstract class InstanceGeneric<
 
             if (instance.enabled) {
                 try {
-                    const expr = parser.parseExpression(instance.schedule);
+                    const expr = CronExpressionParser.parse(instance.schedule);
                     next = expr.next().toDate();
                     prev = expr.prev().toDate();
                 } catch {
