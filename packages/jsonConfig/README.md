@@ -580,19 +580,19 @@ Additionally, you can protect this property from being served to other adapters 
 
 ### `instance`
 
-| Property          | Description                                                                                                                                     |
-|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `adapter`         | name of adapter. With special name `_dataSources` you can get all adapters with flag `common.getHistory`.                                       |
-| `adapters`        | optional list of adapters, that should be shown. If not defined, all adapters will be shown. Only active if `adapter` attribute is not defined. |
-| `allowDeactivate` | if true. Additional option "deactivate" is shown                                                                                                |
-| `onlyEnabled`     | if true. Only enabled instances will be shown                                                                                                   |
-| `long`            | value will look like `system.adapter.ADAPTER.0` and not `ADAPTER.0`                                                                             |
-| `short`           | value will look like `0` and not `ADAPTER.0`                                                                                                    |
-| `all`             | Add to the options "all" option with value `*`                                                                                                  |
+| Property          | Description                                                                                                                                                         |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `adapter`         | name of adapter. With special name `_dataSources` you can get all adapters with flag `common.getHistory`.                                                           |
+| `adapters`        | optional list of adapters as array of strings, that should be shown. If not defined, all adapters will be shown. Only active if `adapter` attribute is not defined. |
+| `allowDeactivate` | if true. Additional option "deactivate" is shown                                                                                                                    |
+| `onlyEnabled`     | if true. Only enabled instances will be shown                                                                                                                       |
+| `long`            | value will look like `system.adapter.ADAPTER.0` and not `ADAPTER.0`                                                                                                 |
+| `short`           | value will look like `0` and not `ADAPTER.0`                                                                                                                        |
+| `all`             | Add to the options "all" option with value `*`                                                                                                                      |
 
 ### `chips`
 
-User can enter the word, and it will be added (see cloud => services => White list). Output is an array if no `delimiter` defined.
+User can enter the word, and it will be added (see cloud => services => Whitelist). Output is an array if no `delimiter` defined.
 
 | Property    | Description                                                                                                                                                           |
 |-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -752,7 +752,7 @@ Example:
 
 ### `certificateCollection`
 
-select certificate collection or just use all collections or don't use let's encrypt at all.
+select a certificate collection or just use all collections or don't use let's encrypt at all.
 
 | Property           | Description                        |
 |--------------------|------------------------------------|
@@ -762,11 +762,12 @@ select certificate collection or just use all collections or don't use let's enc
 
 only Admin6
 
-| Property | Description                                                                                                                    |
-|----------|--------------------------------------------------------------------------------------------------------------------------------|
-| `name`   | Component name that will be provided via props, like `ComponentInstancesEditor`                                                |
-| `url`    | Location of the component                                                                                                      |
-| `i18n`   | true if `i18n/xx.json` files are located in the same directory as component, or translation object `{"text1": {"en": Text1"}}` |
+| Property      | Description                                                                                                                    |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `name`        | Component name that will be provided via props, like `ComponentInstancesEditor`                                                |
+| `url`         | Location of the component                                                                                                      |
+| `i18n`        | true if `i18n/xx.json` files are located in the same directory as component, or translation object `{"text1": {"en": Text1"}}` |
+| `bundlerType` | If module written with TypeScript, set it to `module`. From Admin 7.5.x                                                        |
 
 #### Example for url
 
@@ -1111,6 +1112,7 @@ Special input for ports. It checks automatically if port is used by other instan
 | `size`           | Font size: small, normal, large or number                                                                                            |
 | `addColon`       | Add to label the colon at the end if not exist in label                                                                              |
 | `labelIcon`      | Base64 icon for label                                                                                                                |
+| `buttonValue`    | Optional value, that will be sent for button                                                                                         |
 
 ### `staticInfo`
 

@@ -44,7 +44,7 @@ interface ConfigStateProps extends ConfigGenericProps {
 
 interface ConfigStateState extends ConfigGenericState {
     stateValue?: string | number | boolean | null;
-    controlType?: string;
+    controlType?: 'text' | 'html' | 'input' | 'slider' | 'select' | 'button' | 'switch' | 'number';
     obj?: ioBroker.Object | null;
 }
 
@@ -90,7 +90,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             this.controlTimeout = null;
             this.props.oContext.socket
                 .setState(this.getObjectID(), this.state.stateValue, false)
-                .catch(e => console.error(`Cannot control value: ${e}`));
+                .catch((e: Error) => console.error(`Cannot control value: ${e.toString()}`));
         }
     }
 
@@ -126,7 +126,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         obj = obj || ({} as ioBroker.StateObject);
         obj.common = obj.common || ({} as ioBroker.StateCommon);
 
-        // read object
+        // read an object
         if (obj.common.type === 'boolean') {
             if (this.props.schema.controlled !== false) {
                 if (obj.common.read === false || this.props.schema.controlled === true) {
@@ -164,7 +164,13 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
 
         let content: JSX.Element;
 
-        if (this.state.controlType === 'button') {
+        if (
+            this.state.controlType === 'button' ||
+            (!this.state.controlType &&
+                this.state.obj.common.type === 'boolean' &&
+                ((this.state.obj.common.write && this.state.obj.common.read === false) ||
+                    this.state.obj.common.role?.includes('button')))
+        ) {
             let icon: JSX.Element | null = null;
             if (this.props.schema.falseImage) {
                 icon = getIconByName(this.props.schema.falseImage);
@@ -186,12 +192,22 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                                     confirmDialog: true,
                                     confirmCallback: async (result: boolean) => {
                                         if (result) {
-                                            await this.props.oContext.socket.setState(this.getObjectID(), true, false);
+                                            await this.props.oContext.socket.setState(
+                                                this.getObjectID(),
+                                                this.props.schema.buttonValue !== undefined
+                                                    ? this.props.schema.buttonValue
+                                                    : true,
+                                                false,
+                                            );
                                         }
                                     },
                                 });
                             } else {
-                                await this.props.oContext.socket.setState(this.getObjectID(), true, false);
+                                await this.props.oContext.socket.setState(
+                                    this.getObjectID(),
+                                    this.props.schema.buttonValue !== undefined ? this.props.schema.buttonValue : true,
+                                    false,
+                                );
                             }
                         }}
                     >
@@ -211,12 +227,22 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                                     confirmDialog: true,
                                     confirmCallback: async (result: boolean) => {
                                         if (result) {
-                                            await this.props.oContext.socket.setState(this.getObjectID(), true, false);
+                                            await this.props.oContext.socket.setState(
+                                                this.getObjectID(),
+                                                this.props.schema.buttonValue !== undefined
+                                                    ? this.props.schema.buttonValue
+                                                    : true,
+                                                false,
+                                            );
                                         }
                                     },
                                 });
                             } else {
-                                await this.props.oContext.socket.setState(this.getObjectID(), true, false);
+                                await this.props.oContext.socket.setState(
+                                    this.getObjectID(),
+                                    this.props.schema.buttonValue !== undefined ? this.props.schema.buttonValue : true,
+                                    false,
+                                );
                             }
                         }}
                     >
@@ -224,7 +250,10 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                     </Button>
                 );
             }
-        } else if (this.state.controlType === 'input') {
+        } else if (
+            this.state.controlType === 'input' ||
+            (!this.state.controlType && this.state.obj.common.write && this.state.obj.common.type === 'string')
+        ) {
             content = (
                 <TextField
                     style={{ width: '100%' }}
@@ -257,52 +286,6 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         });
                     }}
                     label={this.getText(this.props.schema.label)}
-                    helperText={this.renderHelp(
-                        this.props.schema.help,
-                        this.props.schema.helpLink,
-                        this.props.schema.noTranslation,
-                    )}
-                />
-            );
-        } else if (this.state.obj.common.type === 'number') {
-            const min = this.props.schema.min === undefined ? this.state.obj.common.min || 0 : this.props.schema.min;
-            const max =
-                this.props.schema.max === undefined
-                    ? this.state.obj.common.max === undefined
-                        ? 100
-                        : this.state.obj.common.max
-                    : this.props.schema.max;
-            const step =
-                this.props.schema.step === undefined ? this.state.obj.common.step || 1 : this.props.schema.step;
-
-            content = (
-                <TextField
-                    variant="standard"
-                    style={{ width: '100%' }}
-                    value={this.state.stateValue}
-                    type="number"
-                    slotProps={{
-                        htmlInput: { min, max, step, readOnly: !!this.props.schema.readOnly },
-                        input: {
-                            endAdornment:
-                                this.getText(this.props.schema.unit, this.props.schema.noTranslation) ||
-                                this.state.obj.common.unit ||
-                                undefined,
-                        },
-                    }}
-                    onChange={e => {
-                        this.setState({ stateValue: e.target.value }, (): void => {
-                            if (this.controlTimeout) {
-                                clearTimeout(this.controlTimeout);
-                            }
-                            this.controlTimeout = setTimeout(async () => {
-                                this.controlTimeout = null;
-                                const val = parseFloat(this.state.stateValue as unknown as string);
-                                await this.props.oContext.socket.setState(this.getObjectID(), val, false);
-                            }, this.props.schema.controlDelay || 0);
-                        });
-                    }}
-                    label={this.getText(this.props.schema.label, this.props.schema.noTranslation)}
                     helperText={this.renderHelp(
                         this.props.schema.help,
                         this.props.schema.helpLink,
@@ -368,7 +351,13 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 labelControl = labelIcon;
             }
 
-            if (this.state.controlType === 'switch') {
+            if (
+                this.state.controlType === 'switch' ||
+                (!this.state.controlType &&
+                    this.state.obj.common.type === 'boolean' &&
+                    ((this.state.obj.common.write && this.state.obj.common.read !== false) ||
+                        this.state.obj.common.role?.includes('switch')))
+            ) {
                 let iconFalse: JSX.Element | null = null;
                 const textFalse = this.getText(this.props.schema.falseText, this.props.schema.noTranslation);
                 if (this.props.schema.falseImage) {
@@ -433,7 +422,16 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         </div>
                     );
                 }
-            } else if (this.state.controlType === 'slider') {
+            } else if (
+                this.state.controlType === 'slider' ||
+                (!this.state.controlType &&
+                    this.state.obj.common.type === 'number' &&
+                    ((this.state.obj.common.write &&
+                        (this.state.obj.common.max !== undefined || this.state.obj.common.unit === '%')) ||
+                        this.state.obj.common.role?.includes('slider') ||
+                        this.state.obj.common.role?.includes('dimmer') ||
+                        this.state.obj.common.role?.includes('blind')))
+            ) {
                 let iconFalse: JSX.Element | null = null;
                 const textFalse = this.getText(this.props.schema.falseText, this.props.schema.noTranslation);
                 if (this.props.schema.falseImage) {
@@ -517,6 +515,62 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         </div>
                     );
                 }
+            } else if (this.state.obj.common.type === 'number' && this.state.obj.common.write) {
+                // Auto-detection of the type
+                const min =
+                    this.props.schema.min === undefined
+                        ? this.state.obj.common.min === undefined
+                            ? undefined
+                            : this.state.obj.common.min
+                        : this.props.schema.min;
+                const max =
+                    this.props.schema.max === undefined
+                        ? this.state.obj.common.max === undefined
+                            ? undefined
+                            : this.state.obj.common.max
+                        : this.props.schema.max;
+                const step =
+                    this.props.schema.step === undefined
+                        ? this.state.obj.common.step === undefined
+                            ? undefined
+                            : this.state.obj.common.step
+                        : this.props.schema.step;
+
+                content = (
+                    <TextField
+                        variant="standard"
+                        style={{ width: '100%' }}
+                        value={this.state.stateValue}
+                        type="number"
+                        slotProps={{
+                            htmlInput: { min, max, step, readOnly: !!this.props.schema.readOnly },
+                            input: {
+                                endAdornment:
+                                    this.getText(this.props.schema.unit, this.props.schema.noTranslation) ||
+                                    this.state.obj.common.unit ||
+                                    undefined,
+                            },
+                        }}
+                        onChange={e => {
+                            this.setState({ stateValue: e.target.value }, (): void => {
+                                if (this.controlTimeout) {
+                                    clearTimeout(this.controlTimeout);
+                                }
+                                this.controlTimeout = setTimeout(async () => {
+                                    this.controlTimeout = null;
+                                    const val = parseFloat(this.state.stateValue as unknown as string);
+                                    await this.props.oContext.socket.setState(this.getObjectID(), val, false);
+                                }, this.props.schema.controlDelay || 0);
+                            });
+                        }}
+                        label={this.getText(this.props.schema.label, this.props.schema.noTranslation)}
+                        helperText={this.renderHelp(
+                            this.props.schema.help,
+                            this.props.schema.helpLink,
+                            this.props.schema.noTranslation,
+                        )}
+                    />
+                );
             } else if (this.state.obj.common.type === 'boolean') {
                 let icon: JSX.Element | null = null;
                 let text: string;

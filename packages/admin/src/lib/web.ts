@@ -1,5 +1,5 @@
 import { commonTools, EXIT_CODES } from '@iobroker/adapter-core';
-import * as IoBWebServer from '@iobroker/webserver';
+import { checkPublicIP, WebServer } from '@iobroker/webserver';
 import * as express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
 import type { Server } from 'node:http';
@@ -8,7 +8,7 @@ import { inherits } from 'util';
 import { join, normalize, parse, dirname } from 'node:path';
 import { Transform } from 'node:stream';
 import * as compression from 'compression';
-import * as mime from 'mime';
+import { getType } from 'mime';
 import { gunzipSync } from 'node:zlib';
 import * as archiver from 'archiver';
 import axios from 'axios';
@@ -168,11 +168,11 @@ async function readFolderRecursive(
 function MemoryWriteStream(): void {
     Transform.call(this);
     this._chunks = [];
-    this._transform = (chunk: unknown, enc: unknown, cb: () => void): void => {
+    this._transform = (chunk: Buffer, _enc: string, cb: () => void): void => {
         this._chunks.push(chunk);
         cb();
     };
-    this.collect = (): unknown => {
+    this.collect = (): Buffer<ArrayBuffer> => {
         const result = Buffer.concat(this._chunks);
         this._chunks = [];
         return result;
@@ -202,7 +202,6 @@ class Web {
         server: null,
     };
 
-    // todo delete after react will be main
     private readonly LOGIN_PAGE = '/index.html?login';
 
     /** URL to the JSON config schema */
@@ -210,7 +209,7 @@ class Web {
         'https://raw.githubusercontent.com/ioBroker/adapter-react-v5/main/schemas/jsonConfig.json';
 
     private bruteForce: Record<string, { errors: number; time?: number }> = {};
-    private store: unknown = null;
+    private store: Store | null = null;
     private indexHTML: string;
     baseDir = join(__dirname, '..', '..');
     dirName = normalize(`${this.baseDir}/admin/`.replace(/\\/g, '/')).replace(/\\/g, '/');
@@ -223,7 +222,11 @@ class Web {
     private settings: AdminAdapterConfig;
     private readonly adapter: AdminAdapter;
     private options: WebOptions;
-    private readonly onReady: (server: unknown, store: unknown, adapter: AdminAdapter) => void;
+    private readonly onReady: (
+        server: Server & { __server: { app: null | Express; server: null | Server } },
+        store: Store,
+        adapter: AdminAdapter,
+    ) => void;
     private systemLanguage: ioBroker.Languages;
     private checkTimeout: ioBroker.Timeout;
 
@@ -238,7 +241,11 @@ class Web {
     constructor(
         settings: AdminAdapterConfig,
         adapter: AdminAdapter,
-        onReady: (server: unknown, store: unknown, adapter: AdminAdapter) => void,
+        onReady: (
+            server: Server & { __server: { app: null | Express; server: null | Server } },
+            store: Store,
+            adapter: AdminAdapter,
+        ) => void,
         options: WebOptions,
     ) {
         this.settings = settings;
@@ -270,17 +277,17 @@ class Web {
         this.server.server?.close();
     }
 
-    prepareIndex(): string {
+    async prepareIndex(): Promise<string> {
         let template = readFileSync(join(this.wwwDir, 'index.html')).toString('utf8');
         const m = template.match(/(["']?@@\w+@@["']?)/g);
-        m.forEach(pattern => {
+        for (let pattern of m) {
             pattern = pattern.replace(/@/g, '').replace(/'/g, '').replace(/"/g, '');
             if (pattern === 'disableDataReporting') {
-                template = template.replace(
-                    /['"]@@disableDataReporting@@["']/g,
-                    // @ts-expect-error deprecated: this is not used on instance objects use system.adapter.xy.plugins.sentry.enabled
-                    this.adapter.common?.disableDataReporting ? 'true' : 'false',
+                // read sentry state
+                const state = await this.adapter.getStateAsync(
+                    `system.adapter.${this.adapter.namespace}.plugins.sentry.enabled`,
                 );
+                template = template.replace(/['"]@@disableDataReporting@@["']/g, state?.val ? 'true' : 'false');
             } else if (pattern === 'loginBackgroundImage') {
                 if (this.adapter.config.loginBackgroundImage) {
                     template = template.replace(
@@ -333,7 +340,7 @@ class Web {
                         : '',
                 );
             }
-        });
+        }
 
         return template;
     }
@@ -444,6 +451,10 @@ class Web {
         }
     }
 
+    resetIndexHtml(): void {
+        this.indexHTML = '';
+    }
+
     /**
      * Initialize the server
      */
@@ -528,7 +539,7 @@ class Web {
                         (
                             username: string,
                             password: string,
-                            done: (error: any, user?: string | false) => void,
+                            done: (error: null | string | Error, user?: string | false) => void,
                         ): void => {
                             username = (username || '').toString();
 
@@ -609,7 +620,7 @@ class Web {
                         resave: true,
                         cookie: { maxAge: this.settings.ttl * 1000 },
                         // rolling: true, // The expiration is reset to the original maxAge, resetting the expiration countdown.
-                        store: this.store as Store,
+                        store: this.store,
                     }),
                 );
                 this.server.app.use(passport.initialize());
@@ -898,7 +909,7 @@ class Web {
                 }
             });
 
-            const appOptions: Record<string, unknown> = {};
+            const appOptions: { maxAge?: number } = {};
             if (this.settings.cache) {
                 appOptions.maxAge = 30_758_400_000;
             }
@@ -961,13 +972,14 @@ class Web {
                     res.status(200).send('');
                 });
 
-                this.server.app.get('/index.html', (_req: Request, res: Response): void => {
-                    this.indexHTML = this.indexHTML || this.prepareIndex();
+                this.server.app.get('/index.html', async (_req: Request, res: Response): Promise<void> => {
+                    this.indexHTML = this.indexHTML || (await this.prepareIndex());
                     res.header('Content-Type', 'text/html');
                     res.status(200).send(this.indexHTML);
                 });
-                this.server.app.get('/', (_req: Request, res: Response): void => {
-                    this.indexHTML = this.indexHTML || this.prepareIndex();
+
+                this.server.app.get('/', async (_req: Request, res: Response): Promise<void> => {
+                    this.indexHTML = this.indexHTML || (await this.prepareIndex());
                     res.header('Content-Type', 'text/html');
                     res.status(200).send(this.indexHTML);
                 });
@@ -1000,7 +1012,7 @@ class Web {
                     if (url.startsWith(this.dirName)) {
                         try {
                             if (existsSync(url)) {
-                                res.contentType(mime.getType(url) || 'text/javascript');
+                                res.contentType(getType(url) || 'text/javascript');
                                 createReadStream(url).pipe(res);
                             } else {
                                 res.status(404).send(get404Page(`File not found`));
@@ -1057,7 +1069,7 @@ class Web {
                             res.contentType(mimeType);
                         } else {
                             try {
-                                const _mimeType = mime.getType(url);
+                                const _mimeType = getType(url);
                                 res.contentType(_mimeType || 'text/javascript');
                             } catch {
                                 res.contentType('text/javascript');
@@ -1229,7 +1241,7 @@ class Web {
             });
 
             try {
-                const webserver = new IoBWebServer.WebServer({
+                const webserver = new WebServer({
                     app: this.server.app,
                     adapter: this.adapter,
                     secure: this.settings.secure,
@@ -1339,7 +1351,7 @@ class Web {
                                         this.checkTimeout = this.adapter.setTimeout(async (): Promise<void> => {
                                             this.checkTimeout = null;
                                             try {
-                                                await IoBWebServer.checkPublicIP(
+                                                await checkPublicIP(
                                                     this.settings.port,
                                                     'ioBroker',
                                                     '/iobroker_check.html',

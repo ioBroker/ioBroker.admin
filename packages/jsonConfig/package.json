@@ -19,9 +19,9 @@
     },
     "dependencies": {
         "@iobroker/adapter-react-v5": "file:../adapter-react-v5",
-        "@mui/x-date-pickers": "^7.25.0",
+        "@mui/x-date-pickers": "^7.27.0",
         "crypto-js": "^4.2.0",
-        "react-ace": "^13.0.0",
+        "react-ace": "^14.0.1",
         "react-qr-code": "^2.0.15"
     },
     "devDependencies": {
