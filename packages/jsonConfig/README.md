@@ -1241,7 +1241,7 @@ In the Settings of the Web developer tools, you can create your own devices with
 | `onChange`               | Structure in form `{"alsoDependsOn": ["attr1", "attr2"], "calculateFunc": "data.attr1 + data.attr2", "ignoreOwnChanges": true}`                                                      |
 | `doNotSave`              | Do not save this attribute as used only for internal calculations                                                                                                                    |
 | `noMultiEdit`            | if this flag set to true, this field will not be shown if user selected more than one object for edit.                                                                               |
-| `expertMode`             | if this flag set to true, this field will be shown only if the expert mode is true                                                                                                   |
+| `expertMode`             | if this flag set to true, this field will be shown only if the expert mode is true  (from Admin 7.4.3)                                                                                                 |
 
 ### Options with detailed configuration
 
