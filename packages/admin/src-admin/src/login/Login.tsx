@@ -8,11 +8,14 @@ import {
     CircularProgress,
     FormControlLabel,
     Grid2,
+    IconButton,
     Link,
     Paper,
     TextField,
     Typography,
 } from '@mui/material';
+
+import { Visibility } from '@mui/icons-material';
 
 import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
 
@@ -95,16 +98,27 @@ interface LoginProps {
 
 interface LoginState {
     inProcess: boolean;
+    username: string;
+    password: string;
+    stayLoggedIn: boolean;
+    showPassword: boolean;
+    error: string;
 }
 
 class Login extends Component<LoginProps, LoginState> {
     private readonly formRef: React.RefObject<HTMLFormElement>;
+    private readonly passwordRef: React.RefObject<HTMLInputElement>;
 
     constructor(props: LoginProps) {
         super(props);
 
         this.state = {
             inProcess: false,
+            stayLoggedIn: false,
+            showPassword: false,
+            username: '',
+            password: '',
+            error: '',
         };
 
         this.formRef = React.createRef();
@@ -114,6 +128,7 @@ class Login extends Component<LoginProps, LoginState> {
         body.style.backgroundColor = window.loginBackgroundColor;
         body.style.backgroundImage = window.loginBackgroundImage;
         body.style.backgroundSize = 'cover';
+        this.passwordRef = React.createRef();
     }
 
     render(): JSX.Element {
@@ -179,9 +194,9 @@ class Login extends Component<LoginProps, LoginState> {
                                 ? window.loginTitle
                                 : this.props.t('loginTitle')}
                         </Typography>
-                        {window.location.search.includes('error') && (
-                            <div style={styles.alert}>{this.props.t('wrongPassword')}</div>
-                        )}
+                        {window.location.search.includes('error') || this.state.error ? (
+                            <div style={styles.alert}>{this.state.error || this.props.t('wrongPassword')}</div>
+                        ) : null}
                         <form
                             ref={this.formRef}
                             style={styles.form}
@@ -193,6 +208,8 @@ class Login extends Component<LoginProps, LoginState> {
                                 margin="normal"
                                 disabled={this.state.inProcess}
                                 required
+                                value={this.state.username}
+                                onChange={e => this.setState({ username: e.target.value })}
                                 fullWidth
                                 size="small"
                                 id="username"
@@ -207,10 +224,32 @@ class Login extends Component<LoginProps, LoginState> {
                                 disabled={this.state.inProcess}
                                 required
                                 fullWidth
+                                ref={this.passwordRef}
+                                value={this.state.password}
+                                onChange={e => this.setState({ password: e.target.value })}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: this.state.password ? (
+                                            <IconButton
+                                                tabIndex={-1}
+                                                aria-label="toggle password visibility"
+                                            >
+                                                <Visibility
+                                                    onMouseDown={() => this.setState({ showPassword: true })}
+                                                    onMouseUp={() => {
+                                                        this.setState({ showPassword: false }, () => {
+                                                            setTimeout(() => this.passwordRef.current?.focus(), 50);
+                                                        });
+                                                    }}
+                                                />
+                                            </IconButton>
+                                        ) : null,
+                                    },
+                                }}
                                 size="small"
                                 name="password"
                                 label={this.props.t('enterPassword')}
-                                type="password"
+                                type={this.state.showPassword ? 'text' : 'password'}
                                 id="password"
                                 autoComplete="current-password"
                             />
@@ -220,6 +259,8 @@ class Login extends Component<LoginProps, LoginState> {
                                         id="stayloggedin"
                                         name="stayloggedin"
                                         value="on"
+                                        checked={this.state.stayLoggedIn}
+                                        onChange={e => this.setState({ stayLoggedIn: e.target.checked })}
                                         color="primary"
                                         disabled={this.state.inProcess}
                                     />
@@ -235,11 +276,81 @@ class Login extends Component<LoginProps, LoginState> {
                             {
                                 <Button
                                     type="submit"
-                                    disabled={this.state.inProcess}
+                                    disabled={this.state.inProcess || !this.state.username || !this.state.password}
                                     onClick={() => {
-                                        this.formRef.current.submit();
-                                        // give time to firefox to send the data
-                                        setTimeout(() => this.setState({ inProcess: true }), 50);
+                                        if (!window.USE_OAUTH2) {
+                                            this.formRef.current.submit();
+                                            // give time to firefox to send the data
+                                            setTimeout(() => this.setState({ inProcess: true }), 50);
+                                        } else {
+                                            this.setState({ inProcess: true, error: '' }, async () => {
+                                                let origin = decodeURIComponent(
+                                                    (document.getElementById('origin') as HTMLInputElement).value,
+                                                );
+                                                const response = await fetch('../oauth/token', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                                    },
+                                                    body: `grant_type=password&username=${this.state.username}&password=${this.state.password}&stayloggedin=${this.state.stayLoggedIn}&origin=${origin}&client_id=ioBroker`,
+                                                });
+                                                if (response.ok) {
+                                                    const data = await response.json();
+                                                    if (data.accessToken) {
+                                                        // Save expiration time of access token and refresh token
+                                                        if (this.state.stayLoggedIn) {
+                                                            sessionStorage.removeItem('refresh_token_exp');
+                                                            sessionStorage.removeItem('access_token_exp');
+                                                            sessionStorage.removeItem('refresh_token');
+                                                            localStorage.setItem(
+                                                                'access_token_exp',
+                                                                data.accessTokenExpiresAt,
+                                                            );
+                                                            localStorage.setItem(
+                                                                'refresh_token_exp',
+                                                                data.refreshTokenExpiresAt,
+                                                            );
+                                                            localStorage.setItem('refresh_token', data.refreshToken);
+                                                        } else {
+                                                            localStorage.removeItem('access_token_exp');
+                                                            localStorage.removeItem('refresh_token_exp');
+                                                            localStorage.removeItem('refresh_token');
+                                                            sessionStorage.setItem(
+                                                                'refresh_token_exp',
+                                                                data.refreshTokenExpiresAt,
+                                                            );
+                                                            sessionStorage.setItem(
+                                                                'access_token_exp',
+                                                                data.accessTokenExpiresAt,
+                                                            );
+                                                            sessionStorage.setItem('refresh_token', data.refreshToken);
+                                                        }
+                                                        // Get href from origin
+                                                        const parts = window.location.href.split('&');
+                                                        const href = parts.find(part => part.startsWith('href='));
+                                                        if (href) {
+                                                            origin = href.substring(5) || './';
+                                                            if (origin.startsWith('#')) {
+                                                                origin = `./${origin}`;
+                                                            }
+                                                        } else {
+                                                            origin = './';
+                                                        }
+                                                        window.location.href = decodeURIComponent(origin);
+                                                    } else {
+                                                        this.setState({
+                                                            inProcess: false,
+                                                            error: this.props.t('cannotGetAccessToken'),
+                                                        });
+                                                    }
+                                                } else {
+                                                    this.setState({
+                                                        inProcess: false,
+                                                        error: this.props.t('wrongPassword'),
+                                                    });
+                                                }
+                                            });
+                                        }
                                     }}
                                     fullWidth
                                     variant="contained"

@@ -1,5 +1,5 @@
 import { commonTools, EXIT_CODES } from '@iobroker/adapter-core';
-import { checkPublicIP, WebServer } from '@iobroker/webserver';
+import { checkPublicIP, WebServer, createOAuth2Server } from '@iobroker/webserver';
 import * as express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
 import type { Server } from 'node:http';
@@ -22,6 +22,7 @@ import type { Store } from 'express-session';
 import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
+import { InternalStorageToken } from '@iobroker/socket-classes';
 
 export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     accessAllowedConfigs: string[];
@@ -613,6 +614,15 @@ class Web {
                 this.server.app.use(cookieParser());
                 this.server.app.use(bodyParser.urlencoded({ extended: true }));
                 this.server.app.use(bodyParser.json());
+
+                createOAuth2Server(this.adapter, {
+                    app: this.server.app,
+                    secure: this.settings.secure,
+                    accessLifetime: this.settings.ttl,
+                    refreshLifetime: 60 * 60 * 24 * 7, // 1 week
+                    // loginPage: this.LOGIN_PAGE,
+                });
+
                 this.server.app.use(
                     session({
                         secret: this.adapter.secret,
@@ -690,6 +700,21 @@ class Web {
                 });
 
                 this.server.app.get('/session', (req: Request, res: Response): void => {
+                    if (req.headers.cookie) {
+                        const cookies = req.headers.cookie.split(';').map(c => c.trim().split('='));
+                        const tokenCookie = cookies.find(c => c[0] === 'access_token');
+                        if (tokenCookie) {
+                            this.adapter.getSession(`a:${tokenCookie[1]}`, (token: InternalStorageToken): void => {
+                                if (!token?.user) {
+                                    res.json({ expireInSec: 0 });
+                                } else {
+                                    res.json({ expireInSec: Math.round((token.exp - Date.now()) / 1000) });
+                                }
+                            });
+                            return;
+                        }
+                    }
+
                     res.json({ expireInSec: Math.round(req.session.cookie.maxAge / 1_000) });
                 });
 

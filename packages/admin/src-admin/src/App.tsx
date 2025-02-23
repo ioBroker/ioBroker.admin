@@ -606,7 +606,7 @@ class App extends Router<AppProps, AppState> {
 
             const theme = App.createTheme();
 
-            // install setter for configNotSaved (used in javascript)
+            // install setter for configNotSaved (used in JavaScript)
             Object.defineProperty(window, 'configNotSaved', {
                 get: () => this.state.configNotSaved,
                 set: configNotSaved => {
@@ -1384,7 +1384,7 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    updateExpireIn(): void {
+    async updateExpireIn(): Promise<void> {
         const now = Date.now();
         this.expireInSec = this.expireInSec > 0 ? this.expireInSec - (now - this.lastExecution) / 1_000 : 0;
 
@@ -1403,13 +1403,27 @@ class App extends Router<AppProps, AppState> {
             this.setState({ expireWarningMode: false });
         }
 
+        this.lastExecution = now;
+
         if (this.expireInSec <= 0) {
+            try {
+                const data = await this.socket.getCurrentSession();
+
+                if (data?.expireInSec > 0) {
+                    this.expireInSec = data.expireInSec;
+                    this.expireInSecInterval ||= setInterval(() => this.updateExpireIn(), 1_000);
+                    this.lastExecution = Date.now();
+                    void this.updateExpireIn().catch(e => console.error(`Cannot update expireIn: ${e}`));
+                    return;
+                }
+            } catch {
+                console.error('Session timeout');
+            }
+
             window.alert('Session expired');
             // reconnect
             setTimeout(() => window.location.reload(), 1_000);
         }
-
-        this.lastExecution = now;
     }
 
     /**
@@ -1425,9 +1439,7 @@ class App extends Router<AppProps, AppState> {
             const data = await this.socket.getCurrentSession();
 
             if (data) {
-                if (!this.expireInSecInterval) {
-                    this.expireInSecInterval = setInterval(() => this.updateExpireIn(), 1_000);
-                }
+                this.expireInSecInterval ||= setInterval(() => this.updateExpireIn(), 1_000);
                 this.expireInSec = data.expireInSec;
                 this.lastExecution = Date.now();
                 this.updateExpireIn();
