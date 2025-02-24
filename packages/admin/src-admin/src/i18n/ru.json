@@ -928,7 +928,6 @@
     "Serbia": "Сербия",
     "Server URL": "URL-адрес сервера",
     "Session expire in %s": "Сеанс истечёт через %s",
-    "Session will expire in %s seconds. Continue?": "Сессия истечет через %s секунд. Продолжить?",
     "Set": "Задать",
     "Set CRON": "Применить",
     "Set CRON schedule for restarts": "Установить расписание CRON для перезапуска",

@@ -928,7 +928,6 @@
     "Serbia": "Serbia",
     "Server URL": "URL del server",
     "Session expire in %s": "La sessione scade in %s",
-    "Session will expire in %s seconds. Continue?": "La sessione scadrà tra %s secondi. Continuare?",
     "Set": "Imposta",
     "Set CRON": "Imposta CRON",
     "Set CRON schedule for restarts": "Imposta l'orario CRON per il riavvio",

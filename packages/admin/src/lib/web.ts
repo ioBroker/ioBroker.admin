@@ -530,7 +530,7 @@ class Web {
                     app: this.server.app,
                     secure: this.settings.secure,
                     accessLifetime: this.settings.ttl,
-                    refreshLifetime: 60 * 60 * 24 * 7, // 1 week
+                    refreshLifetime: 60 * 60 * 24 * 7, // 1 week (Maybe adjustable?)
                     loginPage: (req: Request): string => {
                         const isDev = req.url.includes('?dev');
                         let origin = req.url.split('origin=')[1];
@@ -551,10 +551,16 @@ class Web {
 
                 this.server.app.get('/session', (req: Request, res: Response): void => {
                     if (req.headers.cookie) {
-                        const cookies = req.headers.cookie.split(';').map(c => c.trim().split('='));
-                        const tokenCookie = cookies.find(c => c[0] === 'access_token');
+                        const cookies = req.headers.cookie.split(';').find(c => c.trim().startsWith('access_token='));
+                        let tokenCookie = cookies?.split('=')[1];
+                        if (!tokenCookie && req.headers.authorization?.startsWith('Bearer ')) {
+                            tokenCookie = req.headers.authorization.split(' ')[1];
+                        } else if (!tokenCookie && req.query?.token) {
+                            tokenCookie = req.query.token as string;
+                        }
+
                         if (tokenCookie) {
-                            this.adapter.getSession(`a:${tokenCookie[1]}`, (token: InternalStorageToken): void => {
+                            void this.adapter.getSession(`a:${tokenCookie[1]}`, (token: InternalStorageToken): void => {
                                 if (!token?.user) {
                                     res.json({ expireInSec: 0 });
                                 } else {
@@ -617,12 +623,10 @@ class Web {
                         }
                         const pathName = req.url.split('?')[0];
                         // protect all paths except
-                        this.unprotectedFiles =
-                            this.unprotectedFiles ||
-                            readdirSync(this.wwwDir).map(file => {
-                                const stat = lstatSync(join(this.wwwDir, file));
-                                return { name: file, isDir: stat.isDirectory() };
-                            });
+                        this.unprotectedFiles ||= readdirSync(this.wwwDir).map(file => {
+                            const stat = lstatSync(join(this.wwwDir, file));
+                            return { name: file, isDir: stat.isDirectory() };
+                        });
                         if (
                             pathName &&
                             pathName !== '/' &&

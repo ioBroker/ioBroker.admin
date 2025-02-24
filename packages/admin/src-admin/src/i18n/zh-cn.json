@@ -928,7 +928,6 @@
     "Serbia": "塞尔维亚",
     "Server URL": "服务器网址",
     "Session expire in %s": "会话在%s中过期",
-    "Session will expire in %s seconds. Continue?": "会话将在 %s 秒后过期。是否继续？",
     "Set": "组",
     "Set CRON": "设置 CRON",
     "Set CRON schedule for restarts": "设置重启的CRON计划",

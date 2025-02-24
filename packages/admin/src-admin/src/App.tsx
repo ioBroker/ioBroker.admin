@@ -8,26 +8,28 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 import {
     AppBar,
     Avatar,
+    Badge,
+    Box,
+    Button,
+    Checkbox,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    FormControlLabel,
     Grid2 as Grid,
     IconButton,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
     Paper,
     Snackbar,
     Toolbar,
-    Typography,
     Tooltip,
-    Badge,
-    Menu,
-    MenuItem,
-    ListItemIcon,
-    ListItemText,
-    CircularProgress,
-    Dialog,
-    DialogTitle,
-    Button,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    Box,
+    Typography,
 } from '@mui/material';
 
 // @mui/icons-material
@@ -487,7 +489,7 @@ interface AppState {
         checkNews: ShowMessage[];
         lastNewsId: string | undefined;
     } | null;
-    askForTokenRefresh: { expireAt: number; resolve: (prolong: boolean) => void } | null;
+    askForTokenRefresh: { expireAt: number; resolve: (prolong: boolean) => void; doNotAsk: boolean } | null;
 }
 
 class App extends Router<AppProps, AppState> {
@@ -528,6 +530,8 @@ class App extends Router<AppProps, AppState> {
     private adminInstance: string = '';
 
     private newsInstance: number = 0;
+
+    private doNotAskSessionExpiration: number = 0;
 
     constructor(props: AppProps) {
         super(props);
@@ -1382,15 +1386,38 @@ class App extends Router<AppProps, AppState> {
                 onClose={() => App.logout()}
             >
                 <DialogContent>
-                    {I18n.t(
-                        'Session will expire in %s seconds. Continue?',
-                        Math.round((this.state.askForTokenRefresh.expireAt - Date.now()) / 1000),
-                    )}
+                    <DialogContentText>
+                        {I18n.t(
+                            'ra_Session will expire in %s seconds. Continue?',
+                            Math.round((this.state.askForTokenRefresh.expireAt - Date.now()) / 1000),
+                        )}
+                    </DialogContentText>
+                    <div>
+                        <FormControlLabel
+                            label={I18n.t('ra_Do not ask for next 2 hours in this session')}
+                            control={
+                                <Checkbox
+                                    checked={this.state.askForTokenRefresh.doNotAsk}
+                                    onChange={() => {
+                                        const askForTokenRefresh = { ...this.state.askForTokenRefresh };
+                                        this.state.askForTokenRefresh.doNotAsk =
+                                            !this.state.askForTokenRefresh.doNotAsk;
+                                        this.setState({ askForTokenRefresh });
+                                    }}
+                                />
+                            }
+                        />
+                    </div>
                 </DialogContent>
                 <DialogActions>
                     <Button
                         onClick={() => {
                             const resolve = this.state.askForTokenRefresh.resolve;
+
+                            if (this.state.askForTokenRefresh.doNotAsk) {
+                                // Add 2 hours for session
+                                this.doNotAskSessionExpiration = Date.now() + 3_600_000 * 2;
+                            }
 
                             if (this.expireInSecInterval) {
                                 clearInterval(this.expireInSecInterval);
@@ -1419,18 +1446,30 @@ class App extends Router<AppProps, AppState> {
 
     onSessionExpiration = (expireAt: number): Promise<boolean> => {
         return new Promise<boolean>(resolve => {
-            this.setState({ askForTokenRefresh: { expireAt, resolve } }, () => {
-                this.expireInSecInterval ||= setInterval(() => {
-                    if (Date.now() >= this.state.askForTokenRefresh.expireAt) {
-                        clearInterval(this.expireInSecInterval);
-                        this.expireInSecInterval = null;
-                        window.location.reload();
-                    } else {
-                        // redraw timer
-                        this.forceUpdate();
-                    }
-                }, 1_000);
-            });
+            const stayLoggedIn =
+                window.localStorage.getItem('refresh_token_exp') && window.localStorage.getItem('refresh_token')
+                    ? new Date(window.localStorage.getItem('refresh_token_exp')).getTime()
+                    : 0;
+
+            if (
+                (this.doNotAskSessionExpiration && Date.now() < this.doNotAskSessionExpiration) ||
+                stayLoggedIn > Date.now()
+            ) {
+                resolve(true);
+            } else {
+                this.setState({ askForTokenRefresh: { expireAt, resolve, doNotAsk: false } }, () => {
+                    this.expireInSecInterval ||= setInterval(() => {
+                        if (Date.now() >= this.state.askForTokenRefresh.expireAt) {
+                            clearInterval(this.expireInSecInterval);
+                            this.expireInSecInterval = null;
+                            window.location.reload();
+                        } else {
+                            // redraw timer
+                            this.forceUpdate();
+                        }
+                    }, 1_000);
+                });
+            }
         });
     };
 

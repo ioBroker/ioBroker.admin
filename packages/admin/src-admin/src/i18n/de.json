@@ -928,7 +928,6 @@
     "Serbia": "Serbien",
     "Server URL": "Server-URL",
     "Session expire in %s": "Sitzung läuft in %s ab",
-    "Session will expire in %s seconds. Continue?": "Die Sitzung läuft in %s Sekunden ab. Fortfahren?",
     "Set": "Setzen",
     "Set CRON": "Zeitplan übernehmen",
     "Set CRON schedule for restarts": "Den CRON-Zeitplan für Neustarts festlegen",

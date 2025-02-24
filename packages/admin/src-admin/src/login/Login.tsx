@@ -103,6 +103,7 @@ interface LoginState {
     stayLoggedIn: boolean;
     showPassword: boolean;
     error: string;
+    loggingIn: boolean;
 }
 
 class Login extends Component<LoginProps, LoginState> {
@@ -112,6 +113,8 @@ class Login extends Component<LoginProps, LoginState> {
     constructor(props: LoginProps) {
         super(props);
 
+        const loggingIn = window.USE_OAUTH2 ? this.authenticateWithRefreshToken() : false;
+
         this.state = {
             inProcess: false,
             stayLoggedIn: false,
@@ -119,6 +122,7 @@ class Login extends Component<LoginProps, LoginState> {
             username: '',
             password: '',
             error: '',
+            loggingIn,
         };
 
         this.formRef = React.createRef();
@@ -129,6 +133,85 @@ class Login extends Component<LoginProps, LoginState> {
         body.style.backgroundImage = window.loginBackgroundImage;
         body.style.backgroundSize = 'cover';
         this.passwordRef = React.createRef();
+    }
+
+    private authenticateWithRefreshToken(): boolean {
+        let refreshToken: string = window.sessionStorage.getItem('refresh_token');
+        let refreshTokenExp: string;
+        let stayLoggedIn = false;
+        if (refreshToken) {
+            refreshTokenExp = window.sessionStorage.getItem('refresh_token_exp');
+        } else {
+            refreshToken = window.localStorage.getItem('refresh_token');
+            if (refreshToken) {
+                stayLoggedIn = true;
+                refreshTokenExp = window.localStorage.getItem('refresh_token_exp');
+            }
+        }
+
+        if (refreshToken && refreshTokenExp) {
+            const exp = new Date(refreshTokenExp);
+            if (exp.getTime() > Date.now()) {
+                void fetch('../oauth/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `grant_type=refresh_token&refresh_token=${refreshToken}&stayloggedin=${stayLoggedIn}&client_id=ioBroker`,
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.accessToken) {
+                                // Save expiration time of access token and refresh token
+                                if (stayLoggedIn) {
+                                    sessionStorage.removeItem('refresh_token_exp');
+                                    sessionStorage.removeItem('access_token_exp');
+                                    sessionStorage.removeItem('refresh_token');
+                                    localStorage.setItem('access_token_exp', data.accessTokenExpiresAt);
+                                    localStorage.setItem('refresh_token_exp', data.refreshTokenExpiresAt);
+                                    localStorage.setItem('refresh_token', data.refreshToken);
+                                } else {
+                                    localStorage.removeItem('access_token_exp');
+                                    localStorage.removeItem('refresh_token_exp');
+                                    localStorage.removeItem('refresh_token');
+                                    sessionStorage.setItem('refresh_token_exp', data.refreshTokenExpiresAt);
+                                    sessionStorage.setItem('access_token_exp', data.accessTokenExpiresAt);
+                                    sessionStorage.setItem('refresh_token', data.refreshToken);
+                                }
+                                // Get href from origin
+                                const parts = window.location.href.split('&');
+                                const href = parts.find(part => part.startsWith('href='));
+                                let origin = window.location.pathname + window.location.search.replace('&error', '');
+                                if (href) {
+                                    origin = href.substring(5) || './';
+                                    if (origin.startsWith('#')) {
+                                        origin = `./${origin}`;
+                                    }
+                                } else {
+                                    origin = './';
+                                }
+                                window.location.href = origin;
+                            } else {
+                                this.setState({
+                                    inProcess: false,
+                                    loggingIn: false,
+                                });
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Cannot fetch access token: ${error}`);
+                        this.setState({
+                            inProcess: false,
+                            loggingIn: false,
+                        });
+                    });
+                return true;
+            }
+        }
+
+        return false;
     }
 
     render(): JSX.Element {
@@ -149,11 +232,11 @@ class Login extends Component<LoginProps, LoginState> {
                 ? { background: '#00000000' }
                 : {};
 
-        return (
-            <Paper
-                component="main"
-                style={{ ...styles.root, ...style }}
-            >
+        let content: React.JSX.Element;
+        if (this.state.loggingIn) {
+            content = <Paper sx={styles.paper}>...</Paper>;
+        } else {
+            content = (
                 <Paper sx={styles.paper}>
                     <Grid2
                         container
@@ -284,9 +367,6 @@ class Login extends Component<LoginProps, LoginState> {
                                             setTimeout(() => this.setState({ inProcess: true }), 50);
                                         } else {
                                             this.setState({ inProcess: true, error: '' }, async () => {
-                                                let origin = decodeURIComponent(
-                                                    (document.getElementById('origin') as HTMLInputElement).value,
-                                                );
                                                 const response = await fetch('../oauth/token', {
                                                     method: 'POST',
                                                     headers: {
@@ -328,6 +408,10 @@ class Login extends Component<LoginProps, LoginState> {
                                                         // Get href from origin
                                                         const parts = window.location.href.split('&');
                                                         const href = parts.find(part => part.startsWith('href='));
+                                                        let origin =
+                                                            window.location.pathname +
+                                                            window.location.search.replace('&error', '');
+
                                                         if (href) {
                                                             origin = href.substring(5) || './';
                                                             if (origin.startsWith('#')) {
@@ -394,6 +478,15 @@ class Login extends Component<LoginProps, LoginState> {
                         </Typography>
                     </Box>
                 </Paper>
+            );
+        }
+
+        return (
+            <Paper
+                component="main"
+                style={{ ...styles.root, ...style }}
+            >
+                {content}
             </Paper>
         );
     }
