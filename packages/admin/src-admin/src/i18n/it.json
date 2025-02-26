@@ -1253,6 +1253,7 @@
     "boolean": "Booleano",
     "bug": "Bug",
     "cancel": "Annulla",
+    "cannotGetAccessToken": "Impossibile ottenere il token di accesso",
     "cert_path_note": "Puoi utilizzare un percorso assoluto per il certificato, come \"/opt/certs/cert.pem\", o semplicemente caricarlo per drag & drop",
     "certificate": "Certificato",
     "certs_hint": "Puoi utilizzare il percorso assoluto del certificato, ad esempio \"/opt/certs/cert.pem\" oppure puoi trascinare i file qui",

@@ -1253,6 +1253,7 @@
     "boolean": "valor lógico",
     "bug": "bugtracker",
     "cancel": "Cancelar",
+    "cannotGetAccessToken": "Não é possível obter o token de acesso",
     "cert_path_note": "Você pode usar o caminho absoluto para o certificado, como '/opt/certs/cert.pem', ou simplesmente fazer um upload de um arquivo",
     "certificate": "certificado",
     "certs_hint": "Você pode usar o caminho absoluto do certificado, '/opt/certs/cert.pem' por exemplo, ou você pode e soltar arquivos aqui",

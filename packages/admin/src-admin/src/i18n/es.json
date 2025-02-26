@@ -1253,6 +1253,7 @@
     "boolean": "booleano",
     "bug": "bugtracker",
     "cancel": "Cancelar",
+    "cannotGetAccessToken": "No se puede obtener el token de acceso",
     "cert_path_note": "Puede utilizar la ruta absoluta para el certificado, como '/opt/certs/cert.pem', o simplemente cargar un archivo",
     "certificate": "certificado",
     "certs_hint": "Puede usar la ruta absoluta del certificado, '/opt/certs/cert.pem' por ejemplo, o puede y soltar archivos aquí",

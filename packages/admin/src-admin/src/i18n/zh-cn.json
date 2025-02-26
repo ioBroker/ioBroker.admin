@@ -1253,6 +1253,7 @@
     "boolean": "布尔",
     "bug": "错误追踪系统",
     "cancel": "取消",
+    "cannotGetAccessToken": "无法获取访问令牌",
     "cert_path_note": "您可以使用证书的绝对路径，例如'/opt/certs/cert.pem'，或者只需按拖放即可上传",
     "certificate": "证书",
     "certs_hint": "您可以使用证书的绝对路径，例如“ /opt/certs/cert.pem”，也可以在此处拖放文件",

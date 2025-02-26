@@ -17,7 +17,7 @@ import {
 
 import { Visibility } from '@mui/icons-material';
 
-import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
+import { type IobTheme, I18n } from '@iobroker/adapter-react-v5';
 
 const boxShadow = '0 4px 7px 5px rgb(0 0 0 / 14%), 0 3px 1px 1px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%)';
 
@@ -92,9 +92,7 @@ declare global {
     }
 }
 
-interface LoginProps {
-    t: Translate;
-}
+interface LoginProps {}
 
 interface LoginState {
     inProcess: boolean;
@@ -192,13 +190,20 @@ class Login extends Component<LoginProps, LoginState> {
                                     origin = './';
                                 }
                                 window.location.href = origin;
+                                return;
                             } else {
-                                this.setState({
-                                    inProcess: false,
-                                    loggingIn: false,
-                                });
+                                sessionStorage.removeItem('refresh_token_exp');
+                                sessionStorage.removeItem('access_token_exp');
+                                sessionStorage.removeItem('refresh_token');
+                                localStorage.removeItem('access_token_exp');
+                                localStorage.removeItem('refresh_token_exp');
+                                localStorage.removeItem('refresh_token');
                             }
                         }
+                        this.setState({
+                            inProcess: false,
+                            loggingIn: false,
+                        });
                     })
                     .catch(error => {
                         console.error(`Cannot fetch access token: ${error}`);
@@ -244,12 +249,13 @@ class Login extends Component<LoginProps, LoginState> {
                         alignItems="center"
                     >
                         {window.loginLogo && window.loginLogo !== '@@loginLogo@@' ? (
-                            <div
-                                style={{
+                            <Box
+                                sx={{
                                     height: 50,
                                     width: 102,
                                     lineHeight: '50px',
-                                    background: 'white',
+                                    backgroundColor: (theme: IobTheme) =>
+                                        theme.palette.mode === 'dark' ? '#000' : '#fff',
                                     borderRadius: 5,
                                     padding: 5,
                                 }}
@@ -259,12 +265,12 @@ class Login extends Component<LoginProps, LoginState> {
                                     alt="logo"
                                     style={{ maxWidth: '100%', maxHeight: '100%' }}
                                 />
-                            </div>
+                            </Box>
                         ) : (
                             window.loginHideLogo === 'false' && (
                                 <Avatar
                                     style={styles.avatar}
-                                    src="img/logo.png"
+                                    src="img/admin.svg"
                                     sx={{ '& .MuiAvatar-img': styles.avatarImg }}
                                 />
                             )
@@ -275,10 +281,10 @@ class Login extends Component<LoginProps, LoginState> {
                         >
                             {window.loginTitle && window.loginTitle !== '@@loginTitle@@'
                                 ? window.loginTitle
-                                : this.props.t('loginTitle')}
+                                : I18n.t('loginTitle')}
                         </Typography>
                         {window.location.search.includes('error') || this.state.error ? (
-                            <div style={styles.alert}>{this.state.error || this.props.t('wrongPassword')}</div>
+                            <div style={styles.alert}>{this.state.error || I18n.t('wrongPassword')}</div>
                         ) : null}
                         <form
                             ref={this.formRef}
@@ -296,7 +302,7 @@ class Login extends Component<LoginProps, LoginState> {
                                 fullWidth
                                 size="small"
                                 id="username"
-                                label={this.props.t('enterLogin')}
+                                label={I18n.t('enterLogin')}
                                 name="username"
                                 autoComplete="username"
                                 autoFocus
@@ -331,7 +337,7 @@ class Login extends Component<LoginProps, LoginState> {
                                 }}
                                 size="small"
                                 name="password"
-                                label={this.props.t('enterPassword')}
+                                label={I18n.t('enterPassword')}
                                 type={this.state.showPassword ? 'text' : 'password'}
                                 id="password"
                                 autoComplete="current-password"
@@ -348,7 +354,7 @@ class Login extends Component<LoginProps, LoginState> {
                                         disabled={this.state.inProcess}
                                     />
                                 }
-                                label={this.props.t('Stay signed in')}
+                                label={I18n.t('Stay signed in')}
                             />
                             <input
                                 id="origin"
@@ -424,13 +430,13 @@ class Login extends Component<LoginProps, LoginState> {
                                                     } else {
                                                         this.setState({
                                                             inProcess: false,
-                                                            error: this.props.t('cannotGetAccessToken'),
+                                                            error: I18n.t('cannotGetAccessToken'),
                                                         });
                                                     }
                                                 } else {
                                                     this.setState({
                                                         inProcess: false,
-                                                        error: this.props.t('wrongPassword'),
+                                                        error: I18n.t('wrongPassword'),
                                                     });
                                                 }
                                             });
@@ -441,7 +447,7 @@ class Login extends Component<LoginProps, LoginState> {
                                     color="primary"
                                     style={styles.submit}
                                 >
-                                    {this.state.inProcess ? <CircularProgress size={24} /> : this.props.t('login')}
+                                    {this.state.inProcess ? <CircularProgress size={24} /> : I18n.t('login')}
                                 </Button>
                             }
                         </form>
@@ -492,4 +498,4 @@ class Login extends Component<LoginProps, LoginState> {
     }
 }
 
-export default withWidth()(Login);
+export default Login;

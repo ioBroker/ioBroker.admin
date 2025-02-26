@@ -1253,6 +1253,7 @@
     "boolean": "boolean",
     "bug": "bład",
     "cancel": "Anuluj",
+    "cannotGetAccessToken": "Nie można uzyskać tokena dostępu",
     "cert_path_note": "Możesz użyć bezwzględnej ścieżki do certyfikatu, takiej jak \"/opt/certs/cert.pem\", lub po prostu przesłać ją na przeciągnij i upuść",
     "certificate": "certyfikat",
     "certs_hint": "Możesz użyć bezwzględnej ścieżki certyfikatu, na przykład „/opt/certs/cert.pem”, lub możesz i upuścić pliki tutaj",

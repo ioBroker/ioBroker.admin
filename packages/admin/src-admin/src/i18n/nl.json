@@ -1253,6 +1253,7 @@
     "boolean": "boolean",
     "bug": "bugtracker",
     "cancel": "Annuleer",
+    "cannotGetAccessToken": "Kan geen toegangstoken verkrijgen",
     "cert_path_note": "U kunt een absoluut pad gebruiken voor de certificaten, zoals '/opt/certs/cert.pem', of u kunt het uploaden door het hierheen te slepen",
     "certificate": "certificaat",
     "certs_hint": "U kunt het absolute pad van het certificaat gebruiken, bijvoorbeeld '/opt/certs/cert.pem', of u kunt bestanden hier neerzetten",

@@ -1253,6 +1253,7 @@
     "boolean": "boolean",
     "bug": "bugtracker",
     "cancel": "Cancel",
+    "cannotGetAccessToken": "Cannot get access token",
     "cert_path_note": "You can use an absolute path to the certificate, like '/opt/certs/cert.pem', or just upload it per drag&drop",
     "certificate": "certificate",
     "certs_hint": "You can use absolute path of certificate, '/opt/certs/cert.pem' for example, or you can and drop files here",

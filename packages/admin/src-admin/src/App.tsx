@@ -2211,6 +2211,13 @@ class App extends Router<AppProps, AppState> {
     }
 
     static logout(): void {
+        window.localStorage.removeItem('refresh_token');
+        window.localStorage.removeItem('refresh_token_exp');
+        window.localStorage.removeItem('access_token_exp');
+        window.sessionStorage.removeItem('refresh_token');
+        window.sessionStorage.removeItem('refresh_token_exp');
+        window.sessionStorage.removeItem('access_token_exp');
+
         if (window.location.port === '3000') {
             window.location.href = `${window.location.protocol}//${window.location.hostname}:8081/logout?dev`;
         } else {
@@ -3015,7 +3022,7 @@ class App extends Router<AppProps, AppState> {
             return (
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
-                        <Login t={I18n.t} />
+                        <Login />
                         {this.renderAlertSnackbar()}
                     </ThemeProvider>
                 </StyledEngineProvider>

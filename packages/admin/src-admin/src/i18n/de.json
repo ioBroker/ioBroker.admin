@@ -1253,6 +1253,7 @@
     "boolean": "Logikwert",
     "bug": "Bugtracker",
     "cancel": "Abbrechen",
+    "cannotGetAccessToken": "Zugriffstoken kann nicht abgerufen werden",
     "cert_path_note": "Sie können den absoluten Pfad zum Zertifikat verwenden, wie '/opt/certs/cert.pem', oder einfach hochladen",
     "certificate": "Zertifikate",
     "certs_hint": "Man kann den absoluten Pfad des Zertifikats verwenden, z. B. '/opt/certs/cert.pem', oder man kann Dateien hier ablegen",

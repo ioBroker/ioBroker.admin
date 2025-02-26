@@ -477,8 +477,13 @@ class Web {
 
             // replace socket.io
             this.server.app.use((req: Request, res: Response, next: NextFunction): void => {
+                const url = req.url.split('?')[0];
                 // return favicon always
-                if (req.url === '/favicon.ico') {
+                if (url === '/auth') {
+                    // User can ask server if authentication enabled
+                    res.setHeader('Content-Type', 'application/json');
+                    res.json({ auth: this.settings.auth });
+                } else if (url === '/favicon.ico') {
                     res.set('Content-Type', 'image/x-icon');
                     if (this.systemConfig.native.vendor.ico) {
                         // convert base64 to ico
@@ -489,10 +494,7 @@ class Web {
 
                     res.send(readFileSync(join(this.wwwDir, 'favicon.ico')));
                     return;
-                } else if (
-                    socketIoFile !== false &&
-                    (req.url.startsWith('socket.io.js') || req.url.match(/\/socket\.io\.js(\?.*)?$/))
-                ) {
+                } else if (socketIoFile !== false && url.includes('socket.io.js')) {
                     if (socketIoFile) {
                         res.contentType('text/javascript');
                         res.status(200).send(socketIoFile);
@@ -564,7 +566,7 @@ class Web {
                                 if (!token?.user) {
                                     res.json({ expireInSec: 0 });
                                 } else {
-                                    res.json({ expireInSec: Math.round((token.exp - Date.now()) / 1000) });
+                                    res.json({ expireInSec: Math.round((token.aExp - Date.now()) / 1000) });
                                 }
                             });
                             return;
@@ -618,10 +620,14 @@ class Web {
                         return;
                     }
                     if ((req.isAuthenticated && !req.isAuthenticated()) || (!req.isAuthenticated && !req.user)) {
-                        if (/^\/login\//.test(req.originalUrl) || /\.ico(\?.*)?$/.test(req.originalUrl)) {
+                        const pathName = req.url.split('?')[0];
+                        if (
+                            pathName.startsWith('/login/') ||
+                            pathName.endsWith('.ico') ||
+                            pathName.endsWith('manifest.json')
+                        ) {
                             return next();
                         }
-                        const pathName = req.url.split('?')[0];
                         // protect all paths except
                         this.unprotectedFiles ||= readdirSync(this.wwwDir).map(file => {
                             const stat = lstatSync(join(this.wwwDir, file));

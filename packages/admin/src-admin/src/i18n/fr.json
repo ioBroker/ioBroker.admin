@@ -1253,6 +1253,7 @@
     "boolean": "booléen",
     "bug": "bugtracker",
     "cancel": "Annuler",
+    "cannotGetAccessToken": "Impossible d'obtenir le jeton d'accès",
     "cert_path_note": "Vous pouvez utiliser le chemin absolu du certificat, comme '/opt/certs/cert.pem', ou simplement le télécharger par glisser-déposer",
     "certificate": "certificat",
     "certs_hint": "Vous pouvez utiliser le chemin absolu du certificat, '/opt/certs/cert.pem' par exemple, ou vous pouvez déposer les fichiers ici",
