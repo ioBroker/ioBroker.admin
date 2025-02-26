@@ -191,14 +191,13 @@ class Login extends Component<LoginProps, LoginState> {
                                 }
                                 window.location.href = origin;
                                 return;
-                            } else {
-                                sessionStorage.removeItem('refresh_token_exp');
-                                sessionStorage.removeItem('access_token_exp');
-                                sessionStorage.removeItem('refresh_token');
-                                localStorage.removeItem('access_token_exp');
-                                localStorage.removeItem('refresh_token_exp');
-                                localStorage.removeItem('refresh_token');
                             }
+                            sessionStorage.removeItem('refresh_token_exp');
+                            sessionStorage.removeItem('access_token_exp');
+                            sessionStorage.removeItem('refresh_token');
+                            localStorage.removeItem('access_token_exp');
+                            localStorage.removeItem('refresh_token_exp');
+                            localStorage.removeItem('refresh_token');
                         }
                         this.setState({
                             inProcess: false,
@@ -239,7 +238,19 @@ class Login extends Component<LoginProps, LoginState> {
 
         let content: React.JSX.Element;
         if (this.state.loggingIn) {
-            content = <Paper sx={styles.paper}>...</Paper>;
+            content = (
+                <div
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    ...
+                </div>
+            );
         } else {
             content = (
                 <Paper sx={styles.paper}>
