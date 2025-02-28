@@ -1446,14 +1446,10 @@ class App extends Router<AppProps, AppState> {
 
     onSessionExpiration = (expireAt: number): Promise<boolean> => {
         return new Promise<boolean>(resolve => {
-            const stayLoggedIn =
-                window.localStorage.getItem('refresh_token_exp') && window.localStorage.getItem('refresh_token')
-                    ? new Date(window.localStorage.getItem('refresh_token_exp')).getTime()
-                    : 0;
-
+            const tokens = Connection.readTokens();
             if (
                 (this.doNotAskSessionExpiration && Date.now() < this.doNotAskSessionExpiration) ||
-                stayLoggedIn > Date.now()
+                tokens.refresh_token_expires_in.getTime() > Date.now()
             ) {
                 resolve(true);
             } else {
@@ -1462,13 +1458,8 @@ class App extends Router<AppProps, AppState> {
                         if (Date.now() >= this.state.askForTokenRefresh.expireAt) {
                             clearInterval(this.expireInSecInterval);
                             this.expireInSecInterval = null;
-                            window.localStorage.removeItem('refresh_token');
-                            window.localStorage.removeItem('refresh_token_exp');
-                            window.localStorage.removeItem('access_token_exp');
-                            window.sessionStorage.removeItem('refresh_token');
-                            window.sessionStorage.removeItem('refresh_token_exp');
-                            window.sessionStorage.removeItem('access_token_exp');
-
+                            // On session expiration will be called only if the connectino is the owner of the token
+                            Connection.deleteTokensStatic();
                             window.location.reload();
                         } else {
                             // redraw timer
@@ -2218,12 +2209,7 @@ class App extends Router<AppProps, AppState> {
     }
 
     static logout(): void {
-        window.localStorage.removeItem('refresh_token');
-        window.localStorage.removeItem('refresh_token_exp');
-        window.localStorage.removeItem('access_token_exp');
-        window.sessionStorage.removeItem('refresh_token');
-        window.sessionStorage.removeItem('refresh_token_exp');
-        window.sessionStorage.removeItem('access_token_exp');
+        Connection.deleteTokensStatic();
 
         if (window.location.port === '3000') {
             window.location.href = `${window.location.protocol}//${window.location.hostname}:8081/logout?dev`;

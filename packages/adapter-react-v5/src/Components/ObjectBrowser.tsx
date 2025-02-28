@@ -814,9 +814,6 @@ const styles: Record<string, any> = {
         height: 'calc(100% - 50px)',
         overflow: 'auto',
     },
-    enumButton: {
-        float: 'right',
-    },
     enumCheckbox: {
         minWidth: 0,
     },
@@ -6009,10 +6006,19 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 aria-labelledby="enum-dialog-title"
                 open={!0} // true
             >
-                <DialogTitle id="enum-dialog-title">
+                <DialogTitle
+                    id="enum-dialog-title"
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        flexWrap: 'nowrap',
+                        gap: 8,
+                        paddingRight: 12,
+                    }}
+                >
                     {type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms')}
                     <Fab
-                        sx={styles.enumButton}
                         color="primary"
                         disabled={enumsOriginal === JSON.stringify(itemEnums)}
                         size="small"

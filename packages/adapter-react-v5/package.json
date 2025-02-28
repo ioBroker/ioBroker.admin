@@ -59,7 +59,7 @@
         "@emotion/styled": "^11.14.0",
         "@iobroker/js-controller-common": "^7.0.6",
         "@iobroker/js-controller-common-db": "^7.0.6",
-        "@iobroker/socket-client": "4.0.12",
+        "@iobroker/socket-client": "4.0.21",
         "@iobroker/types": "^7.0.6",
         "@mui/icons-material": "^6.4.5",
         "@mui/material": "^6.4.5",

@@ -17,7 +17,7 @@ import {
 
 import { Visibility } from '@mui/icons-material';
 
-import { type IobTheme, I18n } from '@iobroker/adapter-react-v5';
+import { type IobTheme, I18n, Connection } from '@iobroker/adapter-react-v5';
 
 export interface OAuth2Response {
     access_token: string;
@@ -144,29 +144,10 @@ class Login extends Component<object, LoginState> {
             const data: OAuth2Response = await response.json();
 
             if (data?.access_token) {
-                const now = Date.now();
                 // Save expiration time of access token and refresh token
-                if (stayLoggedIn) {
-                    sessionStorage.removeItem('refresh_token_exp');
-                    sessionStorage.removeItem('access_token_exp');
-                    sessionStorage.removeItem('refresh_token');
-                    localStorage.setItem('access_token_exp', new Date(data.expires_in * 1000 + now).toISOString());
-                    localStorage.setItem(
-                        'refresh_token_exp',
-                        new Date(data.refresh_token_expires_in * 1000 + now).toISOString(),
-                    );
-                    localStorage.setItem('refresh_token', data.refresh_token);
-                } else {
-                    localStorage.removeItem('access_token_exp');
-                    localStorage.removeItem('refresh_token_exp');
-                    localStorage.removeItem('refresh_token');
-                    sessionStorage.setItem('access_token_exp', new Date(data.expires_in * 1000 + now).toISOString());
-                    sessionStorage.setItem(
-                        'refresh_token_exp',
-                        new Date(data.refresh_token_expires_in * 1000 + now).toISOString(),
-                    );
-                    sessionStorage.setItem('refresh_token', data.refresh_token);
-                }
+                // Next loaded page with socket will take the ownership of the tokens
+                Connection.saveTokensStatic(data, stayLoggedIn);
+
                 // Get href from origin
                 // Extract from the URL like "http://localhost:8084/login?href=http://localhost:63342/ioBroker.socketio/example/index.html?_ijt=nqn3c1on9q44elikut4rgr23j8&_ij_reload=RELOAD_ON_SAVE" the href
                 const urlObj = new URL(window.location.href);
@@ -184,57 +165,38 @@ class Login extends Component<object, LoginState> {
                 return true;
             }
         }
-        sessionStorage.removeItem('refresh_token_exp');
-        sessionStorage.removeItem('access_token_exp');
-        sessionStorage.removeItem('refresh_token');
-        localStorage.removeItem('access_token_exp');
-        localStorage.removeItem('refresh_token_exp');
-        localStorage.removeItem('refresh_token');
+        Connection.deleteTokensStatic();
 
         return false;
     }
 
     private authenticateWithRefreshToken(): boolean {
-        let refreshToken: string = window.sessionStorage.getItem('refresh_token');
-        let refreshTokenExp: string;
-        let stayLoggedIn = false;
-        if (refreshToken) {
-            refreshTokenExp = window.sessionStorage.getItem('refresh_token_exp');
-        } else {
-            refreshToken = window.localStorage.getItem('refresh_token');
-            if (refreshToken) {
-                stayLoggedIn = true;
-                refreshTokenExp = window.localStorage.getItem('refresh_token_exp');
-            }
-        }
+        const tokens = Connection.readTokens();
 
-        if (refreshToken && refreshTokenExp) {
-            const exp = new Date(refreshTokenExp);
-            if (exp.getTime() > Date.now()) {
-                void fetch('../oauth/token', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `grant_type=refresh_token&refresh_token=${refreshToken}&stayloggedin=${stayLoggedIn}&client_id=ioBroker`,
-                })
-                    .then(async response => {
-                        await Login.processTokenAnswer(stayLoggedIn, response);
+        if (tokens?.refresh_token) {
+            void fetch('../oauth/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `grant_type=refresh_token&refresh_token=${tokens.refresh_token}&stayloggedin=${tokens.stayLoggedIn}&client_id=ioBroker`,
+            })
+                .then(async response => {
+                    await Login.processTokenAnswer(tokens.stayLoggedIn, response);
 
-                        this.setState({
-                            inProcess: false,
-                            loggingIn: false,
-                        });
-                    })
-                    .catch(error => {
-                        console.error(`Cannot fetch access token: ${error}`);
-                        this.setState({
-                            inProcess: false,
-                            loggingIn: false,
-                        });
+                    this.setState({
+                        inProcess: false,
+                        loggingIn: false,
                     });
-                return true;
-            }
+                })
+                .catch(error => {
+                    console.error(`Cannot fetch access token: ${error}`);
+                    this.setState({
+                        inProcess: false,
+                        loggingIn: false,
+                    });
+                });
+            return true;
         }
 
         return false;
