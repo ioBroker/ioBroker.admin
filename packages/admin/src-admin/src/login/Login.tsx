@@ -19,6 +19,14 @@ import { Visibility } from '@mui/icons-material';
 
 import { type IobTheme, I18n } from '@iobroker/adapter-react-v5';
 
+export interface OAuth2Response {
+    access_token: string;
+    expires_in: number;
+    token_type: 'Bearer' | 'JWT';
+    refresh_token: string;
+    refresh_token_expires_in: number;
+}
+
 const boxShadow = '0 4px 7px 5px rgb(0 0 0 / 14%), 0 3px 1px 1px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%)';
 
 const styles: Record<string, any> = {
@@ -42,17 +50,17 @@ const styles: Record<string, any> = {
         maxWidth: 380,
         boxShadow,
     }),
-    avatar: {
-        margin: 8,
-        backgroundColor: '#fff',
+    avatar: (theme: IobTheme): any => ({
+        m: 1,
+        backgroundColor: theme.palette.mode === 'dark' ? '#111' : '#eee',
         width: 100,
         height: 100,
-    },
-    avatarImg: {
-        width: 'calc(100% - 4px)',
-        height: 'calc(100% - 4px)',
-        padding: 2,
-    },
+        '& .MuiAvatar-img': {
+            width: 'calc(100% - 4px)',
+            height: 'calc(100% - 4px)',
+            padding: 2,
+        },
+    }),
     form: {
         width: '100%', // Fix IE 11 issue.
         marginTop: 8,
@@ -92,8 +100,6 @@ declare global {
     }
 }
 
-interface LoginProps {}
-
 interface LoginState {
     inProcess: boolean;
     username: string;
@@ -104,11 +110,11 @@ interface LoginState {
     loggingIn: boolean;
 }
 
-class Login extends Component<LoginProps, LoginState> {
+class Login extends Component<object, LoginState> {
     private readonly formRef: React.RefObject<HTMLFormElement>;
     private readonly passwordRef: React.RefObject<HTMLInputElement>;
 
-    constructor(props: LoginProps) {
+    constructor(props: object) {
         super(props);
 
         const loggingIn = window.USE_OAUTH2 ? this.authenticateWithRefreshToken() : false;
@@ -131,6 +137,61 @@ class Login extends Component<LoginProps, LoginState> {
         body.style.backgroundImage = window.loginBackgroundImage;
         body.style.backgroundSize = 'cover';
         this.passwordRef = React.createRef();
+    }
+
+    static async processTokenAnswer(stayLoggedIn: boolean, response: Response): Promise<boolean> {
+        if (response.ok) {
+            const data: OAuth2Response = await response.json();
+
+            if (data?.access_token) {
+                const now = Date.now();
+                // Save expiration time of access token and refresh token
+                if (stayLoggedIn) {
+                    sessionStorage.removeItem('refresh_token_exp');
+                    sessionStorage.removeItem('access_token_exp');
+                    sessionStorage.removeItem('refresh_token');
+                    localStorage.setItem('access_token_exp', new Date(data.expires_in * 1000 + now).toISOString());
+                    localStorage.setItem(
+                        'refresh_token_exp',
+                        new Date(data.refresh_token_expires_in * 1000 + now).toISOString(),
+                    );
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                } else {
+                    localStorage.removeItem('access_token_exp');
+                    localStorage.removeItem('refresh_token_exp');
+                    localStorage.removeItem('refresh_token');
+                    sessionStorage.setItem('access_token_exp', new Date(data.expires_in * 1000 + now).toISOString());
+                    sessionStorage.setItem(
+                        'refresh_token_exp',
+                        new Date(data.refresh_token_expires_in * 1000 + now).toISOString(),
+                    );
+                    sessionStorage.setItem('refresh_token', data.refresh_token);
+                }
+                // Get href from origin
+                // Extract from the URL like "http://localhost:8084/login?href=http://localhost:63342/ioBroker.socketio/example/index.html?_ijt=nqn3c1on9q44elikut4rgr23j8&_ij_reload=RELOAD_ON_SAVE" the href
+                const urlObj = new URL(window.location.href);
+                const href = urlObj.searchParams.get('href');
+                let origin;
+                if (href) {
+                    origin = href;
+                    if (origin.startsWith('#')) {
+                        origin = `./${origin}`;
+                    }
+                } else {
+                    origin = './';
+                }
+                window.location.href = origin;
+                return true;
+            }
+        }
+        sessionStorage.removeItem('refresh_token_exp');
+        sessionStorage.removeItem('access_token_exp');
+        sessionStorage.removeItem('refresh_token');
+        localStorage.removeItem('access_token_exp');
+        localStorage.removeItem('refresh_token_exp');
+        localStorage.removeItem('refresh_token');
+
+        return false;
     }
 
     private authenticateWithRefreshToken(): boolean {
@@ -158,47 +219,8 @@ class Login extends Component<LoginProps, LoginState> {
                     body: `grant_type=refresh_token&refresh_token=${refreshToken}&stayloggedin=${stayLoggedIn}&client_id=ioBroker`,
                 })
                     .then(async response => {
-                        if (response.ok) {
-                            const data = await response.json();
-                            if (data.accessToken) {
-                                // Save expiration time of access token and refresh token
-                                if (stayLoggedIn) {
-                                    sessionStorage.removeItem('refresh_token_exp');
-                                    sessionStorage.removeItem('access_token_exp');
-                                    sessionStorage.removeItem('refresh_token');
-                                    localStorage.setItem('access_token_exp', data.accessTokenExpiresAt);
-                                    localStorage.setItem('refresh_token_exp', data.refreshTokenExpiresAt);
-                                    localStorage.setItem('refresh_token', data.refreshToken);
-                                } else {
-                                    localStorage.removeItem('access_token_exp');
-                                    localStorage.removeItem('refresh_token_exp');
-                                    localStorage.removeItem('refresh_token');
-                                    sessionStorage.setItem('refresh_token_exp', data.refreshTokenExpiresAt);
-                                    sessionStorage.setItem('access_token_exp', data.accessTokenExpiresAt);
-                                    sessionStorage.setItem('refresh_token', data.refreshToken);
-                                }
-                                // Get href from origin
-                                const parts = window.location.href.split('&');
-                                const href = parts.find(part => part.startsWith('href='));
-                                let origin = window.location.pathname + window.location.search.replace('&error', '');
-                                if (href) {
-                                    origin = href.substring(5) || './';
-                                    if (origin.startsWith('#')) {
-                                        origin = `./${origin}`;
-                                    }
-                                } else {
-                                    origin = './';
-                                }
-                                window.location.href = origin;
-                                return;
-                            }
-                            sessionStorage.removeItem('refresh_token_exp');
-                            sessionStorage.removeItem('access_token_exp');
-                            sessionStorage.removeItem('refresh_token');
-                            localStorage.removeItem('access_token_exp');
-                            localStorage.removeItem('refresh_token_exp');
-                            localStorage.removeItem('refresh_token');
-                        }
+                        await Login.processTokenAnswer(stayLoggedIn, response);
+
                         this.setState({
                             inProcess: false,
                             loggingIn: false,
@@ -280,9 +302,8 @@ class Login extends Component<LoginProps, LoginState> {
                         ) : (
                             window.loginHideLogo === 'false' && (
                                 <Avatar
-                                    style={styles.avatar}
+                                    sx={styles.avatar}
                                     src="img/admin.svg"
-                                    sx={{ '& .MuiAvatar-img': styles.avatarImg }}
                                 />
                             )
                         )}
@@ -389,61 +410,10 @@ class Login extends Component<LoginProps, LoginState> {
                                                     headers: {
                                                         'Content-Type': 'application/x-www-form-urlencoded',
                                                     },
-                                                    body: `grant_type=password&username=${this.state.username}&password=${this.state.password}&stayloggedin=${this.state.stayLoggedIn}&origin=${origin}&client_id=ioBroker`,
+                                                    body: `grant_type=password&username=${this.state.username}&password=${this.state.password}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
                                                 });
-                                                if (response.ok) {
-                                                    const data = await response.json();
-                                                    if (data.accessToken) {
-                                                        // Save expiration time of access token and refresh token
-                                                        if (this.state.stayLoggedIn) {
-                                                            sessionStorage.removeItem('refresh_token_exp');
-                                                            sessionStorage.removeItem('access_token_exp');
-                                                            sessionStorage.removeItem('refresh_token');
-                                                            localStorage.setItem(
-                                                                'access_token_exp',
-                                                                data.accessTokenExpiresAt,
-                                                            );
-                                                            localStorage.setItem(
-                                                                'refresh_token_exp',
-                                                                data.refreshTokenExpiresAt,
-                                                            );
-                                                            localStorage.setItem('refresh_token', data.refreshToken);
-                                                        } else {
-                                                            localStorage.removeItem('access_token_exp');
-                                                            localStorage.removeItem('refresh_token_exp');
-                                                            localStorage.removeItem('refresh_token');
-                                                            sessionStorage.setItem(
-                                                                'refresh_token_exp',
-                                                                data.refreshTokenExpiresAt,
-                                                            );
-                                                            sessionStorage.setItem(
-                                                                'access_token_exp',
-                                                                data.accessTokenExpiresAt,
-                                                            );
-                                                            sessionStorage.setItem('refresh_token', data.refreshToken);
-                                                        }
-                                                        // Get href from origin
-                                                        const parts = window.location.href.split('&');
-                                                        const href = parts.find(part => part.startsWith('href='));
-                                                        let origin =
-                                                            window.location.pathname +
-                                                            window.location.search.replace('&error', '');
-
-                                                        if (href) {
-                                                            origin = href.substring(5) || './';
-                                                            if (origin.startsWith('#')) {
-                                                                origin = `./${origin}`;
-                                                            }
-                                                        } else {
-                                                            origin = './';
-                                                        }
-                                                        window.location.href = decodeURIComponent(origin);
-                                                    } else {
-                                                        this.setState({
-                                                            inProcess: false,
-                                                            error: I18n.t('cannotGetAccessToken'),
-                                                        });
-                                                    }
+                                                if (await Login.processTokenAnswer(this.state.stayLoggedIn, response)) {
+                                                    this.setState({ inProcess: false });
                                                 } else {
                                                     this.setState({
                                                         inProcess: false,

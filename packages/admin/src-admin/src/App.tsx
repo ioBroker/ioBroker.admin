@@ -1462,6 +1462,13 @@ class App extends Router<AppProps, AppState> {
                         if (Date.now() >= this.state.askForTokenRefresh.expireAt) {
                             clearInterval(this.expireInSecInterval);
                             this.expireInSecInterval = null;
+                            window.localStorage.removeItem('refresh_token');
+                            window.localStorage.removeItem('refresh_token_exp');
+                            window.localStorage.removeItem('access_token_exp');
+                            window.sessionStorage.removeItem('refresh_token');
+                            window.sessionStorage.removeItem('refresh_token_exp');
+                            window.sessionStorage.removeItem('access_token_exp');
+
                             window.location.reload();
                         } else {
                             // redraw timer

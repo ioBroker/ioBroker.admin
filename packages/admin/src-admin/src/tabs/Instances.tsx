@@ -1172,10 +1172,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
         const hostInfo = this.state.hostInfo
             ? `${
-                  // @ts-expect-error fixed
                   this.state.hostInfo['Disk free']
-                      ? // @ts-expect-error fixed
-                        `${this.t('Disk free')}: ${Math.round(this.state.hostInfo['Disk free'] / (this.state.hostInfo['Disk size'] / 100))}%, `
+                      ? `${this.t('Disk free')}: ${Math.round(this.state.hostInfo['Disk free'] / (this.state.hostInfo['Disk size'] / 100))}%, `
                       : ''
               }${this.t('Total RAM usage')}: ${this.state.mem} Mb / ` +
               `${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb ` +
