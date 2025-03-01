@@ -76,6 +76,7 @@ import {
     ViewColumn as IconColumns,
     Wifi as IconConnection,
     WifiOff as IconDisconnected,
+    DriveFileRenameOutline,
 } from '@mui/icons-material';
 
 import { IconExpert } from '../icons/IconExpert';
@@ -2679,6 +2680,14 @@ interface ObjectBrowserState {
     tooltipInfo: null | { el: JSX.Element[]; id: string };
     /** Show the menu with aliases for state */
     aliasMenu: string;
+    /** Show rename dialog */
+    showRenameDialog: {
+        value: string;
+        id: string;
+        extended: boolean;
+        renameAllChildren: boolean;
+        hasChildren: boolean;
+    } | null;
 }
 
 export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrowserState> {
@@ -2996,6 +3005,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             excludeTranslations: false,
             tooltipInfo: null,
             aliasMenu: '',
+            showRenameDialog: null,
         };
 
         this.texts = {
@@ -4814,6 +4824,201 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         color="grey"
                         variant="contained"
                         onClick={() => this.setState({ showExportDialog: false, showAllExportOptions: false })}
+                        startIcon={<IconClose />}
+                    >
+                        {this.props.t('ra_Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+
+    static calculateNewId(oldId: string, newId: string, id: string): string {
+        // find common name
+        const oldParts = oldId.split('.');
+        const newParts = newId.split('.');
+        let i = 0;
+        while (oldParts[i] === newParts[i]) {
+            i++;
+        }
+        const parts = id.split('.');
+        parts.splice(0, i + 1);
+        return `${newId}.${parts.join('.')}`;
+    }
+
+    async renameObject(oldId: string, newId: string, withChildren: boolean): Promise<void> {
+        if (oldId === newId) {
+            return;
+        }
+        let obj;
+        try {
+            obj = await this.props.socket.getObject(oldId);
+        } catch {
+            // ignore
+        }
+        let state: ioBroker.State | undefined;
+        if (obj?.type === 'state') {
+            state = await this.props.socket.getState(oldId);
+        }
+        if (withChildren) {
+            const children = Object.keys(this.objects).filter(id => id.startsWith(`${oldId}.`));
+
+            for (const id of children) {
+                const nid = ObjectBrowserClass.calculateNewId(oldId, newId, id);
+                // calculate new id
+                await this.renameObject(id, nid, false);
+            }
+        }
+
+        if (obj) {
+            await this.props.socket.setObject(newId, obj);
+            if (state) {
+                await this.props.socket.setState(newId, state);
+            }
+            await this.props.socket.delObject(oldId);
+        }
+    }
+
+    renderRenameDialog(): JSX.Element | null {
+        if (!this.state.showRenameDialog) {
+            return null;
+        }
+        let newID: string;
+        let notExtendedPossible = true;
+        const parts = this.state.showRenameDialog.id.split('.');
+        if (this.state.showRenameDialog.extended) {
+            newID = `${parts[0]}.${parts[1]}.${this.state.showRenameDialog.value}`;
+            parts.pop();
+            const parentId = parts.join('.');
+            const newParts = newID.split('.');
+            newParts.splice(parentId.length);
+
+            if (newParts.join('.') !== parentId) {
+                notExtendedPossible = false;
+            }
+        } else {
+            parts.pop();
+            newID = `${parts.join('.')}.${this.state.showRenameDialog.value}`;
+        }
+
+        return (
+            <Dialog
+                open={!0}
+                maxWidth="md"
+                fullWidth
+                onClose={() => this.setState({ showRenameDialog: null })}
+            >
+                <DialogTitle>{this.props.t('ra_Rename object')}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        value={this.state.showRenameDialog.value}
+                        onChange={e => {
+                            const value = e.target.value
+                                .replace(Utils.FORBIDDEN_CHARS, '_')
+                                .replace(/\s/g, '_')
+                                .replace(/,/g, '_')
+                                .replace(/__/g, '_')
+                                .replace(/__/g, '_');
+
+                            if (!this.state.showRenameDialog.extended && value.includes('.')) {
+                                this.setState({
+                                    showRenameDialog: {
+                                        ...this.state.showRenameDialog,
+                                        value: e.target.value.replace(/\./g, '_'),
+                                    },
+                                });
+                            } else {
+                                this.setState({
+                                    showRenameDialog: { ...this.state.showRenameDialog, value },
+                                });
+                            }
+                        }}
+                        variant="standard"
+                        fullWidth
+                        label={this.props.t('ra_New object ID')}
+                        helperText={`${this.props.t('ra_New object ID')}: ${newID}`}
+                    />
+                    {this.props.expertMode ? (
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    disabled={!notExtendedPossible}
+                                    checked={this.state.showRenameDialog.extended}
+                                    onChange={() => {
+                                        if (this.state.showRenameDialog.extended) {
+                                            const parts = this.state.showRenameDialog.value.split('.');
+                                            this.setState({
+                                                showRenameDialog: {
+                                                    ...this.state.showRenameDialog,
+                                                    value: parts.pop(),
+                                                    extended: false,
+                                                },
+                                            });
+                                        } else {
+                                            const parts = this.state.showRenameDialog.id.split('.');
+                                            parts.shift(); // remove "javascript"
+                                            parts.shift(); // remove "0"
+                                            parts.pop(); // remove the last part
+                                            this.setState({
+                                                showRenameDialog: {
+                                                    ...this.state.showRenameDialog,
+                                                    value: `${parts.join('.')}.${this.state.showRenameDialog.value}`,
+                                                    extended: true,
+                                                },
+                                            });
+                                        }
+                                    }}
+                                />
+                            }
+                            label={this.props.t('ra_Edit full path')}
+                        />
+                    ) : null}
+                    {this.state.showRenameDialog.hasChildren ? (
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={this.state.showRenameDialog.renameAllChildren}
+                                    onChange={() => {
+                                        this.setState({
+                                            showRenameDialog: {
+                                                ...this.state.showRenameDialog,
+                                                renameAllChildren: !this.state.showRenameDialog.renameAllChildren,
+                                            },
+                                        });
+                                    }}
+                                />
+                            }
+                            label={this.props.t('ra_Rename all children')}
+                        />
+                    ) : null}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        disabled={
+                            !this.state.showRenameDialog.value ||
+                            this.state.showRenameDialog.value.endsWith('.') ||
+                            newID === this.state.showRenameDialog.id
+                        }
+                        color="primary"
+                        variant="contained"
+                        onClick={async () => {
+                            await this.renameObject(
+                                this.state.showRenameDialog.id,
+                                newID,
+                                this.state.showRenameDialog.hasChildren &&
+                                    this.state.showRenameDialog.renameAllChildren,
+                            );
+                            this.setState({ showRenameDialog: null });
+                        }}
+                    >
+                        {newID !== this.state.showRenameDialog.id && this.objects[newID]
+                            ? this.props.t('ra_Replace')
+                            : this.props.t('ra_Rename')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="grey"
+                        onClick={() => this.setState({ showRenameDialog: null })}
                         startIcon={<IconClose />}
                     >
                         {this.props.t('ra_Cancel')}
@@ -8673,6 +8878,31 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     },
                 ],
             },
+            RENAME: {
+                key: '8',
+                visibility: !!(
+                    !this.props.notEditable &&
+                    !item.data.id.startsWith('system.') &&
+                    item.data.id.split('.').length > 2 &&
+                    (this.props.expertMode ||
+                        item.data.id.startsWith('javascript.0.') ||
+                        item.data.id.startsWith('0_userdata.0.'))
+                ),
+                icon: <DriveFileRenameOutline />,
+                label: this.props.t('ra_Rename'),
+                onClick: () => {
+                    this.setState({
+                        showContextMenu: null,
+                        showRenameDialog: {
+                            id: item.data.id,
+                            value: item.data.id.split('.').pop(),
+                            extended: false,
+                            hasChildren: !!item.children?.length,
+                            renameAllChildren: true,
+                        },
+                    });
+                },
+            },
             DELETE: {
                 key: 'Delete',
                 visibility: !!(
@@ -9017,6 +9247,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 {this.renderEnumDialog()}
                 {this.renderErrorDialog()}
                 {this.renderExportDialog()}
+                {this.renderRenameDialog()}
                 {this.state.modalNewObj && this.props.modalNewObject && this.props.modalNewObject(this)}
                 {this.state.modalEditOfAccess &&
                     this.state.modalEditOfAccessObjData &&
