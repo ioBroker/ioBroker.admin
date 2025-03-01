@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.22 (2025-02-23)
 -   (@GermanBluefox) Changed Device Manager for control types
 -   (@GermanBluefox) Used socket classes with TypeScript
 -   (@GermanBluefox) Added support for `plugins.sentry.enabled` flag in adapter
@@ -110,12 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.4.17 (2025-01-24)
 -   (@GermanBluefox) Fixing Tabs in JSON Config
 -   (@GermanBluefox) Added support of `ifInstallDependencies` flag in adapter
-
-### 7.4.15 (2025-01-22)
-
--   (@oweitman) Implemented better table view
--   (@GermanBluefox) Extended DM with device type
--   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as a menu
 
 ## License
 
