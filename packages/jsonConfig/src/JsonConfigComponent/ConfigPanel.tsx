@@ -161,7 +161,7 @@ interface ConfigPanelState extends ConfigGenericState {
 class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
     componentDidMount(): void {
         super.componentDidMount();
-        if (this.props.schema && this.props.schema.collapsable) {
+        if (this.props.schema?.collapsable) {
             this.setState({
                 expanded:
                     (((window as any)._localStorage as Storage) || window.localStorage).getItem(
