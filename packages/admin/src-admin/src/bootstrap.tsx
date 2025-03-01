@@ -14,10 +14,12 @@ declare global {
     interface Window {
         adapterName: string;
         disableDataReporting: boolean | string;
+        USE_OAUTH2: boolean;
     }
 }
 
 window.adapterName = 'admin';
+window.USE_OAUTH2 = true;
 
 console.log(`iobroker.${window.adapterName}@${version.version}`);
 

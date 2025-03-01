@@ -37,7 +37,7 @@
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
         "@iobroker/admin-component-easy-access": "^1.0.11",
         "@iobroker/dm-utils": "^1.0.9",
-        "@iobroker/socket-client": "^4.0.1",
+        "@iobroker/socket-client": "4.0.21",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^2.1.0",
         "@tsconfig/node16": "^16.1.3",

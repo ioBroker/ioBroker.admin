@@ -1315,7 +1315,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 <Tab
                     value="common"
                     disabled={this.state.customError || this.state.error}
-                    label={this.props.t('Common')}
+                    label={this.props.t('common')}
                 />
                 <Tab
                     value="object"
@@ -1393,8 +1393,8 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     }
 
     setAliasItem(json: ioBroker.StateObject, name: string, value: string, cb?: () => void): void {
-        json.common = json.common || ({} as any);
-        const commonAlias = json.common.alias || ({} as Record<string, any>);
+        json.common = json.common || ({} as ioBroker.StateCommon);
+        const commonAlias = json.common.alias || ({} as ioBroker.StateCommon['alias']);
 
         if (name === 'id.read') {
             if (commonAlias.id && typeof commonAlias.id === 'object') {
@@ -1412,7 +1412,6 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             (commonAlias as any)[name] = value;
         }
 
-        // @ts-expect-error fix later
         json.common.alias = commonAlias;
         this.onChange(JSON.stringify(json, null, 2), cb);
     }
@@ -1437,7 +1436,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     startIcon={<IconAdd />}
                     onClick={cb}
                 >
-                    {nameKey}
+                    {I18n.t(nameKey)}
                 </Button>
             </div>
         );
@@ -1447,7 +1446,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         const { t } = this.props;
         return (
             <Tooltip
-                title={t('Remove attribute %s', nameKey)}
+                title={t('Remove attribute %s', t(nameKey))}
                 slotProps={{ popper: { sx: styles.tooltip } }}
             >
                 <Box
@@ -1505,6 +1504,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     }
                 }
             }
+
+            const desc =
+                typeof json.common.desc === 'object' && json.common.desc
+                    ? json.common.desc[I18n.getLanguage()] || json.common.desc.en || ''
+                    : json.common.desc || '';
+
+            const name = Utils.getObjectNameFromObj(json, I18n.getLanguage(), {}, false, true);
+
             return (
                 <Box
                     style={styles.commonTabWrapper}
@@ -1533,11 +1540,60 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 label={t('Name')}
                                 style={{ ...styles.textField, marginTop: 8 }}
                                 fullWidth
-                                value={Utils.getObjectNameFromObj(json, I18n.getLanguage(), {}, false, true)}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: name ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => this.setCommonItem(json, 'name', '')}
+                                                >
+                                                    <IconClose />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                    },
+                                }}
+                                value={name}
                                 onChange={el => this.setCommonItem(json, 'name', el.target.value)}
                             />
                         ) : (
-                            ObjectBrowserEditObject.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))
+                            ObjectBrowserEditObject.buttonAddKey('Name', () => this.setCommonItem(json, 'name', ''))
+                        )}
+                        {typeof json.common.desc !== 'undefined' ? (
+                            <Box
+                                component="div"
+                                sx={styles.flex}
+                            >
+                                <TextField
+                                    variant="standard"
+                                    disabled={disabled}
+                                    label={t('Description')}
+                                    style={{ ...styles.textField, marginTop: 8 }}
+                                    fullWidth
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: desc ? (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => this.setCommonItem(json, 'desc', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ) : null,
+                                        },
+                                    }}
+                                    value={desc}
+                                    onChange={el => this.setCommonItem(json, 'desc', el.target.value)}
+                                />
+                                {this.buttonRemoveKey('Description', () => this.removeCommonItem(json, 'desc'))}
+                            </Box>
+                        ) : (
+                            ObjectBrowserEditObject.buttonAddKey('Description', () =>
+                                this.setCommonItem(json, 'desc', ''),
+                            )
                         )}
                         {checkState ? (
                             typeof json.common.type !== 'undefined' ? (
@@ -1567,10 +1623,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             ))}
                                         </Select>
                                     </FormControl>
-                                    {this.buttonRemoveKey('type', () => this.removeCommonItem(json, 'type'))}
+                                    {this.buttonRemoveKey('State type', () => this.removeCommonItem(json, 'type'))}
                                 </Box>
                             ) : (
-                                ObjectBrowserEditObject.buttonAddKey('type', () =>
+                                ObjectBrowserEditObject.buttonAddKey('State type', () =>
                                     this.setCommonItem(json, 'type', 'string'),
                                 )
                             )
@@ -1591,16 +1647,15 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                                 <Checkbox
                                                     disabled={disabled}
                                                     checked={json.common.read}
-                                                    // @ts-expect-error check later
-                                                    onClick={el => this.setCommonItem(json, 'read', el.target.checked)}
+                                                    onChange={el => this.setCommonItem(json, 'read', el.target.checked)}
                                                 />
                                             }
                                             label={t('Readable')}
                                         />
-                                        {this.buttonRemoveKey('read', () => this.removeCommonItem(json, 'read'))}
+                                        {this.buttonRemoveKey('Readable', () => this.removeCommonItem(json, 'read'))}
                                     </Box>
                                 ) : (
-                                    ObjectBrowserEditObject.buttonAddKey('read', () =>
+                                    ObjectBrowserEditObject.buttonAddKey('Readable', () =>
                                         this.setCommonItem(json, 'read', true),
                                     )
                                 )
@@ -1617,16 +1672,17 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                                 <Checkbox
                                                     disabled={disabled}
                                                     checked={json.common.write}
-                                                    // @ts-expect-error check later
-                                                    onClick={el => this.setCommonItem(json, 'write', el.target.checked)}
+                                                    onChange={el =>
+                                                        this.setCommonItem(json, 'write', el.target.checked)
+                                                    }
                                                 />
                                             }
                                             label={t('Writeable')}
                                         />
-                                        {this.buttonRemoveKey('write', () => this.removeCommonItem(json, 'write'))}
+                                        {this.buttonRemoveKey('Writeable', () => this.removeCommonItem(json, 'write'))}
                                     </Box>
                                 ) : (
-                                    ObjectBrowserEditObject.buttonAddKey('write', () =>
+                                    ObjectBrowserEditObject.buttonAddKey('Writeable', () =>
                                         this.setCommonItem(json, 'write', true),
                                     )
                                 )
@@ -1695,10 +1751,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             />
                                         )}
                                     />
-                                    {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
+                                    {this.buttonRemoveKey('Role', () => this.removeCommonItem(json, 'role'))}
                                 </Box>
                             ) : (
-                                ObjectBrowserEditObject.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
+                                ObjectBrowserEditObject.buttonAddKey('Role', () => this.setCommonItem(json, 'role', ''))
                             )
                         ) : null}
                         {typeof json.common.color !== 'undefined' ? (
@@ -1712,13 +1768,27 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     style={{ ...styles.marginBlock, ...styles.color }}
                                     label={t('Color')}
                                     type="color"
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: json.common.color ? (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => this.setCommonItem(json, 'color', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ) : null,
+                                        },
+                                    }}
                                     value={json.common.color}
                                     onChange={el => this.setCommonItem(json, 'color', el.target.value)}
                                 />
-                                {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
+                                {this.buttonRemoveKey('Color', () => this.removeCommonItem(json, 'color'))}
                             </Box>
                         ) : (
-                            ObjectBrowserEditObject.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
+                            ObjectBrowserEditObject.buttonAddKey('Color', () => this.setCommonItem(json, 'color', ''))
                         )}
                         <Box
                             component="div"
@@ -1742,14 +1812,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             value={json.common.min}
                                             onChange={el => this.setCommonItem(json, 'min', el.target.value)}
                                         />
-                                        {this.buttonRemoveKey('min', () => this.removeCommonItem(json, 'min'))}
+                                        {this.buttonRemoveKey('Min', () => this.removeCommonItem(json, 'min'))}
                                     </Box>
                                 ) : (
                                     <Box
                                         component="div"
                                         sx={styles.flex}
                                     >
-                                        {ObjectBrowserEditObject.buttonAddKey('min', () =>
+                                        {ObjectBrowserEditObject.buttonAddKey('Min', () =>
                                             this.setCommonItem(json, 'min', 0),
                                         )}
                                     </Box>
@@ -1769,14 +1839,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             value={json.common.max}
                                             onChange={el => this.setCommonItem(json, 'max', el.target.value)}
                                         />
-                                        {this.buttonRemoveKey('max', () => this.removeCommonItem(json, 'max'))}
+                                        {this.buttonRemoveKey('Max', () => this.removeCommonItem(json, 'max'))}
                                     </Box>
                                 ) : (
                                     <Box
                                         component="div"
                                         sx={styles.flex}
                                     >
-                                        {ObjectBrowserEditObject.buttonAddKey('max', () =>
+                                        {ObjectBrowserEditObject.buttonAddKey('Max', () =>
                                             this.setCommonItem(json, 'max', 100),
                                         )}
                                     </Box>
@@ -1796,14 +1866,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             value={json.common.step}
                                             onChange={el => this.setCommonItem(json, 'step', el.target.value)}
                                         />
-                                        {this.buttonRemoveKey('step', () => this.removeCommonItem(json, 'step'))}
+                                        {this.buttonRemoveKey('Step', () => this.removeCommonItem(json, 'step'))}
                                     </Box>
                                 ) : (
                                     <Box
                                         component="div"
                                         sx={styles.flex}
                                     >
-                                        {ObjectBrowserEditObject.buttonAddKey('step', () =>
+                                        {ObjectBrowserEditObject.buttonAddKey('Step', () =>
                                             this.setCommonItem(json, 'step', 1),
                                         )}
                                     </Box>
@@ -1821,14 +1891,28 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         disabled={disabled}
                                         className={{ ...styles.marginBlock, ...styles.color }}
                                         label={t('Unit')}
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: json.common.unit ? (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => this.setCommonItem(json, 'unit', '')}
+                                                        >
+                                                            <IconClose />
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ) : null,
+                                            },
+                                        }}
                                         value={json.common.unit}
                                         onChange={el => this.setCommonItem(json, 'unit', el.target.value)}
                                     />
-                                    {this.buttonRemoveKey('unit', () => this.removeCommonItem(json, 'unit'))}
+                                    {this.buttonRemoveKey('Unit', () => this.removeCommonItem(json, 'unit'))}
                                 </Box>
                             ) : (
                                 <div style={styles.flexDrop}>
-                                    {ObjectBrowserEditObject.buttonAddKey('unit', () =>
+                                    {ObjectBrowserEditObject.buttonAddKey('Unit', () =>
                                         this.setCommonItem(json, 'unit', ''),
                                     )}
                                 </div>
@@ -1848,14 +1932,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
                                 onChange={base64 => this.setCommonItem(json, 'icon', base64)}
                             />
-                            {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
+                            {this.buttonRemoveKey('Icon', () => this.removeCommonItem(json, 'icon'))}
                         </Box>
                     ) : (
                         <Box
                             component="div"
                             sx={styles.flex}
                         >
-                            {ObjectBrowserEditObject.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
+                            {ObjectBrowserEditObject.buttonAddKey('Icon', () => this.setCommonItem(json, 'icon', ''))}
                         </Box>
                     )}
                 </Box>
@@ -2130,6 +2214,20 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         fullWidth
                         label={this.props.t('New object ID')}
                         value={this.state.newId}
+                        slotProps={{
+                            input: {
+                                endAdornment: this.state.newId ? (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.setState({ newId: '' })}
+                                        >
+                                            <IconClose />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ) : null,
+                            },
+                        }}
                         onKeyDown={e => {
                             if (e.key === 'Enter' && !this.props.objects[this.state.newId]) {
                                 this.setState({ showCopyDialog: '' });

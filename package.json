@@ -22,7 +22,7 @@
     "scripts": {
         "build": "npm run clean && lerna run build",
         "clean": "lerna run clean",
-        "install-monorepo": "npm i && npm i -w packages/adapter-react-v5 && npm i -w packages/dm-gui-components && npm i -w packages/jsonConfig && npm i -w packages/admin",
+        "install-monorepo": "npm i && npm i -w packages/adapter-react-v5 && npm i -w packages/dm-gui-components && npm i -w packages/jsonConfig && npm i -w packages/admin && cd packages/admin/src-admin && npm i -f",
         "npm": "npm run install-monorepo",
         "start": "npm run start -w packages/admin",
         "release": "release-script -y --noPush --no-update-lockfile",

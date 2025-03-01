@@ -367,8 +367,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
     itemTable(attrItem: string, data: Record<string, any>, idx: number): JSX.Element | null {
         const { schema } = this.props;
-        const schemaForAttribute =
-            schema.items && schema.items.find((el: ConfigItemTableIndexed) => el.attr === attrItem);
+        const schemaForAttribute = schema.items?.find((el: ConfigItemTableIndexed) => el.attr === attrItem);
 
         if (!schemaForAttribute) {
             return null;
@@ -471,10 +470,13 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         const isAsc = orderBy === property && order === 'asc';
         const newOrder = orderCheck ? order : isAsc ? 'desc' : 'asc';
         const newValue = this.stableSort(newOrder, property);
-        this.setState(
-            { value: newValue, order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 },
-            () => this.applyFilter(false, newValue),
-        );
+        // update only if value is really changed
+        if (JSON.stringify(newValue) !== JSON.stringify(this.state.value)) {
+            this.setState(
+                { value: newValue, order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 },
+                () => this.applyFilter(false, newValue),
+            );
+        }
         //}
     };
 

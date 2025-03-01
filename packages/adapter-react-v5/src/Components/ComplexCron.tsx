@@ -345,7 +345,7 @@ export class ComplexCron extends Component<ComplexCronProps, ComplexCronState> {
         let select;
         if (this.state.modes[type] === null) {
             select = every ? 'every' : everyN ? 'everyN' : 'specific';
-            const modes = JSON.parse(JSON.stringify(this.state.modes));
+            const modes: CronProps = JSON.parse(JSON.stringify(this.state.modes));
             modes[type] = select;
             setTimeout(() => this.setState({ modes }, () => this.recalcCron()), 100);
             return null;
@@ -367,8 +367,8 @@ export class ComplexCron extends Component<ComplexCronProps, ComplexCronState> {
                     style={{ ...styles.periodSelect, verticalAlign: 'bottom' }}
                     value={select}
                     onChange={e => {
-                        const modes = JSON.parse(JSON.stringify(this.state.modes));
-                        modes[type] = e.target.value;
+                        const modes: CronProps = JSON.parse(JSON.stringify(this.state.modes));
+                        modes[type] = e.target.value as string;
                         if (e.target.value === 'every') {
                             this.setCronAttr(type, '*', modes);
                         } else if (e.target.value === 'everyN') {

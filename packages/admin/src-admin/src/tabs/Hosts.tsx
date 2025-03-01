@@ -20,6 +20,7 @@ import {
     type ThemeType,
     type Translate,
 } from '@iobroker/adapter-react-v5';
+import { InfoBox } from '@foxriver76/iob-component-lib';
 
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import type { HostsWorker, NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
@@ -27,7 +28,6 @@ import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import { blinkClasses } from '@/components/Hosts/HostGeneric';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
-import { InfoBox } from '@foxriver76/iob-component-lib';
 
 const styles: Record<string, any> = {
     grow: {
@@ -234,37 +234,39 @@ class Hosts extends Component<HostsProps, HostsState> {
         });
     }
 
-    readInfo(): Promise<void> {
-        return this.props.socket.getHosts(true).then(hosts =>
-            this.props.socket
-                .getRepository(this.props.currentHost, { update: false }, false, this.state.readTimeoutMs)
-                .then(async repository => {
-                    const alive = JSON.parse(JSON.stringify(this.state.alive));
+    async readInfo(): Promise<void> {
+        try {
+            const hosts: ioBroker.HostObject[] = await this.props.socket.getHosts(true);
+            const repository: Record<string, RepoAdapterObject> = (await this.props.socket.getRepository(
+                this.props.currentHost,
+                { update: false },
+                false,
+                this.state.readTimeoutMs,
+            )) as unknown as Record<string, RepoAdapterObject>;
+            const alive = JSON.parse(JSON.stringify(this.state.alive));
 
-                    for (let h = 0; h < hosts.length; h++) {
-                        const aliveValue = await this.props.socket.getState(`${hosts[h]._id}.alive`);
-                        alive[hosts[h]._id] = !aliveValue ? false : !!aliveValue.val;
-                    }
+            for (let h = 0; h < hosts.length; h++) {
+                const aliveValue = await this.props.socket.getState(`${hosts[h]._id}.alive`);
+                alive[hosts[h]._id] = !aliveValue ? false : !!aliveValue.val;
+            }
 
-                    const hostsData = await this.getHostsData(hosts, alive);
-                    const newState: Partial<HostsState> = {
-                        alive,
-                        hosts,
-                        hostsData,
-                        repository,
-                    };
-                    if (this.state.filterText && hosts.length <= 2) {
-                        newState.filterText = '';
-                    }
-                    this.setState(newState as HostsState);
-                })
-                .catch((e: unknown): void => {
-                    window.alert(`Cannot getRepository: ${e as Error}`);
-                    if ((e as Error).toString().includes('timeout')) {
-                        this.setState({ showSlowConnectionWarning: true });
-                    }
-                }),
-        );
+            const hostsData = await this.getHostsData(hosts, alive);
+            const newState: Partial<HostsState> = {
+                alive,
+                hosts,
+                hostsData,
+                repository,
+            };
+            if (this.state.filterText && hosts.length <= 2) {
+                newState.filterText = '';
+            }
+            this.setState(newState as HostsState);
+        } catch (e: unknown) {
+            window.alert(`Cannot getRepository: ${e as Error}`);
+            if ((e as Error).toString().includes('timeout')) {
+                this.setState({ showSlowConnectionWarning: true });
+            }
+        }
     }
 
     updateHosts = (events: HostEvent[]): void => {
