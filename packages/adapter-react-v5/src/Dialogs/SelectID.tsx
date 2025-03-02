@@ -4,7 +4,6 @@
  * MIT License
  *
  */
-// please do not delete React, as without it other projects could not be compiled: ReferenceError: React is not defined
 import React, { Component, type JSX } from 'react';
 
 import { Button, DialogTitle, DialogContent, DialogActions, Dialog } from '@mui/material';
@@ -94,11 +93,17 @@ interface DialogSelectIDProps {
     root?: string;
     /** Allow selection of non-objects (virtual branches) */
     allowNonObjects?: boolean;
+    /** Will be called by selection, so the decision could be done if the OK button is available or not */
+    onSelectConfirm?: (
+        selected: string | string[],
+        objects: Record<string, ioBroker.Object | null | undefined>,
+    ) => Promise<boolean>;
 }
 
 interface DialogSelectIDState {
     selected: string[];
     name: string | null;
+    selectionBlocked: boolean;
 }
 
 export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectIDState> {
@@ -147,6 +152,7 @@ export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectI
         this.state = {
             selected,
             name: '',
+            selectionBlocked: false,
         };
     }
 
@@ -270,15 +276,37 @@ export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectI
                                 JSON.stringify(filterConfig),
                             );
                         }}
-                        onSelect={(_selected: string | string[], name: string | null, isDouble?: boolean) => {
+                        onSelect={async (
+                            _selected: string | string[],
+                            name: string | null,
+                            isDouble?: boolean,
+                        ): Promise<void> => {
                             let selected: string[];
                             if (!Array.isArray(_selected)) {
                                 selected = [_selected];
                             } else {
                                 selected = _selected;
                             }
+
                             if (JSON.stringify(selected) !== JSON.stringify(this.state.selected)) {
-                                this.setState({ selected, name }, () => isDouble && this.handleOk());
+                                let selectionAllowed = true;
+                                if (this.props.onSelectConfirm) {
+                                    const objects: Record<string, ioBroker.Object | null | undefined> = {};
+                                    for (const id of selected) {
+                                        try {
+                                            objects[id] = await this.props.socket.getObject(id);
+                                        } catch {
+                                            // ignore
+                                        }
+                                    }
+
+                                    selectionAllowed = await this.props.onSelectConfirm(selected, objects);
+                                }
+
+                                this.setState(
+                                    { selected, name, selectionBlocked: !selectionAllowed },
+                                    () => isDouble && this.handleOk(),
+                                );
                             } else if (isDouble) {
                                 this.handleOk();
                             }
@@ -294,7 +322,7 @@ export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectI
                         variant="contained"
                         onClick={() => this.handleOk()}
                         startIcon={<IconOk />}
-                        disabled={!this.state.selected.length}
+                        disabled={!this.state.selected.length || this.state.selectionBlocked}
                         color="primary"
                     >
                         {this.props.ok || I18n.t('ra_Ok')}

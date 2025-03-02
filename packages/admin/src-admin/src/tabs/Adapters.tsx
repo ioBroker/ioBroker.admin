@@ -31,7 +31,7 @@ import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import type { HostInfo } from '@iobroker/socket-client';
 import CustomSelectButton from '@/components/CustomSelectButton';
-import AdaptersUpdaterDialog from '@/dialogs/AdaptersUpdaterDialog';
+import AdaptersUpdaterDialog from '@/components/Adapters/AdaptersUpdaterDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import IsVisible from '@/components/IsVisible';
 import AdminUtils from '@/helpers/AdminUtils';
@@ -48,12 +48,12 @@ import {
 import type { AdaptersWorker, AdapterEvent } from '@/Workers/AdaptersWorker';
 import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
 import { HostAdapterWorker, type HostAdapterEvent } from '@/Workers/HostAdapterWorker';
-import type { CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
+import type { CompactInstanceInfo } from '@/components/Adapters/AdapterUpdateDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 
 import type { Ratings, AdapterCacheEntry } from '@/components/Adapters/AdapterGeneric';
 import type { HostsWorker } from '@/Workers/HostsWorker';
-import GitHubInstallDialog from '@/dialogs/GitHubInstallDialog';
+import GitHubInstallDialog from '@/components/Adapters/GitHubInstallDialog';
 import AdapterInstallDialog, {
     type AdapterRatingInfo,
     type InstalledInfo,

@@ -238,29 +238,6 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
             <LinearProgress />
         );
 
-        // If any widths are defined
-        if (schema.xs || schema.sm || schema.md || schema.lg || schema.xl) {
-            item = (
-                <Grid2
-                    size={{
-                        xs: schema.xs || 12,
-                        sm: schema.sm || undefined,
-                        md: schema.md || undefined,
-                        lg: schema.lg || undefined,
-                        xl: schema.xl || undefined,
-                    }}
-                    style={{
-                        marginBottom: 0,
-                        textAlign: 'left',
-                        ...schema.style,
-                        ...(this.props.oContext.themeType === 'dark' ? schema.darkStyle : {}),
-                    }}
-                >
-                    {item}
-                </Grid2>
-            );
-        }
-
         if (schema.newLine) {
             return (
                 <>

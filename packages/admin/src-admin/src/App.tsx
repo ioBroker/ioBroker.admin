@@ -90,7 +90,7 @@ import Drawer, {
 import Connecting from './components/Connecting';
 
 import WizardDialog from './dialogs/WizardDialog';
-import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
+import SystemSettingsDialog from './components/SystemSettings';
 import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
 import ExpertModeDialog from './dialogs/ExpertModeDialog';
@@ -104,7 +104,7 @@ import { ObjectsWorker } from './Workers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from './dialogs/SlowConnectionWarningDialog';
 import IsVisible from './components/IsVisible';
-import type { CompactInstanceInfo } from './dialogs/AdapterUpdateDialog';
+import type { CompactInstanceInfo } from './components/Adapters/AdapterUpdateDialog';
 
 import enLocal from './i18n/en.json';
 import deLocal from './i18n/de.json';

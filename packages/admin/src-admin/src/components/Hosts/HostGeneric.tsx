@@ -40,7 +40,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import type { HostsWorker, NotificationAnswer } from '@/Workers/HostsWorker';
-import AdapterUpdateDialog, { type News } from '@/dialogs/AdapterUpdateDialog';
+import AdapterUpdateDialog, { type News } from '@/components/Adapters/AdapterUpdateDialog';
 import JsControllerUpdater from '@/dialogs/JsControllerUpdater';
 import JsControllerDialog from '@/dialogs/JsControllerDialog';
 import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
