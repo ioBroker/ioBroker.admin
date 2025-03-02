@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.5.0 (2025-03-02)
 -   (@GermanBluefox) Changed Device Manager for control types
 -   (@GermanBluefox) Used socket classes with TypeScript
 -   (@GermanBluefox) Added support for `plugins.sentry.enabled` flag in adapter
