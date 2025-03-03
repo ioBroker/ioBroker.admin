@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.5.1 (2025-03-03)
 -   (@GermanBluefox) Added the possibility to rename or copy of the objects
 -   (@GermanBluefox) Corrected the problem with the user rights
 
@@ -110,10 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.4.18 (2025-01-25)
 -   (@GermanBluefox) Changes are only for device manager.
 -   (@GermanBluefox) Do not show values longer than 40 chars in Object Browser
-
-### 7.4.17 (2025-01-24)
--   (@GermanBluefox) Fixing Tabs in JSON Config
--   (@GermanBluefox) Added support of `ifInstallDependencies` flag in adapter
 
 ## License
 
