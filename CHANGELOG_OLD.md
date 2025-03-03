@@ -1,4 +1,8 @@
 # Older changes
+## 7.4.17 (2025-01-24)
+-   (@GermanBluefox) Fixing Tabs in JSON Config
+-   (@GermanBluefox) Added support of `ifInstallDependencies` flag in adapter
+
 ## 7.4.15 (2025-01-22)
 
 -   (@oweitman) Implemented better table view
