@@ -16,10 +16,10 @@ import {
 // Icons
 import { Close as CloseIcon, Save as SaveIcon } from '@mui/icons-material';
 
-import ObjectCustomEditor from '../components/Object/ObjectCustomEditor';
-import ObjectHistoryData from '../components/Object/ObjectHistoryData';
-import ObjectChart from '../components/Object/ObjectChart';
-import MobileDialog from '../helpers/MobileDialog';
+import ObjectCustomEditor from '@/components/Object/ObjectCustomEditor';
+import ObjectHistoryData from '@/components/Object/ObjectHistoryData';
+import ObjectChart from '@/components/Object/ObjectChart';
+import MobileDialog from '@/helpers/MobileDialog';
 
 const styles: Record<string, any> = {
     dialog: {

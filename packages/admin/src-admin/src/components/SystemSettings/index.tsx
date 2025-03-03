@@ -29,18 +29,18 @@ import {
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import AdminUtils from '@/helpers/AdminUtils';
-import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
-import RepositoriesDialog, { type Repository } from './SystemSettingsTabs/RepositoriesDialog';
-import LicensesDialog from './SystemSettingsTabs/LicensesDialog';
-import CertificatesDialog from './SystemSettingsTabs/CertificatesDialog';
-import SSLDialog from './SystemSettingsTabs/SSLDialog';
-import ACLDialog from './SystemSettingsTabs/ACLDialog';
-import StatisticsDialog from './SystemSettingsTabs/StatisticsDialog';
-import type { BaseSystemSettingsDialogProps } from './SystemSettingsTabs/BaseSystemSettingsDialog';
+import MainSettingsDialog from './MainSettingsDialog';
+import RepositoriesDialog, { type Repository } from './RepositoriesDialog';
+import LicensesDialog from './LicensesDialog';
+import CertificatesDialog from './CertificatesDialog';
+import SSLDialog from './SSLDialog';
+import ACLDialog from './ACLDialog';
+import StatisticsDialog from './StatisticsDialog';
+import type { BaseSystemSettingsDialogProps } from './BaseSystemSettingsDialog';
 // icons
 
 // style
-import '../assets/css/style.css';
+import '../../assets/css/style.css';
 
 const SOME_PASSWORD = '__SOME_PASSWORD__';
 

@@ -41,10 +41,10 @@ import {
 
 import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
-import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
+import AdapterUpdateDialog from '@/components/Adapters/AdapterUpdateDialog';
 import CustomModal from '@/components/CustomModal';
 import RatingDialog, { type RatingDialogRepository } from '@/dialogs/RatingDialog';
-import AdapterDeletionDialog from '@/dialogs/AdapterDeletionDialog';
+import AdapterDeletionDialog from '@/components/Adapters/AdapterDeletionDialog';
 import AdminUtils from '@/helpers/AdminUtils';
 import AdapterInstallDialog, {
     type AdapterInstallDialogState,

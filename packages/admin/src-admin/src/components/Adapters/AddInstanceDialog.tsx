@@ -22,7 +22,7 @@ import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from
 
 import type { HostsWorker } from '@/Workers/HostsWorker';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
-import { checkCondition, type CompactInstanceInfo, type Message } from '@/dialogs/AdapterUpdateDialog';
+import { checkCondition, type CompactInstanceInfo, type Message } from './AdapterUpdateDialog';
 import HostSelectors from '@/components/HostSelectors';
 
 const styles: Record<string, any> = {

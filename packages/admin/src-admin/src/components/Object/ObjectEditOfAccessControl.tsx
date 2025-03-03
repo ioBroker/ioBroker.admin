@@ -3,7 +3,7 @@ import { Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Sw
 
 import { I18n, Icon, type IobTheme, type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
 
-import CustomModal from '../components/CustomModal';
+import CustomModal from '@/components/CustomModal';
 
 const readWriteArray: Record<string, { name: string; valueNum: number; title: string }[]>[] = [
     {

@@ -13,7 +13,7 @@ import {
 
 import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 import type { CompactAdapterInfo } from '@/types';
-import type { CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
+import type { CompactInstanceInfo } from '@/components/Adapters/AdapterUpdateDialog';
 
 const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({

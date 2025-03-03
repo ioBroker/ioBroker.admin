@@ -87,6 +87,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Added the possibility to rename or copy of the objects
+-   (@GermanBluefox) Corrected the problem with the user rights
+
 ### 7.5.0 (2025-03-02)
 -   (@GermanBluefox) Changed Device Manager for control types
 -   (@GermanBluefox) Used socket classes with TypeScript
