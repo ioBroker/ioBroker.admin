@@ -111,15 +111,12 @@ class ObjectMoveRenameDialog extends Component<ObjectEditDialogProps, ObjectEdit
 
         Object.values(this.objects).forEach((obj: ioBroker.Object): void => {
             if (obj.common?.custom) {
-                const found = Object.keys(obj.common.custom).find(key => {
-                    // Normally we should try to find all instances with common.getHistory flag
-                    if (instances.includes(key)) {
-                        if (!obj.common.custom[key].aliasId) {
-                            return true;
-                        }
-                    }
-                });
-                if (found) {
+                // Try to find all instances with common.getHistory flag
+                if (
+                    Object.keys(obj.common.custom).find(
+                        key => instances.includes(key) && !obj.common.custom[key].aliasId,
+                    )
+                ) {
                     withHistory.push(obj._id);
                 }
             }
