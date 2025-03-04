@@ -31,7 +31,6 @@ interface ObjectEditDialogState {
     name: string;
     parentId: string;
     renameAllChildren: boolean;
-    copy: boolean;
     newExists: boolean;
     showParentDialog: boolean;
     showHistoryWarning: boolean;
@@ -52,7 +51,6 @@ class ObjectMoveRenameDialog extends Component<ObjectEditDialogProps, ObjectEdit
             name,
             parentId: parts.join('.'),
             renameAllChildren: true,
-            copy: window.localStorage.getItem('objects.copyMoveRename') === 'true',
             newExists: true,
             showParentDialog: false,
             showHistoryWarning: false,

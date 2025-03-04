@@ -61,15 +61,15 @@
         "@iobroker/js-controller-common-db": "^7.0.6",
         "@iobroker/socket-client": "4.0.21",
         "@iobroker/types": "^7.0.6",
-        "@mui/icons-material": "^6.4.5",
-        "@mui/material": "^6.4.5",
-        "@sentry/browser": "^9.1.0",
-        "cronstrue": "^2.55.0",
+        "@mui/icons-material": "^6.4.6",
+        "@mui/material": "^6.4.6",
+        "@sentry/browser": "^9.3.0",
+        "cronstrue": "^2.56.0",
         "file-selector": "^2.1.2",
         "react-color": "^2.19.3",
         "react-colorful": "^5.6.1",
         "react-cropper": "^2.3.3",
-        "react-dropzone": "^14.3.6",
+        "react-dropzone": "^14.3.8",
         "react-inlinesvg": "^4.2.0"
     },
     "devDependencies": {
@@ -79,12 +79,12 @@
         "@babel/preset-env": "^7.26.9",
         "@babel/preset-flow": "^7.25.9",
         "@babel/preset-react": "^7.26.3",
-        "@iobroker/eslint-config": "^1.0.0",
-        "@types/node": "^22.13.5",
+        "@iobroker/eslint-config": "^2.0.0",
+        "@types/node": "^22.13.9",
         "@types/react": "^18.3.18",
         "@types/react-color": "^3.0.13",
         "ajv": "^8.17.1",
         "ts-node": "^10.9.2",
-        "typescript": "^5.7.3"
+        "typescript": "^5.8.2"
     }
 }

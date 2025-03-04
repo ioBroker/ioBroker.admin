@@ -25,7 +25,7 @@
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.3",
         "@iobroker/i18n": "^0.3.1",
-        "@iobroker/socket-classes": "^2.1.17",
+        "@iobroker/socket-classes": "^2.2.0",
         "@iobroker/webserver": "^1.1.7",
         "@iobroker/ws": "^2.0.2",
         "@iobroker/ws-server": "^4.2.9",
@@ -61,9 +61,9 @@
         "@types/validator": "^13.12.2",
         "colorette": "^2.0.20",
         "less": "^4.2.2",
-        "puppeteer": "^24.2.1",
+        "puppeteer": "^24.3.1",
         "src-rx": "file:src-admin",
-        "typescript": "^5.7.3"
+        "typescript": "^5.8.2"
     },
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.admin/issues"

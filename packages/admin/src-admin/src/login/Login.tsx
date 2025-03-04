@@ -372,7 +372,7 @@ class Login extends Component<object, LoginState> {
                                                     headers: {
                                                         'Content-Type': 'application/x-www-form-urlencoded',
                                                     },
-                                                    body: `grant_type=password&username=${this.state.username}&password=${this.state.password}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
+                                                    body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
                                                 });
                                                 if (await Login.processTokenAnswer(this.state.stayLoggedIn, response)) {
                                                     this.setState({ inProcess: false });
