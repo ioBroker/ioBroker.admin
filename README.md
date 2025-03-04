@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.5.2 (2025-03-04)
 -   (@GermanBluefox) Corrected the login page
 -   (@GermanBluefox) Removed the frequent debug output
 
@@ -110,10 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.4.19 (2025-01-26)
 -   (@GermanBluefox) Corrected file upload in File Browser and in JSON Config
-
-### 7.4.18 (2025-01-25)
--   (@GermanBluefox) Changes are only for device manager.
--   (@GermanBluefox) Do not show values longer than 40 chars in Object Browser
 
 ## License
 
