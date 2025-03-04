@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.5.1",
+    "version": "7.5.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.5.2": {
+        "en": "Corrected the login page\nRemoved the frequent debug output",
+        "de": "Korrektur der Anmeldeseite\nEntfernen der häufigen Debug-Ausgabe",
+        "ru": "Исправлена страница login\nСнят частый вывод отладки",
+        "pt": "Corrigido a página de login\nRemovido a saída de depuração frequente",
+        "nl": "De aanmeldpagina corrigeren\nDe frequente debug-uitvoer is verwijderd",
+        "fr": "Correction de la page de connexion\nSupprimé la sortie de débogage fréquente",
+        "it": "Corretto la pagina di login\nRimozione dell'uscita di debug frequente",
+        "es": "Corregido la página de inicio de sesión\nEliminar la producción de depuración frecuente",
+        "pl": "Poprawiono stronę logowania\nUsunięto częste wyjście debugowania",
+        "uk": "Виправлено сторінку входу\nВилучено часте дебвуг",
+        "zh-cn": "更正登录页面\n删除频繁调试输出"
+      },
       "7.5.1": {
         "en": "Added the possibility to rename or copy of the objects\nCorrected the problem with the user rights",
         "de": "Hinzufügen der Möglichkeit zum Umbenennen oder Kopieren der Objekte\nDas Problem mit den Nutzerrechten korrigiert",
@@ -96,19 +109,6 @@
         "pl": "Zmiany są tylko dla menedżera urządzeń.\nNie pokazuj wartości dłuższych niż 40 znaków w przeglądarce obiektów",
         "uk": "Зміни тільки для диспетчера пристроїв.\nНе показувати значення довше 40 chars у браузері Об'єкт",
         "zh-cn": "更改只针对设备管理器 .\n在对象浏览器中不显示超过40个字符的值"
-      },
-      "7.4.17": {
-        "en": "Fixing Tabs in JSON Config\nAdded support of `ifInstallDependencies` flag in adapter",
-        "de": "Registerkarten in JSON Config\nUnterstützung von `ifInstallDependencies`-Flag im Adapter hinzugefügt",
-        "ru": "Fixing Tabs in JSON Config\nДобавлена поддержка флага \"ifInstallDependence\" в адаптере",
-        "pt": "Fixação de guias em JSON Config\nAdicionado suporte de `ifInstallDependencies` bandeira em adaptador",
-        "nl": "Tabbladen in JSON instellen\nToegevoegde ondersteuning van de vlag \"InstallDependents\" in de adapter",
-        "fr": "Correction des onglets dans JSON Config\nAjout du support du drapeau `ifInstallDependences` dans l`adaptateur",
-        "it": "Fissare le schede in JSON Config\nAggiunto il supporto di `ifInstallDependencies` bandiera in adattatore",
-        "es": "Fijación de pestañas en JSON Config\nAgregado soporte de bandera 'siInstallDependencies` en adaptador",
-        "pl": "Fixing Tabs in JSON Config\nDodano wsparcie flagi 'ifInstallation Dependences' w adapterze",
-        "uk": "Виправлення вкладок в JSON Config\nДодано підтримку прапора `ifInstallDepencies` в адаптері",
-        "zh-cn": "在 JSON 配置中修复标签\n在适配器中添加“ifInstallDependency”旗的支持"
       }
     },
     "desc": {
