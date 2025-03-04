@@ -25,7 +25,7 @@
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.3",
         "@iobroker/i18n": "^0.3.1",
-        "@iobroker/socket-classes": "^2.1.17",
+        "@iobroker/socket-classes": "^2.2.0",
         "@iobroker/webserver": "^1.1.7",
         "@iobroker/ws": "^2.0.2",
         "@iobroker/ws-server": "^4.2.9",

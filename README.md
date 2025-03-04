@@ -87,6 +87,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Corrected the login page
+-   (@GermanBluefox) Removed the frequent debug output
+
 ### 7.5.1 (2025-03-03)
 -   (@GermanBluefox) Added the possibility to rename or copy of the objects
 -   (@GermanBluefox) Corrected the problem with the user rights
