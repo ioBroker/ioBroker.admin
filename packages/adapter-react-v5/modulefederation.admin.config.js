@@ -17,7 +17,7 @@ module.exports = {
         '@iobroker/adapter-react-v5',
         '@iobroker/json-config',
         '@iobroker/dm-gui-components',
-        // '@mui/icons-material',
+        '@mui/icons-material',
         '@mui/material',
         '@mui/x-date-pickers',
         'date-fns',
@@ -27,7 +27,7 @@ module.exports = {
         'react',
         'react-ace',
         'react-dom',
-        // 'react-dropzone',
+        'react-dropzone',
         'semver',
     ])
 }

@@ -26,7 +26,6 @@
         "react-qr-code": "^2.0.15"
     },
     "devDependencies": {
-        "@craco/craco": "^7.1.0",
         "@types/crypto-js": "^4.2.2",
         "@types/json5": "^2.2.0",
         "ajv": "^8.17.1",

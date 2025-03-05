@@ -114,15 +114,14 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                     ],
                     // force: true // may be needed to side-load remotes after the fact.
                 );
-                setPromise = loadRemote(
-                    uniqueName + '/' + fileToLoad,
-                    );
+                setPromise = loadRemote(`${uniqueName}/${fileToLoad}`);
                 if (i18nPromise instanceof Promise) {
                     setPromise = Promise.all([setPromise, i18nPromise]).then(result => result[0]);
                 }
                 // remember promise
                 ConfigCustom.runningLoads[`${url}!${fileToLoad}`] = setPromise;
             } catch (error) {
+                console.error(error);
                 this.setState({ error: `Cannot import from ${this.props.schema.url}: ${error}` });
             }
         }
@@ -137,9 +136,11 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                     error: `Component ${this.props.schema.name} not found in ${this.props.schema.url}. Found: ${keys.join(', ')}`,
                 });
             } else {
-                this.setState({ Component: component[componentName] });
+                const _Component = component[componentName];
+                setTimeout(() => this.setState({ Component: _Component }), 2000);
             }
         } catch (error) {
+            console.error(error);
             this.setState({ error: `Cannot import from ${this.props.schema.url}: ${error}` });
         }
     }
