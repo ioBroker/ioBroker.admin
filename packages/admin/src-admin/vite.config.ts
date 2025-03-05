@@ -4,14 +4,14 @@ import commonjs from 'vite-plugin-commonjs';
 import svgr from 'vite-plugin-svgr';
 import vitetsConfigPaths from 'vite-tsconfig-paths';
 import { federation } from '@module-federation/vite';
-import config from '@iobroker/adapter-react-v5/modulefederation.admin.config';
+import { ModuleFederationShared } from './modulefederation.admin.config'
 import path from 'path';
 
 export default defineConfig({
     plugins: [
         federation({
             name: 'iobroker_admin',
-            shared: config.shared,
+            shared: ModuleFederationShared,
             exposes: {},
             remotes: {},
             filename: 'remoteEntry.js',

@@ -1,5 +1,5 @@
-const makeShared = (pkgs) => {
-    const result = {};
+const makeShared = (pkgs: string[]): Record<string, { requiredVersion: '*', singleton: true }> => {
+    const result: Record<string, { requiredVersion: '*', singleton: true }> = {};
     pkgs.forEach(packageName => {
         result[packageName] = {
             requiredVersion: '*',
@@ -10,8 +10,7 @@ const makeShared = (pkgs) => {
 };
 
 // Admin shares these modules for all components
-module.exports = {
-    shared: makeShared([
+export const ModuleFederationShared = () => makeShared([
         '@emotion/react',
         '@emotion/styled',
         '@iobroker/adapter-react-v5',
@@ -30,4 +29,3 @@ module.exports = {
         // 'react-dropzone',
         'semver',
     ])
-}

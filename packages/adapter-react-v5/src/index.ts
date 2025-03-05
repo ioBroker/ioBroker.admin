@@ -135,3 +135,5 @@ export type {
     Width,
     GenericAppState,
 } from './types';
+
+export { ModuleFederationShared } from './modulefederation.admin.config';
