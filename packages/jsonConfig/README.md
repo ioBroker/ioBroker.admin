@@ -715,10 +715,14 @@ accordion with items that could be deleted, added, moved up, moved down (Admin 6
 
 ### `jsonEditor`
 
-| Property       | Description                                                        |
-|----------------|--------------------------------------------------------------------|
-| `validateJson` | if false, the text will be not validated as JSON                   |
-| `allowEmpty`   | if true, the JSON will be validated only if the value is not empty |
+Button to open a JSON(5) editor. JSON5 is supported from admin version 5.7.3
+
+| Property               | Description                                                           |
+|------------------------|-----------------------------------------------------------------------|
+| `validateJson`         | if false, the text will be not validated as JSON                      |
+| `allowEmpty`           | if true, the JSON will be validated only if the value is not empty    |
+| `json5`                | if JSON5 format allowed (From 7.5.3)                                  |
+| `doNotApplyWithError`  | Do not allow to save the value if error in JSON or JSON5 (From 7.5.3) |
 
 ### `language`
 

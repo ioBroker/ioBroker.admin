@@ -1317,6 +1317,14 @@
                     "type": "boolean",
                     "description": "if true, the JSON will be validated only if the value is not empty"
                 },
+                "json5": {
+                    "type": "boolean",
+                    "description": "if JSON5 format allowed"
+                },
+                "doNotApplyWithError": {
+                    "type": "boolean",
+                    "description": "Do not allow to save the value if error in JSON or JSON5"
+                },
                 "label": true,
                 "type": true,
                 "defaultSendTo": true,
@@ -6540,6 +6548,18 @@
                                     },
                                     "then": {
                                         "$ref": "#/definitions/coordinatesProps"
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "properties": {
+                                            "type": {
+                                                "const": "jsonEditor"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "$ref": "#/definitions/jsonEditorProps"
                                     }
                                 },
                                 {

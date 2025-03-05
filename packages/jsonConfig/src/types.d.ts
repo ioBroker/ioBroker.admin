@@ -860,6 +860,10 @@ export interface ConfigItemJsonEditor extends ConfigItem {
     validateJson?: boolean;
     /** if true, the JSON will be validated only if the value is not empty */
     allowEmpty?: boolean;
+    /** Allow JSON5 format. Default is disabled */
+    json5?: boolean;
+    /** Do not allow to save the value if error in JSON or JSON5 */
+    doNotApplyWithError?: boolean;
 }
 
 export interface ConfigItemInterface extends ConfigItem {
