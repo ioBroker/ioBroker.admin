@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 
 import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemStaticDivider } from '#JC/types';
+import type { ConfigItemStaticDivider } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: {

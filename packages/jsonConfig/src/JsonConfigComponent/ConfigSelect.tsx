@@ -4,7 +4,7 @@ import { InputLabel, FormHelperText, FormControl, Select, MenuItem, ListSubheade
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemSelect, ConfigItemSelectOption } from '#JC/types';
+import type { ConfigItemSelect, ConfigItemSelectOption } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, any> = {

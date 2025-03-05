@@ -4,7 +4,7 @@ import { TextField } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemPort } from '#JC/types';
+import type { ConfigItemPort } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, any> = {

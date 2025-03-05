@@ -3,7 +3,7 @@ import React, { type JSX } from 'react';
 import { IconButton, TextField } from '@mui/material';
 
 import { I18n, IconCopy, Utils } from '@iobroker/adapter-react-v5';
-import type { ConfigItemPattern } from '#JC/types';
+import type { ConfigItemPattern } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigPatternProps extends ConfigGenericProps {

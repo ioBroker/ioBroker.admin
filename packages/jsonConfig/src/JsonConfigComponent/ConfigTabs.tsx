@@ -3,7 +3,7 @@ import React, { type JSX } from 'react';
 import { Tabs, Tab, IconButton, Toolbar, Menu, MenuItem, ListItemIcon } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 
-import type { ConfigItemTabs } from '#JC/types';
+import type { ConfigItemTabs } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
 

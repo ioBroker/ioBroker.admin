@@ -6,7 +6,7 @@ import { GpsFixed as IconGpsFixed, LocationOn as IconLocationOn } from '@mui/ico
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemCoordinates } from '#JC/types';
+import type { ConfigItemCoordinates } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, React.CSSProperties> = {

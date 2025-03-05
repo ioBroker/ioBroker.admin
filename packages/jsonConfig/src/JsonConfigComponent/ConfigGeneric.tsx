@@ -35,7 +35,7 @@ import {
     type ThemeName,
     type IobTheme,
 } from '@iobroker/adapter-react-v5';
-import type { ConfigIconType, ConfigItemAny, ConfigItemConfirmData, JsonConfigContext } from '#JC/types';
+import type { ConfigIconType, ConfigItemAny, ConfigItemConfirmData, JsonConfigContext } from '../types';
 
 const DEFAULT_SM_SIZE = window.innerWidth <= 600 ? 12 : undefined;
 

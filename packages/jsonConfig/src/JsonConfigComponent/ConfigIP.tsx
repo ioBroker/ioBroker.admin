@@ -4,7 +4,7 @@ import { InputLabel, TextField, FormHelperText, MenuItem, FormControl, Select } 
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemIP } from '#JC/types';
+import type { ConfigItemIP } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigIPProps extends ConfigGenericProps {

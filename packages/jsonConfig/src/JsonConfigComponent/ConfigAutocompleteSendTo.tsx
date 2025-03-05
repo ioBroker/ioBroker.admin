@@ -4,7 +4,7 @@ import { Autocomplete, TextField } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemAutocompleteSendTo } from '#JC/types';
+import type { ConfigItemAutocompleteSendTo } from '../types';
 import ConfigGeneric, { type ConfigGenericProps } from './ConfigGeneric';
 import type { ConfigAutocompleteState } from './ConfigAutocomplete';
 
