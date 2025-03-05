@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import type { ConfigItemDeviceManager } from '#JC/types';
+import type { ConfigItemDeviceManager } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigDeviceManagerProps extends ConfigGenericProps {

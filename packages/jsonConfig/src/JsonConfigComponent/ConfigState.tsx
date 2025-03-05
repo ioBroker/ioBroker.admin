@@ -4,7 +4,7 @@ import { TextField, IconButton, Button, Switch, Slider, Box } from '@mui/materia
 
 import { I18n, Icon, type IobTheme } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemState } from '#JC/types';
+import type { ConfigItemState } from '../types';
 import getIconByName from './Icons';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 

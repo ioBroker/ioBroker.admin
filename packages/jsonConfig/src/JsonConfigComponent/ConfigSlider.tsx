@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { Box, Typography, Slider } from '@mui/material';
 
-import type { ConfigItemSlider } from '#JC/types';
+import type { ConfigItemSlider } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, React.CSSProperties> = {

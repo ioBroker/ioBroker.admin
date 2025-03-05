@@ -2071,8 +2071,8 @@ function formatValue(options: FormatValueOptions): {
     }
 
     if (valText.v?.length > 40) {
-        valText.v = `${valText.v.substring(0, 40)}...`;
         valText.c = valText.v;
+        valText.v = `${valText.v.substring(0, 40)}...`;
     }
 
     if (isCommon?.unit) {

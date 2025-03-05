@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { TimePicker } from '@mui/x-date-pickers';
 
-import type { ConfigItemTimePicker } from '#JC/types';
+import type { ConfigItemTimePicker } from '../types';
 import ConfigGeneric, { type ConfigGenericProps } from './ConfigGeneric';
 
 interface ConfigTimePickerProps extends ConfigGenericProps {

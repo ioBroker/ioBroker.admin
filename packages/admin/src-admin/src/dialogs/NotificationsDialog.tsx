@@ -28,8 +28,8 @@ import {
 
 import { I18n, type ThemeType, type IobTheme, type AdminConnection, type ThemeName } from '@iobroker/adapter-react-v5';
 
+import type { BackEndCommandGeneric } from '@iobroker/json-config';
 import NotificationMessage, { type Message, type Severity } from '../components/NotificationMessage';
-import type { BackEndCommandGeneric } from '#JC/types';
 
 export interface BackEndCommandOpenLink extends BackEndCommandGeneric {
     command: 'link';

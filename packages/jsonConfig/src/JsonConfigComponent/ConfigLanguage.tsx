@@ -4,7 +4,7 @@ import { InputLabel, MenuItem, FormHelperText, FormControl, Select } from '@mui/
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemLanguage } from '#JC/types';
+import type { ConfigItemLanguage } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const LANGUAGES = [

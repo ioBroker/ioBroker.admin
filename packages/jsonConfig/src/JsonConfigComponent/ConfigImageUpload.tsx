@@ -4,7 +4,7 @@ import { InputLabel, FormHelperText, FormControl } from '@mui/material';
 
 import { UploadImage } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemImageUpload } from '#JC/types';
+import type { ConfigItemImageUpload } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigImageUploadProps extends ConfigGenericProps {

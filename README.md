@@ -87,6 +87,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Added support for JSON5 in JsonConfig editor component 
+
 ### 7.5.2 (2025-03-04)
 -   (@GermanBluefox) Corrected the login page
 -   (@GermanBluefox) Removed the frequent debug output

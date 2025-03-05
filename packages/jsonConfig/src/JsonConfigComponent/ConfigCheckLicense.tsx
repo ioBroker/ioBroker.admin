@@ -21,7 +21,7 @@ import { Check as IconCheck, Send as IconSend } from '@mui/icons-material';
 
 import { DialogConfirm, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemCheckLicense } from '#JC/types';
+import type { ConfigItemCheckLicense } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, any> = {

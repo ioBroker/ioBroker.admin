@@ -23,7 +23,7 @@ import {
 
 import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemAccordion, ConfigItemAny, ConfigItemIndexed, ConfigItemPanel } from '#JC/types';
+import type { ConfigItemAccordion, ConfigItemAny, ConfigItemIndexed, ConfigItemPanel } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 import ConfigPanel from './ConfigPanel';
