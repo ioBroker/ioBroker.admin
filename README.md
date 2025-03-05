@@ -87,25 +87,32 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Added support for JSON5 in JsonConfig editor component 
+
+### 7.5.2 (2025-03-04)
+-   (@GermanBluefox) Corrected the login page
+-   (@GermanBluefox) Removed the frequent debug output
+
+### 7.5.1 (2025-03-03)
+-   (@GermanBluefox) Added the possibility to rename or copy of the objects
+-   (@GermanBluefox) Corrected the problem with the user rights
+
+### 7.5.0 (2025-03-02)
+-   (@GermanBluefox) Changed Device Manager for control types
+-   (@GermanBluefox) Used socket classes with TypeScript
+-   (@GermanBluefox) Added support for `plugins.sentry.enabled` flag in adapter
+-   (@GermanBluefox) Updated packages
+-   (@GermanBluefox) Corrected stopping of running admin instances
+-   (@GermanBluefox) Added OAuth2 authentication
+-   (@GermanBluefox) Corrected the focus lost by editing of tables in JSON Config 
+-   (@GermanBluefox) Added the renaming of objects via context menu in Object Browser
+
 ### 7.4.21 (2025-02-07)
 -   (@GermanBluefox) Corrected the device manager in `hm-rpc` and other adapters
 
 ### 7.4.19 (2025-01-26)
 -   (@GermanBluefox) Corrected file upload in File Browser and in JSON Config
-
-### 7.4.18 (2025-01-25)
--   (@GermanBluefox) Changes are only for device manager.
--   (@GermanBluefox) Do not show values longer than 40 chars in Object Browser
-
-### 7.4.17 (2025-01-24)
--   (@GermanBluefox) Fixing Tabs in JSON Config
--   (@GermanBluefox) Added support of `ifInstallDependencies` flag in adapter
-
-### 7.4.15 (2025-01-22)
-
--   (@oweitman) Implemented better table view
--   (@GermanBluefox) Extended DM with device type
--   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as a menu
 
 ## License
 

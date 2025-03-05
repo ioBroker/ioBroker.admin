@@ -4,7 +4,7 @@ import { FormControlLabel, Checkbox, FormHelperText, FormControl } from '@mui/ma
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemCheckbox } from '#JC/types';
+import type { ConfigItemCheckbox } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigCheckboxProps extends ConfigGenericProps {

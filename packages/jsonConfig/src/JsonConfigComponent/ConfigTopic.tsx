@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { TextField } from '@mui/material';
 
-import type { ConfigItemTopic } from '#JC/types';
+import type { ConfigItemTopic } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 function convertID2Topic(id: string, namespace: string): string {

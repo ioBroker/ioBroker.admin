@@ -4,7 +4,7 @@ import { InputLabel, MenuItem, FormHelperText, FormControl, Select } from '@mui/
 
 import { TextWithIcon, I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemRoom } from '#JC/types';
+import type { ConfigItemRoom } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigRoomProps extends ConfigGenericProps {

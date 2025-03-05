@@ -1,4 +1,18 @@
 # Older changes
+## 7.4.18 (2025-01-25)
+-   (@GermanBluefox) Changes are only for device manager.
+-   (@GermanBluefox) Do not show values longer than 40 chars in Object Browser
+
+## 7.4.17 (2025-01-24)
+-   (@GermanBluefox) Fixing Tabs in JSON Config
+-   (@GermanBluefox) Added support of `ifInstallDependencies` flag in adapter
+
+## 7.4.15 (2025-01-22)
+
+-   (@oweitman) Implemented better table view
+-   (@GermanBluefox) Extended DM with device type
+-   (@GermanBluefox) Showed the tabs in JSONConfig on narrow displays as a menu
+
 ## 7.4.14 (2025-01-15)
 
 -   (@GermanBluefox) Extended DM with device type

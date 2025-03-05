@@ -25,7 +25,7 @@ import { Close as CloseIcon, Language as LanguageIcon, Info as InfoIcon } from '
 import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
-import { checkCondition } from '@/dialogs/AdapterUpdateDialog';
+import { checkCondition } from '@/components/Adapters/AdapterUpdateDialog';
 import type { RepoAdapterObject, RepoInfo } from '@/components/Adapters/Utils';
 
 interface GetNewsResultEntry {

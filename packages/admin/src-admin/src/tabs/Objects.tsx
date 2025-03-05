@@ -30,14 +30,15 @@ import {
 
 import type { ObjectsWorker } from '@/Workers/ObjectsWorker';
 
-import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
+import ObjectCustomDialog from '../components/Object/ObjectCustomDialog';
 import ObjectBrowserValue from '../components/Object/ObjectBrowserValue';
 import ObjectBrowserEditObject from '../components/Object/ObjectBrowserEditObject';
 import ObjectBrowserEditRole from '../components/Object/ObjectBrowserEditRole';
-import ObjectAddNewObject from '../dialogs/ObjectAddNewObject';
-import ObjectEditOfAccessControl from '../dialogs/ObjectEditOfAccessControl';
-import ObjectViewFileDialog from '../dialogs/ObjectViewFileDialog';
-import ObjectAliasEditor from '../dialogs/ObjectAliasEditor';
+import ObjectAddNewObject from '../components/Object/ObjectAddNewObject';
+import ObjectEditOfAccessControl from '../components/Object/ObjectEditOfAccessControl';
+import ObjectViewFileDialog from '../components/Object/ObjectViewFileDialog';
+import ObjectAliasEditor from '../components/Object/ObjectAliasEditor';
+import ObjectMoveRenameDialog from '../components/Object/ObjectMoveRenameDialog';
 
 const IconDeleteAll = IconDeleteOne;
 const styles: Record<string, React.CSSProperties> = {
@@ -270,6 +271,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
                 objectBrowserEditRole={ObjectBrowserEditRole}
                 objectBrowserViewFile={ObjectViewFileDialog}
                 objectBrowserAliasEditor={ObjectAliasEditor}
+                objectMoveRenameDialog={ObjectMoveRenameDialog}
                 router={Router}
                 enableStateValueEdit
                 onObjectDelete={(id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) =>

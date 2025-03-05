@@ -3,7 +3,7 @@ import React, { type JSX } from 'react';
 import { InputLabel, MenuItem, FormHelperText, FormControl, Select } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import type { ConfigItemInstanceSelect } from '#JC/types';
+import type { ConfigItemInstanceSelect } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, React.CSSProperties> = {

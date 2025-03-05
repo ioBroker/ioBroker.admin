@@ -8,13 +8,24 @@ import {
     CircularProgress,
     FormControlLabel,
     Grid2,
+    IconButton,
     Link,
     Paper,
     TextField,
     Typography,
 } from '@mui/material';
 
-import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
+import { Visibility } from '@mui/icons-material';
+
+import { type IobTheme, I18n, Connection } from '@iobroker/adapter-react-v5';
+
+export interface OAuth2Response {
+    access_token: string;
+    expires_in: number;
+    token_type: 'Bearer' | 'JWT';
+    refresh_token: string;
+    refresh_token_expires_in: number;
+}
 
 const boxShadow = '0 4px 7px 5px rgb(0 0 0 / 14%), 0 3px 1px 1px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%)';
 
@@ -39,17 +50,17 @@ const styles: Record<string, any> = {
         maxWidth: 380,
         boxShadow,
     }),
-    avatar: {
-        margin: 8,
-        backgroundColor: '#fff',
+    avatar: (theme: IobTheme): any => ({
+        m: 1,
+        backgroundColor: theme.palette.mode === 'dark' ? '#111' : '#eee',
         width: 100,
         height: 100,
-    },
-    avatarImg: {
-        width: 'calc(100% - 4px)',
-        height: 'calc(100% - 4px)',
-        padding: 2,
-    },
+        '& .MuiAvatar-img': {
+            width: 'calc(100% - 4px)',
+            height: 'calc(100% - 4px)',
+            padding: 2,
+        },
+    }),
     form: {
         width: '100%', // Fix IE 11 issue.
         marginTop: 8,
@@ -89,22 +100,33 @@ declare global {
     }
 }
 
-interface LoginProps {
-    t: Translate;
-}
-
 interface LoginState {
     inProcess: boolean;
+    username: string;
+    password: string;
+    stayLoggedIn: boolean;
+    showPassword: boolean;
+    error: string;
+    loggingIn: boolean;
 }
 
-class Login extends Component<LoginProps, LoginState> {
+class Login extends Component<object, LoginState> {
     private readonly formRef: React.RefObject<HTMLFormElement>;
+    private readonly passwordRef: React.RefObject<HTMLInputElement>;
 
-    constructor(props: LoginProps) {
+    constructor(props: object) {
         super(props);
+
+        const loggingIn = window.USE_OAUTH2 ? this.authenticateWithRefreshToken() : false;
 
         this.state = {
             inProcess: false,
+            stayLoggedIn: false,
+            showPassword: false,
+            username: '',
+            password: '',
+            error: '',
+            loggingIn,
         };
 
         this.formRef = React.createRef();
@@ -114,6 +136,70 @@ class Login extends Component<LoginProps, LoginState> {
         body.style.backgroundColor = window.loginBackgroundColor;
         body.style.backgroundImage = window.loginBackgroundImage;
         body.style.backgroundSize = 'cover';
+        this.passwordRef = React.createRef();
+    }
+
+    static async processTokenAnswer(stayLoggedIn: boolean, response: Response): Promise<boolean> {
+        if (response.ok) {
+            const data: OAuth2Response = await response.json();
+
+            if (data?.access_token) {
+                // Save expiration time of access token and refresh token
+                // Next loaded page with socket will take the ownership of the tokens
+                Connection.saveTokensStatic(data, stayLoggedIn);
+
+                // Get href from origin
+                // Extract from the URL like "http://localhost:8084/login?href=http://localhost:63342/ioBroker.socketio/example/index.html?_ijt=nqn3c1on9q44elikut4rgr23j8&_ij_reload=RELOAD_ON_SAVE" the href
+                const urlObj = new URL(window.location.href);
+                const href = urlObj.searchParams.get('href');
+                let origin;
+                if (href) {
+                    origin = href;
+                    if (origin.startsWith('#')) {
+                        origin = `./${origin}`;
+                    }
+                } else {
+                    origin = './';
+                }
+                window.location.href = origin;
+                return true;
+            }
+        }
+        Connection.deleteTokensStatic();
+
+        return false;
+    }
+
+    private authenticateWithRefreshToken(): boolean {
+        const tokens = Connection.readTokens();
+
+        if (tokens?.refresh_token) {
+            void fetch('../oauth/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `grant_type=refresh_token&refresh_token=${tokens.refresh_token}&stayloggedin=${tokens.stayLoggedIn}&client_id=ioBroker`,
+            })
+                .then(async response => {
+                    await Login.processTokenAnswer(tokens.stayLoggedIn, response);
+
+                    this.setState({
+                        inProcess: false,
+                        loggingIn: false,
+                    });
+                })
+                .catch(error => {
+                    console.error(`Cannot fetch access token: ${error}`);
+                    this.setState({
+                        inProcess: false,
+                        loggingIn: false,
+                    });
+                });
+            return true;
+        }
+
+        return false;
     }
 
     render(): JSX.Element {
@@ -134,11 +220,23 @@ class Login extends Component<LoginProps, LoginState> {
                 ? { background: '#00000000' }
                 : {};
 
-        return (
-            <Paper
-                component="main"
-                style={{ ...styles.root, ...style }}
-            >
+        let content: React.JSX.Element;
+        if (this.state.loggingIn) {
+            content = (
+                <div
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    ...
+                </div>
+            );
+        } else {
+            content = (
                 <Paper sx={styles.paper}>
                     <Grid2
                         container
@@ -146,12 +244,13 @@ class Login extends Component<LoginProps, LoginState> {
                         alignItems="center"
                     >
                         {window.loginLogo && window.loginLogo !== '@@loginLogo@@' ? (
-                            <div
-                                style={{
+                            <Box
+                                sx={{
                                     height: 50,
                                     width: 102,
                                     lineHeight: '50px',
-                                    background: 'white',
+                                    backgroundColor: (theme: IobTheme) =>
+                                        theme.palette.mode === 'dark' ? '#000' : '#fff',
                                     borderRadius: 5,
                                     padding: 5,
                                 }}
@@ -161,13 +260,12 @@ class Login extends Component<LoginProps, LoginState> {
                                     alt="logo"
                                     style={{ maxWidth: '100%', maxHeight: '100%' }}
                                 />
-                            </div>
+                            </Box>
                         ) : (
                             window.loginHideLogo === 'false' && (
                                 <Avatar
-                                    style={styles.avatar}
-                                    src="img/logo.png"
-                                    sx={{ '& .MuiAvatar-img': styles.avatarImg }}
+                                    sx={styles.avatar}
+                                    src="img/admin.svg"
                                 />
                             )
                         )}
@@ -177,11 +275,11 @@ class Login extends Component<LoginProps, LoginState> {
                         >
                             {window.loginTitle && window.loginTitle !== '@@loginTitle@@'
                                 ? window.loginTitle
-                                : this.props.t('loginTitle')}
+                                : I18n.t('loginTitle')}
                         </Typography>
-                        {window.location.search.includes('error') && (
-                            <div style={styles.alert}>{this.props.t('wrongPassword')}</div>
-                        )}
+                        {window.location.search.includes('error') || this.state.error ? (
+                            <div style={styles.alert}>{this.state.error || I18n.t('wrongPassword')}</div>
+                        ) : null}
                         <form
                             ref={this.formRef}
                             style={styles.form}
@@ -193,10 +291,12 @@ class Login extends Component<LoginProps, LoginState> {
                                 margin="normal"
                                 disabled={this.state.inProcess}
                                 required
+                                value={this.state.username}
+                                onChange={e => this.setState({ username: e.target.value })}
                                 fullWidth
                                 size="small"
                                 id="username"
-                                label={this.props.t('enterLogin')}
+                                label={I18n.t('enterLogin')}
                                 name="username"
                                 autoComplete="username"
                                 autoFocus
@@ -207,10 +307,32 @@ class Login extends Component<LoginProps, LoginState> {
                                 disabled={this.state.inProcess}
                                 required
                                 fullWidth
+                                ref={this.passwordRef}
+                                value={this.state.password}
+                                onChange={e => this.setState({ password: e.target.value })}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: this.state.password ? (
+                                            <IconButton
+                                                tabIndex={-1}
+                                                aria-label="toggle password visibility"
+                                            >
+                                                <Visibility
+                                                    onMouseDown={() => this.setState({ showPassword: true })}
+                                                    onMouseUp={() => {
+                                                        this.setState({ showPassword: false }, () => {
+                                                            setTimeout(() => this.passwordRef.current?.focus(), 50);
+                                                        });
+                                                    }}
+                                                />
+                                            </IconButton>
+                                        ) : null,
+                                    },
+                                }}
                                 size="small"
                                 name="password"
-                                label={this.props.t('enterPassword')}
-                                type="password"
+                                label={I18n.t('enterPassword')}
+                                type={this.state.showPassword ? 'text' : 'password'}
                                 id="password"
                                 autoComplete="current-password"
                             />
@@ -220,11 +342,13 @@ class Login extends Component<LoginProps, LoginState> {
                                         id="stayloggedin"
                                         name="stayloggedin"
                                         value="on"
+                                        checked={this.state.stayLoggedIn}
+                                        onChange={e => this.setState({ stayLoggedIn: e.target.checked })}
                                         color="primary"
                                         disabled={this.state.inProcess}
                                     />
                                 }
-                                label={this.props.t('Stay signed in')}
+                                label={I18n.t('Stay signed in')}
                             />
                             <input
                                 id="origin"
@@ -235,18 +359,38 @@ class Login extends Component<LoginProps, LoginState> {
                             {
                                 <Button
                                     type="submit"
-                                    disabled={this.state.inProcess}
+                                    disabled={this.state.inProcess || !this.state.username || !this.state.password}
                                     onClick={() => {
-                                        this.formRef.current.submit();
-                                        // give time to firefox to send the data
-                                        setTimeout(() => this.setState({ inProcess: true }), 50);
+                                        if (!window.USE_OAUTH2) {
+                                            this.formRef.current.submit();
+                                            // give time to firefox to send the data
+                                            setTimeout(() => this.setState({ inProcess: true }), 50);
+                                        } else {
+                                            this.setState({ inProcess: true, error: '' }, async () => {
+                                                const response = await fetch('../oauth/token', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                                    },
+                                                    body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
+                                                });
+                                                if (await Login.processTokenAnswer(this.state.stayLoggedIn, response)) {
+                                                    this.setState({ inProcess: false });
+                                                } else {
+                                                    this.setState({
+                                                        inProcess: false,
+                                                        error: I18n.t('wrongPassword'),
+                                                    });
+                                                }
+                                            });
+                                        }
                                     }}
                                     fullWidth
                                     variant="contained"
                                     color="primary"
                                     style={styles.submit}
                                 >
-                                    {this.state.inProcess ? <CircularProgress size={24} /> : this.props.t('login')}
+                                    {this.state.inProcess ? <CircularProgress size={24} /> : I18n.t('login')}
                                 </Button>
                             }
                         </form>
@@ -283,9 +427,18 @@ class Login extends Component<LoginProps, LoginState> {
                         </Typography>
                     </Box>
                 </Paper>
+            );
+        }
+
+        return (
+            <Paper
+                component="main"
+                style={{ ...styles.root, ...style }}
+            >
+                {content}
             </Paper>
         );
     }
 }
 
-export default withWidth()(Login);
+export default Login;

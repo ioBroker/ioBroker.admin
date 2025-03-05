@@ -7,7 +7,7 @@ import { Close as ClearIcon } from '@mui/icons-material';
 
 import { Utils } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemText } from '#JC/types';
+import type { ConfigItemText } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigColorProps extends ConfigGenericProps {

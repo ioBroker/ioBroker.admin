@@ -15,7 +15,7 @@ import { Check, Close } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemLicense } from '#JC/types';
+import type { ConfigItemLicense } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigLicenseProps extends ConfigGenericProps {

@@ -3,9 +3,9 @@ import semver from 'semver';
 
 import { type Translate, type AdminConnection, type ThemeType, type IobTheme, I18n } from '@iobroker/adapter-react-v5';
 
-import { checkCondition, type CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
+import { checkCondition, type CompactInstanceInfo } from './AdapterUpdateDialog';
 
-import AddInstanceDialog, { type AdapterDependencies } from '@/dialogs/AddInstanceDialog';
+import AddInstanceDialog, { type AdapterDependencies } from './AddInstanceDialog';
 import LicenseDialog from '@/dialogs/LicenseDialog';
 // import type { AdapterInformation } from '@iobroker/js-controller-common-db/build/esm/lib/common/tools';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
@@ -49,7 +49,7 @@ export interface AdapterInformation {
     platform: 'Javascript/Node.js';
     /** keywords of the adapter */
     keywords: string[];
-    /** path to readme file */
+    /** path to a readme file */
     readme: string;
     /** The installed adapter version, not existing on controller */
     runningVersion?: string;

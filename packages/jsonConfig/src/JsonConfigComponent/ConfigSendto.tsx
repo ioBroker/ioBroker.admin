@@ -6,7 +6,7 @@ import { Warning as IconWarning, Error as IconError, Info as IconInfo } from '@m
 
 import { DialogConfirm, DialogError, DialogMessage, I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemSendTo } from '#JC/types';
+import type { ConfigItemSendTo } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, React.CSSProperties> = {

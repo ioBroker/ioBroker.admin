@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { InputLabel, TextField, FormHelperText, MenuItem, FormControl, Select } from '@mui/material';
 
-import type { ConfigItemInterface } from '#JC/types';
+import type { ConfigItemInterface } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface NetworkInterfaceBase {

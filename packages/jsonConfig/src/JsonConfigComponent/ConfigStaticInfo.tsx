@@ -4,7 +4,7 @@ import { Box, Checkbox } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
 import { I18n, Icon, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemStaticInfo } from '#JC/types';
+import type { ConfigItemStaticInfo } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 function valueBlinkOnce(theme: IobTheme, force: boolean, color?: string | boolean): any {

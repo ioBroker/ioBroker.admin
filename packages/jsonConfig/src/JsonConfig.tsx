@@ -18,7 +18,7 @@ import {
     Utils,
 } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemAny, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
+import type { ConfigItemAny, ConfigItemPanel, ConfigItemTabs } from './types';
 import ConfigGeneric, { type DeviceManagerPropsProps } from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
 

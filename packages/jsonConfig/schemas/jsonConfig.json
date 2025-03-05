@@ -328,6 +328,11 @@
                 "i18n": {
                     "$ref": "#/definitions/i18n"
                 },
+                "bundlerType": {
+                    "type": "string",
+                    "description": "If module written with TypeScript, set it to `module`. From Admin 7.5.x",
+                    "enum": ["module"]
+                },
                 "label": true,
                 "type": true,
                 "defaultSendTo": true,
@@ -871,6 +876,20 @@
                     "description": "Base64 icon for label",
                     "type": "string"
                 },
+                "buttonValue": {
+                    "description": "Optional value, that will be sent for button",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                },
                 "label": true,
                 "type": true,
                 "xs": true,
@@ -901,7 +920,7 @@
                     "type": "string"
                 },
                 "adapters": {
-                    "description": "Optional list of adapters, that should be shown. If not defined, all adapters will be shown. Only active if adapter attribute is not defined.",
+                    "description": "Optional list of adapters as array of strings, that should be shown. If not defined, all adapters will be shown. Only active if adapter attribute is not defined.",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -1297,6 +1316,14 @@
                 "allowEmpty": {
                     "type": "boolean",
                     "description": "if true, the JSON will be validated only if the value is not empty"
+                },
+                "json5": {
+                    "type": "boolean",
+                    "description": "if JSON5 format allowed"
+                },
+                "doNotApplyWithError": {
+                    "type": "boolean",
+                    "description": "Do not allow to save the value if error in JSON or JSON5"
                 },
                 "label": true,
                 "type": true,
@@ -6521,6 +6548,18 @@
                                     },
                                     "then": {
                                         "$ref": "#/definitions/coordinatesProps"
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "properties": {
+                                            "type": {
+                                                "const": "jsonEditor"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "$ref": "#/definitions/jsonEditorProps"
                                     }
                                 },
                                 {

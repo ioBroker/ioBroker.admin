@@ -33,7 +33,7 @@ import {
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
-import { DEFAULT_ROLES } from '../components/Object/ObjectBrowserEditObject';
+import { DEFAULT_ROLES } from './ObjectBrowserEditObject';
 
 import type { ioBrokerObject } from '@/types';
 

@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { DatePicker } from '@mui/x-date-pickers';
 
-import type { ConfigItemDatePicker } from '#JC/types';
+import type { ConfigItemDatePicker } from '../types';
 import ConfigGeneric, { type ConfigGenericProps } from './ConfigGeneric';
 
 interface ConfigDatePickerProps extends ConfigGenericProps {

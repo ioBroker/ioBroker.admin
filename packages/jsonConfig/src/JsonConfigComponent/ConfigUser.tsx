@@ -4,7 +4,7 @@ import { InputLabel, TextField, MenuItem, FormHelperText, FormControl, Select } 
 
 import { Icon, Utils, I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemUser } from '#JC/types';
+import type { ConfigItemUser } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, React.CSSProperties> = {

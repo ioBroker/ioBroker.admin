@@ -20,6 +20,8 @@ import {
     TabContainer,
 } from '@iobroker/adapter-react-v5';
 
+import type { HostInfo } from '@iobroker/socket-client';
+
 import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
 import type { HostsWorker, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import AdminUtils from '@/helpers/AdminUtils';
@@ -128,6 +130,14 @@ const styles: Record<string, any> = {
     },
 };
 
+type HostInfoEx = HostInfo & {
+    alive?: boolean;
+    _nodeNewest: string;
+    _nodeNewestNext: string;
+    _npmNewest: string;
+    _npmNewestNext: string;
+};
+
 interface ReverseProxyItem {
     globalPath: string;
     paths: { path: string; instance: string }[];
@@ -160,27 +170,6 @@ interface IntroInstanceItem {
     order?: number;
     info: string;
     port?: number;
-}
-
-interface HostData {
-    alive: boolean;
-    time?: number;
-    _nodeNewest?: string;
-    _nodeNewestNext?: string;
-    'Node.js'?: string;
-    _npmNewest?: string;
-    NPM?: string;
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    Platform?: 'win32' | 'linux' | 'darwin' | 'freebsd' | 'sunos' | string;
-    RAM?: number;
-    _npmNewestNext?: string;
-    _versions?: Record<string, string>;
-    dockerInformation?: {
-        isDocker: boolean;
-        isOfficial: boolean;
-        officialVersion: string;
-    };
-    [key: string]: string | boolean | number | Record<string, string | boolean>;
 }
 
 const formatInfo: Record<string, (seconds: number, t?: Translate) => string> = {
@@ -248,7 +237,7 @@ type ItemElement = ItemCamera | ItemLink;
 interface IntroState {
     /** Difference between client and host time in ms */
     hostTimeDiffMap: Map<string, number>;
-    hostsData: Record<string, HostData>;
+    hostsData: Record<string, HostInfoEx>;
     alive: Record<string, boolean>;
     reverseProxy: null | ReverseProxyItem[];
     hasUnsavedChanges: boolean;
@@ -373,7 +362,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         });
 
         if (hostsId.length) {
-            const hostsData: Record<string, HostData> = JSON.parse(JSON.stringify(this.state.hostsData));
+            const hostsData: Record<string, HostInfoEx> = JSON.parse(JSON.stringify(this.state.hostsData));
 
             const results = await Promise.all(hostsId.map(id => this.getHostData(id, alive[id])));
             results.forEach(res => (hostsData[res.id] = Intro.preprocessHostData(res.data)));
@@ -392,7 +381,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         hostsId = events.map(event => event.id);
 
         if (hostsId.length) {
-            const hostsData: Record<string, HostData> = JSON.parse(JSON.stringify(this.state.hostsData));
+            const hostsData: Record<string, HostInfoEx> = JSON.parse(JSON.stringify(this.state.hostsData));
 
             void Promise.all(hostsId.map(id => this.getHostData(id))).then(results => {
                 results.forEach(res => (hostsData[res.id] = Intro.preprocessHostData(res.data)));
@@ -488,7 +477,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     );
                 }
 
-                const hostData = this.state.hostsData ? this.state.hostsData[instance.id] : null;
+                const hostData: HostInfoEx | null = this.state.hostsData ? this.state.hostsData[instance.id] : null;
                 const timeDiff = this.state.hostTimeDiffMap.get(instance.id) ?? 0;
                 return (
                     <IntroCard
@@ -758,7 +747,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    async getHostData(hostId: string, isAlive?: boolean): Promise<{ id: string; data: HostData }> {
+    async getHostData(hostId: string, isAlive?: boolean): Promise<{ id: string; data: HostInfoEx }> {
         let alive;
         if (isAlive !== undefined) {
             alive = { val: isAlive };
@@ -771,35 +760,35 @@ class Intro extends React.Component<IntroProps, IntroState> {
             }
         }
 
-        let data: HostData = { alive: false };
+        let data: HostInfoEx = { alive: false } as HostInfoEx;
         if (alive?.val) {
             try {
-                data = await this.props.socket.getHostInfo(hostId, false, 10000);
+                data = (await this.props.socket.getHostInfo(hostId, false, 10000)) as HostInfoEx;
                 if (data && typeof data === 'object' && data.alive !== false) {
                     data.alive = true;
                 }
             } catch (e) {
                 console.error(`Cannot get host info for ${hostId}: ${e}`);
-                data = { alive: false };
+                data = { alive: false } as HostInfoEx;
             }
         } else {
-            data = { alive: false };
+            data = { alive: false } as HostInfoEx;
         }
 
         const states = await this.props.socket.getForeignStates(`${hostId}.versions.*`);
 
-        Object.keys(states).forEach(id => (data[`_${id.split('.').pop()}`] = states[id].val));
+        Object.keys(states).forEach(id => ((data as any)[`_${id.split('.').pop()}`] = states[id].val));
 
         return { id: hostId, data };
     }
 
     async getHostsData(
         hosts: CompactHost[],
-    ): Promise<{ hostsData: Record<string, HostData>; alive: Record<string, boolean> }> {
+    ): Promise<{ hostsData: Record<string, HostInfo>; alive: Record<string, boolean> }> {
         const promises = hosts.map(obj => this.getHostData(obj._id));
 
         const results = await Promise.all(promises);
-        const hostsData: Record<string, HostData> = {};
+        const hostsData: Record<string, HostInfoEx> = {};
         const alive: Record<string, boolean> = {};
         results.forEach(res => {
             hostsData[res.id] = Intro.preprocessHostData(res.data);
@@ -1480,7 +1469,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         typeof hostData === 'object' &&
                         Object.keys(hostData)
                             .filter(
-                                _id => !_id.startsWith('_') && hostData[_id] !== null && hostData[_id] !== undefined,
+                                _id =>
+                                    !_id.startsWith('_') &&
+                                    (hostData as any)[_id] !== null &&
+                                    (hostData as any)[_id] !== undefined,
                             )
                             .map(value => (
                                 <li key={value}>
@@ -1488,10 +1480,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
                                         <span>
                                             <span style={styles.bold}>{this.t(value)}: </span>
                                             {formatInfo[value]
-                                                ? formatInfo[value](hostData[value] as number, this.t)
-                                                : (typeof hostData[value] === 'object'
-                                                      ? JSON.stringify(hostData[value])
-                                                      : (hostData[value] as any).toString()) || '--'}
+                                                ? formatInfo[value]((hostData as any)[value] as number, this.t)
+                                                : (typeof (hostData as any)[value] === 'object'
+                                                      ? JSON.stringify((hostData as any)[value])
+                                                      : (hostData as any)[value].toString()) || '--'}
                                         </span>
                                     ) : (
                                         <Skeleton />
@@ -1505,7 +1497,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 hostData && typeof hostData === 'object'
                     ? Object.keys(hostData).reduce(
                           (acom: string, item: string) =>
-                              `${acom}${this.t(item)}:${formatInfo[item] ? formatInfo[item](hostData[item] as number, this.t) : (typeof hostData[item] === 'object' ? JSON.stringify(hostData[item]) : (hostData[item] as string)) || '--'}\n`,
+                              `${acom}${this.t(item)}:${formatInfo[item] ? formatInfo[item]((hostData as any)[item] as number, this.t) : (typeof (hostData as any)[item] === 'object' ? JSON.stringify((hostData as any)[item]) : ((hostData as any)[item] as string)) || '--'}\n`,
                       )
                     : '',
         };
@@ -1540,7 +1532,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         : [],
             });
             // hosts data could last a long time, so show some results to user now and then get the info about hosts
-            const newState: Partial<IntroState> = await this.getHostsData(hosts);
+            const newState: { hostsData: Record<string, HostInfo>; alive: Record<string, boolean> } =
+                await this.getHostsData(hosts);
             await new Promise<void>(resolve => {
                 this.setState(newState as IntroState, () => resolve());
             });
@@ -1600,7 +1593,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
      *
      * @param hostData Host data from controller
      */
-    static preprocessHostData(hostData: HostData): HostData {
+    static preprocessHostData(hostData: HostInfoEx): HostInfoEx {
         if (hostData.dockerInformation?.isDocker) {
             let dockerString = hostData.dockerInformation.isOfficial ? 'official image' : 'unofficial image';
 
@@ -1608,7 +1601,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 dockerString += ` - ${hostData.dockerInformation.officialVersion}`;
             }
 
-            hostData.Platform = `${hostData.Platform} (${dockerString})`;
+            hostData.Platform = `${hostData.Platform} (${dockerString})` as HostInfo['Platform'];
         }
 
         delete hostData.dockerInformation;
