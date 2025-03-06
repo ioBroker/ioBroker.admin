@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import type { ConfigItemImageSendTo } from '#JC/types';
+import type { ConfigItemImageSendTo } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigImageSendToProps extends ConfigGenericProps {

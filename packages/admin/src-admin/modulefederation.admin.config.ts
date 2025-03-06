@@ -16,7 +16,7 @@ export const ModuleFederationShared = makeShared([
         '@iobroker/adapter-react-v5',
         '@iobroker/json-config',
         '@iobroker/dm-gui-components',
-        // '@mui/icons-material',
+        '@mui/icons-material',
         '@mui/material',
         '@mui/x-date-pickers',
         'date-fns',
@@ -26,6 +26,6 @@ export const ModuleFederationShared = makeShared([
         'react',
         'react-ace',
         'react-dom',
-        // 'react-dropzone',
+        'react-dropzone',
         'semver',
     ])

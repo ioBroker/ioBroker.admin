@@ -5,7 +5,7 @@ import { Grid2, Accordion, AccordionSummary, AccordionDetails, Typography, Box }
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 import { type AdminConnection, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
-import type { ConfigItemPanel } from '#JC/types';
+import type { ConfigItemPanel } from '../types';
 
 import ConfigGeneric, { type ConfigGenericState, type ConfigGenericProps } from './ConfigGeneric';
 import ConfigAccordion from './ConfigAccordion';
@@ -161,7 +161,7 @@ interface ConfigPanelState extends ConfigGenericState {
 class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
     componentDidMount(): void {
         super.componentDidMount();
-        if (this.props.schema && this.props.schema.collapsable) {
+        if (this.props.schema?.collapsable) {
             this.setState({
                 expanded:
                     (((window as any)._localStorage as Storage) || window.localStorage).getItem(

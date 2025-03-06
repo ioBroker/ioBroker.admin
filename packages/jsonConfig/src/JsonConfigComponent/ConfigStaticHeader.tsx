@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 
 import type { IobTheme } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemStaticHeader } from '#JC/types';
+import type { ConfigItemStaticHeader } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, any> = {

@@ -580,19 +580,19 @@ Additionally, you can protect this property from being served to other adapters 
 
 ### `instance`
 
-| Property          | Description                                                                                                                                     |
-|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `adapter`         | name of adapter. With special name `_dataSources` you can get all adapters with flag `common.getHistory`.                                       |
-| `adapters`        | optional list of adapters, that should be shown. If not defined, all adapters will be shown. Only active if `adapter` attribute is not defined. |
-| `allowDeactivate` | if true. Additional option "deactivate" is shown                                                                                                |
-| `onlyEnabled`     | if true. Only enabled instances will be shown                                                                                                   |
-| `long`            | value will look like `system.adapter.ADAPTER.0` and not `ADAPTER.0`                                                                             |
-| `short`           | value will look like `0` and not `ADAPTER.0`                                                                                                    |
-| `all`             | Add to the options "all" option with value `*`                                                                                                  |
+| Property          | Description                                                                                                                                                         |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `adapter`         | name of adapter. With special name `_dataSources` you can get all adapters with flag `common.getHistory`.                                                           |
+| `adapters`        | optional list of adapters as array of strings, that should be shown. If not defined, all adapters will be shown. Only active if `adapter` attribute is not defined. |
+| `allowDeactivate` | if true. Additional option "deactivate" is shown                                                                                                                    |
+| `onlyEnabled`     | if true. Only enabled instances will be shown                                                                                                                       |
+| `long`            | value will look like `system.adapter.ADAPTER.0` and not `ADAPTER.0`                                                                                                 |
+| `short`           | value will look like `0` and not `ADAPTER.0`                                                                                                                        |
+| `all`             | Add to the options "all" option with value `*`                                                                                                                      |
 
 ### `chips`
 
-User can enter the word, and it will be added (see cloud => services => White list). Output is an array if no `delimiter` defined.
+User can enter the word, and it will be added (see cloud => services => Whitelist). Output is an array if no `delimiter` defined.
 
 | Property    | Description                                                                                                                                                           |
 |-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -715,10 +715,14 @@ accordion with items that could be deleted, added, moved up, moved down (Admin 6
 
 ### `jsonEditor`
 
-| Property       | Description                                                        |
-|----------------|--------------------------------------------------------------------|
-| `validateJson` | if false, the text will be not validated as JSON                   |
-| `allowEmpty`   | if true, the JSON will be validated only if the value is not empty |
+Button to open a JSON(5) editor. JSON5 is supported from admin version 5.7.3
+
+| Property               | Description                                                           |
+|------------------------|-----------------------------------------------------------------------|
+| `validateJson`         | if false, the text will be not validated as JSON                      |
+| `allowEmpty`           | if true, the JSON will be validated only if the value is not empty    |
+| `json5`                | if JSON5 format allowed (From 7.5.3)                                  |
+| `doNotApplyWithError`  | Do not allow to save the value if error in JSON or JSON5 (From 7.5.3) |
 
 ### `language`
 
@@ -752,7 +756,7 @@ Example:
 
 ### `certificateCollection`
 
-select certificate collection or just use all collections or don't use let's encrypt at all.
+select a certificate collection or just use all collections or don't use let's encrypt at all.
 
 | Property           | Description                        |
 |--------------------|------------------------------------|
@@ -762,11 +766,12 @@ select certificate collection or just use all collections or don't use let's enc
 
 only Admin6
 
-| Property | Description                                                                                                                    |
-|----------|--------------------------------------------------------------------------------------------------------------------------------|
-| `name`   | Component name that will be provided via props, like `ComponentInstancesEditor`                                                |
-| `url`    | Location of the component                                                                                                      |
-| `i18n`   | true if `i18n/xx.json` files are located in the same directory as component, or translation object `{"text1": {"en": Text1"}}` |
+| Property      | Description                                                                                                                    |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `name`        | Component name that will be provided via props, like `ComponentInstancesEditor`                                                |
+| `url`         | Location of the component                                                                                                      |
+| `i18n`        | true if `i18n/xx.json` files are located in the same directory as component, or translation object `{"text1": {"en": Text1"}}` |
+| `bundlerType` | If module written with TypeScript, set it to `module`. From Admin 7.5.x                                                        |
 
 #### Example for url
 
@@ -1111,6 +1116,7 @@ Special input for ports. It checks automatically if port is used by other instan
 | `size`           | Font size: small, normal, large or number                                                                                            |
 | `addColon`       | Add to label the colon at the end if not exist in label                                                                              |
 | `labelIcon`      | Base64 icon for label                                                                                                                |
+| `buttonValue`    | Optional value, that will be sent for button                                                                                         |
 
 ### `staticInfo`
 
@@ -1239,7 +1245,7 @@ In the Settings of the Web developer tools, you can create your own devices with
 | `onChange`               | Structure in form `{"alsoDependsOn": ["attr1", "attr2"], "calculateFunc": "data.attr1 + data.attr2", "ignoreOwnChanges": true}`                                                      |
 | `doNotSave`              | Do not save this attribute as used only for internal calculations                                                                                                                    |
 | `noMultiEdit`            | if this flag set to true, this field will not be shown if user selected more than one object for edit.                                                                               |
-| `expertMode`             | if this flag set to true, this field will be shown only if the expert mode is true                                                                                                   |
+| `expertMode`             | if this flag set to true, this field will be shown only if the expert mode is true  (from Admin 7.4.3)                                                                                                 |
 
 ### Options with detailed configuration
 

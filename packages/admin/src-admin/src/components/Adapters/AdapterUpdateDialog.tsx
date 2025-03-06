@@ -30,7 +30,7 @@ import { I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-re
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 
-import State from '../components/State';
+import State from '../State';
 
 import 'moment/locale/de';
 import 'moment/locale/es';
@@ -42,7 +42,7 @@ import 'moment/locale/pt';
 import 'moment/locale/ru';
 import 'moment/locale/uk';
 import 'moment/locale/zh-cn';
-import type { AdapterDependencies } from '@/dialogs/AddInstanceDialog';
+import type { AdapterDependencies } from './AddInstanceDialog';
 
 const styles: Record<string, any> = {
     closeButton: (theme: IobTheme) => ({

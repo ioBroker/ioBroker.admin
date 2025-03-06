@@ -1,5 +1,5 @@
 import { commonTools, EXIT_CODES } from '@iobroker/adapter-core';
-import * as IoBWebServer from '@iobroker/webserver';
+import { checkPublicIP, WebServer, createOAuth2Server } from '@iobroker/webserver';
 import * as express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
 import type { Server } from 'node:http';
@@ -8,20 +8,19 @@ import { inherits } from 'util';
 import { join, normalize, parse, dirname } from 'node:path';
 import { Transform } from 'node:stream';
 import * as compression from 'compression';
-import * as mime from 'mime';
+import { getType } from 'mime';
 import { gunzipSync } from 'node:zlib';
 import * as archiver from 'archiver';
 import axios from 'axios';
 import { Ajv } from 'ajv';
 import { parse as JSON5 } from 'json5';
-import * as passport from 'passport';
 import * as fileUpload from 'express-fileupload';
-import { Strategy } from 'passport-local';
 
 import type { Store } from 'express-session';
 import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
+import type { InternalStorageToken } from '@iobroker/socket-classes';
 
 export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     accessAllowedConfigs: string[];
@@ -66,7 +65,6 @@ let uuid: string;
 const page404 = readFileSync(`${__dirname}/../../public/404.html`).toString('utf8');
 const logTemplate = readFileSync(`${__dirname}/../../public/logTemplate.html`).toString('utf8');
 // const FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g; // with space
-const ONE_MONTH_SEC = 30 * 24 * 3_600;
 
 // copied from here: https://github.com/component/escape-html/blob/master/index.js
 const matchHtmlRegExp = /["'&<>]/;
@@ -115,14 +113,6 @@ function escapeHtml(string: string): string {
     return lastIndex !== index ? html + str.substring(lastIndex, index) : html;
 }
 
-function isLocalUrl(path: string): boolean {
-    try {
-        return new URL(path, 'http://127.0.0.1:3000').origin === 'http://127.0.0.1:3000';
-    } catch {
-        return false;
-    }
-}
-
 function get404Page(customText?: string): string {
     if (customText) {
         return page404.replace('<div class="custom-message"></div>', `<div class="custom-message">${customText}</div>`);
@@ -168,11 +158,11 @@ async function readFolderRecursive(
 function MemoryWriteStream(): void {
     Transform.call(this);
     this._chunks = [];
-    this._transform = (chunk: unknown, enc: unknown, cb: () => void): void => {
+    this._transform = (chunk: Buffer, _enc: string, cb: () => void): void => {
         this._chunks.push(chunk);
         cb();
     };
-    this.collect = (): unknown => {
+    this.collect = (): Buffer<ArrayBuffer> => {
         const result = Buffer.concat(this._chunks);
         this._chunks = [];
         return result;
@@ -202,15 +192,13 @@ class Web {
         server: null,
     };
 
-    // todo delete after react will be main
     private readonly LOGIN_PAGE = '/index.html?login';
 
     /** URL to the JSON config schema */
     private readonly JSON_CONFIG_SCHEMA_URL =
         'https://raw.githubusercontent.com/ioBroker/adapter-react-v5/main/schemas/jsonConfig.json';
 
-    private bruteForce: Record<string, { errors: number; time?: number }> = {};
-    private store: unknown = null;
+    private store: Store | null = null;
     private indexHTML: string;
     baseDir = join(__dirname, '..', '..');
     dirName = normalize(`${this.baseDir}/admin/`.replace(/\\/g, '/')).replace(/\\/g, '/');
@@ -223,7 +211,11 @@ class Web {
     private settings: AdminAdapterConfig;
     private readonly adapter: AdminAdapter;
     private options: WebOptions;
-    private readonly onReady: (server: unknown, store: unknown, adapter: AdminAdapter) => void;
+    private readonly onReady: (
+        server: Server & { __server: { app: null | Express; server: null | Server } },
+        store: Store,
+        adapter: AdminAdapter,
+    ) => void;
     private systemLanguage: ioBroker.Languages;
     private checkTimeout: ioBroker.Timeout;
 
@@ -238,7 +230,11 @@ class Web {
     constructor(
         settings: AdminAdapterConfig,
         adapter: AdminAdapter,
-        onReady: (server: unknown, store: unknown, adapter: AdminAdapter) => void,
+        onReady: (
+            server: Server & { __server: { app: null | Express; server: null | Server } },
+            store: Store,
+            adapter: AdminAdapter,
+        ) => void,
         options: WebOptions,
     ) {
         this.settings = settings;
@@ -270,17 +266,17 @@ class Web {
         this.server.server?.close();
     }
 
-    prepareIndex(): string {
+    async prepareIndex(): Promise<string> {
         let template = readFileSync(join(this.wwwDir, 'index.html')).toString('utf8');
         const m = template.match(/(["']?@@\w+@@["']?)/g);
-        m.forEach(pattern => {
+        for (let pattern of m) {
             pattern = pattern.replace(/@/g, '').replace(/'/g, '').replace(/"/g, '');
             if (pattern === 'disableDataReporting') {
-                template = template.replace(
-                    /['"]@@disableDataReporting@@["']/g,
-                    // @ts-expect-error deprecated: this is not used on instance objects use system.adapter.xy.plugins.sentry.enabled
-                    this.adapter.common?.disableDataReporting ? 'true' : 'false',
+                // read sentry state
+                const state = await this.adapter.getStateAsync(
+                    `system.adapter.${this.adapter.namespace}.plugins.sentry.enabled`,
                 );
+                template = template.replace(/['"]@@disableDataReporting@@["']/g, state?.val ? 'true' : 'false');
             } else if (pattern === 'loginBackgroundImage') {
                 if (this.adapter.config.loginBackgroundImage) {
                     template = template.replace(
@@ -333,7 +329,7 @@ class Web {
                         : '',
                 );
             }
-        });
+        }
 
         return template;
     }
@@ -444,6 +440,10 @@ class Web {
         }
     }
 
+    resetIndexHtml(): void {
+        this.indexHTML = '';
+    }
+
     /**
      * Initialize the server
      */
@@ -477,8 +477,13 @@ class Web {
 
             // replace socket.io
             this.server.app.use((req: Request, res: Response, next: NextFunction): void => {
+                const url = req.url.split('?')[0];
                 // return favicon always
-                if (req.url === '/favicon.ico') {
+                if (url === '/auth') {
+                    // User can ask server if authentication enabled
+                    res.setHeader('Content-Type', 'application/json');
+                    res.json({ auth: this.settings.auth });
+                } else if (url === '/favicon.ico') {
                     res.set('Content-Type', 'image/x-icon');
                     if (this.systemConfig.native.vendor.ico) {
                         // convert base64 to ico
@@ -489,10 +494,7 @@ class Web {
 
                     res.send(readFileSync(join(this.wwwDir, 'favicon.ico')));
                     return;
-                } else if (
-                    socketIoFile !== false &&
-                    (req.url.startsWith('socket.io.js') || req.url.match(/\/socket\.io\.js(\?.*)?$/))
-                ) {
+                } else if (socketIoFile !== false && url.includes('socket.io.js')) {
                     if (socketIoFile) {
                         res.contentType('text/javascript');
                         res.status(200).send(socketIoFile);
@@ -520,166 +522,58 @@ class Web {
 
             if (this.settings.auth) {
                 AdapterStore = commonTools.session(session, this.settings.ttl);
-                const flash = await import('connect-flash');
                 this.store = new AdapterStore({ adapter: this.adapter });
-
-                passport.use(
-                    new Strategy(
-                        (
-                            username: string,
-                            password: string,
-                            done: (error: any, user?: string | false) => void,
-                        ): void => {
-                            username = (username || '').toString();
-
-                            if (this.bruteForce[username] && this.bruteForce[username].errors > 4) {
-                                let minutes = new Date().getTime() - this.bruteForce[username].time;
-                                if (this.bruteForce[username].errors < 7) {
-                                    if (new Date().getTime() - this.bruteForce[username].time < 60_000) {
-                                        minutes = 1;
-                                    } else {
-                                        minutes = 0;
-                                    }
-                                } else if (this.bruteForce[username].errors < 10) {
-                                    if (new Date().getTime() - this.bruteForce[username].time < 180_000) {
-                                        minutes = Math.ceil((180_000 - minutes) / 60000);
-                                    } else {
-                                        minutes = 0;
-                                    }
-                                } else if (this.bruteForce[username].errors < 15) {
-                                    if (new Date().getTime() - this.bruteForce[username].time < 600_000) {
-                                        minutes = Math.ceil((60_0000 - minutes) / 60_000);
-                                    } else {
-                                        minutes = 0;
-                                    }
-                                } else if (new Date().getTime() - this.bruteForce[username].time < 3_600_000) {
-                                    minutes = Math.ceil((3_600_000 - minutes) / 60_000);
-                                } else {
-                                    minutes = 0;
-                                }
-
-                                if (minutes) {
-                                    return done(
-                                        `Too many errors. Try again in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}.`,
-                                        false,
-                                    );
-                                }
-                            }
-
-                            const mayBePromise = this.adapter.checkPassword(
-                                username,
-                                password,
-                                (res: boolean, user: string): void => {
-                                    if (!res) {
-                                        this.bruteForce[username] = this.bruteForce[username] || { errors: 0 };
-                                        this.bruteForce[username].time = new Date().getTime();
-                                        this.bruteForce[username].errors++;
-                                    } else if (this.bruteForce[username]) {
-                                        delete this.bruteForce[username];
-                                    }
-
-                                    if (res) {
-                                        return done(null, (user || username).replace(/^system\.user\./, ''));
-                                    }
-                                    return done(null, false);
-                                },
-                            );
-
-                            if (mayBePromise instanceof Promise) {
-                                mayBePromise.catch(e => {
-                                    this.adapter.log.error(`Cannot check password: ${e}`);
-                                    done(null, false);
-                                });
-                            }
-                        },
-                    ),
-                );
-
-                passport.serializeUser((user, done) => done(null, user));
-
-                passport.deserializeUser((user, done) => done(null, user));
 
                 this.server.app.use(cookieParser());
                 this.server.app.use(bodyParser.urlencoded({ extended: true }));
                 this.server.app.use(bodyParser.json());
-                this.server.app.use(
-                    session({
-                        secret: this.adapter.secret,
-                        saveUninitialized: true,
-                        resave: true,
-                        cookie: { maxAge: this.settings.ttl * 1000 },
-                        // rolling: true, // The expiration is reset to the original maxAge, resetting the expiration countdown.
-                        store: this.store as Store,
-                    }),
-                );
-                this.server.app.use(passport.initialize());
-                this.server.app.use(passport.session());
-                this.server.app.use(flash());
 
-                this.server.app.post('/login', (req: Request, res: Response, next: NextFunction): void => {
-                    let redirect = '/';
-                    req.body = req.body || {};
-                    const isDev = req.url.includes('?dev&');
-
-                    const origin = (req.body.origin || '?href=%2F').trim();
-                    if (origin) {
-                        const parts = origin.split('href=');
-                        if (parts?.length > 1 && parts[1]) {
-                            redirect = decodeURIComponent(parts[1]);
-                            // if some invalid characters in redirect
-                            if (redirect.match(/[^-_a-zA-Z0-9&%?./]/) || !isLocalUrl(redirect)) {
-                                redirect = '/';
+                createOAuth2Server(this.adapter, {
+                    app: this.server.app,
+                    secure: this.settings.secure,
+                    accessLifetime: this.settings.ttl,
+                    refreshLifetime: 60 * 60 * 24 * 7, // 1 week (Maybe adjustable?)
+                    loginPage: (req: Request): string => {
+                        const isDev = req.url.includes('?dev');
+                        let origin = req.url.split('origin=')[1];
+                        if (origin) {
+                            const pos = origin.lastIndexOf('/');
+                            if (pos !== -1) {
+                                origin = origin.substring(0, pos);
                             }
-                        } else {
-                            // extract pathname
-                            redirect = origin.split('?')[0] || '/';
                         }
-                    }
-                    req.body.password = (req.body.password || '').toString();
-                    req.body.username = (req.body.username || '').toString();
-                    req.body.stayLoggedIn =
-                        req.body.stayloggedin === 'true' ||
-                        req.body.stayloggedin === true ||
-                        req.body.stayloggedin === 'on';
 
-                    passport.authenticate('local', (err: Error | null, user: string): void => {
-                        if (err) {
-                            this.adapter.log.warn(`Cannot login user: ${err.message}`);
-                            return res.redirect(this.getErrorRedirect(origin));
+                        if (isDev) {
+                            return 'http://127.0.0.1:3000/index.html?login';
                         }
-                        if (!user) {
-                            return res.redirect(this.getErrorRedirect(origin));
-                        }
-                        req.logIn(user, err => {
-                            if (err) {
-                                this.adapter.log.warn(`Cannot login user: ${err}`);
-                                return res.redirect(this.getErrorRedirect(origin));
-                            }
 
-                            if (req.body.stayLoggedIn) {
-                                req.session.cookie.httpOnly = true;
-                                // https://www.npmjs.com/package/express-session#cookiemaxage-1
-                                // Interval in ms
-                                req.session.cookie.maxAge =
-                                    (this.settings.ttl > ONE_MONTH_SEC ? this.settings.ttl : ONE_MONTH_SEC) * 1000;
-                            } else {
-                                req.session.cookie.httpOnly = true;
-                                // https://www.npmjs.com/package/express-session#cookiemaxage-1
-                                // Interval in ms
-                                req.session.cookie.maxAge = this.settings.ttl * 1000;
-                            }
-
-                            if (isDev) {
-                                return res.redirect(`http://127.0.0.1:3000${redirect}`);
-                            }
-
-                            return res.redirect(redirect);
-                        });
-                    })(req, res, next);
+                        return origin ? origin + this.LOGIN_PAGE : this.LOGIN_PAGE;
+                    },
                 });
 
                 this.server.app.get('/session', (req: Request, res: Response): void => {
-                    res.json({ expireInSec: Math.round(req.session.cookie.maxAge / 1_000) });
+                    if (req.headers.cookie) {
+                        const cookies = req.headers.cookie.split(';').find(c => c.trim().startsWith('access_token='));
+                        let tokenCookie = cookies?.split('=')[1];
+                        if (!tokenCookie && req.headers.authorization?.startsWith('Bearer ')) {
+                            tokenCookie = req.headers.authorization.split(' ')[1];
+                        } else if (!tokenCookie && req.query?.token) {
+                            tokenCookie = req.query.token as string;
+                        }
+
+                        if (tokenCookie) {
+                            void this.adapter.getSession(`a:${tokenCookie[1]}`, (token: InternalStorageToken): void => {
+                                if (!token?.user) {
+                                    res.json({ expireInSec: 0 });
+                                } else {
+                                    res.json({ expireInSec: Math.round((token.aExp - Date.now()) / 1000) });
+                                }
+                            });
+                            return;
+                        }
+                    }
+
+                    res.json({ error: 'Cannot find session' });
                 });
 
                 this.server.app.get('/logout', (req: Request, res: Response): void => {
@@ -692,13 +586,11 @@ class Web {
                         }
                     }
 
-                    req.logout((): void => {
-                        if (isDev) {
-                            res.redirect('http://127.0.0.1:3000/index.html?login');
-                        } else {
-                            res.redirect(origin ? origin + this.LOGIN_PAGE : this.LOGIN_PAGE);
-                        }
-                    });
+                    if (isDev) {
+                        res.redirect('http://127.0.0.1:3000/index.html?login');
+                    } else {
+                        res.redirect(origin ? origin + this.LOGIN_PAGE : this.LOGIN_PAGE);
+                    }
                 });
 
                 // route middleware to make sure a user is logged in
@@ -727,18 +619,20 @@ class Web {
                         });
                         return;
                     }
-                    if (!req.isAuthenticated()) {
-                        if (/^\/login\//.test(req.originalUrl) || /\.ico(\?.*)?$/.test(req.originalUrl)) {
+                    if ((req.isAuthenticated && !req.isAuthenticated()) || (!req.isAuthenticated && !req.user)) {
+                        const pathName = req.url.split('?')[0];
+                        if (
+                            pathName.startsWith('/login/') ||
+                            pathName.endsWith('.ico') ||
+                            pathName.endsWith('manifest.json')
+                        ) {
                             return next();
                         }
-                        const pathName = req.url.split('?')[0];
                         // protect all paths except
-                        this.unprotectedFiles =
-                            this.unprotectedFiles ||
-                            readdirSync(this.wwwDir).map(file => {
-                                const stat = lstatSync(join(this.wwwDir, file));
-                                return { name: file, isDir: stat.isDirectory() };
-                            });
+                        this.unprotectedFiles ||= readdirSync(this.wwwDir).map(file => {
+                            const stat = lstatSync(join(this.wwwDir, file));
+                            return { name: file, isDir: stat.isDirectory() };
+                        });
                         if (
                             pathName &&
                             pathName !== '/' &&
@@ -898,7 +792,7 @@ class Web {
                 }
             });
 
-            const appOptions: Record<string, unknown> = {};
+            const appOptions: { maxAge?: number } = {};
             if (this.settings.cache) {
                 appOptions.maxAge = 30_758_400_000;
             }
@@ -961,13 +855,14 @@ class Web {
                     res.status(200).send('');
                 });
 
-                this.server.app.get('/index.html', (_req: Request, res: Response): void => {
-                    this.indexHTML = this.indexHTML || this.prepareIndex();
+                this.server.app.get('/index.html', async (_req: Request, res: Response): Promise<void> => {
+                    this.indexHTML = this.indexHTML || (await this.prepareIndex());
                     res.header('Content-Type', 'text/html');
                     res.status(200).send(this.indexHTML);
                 });
-                this.server.app.get('/', (_req: Request, res: Response): void => {
-                    this.indexHTML = this.indexHTML || this.prepareIndex();
+
+                this.server.app.get('/', async (_req: Request, res: Response): Promise<void> => {
+                    this.indexHTML = this.indexHTML || (await this.prepareIndex());
                     res.header('Content-Type', 'text/html');
                     res.status(200).send(this.indexHTML);
                 });
@@ -1000,7 +895,7 @@ class Web {
                     if (url.startsWith(this.dirName)) {
                         try {
                             if (existsSync(url)) {
-                                res.contentType(mime.getType(url) || 'text/javascript');
+                                res.contentType(getType(url) || 'text/javascript');
                                 createReadStream(url).pipe(res);
                             } else {
                                 res.status(404).send(get404Page(`File not found`));
@@ -1057,7 +952,7 @@ class Web {
                             res.contentType(mimeType);
                         } else {
                             try {
-                                const _mimeType = mime.getType(url);
+                                const _mimeType = getType(url);
                                 res.contentType(_mimeType || 'text/javascript');
                             } catch {
                                 res.contentType('text/javascript');
@@ -1229,7 +1124,7 @@ class Web {
             });
 
             try {
-                const webserver = new IoBWebServer.WebServer({
+                const webserver = new WebServer({
                     app: this.server.app,
                     adapter: this.adapter,
                     secure: this.settings.secure,
@@ -1339,7 +1234,7 @@ class Web {
                                         this.checkTimeout = this.adapter.setTimeout(async (): Promise<void> => {
                                             this.checkTimeout = null;
                                             try {
-                                                await IoBWebServer.checkPublicIP(
+                                                await checkPublicIP(
                                                     this.settings.port,
                                                     'ioBroker',
                                                     '/iobroker_check.html',

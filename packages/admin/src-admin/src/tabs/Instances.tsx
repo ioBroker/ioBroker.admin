@@ -33,6 +33,8 @@ import {
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
+import type { HostInfo } from '@iobroker/socket-client';
+
 import AdminUtils from '@/helpers/AdminUtils';
 import { replaceLink } from '@/helpers/utils';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
@@ -107,11 +109,6 @@ interface InstancesProps {
     handleNavigation: (tab: string, subTab?: string, param?: string) => void;
 }
 
-interface HostData {
-    'Disk free': number;
-    'Disk size': number;
-}
-
 interface InstancesState {
     expertMode: boolean;
     dialog: string | null;
@@ -121,7 +118,7 @@ interface InstancesState {
     onlyCurrentHost: boolean;
     viewMode: boolean;
     viewCategory: boolean;
-    hostData: HostData | null;
+    hostInfo: HostInfo | null;
     processes: number | null;
     mem: number | null;
     percent: number | null;
@@ -199,7 +196,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             onlyCurrentHost: false,
             viewMode: false,
             viewCategory: false,
-            hostData: null,
+            hostInfo: null,
             processes: null,
             mem: null,
             percent: null,
@@ -1013,11 +1010,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 if (!error.toString().includes('May not read')) {
                     window.alert(`Cannot read host information: ${error}`);
                 }
-                return {};
+                return {} as HostInfo;
             })
-            .then(hostData => {
+            .then(hostInfo => {
                 this._cacheList = null;
-                this.setState({ hostData });
+                this.setState({ hostInfo });
             });
 
         let memState;
@@ -1173,10 +1170,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
             }
         }
 
-        const hostData = this.state.hostData
+        const hostInfo = this.state.hostInfo
             ? `${
-                  this.state.hostData['Disk free']
-                      ? `${this.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, `
+                  this.state.hostInfo['Disk free']
+                      ? `${this.t('Disk free')}: ${Math.round(this.state.hostInfo['Disk free'] / (this.state.hostInfo['Disk size'] / 100))}%, `
                       : ''
               }${this.t('Total RAM usage')}: ${this.state.mem} Mb / ` +
               `${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb ` +
@@ -1397,7 +1394,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         component="span"
                         sx={{ display: { xs: 'none', sm: 'inline-block' } }}
                     >
-                        {hostData}
+                        {hostInfo}
                     </Box>
                 </TabHeader>
                 <TabContent overflow="auto">

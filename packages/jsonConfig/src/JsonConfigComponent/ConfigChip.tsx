@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import { FormHelperText, FormControl } from '@mui/material';
 
-import type { ConfigItemChip } from '#JC/types';
+import type { ConfigItemChip } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ChipInput from './ChipInput';
 import { I18n } from '@iobroker/adapter-react-v5';

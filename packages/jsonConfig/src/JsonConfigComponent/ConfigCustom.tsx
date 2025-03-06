@@ -1,8 +1,8 @@
 import React, { type JSX } from 'react';
 import { Grid2, LinearProgress } from '@mui/material';
 
-import Adapter, { I18n } from '@iobroker/adapter-react-v5';
-import type { ConfigItemCustom } from '#JC/types';
+import { I18n } from '@iobroker/adapter-react-v5';
+import type { ConfigItemCustom } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from '#JC/JsonConfigComponent/ConfigGeneric';
 import { registerRemotes, loadRemote, init } from '@module-federation/runtime';
 
@@ -61,8 +61,6 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
         */
         if (this.props.schema.url.startsWith('./')) {
             url = `${window.location.protocol}//${window.location.host}${this.props.schema.url.replace(/^\./, '')}`;
-        } else if (this.props.schema.url.match(/^https?:\/\//)) {
-            url = this.props.schema.url;
         } else {
             url = `${window.location.protocol}//${window.location.host}/adapter/${this.props.oContext.adapterName}/${this.props.schema.url}`;
         }
@@ -131,15 +129,14 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                     ],
                     // force: true // may be needed to side-load remotes after the fact.
                 );
-                setPromise = loadRemote(
-                    uniqueName + '/' + fileToLoad,
-                    );
+                setPromise = loadRemote(`${uniqueName}/${fileToLoad}`);
                 if (i18nPromise instanceof Promise) {
                     setPromise = Promise.all([setPromise, i18nPromise]).then(result => result[0]);
                 }
                 // remember promise
                 ConfigCustom.runningLoads[`${url}!${fileToLoad}`] = setPromise;
             } catch (error) {
+                console.error(error);
                 this.setState({ error: `Cannot import from ${this.props.schema.url}: ${error}` });
             }
         }
@@ -154,9 +151,11 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                     error: `Component ${this.props.schema.name} not found in ${this.props.schema.url}. Found: ${keys.join(', ')}`,
                 });
             } else {
-                this.setState({ Component: component[componentName] });
+                const _Component = component[componentName];
+                setTimeout(() => this.setState({ Component: _Component }), 2000);
             }
         } catch (error) {
+            console.error(error);
             this.setState({ error: `Cannot import from ${this.props.schema.url}: ${error}` });
         }
     }
@@ -182,29 +181,6 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
         ) : (
             <LinearProgress />
         );
-
-        // If any widths are defined
-        if (schema.xs || schema.sm || schema.md || schema.lg || schema.xl) {
-            item = (
-                <Grid2
-                    size={{
-                        xs: schema.xs || 12,
-                        sm: schema.sm || undefined,
-                        md: schema.md || undefined,
-                        lg: schema.lg || undefined,
-                        xl: schema.xl || undefined,
-                    }}
-                    style={{
-                        marginBottom: 0,
-                        textAlign: 'left',
-                        ...schema.style,
-                        ...(this.props.oContext.themeType === 'dark' ? schema.darkStyle : {}),
-                    }}
-                >
-                    {item}
-                </Grid2>
-            );
-        }
 
         if (schema.newLine) {
             return (

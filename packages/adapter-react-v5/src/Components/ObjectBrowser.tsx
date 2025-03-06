@@ -76,6 +76,7 @@ import {
     ViewColumn as IconColumns,
     Wifi as IconConnection,
     WifiOff as IconDisconnected,
+    DriveFileRenameOutline,
 } from '@mui/icons-material';
 
 import { IconExpert } from '../icons/IconExpert';
@@ -813,9 +814,6 @@ const styles: Record<string, any> = {
         minWidth: 250,
         height: 'calc(100% - 50px)',
         overflow: 'auto',
-    },
-    enumButton: {
-        float: 'right',
     },
     enumCheckbox: {
         minWidth: 0,
@@ -1974,6 +1972,8 @@ function formatValue(options: FormatValueOptions): {
         u?: string;
         /** value not replaced by `common.states` */
         s?: string;
+        /** Text for copy to clipboard */
+        c?: string;
     };
     valFull:
         | {
@@ -2057,6 +2057,8 @@ function formatValue(options: FormatValueOptions): {
         u?: string;
         /** value not replaced by `common.states` */
         s?: string;
+        /** Text for copy to clipboard */
+        c?: string;
     } = { v: v as string };
 
     // try to replace number with "common.states"
@@ -2069,6 +2071,7 @@ function formatValue(options: FormatValueOptions): {
     }
 
     if (valText.v?.length > 40) {
+        valText.c = valText.v;
         valText.v = `${valText.v.substring(0, 40)}...`;
     }
 
@@ -2440,21 +2443,32 @@ interface DragWrapperProps {
 }
 
 interface ObjectCustomDialogProps {
-    t: Translate;
-    lang: ioBroker.Languages;
+    allVisibleObjects: boolean;
+    customsInstances: string[];
     expertMode?: boolean;
+    isFloatComma: boolean;
+    lang: ioBroker.Languages;
+    objectIDs: string[];
     objects: Record<string, ioBroker.Object>;
+    onClose: () => void;
+    reportChangedIds: (ids: string[]) => void;
     socket: Connection;
+    systemConfig: ioBroker.SystemConfigObject;
+    t: Translate;
     theme: IobTheme;
     themeName: ThemeName;
     themeType: ThemeType;
-    customsInstances: string[];
-    objectIDs: string[];
+}
+
+interface ObjectMoveRenameDialogProps {
+    childrenIds: string[];
+    expertMode: boolean;
+    id: string;
+    objectType: ioBroker.ObjectType | undefined;
     onClose: () => void;
-    reportChangedIds: (ids: string[]) => void;
-    isFloatComma: boolean;
-    allVisibleObjects: boolean;
-    systemConfig: ioBroker.SystemConfigObject;
+    socket: Connection;
+    t: Translate;
+    theme: IobTheme;
 }
 
 interface ObjectBrowserValueProps {
@@ -2560,6 +2574,7 @@ export interface ObjectBrowserProps {
 
     // components
     objectCustomDialog?: React.FC<ObjectCustomDialogProps>;
+    objectMoveRenameDialog?: React.FC<ObjectMoveRenameDialogProps>;
     objectAddBoolean?: boolean; // optional toolbar button
     objectEditBoolean?: boolean; // optional toolbar button
     objectStatesView?: boolean; // optional toolbar button
@@ -2677,6 +2692,11 @@ interface ObjectBrowserState {
     tooltipInfo: null | { el: JSX.Element[]; id: string };
     /** Show the menu with aliases for state */
     aliasMenu: string;
+    /** Show rename dialog */
+    showRenameDialog: {
+        id: string;
+        childrenIds: string[];
+    } | null;
 }
 
 export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrowserState> {
@@ -2994,6 +3014,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             excludeTranslations: false,
             tooltipInfo: null,
             aliasMenu: '',
+            showRenameDialog: null,
         };
 
         this.texts = {
@@ -3197,7 +3218,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 props.socket
                     .getState(`system.adapter.${this.defaultHistory}.alive`)
                     .then(state => {
-                        if (!state || !state.val) {
+                        if (!state?.val) {
                             this.defaultHistory = '';
                         }
                     })
@@ -3247,8 +3268,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     this.expandAllSelected(() => this.onAfterSelect()),
                 );
             }
-        } catch (e1) {
-            this.showError(e1);
+        } catch (error) {
+            this.showError(error);
         }
     }
 
@@ -4821,6 +4842,25 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         );
     }
 
+    renderRenameDialog(): JSX.Element | null {
+        if (!this.state.showRenameDialog) {
+            return null;
+        }
+        const ObjectMoveRenameDialog = this.props.objectMoveRenameDialog;
+        return (
+            <ObjectMoveRenameDialog
+                expertMode={this.props.expertMode}
+                onClose={() => this.setState({ showRenameDialog: null })}
+                id={this.state.showRenameDialog.id}
+                childrenIds={this.state.showRenameDialog.childrenIds}
+                theme={this.props.theme}
+                socket={this.props.socket}
+                t={this.props.t}
+                objectType={this.objects[this.state.showRenameDialog.id]?.type}
+            />
+        );
+    }
+
     private handleJsonUpload(evt: Event): void {
         const target = evt.target as HTMLInputElement;
         const f = target.files?.length && target.files[0];
@@ -5311,7 +5351,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     }
 
     private toggleExpanded(id: string): void {
-        const expanded = JSON.parse(JSON.stringify(this.state.expanded));
+        const expanded: string[] = JSON.parse(JSON.stringify(this.state.expanded));
         const pos = expanded.indexOf(id);
         if (pos === -1) {
             expanded.push(id);
@@ -5795,7 +5835,6 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             const valTextRx: JSX.Element[] = [];
             item.data.state = { valTextRx };
 
-            const copyText = valText.v || '';
             valTextRx.push(
                 <span
                     className={`newValueBrowser-${this.props.themeType || 'light'}`}
@@ -5833,6 +5872,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 );
             }
             if (!narrowStyleWithDetails) {
+                const copyText = valText.c !== undefined ? valText.c : valText.v || '';
                 valTextRx.push(
                     <IconCopy
                         className="copyButton"
@@ -5921,7 +5961,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 const pos = this.info.objects[enumId].common.members.indexOf(id);
                 if (pos !== -1 && !newArray.includes(enumId)) {
                     // delete it from members
-                    const obj = JSON.parse(JSON.stringify(this.info.objects[enumId]));
+                    const obj: ioBroker.Object = JSON.parse(JSON.stringify(this.info.objects[enumId]));
                     obj.common.members.splice(pos, 1);
                     promises.push(
                         this.props.socket
@@ -5935,7 +5975,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             // add to it
             if (newArray.includes(enumId) && !this.info.objects[enumId].common.members?.includes(id)) {
                 // add to object
-                const obj = JSON.parse(JSON.stringify(this.info.objects[enumId]));
+                const obj: ioBroker.Object = JSON.parse(JSON.stringify(this.info.objects[enumId]));
                 obj.common.members = obj.common.members || [];
                 obj.common.members.push(id);
                 obj.common.members.sort();
@@ -6004,10 +6044,19 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 aria-labelledby="enum-dialog-title"
                 open={!0} // true
             >
-                <DialogTitle id="enum-dialog-title">
+                <DialogTitle
+                    id="enum-dialog-title"
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        flexWrap: 'nowrap',
+                        gap: 8,
+                        paddingRight: 12,
+                    }}
+                >
                     {type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms')}
                     <Fab
-                        sx={styles.enumButton}
                         color="primary"
                         disabled={enumsOriginal === JSON.stringify(itemEnums)}
                         size="small"
@@ -6042,7 +6091,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 key={id}
                                 onClick={() => {
                                     const pos = itemEnums.indexOf(id);
-                                    const enumDialogEnums = JSON.parse(JSON.stringify(this.state.enumDialogEnums));
+                                    const enumDialogEnums: string[] = JSON.parse(
+                                        JSON.stringify(this.state.enumDialogEnums),
+                                    );
                                     if (pos === -1) {
                                         enumDialogEnums.push(id);
                                         enumDialogEnums.sort();
@@ -7333,7 +7384,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                                 ? this.systemConfig.common.isFloatComma
                                                 : this.props.isFloatComma,
                                     });
-                                    this.onCopy(e, valText.v.toString());
+                                    this.onCopy(e, valText.c !== undefined ? valText.c : valText.v.toString());
                                 }}
                                 key="cc"
                             />
@@ -7741,9 +7792,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     };
 
     resizerMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
-        this.storedWidths =
-            this.storedWidths ||
-            (JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width || 'lg'])) as ScreenWidthOne);
+        this.storedWidths ||= JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width || 'lg'])) as ScreenWidthOne;
 
         this.resizerCurrentWidths = this.resizerCurrentWidths || {};
         this.resizerActiveDiv = (e.target as HTMLDivElement).parentNode as HTMLDivElement;
@@ -8662,6 +8711,31 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     },
                 ],
             },
+            RENAME: {
+                key: '8',
+                visibility: !!(
+                    !this.props.notEditable &&
+                    this.props.objectMoveRenameDialog &&
+                    !item.data.id.startsWith('system.') &&
+                    item.data.id.split('.').length > 2 &&
+                    (this.props.expertMode ||
+                        item.data.id.startsWith('javascript.0.') ||
+                        item.data.id.startsWith('0_userdata.0.'))
+                ),
+                icon: <DriveFileRenameOutline />,
+                label: this.props.t('ra_Rename_Move_Copy'),
+                onClick: () => {
+                    const ids = Object.keys(this.objects);
+                    const parentId = `${item.data.id}.`;
+                    this.setState({
+                        showContextMenu: null,
+                        showRenameDialog: {
+                            id: item.data.id,
+                            childrenIds: ids.filter(id => id.startsWith(parentId)),
+                        },
+                    });
+                },
+            },
             DELETE: {
                 key: 'Delete',
                 visibility: !!(
@@ -9006,6 +9080,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 {this.renderEnumDialog()}
                 {this.renderErrorDialog()}
                 {this.renderExportDialog()}
+                {this.renderRenameDialog()}
                 {this.state.modalNewObj && this.props.modalNewObject && this.props.modalNewObject(this)}
                 {this.state.modalEditOfAccess &&
                     this.state.modalEditOfAccessObjData &&

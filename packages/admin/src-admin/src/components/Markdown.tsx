@@ -35,6 +35,7 @@ import MDUtils, {
     type MarkdownHeader,
     type MarkdownPart,
 } from './MDUtils';
+import type { Repository } from '@iobroker/socket-client';
 // import { Page404 } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
@@ -589,9 +590,11 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         if (this.state.text) {
             this.parseText(this.state.text);
         }
-        void this.props.socket
-            ?.getRepository(this.props.currentHost, {})
-            .then(repo => this.setState({ adapterNews: repo[this.props.adapter]?.news }));
+        void this.props.socket?.getRepository(this.props.currentHost, {}).then((repo: Repository): void =>
+            this.setState({
+                adapterNews: repo[this.props.adapter]?.news as Record<string, ioBroker.StringOrTranslated>,
+            }),
+        );
     }
 
     UNSAFE_componentWillReceiveProps(nextProps: MarkdownProps /* , nextContext */): void {
@@ -748,12 +751,15 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             // split news
             _changeLog = Markdown.parseChangeLog(changeLog);
             if (_changeLog && typeof _changeLog === 'object' && this.state.adapterNews) {
-                const lang = I18n.getLanguage();
+                const lang: ioBroker.Languages = I18n.getLanguage();
                 Object.keys(this.state.adapterNews).forEach(version => {
                     if (!_changeLog[version]) {
-                        let news = this.state.adapterNews[version];
-                        if (typeof news === 'object') {
-                            news = news[lang] || news.en || '';
+                        const adapterNews = this.state.adapterNews[version];
+                        let news: string;
+                        if (typeof adapterNews === 'object') {
+                            news = adapterNews[lang] || adapterNews.en || '';
+                        } else {
+                            news = adapterNews;
                         }
 
                         _changeLog[version] = { version, lines: news.split('\\n') };

@@ -3,7 +3,7 @@ import React, { type JSX } from 'react';
 import { InputLabel, MenuItem, FormControl, Select, FormHelperText } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import type { ConfigItemCertCollection } from '#JC/types';
+import type { ConfigItemCertCollection } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigCertCollectionProps extends ConfigGenericProps {

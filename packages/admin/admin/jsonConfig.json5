@@ -75,6 +75,7 @@
                     type: 'number',
                     label: 'Login timeout',
                     help: 'sec',
+                    min: 120,
                     xs: 12,
                     sm: 12,
                     md: 6,

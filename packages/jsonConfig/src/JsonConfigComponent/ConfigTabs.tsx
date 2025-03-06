@@ -3,7 +3,7 @@ import React, { type JSX } from 'react';
 import { Tabs, Tab, IconButton, Toolbar, Menu, MenuItem, ListItemIcon } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 
-import type { ConfigItemTabs } from '#JC/types';
+import type { ConfigItemTabs } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
 
@@ -33,6 +33,7 @@ interface ConfigTabsState extends ConfigGenericState {
     tab?: string;
     width: number;
     openMenu: HTMLButtonElement | null;
+    initialBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
@@ -114,23 +115,36 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
         if (!this.state.width) {
             return 'md';
         }
-        if (this.state.width < 600) {
-            return 'xs';
+        if (!this.state.initialBreakpoint) {
+            let initialBreakpoint: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+            if (this.state.width < 600) {
+                initialBreakpoint = 'xs';
+            } else if (this.state.width < 900) {
+                initialBreakpoint = 'sm';
+            } else if (this.state.width < 1200) {
+                initialBreakpoint = 'md';
+            } else if (this.state.width < 1536) {
+                initialBreakpoint = 'lg';
+            } else {
+                initialBreakpoint = 'xl';
+            }
+            // Remember initial breakpoint and do not change it anymore
+            setTimeout(() => {
+                this.setState({ initialBreakpoint });
+            }, 50);
+
+            return initialBreakpoint;
         }
-        if (this.state.width < 900) {
-            return 'sm';
-        }
-        if (this.state.width < 1200) {
-            return 'md';
-        }
-        if (this.state.width < 1536) {
-            return 'lg';
-        }
-        return 'xl';
+
+        return this.state.initialBreakpoint;
     }
 
     componentDidUpdate(): void {
-        if (this.refDiv.current?.clientWidth && this.refDiv.current.clientWidth !== this.state.width) {
+        if (
+            !this.state.initialBreakpoint &&
+            this.refDiv.current?.clientWidth &&
+            this.refDiv.current.clientWidth !== this.state.width
+        ) {
             if (this.resizeTimeout) {
                 clearTimeout(this.resizeTimeout);
             }

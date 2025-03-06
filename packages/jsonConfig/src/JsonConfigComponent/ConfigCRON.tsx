@@ -4,7 +4,7 @@ import { InputLabel, FormControl, Button, TextField } from '@mui/material';
 
 import { DialogCron, I18n } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemCRON } from '#JC/types';
+import type { ConfigItemCRON } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, React.CSSProperties> = {

@@ -15,10 +15,12 @@ declare global {
     interface Window {
         adapterName: string;
         disableDataReporting: boolean | string;
+        USE_OAUTH2: boolean;
     }
 }
 
 window.adapterName = 'admin';
+window.USE_OAUTH2 = true;
 
 console.log(`iobroker.${window.adapterName}@${version.version}`);
 
@@ -57,8 +59,13 @@ if (
         release: `iobroker.${window.adapterName}@${version.version}`,
         integrations: [Sentry.dedupeIntegration()],
         beforeSend(event: Sentry.ErrorEvent) {
+            const text = event?.exception?.values?.map(e => e.value).join(' ');
             // Modify the event here
-            if (event?.message && versionChanged.find(error => event.message.includes(error))) {
+            if (text && versionChanged.find(error => text.includes(error))) {
+                window.location.reload();
+            } else if (text && ignoreErrors.find(error => text.includes(error))) {
+                return null;
+            } else if (event?.message && versionChanged.find(error => event.message.includes(error))) {
                 window.location.reload();
             } else if (event?.message && ignoreErrors.find(error => event.message.includes(error))) {
                 return null;
@@ -108,12 +115,14 @@ if (
 }
 
 const container = document.getElementById('root');
-const root = createRoot(container);
+if (container) {
+    const root = createRoot(container);
 
-root.render(
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <ContextWrapperProvider>
-            <App />
-        </ContextWrapperProvider>
-    </LocalizationProvider>,
-);
+    root.render(
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <ContextWrapperProvider>
+                <App />
+            </ContextWrapperProvider>
+        </LocalizationProvider>,
+    );
+}

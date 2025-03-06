@@ -23,10 +23,10 @@ import {
 
 import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
-import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
-import type { RepoAdapterObject } from '@/components/Adapters/Utils';
-import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
-import Command from '../components/Command';
+import type { AdapterRatingInfo, InstalledInfo } from './AdapterInstallDialog';
+import type { RepoAdapterObject } from './Utils';
+import AdaptersUpdater from './AdaptersUpdater';
+import Command from '../Command';
 
 const styles: Record<string, any> = {
     dialogRoot: {

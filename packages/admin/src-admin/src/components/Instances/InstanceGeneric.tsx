@@ -1,6 +1,6 @@
 import React, { Component, type JSX } from 'react';
 import cronstrue from 'cronstrue';
-import parser from 'cron-parser';
+import { CronExpressionParser } from 'cron-parser';
 
 import 'cronstrue/locales/en';
 import 'cronstrue/locales/de';
@@ -937,7 +937,7 @@ export default abstract class InstanceGeneric<
                     if (result) {
                         void this.setCommonValue(this.state.showStopAdminDialog as string, { enabled: false });
                     }
-                    this.setState({ showStopAdminDialog: false });
+                    this.setState({ showStopAdminDialog: false, openDialog: false });
                 }}
             />
         );
@@ -1096,7 +1096,7 @@ export default abstract class InstanceGeneric<
 
             if (instance.enabled) {
                 try {
-                    const expr = parser.parseExpression(instance.schedule);
+                    const expr = CronExpressionParser.parse(instance.schedule);
                     next = expr.next().toDate();
                     prev = expr.prev().toDate();
                 } catch {
@@ -1214,7 +1214,10 @@ export default abstract class InstanceGeneric<
                                 this.props.item.running &&
                                 this.props.instance.id === this.props.context.adminInstance
                             ) {
-                                this.setState({ showStopAdminDialog: `system.adapter.${this.props.instance.id}` });
+                                this.setState({
+                                    showStopAdminDialog: `system.adapter.${this.props.instance.id}`,
+                                    openDialog: true,
+                                });
                             } else {
                                 void this.setCommonValue(`system.adapter.${this.props.instance.id}`, {
                                     enabled: !this.props.item.running,

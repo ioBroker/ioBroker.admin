@@ -1,9 +1,10 @@
 import React, { type JSX } from 'react';
+import JSON5 from 'json5';
 
 import { FormHelperText, FormControl, Button } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import type { ConfigItemJsonEditor } from '#JC/types';
+import type { ConfigItemJsonEditor } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import CustomModal from './wrapper/Components/CustomModal';
 import Editor from './wrapper/Components/Editor';
@@ -40,7 +41,7 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
     componentDidMount(): void {
         super.componentDidMount();
         const { data, attr } = this.props;
-        const value = ConfigGeneric.getValue(data, attr) || {};
+        const value: string = ConfigGeneric.getValue(data, attr) || '{}';
         this.setState({ value, initialized: true, jsonError: this.validateJson(value) });
     }
 
@@ -49,7 +50,11 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
         if (this.props.schema.validateJson !== false) {
             if (value || !this.props.schema.allowEmpty) {
                 try {
-                    JSON.parse(value);
+                    if (this.props.schema.json5) {
+                        JSON5.parse(value);
+                    } else {
+                        JSON.parse(value);
+                    }
                 } catch (err: unknown) {
                     console.log('Error in JSON', err);
                     jsonError = true;
@@ -89,13 +94,20 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
                     <CustomModal
                         title={this.getText(schema.label)}
                         overflowHidden
+                        applyDisabled={this.state.jsonError && this.props.schema.doNotApplyWithError}
                         onClose={() =>
                             this.setState({ showSelectId: false, value: ConfigGeneric.getValue(data, attr) || {} })
                         }
                         onApply={() => this.setState({ showSelectId: false }, () => this.onChange(attr, value))}
                     >
-                        <div style={{ ...styles.wrapper, ...(this.state.jsonError ? {} : undefined) }}>
+                        <div
+                            style={{
+                                ...styles.wrapper,
+                                border: this.state.jsonError ? '2px solid red' : '2px solid transparent',
+                            }}
+                        >
                             <Editor
+                                mode={this.props.schema.json5 ? 'json5' : 'json'}
                                 value={typeof value === 'object' ? JSON.stringify(value) : value}
                                 onChange={newValue =>
                                     this.setState({ value: newValue, jsonError: this.validateJson(newValue) })

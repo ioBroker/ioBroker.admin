@@ -107,7 +107,7 @@ export class SelectWithIcon extends Component<SelectWithIconProps, SelectWithIco
                 this.timeout ||
                 setTimeout(() => {
                     this.timeout = null;
-                    const list = JSON.parse(JSON.stringify(this.state.list));
+                    const list: TextWithIconItem[] = JSON.parse(JSON.stringify(this.state.list));
                     list.unshift({ value: '', name: I18n.t('ra_none') });
                     this.setState({ list });
                 }, 100);
@@ -116,7 +116,7 @@ export class SelectWithIcon extends Component<SelectWithIconProps, SelectWithIco
                 this.timeout ||
                 setTimeout(() => {
                     this.timeout = null;
-                    const list = JSON.parse(JSON.stringify(this.state.list));
+                    const list: TextWithIconItem[] = JSON.parse(JSON.stringify(this.state.list));
                     const i = this.state.list.findIndex(obj => obj.value === '');
                     list.splice(i, 1);
                     this.setState({ list });

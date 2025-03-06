@@ -1,7 +1,7 @@
 {
     "name": "iobroker.admin",
     "description": "The adapter opens a webserver for the ioBroker admin UI.",
-    "version": "7.4.21",
+    "version": "7.5.2",
     "contributors": [
         "bluefox <dogafox@gmail.com>",
         "apollon77",
@@ -25,14 +25,14 @@
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.3",
         "@iobroker/i18n": "^0.3.1",
-        "@iobroker/socket-classes": "^1.6.2",
-        "@iobroker/webserver": "^1.0.6",
-        "@iobroker/ws": "^2.0.0",
-        "@iobroker/ws-server": "4.1.0",
+        "@iobroker/socket-classes": "^2.2.0",
+        "@iobroker/webserver": "^1.2.0",
+        "@iobroker/ws": "^2.1.0",
+        "@iobroker/ws-server": "^4.3.2",
         "ajv": "^8.17.1",
         "archiver": "^7.0.1",
         "body-parser": "^1.20.3",
-        "compression": "^1.7.5",
+        "compression": "^1.8.0",
         "connect-flash": "^0.1.1",
         "express": "^4.21.2",
         "express-fileupload": "^1.5.1",
@@ -61,7 +61,7 @@
         "@types/validator": "^13.12.2",
         "colorette": "^2.0.20",
         "less": "^4.2.2",
-        "puppeteer": "^24.1.1",
+        "puppeteer": "^24.2.1",
         "src-rx": "file:src-admin",
         "typescript": "^5.7.3"
     },

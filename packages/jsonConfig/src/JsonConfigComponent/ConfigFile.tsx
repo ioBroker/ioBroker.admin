@@ -11,7 +11,7 @@ import {
 
 import { DialogSelectFile } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemFile } from '#JC/types';
+import type { ConfigItemFile } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ConfigFileSelector from './ConfigFileSelector';
 

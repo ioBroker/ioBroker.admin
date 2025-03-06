@@ -304,17 +304,17 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
         const isDiff = JSON.stringify(schedule) !== JSON.stringify(this.state.schedule);
         if (force || isDiff) {
             isDiff && this.setState({ schedule, desc: Schedule.state2text(schedule) });
-            const copy = JSON.parse(JSON.stringify(schedule));
+            const copy: ScheduleConfig = JSON.parse(JSON.stringify(schedule));
             if (copy.period.once) {
                 const once = copy.period.once;
                 delete copy.period;
-                copy.period = { once };
+                copy.period = { once } as ScheduleConfig['period'];
                 delete copy.valid;
             } else if (copy.period.days) {
                 const days = copy.period.days;
                 const daysOfWeek = copy.period.dows;
                 delete copy.period;
-                copy.period = { days };
+                copy.period = { days } as ScheduleConfig['period'];
                 if (daysOfWeek && daysOfWeek !== '[]') {
                     copy.period.dows = daysOfWeek;
                 }
@@ -322,7 +322,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                 const weeks = copy.period.weeks;
                 const daysOfWeek = copy.period.dows;
                 delete copy.period;
-                copy.period = { weeks };
+                copy.period = { weeks } as ScheduleConfig['period'];
                 if (daysOfWeek && daysOfWeek !== '[]') {
                     copy.period.dows = daysOfWeek;
                 }
@@ -330,7 +330,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                 const months = copy.period.months;
                 const dates = copy.period.dates;
                 delete copy.period;
-                copy.period = { months };
+                copy.period = { months } as ScheduleConfig['period'];
                 if (dates && dates !== '[]') {
                     copy.period.dates = dates;
                 }
@@ -339,7 +339,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                 const yearMonth = copy.period.yearMonth;
                 const yearDate = copy.period.yearDate;
                 delete copy.period;
-                copy.period = { years, yearDate };
+                copy.period = { years, yearDate } as ScheduleConfig['period'];
                 if (yearMonth) {
                     copy.period.yearMonth = yearMonth;
                 }
@@ -626,7 +626,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputRadio}
                                 checked={!schedule.time.exactTime}
                                 onClick={() => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.time.exactTime = false;
                                     this.onChange(_schedule);
                                 }}
@@ -646,7 +646,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                                 style={styles.inputRadio}
                                                 checked={!!fromTo}
                                                 onClick={() => {
-                                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                                    const _schedule: ScheduleConfig = JSON.parse(
+                                                        JSON.stringify(this.state.schedule),
+                                                    );
                                                     _schedule.time.start = '00:00';
                                                     _schedule.time.end = '23:59';
                                                     this.onChange(_schedule);
@@ -669,7 +671,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                             value={this.state.schedule.time.start}
                                             // InputProps={{inputComponent: TextTime}}
                                             onChange={e => {
-                                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                                const _schedule: ScheduleConfig = JSON.parse(
+                                                    JSON.stringify(this.state.schedule),
+                                                );
                                                 _schedule.time.start = e.target.value;
                                                 this.onChange(_schedule);
                                             }}
@@ -692,7 +696,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                             value={this.state.schedule.time.end}
                                             // InputProps={{inputComponent: TextTime}}
                                             onChange={e => {
-                                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                                const _schedule: ScheduleConfig = JSON.parse(
+                                                    JSON.stringify(this.state.schedule),
+                                                );
                                                 _schedule.time.end = e.target.value;
                                                 this.onChange(_schedule);
                                             }}
@@ -715,7 +721,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                             style={styles.inputRadio}
                                             checked={!!wholeDay}
                                             onClick={() => {
-                                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                                const _schedule: ScheduleConfig = JSON.parse(
+                                                    JSON.stringify(this.state.schedule),
+                                                );
                                                 _schedule.time.start = '00:00';
                                                 _schedule.time.end = '24:00';
                                                 this.onChange(_schedule);
@@ -735,7 +743,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                             style={styles.inputRadio}
                                             checked={!!day}
                                             onClick={() => {
-                                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                                const _schedule: ScheduleConfig = JSON.parse(
+                                                    JSON.stringify(this.state.schedule),
+                                                );
                                                 _schedule.time.start = 'sunrise';
                                                 _schedule.time.end = 'sunset';
                                                 this.onChange(_schedule);
@@ -755,7 +765,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                             style={styles.inputRadio}
                                             checked={!!night}
                                             onClick={() => {
-                                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                                const _schedule: ScheduleConfig = JSON.parse(
+                                                    JSON.stringify(this.state.schedule),
+                                                );
                                                 _schedule.time.start = 'sunset';
                                                 _schedule.time.end = 'sunrise';
                                                 this.onChange(_schedule);
@@ -802,7 +814,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                         variant="standard"
                         value={isAstro ? this.state.schedule.time.start : '00:00'}
                         onChange={e => {
-                            const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                            const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                             _schedule.time.start = e.target.value;
                             this.onChange(_schedule);
                         }}
@@ -837,7 +849,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 },
                             })}
                             onChange={e => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.time.start = e.target.value;
                                 this.onChange(_schedule);
                             }}
@@ -883,7 +895,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputRadio}
                                 checked={!!isOnce}
                                 onClick={() => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.period.once = _schedule.period.once || Schedule.now2string(true);
                                     _schedule.period.dows = '';
                                     _schedule.period.months = '';
@@ -923,7 +935,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                         if (this.refOnce.current) {
                                             this.refOnce.current.style.background = '';
                                         }
-                                        const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                        const _schedule: ScheduleConfig = JSON.parse(
+                                            JSON.stringify(this.state.schedule),
+                                        );
                                         const date = Schedule.string2date(value);
                                         if (date.toString() !== 'Invalid Date') {
                                             _schedule.period.once = `${padding(date.getDate())}.${padding(date.getMonth() + 1)}.${date.getFullYear()}`;
@@ -957,7 +971,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputRadio}
                                 checked={!!schedule.period.days}
                                 onClick={() => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.period.days = 1;
                                     _schedule.period.dows = '';
                                     _schedule.period.months = '';
@@ -1010,7 +1024,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputRadio}
                                 checked={!!schedule.period.weeks}
                                 onClick={() => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.period.weeks = schedule.period.weeks ? 0 : 1;
                                     _schedule.period.dows = schedule.period.dows || '[0]';
                                     _schedule.period.months = '';
@@ -1054,7 +1068,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputRadio}
                                 checked={!!schedule.period.months}
                                 onClick={() => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.period.months = 1;
                                     _schedule.period.dows = '';
                                     _schedule.period.dates = '';
@@ -1085,7 +1099,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                             style={styles.inputRadio}
                                             checked={!!schedule.period.dates}
                                             onClick={() => {
-                                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                                const _schedule: ScheduleConfig = JSON.parse(
+                                                    JSON.stringify(this.state.schedule),
+                                                );
                                                 _schedule.period.months = _schedule.period.months || 1;
                                                 const dates = [];
                                                 for (let i = 1; i <= 31; i++) {
@@ -1132,7 +1148,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputRadio}
                                 checked={!!schedule.period.years}
                                 onClick={() => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.period.years = 1;
                                     _schedule.period.yearDate = 1;
                                     _schedule.period.yearMonth = 1;
@@ -1161,7 +1177,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 type="number"
                                 inputProps={{ min: 1, max: 31 }}
                                 onChange={e => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.period.yearDate = parseInt(e.target.value, 10);
                                     if (_schedule.period.yearDate < 1) {
                                         _schedule.period.yearDate = 31;
@@ -1176,8 +1192,8 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 variant="standard"
                                 value={schedule.period.yearMonth}
                                 onChange={e => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                                    _schedule.period.yearMonth = e.target.value;
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
+                                    _schedule.period.yearMonth = e.target.value as number;
                                     this.onChange(_schedule);
                                 }}
                             >
@@ -1216,7 +1232,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                     type="number"
                     inputProps={{ min: 1 }}
                     onChange={e => {
-                        const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                        const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                         _schedule.time.interval = parseInt(e.target.value, 10);
                         this.onChange(_schedule);
                     }}
@@ -1225,7 +1241,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                     variant="standard"
                     value={this.state.schedule.time.mode}
                     onChange={e => {
-                        const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                        const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                         _schedule.time.mode = e.target.value;
                         this.onChange(_schedule);
                     }}
@@ -1250,7 +1266,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputRadio}
                             checked={schedule.period.dows === '[1, 2, 3, 4, 5]'}
                             onClick={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.dows = '[1, 2, 3, 4, 5]';
                                 if (_schedule.period.days) {
                                     _schedule.period.days = 1;
@@ -1270,7 +1286,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputRadio}
                             checked={schedule.period.dows === '[0, 6]'}
                             onClick={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.dows = '[0, 6]';
                                 if (_schedule.period.days) {
                                     _schedule.period.days = 1;
@@ -1294,7 +1310,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputRadio}
                             checked={!!isSpecific}
                             onClick={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.dows = '[0, 1, 2, 3, 4, 5, 6]';
                                 if (_schedule.period.days) {
                                     _schedule.period.days = 1;
@@ -1319,7 +1335,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                         style={styles.inputSmallCheck}
                                         checked={schedule.period.dows.includes(i.toString())}
                                         onChange={e => {
-                                            const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                            const _schedule: ScheduleConfig = JSON.parse(
+                                                JSON.stringify(this.state.schedule),
+                                            );
                                             let daysOfWeek: number[];
                                             try {
                                                 daysOfWeek = JSON.parse(_schedule.period.dows);
@@ -1362,7 +1380,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputRadio}
                             checked={schedule.period.days === 1 && !schedule.period.dows}
                             onClick={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.days = 1;
                                 _schedule.period.dows = '';
                                 this.onChange(_schedule);
@@ -1379,7 +1397,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputRadio}
                             checked={schedule.period.days > 1}
                             onClick={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.days = 2;
                                 _schedule.period.dows = '';
                                 this.onChange(_schedule);
@@ -1396,7 +1414,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                         type="number"
                         inputProps={{ min: 2 }}
                         onChange={e => {
-                            const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                            const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                             _schedule.period.days = parseInt(e.target.value, 10);
                             _schedule.period.dows = '';
                             this.onChange(_schedule);
@@ -1430,7 +1448,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputRadio}
                                 checked={schedule.period.weeks === 1}
                                 onClick={() => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.period.weeks = 1;
                                     this.onChange(_schedule);
                                 }}
@@ -1446,7 +1464,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputRadio}
                                 checked={schedule.period.weeks > 1}
                                 onClick={() => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.period.weeks = 2;
                                     this.onChange(_schedule);
                                 }}
@@ -1462,7 +1480,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             type="number"
                             inputProps={{ min: 2 }}
                             onChange={e => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.weeks = parseInt(e.target.value, 10);
                                 this.onChange(_schedule);
                             }}
@@ -1499,7 +1517,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputDateDayCheck}
                             checked={parsedDates.length === 31}
                             onChange={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 const _dates = [];
                                 for (let i = 1; i <= 31; i++) {
                                     _dates.push(i);
@@ -1518,7 +1536,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputDateDayCheck}
                             checked={!parsedDates.length}
                             onChange={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.dates = '[]';
                                 this.onChange(_schedule);
                             }}
@@ -1534,7 +1552,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputDateDayCheck}
                                 checked={false}
                                 onChange={() => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     const result = [];
                                     const _parsedDates = JSON.parse(_schedule.period.dates);
                                     for (let i = 1; i <= 31; i++) {
@@ -1571,7 +1589,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputDateDayCheck}
                                 checked={JSON.parse(schedule.period.dates).includes(i)}
                                 onChange={e => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     let _dates;
                                     try {
                                         _dates = JSON.parse(_schedule.period.dates);
@@ -1623,7 +1641,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputRadio}
                             checked={typeof schedule.period.months === 'number' && schedule.period.months === 1}
                             onClick={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.months = 1;
                                 this.onChange(schedule);
                             }}
@@ -1639,7 +1657,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputRadio}
                             checked={typeof schedule.period.months === 'number' && schedule.period.months > 1}
                             onClick={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.months = 2;
                                 this.onChange(_schedule);
                             }}
@@ -1656,7 +1674,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             type="number"
                             inputProps={{ min: 2 }}
                             onChange={e => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.months = parseInt(e.target.value, 10);
                                 if (_schedule.period.months < 1) {
                                     _schedule.period.months = 1;
@@ -1678,7 +1696,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputRadio}
                             checked={typeof schedule.period.months === 'string'}
                             onClick={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.months = '[1,2,3,4,5,6,7,8,9,10,11,12]';
                                 this.onChange(_schedule);
                             }}
@@ -1698,7 +1716,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                     style={styles.inputDateDayCheck}
                                     checked={parsedMonths.length === 12}
                                     onChange={() => {
-                                        const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                        const _schedule: ScheduleConfig = JSON.parse(
+                                            JSON.stringify(this.state.schedule),
+                                        );
                                         const months = [];
                                         for (let i = 1; i <= 12; i++) {
                                             months.push(i);
@@ -1717,7 +1737,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                     style={styles.inputDateDayCheck}
                                     checked={!parsedMonths.length}
                                     onChange={() => {
-                                        const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                        const _schedule: ScheduleConfig = JSON.parse(
+                                            JSON.stringify(this.state.schedule),
+                                        );
                                         _schedule.period.months = '[]';
                                         this.onChange(_schedule);
                                     }}
@@ -1733,9 +1755,11 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                         style={styles.inputDateDayCheck}
                                         checked={false}
                                         onChange={() => {
-                                            const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                                            const result = [];
-                                            const _parsedMonths = JSON.parse(_schedule.period.months);
+                                            const _schedule: ScheduleConfig = JSON.parse(
+                                                JSON.stringify(this.state.schedule),
+                                            );
+                                            const result: number[] = [];
+                                            const _parsedMonths = JSON.parse(_schedule.period.months as string);
                                             for (let i = 1; i <= 12; i++) {
                                                 if (!_parsedMonths.includes(i)) {
                                                     result.push(i);
@@ -1764,10 +1788,12 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                                 : schedule.period.months === i
                                         }
                                         onChange={e => {
-                                            const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                                            let months;
+                                            const _schedule: ScheduleConfig = JSON.parse(
+                                                JSON.stringify(this.state.schedule),
+                                            );
+                                            let months: number[];
                                             try {
-                                                months = JSON.parse(_schedule.period.months);
+                                                months = JSON.parse(_schedule.period.months as string);
                                             } catch {
                                                 months = [];
                                             }
@@ -1804,7 +1830,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputRadio}
                             checked={schedule.period.years === 1}
                             onClick={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.years = 1;
                                 this.onChange(_schedule);
                             }}
@@ -1820,7 +1846,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                             style={styles.inputRadio}
                             checked={schedule.period.years > 1}
                             onClick={() => {
-                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                 _schedule.period.years = 2;
                                 this.onChange(_schedule);
                             }}
@@ -1836,7 +1862,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                         type="number"
                         inputProps={{ min: 2 }}
                         onChange={e => {
-                            const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                            const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                             _schedule.period.years = parseInt(e.target.value, 10);
                             if (_schedule.period.years < 1) {
                                 _schedule.period.years = 1;
@@ -1904,7 +1930,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                     if (this.refFrom.current) {
                                         this.refFrom.current.style.background = '';
                                     }
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     const date = Schedule.string2date(value);
                                     if (date.toString() !== 'Invalid Date') {
                                         _schedule.valid.from = `${padding(date.getDate())}.${padding(date.getMonth() + 1)}.${date.getFullYear()}`;
@@ -1926,7 +1952,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 style={styles.inputRadio}
                                 checked={!!schedule.valid.to}
                                 onClick={() => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                    const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.valid.to = _schedule.valid.to ? '' : Schedule.now2string(true);
                                     this.onChange(_schedule);
                                 }}
@@ -1955,7 +1981,9 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                         if (this.refTo.current) {
                                             this.refTo.current.style.background = '';
                                         }
-                                        const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                        const _schedule: ScheduleConfig = JSON.parse(
+                                            JSON.stringify(this.state.schedule),
+                                        );
                                         const date = Schedule.string2date(value);
                                         if (date.toString() !== 'Invalid Date') {
                                             _schedule.valid.to = `${padding(date.getDate())}.${padding(date.getMonth() + 1)}.${date.getFullYear()}`;
