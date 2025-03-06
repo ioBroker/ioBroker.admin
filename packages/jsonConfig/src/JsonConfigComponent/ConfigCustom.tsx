@@ -3,7 +3,7 @@ import { Grid2, LinearProgress } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCustom } from '../types';
-import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from '#JC/JsonConfigComponent/ConfigGeneric';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import { registerRemotes, loadRemote, init } from '@module-federation/runtime';
 
 interface ConfigCustomProps extends ConfigGenericProps {
@@ -25,7 +25,11 @@ init({
         '@mui/icons-material': {
             lib: () => import('@mui/icons-material'),
             version: '*',
-        }
+        },
+        '@iobroker/json-config': {
+            lib: () => import('@iobroker/json-config'),
+            version: '*',
+        },
     },
     remotes: [],
 })
