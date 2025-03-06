@@ -1,10 +1,10 @@
 import React, { type JSX } from 'react';
 import { Grid2, LinearProgress } from '@mui/material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import Adapter, { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCustom } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from '#JC/JsonConfigComponent/ConfigGeneric';
-import { registerRemotes, loadRemote } from '@module-federation/runtime';
+import { registerRemotes, loadRemote, init } from '@module-federation/runtime';
 
 interface ConfigCustomProps extends ConfigGenericProps {
     schema: ConfigItemCustom;
@@ -14,6 +14,21 @@ interface ConfigCustomState extends ConfigGenericState {
     Component: React.FC<ConfigGenericProps> | null;
     error: string;
 }
+
+init({
+    name: 'iobroker_admin',
+    shared: {
+        '@iobroker/adapter-react-v5': {
+            lib: () => import('@iobroker/adapter-react-v5'),
+            version: '*',
+        },
+        '@mui/icons-material': {
+            lib: () => import('@mui/icons-material'),
+            version: '*',
+        }
+    },
+    remotes: [],
+})
 
 export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, ConfigCustomState> {
     static runningLoads: Record<string, Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }>> = {};
