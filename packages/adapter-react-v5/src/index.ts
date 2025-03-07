@@ -136,4 +136,4 @@ export type {
     GenericAppState,
 } from './types';
 
-export { ModuleFederationShared } from './modulefederation.admin.config';
+export { moduleFederationShared } from './modulefederation.admin.config';
