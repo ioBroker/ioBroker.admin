@@ -1,13 +1,15 @@
 import React, { type JSX } from 'react';
-import { Grid2, LinearProgress } from '@mui/material';
+import { LinearProgress } from '@mui/material';
+import { registerRemotes, loadRemote, init } from '@module-federation/runtime';
+
+import * as IconsMaterial from '@mui/icons-material';
 
 import * as AdapterReact from '@iobroker/adapter-react-v5';
 import { I18n } from '@iobroker/adapter-react-v5';
-import type { ConfigItemCustom } from '../types';
+
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
-import { registerRemotes, loadRemote, init } from '@module-federation/runtime';
-import * as JsonConfig from '@iobroker/json-config';
-import * as IconsMaterial from '@mui/icons-material';
+import * as JsonConfig from '../';
+import type { ConfigItemCustom } from '../types';
 
 interface ConfigCustomProps extends ConfigGenericProps {
     schema: ConfigItemCustom;
@@ -23,7 +25,7 @@ init({
     shared: {
         '@iobroker/adapter-react-v5': {
             lib: () => AdapterReact,
-            version: '*',            
+            version: '*',
         },
         '@mui/icons-material': {
             lib: () => IconsMaterial,

@@ -7,7 +7,7 @@ import type {
     ThemeType,
     ThemeName,
 } from '@iobroker/adapter-react-v5';
-import type { ConfigGeneric, DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
+import type { ConfigGeneric, DeviceManagerPropsProps } from './JsonConfigComponent/ConfigGeneric';
 
 declare module '@mui/material/Button' {
     interface ButtonPropsColorOverrides {

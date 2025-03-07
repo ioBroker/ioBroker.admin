@@ -17,7 +17,6 @@
         "types": ["@iobroker/types"],
         "paths": {
             "@/*": ["./src/*"],
-            "#JC/*": ["../../jsonConfig/src/*"]
         }
     },
     "include": ["./src/**/*", "./src/types.d.ts"]

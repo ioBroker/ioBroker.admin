@@ -1,11 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import commonjs from 'vite-plugin-commonjs';
-import svgr from 'vite-plugin-svgr';
 import vitetsConfigPaths from 'vite-tsconfig-paths';
 import { federation } from '@module-federation/vite';
 import { ModuleFederationShared } from './modulefederation.admin.config'
-import path from 'path';
+import { resolve } from 'node:path';
 
 export default defineConfig({
     plugins: [
@@ -34,12 +33,11 @@ export default defineConfig({
     base: './',
     resolve: {
         alias: {
-            '@iobroker/json-config': path.resolve(__dirname, '..', '..', 'jsonConfig', 'src'),
-            '@iobroker/adapter-react-v5': path.resolve(__dirname, '..', '..', 'adapter-react-v5', 'src'),
-            '@iobroker/dm-gui-components': path.resolve(__dirname, '..', '..', 'dm-gui-components', 'src'),
-            '@': path.resolve(__dirname, 'src'),
-            '#DM': path.resolve(__dirname, '..', '..', 'dm-gui-components', 'src'),
-            '#JC': path.resolve(__dirname, '..', '..', 'jsonConfig', 'src'),
+            '@iobroker/json-config': resolve(__dirname, '..', '..', 'jsonConfig', 'src'),
+            '@iobroker/adapter-react-v5': resolve(__dirname, '..', '..', 'adapter-react-v5', 'src'),
+            '@iobroker/dm-gui-components': resolve(__dirname, '..', '..', 'dm-gui-components', 'src'),
+            '@': resolve(__dirname, 'src'),
+            '#DM': resolve(__dirname, '..', '..', 'dm-gui-components', 'src')
         },
     },
     build: {
