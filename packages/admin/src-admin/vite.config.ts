@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react';
 import commonjs from 'vite-plugin-commonjs';
 import vitetsConfigPaths from 'vite-tsconfig-paths';
 import { federation } from '@module-federation/vite';
-import { moduleFederationShared } from '../../adapter-react-v5/src/modulefederation.admin.config';
 import { resolve } from 'node:path';
+import { moduleFederationShared } from '@iobroker/adapter-react-v5/modulefederation.admin.config';
 
 export default defineConfig({
     plugins: [
