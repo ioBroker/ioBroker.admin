@@ -37,7 +37,7 @@ const moduleFederationShared = (packageJson) => {
         return makeShared(list.filter(packageName => packageJson.includes(packageName)));
     }
     if (packageJson && (packageJson.dependencies || packageJson.devDependencies)) {
-        return makeShared(list.filter(packageName => packageJson.dependencies[packageName] || packageJson.devDependencies[packageName]));
+        return makeShared(list.filter(packageName => packageJson.dependencies?.[packageName] || packageJson.devDependencies?.[packageName]));
     }
     return makeShared(list);
 };

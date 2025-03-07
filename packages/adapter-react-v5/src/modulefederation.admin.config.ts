@@ -43,7 +43,7 @@ export function moduleFederationShared(packageJson?: {
     }
 
     if (packageJson && (packageJson.dependencies || packageJson.devDependencies)) {
-        return makeShared(list.filter(packageName => packageJson.dependencies[packageName] || packageJson.devDependencies[packageName]));
+        return makeShared(list.filter(packageName => packageJson.dependencies?.[packageName] || packageJson.devDependencies?.[packageName]));
     }
 
     return makeShared(list);
