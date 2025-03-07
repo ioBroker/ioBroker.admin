@@ -15,10 +15,10 @@ const makeShared = (pkgs: string[]): Record<string, { requiredVersion: '*'; sing
  * @param packageJson - package.json or list of modules that used in component
  * @return Object with shared modules for "federation"
  */
-export const moduleFederationShared = (packageJson?: {
+export function moduleFederationShared(packageJson?: {
     dependencies: Record<string, string>;
     devDependencies?: Record<string, string>;
-} | string[]) => {
+} | string[]): Record<string, { requiredVersion: '*'; singleton: true }> {
     const list: string[] = [
         '@emotion/react',
         '@emotion/styled',
@@ -47,4 +47,4 @@ export const moduleFederationShared = (packageJson?: {
     }
 
     return makeShared(list);
-};
+}

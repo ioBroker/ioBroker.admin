@@ -44,6 +44,7 @@
         "LICENSE",
         "tasksExample.js",
         "craco-module-federation.js",
+        "modulefederation.admin.config.d.ts",
         "modulefederation.admin.config.js"
     ],
     "license": "MIT",

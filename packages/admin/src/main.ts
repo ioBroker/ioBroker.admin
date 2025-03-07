@@ -83,7 +83,7 @@ interface NewsMessage {
 }
 
 class Admin extends Adapter {
-    public declare config: AdminAdapterConfig;
+    declare public config: AdminAdapterConfig;
 
     /** secret used for the socket connection */
     public secret: string;
@@ -225,14 +225,14 @@ class Admin extends Adapter {
             socket.publishInstanceMessageAll(obj.from, obj.message.m, obj.message.s, obj.message.d);
         } else if (obj.command === 'checkFiles') {
             if (typeof obj.message === 'string') {
-                try {
-                    return (
-                        obj.callback &&
-                        this.sendTo(obj.from, obj.command, { result: existsSync(obj.message) }, obj.callback)
-                    );
-                } catch (e) {
-                    return obj.callback && this.sendTo(obj.from, obj.command, { error: e.message }, obj.callback);
+                if (obj.callback) {
+                    try {
+                        this.sendTo(obj.from, obj.command, { result: existsSync(obj.message) }, obj.callback);
+                    } catch (e) {
+                        this.sendTo(obj.from, obj.command, { error: e.message }, obj.callback);
+                    }
                 }
+                return;
             } else if (Array.isArray(obj.message)) {
                 const result: Record<string, boolean> = {};
                 for (let f = 0; f < obj.message.length; f++) {

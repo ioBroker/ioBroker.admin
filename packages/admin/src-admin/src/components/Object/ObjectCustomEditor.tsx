@@ -251,14 +251,16 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         if (ad.common?.adminUI.custom === 'json') {
             try {
                 const exist = await this.props.socket.fileExists(`${adapter}.admin`, 'jsonCustom.json5');
-                if (exist) {
-                    await this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json5');
-                }
                 let jsonText: string;
-                const json: {
+                let json: {
                     file: string;
                     mimeType: string;
-                } = await this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json');
+                };
+                if (exist) {
+                    json = await this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json5');
+                } else {
+                    json = await this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json');
+                }
 
                 if (json.file !== undefined) {
                     jsonText = json.file;

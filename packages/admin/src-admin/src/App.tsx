@@ -2092,15 +2092,17 @@ class App extends Router<AppProps, AppState> {
                     <Suspense fallback={<Connecting />}>
                         <CustomTab
                             key={this.state.currentTab.tab}
-                            t={I18n.t}
                             hostname={this.state.hostname}
                             adminInstance={this.adminInstance}
                             hosts={this.state.hosts}
                             instancesWorker={this.instancesWorker}
                             tab={this.state.currentTab.tab}
                             themeName={this.state.themeName}
+                            theme={this.state.theme}
                             expertMode={this.state.expertMode}
-                            lang={I18n.getLanguage()}
+                            socket={this.socket}
+                            dateFormat={this.state.systemConfig.common.dateFormat}
+                            isFloatComma={this.state.systemConfig.common.isFloatComma}
                             onRegisterIframeRef={(ref: HTMLIFrameElement) => (this.refConfigIframe = ref)}
                             onUnregisterIframeRef={(ref: HTMLIFrameElement) => {
                                 if (this.refConfigIframe === ref) {
