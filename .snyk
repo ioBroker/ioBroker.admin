@@ -1,0 +1,10 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - iobroker.admin > @iobroker/webserver > oauth2-server > lodash:
+        patched: '2025-03-07T08:25:10.720Z'
+        id: SNYK-JS-LODASH-567746
+        path: iobroker.admin > @iobroker/webserver > oauth2-server > lodash
