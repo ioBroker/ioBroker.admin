@@ -295,6 +295,7 @@
                     newLine: true,
                     url: 'custom/customComponents.js',
                     name: 'AdminComponentEasyAccessSet/Components/ConfigCustomEasyAccess',
+                    bundlerType: 'module',
                 },
             },
         },

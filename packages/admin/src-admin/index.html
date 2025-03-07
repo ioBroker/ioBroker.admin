@@ -2,13 +2,13 @@
 <html lang="en" translate="no">
     <head>
         <meta charset="utf-8" />
-        <link rel="icon" href="./favicon.ico" />
+        <link rel="icon" href="favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <meta name="theme-color" content="#000000" />
         <meta name="description" content="admin - ioBroker" />
-        <link rel="apple-touch-icon" href="./logo192.png" />
-        <link rel="stylesheet" href="./css/leaflet.css" />
-        <link rel="manifest" href="./manifest.json" crossorigin="use-credentials" />
+        <link rel="apple-touch-icon" href="logo192.png" />
+        <link rel="stylesheet" href="css/leaflet.css" />
+        <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
         <script>
             const script = document.createElement('script');
 
@@ -78,20 +78,20 @@
                 const body = document.body;
                 if (window.location.search.includes('?login')) {
                     // apply image and background color to the whole page as fast as possible
-                    if (window.loginBackgroundColor && window.loginBackgroundColor.indexOf('loginBackgroundColor') === -1) {
+                    if (window.loginBackgroundColor && !window.loginBackgroundColor.includes('loginBackgroundColor')) {
                         body.style.backgroundColor = window.loginBackgroundColor;
                     }
-                    if (window.loginBackgroundImage && window.loginBackgroundImage.indexOf('loginBackgroundImage') === -1) {
-                        body.style.backgroundImage = 'url(' + window.loginBackgroundImage + ')';
+                    if (window.loginBackgroundImage && !window.loginBackgroundImage.includes('loginBackgroundImage')) {
+                        body.style.backgroundImage = `url(${window.loginBackgroundImage})`;
                         body.style.backgroundSize  = 'cover';
                     }
                 } else {
                     // apply image and background color to the whole page as fast as possible
-                    if (window.loadingBackgroundColor && window.loadingBackgroundColor.indexOf('loadingBackgroundColor') === -1) {
+                    if (window.loadingBackgroundColor && !window.loadingBackgroundColor.includes('loadingBackgroundColor')) {
                         body.style.backgroundColor = window.loadingBackgroundColor;
                     }
-                    if (window.loadingBackgroundImage && window.loadingBackgroundImage.indexOf('loadingBackgroundImage') === -1) {
-                        body.style.backgroundImage = 'url(' + window.loadingBackgroundImage + ')';
+                    if (window.loadingBackgroundImage && !window.loadingBackgroundImage.includes('loadingBackgroundImage')) {
+                        body.style.backgroundImage = `url(${window.loadingBackgroundImage})`;
                         body.style.backgroundSize  = 'cover';
                     }
                 }
@@ -120,7 +120,10 @@
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
-        <div id="root">
-        </div>
+        <div id="root"></div>
+        <script
+            type="module"
+            src="src/index.tsx"
+        ></script>
     </body>
 </html>

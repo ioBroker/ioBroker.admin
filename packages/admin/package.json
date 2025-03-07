@@ -61,9 +61,9 @@
         "@types/validator": "^13.12.2",
         "colorette": "^2.0.20",
         "less": "^4.2.2",
-        "puppeteer": "^24.2.1",
+        "puppeteer": "^24.4.0",
         "src-rx": "file:src-admin",
-        "typescript": "^5.7.3"
+        "typescript": "~5.7.3"
     },
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.admin/issues"

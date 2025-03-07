@@ -1,3 +1,4 @@
+import 'ace-builds/src-noconflict/ace';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/browser';

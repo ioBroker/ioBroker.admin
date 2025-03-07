@@ -699,13 +699,13 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                     hosts,
                                     this.props.adminInstance,
                                     this.props.themeType,
-                                ).then(href => {
-                                    if (href) {
-                                        console.log(href);
+                                ).then(result => {
+                                    if (result.href) {
+                                        console.log(result.href);
                                         // Open in new tab
                                         window
                                             .open(
-                                                `${window.location.protocol}//${window.location.host}/${href}`,
+                                                `${window.location.protocol}//${window.location.host}/${result.href}`,
                                                 tab.name,
                                             )
                                             .focus();

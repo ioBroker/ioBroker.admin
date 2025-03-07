@@ -16,9 +16,6 @@
         "skipLibCheck": true,
         "lib": ["es2018", "DOM"],
         "jsx": "react",
-        "types": ["@iobroker/types"],
-        "paths": {
-            "#JC/*": ["./src/*"]
-        }
+        "types": ["@iobroker/types"]
     }
 }

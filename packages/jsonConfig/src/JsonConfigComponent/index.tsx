@@ -5,9 +5,9 @@ import { LinearProgress } from '@mui/material';
 import { type AdminConnection, I18n, type ThemeName, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { BackEndCommand, ConfigItemPanel, ConfigItemTabs, JsonConfigContext } from '../types';
-import type ConfigGeneric from '#JC/JsonConfigComponent/ConfigGeneric';
+import type ConfigGeneric from './ConfigGeneric';
 // eslint-disable-next-line no-duplicate-imports
-import { type DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
+import { type DeviceManagerPropsProps } from './ConfigGeneric';
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
 

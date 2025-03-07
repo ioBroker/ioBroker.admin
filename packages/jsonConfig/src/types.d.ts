@@ -7,7 +7,7 @@ import type {
     ThemeType,
     ThemeName,
 } from '@iobroker/adapter-react-v5';
-import type { ConfigGeneric, DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
+import type { ConfigGeneric, DeviceManagerPropsProps } from './JsonConfigComponent/ConfigGeneric';
 
 declare module '@mui/material/Button' {
     interface ButtonPropsColorOverrides {
@@ -601,6 +601,8 @@ export interface ConfigItemCustom extends ConfigItem {
     type: 'custom';
     /** location of Widget, like "custom/customComponents.js" */
     url: string;
+    /* module federation settings */
+    bundlerType?: 'module';
     /** Component name, like "ConfigCustomBackItUpSet/Components/AdapterExist" */
     name: string;
     /** i18n */

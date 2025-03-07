@@ -1,88 +1,15 @@
 import React, { type JSX } from 'react';
-import { Grid2, LinearProgress } from '@mui/material';
+import { LinearProgress } from '@mui/material';
+import { registerRemotes, loadRemote, init } from '@module-federation/runtime';
 
+import * as IconsMaterial from '@mui/icons-material';
+
+import * as AdapterReact from '@iobroker/adapter-react-v5';
 import { I18n } from '@iobroker/adapter-react-v5';
+
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
+import * as JsonConfig from '../';
 import type { ConfigItemCustom } from '../types';
-import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from '#JC/JsonConfigComponent/ConfigGeneric';
-
-const getOrLoadRemote = (
-    remote: string,
-    shareScope: string,
-    remoteFallbackUrl?: string,
-): Promise<{ get: (module: string) => () => Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }> }> =>
-    new Promise((resolve, reject) => {
-        // check if remote exists on the global `window`object
-        if (!(window as any)[remote]) {
-            // search dom to see if remote tag exists, but might still be loading (async)
-            const existingRemote: HTMLScriptElement = document.querySelector(`script[data-webpack="${remote}"]`);
-            // when remote is loaded.
-            const onload = async (): Promise<void> => {
-                // check if it was initialized
-                if ((window as any)[remote]) {
-                    if (!(window as any)[remote].__initialized) {
-                        // if share scope doesn't exist (like in webpack 4) then expect shareScope to be a manual object
-                        // @ts-expect-error it is a trick and must be so
-                        if (typeof __webpack_share_scopes__ === 'undefined') {
-                            // use a default share scope object passed in manually
-                            await (window as any)[remote].init(shareScope);
-                        } else {
-                            // otherwise, init share scope as usual
-                            // @ts-expect-error it is a trick and must be so
-                            await (window as any)[remote].init((__webpack_share_scopes__ as any)[shareScope]);
-                        }
-                        // mark remote as initialized
-                        (window as any)[remote].__initialized = true;
-                    }
-                } else {
-                    console.error(`Cannot load ${remote}`);
-                    reject(new Error(`Cannot load ${remote}`));
-                    return;
-                }
-                // resolve promise so marking remote as loaded
-                resolve((window as any)[remote]);
-            };
-
-            if (existingRemote) {
-                // if existing remote but not loaded, hook into its onload and wait for it to be ready
-                existingRemote.onload = onload;
-                existingRemote.onerror = reject;
-                // check if remote fallback exists as param passed to function
-                // TODO: should scan public config for a matching key if no override exists
-            } else if (remoteFallbackUrl) {
-                // inject remote if a fallback exists and call the same onload function
-                const d = document;
-                const script = d.createElement('script');
-                script.type = 'text/javascript';
-                // mark as data-webpack so runtime can track it internally
-                script.setAttribute('data-webpack', `${remote}`);
-                script.async = true;
-                script.onerror = reject;
-                script.onload = onload;
-                script.src = remoteFallbackUrl;
-                d.getElementsByTagName('head')[0].appendChild(script);
-            } else {
-                // no remote and no fallback exist, reject
-                reject(new Error(`Cannot Find Remote ${remote} to inject`));
-            }
-        } else {
-            // remote already instantiated, resolve
-            resolve((window as any)[remote]);
-        }
-    });
-
-function loadComponent(
-    remote: string,
-    sharedScope: string,
-    module: string,
-    url: string,
-): () => Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }> {
-    return async (): Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }> => {
-        const container = await getOrLoadRemote(remote, sharedScope, url);
-        // eslint-disable-next-line @typescript-eslint/await-thenable
-        const factory = await container.get(module);
-        return factory();
-    };
-}
 
 interface ConfigCustomProps extends ConfigGenericProps {
     schema: ConfigItemCustom;
@@ -92,6 +19,25 @@ interface ConfigCustomState extends ConfigGenericState {
     Component: React.FC<ConfigGenericProps> | null;
     error: string;
 }
+
+init({
+    name: 'iobroker_admin',
+    shared: {
+        '@iobroker/adapter-react-v5': {
+            lib: () => AdapterReact,
+            version: '*',
+        },
+        '@mui/icons-material': {
+            lib: () => IconsMaterial,
+            version: '*',
+        },
+        '@iobroker/json-config': {
+            lib: () => JsonConfig,
+            version: '*',
+        },
+    },
+    remotes: [],
+})
 
 export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, ConfigCustomState> {
     static runningLoads: Record<string, Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }>> = {};
@@ -180,21 +126,26 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                 }
             }
             try {
-                console.log(uniqueName, fileToLoad, componentName);
-                setPromise = loadComponent(
-                    uniqueName,
-                    'default',
-                    fileToLoad.startsWith('http://') || fileToLoad.startsWith('https://') || fileToLoad.startsWith('.')
-                        ? fileToLoad
-                        : `./${fileToLoad}`,
-                    url,
-                )();
+                console.log(url, uniqueName, fileToLoad, componentName);
+
+                registerRemotes(
+                    [
+                        {
+                            name: uniqueName,
+                            entry: url,
+                            type: this.props.schema.bundlerType || undefined,
+                        },
+                    ],
+                    // force: true // may be needed to side-load remotes after the fact.
+                );
+                setPromise = loadRemote(`${uniqueName}/${fileToLoad}`);
                 if (i18nPromise instanceof Promise) {
                     setPromise = Promise.all([setPromise, i18nPromise]).then(result => result[0]);
                 }
                 // remember promise
                 ConfigCustom.runningLoads[`${url}!${fileToLoad}`] = setPromise;
             } catch (error) {
+                console.error(error);
                 this.setState({ error: `Cannot import from ${this.props.schema.url}: ${error}` });
             }
         }
@@ -209,9 +160,11 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                     error: `Component ${this.props.schema.name} not found in ${this.props.schema.url}. Found: ${keys.join(', ')}`,
                 });
             } else {
-                this.setState({ Component: component[componentName] });
+                const _Component = component[componentName];
+                setTimeout(() => this.setState({ Component: _Component }), 2000);
             }
         } catch (error) {
+            console.error(error);
             this.setState({ error: `Cannot import from ${this.props.schema.url}: ${error}` });
         }
     }

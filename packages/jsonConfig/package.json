@@ -19,18 +19,17 @@
     },
     "dependencies": {
         "@iobroker/adapter-react-v5": "file:../adapter-react-v5",
-        "@mui/x-date-pickers": "^7.27.0",
+        "@mui/x-date-pickers": "^7.27.1",
         "crypto-js": "^4.2.0",
         "json5": "^2.2.3",
         "react-ace": "^14.0.1",
         "react-qr-code": "^2.0.15"
     },
     "devDependencies": {
-        "@craco/craco": "^7.1.0",
         "@types/crypto-js": "^4.2.2",
         "@types/json5": "^2.2.0",
         "ajv": "^8.17.1",
-        "tsc-alias": "^1.8.10"
+        "tsc-alias": "^1.8.11"
     },
     "files": [
         "build/",

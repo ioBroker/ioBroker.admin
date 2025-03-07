@@ -1440,8 +1440,83 @@ The following variables are available in JS function in custom settings:
 
 You can find examples in [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) adapter.
 
+## JSON Tab in admin
+From admin version 7.6.x you can define the tab (like `backitup` or `matter`) via JSON config.
+
+For that you must define in `io-package.json` in `common` part following:
+```json5
+{
+   "common": {
+      // ....
+      "adminTab": {
+         "link": "jsonTab.json", // the name could be any, but only ends with `.json` or `.json5`
+         // all following parameters are optional
+         "sendTo": true, // If defined, the tab will send a message by initializing to backend with command "tab" or string contained in "sendTo". Only if `singleton` is false
+         "icon": "AABBCC", // base64 icon. If not provided, the adapter icon will be taken
+         "name": "TabName", // String or multi-language object for menu label 
+         "singleton": true, // Tab will not have an instance number and for all instances will exist only one menu item. 
+         "order": 10, // Order in admin tab (0 is disabled, 1 - first after static menu items, 200 is last) 
+      },
+      // ....
+   }
+}
+```
+
+The file `jsonTab.json5` could look like:
+```json5 
+{
+   "i18n": "tabI18n", // folder name in admin, where the translations are stored (relative to "admin" folder)
+   "items": {
+      "memHeapTotal": {
+         // This will show "system.adapter.admin.0.memHeapTotal" value 
+         "type": "state",
+         "label": "Memory",
+         "sm": 12,
+         "system": true,
+         "oid": "memHeapTotal"
+      },
+      "infoConnected": {
+         // This will show "admin.0.info.connected" value
+         "newLine": true,
+         "type": "state",
+         "label": "Info about connected socket clients",
+         "sm": 12,
+         "oid": "info.connected"
+      },
+      "dayTime": {
+         // This will show "javascript.0.variables.dayTime" value
+         "newLine": true,
+         "type": "state",
+         "label": "Aktuelle Zeit",
+         "sm": 12,
+         "foreign": true,
+         "oid": "javascript.0.variables.dayTime"
+      },
+      "value": {
+         // This will show "data.value" value from "sendTo" answer
+         "newLine": true,
+         "type": "text",
+         "readOnly": "true",
+         "label": "Value from sendTo answer",
+         "sm": 12,
+      }
+   }
+}
+```
+
+If `sendTo` is provided, the instance will receive a message (`common.messagebox` must be true in `io-package.json`) with the command `tab` or with a value stored in `sendTo` if it is a string.
+The instance must answer with the structure like: 
+```typescript
+onMessage = (obj: ioBroker.Message): void => {
+    if (obj?.command === 'tab' && obj.callback) {
+        // if not instance message
+        this.sendTo(obj.from, obj.command, { data: { value: 5 } }, obj.callback);
+    }
+};
+```
+
 ## Report a schema error
 Create an issue here: https://github.com/ioBroker/adapter-react-v5/issues
 
 ## For maintainer
-To update location of JsonConfig schema, create pull request to this file: https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json
+To update the location of JsonConfig schema, create pull request to this file: https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json
