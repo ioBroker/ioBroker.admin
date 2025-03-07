@@ -87,11 +87,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.0 (2025-03-07)
 -   (@GermanBluefox) Added support for JSON5 in JsonConfig editor component 
 -   (@GermanBluefox) GUI build migrated to vite 
 -   (@GermanBluefox) Custom JSON components could be now written in TypeScript 
--   (@GermanBluefox) Added support for Tab as JSONConfig 
+-   (@GermanBluefox) Added support for Tab as JSONConfig
 
 ### 7.5.2 (2025-03-04)
 -   (@GermanBluefox) Corrected the login page
@@ -113,9 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.4.21 (2025-02-07)
 -   (@GermanBluefox) Corrected the device manager in `hm-rpc` and other adapters
-
-### 7.4.19 (2025-01-26)
--   (@GermanBluefox) Corrected file upload in File Browser and in JSON Config
 
 ## License
 
