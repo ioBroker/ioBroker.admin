@@ -15,10 +15,14 @@ const makeShared = (pkgs: string[]): Record<string, { requiredVersion: '*'; sing
  * @param packageJson - package.json or list of modules that used in component
  * @return Object with shared modules for "federation"
  */
-export function moduleFederationShared(packageJson?: {
-    dependencies: Record<string, string>;
-    devDependencies?: Record<string, string>;
-} | string[]): Record<string, { requiredVersion: '*'; singleton: true }> {
+export function moduleFederationShared(
+    packageJson?:
+        | {
+              dependencies: Record<string, string>;
+              devDependencies?: Record<string, string>;
+          }
+        | string[],
+): Record<string, { requiredVersion: '*'; singleton: true }> {
     const list: string[] = [
         '@emotion/react',
         '@emotion/styled',
@@ -29,6 +33,7 @@ export function moduleFederationShared(packageJson?: {
         '@mui/material',
         '@mui/x-date-pickers',
         'date-fns',
+        'date-fns/locale',
         'leaflet',
         'leaflet-geosearch',
         'react',
@@ -43,7 +48,11 @@ export function moduleFederationShared(packageJson?: {
     }
 
     if (packageJson && (packageJson.dependencies || packageJson.devDependencies)) {
-        return makeShared(list.filter(packageName => packageJson.dependencies?.[packageName] || packageJson.devDependencies?.[packageName]));
+        return makeShared(
+            list.filter(
+                packageName => packageJson.dependencies?.[packageName] || packageJson.devDependencies?.[packageName],
+            ),
+        );
     }
 
     return makeShared(list);
