@@ -1,4 +1,4 @@
-const makeShared = (pkgs) => {
+const makeShared = pkgs => {
     const result = {};
     pkgs.forEach(packageName => {
         result[packageName] = {
@@ -14,7 +14,7 @@ const makeShared = (pkgs) => {
  * @param packageJson - package.json or list of modules that used in component
  * @return Object with shared modules for "federation"
  */
-const moduleFederationShared = (packageJson) => {
+const moduleFederationShared = packageJson => {
     const list = [
         '@emotion/react',
         '@emotion/styled',
@@ -25,8 +25,10 @@ const moduleFederationShared = (packageJson) => {
         '@mui/material',
         '@mui/x-date-pickers',
         'date-fns',
+        'date-fns/locale',
         'leaflet',
         'leaflet-geosearch',
+        'prop-types',
         'react',
         'react-ace',
         'react-dom',
@@ -37,7 +39,11 @@ const moduleFederationShared = (packageJson) => {
         return makeShared(list.filter(packageName => packageJson.includes(packageName)));
     }
     if (packageJson && (packageJson.dependencies || packageJson.devDependencies)) {
-        return makeShared(list.filter(packageName => packageJson.dependencies[packageName] || packageJson.devDependencies[packageName]));
+        return makeShared(
+            list.filter(
+                packageName => packageJson.dependencies?.[packageName] || packageJson.devDependencies?.[packageName],
+            ),
+        );
     }
     return makeShared(list);
 };
@@ -45,4 +51,4 @@ const moduleFederationShared = (packageJson) => {
 
 module.exports = {
     moduleFederationShared,
-}
+};
