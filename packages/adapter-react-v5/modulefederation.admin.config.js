@@ -27,6 +27,7 @@ const moduleFederationShared = (packageJson) => {
         'date-fns',
         'leaflet',
         'leaflet-geosearch',
+        'prop-types',
         'react',
         'react-ace',
         'react-dom',
