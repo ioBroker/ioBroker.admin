@@ -1385,7 +1385,7 @@ function applyFilter(
         }
         if (!filteredOut && filters.role && common) {
             if (common) {
-                filteredOut = !(common.role && common.role.startsWith(context.role));
+                filteredOut = !(typeof common.role === 'string' && common.role.startsWith(context.role));
             } else {
                 filteredOut = true;
             }

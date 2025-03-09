@@ -2,18 +2,11 @@ import React, { Component, type JSX } from 'react';
 import { LinearProgress } from '@mui/material';
 import JSON5 from 'json5';
 
-import {
-    type ThemeType,
-    Router,
-    type AdminConnection,
-    type IobTheme,
-    type ThemeName,
-} from '@iobroker/adapter-react-v5';
-import { type ConfigItemPanel, JsonConfigComponent } from '@iobroker/json-config';
+import { Router, type AdminConnection, type IobTheme, type ThemeName } from '@iobroker/adapter-react-v5';
+import { type ConfigItemPanel, type ConfigItemTabs, JsonConfigComponent } from '@iobroker/json-config';
 
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import AdminUtils from '@/helpers/AdminUtils';
-import { replaceLink } from '@/helpers/utils';
 import type { CompactHost } from '@/types';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -32,84 +25,6 @@ const styles: Record<string, React.CSSProperties> = {
         border: '0px solid #888',
     },
 };
-
-export async function getHref(
-    instancesWorker: InstancesWorker,
-    tab: string,
-    hostname: string,
-    hosts: Record<string, ioBroker.HostObject>,
-    adminInstance: string,
-    themeType: ThemeType,
-): Promise<{ href: string; adapterName: string; instanceNumber: number | null; sendTo?: string | boolean }> {
-    const instances = await instancesWorker.getObjects();
-    let adapter = tab.replace(/^tab-/, '');
-    const m = adapter.match(/-(\d+)$/);
-    const instanceNumber: number | null = m ? parseInt(m[1], 10) : null;
-    let instance;
-    if (instances) {
-        if (instanceNumber !== null) {
-            adapter = adapter.replace(/-(\d+)$/, '');
-            const name = `system.adapter.${adapter}.${instanceNumber}`;
-            instance = Object.keys(instances).find(id => id === name);
-        } else {
-            const name = `system.adapter.${adapter}.`;
-
-            instance = instances && Object.keys(instances).find(id => id.startsWith(name));
-        }
-    }
-    instance = instances?.[instance];
-    AdminUtils.fixAdminUI(instance);
-    if (!instance?.common?.adminTab) {
-        console.error(`Cannot find instance ${tab}`);
-
-        return { href: '', adapterName: adapter, instanceNumber };
-    }
-
-    // calculate href
-    let href = instance.common.adminTab.link;
-    if (!href) {
-        if (instance.common.adminUI?.tab === 'materialize') {
-            href = `adapter/${adapter}/tab_m.html${instanceNumber !== null && instanceNumber !== undefined ? `?${instanceNumber}` : ''}`;
-        } else {
-            href = `adapter/${adapter}/tab.html${instanceNumber !== null && instanceNumber !== undefined ? `?${instanceNumber}` : ''}`;
-        }
-    }
-    if (!instance.common.adminTab.singleton && instanceNumber !== null && instanceNumber !== undefined) {
-        href += `${href.includes('?') ? '&' : '?'}instance=${instanceNumber}`;
-    }
-
-    if (href.includes('%')) {
-        let _instNum: number;
-        // fix for singletons
-        if (instanceNumber === null) {
-            _instNum = parseInt(instance._id.split('.').pop(), 10);
-        } else {
-            _instNum = instanceNumber;
-        }
-
-        // replace
-        const hrefs = replaceLink(href, adapter, _instNum, {
-            hostname,
-            // it cannot be void
-            instances,
-            hosts,
-            adminInstance,
-        });
-
-        href = hrefs ? hrefs[0]?.url : '';
-    }
-
-    // add at the end the instance, as some adapters make bullshit like: window.location.search.slice(-1) || 0;
-    href += `${href.includes('?') ? '&' : '?'}newReact=true${instanceNumber !== null && instanceNumber !== undefined ? `&${instanceNumber}` : ''}&react=${themeType}`;
-
-    return {
-        href,
-        adapterName: adapter,
-        instanceNumber,
-        // @ts-expect-error will be defined later
-        sendTo: instance.common.adminTab.sendTo as boolean | string,
-    };
-}
 
 interface CustomTabProps {
     instancesWorker: InstancesWorker;
@@ -131,7 +46,7 @@ interface CustomTabState {
     href: string;
     adapterName: string;
     instanceNumber: number | null;
-    schema: ConfigItemPanel | null;
+    schema: ConfigItemPanel | ConfigItemTabs | null;
     jsonData: Record<string, any>;
 }
 
@@ -167,7 +82,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             hosts[host._id] = host;
         }
 
-        const result = await getHref(
+        const result = await AdminUtils.getHref(
             this.props.instancesWorker,
             this.props.tab,
             this.props.hostname,
@@ -175,7 +90,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             this.props.adminInstance,
             this.props.theme.palette.mode,
         );
-        let schema: ConfigItemPanel | null = null;
+        let schema: ConfigItemPanel | ConfigItemTabs | null = null;
         const fileName = result?.href.split('?')[0] || '';
         let jsonData: Record<string, any> = {};
 
@@ -206,14 +121,14 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
                     await JsonConfigComponent.loadI18n(this.props.socket, schema.i18n, result.adapterName);
                 }
 
-                if (result.sendTo && result.instanceNumber !== null) {
+                if (schema?.command) {
                     const alive = await this.props.socket.getState(
                         `system.adapter.${result.adapterName}.${result.instanceNumber || 0}.alive`,
                     );
                     if (alive?.val) {
                         const answer: { data?: Record<string, any>; error?: string } = await this.props.socket.sendTo(
-                            `${result.adapterName}.${result.instanceNumber}`,
-                            typeof result.sendTo === 'string' ? result.sendTo : 'tab',
+                            `${result.adapterName}.${result.instanceNumber || 0}`,
+                            schema?.command,
                             null,
                         );
                         if (answer?.data) {

@@ -238,6 +238,8 @@ export interface ConfigItemPanel extends ConfigItem {
     innerStyle?: CustomCSSProperties;
     /** i18n definitions: true - load from a file, string - name of subdirectory, object - translations */
     i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
+    // If defined, the tab will send a message by initializing to backend with command with string contained in "command"
+    command?: string;
 }
 
 export interface ConfigItemPattern extends ConfigItem {
@@ -264,6 +266,8 @@ export interface ConfigItemTabs extends ConfigItem {
     tabsStyle?: CustomCSSProperties;
     /** i18n definitions: true - load from a file, string - name of subdirectory, object - translations */
     i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
+    // If defined, the tab will send a message by initializing to backend with command "tab" (string contained in "sendTo"). Used in jsonTab.json
+    command?: string;
 }
 
 export interface ConfigItemText extends ConfigItem {

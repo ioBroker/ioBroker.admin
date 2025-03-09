@@ -1451,7 +1451,6 @@ For that you must define in `io-package.json` in `common` part following:
       "adminTab": {
          "link": "jsonTab.json", // the name could be any, but only ends with `.json` or `.json5`
          // all following parameters are optional
-         "sendTo": true, // If defined, the tab will send a message by initializing to backend with command "tab" or string contained in "sendTo". Only if `singleton` is false
          "icon": "AABBCC", // base64 icon. If not provided, the adapter icon will be taken
          "name": "TabName", // String or multi-language object for menu label 
          "singleton": true, // Tab will not have an instance number and for all instances will exist only one menu item. 
@@ -1466,6 +1465,7 @@ The file `jsonTab.json5` could look like:
 ```json5 
 {
    "i18n": "tabI18n", // folder name in admin, where the translations are stored (relative to "admin" folder)
+   "command": "tab", // If defined, the tab will send a message by initializing to backend with command "tab" (string contained in "sendTo")
    "items": {
       "memHeapTotal": {
          // This will show "system.adapter.admin.0.memHeapTotal" value 
