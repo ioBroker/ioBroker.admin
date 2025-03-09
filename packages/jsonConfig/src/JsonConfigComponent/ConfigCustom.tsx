@@ -63,12 +63,9 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
         }
 
         let url;
-        /*
         if (this.props.schema.url.startsWith('http:') || this.props.schema.url.startsWith('https:')) {
             url = this.props.schema.url;
-        } else
-        */
-        if (this.props.schema.url.startsWith('./')) {
+        } else if (this.props.schema.url.startsWith('./')) {
             url = `${window.location.protocol}//${window.location.host}${this.props.schema.url.replace(/^\./, '')}`;
         } else {
             url = `${window.location.protocol}//${window.location.host}/adapter/${this.props.oContext.adapterName}/${this.props.schema.url}`;
@@ -160,8 +157,7 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
                     error: `Component ${this.props.schema.name} not found in ${this.props.schema.url}. Found: ${keys.join(', ')}`,
                 });
             } else {
-                const _Component = component[componentName];
-                setTimeout(() => this.setState({ Component: _Component }), 2000);
+                this.setState({ Component: component[componentName] });
             }
         } catch (error) {
             console.error(error);

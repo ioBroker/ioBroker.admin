@@ -87,6 +87,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Corrected loading of custom JSON components
+
 ### 7.6.1 (2025-03-08)
 -   (@GermanBluefox) Added support for JSON5 in JsonConfig editor component 
 -   (@GermanBluefox) GUI build migrated to vite 

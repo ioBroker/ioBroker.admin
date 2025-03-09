@@ -31,7 +31,6 @@ import {
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
-import { getHref } from '@/tabs/CustomTab';
 import AdminUtils from '@/helpers/AdminUtils';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import type { HostsWorker, NotificationAnswer } from '@/Workers/HostsWorker';
@@ -692,7 +691,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         compact={!this.isSwipeable() && state !== STATES.opened}
                         onClick={e => {
                             if (e.ctrlKey || e.shiftKey) {
-                                void getHref(
+                                void AdminUtils.getHref(
                                     this.props.instancesWorker,
                                     tab.name,
                                     this.props.hostname,

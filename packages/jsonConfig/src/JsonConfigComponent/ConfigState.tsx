@@ -57,10 +57,16 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
     };
 
     getObjectID(): string {
-        if (this.props.schema.foreign) {
-            return this.props.schema.oid;
+        let oid = this.props.schema.oid;
+        if (oid.includes('${')) {
+            oid = this.getPattern(oid, null, true);
         }
-        return `${this.props.schema.system ? 'system.adapter.' : ''}${this.props.oContext.adapterName}.${this.props.oContext.instance}.${this.props.schema.oid}`;
+
+        if (this.props.schema.foreign) {
+            return oid;
+        }
+
+        return `${this.props.schema.system ? 'system.adapter.' : ''}${this.props.oContext.adapterName}.${this.props.oContext.instance || 0}.${oid}`;
     }
 
     async componentDidMount(): Promise<void> {
@@ -70,11 +76,16 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         )) as ioBroker.StateObject;
         const controlType = this.props.schema.control || this.detectType(obj);
 
-        const state = await this.props.oContext.socket.getState(this.getObjectID());
+        try {
+            const state = await this.props.oContext.socket.getState(this.getObjectID());
 
-        this.setState({ stateValue: state ? state.val : null, controlType, obj }, async () => {
-            await this.props.oContext.socket.subscribeState(this.getObjectID(), this.onStateChanged);
-        });
+            this.setState({ stateValue: state ? state.val : null, controlType, obj }, async () => {
+                await this.props.oContext.socket.subscribeState(this.getObjectID(), this.onStateChanged);
+            });
+        } catch (e) {
+            console.error(`Cannot get state ${this.getObjectID()}: ${e}`);
+            this.setState({ controlType, obj });
+        }
     }
 
     componentWillUnmount(): void {

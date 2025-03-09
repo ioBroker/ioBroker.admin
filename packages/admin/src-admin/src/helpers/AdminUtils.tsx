@@ -1,5 +1,7 @@
 import semver from 'semver';
-import { type Translate } from '@iobroker/adapter-react-v5';
+import { type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import type { InstancesWorker } from '@/Workers/InstancesWorker';
+import { replaceLink } from './utils';
 
 declare module '@mui/material/Button' {
     interface ButtonPropsColorOverrides {
@@ -429,6 +431,82 @@ class AdminUtils {
 
     static clone<T>(obj: T): T {
         return JSON.parse(JSON.stringify(obj));
+    }
+
+    static async getHref(
+        instancesWorker: InstancesWorker,
+        tab: string,
+        hostname: string,
+        hosts: Record<string, ioBroker.HostObject>,
+        adminInstance: string,
+        themeType: ThemeType,
+    ): Promise<{ href: string; adapterName: string; instanceNumber: number | null }> {
+        const instances = await instancesWorker.getObjects();
+        let adapter = tab.replace(/^tab-/, '');
+        const m = adapter.match(/-(\d+)$/);
+        const instanceNumber: number | null = m ? parseInt(m[1], 10) : null;
+        let instance;
+        if (instances) {
+            if (instanceNumber !== null) {
+                adapter = adapter.replace(/-(\d+)$/, '');
+                const name = `system.adapter.${adapter}.${instanceNumber}`;
+                instance = Object.keys(instances).find(id => id === name);
+            } else {
+                const name = `system.adapter.${adapter}.`;
+
+                instance = instances && Object.keys(instances).find(id => id.startsWith(name));
+            }
+        }
+        instance = instances?.[instance];
+        AdminUtils.fixAdminUI(instance);
+        if (!instance?.common?.adminTab) {
+            console.error(`Cannot find instance ${tab}`);
+
+            return { href: '', adapterName: adapter, instanceNumber };
+        }
+
+        // calculate href
+        let href = instance.common.adminTab.link;
+        if (!href) {
+            if (instance.common.adminUI?.tab === 'materialize') {
+                href = `adapter/${adapter}/tab_m.html${instanceNumber !== null && instanceNumber !== undefined ? `?${instanceNumber}` : ''}`;
+            } else {
+                href = `adapter/${adapter}/tab.html${instanceNumber !== null && instanceNumber !== undefined ? `?${instanceNumber}` : ''}`;
+            }
+        }
+        if (!instance.common.adminTab.singleton && instanceNumber !== null && instanceNumber !== undefined) {
+            href += `${href.includes('?') ? '&' : '?'}instance=${instanceNumber}`;
+        }
+
+        if (href.includes('%')) {
+            let _instNum: number;
+            // fix for singletons
+            if (instanceNumber === null) {
+                _instNum = parseInt(instance._id.split('.').pop(), 10);
+            } else {
+                _instNum = instanceNumber;
+            }
+
+            // replace
+            const hrefs = replaceLink(href, adapter, _instNum, {
+                hostname,
+                // it cannot be void
+                instances,
+                hosts,
+                adminInstance,
+            });
+
+            href = hrefs ? hrefs[0]?.url : '';
+        }
+
+        // add at the end the instance, as some adapters make bullshit like: window.location.search.slice(-1) || 0;
+        href += `${href.includes('?') ? '&' : '?'}newReact=true${instanceNumber !== null && instanceNumber !== undefined ? `&${instanceNumber}` : ''}&react=${themeType}`;
+
+        return {
+            href,
+            adapterName: adapter,
+            instanceNumber,
+        };
     }
 }
 
