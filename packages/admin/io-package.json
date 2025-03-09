@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.1",
+    "version": "7.6.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.2": {
+        "en": "Corrected loading of custom JSON components",
+        "de": "Korrigierte Beladung von benutzerdefinierten JSON-Komponenten",
+        "ru": "Исправленная загрузка пользовательских компонентов JSON",
+        "pt": "Carregamento correto de componentes JSON personalizados",
+        "nl": "Gecorrigeerd laden van aangepaste JSON-componenten",
+        "fr": "Chargement corrigé des composants JSON personnalisés",
+        "it": "Caricamento corretto dei componenti JSON personalizzati",
+        "es": "Carga corregida de componentes JSON personalizados",
+        "pl": "Poprawiony załadunek niestandardowych komponentów JSON",
+        "uk": "Корисне завантаження компонентів JSON",
+        "zh-cn": "修正自定义 JSON 组件的装入"
+      },
       "7.6.1": {
         "en": "Added support for JSON5 in JsonConfig editor component \nGUI build migrated to vite \nCustom JSON components could be now written in TypeScript \nAdded support for Tab as JSONConfig",
         "de": "Unterstützung für JSON5 in JsonConfig Editor-Komponente hinzugefügt\nGUI bauen migriert zu vite\nBenutzerdefinierte JSON Komponenten könnten jetzt in TypeScript geschrieben werden\nUnterstützung für Tab als JSONConfig hinzugefügt",
@@ -96,19 +109,6 @@
         "pl": "Zmienione urządzenie Menedżer typów sterowania\nUżywane klasy gniazd z TypeScript\nDodano wsparcie dla flagi 'plugins.sentry.acted' w adapterze\nAktualizacja pakietów",
         "uk": "Змінений пристрій Менеджер по типам управління\nВикористовуються класи розетки з TypeScript\nДодано підтримку прапора `plugins.sentry.enabled`` у адаптері\nОновлені пакети",
         "zh-cn": "更改设备 控制类型管理器\n使用带有类型脚本的套接字类\n在适配器中添加对“ 插件. 哨兵. ” 旗帜的支持\n更新软件包"
-      },
-      "7.4.21": {
-        "en": "Corrected the device manager in `hm-rpc` and other adapters",
-        "de": "Korrektur des Gerätemanagers in `hm-rpc` und anderen Adaptern",
-        "ru": "Исправлен менеджер устройства в `hm-rpc' и других адаптерах",
-        "pt": "Corrigido o gerenciador de dispositivos em `hm-rpc` e outros adaptadores",
-        "nl": "De apparaatbeheerder is gecorrigeerd in ",
-        "fr": "Corrigé le gestionnaire de périphérique dans `hm-rpc` et autres adaptateurs",
-        "it": "Corretto il gestore del dispositivo in `hm-rpc` e altri adattatori",
-        "es": "Corregido el administrador del dispositivo en `hm-rpc` y otros adaptadores",
-        "pl": "Poprawiono menedżera urządzenia w 'hm- rpc' i innych adapterach",
-        "uk": "Виправлено диспетчер пристроїв у `hm-rpc` та інших адаптерах",
-        "zh-cn": "纠正了“hm-rpc”和其他适配器中的设备管理器"
       }
     },
     "desc": {

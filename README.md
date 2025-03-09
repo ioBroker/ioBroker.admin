@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.2 (2025-03-09)
 -   (@GermanBluefox) Corrected loading of custom JSON components
 
 ### 7.6.1 (2025-03-08)
@@ -113,9 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Added OAuth2 authentication
 -   (@GermanBluefox) Corrected the focus lost by editing of tables in JSON Config 
 -   (@GermanBluefox) Added the renaming of objects via context menu in Object Browser
-
-### 7.4.21 (2025-02-07)
--   (@GermanBluefox) Corrected the device manager in `hm-rpc` and other adapters
 
 ## License
 
