@@ -27,6 +27,7 @@ const styles: Record<string, React.CSSProperties> = {
 interface ConfigTabsProps extends ConfigGenericProps {
     schema: ConfigItemTabs;
     dialogName?: string;
+    withoutSaveButtons?: boolean;
 }
 
 interface ConfigTabsState extends ConfigGenericState {
@@ -300,6 +301,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 {tabs}
                 <ConfigPanel
                     oContext={this.props.oContext}
+                    withoutSaveButtons={this.props.withoutSaveButtons}
                     isParentTab
                     changed={this.props.changed}
                     key={this.state.tab}

@@ -220,6 +220,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
                     data={this.state.jsonData}
                     onError={() => {}}
                     theme={this.props.theme}
+                    withoutSaveButtons
                     expertMode={this.props.expertMode}
                 />
             );
