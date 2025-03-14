@@ -1114,6 +1114,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                         <InputAdornment position="end">
                                             <IconButton
                                                 size="small"
+                                                tabIndex={-1}
                                                 onClick={() => {
                                                     ConfigTable.setFilterValue(
                                                         this.filterRefs[props.headCell.attr],

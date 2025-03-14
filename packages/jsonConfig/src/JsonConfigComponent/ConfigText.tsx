@@ -231,6 +231,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                 <IconButton
                     style={actionButtonStyle}
                     size="small"
+                    tabIndex={-1}
                     onClick={() =>
                         this.setState({ value: '', oldValue: this.state.value }, () =>
                             this.onChange(this.props.attr, ''),
