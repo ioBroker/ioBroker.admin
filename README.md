@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 -   (@GermanBluefox) Corrected layout of JSON tabs
+-   (@mcm1957) Schema at ioBroker.admin is now used to validate jsonConfig.json file
 
 ### 7.6.2 (2025-03-09)
 -   (@GermanBluefox) Corrected loading of custom JSON components
