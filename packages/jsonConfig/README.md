@@ -115,7 +115,7 @@ To enable the validation of the jsonConfig in VS code, the following section mus
     "json.schemas": [
         {
             "fileMatch": ["admin/jsonConfig.json", "admin/jsonCustom.json", "admin/jsonTab.json"],
-            "url": "https://raw.githubusercontent.com/ioBroker/adapter-react-v5/main/schemas/jsonConfig.json"
+            "url": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/jsonConfig/schemas/jsonConfig.json"
         }
     ]
 ```
