@@ -1516,7 +1516,7 @@ onMessage = (obj: ioBroker.Message): void => {
 ```
 
 ## Report a schema error
-Create an issue here: https://github.com/ioBroker/adapter-react-v5/issues
+Create an issue here: https://github.com/ioBroker/ioBroker.admin/issues
 
 ## For maintainer
-To update the location of JsonConfig schema, create pull request to this file: https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json
+To update the location of JsonConfig schema, create pull request to this file: https://github.com/ioBroker/ioBroker.admin/blob/master/packages/jsonConfig/schemas/jsonConfig.json
