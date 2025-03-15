@@ -366,7 +366,6 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
             customs: this.props.customs,
             dateFormat: this.props.dateFormat,
             embedded: this.props.embedded,
-            expertMode: this.props.expertMode,
             forceUpdate: this.forceAttrUpdate,
             imagePrefix: this.props.imagePrefix,
             instance: this.props.instance,
@@ -409,6 +408,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                     originalData={JSON.parse(this.state.originalData)}
                     root
                     schema={item}
+                    expertMode={this.props.expertMode}
                     themeName={this.props.themeName}
                 />
             );
@@ -429,6 +429,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                     custom={this.props.custom}
                     customObj={this.props.customObj}
                     data={this.props.data}
+                    expertMode={this.props.expertMode}
                     index={1000}
                     isParentTab={!this.props.embedded && !this.props.withoutSaveButtons}
                     onChange={this.onChange}

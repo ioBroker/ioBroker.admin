@@ -1038,7 +1038,6 @@ export type JsonConfigContext = {
     changeLanguage?: () => void;
     customs?: Record<string, typeof ConfigGeneric>;
     embedded?: boolean;
-    expertMode?: boolean;
     imagePrefix?: string;
     instanceObj?: ioBroker.InstanceObject;
     /** If true, this field edits multiple data points at once and thus contains an array, should not be saved if not changed */

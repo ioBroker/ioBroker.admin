@@ -111,6 +111,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                 index={idx + this.state.iteration}
                 arrayIndex={idx}
                 changed={this.props.changed}
+                expertMode={this.props.expertMode}
                 globalData={this.props.data}
                 common={this.props.common}
                 alive={this.props.alive}

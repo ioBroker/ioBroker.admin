@@ -386,6 +386,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 arrayIndex={idx}
                 changed={this.props.changed}
                 common={this.props.common}
+                expertMode={this.props.expertMode}
                 custom
                 data={data}
                 globalData={this.props.data}

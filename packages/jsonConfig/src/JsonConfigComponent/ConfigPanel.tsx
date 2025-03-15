@@ -210,6 +210,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                           index={this.props.index}
                           changed={this.props.changed}
                           arrayIndex={this.props.arrayIndex}
+                          expertMode={this.props.expertMode}
                           commandRunning={this.props.commandRunning}
                           style={styles.panel}
                           common={this.props.common}

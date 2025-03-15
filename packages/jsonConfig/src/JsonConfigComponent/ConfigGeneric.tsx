@@ -81,7 +81,7 @@ export interface ConfigGenericProps {
     attr?: string;
     changed: boolean;
     className?: string;
-    style?: Record<string, any>;
+    expertMode?: boolean;
     commandRunning?: boolean;
     common: Record<string, any>;
     custom?: boolean;
@@ -100,6 +100,7 @@ export interface ConfigGenericProps {
     root?: boolean;
     /** Provided props by the specific component */
     schema: ConfigItemAny;
+    style?: Record<string, any>;
     /** This item is in the table. Maybe some layouts must be changed */
     table?: boolean;
     themeName: ThemeName;
@@ -1050,7 +1051,7 @@ export default class ConfigGeneric<
         }
 
         // Do not show this component if expert mode is false
-        if (this.props.oContext.expertMode === false && schema.expertMode) {
+        if (this.props.expertMode === false && schema.expertMode) {
             return null;
         }
 

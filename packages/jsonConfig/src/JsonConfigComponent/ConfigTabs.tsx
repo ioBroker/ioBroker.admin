@@ -179,7 +179,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
 
         Object.keys(items).map(name => {
             let disabled: boolean;
-            if (items[name].expertMode && !this.props.oContext.expertMode) {
+            if (items[name].expertMode && !this.props.expertMode) {
                 return;
             }
 
@@ -314,6 +314,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                     isParentTab
                     changed={this.props.changed}
                     key={this.state.tab}
+                    expertMode={this.props.expertMode}
                     index={1001}
                     arrayIndex={this.props.arrayIndex}
                     globalData={this.props.globalData}
