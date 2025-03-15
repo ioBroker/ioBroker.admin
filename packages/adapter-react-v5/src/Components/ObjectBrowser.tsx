@@ -3049,6 +3049,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             stateChangedFrom: props.t('ra_state_changed_from'), // State changed from
             ownerGroup: props.t('ra_Owner group'),
             ownerUser: props.t('ra_Owner user'),
+            showAll: props.t('ra_show_all'),
             deviceError: props.t('ra_Error'),
             deviceDisconnected: props.t('ra_Disconnected'),
             deviceConnected: props.t('ra_Connected'),
@@ -4310,7 +4311,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         key="empty"
                         value=""
                     >
-                        <span style={styles.selectNone}>{this.texts[`filter_${name}`]}</span>
+                        <span style={styles.selectNone}>{name === 'custom' ? this.texts.showAll : this.texts[`filter_${name}`]}</span>
                     </MenuItem>
                     {values?.map(item => {
                         let id: string;

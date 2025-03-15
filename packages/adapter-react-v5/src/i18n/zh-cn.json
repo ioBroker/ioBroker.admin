@@ -309,6 +309,7 @@
     "ra_qualityCode": "质量代码",
     "ra_repeat": "重复",
     "ra_select_folder_hint": "要选择文件夹，只需按住“shift”键单击文件夹即可。",
+    "ra_show_all": "显示全部",
     "ra_state_changed_by": "状态由",
     "ra_state_changed_from": "对象已从更改",
     "ra_timestamp": "时间戳记",
