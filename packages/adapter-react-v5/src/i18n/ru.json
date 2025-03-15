@@ -309,6 +309,7 @@
     "ra_qualityCode": "Код качества",
     "ra_repeat": "повтор",
     "ra_select_folder_hint": "Чтобы выбрать папку, просто удерживайте клавишу «Shift», щелкнув папку.",
+    "ra_show_all": "Показать все",
     "ra_state_changed_by": "Состояние изменено",
     "ra_state_changed_from": "Объект изменен с",
     "ra_timestamp": "Отметка времени",

@@ -27,6 +27,7 @@ const styles: Record<string, React.CSSProperties> = {
 interface ConfigTabsProps extends ConfigGenericProps {
     schema: ConfigItemTabs;
     dialogName?: string;
+    withoutSaveButtons?: boolean;
 }
 
 interface ConfigTabsState extends ConfigGenericState {
@@ -178,6 +179,10 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
 
         Object.keys(items).map(name => {
             let disabled: boolean;
+            if (items[name].expertMode && !this.props.expertMode) {
+                return;
+            }
+
             if (this.props.custom) {
                 const hidden = this.executeCustom(
                     items[name].hidden,
@@ -221,6 +226,11 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
             withIcons = withIcons || !!icon;
             elements.push({ icon, disabled, label: this.getText(items[name].label), name });
         });
+
+        if (!elements.find(item => item.name === this.state.tab)) {
+            // Select the first tab if the current tab is not available
+            setTimeout(() => this.setState({ tab: elements[0].name }), 50);
+        }
 
         const currentBreakpoint = this.getCurrentBreakpoint();
         let tabs: React.JSX.Element;
@@ -300,9 +310,11 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 {tabs}
                 <ConfigPanel
                     oContext={this.props.oContext}
+                    withoutSaveButtons={this.props.withoutSaveButtons}
                     isParentTab
                     changed={this.props.changed}
                     key={this.state.tab}
+                    expertMode={this.props.expertMode}
                     index={1001}
                     arrayIndex={this.props.arrayIndex}
                     globalData={this.props.globalData}

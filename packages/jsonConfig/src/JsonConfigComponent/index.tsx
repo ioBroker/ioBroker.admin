@@ -46,6 +46,7 @@ interface JsonConfigComponentProps {
     style?: React.CSSProperties;
     theme: IobTheme;
     expertMode?: boolean;
+    withoutSaveButtons?: boolean;
 }
 
 interface JsonConfigComponentState {
@@ -365,7 +366,6 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
             customs: this.props.customs,
             dateFormat: this.props.dateFormat,
             embedded: this.props.embedded,
-            expertMode: this.props.expertMode,
             forceUpdate: this.forceAttrUpdate,
             imagePrefix: this.props.imagePrefix,
             instance: this.props.instance,
@@ -394,6 +394,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         if (item.type === 'tabs') {
             return (
                 <ConfigTabs
+                    withoutSaveButtons={this.props.withoutSaveButtons}
                     oContext={this.oContext}
                     alive={this.state.alive}
                     changed={this.state.changed}
@@ -407,6 +408,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                     originalData={JSON.parse(this.state.originalData)}
                     root
                     schema={item}
+                    expertMode={this.props.expertMode}
                     themeName={this.props.themeName}
                 />
             );
@@ -418,6 +420,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         ) {
             return (
                 <ConfigPanel
+                    withoutSaveButtons={this.props.withoutSaveButtons}
                     oContext={this.oContext}
                     alive={this.state.alive}
                     changed={this.state.changed}
@@ -426,8 +429,9 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                     custom={this.props.custom}
                     customObj={this.props.customObj}
                     data={this.props.data}
+                    expertMode={this.props.expertMode}
                     index={1000}
-                    isParentTab={!this.props.embedded}
+                    isParentTab={!this.props.embedded && !this.props.withoutSaveButtons}
                     onChange={this.onChange}
                     onError={(attr, error) => this.onError(attr, error)}
                     originalData={JSON.parse(this.state.originalData)}
@@ -475,7 +479,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
         return (
             <div
                 style={{
-                    ...(!this.props.embedded ? styles.root : undefined),
+                    ...(!this.props.embedded || this.props.withoutSaveButtons ? styles.root : undefined),
                     ...this.props.style,
                     ...this.state.schema.style,
                 }}
