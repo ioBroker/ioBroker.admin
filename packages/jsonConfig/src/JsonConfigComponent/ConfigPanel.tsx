@@ -153,6 +153,7 @@ const styles: Record<string, any> = {
 interface ConfigPanelProps extends ConfigGenericProps {
     schema: ConfigItemPanel;
     withIcons?: boolean;
+    withoutSaveButtons?: boolean;
 }
 interface ConfigPanelState extends ConfigGenericState {
     expanded?: boolean;
@@ -336,20 +337,28 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 </Accordion>
             );
         } else {
+            const sx = Utils.getStyle(
+                this.props.oContext.theme,
+                this.props.style,
+                schemaStyle,
+                { width: '100%' },
+                this.props.isParentTab && styles.paper,
+                this.props.isParentTab &&
+                    (this.props.withoutSaveButtons
+                        ? this.props.withIcons
+                            ? { height: 'calc(100% - 88px) !important' }
+                            : { height: 'calc(100% - 64px) !important' }
+                        : this.props.withIcons
+                          ? styles.paperWithIcons
+                          : styles.paperWithoutIcons),
+            );
+
             content = (
                 <Box
                     component="div"
                     key={`${this.props.attr}_${this.props.index}`}
                     className={this.props.className}
-                    sx={Utils.getStyle(
-                        this.props.oContext.theme,
-                        this.props.style,
-                        schemaStyle,
-                        { width: '100%' },
-                        this.props.isParentTab && styles.paper,
-                        this.props.isParentTab &&
-                            (this.props.withIcons ? styles.paperWithIcons : styles.paperWithoutIcons),
-                    )}
+                    sx={sx}
                 >
                     <Grid2
                         container

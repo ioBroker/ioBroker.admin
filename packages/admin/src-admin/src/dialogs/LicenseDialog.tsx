@@ -84,7 +84,21 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
                 setText(txt);
                 setLoading(false);
             })
-            .catch((): void => setLoading(false));
+            .catch((e: any): void => {
+                console.error(`Cannot read license 1 from "${_url}": ${e}`);
+                // Try one more time
+                fetch(_url)
+                    .then(el => el.text())
+                    .then((txt: string): void => {
+                        setText(txt);
+                        setLoading(false);
+                    })
+                    .catch((e: any): void => {
+                        // Try one more time
+                        console.error(`Cannot read license 2 "${_url}": ${e}`);
+                        setLoading(false);
+                    });
+            });
     }, [url]);
 
     useEffect(() => {

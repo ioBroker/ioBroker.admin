@@ -183,6 +183,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                                 this.state.value && !this.props.schema.noClearButton ? (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            tabIndex={-1}
                                             size="small"
                                             onClick={() =>
                                                 this.setState({ value: '' }, () => this.onChange(this.props.attr, ''))

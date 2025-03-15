@@ -463,6 +463,7 @@
           "it": "Informazione",
           "es": "Información",
           "pl": "Informacja",
+          "uk": "Інформація",
           "zh-cn": "信息"
         }
       },
@@ -482,6 +483,7 @@
           "it": "file utente e immagini per lo sfondo",
           "es": "archivos de usuario e imágenes para el fondo",
           "pl": "pliki użytkownika i obrazy w tle",
+          "uk": "файли користувача та зображення для фону",
           "zh-cn": "背景的用户文件和图像"
         },
         "type": "meta.user"
@@ -503,6 +505,7 @@
           "it": "Informazioni sui client socket connessi",
           "es": "Información sobre clientes de socket conectados",
           "pl": "Informacje o podłączonych klientach gniazd",
+          "uk": "Інформація про підключених клієнтів сокетів",
           "zh-cn": "有关已连接套接字客户端的信息"
         },
         "type": "string",
@@ -527,6 +530,7 @@
           "it": "Server HTTP avviato",
           "es": "Servidor HTTP iniciado",
           "pl": "Uruchomiono serwer HTTP",
+          "uk": "HTTP-сервер запущено",
           "zh-cn": "HTTP 服务器已启动"
         },
         "type": "boolean",
@@ -550,6 +554,7 @@
           "it": "Ultimo feed di notizie come JSON",
           "es": "Últimas noticias como JSON",
           "pl": "Ostatni kanał wiadomości jako JSON",
+          "uk": "Останній новинний канал у форматі JSON",
           "zh-cn": "最后一个新闻提要为 JSON"
         },
         "type": "json",
@@ -571,6 +576,7 @@
           "it": "Etag per il feed di notizie",
           "es": "Etag para noticias",
           "pl": "Etag dla kanału informacyjnego",
+          "uk": "Etag для новинного каналу",
           "zh-cn": "用于新闻提要的 Etag"
         },
         "type": "string",
@@ -592,6 +598,7 @@
           "it": "Ultime notizie ID",
           "es": "ID de última noticia",
           "pl": "Identyfikator ostatnich wiadomości",
+          "uk": "Ідентифікатор останніх новин",
           "zh-cn": "最新消息 ID"
         },
         "type": "string",
@@ -614,6 +621,7 @@
           "it": "Elenco degli adattatori da aggiornare",
           "es": "Lista de adaptadores para actualizar",
           "pl": "Lista adapterów do aktualizacji",
+          "uk": "Список адаптерів для оновлення",
           "zh-cn": "要更新的适配器列表"
         },
         "type": "string",

@@ -54,17 +54,17 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                 hidden?: string | boolean;
             };
             if (Array.isArray(groupItem.items)) {
-                selectOptions.push({ label: this.getText(item.label), value: item.value, group: true });
+                selectOptions.push({ label: this.getText(item.label, this.props.schema.noTranslation), value: item.value, group: true });
                 groupItem.items.forEach(it =>
                     selectOptions.push({
-                        label: this.getText(it.label),
+                        label: this.getText(it.label, this.props.schema.noTranslation),
                         value: it.value,
                         hidden: it.hidden,
                     }),
                 );
             } else {
                 selectOptions.push({
-                    label: this.getText(item.label),
+                    label: this.getText(item.label, this.props.schema.noTranslation),
                     value: item.value,
                     hidden: item.hidden,
                 });
