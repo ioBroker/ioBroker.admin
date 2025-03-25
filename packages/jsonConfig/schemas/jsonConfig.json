@@ -333,6 +333,10 @@
                     "description": "If module written with TypeScript, set it to `module`. From Admin 7.5.x",
                     "enum": ["module"]
                 },
+                "custom": {
+                    "type": "object",
+                    "description": "Custom properties for the component as an object"
+                },
                 "label": true,
                 "type": true,
                 "defaultSendTo": true,
