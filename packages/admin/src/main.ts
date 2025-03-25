@@ -287,6 +287,8 @@ class Admin extends Adapter {
             // just for test
             this.log.info(`test: ${JSON.stringify(obj.message)}`);
             return;
+        } else if (webServer?.processMessage(obj)) {
+            return;
         }
 
         socket?.sendCommand(obj);

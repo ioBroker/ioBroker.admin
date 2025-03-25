@@ -87,6 +87,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Allowed the usage of node-red together with admin with authentication.
+
 ### 7.6.3 (2025-03-15)
 -   (@GermanBluefox) Corrected the layout of JSON tabs
 -   (@mcm1957) Schema at `ioBroker.admin` is now used to validate jsonConfig.json file
