@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.2",
+    "version": "7.6.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.3": {
+        "en": "Corrected the layout of JSON tabs\nSchema at `ioBroker.admin` is now used to validate jsonConfig.json file\nCorrected the small GUI issues",
+        "de": "Korrektur des Layouts von JSON Tabs\nSchema bei `ioBroker.admin` wird nun verwendet, um jsonConfig zu validieren. json file\nKorrektur der kleinen GUI-Probleme",
+        "ru": "Исправлен макет вкладок JSON\nСхема на «ioBroker.admin» теперь используется для проверки jsonConfig. Файл Джонсона\nИсправлены небольшие проблемы GUI",
+        "pt": "Corrigido o layout das abas JSON\nSchema at `ioBroker.admin` agora é usado para validar jsonConfig. arquivo json\nCorrigido os pequenos problemas de GUI",
+        "nl": "De indeling van JSON-tabbladen corrigeren\nSchema bij  json-bestand\nDe kleine GUI-problemen gecorrigeerd",
+        "fr": "Correction de la mise en page des onglets JSON\nLe schéma à `ioBroker.admin` est maintenant utilisé pour valider jsonConfig. fichier json\nCorrection des petits problèmes d'interface utilisateur",
+        "it": "Corretto il layout delle schede JSON\nLo schema a `ioBroker.admin` è ora usato per convalidare jsonConfig. file json\nCorretto il piccolo problema della GUI",
+        "es": "Corregido el diseño de las pestañas JSON\nSchema en `ioBroker.admin` ahora se utiliza para validar jsonConfig. json file\nCorregidos los pequeños problemas de GUI",
+        "pl": "Poprawiono układ kart JSON\nSchema 'iBroker.admin' jest teraz używana do walidacji jsonConfig. plik json\nNaprawiono małe problemy z GUI",
+        "uk": "Виправлено макет вкладок JSON\nШума в `ioBroker.admin` тепер використовується для перевірки jsonConfig. файл json\nВиправлено маленькі проблеми GUI",
+        "zh-cn": "纠正了 JSON 标签的布局\n“ioBroker.admin”的Schema现在被用来验证jsonConfig。 json 文件\n更正了小型图形用户界面问题"
+      },
       "7.6.2": {
         "en": "Corrected loading of custom JSON components",
         "de": "Korrigierte Beladung von benutzerdefinierten JSON-Komponenten",
@@ -96,19 +109,6 @@
         "pl": "Zmienione urządzenie Menedżer typów sterowania\nUżywane klasy gniazd z TypeScript\nDodano wsparcie dla flagi 'plugins.sentry.acted' w adapterze\nAktualizacja pakietów\nSkorygowane zatrzymanie uruchomionych instancji admin\nDodano uwierzytelnianie OAuth2\nPoprawił ostrość utracony przez edycję tabel w JSON Config\nDodano zmianę nazwy obiektów poprzez menu kontekstowe w przeglądarce obiektów",
         "uk": "Змінений пристрій Менеджер по типам управління\nВикористовуються класи розетки з TypeScript\nДодано підтримку прапора `plugins.sentry.enabled`` у адаптері\nОновлені пакети\nВиправлено припинення роботи екземплярів адміністратора\nДодано автентифікацію OAuth2\nВиправлено фокус, втрачений шляхом редагування таблиць в JSON Config\nДодано перейменування об'єктів через контекстне меню у браузері Об'єкт",
         "zh-cn": "更改设备 控制类型管理器\n使用带有类型脚本的套接字类\n在适配器中添加对“ 插件. 哨兵. ” 旗帜的支持\n更新软件包\n纠正已停止运行的管理实例\n添加 OAuth2 认证\n纠正了编辑 JSON 配置中表格所丢失的重点\n在对象浏览器中通过上下文菜单添加对象的重命名"
-      },
-      "7.4.22": {
-        "en": "Changed Device Manager for control types\nUsed socket classes with TypeScript\nAdded support for `plugins.sentry.enabled` flag in adapter\nUpdated packages",
-        "de": "Geändertes Gerät Manager für Steuerungstypen\nGebrauchte Steckdosenklassen mit TypeScript\nUnterstützung für `plugins.sentry.enabled` Flagge im Adapter hinzugefügt\nAktualisierte Pakete",
-        "ru": "Измененное устройство Менеджер по типам контроля\nКлассы сокетов с TypeScript\nДобавлена поддержка флага «plugins.sentry.enabled» в адаптере\nОбновленные пакеты",
-        "pt": "Dispositivo alterado Gerenciador de tipos de controle\nClasses de soquete usadas com TypeScript\nAdicionado suporte para `plugins.sentry.enabled` bandeira em adaptador\nPacotes atualizados",
-        "nl": "Veranderd apparaat Beheerder voor controletypen\nGebruikte socket klassen met TypeScript\nToegevoegd ondersteuning voor de vlag van de plugins.sentry.enabled\nBijgewerkte pakketten",
-        "fr": "Appareil modifié Gestionnaire pour les types de contrôle\nClasses de socket utilisées avec TypeScript\nAjout du support du drapeau `plugins.sentry.enabled` dans l`adaptateur\nPaquets mis à jour",
-        "it": "Dispositivo modificato Manager per i tipi di controllo\nClassi di socket usati con TypeScript\nAggiunto il supporto per `plugins.sentry.enabled` flag in adattatore\nPacchetti aggiornati",
-        "es": "Dispositivo modificado Manager para tipos de control\nClases de toma de corriente usadas con TipoScript\nAñadido soporte para bandera 'plugins.sentry.enabled` en adaptador\nPaquetes actualizados",
-        "pl": "Zmienione urządzenie Menedżer typów sterowania\nUżywane klasy gniazd z TypeScript\nDodano wsparcie dla flagi 'plugins.sentry.acted' w adapterze\nAktualizacja pakietów",
-        "uk": "Змінений пристрій Менеджер по типам управління\nВикористовуються класи розетки з TypeScript\nДодано підтримку прапора `plugins.sentry.enabled`` у адаптері\nОновлені пакети",
-        "zh-cn": "更改设备 控制类型管理器\n使用带有类型脚本的套接字类\n在适配器中添加对“ 插件. 哨兵. ” 旗帜的支持\n更新软件包"
       }
     },
     "desc": {
@@ -463,6 +463,7 @@
           "it": "Informazione",
           "es": "Información",
           "pl": "Informacja",
+          "uk": "Інформація",
           "zh-cn": "信息"
         }
       },
@@ -482,6 +483,7 @@
           "it": "file utente e immagini per lo sfondo",
           "es": "archivos de usuario e imágenes para el fondo",
           "pl": "pliki użytkownika i obrazy w tle",
+          "uk": "файли користувача та зображення для фону",
           "zh-cn": "背景的用户文件和图像"
         },
         "type": "meta.user"
@@ -503,6 +505,7 @@
           "it": "Informazioni sui client socket connessi",
           "es": "Información sobre clientes de socket conectados",
           "pl": "Informacje o podłączonych klientach gniazd",
+          "uk": "Інформація про підключених клієнтів сокетів",
           "zh-cn": "有关已连接套接字客户端的信息"
         },
         "type": "string",
@@ -527,6 +530,7 @@
           "it": "Server HTTP avviato",
           "es": "Servidor HTTP iniciado",
           "pl": "Uruchomiono serwer HTTP",
+          "uk": "HTTP-сервер запущено",
           "zh-cn": "HTTP 服务器已启动"
         },
         "type": "boolean",
@@ -550,6 +554,7 @@
           "it": "Ultimo feed di notizie come JSON",
           "es": "Últimas noticias como JSON",
           "pl": "Ostatni kanał wiadomości jako JSON",
+          "uk": "Останній новинний канал у форматі JSON",
           "zh-cn": "最后一个新闻提要为 JSON"
         },
         "type": "json",
@@ -571,6 +576,7 @@
           "it": "Etag per il feed di notizie",
           "es": "Etag para noticias",
           "pl": "Etag dla kanału informacyjnego",
+          "uk": "Etag для новинного каналу",
           "zh-cn": "用于新闻提要的 Etag"
         },
         "type": "string",
@@ -592,6 +598,7 @@
           "it": "Ultime notizie ID",
           "es": "ID de última noticia",
           "pl": "Identyfikator ostatnich wiadomości",
+          "uk": "Ідентифікатор останніх новин",
           "zh-cn": "最新消息 ID"
         },
         "type": "string",
@@ -614,6 +621,7 @@
           "it": "Elenco degli adattatori da aggiornare",
           "es": "Lista de adaptadores para actualizar",
           "pl": "Lista adapterów do aktualizacji",
+          "uk": "Список адаптерів для оновлення",
           "zh-cn": "要更新的适配器列表"
         },
         "type": "string",

@@ -87,6 +87,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### 7.6.3 (2025-03-15)
+-   (@GermanBluefox) Corrected the layout of JSON tabs
+-   (@mcm1957) Schema at `ioBroker.admin` is now used to validate jsonConfig.json file
+-   (@GermanBluefox) Corrected the small GUI issues
+
 ### 7.6.2 (2025-03-09)
 -   (@GermanBluefox) Corrected loading of custom JSON components
 
@@ -103,16 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.5.1 (2025-03-03)
 -   (@GermanBluefox) Added the possibility to rename or copy of the objects
 -   (@GermanBluefox) Corrected the problem with the user rights
-
-### 7.5.0 (2025-03-02)
--   (@GermanBluefox) Changed Device Manager for control types
--   (@GermanBluefox) Used socket classes with TypeScript
--   (@GermanBluefox) Added support for `plugins.sentry.enabled` flag in adapter
--   (@GermanBluefox) Updated packages
--   (@GermanBluefox) Corrected stopping of running admin instances
--   (@GermanBluefox) Added OAuth2 authentication
--   (@GermanBluefox) Corrected the focus lost by editing of tables in JSON Config 
--   (@GermanBluefox) Added the renaming of objects via context menu in Object Browser
 
 ## License
 

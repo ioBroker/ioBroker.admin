@@ -667,13 +667,13 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     isConnectedToHost(id: string): boolean {
         const state = this.states[`${id}.connected`];
-        return !!state?.val;
+        return !!state?.val && this.isAlive(id);
     }
 
     isConnected(id: string): boolean | string | null {
         const instance = this.state.instances[id];
         return this.states[`${instance.id}.info.connection`]
-            ? (this.states[`${instance.id}.info.connection`].val as string | boolean)
+            ? (this.states[`${instance.id}.info.connection`].val as string | boolean) && this.isAlive(id)
             : null;
     }
 

@@ -1,0 +1,55 @@
+name: Schema - jsonConfig
+description: Report inconsistencies/improvements for the jsonConfig schema
+title: '[jsonConfig]: '
+labels: ['schema :book:']
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Thanks for taking the time to fill out this report!
+
+    - type: checkboxes
+      id: checked-other-issues
+      attributes:
+          label: No existing issues.
+          description: By submitting this issue, you confirm, that you have checked the existing issues for your request.
+          options:
+              - label: There is no existing issue for my request.
+                required: true
+
+    - type: dropdown
+      id: location
+      attributes:
+          label: Problem location
+          description: Where did your receive a schema warning?
+          options:
+              - IDE
+              - ioBroker Log
+              - Other
+      validations:
+          required: true
+
+    - type: textarea
+      id: message
+      attributes:
+          label: Warning message
+          description: Please paste in the exact warning that was generated.
+          placeholder: Tell us what you see!
+      validations:
+          required: true
+
+    - type: textarea
+      id: link
+      attributes:
+          label: Source link
+          description: If you know which line in the config has generated the problem, please link it.
+          placeholder: https://github.com/ioBroker/ioBroker.admin/blob/c2807fae0350fc4a63c1696e131bfefaa77ab974/admin/jsonConfig.json5#L12
+      validations:
+          required: true
+
+    - type: textarea
+      id: additional
+      attributes:
+          label: Additional information
+          description: Please write why do you think this is a schema inconsistency as well as additional information.
+          placeholder: The property is working as expected and was communicated, but the schema validation fails.

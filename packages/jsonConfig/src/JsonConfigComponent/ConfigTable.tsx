@@ -386,6 +386,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 arrayIndex={idx}
                 changed={this.props.changed}
                 common={this.props.common}
+                expertMode={this.props.expertMode}
                 custom
                 data={data}
                 globalData={this.props.data}
@@ -1114,6 +1115,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                         <InputAdornment position="end">
                                             <IconButton
                                                 size="small"
+                                                tabIndex={-1}
                                                 onClick={() => {
                                                     ConfigTable.setFilterValue(
                                                         this.filterRefs[props.headCell.attr],
