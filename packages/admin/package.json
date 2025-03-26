@@ -25,8 +25,8 @@
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.3",
         "@iobroker/i18n": "^0.3.1",
-        "@iobroker/socket-classes": "^2.2.0",
-        "@iobroker/webserver": "^1.2.0",
+        "@iobroker/socket-classes": "^2.2.1",
+        "@iobroker/webserver": "^1.2.4",
         "@iobroker/ws": "^2.1.0",
         "@iobroker/ws-server": "^4.3.2",
         "ajv": "^8.17.1",
@@ -47,7 +47,7 @@
         "@iobroker/dm-gui-components": "file:../dm-gui-components",
         "@iobroker/json-config": "file:../jsonConfig",
         "@iobroker/legacy-testing": "^2.0.2",
-        "@iobroker/testing": "^5.0.3",
+        "@iobroker/testing": "^5.0.4",
         "@types/archiver": "^6.0.3",
         "@types/body-parser": "^1.19.5",
         "@types/compression": "^1.7.5",
@@ -63,7 +63,7 @@
         "less": "^4.2.2",
         "puppeteer": "^24.4.0",
         "src-rx": "file:src-admin",
-        "typescript": "~5.7.3"
+        "typescript": "~5.8.2"
     },
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.admin/issues"

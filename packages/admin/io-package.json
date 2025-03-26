@@ -234,6 +234,7 @@
     "accessApplyRights": false,
     "accessAllowedConfigs": [],
     "accessAllowedTabs": [],
+    "allowInternalAccess": { "node-red":  "admin" },
     "leCollection": false,
     "certPublic": "",
     "certPrivate": "",

@@ -22,7 +22,7 @@ function findNetworkAddressOfHost(obj: ioBroker.HostObject, localIp: string): nu
         return null;
     }
 
-    let hostIp;
+    let hostIp: string | null = null;
     for (const networkInterface of Object.values(networkInterfaces)) {
         if (!networkInterface) {
             continue;
@@ -30,13 +30,13 @@ function findNetworkAddressOfHost(obj: ioBroker.HostObject, localIp: string): nu
         for (let i = 0; i < networkInterface.length; i++) {
             const ip = networkInterface[i];
             if (ip.internal) {
-                return;
+                continue;
             }
             if (localIp.includes(':') && ip.family !== 'IPv6') {
-                return;
+                continue;
             }
             if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
-                return;
+                continue;
             }
             if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) {
                 // if DNS name
@@ -61,13 +61,13 @@ function findNetworkAddressOfHost(obj: ioBroker.HostObject, localIp: string): nu
             for (let i = 0; i < networkInterface.length; i++) {
                 const ip = networkInterface[i];
                 if (ip.internal) {
-                    return;
+                    continue;
                 }
                 if (localIp.includes(':') && ip.family !== 'IPv6') {
-                    return;
+                    continue;
                 }
                 if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
-                    return;
+                    continue;
                 }
                 if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) {
                     // if DNS name
@@ -87,7 +87,7 @@ function findNetworkAddressOfHost(obj: ioBroker.HostObject, localIp: string): nu
             for (let i = 0; i < networkInterface.length; i++) {
                 const ip = networkInterface[i];
                 if (ip.internal) {
-                    return;
+                    continue;
                 }
                 hostIp = ip.address;
             }
@@ -103,8 +103,8 @@ function getHostname(
     hosts: Record<string, ioBroker.HostObject>,
     currentHostname: string,
     adminInstance: string,
-): string {
-    if (!instanceObj || !instanceObj.common) {
+): string | null {
+    if (!instanceObj?.common) {
         return null;
     }
 
@@ -223,15 +223,15 @@ export function replaceLink(
     },
 ): {
     url: string;
-    port: number;
+    port: number | undefined;
     instance?: string;
 }[] {
     const _urls: {
         url: string;
-        port: number;
+        port: number | undefined;
         instance?: string;
     }[] = [];
-    let port: number;
+    let port: number | undefined;
 
     if (link) {
         const instanceObj = context.instances[`system.adapter.${adapter}.${instance}`];
@@ -244,7 +244,7 @@ export function replaceLink(
                 let placeholder = placeholders[p];
 
                 if (placeholder === '%ip%') {
-                    let ip: string = (native.bind || native.ip) as string;
+                    let ip: string | null = (native.bind || native.ip) as string;
                     if (!ip || ip === '0.0.0.0') {
                         // Check host
                         ip = getHostname(
@@ -257,7 +257,7 @@ export function replaceLink(
                     }
 
                     if (_urls.length) {
-                        _urls.forEach(item => (item.url = item.url.replace('%ip%', ip)));
+                        _urls.forEach(item => (item.url = item.url.replace('%ip%', ip || '')));
                     } else {
                         link = link.replace('%ip%', ip || '');
                     }

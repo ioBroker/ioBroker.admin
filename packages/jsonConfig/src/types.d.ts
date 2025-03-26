@@ -605,16 +605,14 @@ export interface ConfigItemCustom extends ConfigItem {
     type: 'custom';
     /** location of Widget, like "custom/customComponents.js" */
     url: string;
-    /* module federation settings */
+    /** New format for components written in TypeScript */
     bundlerType?: 'module';
     /** Component name, like "ConfigCustomBackItUpSet/Components/AdapterExist" */
     name: string;
     /** i18n */
     i18n: boolean | Record<string, string>;
-    /** New format for components written in TypeScript */
-    bundlerType?: 'module';
     /** custom properties */
-    [prop: string]: any;
+    custom?: { [prop: string]: any };
 }
 
 export interface ConfigItemDatePicker extends ConfigItem {
