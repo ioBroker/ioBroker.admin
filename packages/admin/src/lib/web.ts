@@ -375,6 +375,7 @@ class Web {
         let schema: Record<string, any> | null = null;
 
         try {
+            this.adapter.log.debug(`retrieving json schema from ${this.JSON_CONFIG_SCHEMA_URL}`);
             const schemaRes = await axios.get(this.JSON_CONFIG_SCHEMA_URL);
             schema = schemaRes.data as Record<string, any>;
         } catch (e) {
