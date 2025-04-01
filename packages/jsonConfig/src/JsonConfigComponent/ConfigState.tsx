@@ -266,43 +266,75 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             (!this.state.controlType && this.state.obj.common.write && this.state.obj.common.type === 'string')
         ) {
             content = (
-                <TextField
-                    style={{ width: '100%' }}
-                    value={this.state.stateValue}
-                    variant="standard"
-                    slotProps={{
-                        input: {
-                            endAdornment:
-                                this.getText(this.props.schema.unit, this.props.schema.noTranslation) ||
-                                this.state.obj.common.unit ||
-                                undefined,
-                        },
-                        htmlInput: {
-                            readOnly: !!this.props.schema.readOnly,
-                        },
-                    }}
-                    onChange={e => {
-                        this.setState({ stateValue: e.target.value }, (): void => {
-                            if (this.controlTimeout) {
-                                clearTimeout(this.controlTimeout);
-                            }
-                            this.controlTimeout = setTimeout(async () => {
-                                this.controlTimeout = null;
-                                await this.props.oContext.socket.setState(
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 8 }}>
+                    <TextField
+                        style={{ flex: 1 }}
+                        value={this.state.stateValue}
+                        variant="standard"
+                        slotProps={{
+                            input: {
+                                endAdornment:
+                                    this.getText(this.props.schema.unit, this.props.schema.noTranslation) ||
+                                    this.state.obj.common.unit ||
+                                    undefined,
+                            },
+                            htmlInput: {
+                                readOnly: !!this.props.schema.readOnly,
+                            },
+                        }}
+                        onKeyUp={e => {
+                            if (this.props.schema.setOnEnterKey && e.key === 'Enter') {
+                                void this.props.oContext.socket.setState(
                                     this.getObjectID(),
                                     this.state.stateValue,
                                     false,
                                 );
-                            }, this.props.schema.controlDelay || 0);
-                        });
-                    }}
-                    label={this.getText(this.props.schema.label)}
-                    helperText={this.renderHelp(
-                        this.props.schema.help,
-                        this.props.schema.helpLink,
-                        this.props.schema.noTranslation,
+                            }
+                        }}
+                        onChange={e => {
+                            this.setState({ stateValue: e.target.value }, (): void => {
+                                if (this.props.schema.setOnEnterKey || this.props.schema.showEnterButton) {
+                                    return;
+                                }
+                                if (this.controlTimeout) {
+                                    clearTimeout(this.controlTimeout);
+                                }
+                                this.controlTimeout = setTimeout(async () => {
+                                    this.controlTimeout = null;
+                                    await this.props.oContext.socket.setState(
+                                        this.getObjectID(),
+                                        this.state.stateValue,
+                                        false,
+                                    );
+                                }, this.props.schema.controlDelay || 0);
+                            });
+                        }}
+                        label={this.getText(this.props.schema.label)}
+                        helperText={this.renderHelp(
+                            this.props.schema.help,
+                            this.props.schema.helpLink,
+                            this.props.schema.noTranslation,
+                        )}
+                    />
+                    {this.props.schema.showEnterButton && (
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                void this.props.oContext.socket.setState(
+                                    this.getObjectID(),
+                                    this.state.stateValue,
+                                    false,
+                                );
+                            }}
+                        >
+                            {this.getText(
+                                typeof this.props.schema.showEnterButton === 'string'
+                                    ? this.props.schema.showEnterButton
+                                    : 'Set',
+                            )}
+                        </Button>
                     )}
-                />
+                </div>
             );
         } else {
             let fontSize: number | undefined;

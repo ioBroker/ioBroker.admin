@@ -15,6 +15,8 @@ import {
     Typography,
 } from '@mui/material';
 
+import type { Theme } from '@mui/material/styles';
+
 import { Visibility } from '@mui/icons-material';
 
 import { type IobTheme, I18n, Connection } from '@iobroker/adapter-react-v5';
@@ -249,8 +251,8 @@ class Login extends Component<object, LoginState> {
                                     height: 50,
                                     width: 102,
                                     lineHeight: '50px',
-                                    backgroundColor: (theme: IobTheme) =>
-                                        theme.palette.mode === 'dark' ? '#000' : '#fff',
+                                    backgroundColor: (theme: Theme) =>
+                                        theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
                                     borderRadius: 5,
                                     padding: 5,
                                 }}
