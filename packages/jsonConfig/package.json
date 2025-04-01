@@ -19,8 +19,8 @@
     },
     "dependencies": {
         "@iobroker/adapter-react-v5": "file:../adapter-react-v5",
-        "@module-federation/runtime": "^0.11.1",
-        "@mui/x-date-pickers": "^7.27.1",
+        "@module-federation/runtime": "^0.11.3",
+        "@mui/x-date-pickers": "^7.28.2",
         "crypto-js": "^4.2.0",
         "json5": "^2.2.3",
         "react-ace": "^14.0.1",

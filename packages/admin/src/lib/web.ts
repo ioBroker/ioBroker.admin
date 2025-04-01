@@ -1,5 +1,5 @@
 import { commonTools, EXIT_CODES } from '@iobroker/adapter-core';
-import { checkPublicIP, WebServer, createOAuth2Server } from '@iobroker/webserver';
+import { checkPublicIP, WebServer, createOAuth2Server, type OAuth2Model } from '@iobroker/webserver';
 import * as express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
 import type { Server } from 'node:http';
@@ -27,6 +27,7 @@ export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     accessAllowedTabs: string[];
     accessApplyRights: boolean;
     accessLimit: boolean;
+    allowInternalAccess?: { [adapterName: string]: string }; // adapterName: UserName (without system.user)
     auth: boolean;
     autoUpdate: number;
     bind: string;
@@ -220,6 +221,7 @@ class Web {
     ) => void;
     private systemLanguage: ioBroker.Languages;
     private checkTimeout: ioBroker.Timeout;
+    private oauth2Model: OAuth2Model;
 
     /**
      * Create a new instance of Web
@@ -266,6 +268,10 @@ class Web {
 
         void this.adapter.setState('info.connection', false, true);
         this.server.server?.close();
+    }
+
+    processMessage(msg: ioBroker.Message): boolean {
+        return this.oauth2Model?.processMessage(msg);
     }
 
     async prepareIndex(): Promise<string> {
@@ -531,7 +537,7 @@ class Web {
                 this.server.app.use(bodyParser.urlencoded({ extended: true }));
                 this.server.app.use(bodyParser.json());
 
-                createOAuth2Server(this.adapter, {
+                this.oauth2Model = createOAuth2Server(this.adapter, {
                     app: this.server.app,
                     secure: this.settings.secure,
                     accessLifetime: this.settings.ttl,
