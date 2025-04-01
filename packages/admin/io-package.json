@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.3",
+    "version": "7.6.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.4": {
+        "en": "Allowed the usage of node-red together with admin with authentication.\nAdded some options for JSON-Config `state`\nAdded possibility to disable basic authentication\nChanged the order of authentications. Basic authentication will be checked as the last one.",
+        "de": "Erlaubte die Verwendung von node-red zusammen mit admin mit Authentifizierung.\nEinige Optionen für JSON-Config `state` hinzugefügt\nZusätzliche Möglichkeit, grundlegende Authentifizierung zu deaktivieren\nÄnderte die Reihenfolge der Authentifizierungen. Die grundlegende Authentifizierung wird als letztes überprüft.",
+        "ru": "Разрешено использование нод-красного вместе с админом с аутентификацией.\nДобавлены некоторые опции для JSON-Config 'state'\nДобавлена возможность отключения базовой аутентификации\nИзменился порядок аутентификации. Базовая аутентификация будет проверяться как последняя.",
+        "pt": "Permitiu o uso do nó-vermelho em conjunto com admin com autenticação.\nAdicionado algumas opções para JSON-Config `state`\nAdicionado possibilidade de desativar a autenticação básica\nAlterou a ordem de autenticação. A autenticação básica será verificada como a última.",
+        "nl": "Toegestaan het gebruik van node-red samen met admin met authenticatie.\nToegevoegd enkele opties voor JSON-Config \nToegevoegde mogelijkheid om basisauthenticatie uit te schakelen\nVeranderde de volgorde van de authenticaties. De basisauthenticatie wordt als laatste gecontroleerd.",
+        "fr": "Permet l'utilisation de node-red avec admin avec authentification.\nAjout de certaines options pour JSON-Config `état`\nPossibilité supplémentaire de désactiver l'authentification de base\nChangement de l'ordre des authentifications. L'authentification de base sera vérifiée comme la dernière.",
+        "it": "Consentito l'utilizzo di nodo-rosso insieme ad admin con l'autenticazione.\nAggiunto alcune opzioni per JSON-Config `state`\nAggiunta possibilità di disabilitare l'autenticazione di base\nModificato l'ordine delle autenticazione. L'autenticazione di base verrà controllata come ultima.",
+        "es": "Permitió el uso de nodo-red junto con el administrador con autenticación.\nAñadido algunas opciones para JSON-Config `state`\nMayor posibilidad de desactivar la autenticación básica\nCambió el orden de autenticaciones. La autenticación básica será revisada como la última.",
+        "pl": "Umożliwił korzystanie z node-red wraz z admin z uwierzytelnianiem.\nDodano kilka opcji dla 'stanu' JSON- Config\nDodano możliwość wyłączenia podstawowego uwierzytelniania\nZmieniłem kolejność uwierzytelniania. Podstawowe uwierzytelnianie zostanie sprawdzone jako ostatnie.",
+        "uk": "Дозволено використання вузла-червоного разом з адміністратором з автентифікацією.\nJSON-Config `state`\nДодана можливість відключити базову автентифікацію\nЗмінено порядок автентифікації. Базова автентитація буде перевірятися як останній.",
+        "zh-cn": "允许使用节点红和具有认证功能的管理员.\n添加了 JSON-Config `状态'的一些选项\n添加禁用基本认证的可能性\n更改认证顺序. 基本认证将被检查为最后一个 ."
+      },
       "7.6.3": {
         "en": "Corrected the layout of JSON tabs\nSchema at `ioBroker.admin` is now used to validate jsonConfig.json file\nCorrected the small GUI issues",
         "de": "Korrektur des Layouts von JSON Tabs\nSchema bei `ioBroker.admin` wird nun verwendet, um jsonConfig zu validieren. json file\nKorrektur der kleinen GUI-Probleme",
@@ -96,19 +109,6 @@
         "pl": "Dodano możliwość zmiany nazwy lub kopii obiektów\nNaprawiono problem z prawami użytkownika",
         "uk": "Додано можливість перейменування або копіювання об'єктів\nВиправлено проблему з правами користувачів",
         "zh-cn": "添加重命名或复制对象的可能性\n纠正了用户权利的问题"
-      },
-      "7.5.0": {
-        "en": "Changed Device Manager for control types\nUsed socket classes with TypeScript\nAdded support for `plugins.sentry.enabled` flag in adapter\nUpdated packages\nCorrected stopping of running admin instances\nAdded OAuth2 authentication\nCorrected the focus lost by editing of tables in JSON Config \nAdded the renaming of objects via context menu in Object Browser",
-        "de": "Geändertes Gerät Manager für Steuerungstypen\nGebrauchte Steckdosenklassen mit TypeScript\nUnterstützung für `plugins.sentry.enabled` Flagge im Adapter hinzugefügt\nAktualisierte Pakete\nKorrigierte Einstellung von laufenden Admin-Instanzen\nOAuth2 Authentifizierung hinzugefügt\nKorrektur des Fokus, der durch die Bearbeitung von Tabellen in JSON Config verloren ging\nHinzufügen der Umbenennung von Objekten über Kontextmenü im Object Browser",
-        "ru": "Измененное устройство Менеджер по типам контроля\nКлассы сокетов с TypeScript\nДобавлена поддержка флага «plugins.sentry.enabled» в адаптере\nОбновленные пакеты\nИсправленная остановка запуска экземпляров admin\nПроверка подлинности OAuth2\nИсправлен фокус, потерянный при редактировании таблиц в JSON Config\nДобавлено переименование объектов через контекстное меню в Object Browser",
-        "pt": "Dispositivo alterado Gerenciador de tipos de controle\nClasses de soquete usadas com TypeScript\nAdicionado suporte para `plugins.sentry.enabled` bandeira em adaptador\nPacotes atualizados\nParação correta de executar instâncias de administrador\nAutenticação de OAuth2 adicionada\nCorrigido o foco perdido pela edição de tabelas em JSON Config\nAdicionado a renomeação de objetos através do menu de contexto no navegador de objetos",
-        "nl": "Veranderd apparaat Beheerder voor controletypen\nGebruikte socket klassen met TypeScript\nToegevoegd ondersteuning voor de vlag van de plugins.sentry.enabled\nBijgewerkte pakketten\nGecorrigeerde stopzetting van lopende administratieve instanties\nOAuth2-authenticatie toegevoegd\nVerbeterde focus verloren door het bewerken van tabellen in JSON Config\nHet hernoemen van objecten toegevoegd via contextmenu in Objectbrowser",
-        "fr": "Appareil modifié Gestionnaire pour les types de contrôle\nClasses de socket utilisées avec TypeScript\nAjout du support du drapeau `plugins.sentry.enabled` dans l`adaptateur\nPaquets mis à jour\nArrêt corrigé des instances administratives\nAjout de l'authentification OAuth2\nCorrection du focus perdu en éditant des tableaux dans JSON Config\nAjout du nom des objets via le menu contextuel dans le navigateur Objet",
-        "it": "Dispositivo modificato Manager per i tipi di controllo\nClassi di socket usati con TypeScript\nAggiunto il supporto per `plugins.sentry.enabled` flag in adattatore\nPacchetti aggiornati\nArresto corretto di eseguire istanze di amministratore\nAggiunta autenticazione OAuth2\nCorretto l'attenzione persa modificando i tavoli in JSON Config\nAggiunto il rinominazione degli oggetti tramite menu contestuale in Object Browser",
-        "es": "Dispositivo modificado Manager para tipos de control\nClases de toma de corriente usadas con TipoScript\nAñadido soporte para bandera 'plugins.sentry.enabled` en adaptador\nPaquetes actualizados\nParada corregida de instancias de administración en ejecución\nAutenticación OAuth2\nCorregido el foco perdido por la edición de tablas en JSON Config\nAñadido el renombramiento de objetos a través del menú contextual en el navegador de objetos",
-        "pl": "Zmienione urządzenie Menedżer typów sterowania\nUżywane klasy gniazd z TypeScript\nDodano wsparcie dla flagi 'plugins.sentry.acted' w adapterze\nAktualizacja pakietów\nSkorygowane zatrzymanie uruchomionych instancji admin\nDodano uwierzytelnianie OAuth2\nPoprawił ostrość utracony przez edycję tabel w JSON Config\nDodano zmianę nazwy obiektów poprzez menu kontekstowe w przeglądarce obiektów",
-        "uk": "Змінений пристрій Менеджер по типам управління\nВикористовуються класи розетки з TypeScript\nДодано підтримку прапора `plugins.sentry.enabled`` у адаптері\nОновлені пакети\nВиправлено припинення роботи екземплярів адміністратора\nДодано автентифікацію OAuth2\nВиправлено фокус, втрачений шляхом редагування таблиць в JSON Config\nДодано перейменування об'єктів через контекстне меню у браузері Об'єкт",
-        "zh-cn": "更改设备 控制类型管理器\n使用带有类型脚本的套接字类\n在适配器中添加对“ 插件. 哨兵. ” 旗帜的支持\n更新软件包\n纠正已停止运行的管理实例\n添加 OAuth2 认证\n纠正了编辑 JSON 配置中表格所丢失的重点\n在对象浏览器中通过上下文菜单添加对象的重命名"
       }
     },
     "desc": {
@@ -234,7 +234,9 @@
     "accessApplyRights": false,
     "accessAllowedConfigs": [],
     "accessAllowedTabs": [],
-    "allowInternalAccess": { "node-red":  "admin" },
+    "allowInternalAccess": {
+      "node-red": "admin"
+    },
     "leCollection": false,
     "certPublic": "",
     "certPrivate": "",

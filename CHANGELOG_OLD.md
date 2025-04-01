@@ -1,4 +1,8 @@
 # Older changes
+## 7.5.1 (2025-03-03)
+-   (@GermanBluefox) Added the possibility to rename or copy of the objects
+-   (@GermanBluefox) Corrected the problem with the user rights
+
 ## 7.5.0 (2025-03-02)
 -   (@GermanBluefox) Changed Device Manager for control types
 -   (@GermanBluefox) Used socket classes with TypeScript

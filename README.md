@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.4 (2025-04-01)
 
 -   (@GermanBluefox) Allowed the usage of node-red together with admin with authentication.
 -   (@GermanBluefox) Added some options for JSON-Config `state`
@@ -111,10 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.5.2 (2025-03-04)
 -   (@GermanBluefox) Corrected the login page
 -   (@GermanBluefox) Removed the frequent debug output
-
-### 7.5.1 (2025-03-03)
--   (@GermanBluefox) Added the possibility to rename or copy of the objects
--   (@GermanBluefox) Corrected the problem with the user rights
 
 ## License
 
