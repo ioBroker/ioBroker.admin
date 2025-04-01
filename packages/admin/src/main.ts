@@ -883,7 +883,7 @@ class Admin extends Adapter {
         };
 
         socket = new SocketAdmin(settings, this, objects);
-        socket.start(server, SocketIO, { store, oauth2Only: true });
+        socket.start(server, SocketIO, { store, oauth2Only: true, noBasicAuth: this.config.noBasicAuth });
 
         // subscribe on all object changes
         socket.subscribe('objectChange', '*');

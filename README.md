@@ -88,7 +88,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+
 -   (@GermanBluefox) Allowed the usage of node-red together with admin with authentication.
+-   (@GermanBluefox) Added some options for JSON-Config `state`
+-   (@GermanBluefox) Added possibility to disable basic authentication
+-   (@GermanBluefox) Changed the order of authentications. Basic authentication will be checked as the last one.
 
 ### 7.6.3 (2025-03-15)
 -   (@GermanBluefox) Corrected the layout of JSON tabs

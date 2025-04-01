@@ -724,6 +724,10 @@ export interface ConfigItemState extends ConfigItem {
     size?: number | 'small' | 'normal' | 'large';
     /** Optional value, that will be sent for button */
     buttonValue?: ioBroker.StateValue;
+    /** Show SET button. The value in this case will be sent only when the button is pressed. You can define the text of the button. Default text is "Set" */
+    showEnterButton?: boolean | ioBroker.StringOrTranslated;
+    /** The value in this case will be sent only when the "Enter" button is pressed. It can be combined with `showEnterButton` */
+    setOnEnterKey?: boolean;
 }
 
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {

@@ -46,6 +46,7 @@ export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     loginBackgroundImage: boolean;
     loginHideLogo: boolean;
     loginMotto: string;
+    noBasicAuth: boolean;
     port: number;
     secure: boolean;
     thresholdValue: number;
@@ -198,7 +199,7 @@ class Web {
     /** URL to the JSON config schema */
     private readonly JSON_CONFIG_SCHEMA_URL =
         'https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/jsonConfig/schemas/jsonConfig.json';
-        // 'https://raw.githubusercontent.com/ioBroker/adapter-react-v5/main/schemas/jsonConfig.json';
+    // 'https://raw.githubusercontent.com/ioBroker/adapter-react-v5/main/schemas/jsonConfig.json';
 
     private store: Store | null = null;
     private indexHTML: string;
@@ -541,6 +542,7 @@ class Web {
                     secure: this.settings.secure,
                     accessLifetime: this.settings.ttl,
                     refreshLifetime: 60 * 60 * 24 * 7, // 1 week (Maybe adjustable?)
+                    noBasicAuth: this.settings.noBasicAuth,
                     loginPage: (req: Request): string => {
                         const isDev = req.url.includes('?dev');
                         let origin = req.url.split('origin=')[1];
