@@ -25,6 +25,7 @@ declare global {
             loginBackgroundImage: boolean;
             loginHideLogo: boolean;
             loginMotto: string;
+            noBasicAuth: boolean;
             port: number;
             reverseProxy: {
                 globalPath: string;

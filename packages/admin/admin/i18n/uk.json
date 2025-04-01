@@ -1,5 +1,4 @@
 {
-    "Use iobroker.acme adapter for letsencrypt certificates": "Використовуйте адаптер iobroker.acme для сертифікатів letsencrypt",
     "1 minute": "1 хвилина",
     "Access to instances": "Доступ до екземплярів (Спрощений режим)",
     "Admin adapter settings": "Налаштування екземпляра адміністратора",
@@ -16,7 +15,9 @@
     "Chained certificate": "Прикутий сертифікат",
     "Config": "Сторінка конфігурації",
     "Disable authentication": "Вимкнути автентифікацію",
+    "Disable basic authentication": "Вимкнути базову автентифікацію",
     "Discard": "Відкинути",
+    "Do not check if this instance is available from internet": "Не перевіряйте, чи доступний цей екземпляр в Інтернеті",
     "Enabled": "Увімкнено",
     "End date": "Дата закінчення",
     "End time": "Час закінчення",
@@ -44,6 +45,7 @@
     "Private certificate": "Приватний сертифікат",
     "Public certificate": "Публічний сертифікат",
     "Read about Let's Encrypt certificates": "Прочитайте про сертифікати Let's Encrypt",
+    "Reverse proxy": "Reverse проксі",
     "Run as": "Запустити від користувача",
     "Secure(HTTPS)": "Безпечне з'єднання (HTTPS)",
     "Set certificates or load it first in the system settings (right top).": "Встановіть сертифікати або спочатку визначте їх у налаштуваннях системи (справа вгорі).",
@@ -54,10 +56,12 @@
     "Upload image": "Завантажити зображення",
     "Use Lets Encrypt certificates": "Використовуйте сертифікати Let's Encrypt",
     "Use background image": "Використовуйте фонове зображення",
+    "Use iobroker.acme adapter for letsencrypt certificates": "Використовуйте адаптер iobroker.acme для сертифікатів letsencrypt",
     "Use old UI": "Використовуйте старий інтерфейс користувача",
     "Use react UI(experts)": "Спробуйте новий UI React (альфа)",
     "Use this instance for automatic update": "Використовуйте цей екземпляр для автоматичного оновлення сертифіката",
     "Warning!": "Увага!",
+    "You can use admin behind a reverse proxy.": "Ви можете використовувати admin за Reverse Proxy.",
     "every 12 hours": "кожні 12 годин",
     "every 2 days": "кожні 2 дні",
     "every 2 weeks": "кожні 2 тижні",
@@ -84,8 +88,5 @@
     "tooltip_secure": "Увімкнути протокол SSL. Адміністратор буде доступний через https://, а не через http://",
     "tooltip_thresholdValue": "Якщо браузер отримує занадто багато подій і оновлень даних протягом 3 секунд, оновлення даних буде тимчасово припинено",
     "tooltip_ttl": "Тривалість входу в систему. Після закінчення цього часу користувач автоматично вийде з системи.",
-    "users permissions": "Дозволи користувачів",
-    "Reverse proxy": "Reverse проксі",
-    "You can use admin behind a reverse proxy.": "Ви можете використовувати admin за Reverse Proxy.",
-    "Do not check if this instance is available from internet": "Не перевіряйте, чи доступний цей екземпляр в Інтернеті"
+    "users permissions": "Дозволи користувачів"
 }

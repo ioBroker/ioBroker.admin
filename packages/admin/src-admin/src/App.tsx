@@ -1458,7 +1458,7 @@ class App extends Router<AppProps, AppState> {
                         if (Date.now() >= this.state.askForTokenRefresh.expireAt) {
                             clearInterval(this.expireInSecInterval);
                             this.expireInSecInterval = null;
-                            // On session expiration will be called only if the connectino is the owner of the token
+                            // On session expiration will be called only if the connection is the owner of the token
                             Connection.deleteTokensStatic();
                             window.location.reload();
                         } else {

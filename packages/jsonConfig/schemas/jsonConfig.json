@@ -890,6 +890,24 @@
                         }
                     ]
                 },
+                "showEnterButton": {
+                    "description": "Show SET button. The value in this case will be sent only when the button is pressed. You can define the text of the button. Default text is \"Set\" (Only for \"input\", \"number\" or \"slider\")",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "$ref": "#/definitions/multilingual"
+                        }
+                    ]
+                },
+                "setOnEnterKey": {
+                    "description": "The value in this case will be sent only when the \"Enter\" button is pressed. It can be combined with `showEnterButton`",
+                    "type": "boolean"
+                },
                 "label": true,
                 "type": true,
                 "xs": true,
