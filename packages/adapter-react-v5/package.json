@@ -62,7 +62,7 @@
         "@iobroker/js-controller-common-db": "^7.0.6",
         "@iobroker/socket-client": "4.1.2",
         "@iobroker/types": "^7.0.6",
-        "@mui/icons-material": "^6.4.8",
+        "@mui/icons-material": "^7.0.1",
         "@mui/material": "^6.4.8",
         "@sentry/browser": "^9.10.1",
         "cronstrue": "^2.57.0",
