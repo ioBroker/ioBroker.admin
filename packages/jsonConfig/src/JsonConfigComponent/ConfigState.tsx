@@ -266,7 +266,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             (!this.state.controlType && this.state.obj.common.write && this.state.obj.common.type === 'string')
         ) {
             content = (
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 8 }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 8, alignItems: 'baseline' }}>
                     <TextField
                         style={{ flex: 1 }}
                         value={this.state.stateValue}

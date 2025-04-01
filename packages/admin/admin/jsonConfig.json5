@@ -61,6 +61,15 @@
                     md: 6,
                     lg: 2,
                 },
+                noBasicAuth: {
+                    type: 'checkbox',
+                    hidden: '!data.auth',
+                    label: 'Disable basic authentication',
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                    lg: 2,
+                },
                 defaultUser: {
                     hidden: '!!data.auth',
                     type: 'user',
