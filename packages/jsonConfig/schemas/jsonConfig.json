@@ -108,7 +108,14 @@
                 },
                 "unit": {
                     "description": "Unit (could be multi-language)",
-                    "type": ["object", "string"]
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "$ref": "#/definitions/multilingual"
+                        }
+                    ]
                 },
                 "label": true,
                 "type": true,
@@ -793,7 +800,14 @@
                 },
                 "unit": {
                     "description": "Unit (could be multi-language)",
-                    "type": ["object", "string"]
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "$ref": "#/definitions/multilingual"
+                        }
+                    ]
                 },
                 "trueText": {
                     "description": "This text will be shown if the value is true",
@@ -2655,7 +2669,14 @@
                                 },
                                 "unit": {
                                     "description": "Unit (could be multi-language)",
-                                    "type": ["object", "string"]
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "$ref": "#/definitions/multilingual"
+                                        }
+                                    ]
                                 },
                                 "label": true,
                                 "type": true,
@@ -3723,7 +3744,14 @@
                                 },
                                 "unit": {
                                     "description": "Unit (could be multi-language)",
-                                    "type": ["object", "string"]
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "$ref": "#/definitions/multilingual"
+                                        }
+                                    ]
                                 },
                                 "narrow": {
                                     "description": "With this flag, the value will appear just after the label",
@@ -4490,7 +4518,14 @@
                     },
                     "tooltip": {
                         "description": "Optional tooltip",
-                        "type": "string"
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "$ref": "#/definitions/multilingual"
+                            }
+                        ]
                     },
                     "default": {
                         "description": "Default value"
@@ -5410,7 +5445,14 @@
                                             },
                                             "unit": {
                                                 "description": "Unit (could be multi-language)",
-                                                "type": ["object", "string"]
+                                                "oneOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/multilingual"
+                                                    }
+                                                ]
                                             },
                                             "label": true,
                                             "type": true,
@@ -6258,7 +6300,14 @@
                                             },
                                             "unit": {
                                                 "description": "Unit (could be multi-language)",
-                                                "type": ["object", "string"]
+                                                "oneOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/multilingual"
+                                                    }
+                                                ]
                                             },
                                             "narrow": {
                                                 "description": "With this flag, the value will appear just after the label",
@@ -6772,7 +6821,14 @@
                                 },
                                 "tooltip": {
                                     "description": "Optional tooltip",
-                                    "type": "string"
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "$ref": "#/definitions/multilingual"
+                                        }
+                                    ]
                                 },
                                 "default": {
                                     "description": "Default value"
