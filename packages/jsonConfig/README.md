@@ -813,6 +813,11 @@ horizontal line
 
 ### `cron`
 
+Shows CRON settings. You have 3 options:
+- `simple` - shows simple CRON settings
+- `complex` - shows CRON with "minutes", "seconds" and so on
+- none of `simple` or `complex` - User can switch between simple and complex in the dialog
+
 | Property  | Description                                   |
 |-----------|-----------------------------------------------|
 | `complex` | show CRON with "minutes", "seconds" and so on |
