@@ -747,6 +747,10 @@
                     "description": "Style of the button or control itself",
                     "type": "object"
                 },
+                "timeout": {
+                    "description": "timeout for request in ms. Default: none.",
+                    "type": "number"
+                },
                 "label": true,
                 "type": true,
                 "defaultSendTo": true,
