@@ -4497,8 +4497,8 @@
                         "type": "object"
                     },
                     "darkStyle": {
-                        "description": "CSS style for dark mode",
-                        "type": "string"
+                        "description": "CSS style for dark mode in react notation: 'radiusBorder' and not 'radius-border'",
+                        "type": "object"
                     },
                     "validator": {
                         "description": "JS function: true no error, false - error",
@@ -6800,8 +6800,8 @@
                                     "type": "object"
                                 },
                                 "darkStyle": {
-                                    "description": "CSS style for dark mode",
-                                    "type": "string"
+                                    "description": "CSS style for dark mode in react notation: 'radiusBorder' and not 'radius-border'",
+                                    "type": "object"
                                 },
                                 "innerStyle": {
                                     "description": "CSS style in react notation: 'radiusBorder' and not 'radius-border'",
