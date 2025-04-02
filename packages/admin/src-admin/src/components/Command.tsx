@@ -390,7 +390,7 @@ class Command extends Component<CommandProps, CommandState> {
                                 alignItems="center"
                                 spacing={1}
                             >
-                                <Grid2>{this.props.t('less')}</Grid2>
+                                <Grid2>{this.props.t('less output')}</Grid2>
                                 <Grid2>
                                     <Switch
                                         checked={this.state.moreChecked}
@@ -398,7 +398,7 @@ class Command extends Component<CommandProps, CommandState> {
                                         color="primary"
                                     />
                                 </Grid2>
-                                <Grid2>{this.props.t('more')}</Grid2>
+                                <Grid2>{this.props.t('more output')}</Grid2>
                             </Grid2>
                         </Typography>
                     ) : null}
