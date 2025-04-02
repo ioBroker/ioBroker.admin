@@ -1090,6 +1090,7 @@ Special input for ports. It checks automatically if port is used by other instan
 ### `state`
 
 (admin >= 7.1.0) Show control or information from the state
+(admin >= 7.6.4) attributes `showEnterButton` and `setOnEnterKey`
 
 | Property          | Description                                                                                                                                                                                 |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
