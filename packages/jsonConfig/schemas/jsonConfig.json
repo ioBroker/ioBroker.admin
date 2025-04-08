@@ -108,7 +108,14 @@
                 },
                 "unit": {
                     "description": "Unit (could be multi-language)",
-                    "type": ["object", "string"]
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "$ref": "#/definitions/multilingual"
+                        }
+                    ]
                 },
                 "label": true,
                 "type": true,
@@ -740,6 +747,10 @@
                     "description": "Style of the button or control itself",
                     "type": "object"
                 },
+                "timeout": {
+                    "description": "timeout for request in ms. Default: none.",
+                    "type": "number"
+                },
                 "label": true,
                 "type": true,
                 "defaultSendTo": true,
@@ -793,7 +804,14 @@
                 },
                 "unit": {
                     "description": "Unit (could be multi-language)",
-                    "type": ["object", "string"]
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "$ref": "#/definitions/multilingual"
+                        }
+                    ]
                 },
                 "trueText": {
                     "description": "This text will be shown if the value is true",
@@ -2655,7 +2673,14 @@
                                 },
                                 "unit": {
                                     "description": "Unit (could be multi-language)",
-                                    "type": ["object", "string"]
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "$ref": "#/definitions/multilingual"
+                                        }
+                                    ]
                                 },
                                 "label": true,
                                 "type": true,
@@ -2991,9 +3016,21 @@
                                             "hidden": {
                                                 "type": "string",
                                                 "description": "JS function that could use `native.attribute` for calculation"
+                                            },
+                                            "group": {
+                                                "description": "Is it a group or not",
+                                                "type": "boolean"
                                             }
                                         }
                                     }
+                                },
+                                "multiple": {
+                                    "description": "If true, multiple values can be selected",
+                                    "type": "boolean"
+                                },
+                                "showAllValues": {
+                                    "description": "Show item even if no label was found for it (by multiple), default=`true`",
+                                    "type": "boolean"
                                 },
                                 "label": true,
                                 "type": true,
@@ -3723,7 +3760,14 @@
                                 },
                                 "unit": {
                                     "description": "Unit (could be multi-language)",
-                                    "type": ["object", "string"]
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "$ref": "#/definitions/multilingual"
+                                        }
+                                    ]
                                 },
                                 "narrow": {
                                     "description": "With this flag, the value will appear just after the label",
@@ -4465,8 +4509,8 @@
                         "type": "object"
                     },
                     "darkStyle": {
-                        "description": "CSS style for dark mode",
-                        "type": "string"
+                        "description": "CSS style for dark mode in react notation: 'radiusBorder' and not 'radius-border'",
+                        "type": "object"
                     },
                     "validator": {
                         "description": "JS function: true no error, false - error",
@@ -4490,7 +4534,14 @@
                     },
                     "tooltip": {
                         "description": "Optional tooltip",
-                        "type": "string"
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "$ref": "#/definitions/multilingual"
+                            }
+                        ]
                     },
                     "default": {
                         "description": "Default value"
@@ -5410,7 +5461,14 @@
                                             },
                                             "unit": {
                                                 "description": "Unit (could be multi-language)",
-                                                "type": ["object", "string"]
+                                                "oneOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/multilingual"
+                                                    }
+                                                ]
                                             },
                                             "label": true,
                                             "type": true,
@@ -5645,9 +5703,21 @@
                                                         "hidden": {
                                                             "type": "string",
                                                             "description": "JS function that could use `native.attribute` for calculation"
+                                                        },
+                                                        "group": {
+                                                            "description": "Is this a group",
+                                                            "type": "boolean"
                                                         }
                                                     }
                                                 }
+                                            },
+                                            "multiple": {
+                                                "description": "If true, multiple values can be selected",
+                                                "type": "boolean"
+                                            },
+                                            "showAllValues": {
+                                                "description": "Show item even if no label was found for it (by multiple), default=`true`",
+                                                "type": "boolean"
                                             },
                                             "label": true,
                                             "type": true,
@@ -6258,7 +6328,14 @@
                                             },
                                             "unit": {
                                                 "description": "Unit (could be multi-language)",
-                                                "type": ["object", "string"]
+                                                "oneOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/multilingual"
+                                                    }
+                                                ]
                                             },
                                             "narrow": {
                                                 "description": "With this flag, the value will appear just after the label",
@@ -6747,8 +6824,8 @@
                                     "type": "object"
                                 },
                                 "darkStyle": {
-                                    "description": "CSS style for dark mode",
-                                    "type": "string"
+                                    "description": "CSS style for dark mode in react notation: 'radiusBorder' and not 'radius-border'",
+                                    "type": "object"
                                 },
                                 "innerStyle": {
                                     "description": "CSS style in react notation: 'radiusBorder' and not 'radius-border'",
@@ -6772,7 +6849,14 @@
                                 },
                                 "tooltip": {
                                     "description": "Optional tooltip",
-                                    "type": "string"
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "$ref": "#/definitions/multilingual"
+                                        }
+                                    ]
                                 },
                                 "default": {
                                     "description": "Default value"

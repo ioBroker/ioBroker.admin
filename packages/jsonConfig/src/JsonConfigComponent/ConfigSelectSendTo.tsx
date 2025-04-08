@@ -14,6 +14,7 @@ import {
     Box,
     InputAdornment,
     IconButton,
+    ListSubheader,
 } from '@mui/material';
 
 import { Close as CloseIcon } from '@mui/icons-material';
@@ -71,7 +72,7 @@ interface ConfigSelectSendToProps extends ConfigGenericProps {
 }
 
 interface ConfigSelectSendToState extends ConfigGenericState {
-    list?: { label: string; value: string; hidden?: boolean }[];
+    list?: { label: string; value: string; hidden?: boolean; group?: boolean }[];
     running?: boolean;
 }
 
@@ -262,7 +263,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                                 })}
                             </Box>
                         ) : (
-                            item?.label || val
+                            this.getText(item?.label || (val as string), this.props.schema.noTranslation)
                         )
                     }
                     onChange={e => {
@@ -272,30 +273,41 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                         }
                     }}
                 >
-                    {selectOptions.map((it, i) => (
-                        <MenuItem
-                            key={i}
-                            value={it.value}
-                        >
-                            {this.props.schema.multiple ? (
-                                <Checkbox
-                                    checked={value.includes(it.value)}
-                                    onClick={() => {
-                                        const _value = JSON.parse(JSON.stringify(this._getValue()));
-                                        const pos = value.indexOf(it.value);
-                                        if (pos !== -1) {
-                                            _value.splice(pos, 1);
-                                        } else {
-                                            _value.push(it.value);
-                                            _value.sort();
-                                        }
-                                        this.setState({ value: _value }, () => this.onChange(this.props.attr, _value));
-                                    }}
-                                />
-                            ) : null}
-                            <ListItemText primary={it.label} />
-                        </MenuItem>
-                    ))}
+                    {selectOptions.map((it, i) => {
+                        if (it.group) {
+                            return (
+                                <ListSubheader key={i}>
+                                    {this.getText(it.label, this.props.schema.noTranslation)}
+                                </ListSubheader>
+                            );
+                        }
+                        return (
+                            <MenuItem
+                                key={i}
+                                value={it.value}
+                            >
+                                {this.props.schema.multiple ? (
+                                    <Checkbox
+                                        checked={value.includes(it.value)}
+                                        onClick={() => {
+                                            const _value = JSON.parse(JSON.stringify(this._getValue()));
+                                            const pos = value.indexOf(it.value);
+                                            if (pos !== -1) {
+                                                _value.splice(pos, 1);
+                                            } else {
+                                                _value.push(it.value);
+                                                _value.sort();
+                                            }
+                                            this.setState({ value: _value }, () =>
+                                                this.onChange(this.props.attr, _value),
+                                            );
+                                        }}
+                                    />
+                                ) : null}
+                                <ListItemText primary={it.label} />
+                            </MenuItem>
+                        );
+                    })}
                 </Select>
                 {this.props.schema.help ? (
                     <FormHelperText>

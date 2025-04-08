@@ -418,10 +418,12 @@ export default abstract class AdapterGeneric<
                 href={link}
                 target="_blank"
                 rel="noopener"
-                sx={((theme: IobTheme) => ({
-                    color: theme.palette.mode === 'dark' ? 'white' : 'black',
-                    '&:hover': { color: theme.palette.mode === 'dark' ? 'white' : 'black' },
-                })) as any}
+                sx={
+                    ((theme: IobTheme) => ({
+                        color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                        '&:hover': { color: theme.palette.mode === 'dark' ? 'white' : 'black' },
+                    })) as any
+                }
             >
                 {adapter.licenseInformation?.type === 'paid' ? (
                     <Tooltip
@@ -495,9 +497,14 @@ export default abstract class AdapterGeneric<
                 </div>
             </Tooltip>
         ) : (
-            <span style={this.props.cached.rightDependencies ? undefined : this.styles.wrongDependencies}>
-                {this.props.context.repository[this.props.adapterName].version}
-            </span>
+            <Tooltip
+                title={this.props.context.t('Wrong dependencies')}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
+            >
+                <span style={this.props.cached.rightDependencies ? undefined : this.styles.wrongDependencies}>
+                    {this.props.context.repository[this.props.adapterName].version}
+                </span>
+            </Tooltip>
         );
     }
 

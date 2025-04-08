@@ -184,12 +184,14 @@ class Login extends Component<object, LoginState> {
                 body: `grant_type=refresh_token&refresh_token=${tokens.refresh_token}&stayloggedin=${tokens.stayLoggedIn}&client_id=ioBroker`,
             })
                 .then(async response => {
-                    await Login.processTokenAnswer(tokens.stayLoggedIn, response);
-
-                    this.setState({
-                        inProcess: false,
-                        loggingIn: false,
-                    });
+                    if (!(await Login.processTokenAnswer(tokens.stayLoggedIn, response))) {
+                        this.setState({
+                            inProcess: false,
+                            loggingIn: false,
+                        });
+                    } else {
+                        // In processTokenAnswer the redirect will be done if already logged in
+                    }
                 })
                 .catch(error => {
                     console.error(`Cannot fetch access token: ${error}`);

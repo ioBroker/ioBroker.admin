@@ -434,9 +434,11 @@ Select function from `enum.func` (With color and icon) - (only Admin6)
 
 ### `select`
 
-| Property  | Description                                                             |
-|-----------|-------------------------------------------------------------------------|
-| `options` | object with labels, optional translations, optional grouping and values |
+| Property        | Description                                                               |
+|-----------------|---------------------------------------------------------------------------|
+| `options`       | object with labels, optional translations, optional grouping and values   |
+| `multiple`      | Multiple choice select (From 7.6.5)                                       |
+| `showAllValues` | show item even if no label was found for it (by multiple), default=`true` |
 
 #### Example for `select options`
 
@@ -631,7 +633,7 @@ button that sends request to instance (<https://github.com/iobroker-community-ad
 | `data`          | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.                                                                                                                                                |
 | `result`        | `{result1: {en: 'A'}, result2: {en: 'B'}}`                                                                                                                                                                                                   |
 | `error`         | `{error1: {en: 'E'}, error2: {en: 'E2'}}`                                                                                                                                                                                                    |
-| `variant`       | `contained`, `outlined` or nothing                                                                                                                                                                                                           |
+| `variant`       | `contained`, `outlined` or nothing. Variant of button.                                                                                                                                                                                       |
 | `openUrl`       | if true - open URL in new tab, if response contains attribute `openUrl`, like `{"openUrl": "http://1.2.3.4:80/aaa", "window": "_blank", "saveConfig": true}`. If `saveConfig` is true, the user will be requested to save the configuration. |
 | `reloadBrowser` | if true - reload the current browser window, if response contains attribute `reloadBrowser`, like `{"reloadBrowser": true}`.                                                                                                                 |
 | `window`        | if `openUrl` is true, this is a name of the new window. Could be overwritten if response consist `window` attribute. `this.props.socket.sendTo(adapterName.instance, command \|\| 'send', data, result => {});`                              |
@@ -640,6 +642,7 @@ button that sends request to instance (<https://github.com/iobroker-community-ad
 | `showProcess`   | Show spinner while request is in progress                                                                                                                                                                                                    |
 | `timeout`       | timeout for request in ms. Default: none.                                                                                                                                                                                                    |
 | `onLoaded`      | execute the button logic once initially                                                                                                                                                                                                      |
+| `controlStyle`  | Styles for the button.                                                                                                                                                                                                                       |
 
 ### `setState`
 
@@ -812,6 +815,11 @@ horizontal line
 
 ### `cron`
 
+Shows CRON settings. You have 3 options:
+- `simple` - shows simple CRON settings
+- `complex` - shows CRON with "minutes", "seconds" and so on
+- none of `simple` or `complex` - User can switch between simple and complex in the dialog
+
 | Property  | Description                                   |
 |-----------|-----------------------------------------------|
 | `complex` | show CRON with "minutes", "seconds" and so on |
@@ -972,7 +980,7 @@ Shows readonly control with the given from the instance values.
 
 | Property          | Description                                                                                                                                                     |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `container`       | div, text, html                                                                                                                                                 |
+| `container`       | `div`, `text`, `html`                                                                                                                                           |
 | `copyToClipboard` | if true - show button                                                                                                                                           |
 | `alsoDependsOn`   | by change of which attributes, the command must be resent                                                                                                       |
 | `command`         | sendTo command                                                                                                                                                  |

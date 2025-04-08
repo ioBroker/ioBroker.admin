@@ -87,6 +87,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+-   (@GermanBluefox) Corrected login with password managers
+-   (@GermanBluefox) Added support for the multiple selection for JSON config
+
 ### 7.6.4 (2025-04-01)
 
 -   (@GermanBluefox) Allowed the usage of node-red together with admin with authentication.

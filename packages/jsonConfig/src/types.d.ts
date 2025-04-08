@@ -520,6 +520,10 @@ export interface ConfigItemSelect extends ConfigItem {
           }
     )[];
     attr?: string;
+    /** If multiple selection is possible. In this case, the value will be an array */
+    multiple?: boolean;
+    /** show item even if no label was found for it (by multiple), default=`true` */
+    showAllValues?: boolean;
 }
 
 export interface ConfigItemAutocomplete extends ConfigItem {
