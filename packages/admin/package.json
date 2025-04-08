@@ -57,6 +57,7 @@
         "@types/mime": "3.0.4",
         "@types/passport": "^1.0.17",
         "@types/passport-local": "^1.0.38",
+        "@types/semver": "^7.7.0",
         "@types/validator": "^13.12.2",
         "colorette": "^2.0.20",
         "less": "^4.2.2",
