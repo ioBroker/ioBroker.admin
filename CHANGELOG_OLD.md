@@ -1,4 +1,8 @@
 # Older changes
+## 7.5.2 (2025-03-04)
+-   (@GermanBluefox) Corrected the login page
+-   (@GermanBluefox) Removed the frequent debug output
+
 ## 7.5.1 (2025-03-03)
 -   (@GermanBluefox) Added the possibility to rename or copy of the objects
 -   (@GermanBluefox) Corrected the problem with the user rights

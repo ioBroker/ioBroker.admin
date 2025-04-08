@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.4",
+    "version": "7.6.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.5": {
+        "en": "Corrected login with password managers\nAdded support for the multiple selection for JSON config",
+        "de": "Korrigierte Anmeldung mit Passwortmanagern\nUnterstützung für die Mehrfachauswahl für JSON config",
+        "ru": "Исправлен логин с менеджерами паролей\nДобавлена поддержка множественного выбора конфигурации JSON",
+        "pt": "Login correto com gestores de senha\nAdicionado suporte para a seleção múltipla para JSON config",
+        "nl": "Gecorrigeerde login met wachtwoordbeheerders\nOndersteuning toegevoegd voor de meervoudige selectie voor JSON config",
+        "fr": "Connexion corrigée avec les gestionnaires de mots de passe\nAjout du support pour la sélection multiple pour la configuration JSON",
+        "it": "Collegamento corretto con password manager\nAggiunto il supporto per la selezione multipla per JSON config",
+        "es": "Acceso corregido con gestores de contraseña\nSoporte añadido para la selección múltiple para JSON config",
+        "pl": "Poprawione logowanie z menedżerami haseł\nDodano wsparcie dla wielokrotnego wyboru dla konfiguracji JSON",
+        "uk": "Виправлений логін з менеджерами паролів\nДодано підтримку для декількох вибору для налаштування JSON",
+        "zh-cn": "已更正密码管理器登录\n为 JSON 配置的多重选择添加支持"
+      },
       "7.6.4": {
         "en": "Allowed the usage of node-red together with admin with authentication.\nAdded some options for JSON-Config `state`\nAdded possibility to disable basic authentication\nChanged the order of authentications. Basic authentication will be checked as the last one.",
         "de": "Erlaubte die Verwendung von node-red zusammen mit admin mit Authentifizierung.\nEinige Optionen für JSON-Config `state` hinzugefügt\nZusätzliche Möglichkeit, grundlegende Authentifizierung zu deaktivieren\nÄnderte die Reihenfolge der Authentifizierungen. Die grundlegende Authentifizierung wird als letztes überprüft.",
@@ -96,19 +109,6 @@
         "pl": "Poprawiono stronę logowania\nUsunięto częste wyjście debugowania",
         "uk": "Виправлено сторінку входу\nВилучено часте дебвуг",
         "zh-cn": "更正登录页面\n删除频繁调试输出"
-      },
-      "7.5.1": {
-        "en": "Added the possibility to rename or copy of the objects\nCorrected the problem with the user rights",
-        "de": "Hinzufügen der Möglichkeit zum Umbenennen oder Kopieren der Objekte\nDas Problem mit den Nutzerrechten korrigiert",
-        "ru": "Добавлена возможность переименовывать или копировать объекты\nИсправлена проблема с правами пользователя",
-        "pt": "Adicionado a possibilidade de renomear ou copiar os objetos\nCorrigido o problema com os direitos do usuário",
-        "nl": "De mogelijkheid toegevoegd om objecten te hernoemen of te kopiëren\nHet probleem met de gebruikersrechten verhelpen",
-        "fr": "Ajout de la possibilité de renommer ou de copier les objets\nCorrection du problème des droits d'utilisateur",
-        "it": "Aggiunta la possibilità di rinominare o copiare gli oggetti\nCorretto il problema con i diritti dell'utente",
-        "es": "Se agregó la posibilidad de renombrar o copiar los objetos\nCorregido el problema con los derechos del usuario",
-        "pl": "Dodano możliwość zmiany nazwy lub kopii obiektów\nNaprawiono problem z prawami użytkownika",
-        "uk": "Додано можливість перейменування або копіювання об'єктів\nВиправлено проблему з правами користувачів",
-        "zh-cn": "添加重命名或复制对象的可能性\n纠正了用户权利的问题"
       }
     },
     "desc": {
