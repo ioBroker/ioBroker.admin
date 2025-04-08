@@ -3016,9 +3016,21 @@
                                             "hidden": {
                                                 "type": "string",
                                                 "description": "JS function that could use `native.attribute` for calculation"
+                                            },
+                                            "group": {
+                                                "description": "Is it a group or not",
+                                                "type": "boolean"
                                             }
                                         }
                                     }
+                                },
+                                "multiple": {
+                                    "description": "If true, multiple values can be selected",
+                                    "type": "boolean"
+                                },
+                                "showAllValues": {
+                                    "description": "Show item even if no label was found for it (by multiple), default=`true`",
+                                    "type": "boolean"
                                 },
                                 "label": true,
                                 "type": true,
@@ -5691,9 +5703,21 @@
                                                         "hidden": {
                                                             "type": "string",
                                                             "description": "JS function that could use `native.attribute` for calculation"
+                                                        },
+                                                        "group": {
+                                                            "description": "Is this a group",
+                                                            "type": "boolean"
                                                         }
                                                     }
                                                 }
+                                            },
+                                            "multiple": {
+                                                "description": "If true, multiple values can be selected",
+                                                "type": "boolean"
+                                            },
+                                            "showAllValues": {
+                                                "description": "Show item even if no label was found for it (by multiple), default=`true`",
+                                                "type": "boolean"
                                             },
                                             "label": true,
                                             "type": true,

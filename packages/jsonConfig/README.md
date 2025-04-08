@@ -434,9 +434,11 @@ Select function from `enum.func` (With color and icon) - (only Admin6)
 
 ### `select`
 
-| Property  | Description                                                             |
-|-----------|-------------------------------------------------------------------------|
-| `options` | object with labels, optional translations, optional grouping and values |
+| Property        | Description                                                               |
+|-----------------|---------------------------------------------------------------------------|
+| `options`       | object with labels, optional translations, optional grouping and values   |
+| `multiple`      | Multiple choice select (From 7.6.5)                                       |
+| `showAllValues` | show item even if no label was found for it (by multiple), default=`true` |
 
 #### Example for `select options`
 

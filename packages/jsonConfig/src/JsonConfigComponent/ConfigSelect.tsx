@@ -1,6 +1,16 @@
 import React, { type JSX } from 'react';
 
-import { InputLabel, FormHelperText, FormControl, Select, MenuItem, ListSubheader } from '@mui/material';
+import {
+    InputLabel,
+    FormHelperText,
+    FormControl,
+    Select,
+    MenuItem,
+    ListSubheader,
+    Box,
+    Chip,
+    ListItemText, Checkbox,
+} from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -54,7 +64,11 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                 hidden?: string | boolean;
             };
             if (Array.isArray(groupItem.items)) {
-                selectOptions.push({ label: this.getText(item.label, this.props.schema.noTranslation), value: item.value, group: true });
+                selectOptions.push({
+                    label: this.getText(item.label, this.props.schema.noTranslation),
+                    value: item.value,
+                    group: true,
+                });
                 groupItem.items.forEach(it =>
                     selectOptions.push({
                         label: this.getText(it.label, this.props.schema.noTranslation),
@@ -82,6 +96,23 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
         } else {
             this.setState({ value, selectOptions });
         }
+    }
+
+    _getValue(): string | string[] {
+        let value =
+            this.state.value === null || this.state.value === undefined
+                ? ConfigGeneric.getValue(this.props.data, this.props.attr)
+                : this.state.value;
+
+        if (this.props.schema.multiple) {
+            if (typeof value === 'string') {
+                value = [value];
+            } else if (value === null || value === undefined) {
+                value = [];
+            }
+        }
+
+        return value;
     }
 
     renderItem(error: string, disabled: boolean /* , defaultValue */): JSX.Element {
@@ -114,7 +145,9 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
             );
         });
 
-        const item = selectOptions.find(it => it.value == this.state.value); // let "==" be and not ===
+        const value = this._getValue();
+
+        const item = this.props.schema.multiple ? null : selectOptions.find(it => it.value == value); // let "==" be and not ===
 
         return (
             <FormControl
@@ -127,9 +160,30 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                 <Select
                     variant="standard"
                     error={!!error}
+                    multiple={this.props.schema.multiple}
                     disabled={!!disabled}
-                    value={this.state.value || '_'}
-                    renderValue={() => this.getText(item?.label, this.props.schema.noTranslation)}
+                    value={value || '_'}
+                    renderValue={(val: string | string[]) =>
+                        this.props.schema.multiple ? (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {(val as string[]).map((v: string) => {
+                                    const it = selectOptions.find(_item => _item.value === v);
+                                    if (it || this.props.schema.showAllValues !== false) {
+                                        const label = it?.label || v;
+                                        return (
+                                            <Chip
+                                                key={v}
+                                                label={label}
+                                            />
+                                        );
+                                    }
+                                    return null;
+                                })}
+                            </Box>
+                        ) : (
+                            this.getText(item?.label, this.props.schema.noTranslation)
+                        )
+                    }
                     onChange={e => {
                         this.setState({ value: e.target.value === '_' ? '' : e.target.value }, () => {
                             let mayBePromise: void | Promise<void>;
@@ -158,7 +212,25 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                                 value={it.value}
                                 style={it.value === ConfigGeneric.DIFFERENT_VALUE ? { opacity: 0.5 } : {}}
                             >
-                                {this.getText(it.label, this.props.schema.noTranslation)}
+                                {this.props.schema.multiple ? (
+                                    <Checkbox
+                                        checked={value.includes(it.value as string)}
+                                        onClick={() => {
+                                            const _value = JSON.parse(JSON.stringify(this._getValue()));
+                                            const pos = value.indexOf(it.value as string);
+                                            if (pos !== -1) {
+                                                _value.splice(pos, 1);
+                                            } else {
+                                                _value.push(it.value);
+                                                _value.sort();
+                                            }
+                                            this.setState({ value: _value }, () =>
+                                                this.onChange(this.props.attr, _value),
+                                            );
+                                        }}
+                                    />
+                                ) : null}
+                                <ListItemText primary={this.getText(it.label, this.props.schema.noTranslation)} />
                             </MenuItem>
                         );
                     })}
