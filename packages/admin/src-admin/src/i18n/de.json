@@ -1207,6 +1207,7 @@
     "Write to the database file no more than every X milliseconds": "Höchstens alle X Millisekunden in die Datenbankdatei schreiben",
     "Write value": "Wert schreiben",
     "Writeable": "Beschreibbar",
+    "Wrong dependencies": "Falsche Abhängigkeiten",
     "YYYY.MM.DD": "JJJJ.MM.TT",
     "Yemen": "Jemen",
     "Yes": "Ja",

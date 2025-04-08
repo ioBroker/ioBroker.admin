@@ -1207,6 +1207,7 @@
     "Write to the database file no more than every X milliseconds": "Записуйте у файл бази даних не частіше ніж кожні X мілісекунд",
     "Write value": "Напишіть значення",
     "Writeable": "Можливість запису",
+    "Wrong dependencies": "",
     "YYYY.MM.DD": "РРРР.ММ.ДД",
     "Yemen": "Ємен",
     "Yes": "Так",
