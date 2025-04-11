@@ -35,7 +35,7 @@ import AdminUtils from '@/helpers/AdminUtils';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import type { HostsWorker, NotificationAnswer } from '@/Workers/HostsWorker';
 import type { LogsWorker } from '@/Workers/LogsWorker';
-import type { NotificationsCount } from '@/types';
+import type { AdminGuiConfig, NotificationsCount } from '@/types';
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
@@ -184,7 +184,7 @@ interface DrawerProps {
     t: Translate;
     lang: ioBroker.Languages;
     state: 0 | 1 | 2;
-    adminGuiConfig: Record<string, any>;
+    adminGuiConfig: AdminGuiConfig;
     onStateChange: (state: 0 | 1 | 2) => void;
     onLogout: () => void;
     isSecure: boolean;

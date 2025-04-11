@@ -1098,10 +1098,10 @@ class App extends Router<AppProps, AppState> {
                         },
                         ...this.socket.systemConfig.native?.vendor,
                     };
-                    this.adminGuiConfig.admin.menu = this.adminGuiConfig.admin.menu || {};
-                    this.adminGuiConfig.admin.settings = this.adminGuiConfig.admin.settings || {};
-                    this.adminGuiConfig.admin.adapters = this.adminGuiConfig.admin.adapters || {};
-                    this.adminGuiConfig.admin.login = this.adminGuiConfig.admin.login || {};
+                    this.adminGuiConfig.admin.menu ||= {};
+                    this.adminGuiConfig.admin.settings ||= {};
+                    this.adminGuiConfig.admin.adapters ||= {};
+                    this.adminGuiConfig.admin.login ||= {};
 
                     try {
                         if (!this.adminInstance) {
