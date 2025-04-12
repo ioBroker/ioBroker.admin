@@ -38,12 +38,14 @@ export type ioBrokerObject<Native extends object = object, Common extends object
 
 export interface AdminGuiConfig {
     admin?: {
-        icon?: string;
-        menu?: Record<string, boolean>;
-        settings?: Record<string, boolean>;
-        adapters: {
-            allowAdapterRating?: boolean;
-            gitHubInstall?: boolean;
+        menu?: {
+            editable?: false;
+            [tabName: string]: false;
+        };
+        settings?: { [tabName: string]: false; activeRepo?: false };
+        adapters?: {
+            allowAdapterRating?: false;
+            gitHubInstall?: false;
         };
         login?: {
             title?: string;
@@ -53,7 +55,7 @@ export interface AdminGuiConfig {
     };
     name?: string;
     icon?: string;
-    logo?: string;
+    // logo?: string;
     ico?: string;
     uuidPrefix?: string;
 }

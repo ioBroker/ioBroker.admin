@@ -287,8 +287,8 @@ class Login extends Component<object, LoginState> {
                         <form
                             ref={this.formRef}
                             style={styles.form}
-                            action={action}
-                            method="post"
+                            action={window.USE_OAUTH2 ? undefined : action}
+                            method={window.USE_OAUTH2 ? undefined : 'POST'}
                         >
                             <TextField
                                 variant="outlined"
