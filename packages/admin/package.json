@@ -1,7 +1,7 @@
 {
     "name": "iobroker.admin",
     "description": "The adapter opens a webserver for the ioBroker admin UI.",
-    "version": "7.6.5",
+    "version": "7.6.6",
     "contributors": [
         "bluefox <dogafox@gmail.com>",
         "apollon77",
@@ -25,7 +25,7 @@
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.3",
         "@iobroker/i18n": "^0.3.1",
-        "@iobroker/socket-classes": "^2.2.7",
+        "@iobroker/socket-classes": "^2.2.8",
         "@iobroker/webserver": "^1.2.6",
         "@iobroker/ws": "^2.1.0",
         "@iobroker/ws-server": "^4.3.4",
@@ -33,7 +33,6 @@
         "archiver": "^7.0.1",
         "body-parser": "^2.2.0",
         "compression": "^1.8.0",
-        "connect-flash": "^0.1.1",
         "express": "^4.21.2",
         "express-fileupload": "^1.5.1",
         "express-session": "^1.18.1",
