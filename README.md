@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.6.6 (2025-04-12)
+### **WORK IN PROGRESS**
    
 - (@GermanBluefox) Corrected login with password managers
 

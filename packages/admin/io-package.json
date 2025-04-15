@@ -19,19 +19,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.6.6": {
-        "en": "Corrected login with password managers",
-        "de": "Korrigierte Anmeldung mit Passwortmanagern",
-        "ru": "Исправлен логин с менеджерами паролей",
-        "pt": "Login correto com gestores de senha",
-        "nl": "Gecorrigeerde login met wachtwoordbeheerders",
-        "fr": "Connexion corrigée avec les gestionnaires de mots de passe",
-        "it": "Collegamento corretto con password manager",
-        "es": "Acceso corregido con gestores de contraseña",
-        "pl": "Poprawione logowanie z menedżerami haseł",
-        "uk": "Виправлений логін з менеджерами паролів",
-        "zh-cn": "已更正密码管理器登录"
-      },
       "7.6.5": {
         "en": "Corrected login with password managers\nAdded support for the multiple selection for JSON config",
         "de": "Korrigierte Anmeldung mit Passwortmanagern\nUnterstützung für die Mehrfachauswahl für JSON config",
