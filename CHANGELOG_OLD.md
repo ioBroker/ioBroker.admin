@@ -5,6 +5,12 @@
 -   (@GermanBluefox) Custom JSON components could be now written in TypeScript 
 -   (@GermanBluefox) Added support for Tab as JSONConfig
 
+## 7.6.1 (2025-03-08)
+-   (@GermanBluefox) Added support for JSON5 in JsonConfig editor component 
+-   (@GermanBluefox) GUI build migrated to vite 
+-   (@GermanBluefox) Custom JSON components could be now written in TypeScript 
+-   (@GermanBluefox) Added support for Tab as JSONConfig
+
 ## 7.5.2 (2025-03-04)
 -   (@GermanBluefox) Corrected the login page
 -   (@GermanBluefox) Removed the frequent debug output
