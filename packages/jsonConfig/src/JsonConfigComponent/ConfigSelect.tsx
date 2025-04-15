@@ -41,7 +41,15 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
 
     componentDidMount(): void {
         super.componentDidMount();
-        const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
+        let value: string | string[] = ConfigGeneric.getValue(this.props.data, this.props.attr);
+
+        if (this.props.schema.multiple) {
+            if (typeof value === 'string') {
+                value = [value];
+            } else if (value === null || value === undefined) {
+                value = [];
+            }
+        }
 
         const selectOptions: {
             label: string;
@@ -86,7 +94,7 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
         });
 
         // if __different
-        if (Array.isArray(value)) {
+        if (Array.isArray(value) && !this.props.schema.multiple) {
             this.initialValue = [...value];
             selectOptions.unshift({
                 label: I18n.t(ConfigGeneric.DIFFERENT_LABEL),

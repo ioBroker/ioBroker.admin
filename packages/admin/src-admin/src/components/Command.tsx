@@ -380,27 +380,21 @@ class Command extends Component<CommandProps, CommandState> {
                         {this.colorize(this.state.log[this.state.log.length - 1])}
                     </Typography>
                     {this.props.showElement === undefined || this.props.showElement === true ? (
-                        <Typography
-                            component="div"
-                            style={{ width: 250 }}
+                        <Grid2
+                            component="label"
+                            container
+                            alignItems="center"
+                            justifyContent="end"
+                            spacing={1}
                         >
-                            <Grid2
-                                component="label"
-                                container
-                                alignItems="center"
-                                spacing={1}
-                            >
-                                <Grid2>{this.props.t('less output')}</Grid2>
-                                <Grid2>
-                                    <Switch
-                                        checked={this.state.moreChecked}
-                                        onChange={event => this.setState({ moreChecked: event.target.checked })}
-                                        color="primary"
-                                    />
-                                </Grid2>
-                                <Grid2>{this.props.t('more output')}</Grid2>
-                            </Grid2>
-                        </Typography>
+                            <div>{this.props.t('less output')}</div>
+                            <Switch
+                                checked={this.state.moreChecked}
+                                onChange={event => this.setState({ moreChecked: event.target.checked })}
+                                color="primary"
+                            />
+                            <div>{this.props.t('more output')}</div>
+                        </Grid2>
                     ) : null}
                 </div>
                 <Grid2 style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>

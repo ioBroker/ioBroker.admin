@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.6.6 (2025-04-12)
+### **WORK IN PROGRESS**
    
 - (@GermanBluefox) Corrected login with password managers
 
@@ -110,6 +110,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.6.2 (2025-03-09)
 -   (@GermanBluefox) Corrected loading of custom JSON components
+
+### 7.6.1 (2025-03-08)
+-   (@GermanBluefox) Added support for JSON5 in JsonConfig editor component 
+-   (@GermanBluefox) GUI build migrated to vite 
+-   (@GermanBluefox) Custom JSON components could be now written in TypeScript 
+-   (@GermanBluefox) Added support for Tab as JSONConfig
 
 ## License
 

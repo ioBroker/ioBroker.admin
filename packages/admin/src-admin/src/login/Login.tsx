@@ -113,13 +113,12 @@ interface LoginState {
 }
 
 class Login extends Component<object, LoginState> {
-    private readonly formRef: React.RefObject<HTMLFormElement>;
     private readonly passwordRef: React.RefObject<HTMLInputElement>;
 
     constructor(props: object) {
         super(props);
 
-        const loggingIn = window.USE_OAUTH2 ? this.authenticateWithRefreshToken() : false;
+        const loggingIn = this.authenticateWithRefreshToken();
 
         this.state = {
             inProcess: false,
@@ -130,8 +129,6 @@ class Login extends Component<object, LoginState> {
             error: '',
             loggingIn,
         };
-
-        this.formRef = React.createRef();
 
         // apply image
         const body = window.document.body;
@@ -207,8 +204,6 @@ class Login extends Component<object, LoginState> {
     }
 
     render(): JSX.Element {
-        const action = `${window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:8081/` : ''}login?${window.location.port === '3000' ? 'dev&' : ''}href=${window.location.hash}`;
-
         const link =
             window.loginLink && window.loginLink !== '@@loginLink@@' ? window.loginLink : 'https://www.iobroker.net/';
         const motto =
@@ -250,13 +245,12 @@ class Login extends Component<object, LoginState> {
                         {window.loginLogo && window.loginLogo !== '@@loginLogo@@' ? (
                             <Box
                                 sx={{
-                                    height: 50,
-                                    width: 102,
-                                    lineHeight: '50px',
+                                    width: 100,
+                                    height: 100,
                                     backgroundColor: (theme: Theme) =>
                                         theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
-                                    borderRadius: 5,
-                                    padding: 5,
+                                    borderRadius: '5px',
+                                    padding: '5px',
                                 }}
                             >
                                 <img
@@ -284,120 +278,99 @@ class Login extends Component<object, LoginState> {
                         {window.location.search.includes('error') || this.state.error ? (
                             <div style={styles.alert}>{this.state.error || I18n.t('wrongPassword')}</div>
                         ) : null}
-                        <form
-                            ref={this.formRef}
-                            style={styles.form}
-                            action={window.USE_OAUTH2 ? undefined : action}
-                            method={window.USE_OAUTH2 ? undefined : 'POST'}
-                        >
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                disabled={this.state.inProcess}
-                                required
-                                value={this.state.username}
-                                onChange={e => this.setState({ username: e.target.value })}
-                                fullWidth
-                                size="small"
-                                id="username"
-                                label={I18n.t('enterLogin')}
-                                name="username"
-                                autoComplete="username"
-                                autoFocus
-                            />
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                disabled={this.state.inProcess}
-                                required
-                                fullWidth
-                                ref={this.passwordRef}
-                                value={this.state.password}
-                                onChange={e => this.setState({ password: e.target.value })}
-                                slotProps={{
-                                    input: {
-                                        endAdornment: this.state.password ? (
-                                            <IconButton
-                                                tabIndex={-1}
-                                                aria-label="toggle password visibility"
-                                            >
-                                                <Visibility
-                                                    onMouseDown={() => this.setState({ showPassword: true })}
-                                                    onMouseUp={() => {
-                                                        this.setState({ showPassword: false }, () => {
-                                                            setTimeout(() => this.passwordRef.current?.focus(), 50);
-                                                        });
-                                                    }}
-                                                />
-                                            </IconButton>
-                                        ) : null,
-                                    },
-                                }}
-                                size="small"
-                                name="password"
-                                label={I18n.t('enterPassword')}
-                                type={this.state.showPassword ? 'text' : 'password'}
-                                id="password"
-                                autoComplete="current-password"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        id="stayloggedin"
-                                        name="stayloggedin"
-                                        value="on"
-                                        checked={this.state.stayLoggedIn}
-                                        onChange={e => this.setState({ stayLoggedIn: e.target.checked })}
-                                        color="primary"
-                                        disabled={this.state.inProcess}
-                                    />
-                                }
-                                label={I18n.t('Stay signed in')}
-                            />
-                            <input
-                                id="origin"
-                                type="hidden"
-                                name="origin"
-                                value={window.location.pathname + window.location.search.replace('&error', '')}
-                            />
-                            {
-                                <Button
-                                    type="submit"
-                                    disabled={this.state.inProcess || !this.state.username || !this.state.password}
-                                    onClick={() => {
-                                        if (!window.USE_OAUTH2) {
-                                            this.formRef.current.submit();
-                                            // give time to firefox to send the data
-                                            setTimeout(() => this.setState({ inProcess: true }), 50);
-                                        } else {
-                                            this.setState({ inProcess: true, error: '' }, async () => {
-                                                const response = await fetch('../oauth/token', {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Content-Type': 'application/x-www-form-urlencoded',
-                                                    },
-                                                    body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
-                                                });
-                                                if (await Login.processTokenAnswer(this.state.stayLoggedIn, response)) {
-                                                    this.setState({ inProcess: false });
-                                                } else {
-                                                    this.setState({
-                                                        inProcess: false,
-                                                        error: I18n.t('wrongPassword'),
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            disabled={this.state.inProcess}
+                            required
+                            value={this.state.username}
+                            onChange={e => this.setState({ username: e.target.value })}
+                            fullWidth
+                            size="small"
+                            id="username"
+                            label={I18n.t('enterLogin')}
+                            name="username"
+                            autoComplete="username"
+                            autoFocus
+                        />
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            disabled={this.state.inProcess}
+                            required
+                            fullWidth
+                            ref={this.passwordRef}
+                            value={this.state.password}
+                            onChange={e => this.setState({ password: e.target.value })}
+                            slotProps={{
+                                input: {
+                                    endAdornment: this.state.password ? (
+                                        <IconButton
+                                            tabIndex={-1}
+                                            aria-label="toggle password visibility"
+                                        >
+                                            <Visibility
+                                                onMouseDown={() => this.setState({ showPassword: true })}
+                                                onMouseUp={() => {
+                                                    this.setState({ showPassword: false }, () => {
+                                                        setTimeout(() => this.passwordRef.current?.focus(), 50);
                                                     });
-                                                }
-                                            });
-                                        }
-                                    }}
-                                    fullWidth
-                                    variant="contained"
+                                                }}
+                                            />
+                                        </IconButton>
+                                    ) : null,
+                                },
+                            }}
+                            size="small"
+                            name="password"
+                            label={I18n.t('enterPassword')}
+                            type={this.state.showPassword ? 'text' : 'password'}
+                            id="password"
+                            autoComplete="current-password"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    id="stayloggedin"
+                                    name="stayloggedin"
+                                    value="on"
+                                    checked={this.state.stayLoggedIn}
+                                    onChange={e => this.setState({ stayLoggedIn: e.target.checked })}
                                     color="primary"
-                                    style={styles.submit}
-                                >
-                                    {this.state.inProcess ? <CircularProgress size={24} /> : I18n.t('login')}
-                                </Button>
+                                    disabled={this.state.inProcess}
+                                />
                             }
-                        </form>
+                            label={I18n.t('Stay signed in')}
+                        />
+                        <Button
+                            type="submit"
+                            disabled={this.state.inProcess || !this.state.username || !this.state.password}
+                            onClick={() => {
+                                this.setState({ inProcess: true, error: '' }, async () => {
+                                    const response = await fetch('../oauth/token', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                        },
+                                        body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
+                                    });
+                                    if (await Login.processTokenAnswer(this.state.stayLoggedIn, response)) {
+                                        this.setState({ inProcess: false });
+                                    } else {
+                                        this.setState({
+                                            inProcess: false,
+                                            error: I18n.t('wrongPassword'),
+                                        });
+                                    }
+                                });
+                            }}
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            style={styles.submit}
+                        >
+                            {this.state.inProcess ? <CircularProgress size={24} /> : I18n.t('login')}
+                        </Button>
                     </Grid2>
                     <Box style={styles.marginTop}>
                         <Typography
