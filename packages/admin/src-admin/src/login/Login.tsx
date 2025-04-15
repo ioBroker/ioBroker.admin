@@ -245,13 +245,12 @@ class Login extends Component<object, LoginState> {
                         {window.loginLogo && window.loginLogo !== '@@loginLogo@@' ? (
                             <Box
                                 sx={{
-                                    height: 50,
-                                    width: 102,
-                                    lineHeight: '50px',
+                                    width: 100,
+                                    height: 100,
                                     backgroundColor: (theme: Theme) =>
                                         theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
-                                    borderRadius: 5,
-                                    padding: 5,
+                                    borderRadius: '5px',
+                                    padding: '5px',
                                 }}
                             >
                                 <img
@@ -344,7 +343,7 @@ class Login extends Component<object, LoginState> {
                             label={I18n.t('Stay signed in')}
                         />
                         <Button
-                            component="div"
+                            type="submit"
                             disabled={this.state.inProcess || !this.state.username || !this.state.password}
                             onClick={() => {
                                 this.setState({ inProcess: true, error: '' }, async () => {
