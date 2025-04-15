@@ -665,6 +665,8 @@ static text like description
 | `label`  | multi-language text |
 | `text`   | same as label       |
 
+exactly one of `label` or `text` must be specified - not both
+
 ### `staticLink`
 
 | Property  | Description                                                                                                                                                                                                                                                                     |
