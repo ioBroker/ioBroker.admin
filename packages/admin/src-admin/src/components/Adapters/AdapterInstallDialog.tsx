@@ -329,9 +329,7 @@ export default abstract class AdapterInstallDialog<
                 }
             }
 
-            const dependencies: Record<string, string> =
-                // @ts-expect-error Types implemented in js-controller
-                adapter.ifInstalledDependencies as Record<string, string>;
+            const dependencies: Record<string, string> = adapter.ifInstalledDependencies as Record<string, string>;
 
             if (dependencies && typeof dependencies === 'object' && !Array.isArray(dependencies)) {
                 const adapters = Object.keys(dependencies);

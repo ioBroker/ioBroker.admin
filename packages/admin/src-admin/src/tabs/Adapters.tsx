@@ -1054,7 +1054,6 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 }
             }
 
-            // @ts-expect-error Types implemented in js-controller
             const ifDependencies: Record<string, string> = adapter.ifInstalledDependencies as Record<string, string>;
 
             if (ifDependencies && typeof ifDependencies === 'object' && !Array.isArray(ifDependencies)) {

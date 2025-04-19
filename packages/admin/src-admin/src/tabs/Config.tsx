@@ -755,33 +755,33 @@ class Config extends Component<ConfigProps, ConfigState> {
                             ) : null}
                             <Box
                                 component="span"
-                                sx={((theme: IobTheme): any => ({
+                                sx={(theme: IobTheme): any => ({
                                     [theme.breakpoints.down('md')]: {
                                         display: 'none',
                                     },
                                     marginRight: '8px',
-                                })) as any}
+                                })}
                             >
                                 {`${this.props.t('Instance settings')}:`}
                             </Box>
                             {`${this.props.adapter}.${this.props.instance}`}
                             <Box
                                 component="div"
-                                sx={((theme: IobTheme): any => ({
+                                sx={(theme: IobTheme): any => ({
                                     [theme.breakpoints.down('sm')]: {
                                         display: 'none',
                                     },
-                                })) as any}
+                                })}
                             >
                                 {buttons}
                             </Box>
                             <Box
                                 component="span"
-                                sx={((theme: IobTheme): any => ({
+                                sx={(theme: IobTheme): any => ({
                                     [theme.breakpoints.up('sm')]: {
                                         display: 'none',
                                     },
-                                })) as any}
+                                })}
                             >
                                 <IconButton
                                     style={{ marginLeft: 8 }}

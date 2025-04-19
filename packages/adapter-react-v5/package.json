@@ -55,10 +55,10 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
-        "@iobroker/js-controller-common": "^7.0.6",
-        "@iobroker/js-controller-common-db": "^7.0.6",
+        "@iobroker/js-controller-common": "^7.0.7",
+        "@iobroker/js-controller-common-db": "^7.0.7",
         "@iobroker/socket-client": "4.1.2",
-        "@iobroker/types": "^7.0.6",
+        "@iobroker/types": "^7.0.7",
         "@mui/icons-material": "^6.4.10",
         "@mui/material": "^6.4.10",
         "@sentry/browser": "^9.11.0",
