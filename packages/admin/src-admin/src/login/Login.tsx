@@ -47,7 +47,8 @@ const styles: Record<string, any> = {
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        height: 'calc(100% - 48px)',
+        width: 'calc(100% - 48px)',
         maxHeight: 500,
         maxWidth: 380,
         boxShadow,
@@ -63,10 +64,6 @@ const styles: Record<string, any> = {
             padding: 2,
         },
     }),
-    form: {
-        width: '100%', // Fix IE 11 issue.
-        marginTop: 8,
-    },
     submit: {
         margin: 8,
     },
@@ -203,6 +200,27 @@ class Login extends Component<object, LoginState> {
         return false;
     }
 
+    onLogin(): void {
+        this.setState({ inProcess: true, error: '' }, async () => {
+            const response = await fetch('../oauth/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
+            });
+            if (await Login.processTokenAnswer(this.state.stayLoggedIn, response)) {
+                // Do not allow entering again as redirection is running
+                // this.setState({ inProcess: false });
+            } else {
+                this.setState({
+                    inProcess: false,
+                    error: I18n.t('wrongPassword'),
+                });
+            }
+        });
+    }
+
     render(): JSX.Element {
         const link =
             window.loginLink && window.loginLink !== '@@loginLink@@' ? window.loginLink : 'https://www.iobroker.net/';
@@ -285,6 +303,12 @@ class Login extends Component<object, LoginState> {
                             required
                             value={this.state.username}
                             onChange={e => this.setState({ username: e.target.value })}
+                            onKeyUp={e => {
+                                if (e.key === 'Enter' && this.state.username) {
+                                    e.preventDefault();
+                                    this.passwordRef.current?.focus();
+                                }
+                            }}
                             fullWidth
                             size="small"
                             id="username"
@@ -302,21 +326,24 @@ class Login extends Component<object, LoginState> {
                             ref={this.passwordRef}
                             value={this.state.password}
                             onChange={e => this.setState({ password: e.target.value })}
+                            onKeyUp={e => {
+                                if (e.key === 'Enter' && this.state.username && this.state.password) {
+                                    this.onLogin();
+                                }
+                            }}
                             slotProps={{
                                 input: {
                                     endAdornment: this.state.password ? (
                                         <IconButton
                                             tabIndex={-1}
                                             aria-label="toggle password visibility"
+                                            onClick={() => {
+                                                this.setState({ showPassword: !this.state.showPassword }, () => {
+                                                    setTimeout(() => this.passwordRef.current?.focus(), 50);
+                                                });
+                                            }}
                                         >
-                                            <Visibility
-                                                onMouseDown={() => this.setState({ showPassword: true })}
-                                                onMouseUp={() => {
-                                                    this.setState({ showPassword: false }, () => {
-                                                        setTimeout(() => this.passwordRef.current?.focus(), 50);
-                                                    });
-                                                }}
-                                            />
+                                            <Visibility />
                                         </IconButton>
                                     ) : null,
                                 },
@@ -345,25 +372,7 @@ class Login extends Component<object, LoginState> {
                         <Button
                             type="submit"
                             disabled={this.state.inProcess || !this.state.username || !this.state.password}
-                            onClick={() => {
-                                this.setState({ inProcess: true, error: '' }, async () => {
-                                    const response = await fetch('../oauth/token', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded',
-                                        },
-                                        body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
-                                    });
-                                    if (await Login.processTokenAnswer(this.state.stayLoggedIn, response)) {
-                                        this.setState({ inProcess: false });
-                                    } else {
-                                        this.setState({
-                                            inProcess: false,
-                                            error: I18n.t('wrongPassword'),
-                                        });
-                                    }
-                                });
-                            }}
+                            onClick={() => this.onLogin()}
                             fullWidth
                             variant="contained"
                             color="primary"
