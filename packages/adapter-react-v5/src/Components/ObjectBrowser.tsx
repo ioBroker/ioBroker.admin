@@ -196,6 +196,8 @@ export interface TreeItemData {
     button?: boolean;
     /** If the item has read and write and is boolean */
     switch?: boolean;
+    /** If the item is url linke */
+    url?: boolean;
     /** if the item has custom settings in `common.custom` */
     hasCustoms?: boolean;
     /** If this item is visible */
@@ -1747,6 +1749,10 @@ function buildTree(
                             obj.common?.type === 'boolean' &&
                             obj.common?.write !== false &&
                             obj.common?.read !== false,
+                        url:
+                            !!obj.common?.role &&
+                            typeof obj.common.role === 'string' &&
+                            obj.common.role.startsWith('url'),
                     },
                 };
 
@@ -2800,6 +2806,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private defaultHistory: string = '';
 
+    private cltrPressed = false;
+
     private columnsVisibility: {
         id?: number | string;
         name?: number | string;
@@ -3033,6 +3041,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             customConfig: props.t('ra_tooltip_customConfig'),
             copyState: props.t('ra_tooltip_copyState'),
             editState: props.t('ra_tooltip_editState'),
+            ctrlForLink: props.t('ra_tooltip_ctrlForLink'),
             close: props.t('ra_Close'),
             filter_id: props.t('ra_filter_id'),
             filter_name: props.t('ra_filter_name'),
@@ -3390,6 +3399,23 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         objectsAlreadyLoaded = true;
 
         window.addEventListener('contextmenu', this.onContextMenu, true);
+        window.addEventListener('keydown', this.onKeyPress, true);
+        window.addEventListener('keyup', this.onKeyPress, true);
+    }
+
+    onKeyPress = (event: KeyboardEvent) => {
+        if (event.type === 'keydown' && event.ctrlKey && !this.cltrPressed) {
+            this.cltrPressed = true;
+            if (this.tableRef.current) {
+                this.tableRef.current.className = 'highlight-link';
+            }
+        } else if (event.type === 'keyup' && !event.ctrlKey && this.cltrPressed) {
+            this.cltrPressed = false;
+            if (this.tableRef.current) {
+                this.tableRef.current.className = '';
+            }
+        }
+
     }
 
     /**
@@ -3401,6 +3427,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.filterTimer = null;
         }
         window.removeEventListener('contextmenu', this.onContextMenu, true);
+        window.removeEventListener('keydown', this.onKeyPress, true);
+        window.removeEventListener('keyup', this.onKeyPress, true);
 
         if (this.props.objectsWorker) {
             this.props.objectsWorker.unregisterHandler(this.onObjectChangeFromWorker, true);
@@ -4311,7 +4339,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         key="empty"
                         value=""
                     >
-                        <span style={styles.selectNone}>{name === 'custom' ? this.texts.showAll : this.texts[`filter_${name}`]}</span>
+                        <span style={styles.selectNone}>
+                            {name === 'custom' ? this.texts.showAll : this.texts[`filter_${name}`]}
+                        </span>
                     </MenuItem>
                     {values?.map(item => {
                         let id: string;
@@ -5758,6 +5788,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 }
             }
         });
+        const role = obj?.common?.role || '';
 
         if (fileViewer === 'image') {
             valFullRx.push(
@@ -5767,11 +5798,17 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     alt={id}
                 />,
             );
-        } else if (
-            this.defaultHistory &&
-            this.objects[id]?.common?.custom &&
-            this.objects[id].common.custom[this.defaultHistory]
-        ) {
+        } else if (role === 'url' || obj.common.role === 'url.self' || obj.common.role === 'url.blank') {
+            // Show comment about "Hold Ctrl/⌘ key to open the link"
+            valFullRx.unshift(
+                <div
+                    key="ctrl"
+                    style={{ textDecoration: 'underline', fontWeight: 'bold' }}
+                >
+                    {this.texts.ctrlForLink}
+                </div>,
+            );
+        } else if (this.defaultHistory && obj?.common?.custom?.[this.defaultHistory]) {
             valFullRx.push(
                 <svg
                     key="sparkline"
@@ -5788,6 +5825,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         this.setState({ tooltipInfo: { el: valFullRx, id } }, () => cb && cb());
     }
 
+    /**
+     * This function renders the value in different forms in the table
+     * @param id state ID
+     * @param item Item
+     * @param narrowStyleWithDetails if use mobile view
+     */
     private renderColumnValue(id: string, item: TreeItem, narrowStyleWithDetails?: boolean): JSX.Element | null {
         const obj = item.data.obj;
         if (!obj || !this.states) {
@@ -5934,6 +5977,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 <Box
                     component="div"
                     style={info.style}
+                    className={item.data.url ? 'iob-link' : undefined}
                     sx={{
                         ...styles.cellValueText,
                         height: narrowStyleWithDetails ? undefined : ROW_HEIGHT,
@@ -6575,6 +6619,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (this.props.objectBrowserViewFile && common?.type === 'file') {
             valueEditable = true;
         }
+
         const enumEditable =
             !this.props.notEditable &&
             this.objects[id] &&
@@ -7251,35 +7296,50 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                   : 'text'
                             : 'default',
                     }}
-                    onClick={
-                        valueEditable
-                            ? () => {
-                                  if (!obj || !this.states) {
-                                      // return;
-                                  } else if (common?.type === 'file') {
-                                      this.setState({ viewFileDialog: id });
-                                  } else if (!this.state.filter.expertMode && item.data.button) {
-                                      // in non-expert mode control button directly
-                                      this.props.socket
-                                          .setState(id, true)
-                                          .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
-                                  } else if (!this.state.filter.expertMode && item.data.switch) {
-                                      // in non-expert mode control switch directly
-                                      this.props.socket
-                                          .setState(id, !this.states[id].val)
-                                          .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
-                                  } else {
-                                      this.edit = {
-                                          val: this.states[id] ? this.states[id].val : '',
-                                          q: this.states[id] ? this.states[id].q || 0 : 0,
-                                          ack: false,
-                                          id,
-                                      };
-                                      this.setState({ updateOpened: true });
-                                  }
-                              }
-                            : undefined
-                    }
+                    onClick={e => {
+                        if (valueEditable) {
+                            if (!obj || !this.states) {
+                                // return;
+                            } else if (common?.type === 'file') {
+                                this.setState({ viewFileDialog: id });
+                            } else if (item.data.url && e.ctrlKey) {
+                                if (this.states[id]?.val && typeof this.states[id].val === 'string') {
+                                    if (common?.role === 'url.self') {
+                                        window.location.href = this.states[id].val;
+                                    } else {
+                                        const opened = window.open(this.states[id].val, '_blank');
+                                        opened?.focus();
+                                    }
+                                }
+                            } else if (!this.state.filter.expertMode && item.data.button) {
+                                // in non-expert mode control button directly
+                                this.props.socket
+                                    .setState(id, true)
+                                    .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
+                            } else if (!this.state.filter.expertMode && item.data.switch) {
+                                // in non-expert mode control switch directly
+                                this.props.socket
+                                    .setState(id, !this.states[id].val)
+                                    .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
+                            } else {
+                                this.edit = {
+                                    val: this.states[id] ? this.states[id].val : '',
+                                    q: this.states[id] ? this.states[id].q || 0 : 0,
+                                    ack: false,
+                                    id,
+                                };
+                                this.setState({ updateOpened: true });
+                            }
+                        } else if (common?.role === 'url' || (common?.role === 'url.blank' && e.ctrlKey)) {
+                            if (this.states[id]?.val && typeof this.states[id].val === 'string') {
+                                window.open(this.states[id].val, '_blank');
+                            }
+                        } else if (common?.role === 'url.self' && e.ctrlKey) {
+                            if (this.states[id]?.val && typeof this.states[id].val === 'string') {
+                                window.location.href = this.states[id].val;
+                            }
+                        }
+                    }}
                 >
                     {columnValue}
                 </div>
@@ -9054,18 +9114,22 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 .newValueBrowser-light {
     animation: newValueAnimation-light 2s ease-in-out;
 }
+.highlight-link .iob-link {
+    text-decoration: underline;
+    cursor: pointer;
+}
 `}
                 </style>
                 <TabHeader>{this.getToolbar()}</TabHeader>
                 <TabContent>
                     {this.renderHeader()}
-                    <div
+                    <Box
                         style={styles.tableDiv}
                         ref={this.tableRef}
                         onKeyDown={event => this.navigateKeyPress(event)}
                     >
                         {items}
-                    </div>
+                    </Box>
                 </TabContent>
                 {this.renderContextMenu()}
                 {this.renderAliasMenu()}

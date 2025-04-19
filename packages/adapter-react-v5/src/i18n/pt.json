@@ -316,6 +316,7 @@
     "ra_tooltip_ack": "Confirmado",
     "ra_tooltip_comment": "Comente",
     "ra_tooltip_copyState": "Copie o valor do estado",
+    "ra_tooltip_ctrlForLink": "Segure a tecla Ctrl/⌘ para abrir o link",
     "ra_tooltip_customConfig": "Opções customizadas",
     "ra_tooltip_deleteObject": "Excluir objeto",
     "ra_tooltip_editObject": "Editar objeto",

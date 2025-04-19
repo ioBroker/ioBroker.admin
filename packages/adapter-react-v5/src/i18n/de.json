@@ -316,6 +316,7 @@
     "ra_tooltip_ack": "Bestätigt",
     "ra_tooltip_comment": "Kommentar",
     "ra_tooltip_copyState": "Statuswert kopieren",
+    "ra_tooltip_ctrlForLink": "Strg/⌘-Taste gedrückt halten, um den Link zu öffnen",
     "ra_tooltip_customConfig": "Benutzerdefinierte Einstellungen",
     "ra_tooltip_deleteObject": "Objekt löschen",
     "ra_tooltip_editObject": "Objekt bearbeiten",
