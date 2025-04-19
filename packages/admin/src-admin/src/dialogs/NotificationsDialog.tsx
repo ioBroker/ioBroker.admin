@@ -98,7 +98,7 @@ const styles: Record<string, any> = {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            background: 'url("img/no-image.svg") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
         },
@@ -458,7 +458,7 @@ const NotificationsDialog = ({
                                           }
 
                                           const currentInstance = instances && instances[nameInst];
-                                          let icon = 'img/no-image.png';
+                                          let icon = 'img/no-image.svg';
                                           if (currentInstance?.common?.icon && currentInstance?.common?.name) {
                                               icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
                                           }

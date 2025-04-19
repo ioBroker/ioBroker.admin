@@ -303,7 +303,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                             <CardMedia
                                 sx={styles.img}
                                 component="img"
-                                image={this.props.host.common.icon || 'img/no-image.png'}
+                                image={this.props.host.common.icon || 'img/no-image.svg'}
                             />,
                             true,
                         )}

@@ -136,7 +136,7 @@ const styles: Record<string, any> = {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            background: 'url("img/no-image.svg") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
         },
@@ -313,7 +313,7 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                     <CardMedia
                         sx={styles.img}
                         component="img"
-                        image={instance.image || 'img/no-image.png'}
+                        image={instance.image || 'img/no-image.svg'}
                     />
                     <div style={styles.adapter}>{instance.id}</div>
                     <div style={styles.versionDate}>

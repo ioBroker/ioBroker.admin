@@ -539,7 +539,7 @@ class Logs extends Component<LogsProps, LogsState> {
                 icon = `./files/${adapterName}.admin/${icon}`;
             }
         } else if (this.state.hosts) {
-            icon = this.state.hosts[`system.${from}`]?.common?.icon || 'img/no-image.png';
+            icon = this.state.hosts[`system.${from}`]?.common?.icon || 'img/no-image.svg';
         }
         return icon || null;
     }

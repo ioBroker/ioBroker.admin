@@ -2855,7 +2855,7 @@ class App extends Router<AppProps, AppState> {
                                                     : undefined
                                             }
                                             alt="ioBroker"
-                                            src="img/no-image.png"
+                                            src="img/no-image.svg"
                                         />
                                     )}
                                 </a>

@@ -309,7 +309,7 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
                     <CardMedia
                         sx={styles.img}
                         component="img"
-                        image={this.props.host.common.icon || 'img/no-image.png'}
+                        image={this.props.host.common.icon || 'img/no-image.svg'}
                     />
                     <Box
                         component="div"

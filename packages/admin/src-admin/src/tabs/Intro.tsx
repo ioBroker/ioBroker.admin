@@ -911,7 +911,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             order: instance.common.order || 1000,
             intro: true,
             description: Intro.getText(instance.common.desc, language),
-            icon: instance.common.icon ? `adapter/${instance.common.name}/${instance.common.icon}` : 'img/no-image.png',
+            icon: instance.common.icon ? `adapter/${instance.common.name}/${instance.common.icon}` : 'img/no-image.svg',
         };
         let result: LinkItem[] = [];
         if (instance.common.localLink) {
@@ -1111,7 +1111,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 !item.icon.startsWith('data:image/') &&
                 !item.icon.startsWith('http://') &&
                 !item.icon.startsWith('https://') &&
-                item.icon !== 'img/no-image.png'
+                item.icon !== 'img/no-image.svg'
             ) {
                 // normalize icon
                 item.icon = `adapter/${instance.common.name}/${item.icon}`;
@@ -1295,7 +1295,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         id: obj._id,
                         name: name || '',
                         color: '',
-                        image: common.icon || 'img/no-image.png',
+                        image: common.icon || 'img/no-image.svg',
                         info: this.t('Info'),
                         linkName: '',
                     };

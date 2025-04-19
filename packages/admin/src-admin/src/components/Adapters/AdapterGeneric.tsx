@@ -235,7 +235,7 @@ export default abstract class AdapterGeneric<
                 onError={e => {
                     if (e.target) {
                         (e.target as HTMLImageElement).onerror = null;
-                        (e.target as HTMLImageElement).src = './img/no-image.png';
+                        (e.target as HTMLImageElement).src = 'img/no-image.svg';
                     }
                 }}
             />

@@ -59,7 +59,7 @@ const styles: Record<string, any> = {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            background: 'url("img/no-image.svg") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
         },
@@ -265,8 +265,8 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
                 <CardMedia
                     sx={this.styles.img}
                     component={(props: ImageProps) => AdapterGeneric.renderImage(props)}
-                    src={this.props.cached.image || 'img/no-image.png'}
-                    image={this.props.cached.image || 'img/no-image.png'}
+                    src={this.props.cached.image || 'img/no-image.svg'}
+                    image={this.props.cached.image || 'img/no-image.svg'}
                 />
                 <Box
                     component="div"
