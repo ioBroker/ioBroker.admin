@@ -316,6 +316,7 @@
     "ra_tooltip_ack": "Bandera reconocida",
     "ra_tooltip_comment": "Comentario",
     "ra_tooltip_copyState": "Copie el valor del estado",
+    "ra_tooltip_ctrlForLink": "Mantenga presionada la tecla Cltr/⌘ para abrir el enlace",
     "ra_tooltip_customConfig": "Ajustes personalizados",
     "ra_tooltip_deleteObject": "Eliminar objeto",
     "ra_tooltip_editObject": "Editar objeto",

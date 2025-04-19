@@ -188,7 +188,7 @@ export class Utils {
         noTrim?: boolean,
     ): string {
         const item = obj;
-        let text = (obj && obj._id) || '';
+        let text = obj?._id || '';
 
         if (typeof settings === 'string' && !options) {
             options = { language: settings };
@@ -1122,8 +1122,8 @@ export class Utils {
      * @param hex Color in the format '#rrggbb' or '#rgb' (or without a hash)
      * @param bw Set to black or white.
      */
-    static invertColor(hex: string, bw?: boolean): string {
-        if (hex === undefined || hex === null || hex === '' || typeof hex !== 'string') {
+    static invertColor(hex: string | null | undefined, bw?: boolean): string {
+        if (!hex || typeof hex !== 'string') {
             return '';
         }
         if (hex.startsWith('rgba')) {

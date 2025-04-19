@@ -19,7 +19,7 @@ import WizardPasswordTab from '@/components/Wizard/WizardPasswordTab';
 import WizardLicenseTab from '@/components/Wizard/WizardLicenseTab';
 import WizardFinishImage from '@/assets/wizard-finish.jpg';
 import WizardWelcomeImage from '@/assets/wizard-welcome.jpg';
-import Logo from '@/assets/logo.png';
+import Logo from '@/assets/logo.svg';
 import LongLogo from '@/assets/longLogo.svg';
 import WizardSettingsTab from '@/components/Wizard/WizardSettingsTab';
 import WizardAuthSSLTab from '@/components/Wizard/WizardAuthSSLTab';

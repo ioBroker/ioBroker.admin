@@ -381,7 +381,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 compact: !!common.compact,
                 host: common.host,
                 name: this.getName(obj),
-                image: common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png',
+                image: common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.svg',
                 enabled: common.enabled,
                 canStart: !common.onlyWWW,
                 config: common.adminUI.config !== 'none',

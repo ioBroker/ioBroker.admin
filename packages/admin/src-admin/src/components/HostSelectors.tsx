@@ -16,7 +16,7 @@ const styles: Record<string, any> = {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            background: 'url("img/no-image.svg") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
         },
@@ -28,7 +28,7 @@ const styles: Record<string, any> = {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            background: 'url("img/no-image.svg") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
         },
@@ -314,7 +314,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                             >
                                 <Icon
                                     style={styles.img}
-                                    src={selectedHostObj?.common?.icon || 'img/no-image.png'}
+                                    src={selectedHostObj?.common?.icon || 'img/no-image.svg'}
                                 />
                                 <Box
                                     component="div"
@@ -361,7 +361,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                                 <div style={styles.selector}>{_id === this.props.currentHost ? 'ᐅ' : ''}</div>
                                 <Icon
                                     style={styles.img}
-                                    src={icon || 'img/no-image.png'}
+                                    src={icon || 'img/no-image.svg'}
                                 />
                                 {name}
                             </Box>

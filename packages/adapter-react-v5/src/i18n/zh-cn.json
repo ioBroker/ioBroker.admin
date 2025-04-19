@@ -316,6 +316,7 @@
     "ra_tooltip_ack": "致谢国旗",
     "ra_tooltip_comment": "评论",
     "ra_tooltip_copyState": "复制状态值",
+    "ra_tooltip_ctrlForLink": "按住 Cltr/⌘ 键打开链接",
     "ra_tooltip_customConfig": "自定义设置",
     "ra_tooltip_deleteObject": "删除物件",
     "ra_tooltip_editObject": "编辑物件",

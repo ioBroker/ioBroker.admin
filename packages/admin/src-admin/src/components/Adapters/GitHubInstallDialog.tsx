@@ -32,7 +32,7 @@ import { I18n, Icon, type IobTheme } from '@iobroker/adapter-react-v5';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 
-import npmIcon from '../../assets/npm.png';
+import npmIcon from '../../assets/npm.svg';
 
 function a11yProps(name: string): { id: string; 'aria-controls': string } {
     return {

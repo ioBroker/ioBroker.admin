@@ -316,6 +316,7 @@
     "ra_tooltip_ack": "Drapeau reconnu",
     "ra_tooltip_comment": "Commentaire",
     "ra_tooltip_copyState": "Copiez la valeur d'état",
+    "ra_tooltip_ctrlForLink": "Maintenez la touche Cltr/⌘ enfoncée pour ouvrir le lien",
     "ra_tooltip_customConfig": "Paramètres personnalisés",
     "ra_tooltip_deleteObject": "Supprimer un objet",
     "ra_tooltip_editObject": "Modifier l'objet",

@@ -316,6 +316,7 @@
     "ra_tooltip_ack": "Erkende vlag",
     "ra_tooltip_comment": "Opmerking",
     "ra_tooltip_copyState": "Kopieer de statuswaarde",
+    "ra_tooltip_ctrlForLink": "Houd de Cltr/⌘-toets ingedrukt om de link te openen",
     "ra_tooltip_customConfig": "Aangepaste instellingen",
     "ra_tooltip_deleteObject": "Object verwijderen",
     "ra_tooltip_editObject": "Object bewerken",

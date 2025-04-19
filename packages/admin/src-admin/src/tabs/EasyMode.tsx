@@ -199,7 +199,7 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
                                         : undefined),
                                 }}
                                 component="img"
-                                image="img/no-image.png"
+                                image="img/no-image.svg"
                             />
                             <div style={styles.headerName}>{t('Easy Admin')}</div>
                         </div>

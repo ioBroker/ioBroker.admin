@@ -583,7 +583,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                 onClick={() => handleNavigation('easy')}
                                 style={styles.logoSize}
                                 alt="ioBroker"
-                                src="img/no-image.png"
+                                src="img/no-image.svg"
                             />
                         )}
                     </a>

@@ -316,6 +316,7 @@
     "ra_tooltip_ack": "Визнано",
     "ra_tooltip_comment": "коментар",
     "ra_tooltip_copyState": "Скопіюйте значення стану",
+    "ra_tooltip_ctrlForLink": "Утримуйте клавішу Cltr/⌘, щоб відкрити посилання",
     "ra_tooltip_customConfig": "Спеціальні налаштування",
     "ra_tooltip_deleteObject": "Видалити об'єкт",
     "ra_tooltip_editObject": "Редагувати об'єкт",
