@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.8 (2025-04-19)
 
 - (@GermanBluefox) Allowed following of the `url` types in the object browser
 - (@GermanBluefox) Allowed login by pressing the enter key
@@ -112,9 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Corrected the layout of JSON tabs
 -   (@mcm1957) Schema at `ioBroker.admin` is now used to validate jsonConfig.json file
 -   (@GermanBluefox) Corrected the small GUI issues
-
-### 7.6.2 (2025-03-09)
--   (@GermanBluefox) Corrected loading of custom JSON components
 
 ## License
 

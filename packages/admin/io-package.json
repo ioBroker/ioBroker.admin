@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.7",
+    "version": "7.6.8",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.8": {
+        "en": "Allowed following of the `url` types in the object browser\nAllowed login by pressing the enter key",
+        "de": "Erlaubt nach den `url`-Typen im Objektbrowser\nErlaubte Anmeldung durch Drücken des Eingabeschlüssels",
+        "ru": "Допускается следование типам URL в браузере объекта\nРазрешенный вход, нажав клавишу ввода",
+        "pt": "Permitido seguindo os tipos `url` no navegador objeto\nEntrada permitida pressionando a chave de entrada",
+        "nl": "Toegestaan navolgen van de typen in de objectbrowser\nAanmelden toegestaan door op de enter-toets te drukken",
+        "fr": "Autorisé suivant les types `url` dans le navigateur objet\nConnexion autorisée en appuyant sur la touche entrée",
+        "it": "Consentito seguendo i tipi `url` nel browser dell'oggetto\nConsentito login premendo il tasto entrare",
+        "es": "Permitido siguiendo los tipos `url` en el navegador objeto\nAcceso permitido pulsando la tecla de entrada",
+        "pl": "Dozwolone śledzenie typów 'url' w przeglądarce obiektu\nDozwolone logowanie poprzez naciśnięcie klawisza enter",
+        "uk": "Визначено наступні типи `url` у браузері об’єкта\nДозволений логін, натиснувши кнопку введення",
+        "zh-cn": "允许跟踪对象浏览器中的“ url” 类型\n通过按下输入键允许登录"
+      },
       "7.6.7": {
         "en": "Corrected login with password managers",
         "de": "Korrigierte Anmeldung mit Passwortmanagern",
@@ -85,19 +98,6 @@
         "zh-cn": "修正自定义 JSON 组件的装入"
       },
       "7.6.1": {
-        "en": "Added support for JSON5 in JsonConfig editor component \nGUI build migrated to vite \nCustom JSON components could be now written in TypeScript \nAdded support for Tab as JSONConfig",
-        "de": "Unterstützung für JSON5 in JsonConfig Editor-Komponente hinzugefügt\nGUI bauen migriert zu vite\nBenutzerdefinierte JSON Komponenten könnten jetzt in TypeScript geschrieben werden\nUnterstützung für Tab als JSONConfig hinzugefügt",
-        "ru": "Поддержка JSON5 в компоненте редактора JsonConfig\nGUI build перекочевал в Vite\nНастраиваемые компоненты JSON теперь могут быть записаны в TypeScript\nДобавлена поддержка Tab в виде JSONConfig",
-        "pt": "Adicionado suporte para JSON5 em JsonConfig editor componente\nGUI build migrated to vite\nComponentes JSON personalizados podem agora ser escritos no TypeScript\nAdicionado suporte para Tab como JSONConfig",
-        "nl": "Ondersteuning toegevoegd voor JSON5 in JsonConfig editor component\nGUI build gemigreerd naar vite\nAangepaste JSON-componenten kunnen nu worden geschreven in TypeScript\nOndersteuning toegevoegd voor Tab als JSONConfig",
-        "fr": "Ajout du support pour JSON5 dans le composant de l'éditeur JsonConfig\nGUI build migré vers vite\nLes composants JSON personnalisés peuvent maintenant être écrits dans TypeScript\nAjout du support pour Tab sous JSONConfig",
-        "it": "Aggiunto il supporto per JSON5 in JsonConfig componente editor\nGUI costruire migrato per vite\nI componenti JSON personalizzati potrebbero essere ora scritti in TypeScript\nAggiunto il supporto per Tab come JSONConfig",
-        "es": "Añadido soporte para JSON5 en JsonConfig editor componente\nGUI build migrated to vite\nLos componentes JSON personalizados pueden ser escritos ahora en TipoScript\nAñadido soporte para Tab como JSONConfig",
-        "pl": "Dodano wsparcie dla JSON5 w komponencie edytora JsonConfig\nGUI build migrated to vite\nKomponenty Custom JSON mogą być teraz zapisane w TypeScript\nDodano wsparcie dla Tab jako JSONConfig",
-        "uk": "Додано підтримку JSON5 в JsonConfig компонент редактора\nСтворення графічних інтерфейсів мігрувати\nПризначені для користувача компоненти JSON можуть бути написані в TypeScript\nДодано підтримку Таблиці як JSONConfig",
-        "zh-cn": "在 JsonConfig 编辑器组件中添加对 JSON5 的支持\nGUI 构建迁移到 vite\n自定义 JSON 组件现在可以写入 TypeScript\n添加标签为 JSONConfig 的支持"
-      },
-      "7.6.0": {
         "en": "Added support for JSON5 in JsonConfig editor component \nGUI build migrated to vite \nCustom JSON components could be now written in TypeScript \nAdded support for Tab as JSONConfig",
         "de": "Unterstützung für JSON5 in JsonConfig Editor-Komponente hinzugefügt\nGUI bauen migriert zu vite\nBenutzerdefinierte JSON Komponenten könnten jetzt in TypeScript geschrieben werden\nUnterstützung für Tab als JSONConfig hinzugefügt",
         "ru": "Поддержка JSON5 в компоненте редактора JsonConfig\nGUI build перекочевал в Vite\nНастраиваемые компоненты JSON теперь могут быть записаны в TypeScript\nДобавлена поддержка Tab в виде JSONConfig",
