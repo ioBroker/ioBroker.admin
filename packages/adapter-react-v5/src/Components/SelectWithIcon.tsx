@@ -28,7 +28,6 @@ interface SelectWithIconProps {
     onChange: (id: string) => void;
     disabled?: boolean;
     list?: ioBroker.Object[] | Record<string, ioBroker.Object>; // one of "list"(Array) or "options"(object) is required
-    options?: Record<string, any>; // one of "list"(Array) or "options"(object) is required
     different?: string | boolean;
     label?: string;
     fullWidth?: boolean;
@@ -64,8 +63,8 @@ export class SelectWithIcon extends Component<SelectWithIconProps, SelectWithIco
         }
 
         let list: TextWithIconItem[];
-        if (Array.isArray(props.list || props.options)) {
-            list = ((props.list || props.options) as ioBroker.Object[]).map(obj => ({
+        if (Array.isArray(props.list)) {
+            list = props.list.filter(obj => obj?._id && obj.common).map(obj => ({
                 name: Utils.getObjectNameFromObj(obj, props.lang)
                     .replace('system.group.', '')
                     .replace('system.user.', '')
@@ -76,7 +75,7 @@ export class SelectWithIcon extends Component<SelectWithIconProps, SelectWithIco
                 color: obj.common?.color,
             }));
         } else {
-            list = Object.values((props.list || props.options) as Record<string, ioBroker.Object>).map(obj => ({
+            list = Object.values(props.list as Record<string, ioBroker.Object>).filter(obj => obj?._id && obj.common).map(obj => ({
                 name: Utils.getObjectNameFromObj(obj, props.lang)
                     .replace('system.group.', '')
                     .replace('system.user.', '')
