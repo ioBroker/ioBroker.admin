@@ -42,6 +42,7 @@ export {
     getSelectIdIconFromObjects,
     ITEM_IMAGES,
 } from './Components/ObjectBrowser';
+export { InfoBox } from './Components/InfoBox';
 export { Router } from './Components/Router';
 export { SaveCloseButtons } from './Components/SaveCloseButtons';
 export { Schedule, type ScheduleConfig } from './Components/Schedule';
