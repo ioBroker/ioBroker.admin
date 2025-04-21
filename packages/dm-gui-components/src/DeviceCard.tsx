@@ -197,7 +197,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                     true,
                 );
                 if (file) {
-                    this.setState({ icon: `data:image/${file.mimeType},${file.file}` });
+                    this.setState({ icon: `data:${file.mimeType};base64,${file.file}` });
                 } else {
                     this.setState({ icon: '' });
                 }

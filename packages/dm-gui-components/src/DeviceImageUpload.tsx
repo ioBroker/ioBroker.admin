@@ -34,8 +34,8 @@ function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | 
                 img.src = e.target.result as string;
 
                 img.onload = async () => {
-                    const maxWidth = 50;
-                    const maxHeight = 50;
+                    const maxWidth = 100;
+                    const maxHeight = 100;
                     let width = img.width;
                     let height = img.height;
 
@@ -59,7 +59,7 @@ function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | 
                         const resizedImage = canvas.toDataURL('image/webp');
 
                         // Build the file name from a manufacturer and model, if not available, use device id
-                        const fileName = `${manufacturer ? `${manufacturer}_` : ''}${model || deviceId}`;
+                        const fileName = `${manufacturer ? `${manufacturer}_` : ''}${model || deviceId}.webp`;
                         const base64Data = resizedImage.replace(/^data:image\/webp;base64,/, '');
                         const response = await socket.writeFile64(uploadImagesToInstance, fileName, base64Data);
                         console.log(`saveImage response: ${JSON.stringify(response)}`);
@@ -84,8 +84,13 @@ function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | 
         zIndex: 3,
     };
 
+    const imageUploadDiv: React.CSSProperties = {
+        position: 'relative',
+        top: '-22px'
+    }
+
     return (
-        <div>
+        <div style={imageUploadDiv}>
             <input
                 style={imageUploadButtonStyle}
                 type="file"
