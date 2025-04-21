@@ -83,9 +83,14 @@ function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | 
         height: '45px',
         zIndex: 3,
     };
-    // TODO: Position upload button in the center of the image
+
+    const imageUploadDiv: React.CSSProperties = {
+        position: 'relative',
+        top: '-22px'
+    }
+
     return (
-        <div>
+        <div style={imageUploadDiv}>
             <input
                 style={imageUploadButtonStyle}
                 type="file"
