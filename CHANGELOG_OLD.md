@@ -1,4 +1,9 @@
 # Older changes
+## 7.6.3 (2025-03-15)
+-   (@GermanBluefox) Corrected the layout of JSON tabs
+-   (@mcm1957) Schema at `ioBroker.admin` is now used to validate jsonConfig.json file
+-   (@GermanBluefox) Corrected the small GUI issues
+
 ## 7.6.2 (2025-03-09)
 -   (@GermanBluefox) Corrected loading of custom JSON components
 
