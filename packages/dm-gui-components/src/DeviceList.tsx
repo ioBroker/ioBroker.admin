@@ -12,7 +12,7 @@ import {
 
 import { Clear, QuestionMark, Refresh, FilterAltOff } from '@mui/icons-material';
 
-import { I18n, TypeIcon } from '@iobroker/adapter-react-v5';
+import { I18n, DeviceTypeIcon } from '@iobroker/adapter-react-v5';
 import type { DeviceInfo, InstanceDetails } from '@iobroker/dm-utils';
 
 import DeviceCard from './DeviceCard';
@@ -336,7 +336,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
                         if (type) {
                             type.count++;
                         } else {
-                            const icon = device.group.icon ? <TypeIcon src={device.group.icon} /> : null;
+                            const icon = device.group.icon ? <DeviceTypeIcon src={device.group.icon} /> : null;
 
                             deviceGroups.push({
                                 name: this.getText(device.group.name || device.group.key),

@@ -7,15 +7,18 @@ import { I18n } from '../../i18n';
 import { Icon } from '../Icon';
 import type { ThemeType } from '../../types';
 
-import TYPE_OPTIONS, { type ApplicationType, ICONS_TYPE } from './TypeOptions';
+import { DeviceTypeIcon } from './DeviceTypeIcon';
 
-import { TypeIcon } from './TypeIcon';
-
-declare global {
-    interface Window {
-        iobTypeWordsLoaded: undefined | ioBroker.Languages;
-    }
-}
+import enLang from './i18n/en.json';
+import deLang from './i18n/de.json';
+import ruLang from './i18n/ru.json';
+import ptLang from './i18n/pt.json';
+import plLang from './i18n/pl.json';
+import frLang from './i18n/fr.json';
+import itLang from './i18n/it.json';
+import nlLang from './i18n/nl.json';
+import ukLang from './i18n/uk.json';
+import zhLang from './i18n/zh-cn.json';
 
 const styles: Record<
     'itemChildrenWrapper' | 'type' | 'selectIcon' | 'selectText' | 'iconWrapper' | 'iconStyle' | 'emptyIcon',
@@ -54,7 +57,7 @@ const styles: Record<
     },
 };
 
-export function TypeSelector(props: {
+export function DeviceTypeSelector(props: {
     themeType: ThemeType;
     supportedDevices?: Types[];
     unsupportedDevices?: Types[];
@@ -65,12 +68,14 @@ export function TypeSelector(props: {
     sx?: Record<string, any>;
     disabled?: boolean;
     error?: boolean;
-    /** Show icons for applications: google, amazon, material, alias */
-    showApplications?: boolean;
+    /** Show icons for applications: google, amazon, material, alias. Used in devices */
+    showApplications?: {
+        TYPE_OPTIONS: Partial<Record<Types, Record<string, boolean>>>;
+        ICONS_TYPE: Record<string, React.JSX.Element>;
+    };
 }): React.JSX.Element {
     const [typesWords, setTypesWords] = React.useState<Partial<Record<Types, string>>>({});
     const [types, setTypes] = React.useState<Types[] | null>([]);
-    const language = I18n.getLanguage();
 
     useEffect(() => {
         const _typesWords: Partial<Record<Types, string>> = {};
@@ -81,26 +86,31 @@ export function TypeSelector(props: {
             .forEach(typeId => (_typesWords[typeId as Types] = I18n.t(`type-${Types[typeId as Types]}`)));
 
         // sort types by ABC in the current language
-        const _types: Types[] = Object.keys(_typesWords).sort((a, b) => {
+        const _types: Types[] = Object.keys(_typesWords) as Types[];
+
+        _types.sort((a, b) => {
             if (_typesWords[a as Types] === _typesWords[b as Types]) {
                 return 0;
             }
             return _typesWords[a as Types]!.localeCompare(_typesWords[b as Types]!, 'de');
-        }) as Types[];
+        });
 
-        if (window.iobTypeWordsLoaded !== language) {
-            // Load translations dynamically
-            void import(`./i18n/${language}.json`).then(i18n => {
-                I18n.extendTranslations(i18n.default, language);
-                window.iobTypeWordsLoaded = language;
-                setTypes(_types);
-                setTypesWords(_typesWords);
-            });
-        } else {
-            setTypes(_types);
-            setTypesWords(_typesWords);
-        }
-    }, [language, props.supportedDevices, props.unsupportedDevices]);
+        I18n.extendTranslations({
+            en: enLang,
+            de: deLang,
+            ru: ruLang,
+            pt: ptLang,
+            pl: plLang,
+            fr: frLang,
+            it: itLang,
+            nl: nlLang,
+            uk: ukLang,
+            'zh-cn': zhLang,
+        });
+
+        setTypes(_types);
+        setTypesWords(_typesWords);
+    }, [props.supportedDevices, props.unsupportedDevices]);
 
     if (!types) {
         return (
@@ -138,7 +148,7 @@ export function TypeSelector(props: {
                     >
                         <div style={styles.itemChildrenWrapper}>
                             <div>
-                                <TypeIcon
+                                <DeviceTypeIcon
                                     type={Types[typeId]}
                                     style={{
                                         ...styles.selectIcon,
@@ -147,14 +157,14 @@ export function TypeSelector(props: {
                                 />
                                 <span style={styles.selectText}>{typesWords[typeId]}</span>
                             </div>
-                            {props.showApplications && TYPE_OPTIONS[typeId] ? (
+                            {props.showApplications?.TYPE_OPTIONS[typeId] ? (
                                 <div style={styles.iconWrapper}>
-                                    {Object.keys(TYPE_OPTIONS[typeId]).map(key =>
-                                        TYPE_OPTIONS[typeId][key as ApplicationType] ? (
+                                    {Object.keys(props.showApplications.TYPE_OPTIONS[typeId]).map(key =>
+                                        props.showApplications.TYPE_OPTIONS[typeId][key] ? (
                                             <Icon
                                                 key={key}
                                                 style={styles.iconStyle}
-                                                src={ICONS_TYPE[key as ApplicationType]}
+                                                src={props.showApplications.ICONS_TYPE[key]}
                                             />
                                         ) : (
                                             <div

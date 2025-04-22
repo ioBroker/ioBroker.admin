@@ -26,7 +26,7 @@ import {
     type ThemeName,
     type ThemeType,
     type IobTheme,
-    TypeIcon,
+    DeviceTypeIcon,
 } from '@iobroker/adapter-react-v5';
 import {
     type DeviceDetails,
@@ -402,7 +402,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
               ? this.props.device.status
               : [this.props.device.status];
 
-        const icon = this.state.icon ? <TypeIcon src={this.state.icon} /> : <NoImageIcon />;
+        const icon = this.state.icon ? <DeviceTypeIcon src={this.state.icon} /> : <NoImageIcon />;
 
         const headerStyle = this.getCardHeaderStyle(this.props.theme, 345);
 
@@ -572,7 +572,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
               : [this.props.device.status];
 
         const icon = this.state.icon ? (
-            <TypeIcon
+            <DeviceTypeIcon
                 src={this.state.icon}
                 style={styles.imgStyle}
             />

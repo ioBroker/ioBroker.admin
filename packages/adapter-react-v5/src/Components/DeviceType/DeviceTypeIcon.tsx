@@ -122,6 +122,17 @@ const TYPE_ICONS: Record<TypesExtended, React.FC<IconPropsSVG>> = {
     controller: TypeIconController,
 };
 
+import enLang from './i18n/en.json';
+import deLang from './i18n/de.json';
+import ruLang from './i18n/ru.json';
+import ptLang from './i18n/pt.json';
+import plLang from './i18n/pl.json';
+import frLang from './i18n/fr.json';
+import itLang from './i18n/it.json';
+import nlLang from './i18n/nl.json';
+import ukLang from './i18n/uk.json';
+import zhLang from './i18n/zh-cn.json';
+
 const defaultStyle: React.CSSProperties = {
     width: 32,
     height: 32,
@@ -152,20 +163,26 @@ export interface IconProps {
 
 export type TypeIconProps = IconProps & { type?: TypesExtended };
 
-export function TypeIcon(props: TypeIconProps): React.JSX.Element | null {
-    const language = I18n.getLanguage();
-    const [loaded, setLoaded] = React.useState(window.iobTypeWordsLoaded === language);
+export function DeviceTypeIcon(props: TypeIconProps): React.JSX.Element | null {
+    const [loaded, setLoaded] = React.useState(false);
 
     useEffect(() => {
-        if (props.title && window.iobTypeWordsLoaded !== language) {
-            // Load translations dynamically
-            void import(`./i18n/${language}.json`).then(i18n => {
-                I18n.extendTranslations(i18n.default, language);
-                window.iobTypeWordsLoaded = language;
-                setLoaded(true);
+        if (props.title && !loaded) {
+            I18n.extendTranslations({
+                en: enLang,
+                de: deLang,
+                ru: ruLang,
+                pt: ptLang,
+                pl: plLang,
+                fr: frLang,
+                it: itLang,
+                nl: nlLang,
+                uk: ukLang,
+                'zh-cn': zhLang,
             });
+            setLoaded(true);
         }
-    }, [language, props.title]);
+    }, [props.title]);
 
     if (!loaded && props.title) {
         return (
