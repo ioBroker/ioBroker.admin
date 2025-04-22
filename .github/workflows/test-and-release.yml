@@ -176,7 +176,7 @@ jobs:
                   npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
                   npm whoami
                   git checkout -- package-lock.json
-                  npx lerna publish from-package --yes
+                  NODE_OPTIONS=--max_old_space_size=8192 npx lerna publish from-package --yes
 
             - name: Create Github Release
               if: steps.automerge.outputs.mergeResult == 'merged'
