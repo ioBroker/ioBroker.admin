@@ -29,6 +29,7 @@ export { Image } from './Components/Image';
 export { DeviceTypeSelector } from './Components/DeviceType/DeviceTypeSelector';
 export { DeviceTypeIcon } from './Components/DeviceType/DeviceTypeIcon';
 export { STATES_NAME_ICONS } from './Components/DeviceType/DeviceTypeOptions';
+export { extendDeviceTypeTranslation } from './Components/DeviceType/deviceTypeTranslations';
 export { Loader } from './Components/Loader';
 export { Logo } from './Components/Logo';
 export { MDUtils } from './Components/MDUtils';
