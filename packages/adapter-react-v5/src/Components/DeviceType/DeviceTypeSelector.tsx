@@ -58,7 +58,7 @@ const styles: Record<
 };
 
 
-export function deviceTypeExtendTranslations() {
+export function deviceTypeExtendTranslations(): void {
     I18n.extendTranslations({
         en: enLang,
         de: deLang,
