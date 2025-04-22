@@ -57,6 +57,22 @@ const styles: Record<
     },
 };
 
+
+export function deviceTypeExtendTranslations() {
+    I18n.extendTranslations({
+        en: enLang,
+        de: deLang,
+        ru: ruLang,
+        pt: ptLang,
+        pl: plLang,
+        fr: frLang,
+        it: itLang,
+        nl: nlLang,
+        uk: ukLang,
+        'zh-cn': zhLang,
+    });
+}
+
 export function DeviceTypeSelector(props: {
     themeType: ThemeType;
     supportedDevices?: Types[];
@@ -95,18 +111,7 @@ export function DeviceTypeSelector(props: {
             return _typesWords[a as Types]!.localeCompare(_typesWords[b as Types]!, 'de');
         });
 
-        I18n.extendTranslations({
-            en: enLang,
-            de: deLang,
-            ru: ruLang,
-            pt: ptLang,
-            pl: plLang,
-            fr: frLang,
-            it: itLang,
-            nl: nlLang,
-            uk: ukLang,
-            'zh-cn': zhLang,
-        });
+        deviceTypeExtendTranslations();
 
         setTypes(_types);
         setTypesWords(_typesWords);

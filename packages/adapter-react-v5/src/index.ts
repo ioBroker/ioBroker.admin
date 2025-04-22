@@ -26,7 +26,7 @@ export { getSystemIcon, getSelectIdIcon, Icon } from './Components/Icon';
 export { IconPicker } from './Components/IconPicker';
 export { IconSelector } from './Components/IconSelector';
 export { Image } from './Components/Image';
-export { DeviceTypeSelector } from './Components/DeviceType/DeviceTypeSelector';
+export { DeviceTypeSelector, deviceTypeExtendTranslations } from './Components/DeviceType/DeviceTypeSelector';
 export { DeviceTypeIcon } from './Components/DeviceType/DeviceTypeIcon';
 export { STATES_NAME_ICONS } from './Components/DeviceType/DeviceTypeOptions';
 export { Loader } from './Components/Loader';

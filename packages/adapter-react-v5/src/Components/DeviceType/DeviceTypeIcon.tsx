@@ -61,6 +61,7 @@ import {
     WindowTilted as TypeIconWindowTilt,
     type IconPropsSVG,
 } from './icons';
+import { deviceTypeExtendTranslations } from './DeviceTypeSelector';
 
 export type TypesExtended = Types | 'invalid' | 'hub3' | 'node' | 'hub5' | 'controller';
 
@@ -122,17 +123,6 @@ const TYPE_ICONS: Record<TypesExtended, React.FC<IconPropsSVG>> = {
     controller: TypeIconController,
 };
 
-import enLang from './i18n/en.json';
-import deLang from './i18n/de.json';
-import ruLang from './i18n/ru.json';
-import ptLang from './i18n/pt.json';
-import plLang from './i18n/pl.json';
-import frLang from './i18n/fr.json';
-import itLang from './i18n/it.json';
-import nlLang from './i18n/nl.json';
-import ukLang from './i18n/uk.json';
-import zhLang from './i18n/zh-cn.json';
-
 const defaultStyle: React.CSSProperties = {
     width: 32,
     height: 32,
@@ -168,18 +158,7 @@ export function DeviceTypeIcon(props: TypeIconProps): React.JSX.Element | null {
 
     useEffect(() => {
         if (props.title && !loaded) {
-            I18n.extendTranslations({
-                en: enLang,
-                de: deLang,
-                ru: ruLang,
-                pt: ptLang,
-                pl: plLang,
-                fr: frLang,
-                it: itLang,
-                nl: nlLang,
-                uk: ukLang,
-                'zh-cn': zhLang,
-            });
+            deviceTypeExtendTranslations()
             setLoaded(true);
         }
     }, [props.title]);
