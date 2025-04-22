@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.10 (2025-04-22)
 
 - (@GermanBluefox) Added the device type selector and icon to adapter-react-v5
 - (@GermanBluefox) Fixed authentication issues with oauth2
