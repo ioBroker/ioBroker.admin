@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.9 (2025-04-22)
 
 - (@GermanBluefox) Added the device type selector and icon to adapter-react-v5
 - (@GermanBluefox) Fixed authentication issues with oauth2
@@ -113,11 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -   (@GermanBluefox) Added some options for JSON-Config `state`
 -   (@GermanBluefox) Added possibility to disable basic authentication
 -   (@GermanBluefox) Changed the order of authentications. Basic authentication will be checked as the last one.
-
-### 7.6.3 (2025-03-15)
--   (@GermanBluefox) Corrected the layout of JSON tabs
--   (@mcm1957) Schema at `ioBroker.admin` is now used to validate jsonConfig.json file
--   (@GermanBluefox) Corrected the small GUI issues
 
 ## License
 
