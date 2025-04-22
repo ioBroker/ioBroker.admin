@@ -79,15 +79,15 @@ function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | 
         // make the button invisible but still clickable
         opacity: 0,
         position: 'absolute',
-        width: '45px',
-        height: '45px',
+        width: 45,
+        height: 45,
         zIndex: 3,
     };
 
     const imageUploadDiv: React.CSSProperties = {
         position: 'relative',
-        top: '-22px'
-    }
+        top: -22,
+    };
 
     return (
         <div style={imageUploadDiv}>
