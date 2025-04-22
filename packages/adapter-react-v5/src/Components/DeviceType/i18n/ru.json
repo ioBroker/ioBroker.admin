@@ -22,6 +22,7 @@
     "type-instance": "Инстанция",
     "type-light": "Свет",
     "type-location": "Местоположение",
+    "type-location_one": "Позиция как одно состояние",
     "type-lock": "Замок",
     "type-media": "Медиа-плейер",
     "type-motion": "Датчик движения",

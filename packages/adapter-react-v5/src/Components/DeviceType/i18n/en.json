@@ -22,6 +22,7 @@
     "type-instance": "Instance",
     "type-light": "Light",
     "type-location": "Position",
+    "type-location_one": "Position as one state",
     "type-lock": "Lock",
     "type-media": "Media-player",
     "type-motion": "Motion sensor",

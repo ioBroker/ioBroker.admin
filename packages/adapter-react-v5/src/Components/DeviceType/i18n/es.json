@@ -22,6 +22,7 @@
     "type-instance": "instancia",
     "type-light": "luz",
     "type-location": "ubicación",
+    "type-location_one": "Posición como un solo estado",
     "type-lock": "cerrar",
     "type-media": "medios de comunicación",
     "type-motion": "movimiento",
