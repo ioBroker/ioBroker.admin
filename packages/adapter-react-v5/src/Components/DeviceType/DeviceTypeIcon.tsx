@@ -88,7 +88,7 @@ const TYPE_ICONS: Record<TypesExtended, React.FC<IconPropsSVG>> = {
     [Types.light]: TypeIconLight,
     [Types.lock]: TypeIconLock,
     [Types.location]: TypeIconLocation,
-    [Types.location_one]: TypeIconLocationOne,
+    [Types.locationOne]: TypeIconLocationOne,
     [Types.media]: TypeIconMedia,
     [Types.motion]: TypeIconMotion,
     [Types.ct]: TypeIconCT,
