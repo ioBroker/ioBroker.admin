@@ -61,6 +61,7 @@ import {
     WindowTilted as TypeIconWindowTilt,
     type IconPropsSVG,
 } from './icons';
+import { extendDeviceTypeTranslation } from './deviceTypeTranslations';
 
 export type TypesExtended = Types | 'invalid' | 'hub3' | 'node' | 'hub5' | 'controller';
 
@@ -121,8 +122,6 @@ const TYPE_ICONS: Record<TypesExtended, React.FC<IconPropsSVG>> = {
     hub5: TypeIconHub5,
     controller: TypeIconController,
 };
-
-import { extendDeviceTypeTranslation } from '@/Components/DeviceType/deviceTypeTranslations';
 
 const defaultStyle: React.CSSProperties = {
     width: 32,
