@@ -27,7 +27,7 @@ interface InfoBoxState {
 /**
  * This component can be used to show important information or warnings to the user
  */
-export default class InfoBox extends React.Component<InfoBoxProps, InfoBoxState> {
+export class InfoBox extends React.Component<InfoBoxProps, InfoBoxState> {
     private readonly refTypo: React.RefObject<HTMLDivElement>;
     private height: number;
     private width: number;

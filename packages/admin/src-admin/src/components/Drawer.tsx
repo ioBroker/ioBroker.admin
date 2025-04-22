@@ -148,7 +148,7 @@ const tabsInfo: Record<string, { order: number; icon?: JSX.Element; host?: boole
     'tab-instances': { order: 15, icon: <SubtitlesIcon />, host: true },
     'tab-objects': { order: 20, icon: <ViewListIcon /> },
     'tab-enums': { order: 25, icon: <ArtTrackIcon /> },
-    'tab-devices': { order: 27, icon: <DvrIcon />, host: true },
+    'tab-devices': { order: 27, host: true },
     'tab-logs': { order: 30, icon: <ViewHeadlineIcon />, host: true },
     'tab-scenes': { order: 35, icon: <SubscriptionsIcon /> },
     'tab-events': { order: 40, icon: <FlashOnIcon /> },

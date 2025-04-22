@@ -1,19 +1,20 @@
 import React from 'react';
-import { type IconProps } from './IconProps';
+import { type IconsIconProps } from './types';
 
-export const IconFx = (props: IconProps): React.JSX.Element => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        onClick={e => props.onClick && props.onClick(e)}
-        viewBox="0 0 95 95"
-        width={props.width || (props.fontSize === 'small' ? 16 : 20)}
-        height={props.height || props.width || (props.fontSize === 'small' ? 16 : 20)}
-        className={props.className}
-        style={props.style}
-    >
-        <path
-            fill="currentColor"
-            d="M93.779,63.676c-0.981-1.082-2.24-1.653-3.639-1.653c-1.145,0-3.953,0.396-5.318,4.062
+export function IconFx(props: IconsIconProps): React.JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            onClick={e => props.onClick && props.onClick(e)}
+            viewBox="0 0 95 95"
+            width={props.width || (props.fontSize === 'small' ? 16 : 20)}
+            height={props.height || props.width || (props.fontSize === 'small' ? 16 : 20)}
+            className={props.className}
+            style={props.style}
+        >
+            <path
+                fill="currentColor"
+                d="M93.779,63.676c-0.981-1.082-2.24-1.653-3.639-1.653c-1.145,0-3.953,0.396-5.318,4.062
         c-0.344,0.922-0.443,1.413-0.907,1.363c-0.786-0.078-3.845-3.346-4.845-8.145l-2.482-11.6c1.961-3.177,3.977-5.629,5.988-7.292
         c1.08-0.882,2.314-1.349,3.808-1.43c3.815-0.26,5.203-0.74,6.14-1.399c1.547-1.115,2.397-2.728,2.397-4.542
         c0-1.596-0.604-3.019-1.75-4.115c-1.106-1.059-2.581-1.618-4.26-1.618c-2.468,0-5.239,1.142-8.474,3.49
@@ -31,6 +32,7 @@ export const IconFx = (props: IconProps): React.JSX.Element => (
         c1.357,1.146,3.034,1.728,4.981,1.728c2.414,0,4.884-0.921,7.344-2.737c2.053-1.519,4.697-4.526,8.074-9.189
         c2.17,6.24,5.248,10.252,6.714,11.927c2.313,2.644,6.049,4.22,9.993,4.22c3.348,0,5.244-1.402,6.916-2.641l0.148-0.109
         c2.926-2.164,3.54-4.545,3.54-6.166C95.174,65.965,94.691,64.679,93.779,63.676z"
-        />
-    </svg>
-);
+            />
+        </svg>
+    );
+}

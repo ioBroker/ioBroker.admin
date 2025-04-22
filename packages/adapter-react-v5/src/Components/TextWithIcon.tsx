@@ -32,7 +32,6 @@ interface TextWithIconProps {
     themeType?: ThemeType;
     value: string | Record<string, any>;
     list?: ioBroker.Object[] | Record<string, ioBroker.Object>;
-    options?: Record<string, any>;
     className?: string;
     style?: React.CSSProperties;
     title?: string;
@@ -59,11 +58,11 @@ export function TextWithIcon(props: TextWithIconProps): React.JSX.Element {
     const prefix = props.removePrefix || '';
 
     if (typeof value === 'string') {
-        const list = props.list || props.options;
+        const list = props.list;
         if (list) {
             // if a list is array, then it is list of ioBroker.Object
             if (Array.isArray(list)) {
-                const _item: ioBroker.Object = list.find((obj: ioBroker.Object) => obj._id === prefix + value);
+                const _item: ioBroker.Object = list.find((obj: ioBroker.Object) => obj?._id === prefix + value);
                 if (_item) {
                     item = {
                         name: Utils.getObjectNameFromObj(_item, props.lang).replace('system.group.', ''),
@@ -78,7 +77,7 @@ export function TextWithIcon(props: TextWithIconProps): React.JSX.Element {
                     };
                 }
             } else if (list[prefix + value]) {
-                // List is object with key-value pairs: {'enum.rooms.1': {common: {name: 'Room 1'}}}
+                // List is the object with key-value pairs: {'enum.rooms.1': {common: {name: 'Room 1'}}}
                 const obj: ioBroker.Object = list[prefix + value];
                 item = {
                     name: Utils.getObjectNameFromObj(obj, props.lang).replace('system.group.', ''),

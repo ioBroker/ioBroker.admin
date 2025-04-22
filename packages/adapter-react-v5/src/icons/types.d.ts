@@ -1,6 +1,6 @@
 import type { CSSProperties, MouseEvent } from 'react';
 
-export interface IconProps {
+export interface IconsIconProps {
     /**  The width in pixels or percentage of the icon. */
     width?: number | string;
     /**  The height in pixels or percentage of the icon. */
