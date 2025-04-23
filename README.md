@@ -84,6 +84,7 @@ This project uses icons from [Flaticon](https://www.flaticon.com/).
 ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
+
 <!--
 	### **WORK IN PROGRESS**
 -->
