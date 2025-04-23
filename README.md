@@ -84,10 +84,11 @@ This project uses icons from [Flaticon](https://www.flaticon.com/).
 ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
+
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.6.13 (2025-04-22)
+### **WORK IN PROGRESS**
 
 - (@GermanBluefox) Added the device type selector and icon to adapter-react-v5
 - (@GermanBluefox) Fixed authentication issues with oauth2
