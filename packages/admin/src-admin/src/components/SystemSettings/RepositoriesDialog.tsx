@@ -514,6 +514,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                                 endAdornment: item.title ? (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            tabIndex={-1}
                                             size="small"
                                             onClick={() => this.onValueChanged('', item.title, 'title')}
                                         >
@@ -545,6 +546,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                                 endAdornment: item.link ? (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            tabIndex={-1}
                                             size="small"
                                             onClick={() => this.onValueChanged('', item.title, 'link')}
                                         >

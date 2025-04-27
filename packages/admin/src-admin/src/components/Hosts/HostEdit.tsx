@@ -240,6 +240,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
                                         endAdornment: json.common.title ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() => this.setCommonItem(json, 'title', '')}
                                                 >
@@ -268,6 +269,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
                                             endAdornment: json.common.color ? (
                                                 <InputAdornment position="end">
                                                     <IconButton
+                                                        tabIndex={-1}
                                                         size="small"
                                                         onClick={() => this.setCommonItem(json, 'color', '')}
                                                     >

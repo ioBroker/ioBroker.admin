@@ -64,6 +64,11 @@
         "src-rx": "file:src-admin",
         "typescript": "~5.8.3"
     },
+    "overrides": {
+        "oauth2-server": {
+            "type-is": "2.0.1"
+        }
+    },
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.admin/issues"
     },

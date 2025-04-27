@@ -208,6 +208,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
             }
             actionButton = (
                 <IconButton
+                    tabIndex={-1}
                     style={actionButtonStyle}
                     size="small"
                     onClick={() => {

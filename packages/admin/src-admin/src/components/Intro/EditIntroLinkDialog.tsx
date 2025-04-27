@@ -293,6 +293,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                             endAdornment: this.state.link ? (
                                                 <InputAdornment position="end">
                                                     <IconButton
+                                                        tabIndex={-1}
                                                         size="small"
                                                         onClick={() => this.setState({ link: '' })}
                                                     >
@@ -315,6 +316,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                             endAdornment: this.state.name ? (
                                                 <InputAdornment position="end">
                                                     <IconButton
+                                                        tabIndex={-1}
                                                         size="small"
                                                         onClick={() => this.setState({ name: '' })}
                                                     >
@@ -338,6 +340,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                                 endAdornment: this.state.linkName ? (
                                                     <InputAdornment position="end">
                                                         <IconButton
+                                                            tabIndex={-1}
                                                             size="small"
                                                             onClick={() => this.setState({ linkName: '' })}
                                                         >
@@ -366,6 +369,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                                 endAdornment: this.state.desc ? (
                                                     <InputAdornment position="end">
                                                         <IconButton
+                                                            tabIndex={-1}
                                                             size="small"
                                                             onClick={() => this.setState({ desc: '' })}
                                                         >

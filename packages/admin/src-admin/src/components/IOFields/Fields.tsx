@@ -48,6 +48,7 @@ export function IOTextField(props: IOTextFieldProps): JSX.Element {
                             endAdornment: props.value ? (
                                 <InputAdornment position="end">
                                     <IconButton
+                                        tabIndex={-1}
                                         size="small"
                                         onClick={() => props.onChange('')}
                                     >

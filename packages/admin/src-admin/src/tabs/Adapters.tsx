@@ -1787,6 +1787,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                             endAdornment: this.state.search ? (
                                 <InputAdornment position="end">
                                     <IconButton
+                                        tabIndex={-1}
                                         size="small"
                                         onClick={() => {
                                             (

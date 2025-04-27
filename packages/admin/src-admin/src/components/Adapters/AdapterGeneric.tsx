@@ -791,6 +791,7 @@ export default abstract class AdapterGeneric<
                                         endAdornment: this.state.adapterInstallSpecificVersion ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() => this.setState({ adapterInstallSpecificVersion: '' })}
                                                 >

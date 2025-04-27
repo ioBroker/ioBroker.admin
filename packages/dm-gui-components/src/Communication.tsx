@@ -860,6 +860,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                     endAdornment: this.state.inputValue ? (
                                         <InputAdornment position="end">
                                             <IconButton
+                                                tabIndex={-1}
                                                 size="small"
                                                 onClick={() => this.setState({ inputValue: '' })}
                                             >

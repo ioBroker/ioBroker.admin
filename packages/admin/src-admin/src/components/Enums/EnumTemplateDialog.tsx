@@ -142,6 +142,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                             input: {
                                 endAdornment: this.state.filter ? (
                                     <IconButton
+                                        tabIndex={-1}
                                         size="small"
                                         onClick={() => this.setState({ filter: '' })}
                                     >

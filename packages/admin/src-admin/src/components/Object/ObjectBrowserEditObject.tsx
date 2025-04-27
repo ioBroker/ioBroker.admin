@@ -1545,6 +1545,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         endAdornment: name ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() => this.setCommonItem(json, 'name', '')}
                                                 >
@@ -1576,6 +1577,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             endAdornment: desc ? (
                                                 <InputAdornment position="end">
                                                     <IconButton
+                                                        tabIndex={-1}
                                                         size="small"
                                                         onClick={() => this.setCommonItem(json, 'desc', '')}
                                                     >
@@ -1773,6 +1775,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             endAdornment: json.common.color ? (
                                                 <InputAdornment position="end">
                                                     <IconButton
+                                                        tabIndex={-1}
                                                         size="small"
                                                         onClick={() => this.setCommonItem(json, 'color', '')}
                                                     >
@@ -1896,6 +1899,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                                 endAdornment: json.common.unit ? (
                                                     <InputAdornment position="end">
                                                         <IconButton
+                                                            tabIndex={-1}
                                                             size="small"
                                                             onClick={() => this.setCommonItem(json, 'unit', '')}
                                                         >
@@ -1989,6 +1993,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         endAdornment: json.common?.alias?.id ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="large"
                                                     onClick={() => this.setAliasItem(json, 'id', '')}
                                                 >
@@ -2024,6 +2029,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             <InputAdornment position="end">
                                                 <IconButton
                                                     size="large"
+                                                    tabIndex={-1}
                                                     onClick={() => this.setAliasItem(json, 'id.read', '')}
                                                 >
                                                     <IconClose />
@@ -2058,6 +2064,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             <InputAdornment position="end">
                                                 <IconButton
                                                     size="large"
+                                                    tabIndex={-1}
                                                     onClick={() => this.setAliasItem(json, 'id.write', '')}
                                                 >
                                                     <IconClose />
@@ -2117,6 +2124,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             <InputAdornment position="end">
                                                 <IconButton
                                                     size="large"
+                                                    tabIndex={-1}
                                                     onClick={() => this.setAliasItem(json, 'read', '')}
                                                 >
                                                     <IconClose />
@@ -2155,6 +2163,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             <InputAdornment position="end">
                                                 <IconButton
                                                     size="large"
+                                                    tabIndex={-1}
                                                     onClick={() => this.setAliasItem(json, 'write', '')}
                                                 >
                                                     <IconClose />
@@ -2220,6 +2229,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     <InputAdornment position="end">
                                         <IconButton
                                             size="small"
+                                            tabIndex={-1}
                                             onClick={() => this.setState({ newId: '' })}
                                         >
                                             <IconClose />

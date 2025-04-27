@@ -993,6 +993,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                         input: {
                                             endAdornment: (
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     ref={this.refClearButton}
                                                     style={{ display: 'none' }}
                                                     size="small"

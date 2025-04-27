@@ -190,6 +190,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                                 endAdornment: this.state.newAliasId ? (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            tabIndex={-1}
                                             size="small"
                                             onClick={() => this.setState({ newAliasId: '' })}
                                         >
@@ -213,6 +214,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                                 endAdornment: this.state.newAliasName ? (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            tabIndex={-1}
                                             size="small"
                                             onClick={() => this.setState({ newAliasName: '' })}
                                         >
@@ -235,6 +237,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                                 endAdornment: this.state.newAliasDesc ? (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            tabIndex={-1}
                                             size="small"
                                             onClick={() => this.setState({ newAliasDesc: '' })}
                                         >
@@ -279,6 +282,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                                     endAdornment: this.state.newAliasUnit ? (
                                         <InputAdornment position="end">
                                             <IconButton
+                                                tabIndex={-1}
                                                 size="small"
                                                 onClick={() => this.setState({ newAliasUnit: '' })}
                                             >
@@ -446,6 +450,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                                         this.state.newAliasReadFormula && this.state.newAliasReadFormula !== 'val' ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() => this.setState({ newAliasReadFormula: 'val' })}
                                                 >
@@ -476,6 +481,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                                         this.state.newAliasWriteFormula && this.state.newAliasWriteFormula !== 'val' ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() => this.setState({ newAliasWriteFormula: 'val' })}
                                                 >

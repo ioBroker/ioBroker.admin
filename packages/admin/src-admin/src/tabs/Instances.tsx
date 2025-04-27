@@ -1374,6 +1374,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                                 endAdornment: this.state.filterText ? (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            tabIndex={-1}
                                             size="small"
                                             onClick={() => {
                                                 this.inputRef.current.value = '';

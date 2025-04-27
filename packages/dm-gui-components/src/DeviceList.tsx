@@ -463,6 +463,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
                                     endAdornment: this.state.filter ? (
                                         <InputAdornment position="end">
                                             <IconButton
+                                                tabIndex={-1}
                                                 onClick={() => this.handleFilterChange('')}
                                                 edge="end"
                                             >
