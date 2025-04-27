@@ -71,7 +71,7 @@ export function DeviceTypeSelector(props: {
         const _typesWords: Partial<Record<Types, string>> = {};
         Object.keys(Types)
             .filter(
-                id => props.supportedDevices?.includes(id as Types) && !props.unsupportedDevices?.includes(id as Types),
+                id => (!props.supportedDevices || props.supportedDevices?.includes(id as Types)) && !props.unsupportedDevices?.includes(id as Types),
             )
             .forEach(typeId => (_typesWords[typeId as Types] = I18n.t(`type-${Types[typeId as Types]}`)));
 
