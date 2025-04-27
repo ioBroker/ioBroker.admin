@@ -61,7 +61,7 @@ import {
     WindowTilted as TypeIconWindowTilt,
     type IconPropsSVG,
 } from './icons';
-import { deviceTypeExtendTranslations } from './DeviceTypeSelector';
+import { extendDeviceTypeTranslation } from './deviceTypeTranslations';
 
 export type TypesExtended = Types | 'invalid' | 'hub3' | 'node' | 'hub5' | 'controller';
 
@@ -89,7 +89,7 @@ const TYPE_ICONS: Record<TypesExtended, React.FC<IconPropsSVG>> = {
     [Types.light]: TypeIconLight,
     [Types.lock]: TypeIconLock,
     [Types.location]: TypeIconLocation,
-    [Types.location_one]: TypeIconLocationOne,
+    [Types.locationOne]: TypeIconLocationOne,
     [Types.media]: TypeIconMedia,
     [Types.motion]: TypeIconMotion,
     [Types.ct]: TypeIconCT,
@@ -158,7 +158,7 @@ export function DeviceTypeIcon(props: TypeIconProps): React.JSX.Element | null {
 
     useEffect(() => {
         if (props.title && !loaded) {
-            deviceTypeExtendTranslations()
+            extendDeviceTypeTranslation();
             setLoaded(true);
         }
     }, [props.title]);

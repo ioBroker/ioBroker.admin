@@ -1,6 +1,6 @@
 {
     "name": "@iobroker/adapter-react-v5",
-    "version": "7.6.9",
+    "version": "7.6.14",
     "description": "React components to develop ioBroker interfaces with react.",
     "author": {
         "name": "bluefox",
@@ -58,7 +58,7 @@
         "@iobroker/js-controller-common": "^7.0.7",
         "@iobroker/js-controller-common-db": "^7.0.7",
         "@iobroker/socket-client": "4.1.2",
-        "@iobroker/type-detector": "^4.3.0",
+        "@iobroker/type-detector": "^4.3.1",
         "@iobroker/types": "^7.0.7",
         "@mui/icons-material": "^6.4.10",
         "@mui/material": "^6.4.10",

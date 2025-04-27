@@ -43,7 +43,7 @@ async function build() {
     writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, readFileSync(`${ace}worker-json.js`));
     writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`, readFileSync(`${ace}ext-searchbox.js`));
 
-    await buildReact(src, { rootDir: __dirname, vite: true, tsc: true, exec: true });
+    await buildReact(src, { rootDir: __dirname, vite: true, tsc: true, exec: true, ramSize: 7000 });
     if (existsSync(`${__dirname}/adminWww/index.html`)) {
         throw new Error('Front-end was not build to end!');
     }
@@ -175,9 +175,7 @@ function clean() {
     deleteFoldersRecursive(`${__dirname}/${srcRx}/build`);
 }
 
-if (process.argv.includes('--patch-webpack')) {
-    patchModuleFederationPlugin();
-} else if (process.argv.includes('--backend-i18n')) {
+if (process.argv.includes('--backend-i18n')) {
     copyFiles(['src/i18n/*'], 'build-backend/i18n');
     syncUtils();
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-configCSS')) {
