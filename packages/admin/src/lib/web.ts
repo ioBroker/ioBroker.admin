@@ -146,7 +146,7 @@ async function readFolderRecursive(
             } else {
                 filesOfDir.push({
                     name: url ? `${url}/${fileMeta.file}` : fileMeta.file,
-                    file: Buffer.from(file.file as string, 'utf-8'),
+                    file: Buffer.from(file.file.toString(), 'utf-8'),
                 });
             }
         } else {
@@ -185,7 +185,6 @@ interface AdminAdapter extends ioBroker.Adapter {
  * Webserver class
  */
 class Web {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     server: {
         app: null | Express;
         server: null | (Server & { __server: { app: null | Express; server: null | Server } });

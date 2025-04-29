@@ -100,7 +100,6 @@ const styles: Record<string, any> = {
     },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export type Repository = Record<string, ioBroker.RepositoryInformation>;
 
 type RepositoryArray = Array<{ title: string; link: string }>;

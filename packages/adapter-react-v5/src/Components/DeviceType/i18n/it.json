@@ -22,6 +22,7 @@
     "type-instance": "esempio",
     "type-light": "leggero",
     "type-location": "posizione",
+    "type-locationOne": "Posizione come stato",
     "type-lock": "serratura",
     "type-media": "media",
     "type-motion": "movimento",
