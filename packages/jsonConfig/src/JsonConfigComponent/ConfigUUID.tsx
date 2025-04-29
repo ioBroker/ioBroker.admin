@@ -17,7 +17,7 @@ interface ConfigUUIDState extends ConfigGenericState {
     uuid?: string;
 }
 
-class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
+export default class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
     async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
@@ -59,5 +59,3 @@ class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
         );
     }
 }
-
-export default ConfigUUID;
