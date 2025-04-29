@@ -98,6 +98,7 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
                                         endAdornment: letsEncrypt?.email ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() =>
                                                         this.onChangeText({ target: { value: '' } }, 'email')
@@ -133,6 +134,7 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
                                         endAdornment: letsEncrypt?.domains ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() =>
                                                         this.onChangeText({ target: { value: '' } }, 'domains')
@@ -168,6 +170,7 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
                                         endAdornment: letsEncrypt?.path ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() => this.onChangeText({ target: { value: '' } }, 'path')}
                                                 >

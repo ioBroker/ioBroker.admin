@@ -21,6 +21,7 @@ class ConfigPattern extends ConfigGeneric<ConfigPatternProps, ConfigGenericState
                     input: {
                         endAdornment: this.props.schema.copyToClipboard ? (
                             <IconButton
+                                tabIndex={-1}
                                 size="small"
                                 onClick={() => {
                                     Utils.copyToClipboard(

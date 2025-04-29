@@ -500,6 +500,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                                     endAdornment: this.state.filterText ? (
                                         <InputAdornment position="end">
                                             <IconButton
+                                                tabIndex={-1}
                                                 size="small"
                                                 onClick={() => {
                                                     (

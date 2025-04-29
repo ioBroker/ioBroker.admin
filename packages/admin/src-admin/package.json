@@ -34,7 +34,7 @@
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
         "@iobroker/admin-component-easy-access": "^2.0.1",
         "@iobroker/dm-utils": "^1.0.9",
-        "@iobroker/socket-client": "^4.1.2",
+        "@iobroker/socket-client": "^4.1.3",
         "@module-federation/runtime": "^0.11.4",
         "@module-federation/vite": "^1.2.6",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
@@ -105,5 +105,5 @@
             }
         ]
     ],
-    "version": "7.6.13"
+    "version": "7.6.14"
 }

@@ -37,6 +37,7 @@ class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
                     input: {
                         endAdornment: (
                             <IconButton
+                                tabIndex={-1}
                                 onClick={() => {
                                     Utils.copyToClipboard(this.state.uuid);
                                     window.alert(I18n.t('ra_Copied %s', this.state.uuid));

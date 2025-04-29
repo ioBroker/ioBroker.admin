@@ -2148,6 +2148,7 @@ export class IconSelector extends Component<IconSelectorProps, IconSelectorState
                                         input: {
                                             endAdornment: this.state.filter ? (
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() => this.setState({ filter: '' })}
                                                 >

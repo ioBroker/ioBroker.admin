@@ -282,6 +282,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
                                 endAdornment: name ? (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            tabIndex={-1}
                                             size="small"
                                             onClick={() => setName('')}
                                         >

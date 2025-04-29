@@ -125,6 +125,7 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
                         input: {
                             endAdornment: this.props.schema.copyToClipboard ? (
                                 <IconButton
+                                    tabIndex={-1}
                                     size="small"
                                     onClick={() => {
                                         Utils.copyToClipboard(this.state.text);

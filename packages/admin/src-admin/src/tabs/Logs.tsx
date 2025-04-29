@@ -1252,6 +1252,7 @@ class Logs extends Component<LogsProps, LogsState> {
                                     input: {
                                         endAdornment: this.state.message ? (
                                             <IconButton
+                                                tabIndex={-1}
                                                 size="small"
                                                 onClick={() => {
                                                     (
