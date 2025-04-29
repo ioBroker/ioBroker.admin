@@ -1,4 +1,11 @@
 # Older changes
+## 7.6.4 (2025-04-01)
+
+-   (@GermanBluefox) Allowed the usage of node-red together with admin with authentication.
+-   (@GermanBluefox) Added some options for JSON-Config `state`
+-   (@GermanBluefox) Added possibility to disable basic authentication
+-   (@GermanBluefox) Changed the order of authentications. Basic authentication will be checked as the last one.
+
 ## 7.6.3 (2025-03-15)
 -   (@GermanBluefox) Corrected the layout of JSON tabs
 -   (@mcm1957) Schema at `ioBroker.admin` is now used to validate jsonConfig.json file
