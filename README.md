@@ -88,7 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.15 (2025-04-29)
 
 - (@GermanBluefox) Added debug logs to authentication
 - (@GermanBluefox) Corrected the delete button if noDelete flag set for table (JSONConfig)
@@ -112,13 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 -   (@GermanBluefox) Corrected login with password managers
 -   (@GermanBluefox) Added support for the multiple selection for JSON config
-
-### 7.6.4 (2025-04-01)
-
--   (@GermanBluefox) Allowed the usage of node-red together with admin with authentication.
--   (@GermanBluefox) Added some options for JSON-Config `state`
--   (@GermanBluefox) Added possibility to disable basic authentication
--   (@GermanBluefox) Changed the order of authentications. Basic authentication will be checked as the last one.
 
 ## License
 
