@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.14",
+    "version": "7.6.15",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.15": {
+        "en": "Added debug logs to authentication\nCorrected the delete button if noDelete flag set for table (JSONConfig)",
+        "de": "Debug Protokolle zur Authentifizierung hinzugefügt\nKorrektur der Löschtaste, wenn noDelete-Flag-Set für Tabelle (JSONConfig)",
+        "ru": "Добавлены отладочные журналы для аутентификации\nИсправлена кнопка удаления, если для таблицы установлен флаг noDelete (JSONConfig)",
+        "pt": "Registos de depuração adicionados para autenticação\nCorrigido o botão de exclusão se nãoExcluir a bandeira definida para tabela (JSONConfig)",
+        "nl": "Debuglogs toegevoegd aan authenticatie\nDe delete knop corrigeren als geenDelete vlag ingesteld voor tabel (JSONConfig)",
+        "fr": "Ajout des journaux de débogage à l'authentification\nCorrection du bouton de suppression si aucun drapeauDelete est défini pour la table (JSONConfig)",
+        "it": "Aggiunti i log del debug all'autenticazione\nCorretto il pulsante di eliminazione se noCancella la bandiera impostata per la tabella (JSONConfig)",
+        "es": "Registros de depuración añadidos a la autenticación\nCorregido el botón de eliminación si noDelete flag set for table (JSONConfig)",
+        "pl": "Dodano logi debugowania do uwierzytelniania\nPoprawiono przycisk Usuń jeśli nieUsuwanie znacznika dla tabeli (JSONConfig)",
+        "uk": "Додано дебвугові колоди для автентифікації\nВиправлено помилку видалення, якщо не встановлено прапорець для таблиці (JSONConfig)",
+        "zh-cn": "添加调试日志到认证\n如果为表格设置了不删除标记( JSONConfig), 则修改了删除按钮"
+      },
       "7.6.14": {
         "en": "Added the device type selector and icon to adapter-react-v5\nFixed authentication issues with oauth2\nCorrected the device manager icon upload",
         "de": "Hinzufügen der Gerätetyp-Selektor und Icon zu adapter-react-v5\nBehobene Authentifizierungsprobleme mit oauth2\nKorrektur des Gerätemanager-Symbols Upload",
@@ -96,19 +109,6 @@
         "pl": "Poprawiono układ kart JSON\nSchema 'iBroker.admin' jest teraz używana do walidacji jsonConfig. plik json\nNaprawiono małe problemy z GUI",
         "uk": "Виправлено макет вкладок JSON\nШума в `ioBroker.admin` тепер використовується для перевірки jsonConfig. файл json\nВиправлено маленькі проблеми GUI",
         "zh-cn": "纠正了 JSON 标签的布局\n“ioBroker.admin”的Schema现在被用来验证jsonConfig。 json 文件\n更正了小型图形用户界面问题"
-      },
-      "7.6.2": {
-        "en": "Corrected loading of custom JSON components",
-        "de": "Korrigierte Beladung von benutzerdefinierten JSON-Komponenten",
-        "ru": "Исправленная загрузка пользовательских компонентов JSON",
-        "pt": "Carregamento correto de componentes JSON personalizados",
-        "nl": "Gecorrigeerd laden van aangepaste JSON-componenten",
-        "fr": "Chargement corrigé des composants JSON personnalisés",
-        "it": "Caricamento corretto dei componenti JSON personalizzati",
-        "es": "Carga corregida de componentes JSON personalizados",
-        "pl": "Poprawiony załadunek niestandardowych komponentów JSON",
-        "uk": "Корисне завантаження компонентів JSON",
-        "zh-cn": "修正自定义 JSON 组件的装入"
       }
     },
     "desc": {
