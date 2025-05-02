@@ -88,6 +88,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+- (@GermanBluefox) Added debug logs to authentication
+- (@GermanBluefox) Corrected layout of installation log
+
 ### 7.6.15 (2025-04-29)
 
 - (@GermanBluefox) Added debug logs to authentication
