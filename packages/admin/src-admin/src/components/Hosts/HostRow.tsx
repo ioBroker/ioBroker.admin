@@ -243,7 +243,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
             <div style={styles.wrapperInfo}>
                 <div style={styles.marginRight}>
                     {this.props.hostData && typeof this.props.hostData === 'object' ? (
-                        Object.keys(this.props.hostData).map((value, idx) => idx < 5 && this.renderValue(value))
+                        Object.keys(this.props.hostData).map((value, idx) => idx <= 5 && this.renderValue(value))
                     ) : (
                         <Skeleton />
                     )}
@@ -251,16 +251,18 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                 <div style={styles.marginRight}>
                     {this.props.hostData && typeof this.props.hostData === 'object' ? (
                         Object.keys(this.props.hostData).map(
-                            (value, idx) => idx > 4 && idx < 10 && this.renderValue(value),
+                            (value, idx) => idx > 5 && idx < 12 && this.renderValue(value),
                         )
                     ) : (
                         <Skeleton />
                     )}
                 </div>
                 <div style={styles.marginRight}>
-                    {this.props.hostData &&
-                        typeof this.props.hostData === 'object' &&
-                        Object.keys(this.props.hostData).map((value, idx) => idx > 10 && this.renderValue(value))}
+                    {this.props.hostData && typeof this.props.hostData === 'object' ? (
+                        Object.keys(this.props.hostData).map((value, idx) => idx >= 12 && this.renderValue(value))
+                    ) : (
+                        <Skeleton />
+                    )}
                 </div>
             </div>
         );

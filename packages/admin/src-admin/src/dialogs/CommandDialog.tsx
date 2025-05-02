@@ -1,6 +1,7 @@
 import React, { Component, type JSX } from 'react';
 
 import {
+    Box,
     Button,
     Checkbox,
     Dialog,
@@ -139,15 +140,43 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
                         <Button
                             variant="contained"
                             autoFocus
+                            title={this.props.confirmText || this.props.t('In background')}
                             disabled={this.props.inBackground}
                             onClick={this.props.onInBackground}
-                            startIcon={<OpenInBrowserIcon />}
+                            startIcon={
+                                <Box
+                                    sx={{
+                                        '@media (max-width: 600px)': {
+                                            display: 'none',
+                                        },
+                                    }}
+                                >
+                                    <OpenInBrowserIcon />
+                                </Box>
+                            }
                             color="primary"
                             style={{
                                 marginRight: 8,
                             }}
                         >
-                            {this.props.confirmText || this.props.t('In background')}
+                            <Box
+                                sx={{
+                                    '@media (min-width: 601px)': {
+                                        display: 'none',
+                                    },
+                                }}
+                            >
+                                <OpenInBrowserIcon />
+                            </Box>
+                            <Box
+                                sx={{
+                                    '@media (max-width: 600px)': {
+                                        display: 'none',
+                                    },
+                                }}
+                            >
+                                {this.props.confirmText || this.props.t('In background')}
+                            </Box>
                         </Button>
                         <Button
                             variant="contained"
@@ -158,9 +187,36 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
                                 backgroundColor: this.state.isError ? '#834141' : undefined,
                                 color: this.state.isError ? '#fff' : undefined,
                             }}
-                            startIcon={<CloseIcon />}
+                            startIcon={
+                                <Box
+                                    sx={{
+                                        '@media (max-width: 600px)': {
+                                            display: 'none',
+                                        },
+                                    }}
+                                >
+                                    <CloseIcon />
+                                </Box>
+                            }
                         >
-                            {this.props.t('Close')}
+                            <Box
+                                sx={{
+                                    '@media (min-width: 601px)': {
+                                        display: 'none',
+                                    },
+                                }}
+                            >
+                                <CloseIcon />
+                            </Box>
+                            <Box
+                                sx={{
+                                    '@media (max-width: 600px)': {
+                                        display: 'none',
+                                    },
+                                }}
+                            >
+                                {this.props.t('Close')}
+                            </Box>
                         </Button>
                     </div>
                 </DialogActions>
