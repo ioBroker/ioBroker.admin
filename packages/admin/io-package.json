@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.15",
+    "version": "7.6.16",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.16": {
+        "en": "Added debug logs to authentication\nCorrected layout of installation log\nFixed indication of connection state for servers",
+        "de": "Debug Protokolle zur Authentifizierung hinzugefügt\nKorrigiertes Layout des Installationsprotokolls\nFeste Anzeige des Verbindungszustands für Server",
+        "ru": "Добавлены отладочные журналы для аутентификации\nИсправленная компоновка журнала установки\nФиксированная индикация состояния соединения для серверов",
+        "pt": "Registos de depuração adicionados para autenticação\nLayout corrigido do log de instalação\nIndicação fixa do estado de conexão para servidores",
+        "nl": "Debuglogs toegevoegd aan authenticatie\nGecorrigeerde indeling van het installatielogboek\nVaste aanduiding van verbindingsstatus voor servers",
+        "fr": "Ajout des journaux de débogage à l'authentification\nMise en page corrigée du journal d'installation\nIndications fixes de l'état de connexion pour les serveurs",
+        "it": "Aggiunti i log del debug all'autenticazione\nLayout corretto del registro di installazione\nIndicazione fissa dello stato di connessione per i server",
+        "es": "Registros de depuración añadidos a la autenticación\nDiseño corregido del registro de instalación\nIndicación fija del estado de conexión para servidores",
+        "pl": "Dodano logi debugowania do uwierzytelniania\nPoprawiony układ dziennika instalacji\nStałe wskazanie stanu połączenia dla serwerów",
+        "uk": "Додано дебвугові колоди для автентифікації\nВиправлена схема установки колоди\nФіксована індикація стану підключення для серверів",
+        "zh-cn": "添加调试日志到认证\n安装日志的校正布局\n服务器连接状态的固定指示"
+      },
       "7.6.15": {
         "en": "Added debug logs to authentication\nCorrected the delete button if noDelete flag set for table (JSONConfig)",
         "de": "Debug Protokolle zur Authentifizierung hinzugefügt\nKorrektur der Löschtaste, wenn noDelete-Flag-Set für Tabelle (JSONConfig)",
@@ -96,19 +109,6 @@
         "pl": "Umożliwił korzystanie z node-red wraz z admin z uwierzytelnianiem.\nDodano kilka opcji dla 'stanu' JSON- Config\nDodano możliwość wyłączenia podstawowego uwierzytelniania\nZmieniłem kolejność uwierzytelniania. Podstawowe uwierzytelnianie zostanie sprawdzone jako ostatnie.",
         "uk": "Дозволено використання вузла-червоного разом з адміністратором з автентифікацією.\nJSON-Config `state`\nДодана можливість відключити базову автентифікацію\nЗмінено порядок автентифікації. Базова автентитація буде перевірятися як останній.",
         "zh-cn": "允许使用节点红和具有认证功能的管理员.\n添加了 JSON-Config `状态'的一些选项\n添加禁用基本认证的可能性\n更改认证顺序. 基本认证将被检查为最后一个 ."
-      },
-      "7.6.3": {
-        "en": "Corrected the layout of JSON tabs\nSchema at `ioBroker.admin` is now used to validate jsonConfig.json file\nCorrected the small GUI issues",
-        "de": "Korrektur des Layouts von JSON Tabs\nSchema bei `ioBroker.admin` wird nun verwendet, um jsonConfig zu validieren. json file\nKorrektur der kleinen GUI-Probleme",
-        "ru": "Исправлен макет вкладок JSON\nСхема на «ioBroker.admin» теперь используется для проверки jsonConfig. Файл Джонсона\nИсправлены небольшие проблемы GUI",
-        "pt": "Corrigido o layout das abas JSON\nSchema at `ioBroker.admin` agora é usado para validar jsonConfig. arquivo json\nCorrigido os pequenos problemas de GUI",
-        "nl": "De indeling van JSON-tabbladen corrigeren\nSchema bij  json-bestand\nDe kleine GUI-problemen gecorrigeerd",
-        "fr": "Correction de la mise en page des onglets JSON\nLe schéma à `ioBroker.admin` est maintenant utilisé pour valider jsonConfig. fichier json\nCorrection des petits problèmes d'interface utilisateur",
-        "it": "Corretto il layout delle schede JSON\nLo schema a `ioBroker.admin` è ora usato per convalidare jsonConfig. file json\nCorretto il piccolo problema della GUI",
-        "es": "Corregido el diseño de las pestañas JSON\nSchema en `ioBroker.admin` ahora se utiliza para validar jsonConfig. json file\nCorregidos los pequeños problemas de GUI",
-        "pl": "Poprawiono układ kart JSON\nSchema 'iBroker.admin' jest teraz używana do walidacji jsonConfig. plik json\nNaprawiono małe problemy z GUI",
-        "uk": "Виправлено макет вкладок JSON\nШума в `ioBroker.admin` тепер використовується для перевірки jsonConfig. файл json\nВиправлено маленькі проблеми GUI",
-        "zh-cn": "纠正了 JSON 标签的布局\n“ioBroker.admin”的Schema现在被用来验证jsonConfig。 json 文件\n更正了小型图形用户界面问题"
       }
     },
     "desc": {
