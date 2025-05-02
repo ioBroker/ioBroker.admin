@@ -2207,8 +2207,8 @@
                                 {
                                     "properties": {
                                         "accept": {
-                                            "description": "HTML accept attribute, like 'image/*,.pdf'",
-                                            "type": "string"
+                                            "description": "HTML accept attribute, like { 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }",
+                                            "type": "object"
                                         },
                                         "crop": {
                                             "description": "If true, allow user to crop the image (only for non svg)",
@@ -2233,6 +2233,10 @@
                                         "filename": {
                                             "description": "Name of the file",
                                             "type": "string"
+                                        },
+                                        "base64": {
+                                            "description": "If true, the image will be saved as data-url in attribute, elsewise as binary in file storage",
+                                            "type": "boolean"
                                         },
                                         "attr": true,
                                         "label": true,
@@ -5288,8 +5292,8 @@
                                     "then": {
                                         "properties": {
                                             "accept": {
-                                                "description": "HTML accept attribute, like 'image/*,.pdf'",
-                                                "type": "string"
+                                                "description": "HTML accept attribute, like { 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }",
+                                                "type": "object"
                                             },
                                             "crop": {
                                                 "description": "If true, allow user to crop the image (only for non svg)",
@@ -5314,6 +5318,10 @@
                                             "filename": {
                                                 "description": "Name of the file",
                                                 "type": "string"
+                                            },
+                                            "base64": {
+                                                "description": "If true, the image will be saved as data-url in attribute, elsewise as binary in file storage",
+                                                "type": "boolean"
                                             },
                                             "label": true,
                                             "type": true,
