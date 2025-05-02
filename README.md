@@ -88,7 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.16 (2025-05-02)
 
 - (@GermanBluefox) Added debug logs to authentication
 - (@GermanBluefox) Corrected layout of installation log
@@ -113,11 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.6.7 (2025-04-15)
    
 - (@GermanBluefox) Corrected login with password managers
-
-### 7.6.5 (2025-04-08)
-
--   (@GermanBluefox) Corrected login with password managers
--   (@GermanBluefox) Added support for the multiple selection for JSON config
 
 ## License
 
