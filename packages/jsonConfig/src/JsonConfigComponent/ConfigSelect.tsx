@@ -189,7 +189,7 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                                 })}
                             </Box>
                         ) : (
-                            this.getText(item?.label, this.props.schema.noTranslation)
+                            (item?.label === undefined ? val : item.label)
                         )
                     }
                     onChange={e => {
@@ -210,7 +210,7 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                         if (it.group) {
                             return (
                                 <ListSubheader key={i}>
-                                    {this.getText(it.label, this.props.schema.noTranslation)}
+                                    {it.label}
                                 </ListSubheader>
                             );
                         }
@@ -238,7 +238,7 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                                         }}
                                     />
                                 ) : null}
-                                <ListItemText primary={this.getText(it.label, this.props.schema.noTranslation)} />
+                                <ListItemText primary={it.label} />
                             </MenuItem>
                         );
                     })}

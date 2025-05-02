@@ -317,6 +317,7 @@ export default abstract class HostGeneric<
         Speed: AdminUtils.formatSpeed,
         'Disk size': AdminUtils.formatBytes,
         'Disk free': AdminUtils.formatBytes,
+        time: val => new Date(val).toLocaleString(),
     };
 
     protected readonly refEvents = React.createRef<HTMLDivElement>();

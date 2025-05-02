@@ -22,6 +22,7 @@
     "type-instance": "aanleg",
     "type-light": "licht",
     "type-location": "locatie",
+    "type-locationOne": "Positie als staat",
     "type-lock": "slot",
     "type-media": "media",
     "type-motion": "beweging",

@@ -875,7 +875,7 @@ class Admin extends Adapter {
         const settings: SocketSettings = {
             language: this.config.language,
             defaultUser: this.config.defaultUser,
-            ttl: this.config.ttl as number,
+            ttl: this.config.ttl,
             secure: this.config.secure,
             auth: this.config.auth,
             port: this.config.port,

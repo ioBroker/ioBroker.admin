@@ -2,7 +2,7 @@ import React, { Component, type JSX } from 'react';
 
 import { amber, blue, red } from '@mui/material/colors';
 
-import { Grid2, LinearProgress, Paper, Switch, Typography } from '@mui/material';
+import { Box, Grid2, LinearProgress, Paper, Switch, Typography } from '@mui/material';
 
 import { Router, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 
@@ -63,7 +63,7 @@ interface CommandState {
     // closeOnReady: boolean;
 }
 
-class Command extends Component<CommandProps, CommandState> {
+export default class Command extends Component<CommandProps, CommandState> {
     private readonly logRef: React.RefObject<HTMLDivElement>;
 
     private static pattern = ['error', 'warn', 'info'];
@@ -368,7 +368,6 @@ class Command extends Component<CommandProps, CommandState> {
                         style={
                             this.props.inBackground
                                 ? {
-                                      width: 'calc(100% - 180px)',
                                       overflow: 'hidden',
                                       textOverflow: 'ellipsis',
                                       whiteSpace: 'nowrap',
@@ -380,21 +379,42 @@ class Command extends Component<CommandProps, CommandState> {
                         {this.colorize(this.state.log[this.state.log.length - 1])}
                     </Typography>
                     {this.props.showElement === undefined || this.props.showElement === true ? (
-                        <Grid2
-                            component="label"
-                            container
-                            alignItems="center"
-                            justifyContent="end"
-                            spacing={1}
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'end',
+                                gap: 8,
+                                flexWrap: 'nowrap',
+                            }}
                         >
-                            <div>{this.props.t('less output')}</div>
+                            <Box
+                                style={{ whiteSpace: 'nowrap' }}
+                                sx={{
+                                    '@media (max-width: 600px)': {
+                                        display: 'none',
+                                    },
+                                }}
+                            >
+                                {this.props.t('less output')}
+                            </Box>
                             <Switch
                                 checked={this.state.moreChecked}
                                 onChange={event => this.setState({ moreChecked: event.target.checked })}
                                 color="primary"
                             />
-                            <div>{this.props.t('more output')}</div>
-                        </Grid2>
+                            <Box
+                                style={{ whiteSpace: 'nowrap' }}
+                                sx={{
+                                    '@media (max-width: 600px)': {
+                                        display: 'none',
+                                    },
+                                }}
+                            >
+                                {this.props.t('more output')}
+                            </Box>
+                        </div>
                     ) : null}
                 </div>
                 <Grid2 style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
@@ -406,5 +426,3 @@ class Command extends Component<CommandProps, CommandState> {
         );
     }
 }
-
-export default Command;

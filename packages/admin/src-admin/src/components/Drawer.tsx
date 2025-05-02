@@ -10,7 +10,6 @@ import {
     Subtitles as SubtitlesIcon,
     ViewList as ViewListIcon,
     ArtTrack as ArtTrackIcon,
-    Dvr as DvrIcon,
     ViewHeadline as ViewHeadlineIcon,
     Subscriptions as SubscriptionsIcon,
     FlashOn as FlashOnIcon,

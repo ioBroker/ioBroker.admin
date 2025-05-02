@@ -22,6 +22,7 @@
     "type-instance": "exemple",
     "type-light": "lumière",
     "type-location": "emplacement",
+    "type-locationOne": "Position en tant qu'État",
     "type-lock": "verrouillage",
     "type-media": "médias",
     "type-motion": "mouvement",
