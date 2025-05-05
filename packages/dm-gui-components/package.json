@@ -52,6 +52,6 @@
         "@iobroker/json-config": "file:../jsonConfig"
     },
     "devDependencies": {
-        "@iobroker/dm-utils": "^1.0.9"
+        "@iobroker/dm-utils": "^1.0.10"
     }
 }
