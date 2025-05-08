@@ -415,7 +415,9 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 {...params}
                                 onKeyUp={event => {
                                     if (event.key === 'Enter' && this.state.url) {
-                                        const customHistory = this.state.customHistory.filter(url => url !== this.state.url);
+                                        const customHistory = this.state.customHistory.filter(
+                                            url => url !== this.state.url,
+                                        );
                                         customHistory.unshift(this.state.url);
                                         if (customHistory.length > MAX_HISTORY_LENGTH) {
                                             customHistory.pop();
