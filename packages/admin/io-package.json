@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.16",
+    "version": "7.6.17",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.17": {
+        "en": "Small changes on GUI, JSONConfig and Device Manager",
+        "de": "Kleine Änderungen an GUI, JSONConfig und Device Manager",
+        "ru": "Небольшие изменения в GUI, JSONConfig и диспетчере устройств",
+        "pt": "Pequenas mudanças no GUI, JSONConfig e Device Manager",
+        "nl": "Kleine wijzigingen op GUI, JSONConfig en Apparaatbeheer",
+        "fr": "Petits changements sur GUI, JSONConfig et Device Manager",
+        "it": "Piccoli cambiamenti su GUI, JSONConfig e Gestione dispositivi",
+        "es": "Pequeños cambios en GUI, JSONConfig y Device Manager",
+        "pl": "Małe zmiany na GUI, JSONConfig i menedżer urządzeń",
+        "uk": "Невеликі зміни в GUI, JSONConfig і диспетчер пристроїв",
+        "zh-cn": "图形用户界面、 JSONConfig 和设备管理器的小变化"
+      },
       "7.6.16": {
         "en": "Added debug logs to authentication\nCorrected layout of installation log\nFixed indication of connection state for servers",
         "de": "Debug Protokolle zur Authentifizierung hinzugefügt\nKorrigiertes Layout des Installationsprotokolls\nFeste Anzeige des Verbindungszustands für Server",
@@ -96,19 +109,6 @@
         "pl": "Poprawione logowanie z menedżerami haseł\nDodano wsparcie dla wielokrotnego wyboru dla konfiguracji JSON",
         "uk": "Виправлений логін з менеджерами паролів\nДодано підтримку для декількох вибору для налаштування JSON",
         "zh-cn": "已更正密码管理器登录\n为 JSON 配置的多重选择添加支持"
-      },
-      "7.6.4": {
-        "en": "Allowed the usage of node-red together with admin with authentication.\nAdded some options for JSON-Config `state`\nAdded possibility to disable basic authentication\nChanged the order of authentications. Basic authentication will be checked as the last one.",
-        "de": "Erlaubte die Verwendung von node-red zusammen mit admin mit Authentifizierung.\nEinige Optionen für JSON-Config `state` hinzugefügt\nZusätzliche Möglichkeit, grundlegende Authentifizierung zu deaktivieren\nÄnderte die Reihenfolge der Authentifizierungen. Die grundlegende Authentifizierung wird als letztes überprüft.",
-        "ru": "Разрешено использование нод-красного вместе с админом с аутентификацией.\nДобавлены некоторые опции для JSON-Config 'state'\nДобавлена возможность отключения базовой аутентификации\nИзменился порядок аутентификации. Базовая аутентификация будет проверяться как последняя.",
-        "pt": "Permitiu o uso do nó-vermelho em conjunto com admin com autenticação.\nAdicionado algumas opções para JSON-Config `state`\nAdicionado possibilidade de desativar a autenticação básica\nAlterou a ordem de autenticação. A autenticação básica será verificada como a última.",
-        "nl": "Toegestaan het gebruik van node-red samen met admin met authenticatie.\nToegevoegd enkele opties voor JSON-Config \nToegevoegde mogelijkheid om basisauthenticatie uit te schakelen\nVeranderde de volgorde van de authenticaties. De basisauthenticatie wordt als laatste gecontroleerd.",
-        "fr": "Permet l'utilisation de node-red avec admin avec authentification.\nAjout de certaines options pour JSON-Config `état`\nPossibilité supplémentaire de désactiver l'authentification de base\nChangement de l'ordre des authentifications. L'authentification de base sera vérifiée comme la dernière.",
-        "it": "Consentito l'utilizzo di nodo-rosso insieme ad admin con l'autenticazione.\nAggiunto alcune opzioni per JSON-Config `state`\nAggiunta possibilità di disabilitare l'autenticazione di base\nModificato l'ordine delle autenticazione. L'autenticazione di base verrà controllata come ultima.",
-        "es": "Permitió el uso de nodo-red junto con el administrador con autenticación.\nAñadido algunas opciones para JSON-Config `state`\nMayor posibilidad de desactivar la autenticación básica\nCambió el orden de autenticaciones. La autenticación básica será revisada como la última.",
-        "pl": "Umożliwił korzystanie z node-red wraz z admin z uwierzytelnianiem.\nDodano kilka opcji dla 'stanu' JSON- Config\nDodano możliwość wyłączenia podstawowego uwierzytelniania\nZmieniłem kolejność uwierzytelniania. Podstawowe uwierzytelnianie zostanie sprawdzone jako ostatnie.",
-        "uk": "Дозволено використання вузла-червоного разом з адміністратором з автентифікацією.\nJSON-Config `state`\nДодана можливість відключити базову автентифікацію\nЗмінено порядок автентифікації. Базова автентитація буде перевірятися як останній.",
-        "zh-cn": "允许使用节点红和具有认证功能的管理员.\n添加了 JSON-Config `状态'的一些选项\n添加禁用基本认证的可能性\n更改认证顺序. 基本认证将被检查为最后一个 ."
       }
     },
     "desc": {
