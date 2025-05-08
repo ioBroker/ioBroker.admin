@@ -80,7 +80,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
         if (value === null || value === undefined) {
             return null;
         }
-        value = value.toString().trim();
+        value = value.toString().trim().replace(',', '.');
         const f = value === '' ? 0 : parseFloat(value);
 
         if (value !== '' && Number.isNaN(f)) {
@@ -189,8 +189,17 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                 style={styles.control}
             >
                 <TextField
+                    sx={{
+                        '& .up-down': {
+                            display: 'none',
+                        },
+                        '&:hover .up-down': {
+                            display: 'block',
+                        },
+                    }}
                     variant="standard"
-                    type="number"
+                    // because some users want to enter "-" first
+                    type={this.props.schema.min !== undefined && this.props.schema.min >= 0 ? 'number' : 'text'}
                     fullWidth
                     slotProps={{
                         htmlInput: {
@@ -202,7 +211,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                         input: {
                             endAdornment: this.props.schema.unit
                                 ? this.getText(this.props.schema.unit, this.props.schema.noTranslation)
-                                : undefined,
+                                : null,
                         },
                     }}
                     value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
@@ -218,7 +227,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                         }
 
                         this.setState({ _value, oldValue: this.state._value }, () =>
-                            this.onChange(this.props.attr, parseFloat(_value)),
+                            this.onChange(this.props.attr, parseFloat(_value.replace(',', '.'))),
                         );
                     }}
                     placeholder={this.getText(this.props.schema.placeholder)}
