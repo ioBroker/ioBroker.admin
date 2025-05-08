@@ -1152,60 +1152,72 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             tdStyle = { paddingTop: 1, paddingBottom: 1 };
         }
 
-        return (
-            <Grid2
-                size={{
-                    xs: schema.xs || 12, // if xs is not defined, take the full width
-                    sm: schema.sm || undefined,
-                    md: schema.md || undefined,
-                    lg: schema.lg || undefined,
-                    xl: schema.xl || undefined,
-                }}
-            >
-                <Card>
-                    <Paper style={styles.paper}>
-                        <Accordion style={styles.paper}>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography>{I18n.t('ra_Filter and Data Actions')}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Table>
-                                    <TableBody>
-                                        {schema.items?.map(
-                                            (headCell: ConfigItemTableIndexed, i: number): React.JSX.Element => (
-                                                <TableRow key={`${headCell.attr}_${i}`}>
-                                                    {this.renderOneFilter({
-                                                        schema,
-                                                        style: tdStyle,
-                                                        showAddButton: false,
-                                                        headCell,
-                                                        order,
-                                                        orderBy,
-                                                        index: i,
-                                                        doAnyFilterSet: false,
-                                                    })}
+        const importExportVisible = (!schema.noDelete && schema.import) || schema.export;
+
+        if (importExportVisible || schema.items.find(item => item.sort || item.filter)) {
+            return (
+                <Grid2
+                    size={{
+                        xs: schema.xs || 12, // if xs is not defined, take the full width
+                        sm: schema.sm || undefined,
+                        md: schema.md || undefined,
+                        lg: schema.lg || undefined,
+                        xl: schema.xl || undefined,
+                    }}
+                >
+                    <Card>
+                        <Paper style={styles.paper}>
+                            <Accordion style={styles.paper}>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography>{I18n.t('ra_Filter and Data Actions')}</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Table>
+                                        <TableBody>
+                                            {schema.items?.find(item => item.sort || item.filter) &&
+                                                schema.items.map(
+                                                    (
+                                                        headCell: ConfigItemTableIndexed,
+                                                        i: number,
+                                                    ): React.JSX.Element => (
+                                                        <TableRow key={`${headCell.attr}_${i}`}>
+                                                            {this.renderOneFilter({
+                                                                schema,
+                                                                style: tdStyle,
+                                                                showAddButton: false,
+                                                                headCell,
+                                                                order,
+                                                                orderBy,
+                                                                index: i,
+                                                                doAnyFilterSet: false,
+                                                            })}
+                                                        </TableRow>
+                                                    ),
+                                                )}
+                                            {importExportVisible ? (
+                                                <TableRow>
+                                                    <TableCell
+                                                        align="left"
+                                                        style={tdStyle}
+                                                    >
+                                                        <span style={styles.headerText}>{I18n.t('ra_Actions')}</span>
+                                                    </TableCell>
+                                                    <TableCell style={tdStyle}>
+                                                        {this.renderImportExportButtons(schema)}
+                                                    </TableCell>
                                                 </TableRow>
-                                            ),
-                                        )}
-                                        <TableRow>
-                                            <TableCell
-                                                align="left"
-                                                style={tdStyle}
-                                            >
-                                                <span style={styles.headerText}>{I18n.t('ra_Actions')}</span>
-                                            </TableCell>
-                                            <TableCell style={tdStyle}>
-                                                {this.renderImportExportButtons(schema)}
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
-                            </AccordionDetails>
-                        </Accordion>
-                    </Paper>
-                </Card>
-            </Grid2>
-        );
+                                            ) : null}
+                                        </TableBody>
+                                    </Table>
+                                </AccordionDetails>
+                            </Accordion>
+                        </Paper>
+                    </Card>
+                </Grid2>
+            );
+        }
+
+        return null;
     }
 
     enhancedBottomCard(): JSX.Element {
@@ -1252,7 +1264,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         if (this.props.schema.compact) {
             tdStyle = { paddingTop: 1, paddingBottom: 1 };
         }
-        visibleValue = visibleValue || this.state.value.map((_, i) => i);
+        visibleValue ||= this.state.value.map((_, i) => i);
 
         const doAnyFilterSet = this.isAnyFilterSet();
 
