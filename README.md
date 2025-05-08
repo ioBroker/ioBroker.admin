@@ -88,6 +88,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+- (@GermanBluefox) Small changes on GUI, JSONConfig and Device Manager
+
 ### 7.6.16 (2025-05-02)
 
 - (@GermanBluefox) Added debug logs to authentication
