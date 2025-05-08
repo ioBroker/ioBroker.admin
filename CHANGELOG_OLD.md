@@ -1,4 +1,8 @@
 # Older changes
+## 7.6.7 (2025-04-15)
+   
+- (@GermanBluefox) Corrected login with password managers
+
 ## 7.6.5 (2025-04-08)
 
 -   (@GermanBluefox) Corrected login with password managers
