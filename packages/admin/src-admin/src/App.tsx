@@ -733,6 +733,17 @@ class App extends Router<AppProps, AppState> {
         this.setState({ hasGlobalError: error });
     }
 
+    componentDidUpdate(): void {
+        const searchParams = new URLSearchParams(window.location.search);
+
+        if (searchParams.has('id_token')) {
+            window.localStorage.setItem('oidc_id_token', searchParams.get('id_token'));
+            console.log(`new token ${window.localStorage.getItem('oidc_id_token')}`);
+        } else {
+            console.log(`old token ${window.localStorage.getItem('oidc_id_token')}`);
+        }
+    }
+
     setUnsavedData(hasUnsavedData: boolean): void {
         if (hasUnsavedData !== this.state.unsavedDataInDialog) {
             this.setState({ unsavedDataInDialog: hasUnsavedData });
@@ -2171,7 +2182,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    handleAlertClose(event?: string, reason?: string): void {
+    handleAlertClose(_event?: string, reason?: string): void {
         if (reason === 'clickaway') {
             return;
         }

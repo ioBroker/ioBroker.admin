@@ -15,12 +15,46 @@ import axios from 'axios';
 import { Ajv } from 'ajv';
 import { parse as JSON5 } from 'json5';
 import * as fileUpload from 'express-fileupload';
+import { verify, type JwtHeader, type SigningKeyCallback, type JwtPayload } from 'jsonwebtoken';
+import { JwksClient } from 'jwks-rsa';
 
 import type { Store } from 'express-session';
 import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import type { InternalStorageToken } from '@iobroker/socket-classes';
+
+interface SsoCallbackQuery {
+    /** Code to exchange for token */
+    code: string;
+    /** Username in admin */
+    state: string;
+}
+
+interface OidcTokenResponse {
+    access_token: string;
+    refresh_token: string;
+    token_type: 'Bearer';
+    id_token: string;
+    'not-before-policy': number;
+    session_state: string;
+    scope: string;
+}
+
+interface JwtFullPayload extends Required<JwtPayload> {
+    auth_time: number;
+    typ: string;
+    azp: string;
+    sid: string;
+    at_hash: string;
+    acr: string;
+    email_verified: boolean;
+    name: string;
+    preferred_username: string;
+    given_name: string;
+    family_name: string;
+    email: string;
+}
 
 export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     accessAllowedConfigs: string[];
@@ -67,6 +101,15 @@ let uuid: string;
 const page404 = readFileSync(`${__dirname}/../../public/404.html`).toString('utf8');
 const logTemplate = readFileSync(`${__dirname}/../../public/logTemplate.html`).toString('utf8');
 // const FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g; // with space
+
+const KEYCLOAK_ISSUER = 'https://keycloak.heusinger-it.duckdns.org/realms/iobroker-local';
+const KEYCLOAK_CLIENT_ID = 'iobroker-local-auth';
+
+const jwksClient = new JwksClient({
+    jwksUri: `${KEYCLOAK_ISSUER}/protocol/openid-connect/certs`,
+    cache: true,
+    rateLimit: true,
+});
 
 // copied from here: https://github.com/component/escape-html/blob/master/index.js
 const matchHtmlRegExp = /["'&<>]/;
@@ -482,6 +525,86 @@ class Web {
             this.server.app.get('/version', (_req: Request, res: Response): void => {
                 res.status(200).send(this.adapter.version);
             });
+
+            this.server.app.get(
+                '/sso-callback',
+                async (req: Request<any, any, any, SsoCallbackQuery>, res: Response): Promise<void> => {
+                    const { code, state } = req.query;
+
+                    /**
+                     * Get key from Keycloak
+                     *
+                     * @param header JWT header
+                     * @param callback the callback function
+                     */
+                    const getKey = (header: JwtHeader, callback: SigningKeyCallback): void => {
+                        jwksClient.getSigningKey(header.kid, (err, key) => {
+                            if (err) {
+                                return callback(err);
+                            }
+                            const signingKey = key.getPublicKey();
+                            callback(null, signingKey);
+                        });
+                    };
+
+                    /**
+                     * Verify the given JWT token
+                     *
+                     * @param idToken the jwt token to verify
+                     */
+                    const verifyIdToken = async (idToken: string): Promise<JwtFullPayload> => {
+                        return new Promise((resolve, reject) => {
+                            verify(
+                                idToken,
+                                getKey,
+                                {
+                                    algorithms: ['RS256'],
+                                    issuer: KEYCLOAK_ISSUER,
+                                    audience: KEYCLOAK_CLIENT_ID,
+                                },
+                                (err, decoded) => {
+                                    if (err) {
+                                        return reject(new Error(`Token verification failed: ${err.message}`));
+                                    }
+                                    resolve(decoded as JwtFullPayload);
+                                },
+                            );
+                        });
+                    };
+
+                    const tokenUrl = `https://keycloak.heusinger-it.duckdns.org/realms/iobroker-local/protocol/openid-connect/token`;
+
+                    try {
+                        const tokenResponse = await fetch(tokenUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({
+                                grant_type: 'authorization_code',
+                                code,
+                                redirect_uri: 'http://localhost:8081/sso-callback',
+                                client_id: KEYCLOAK_CLIENT_ID,
+                            }),
+                        });
+
+                        const tokenData: OidcTokenResponse = await tokenResponse.json();
+                        const jwtVerifiedPayload = await verifyIdToken(tokenData.id_token);
+
+                        this.adapter.log.debug(JSON.stringify(jwtVerifiedPayload));
+
+                        const userObj = await this.adapter.getForeignObjectAsync(`system.user.${state}`);
+                        // @ts-expect-error needs to be allowed explicitly
+                        userObj.common.externalAuthentication ??= {};
+                        // @ts-expect-error needs to be allowed explicitly
+                        userObj.common.externalAuthentication.oidc = { sub: jwtVerifiedPayload.sub };
+                        await this.adapter.extendForeignObjectAsync(`system.user.${state}`, userObj);
+
+                        res.status(200).redirect(`http://localhost:3000/?id_token=${tokenData.id_token}#tab-users`);
+                    } catch (e) {
+                        this.adapter.log.error(`Error getting token: ${e.message}`);
+                        res.status(200).redirect(`http://localhost:3000/#tab-users`);
+                    }
+                },
+            );
 
             // replace socket.io
             this.server.app.use((req: Request, res: Response, next: NextFunction): void => {

@@ -37,6 +37,8 @@
         "express-fileupload": "^1.5.1",
         "express-session": "^1.18.1",
         "json5": "^2.2.3",
+        "jsonwebtoken": "^9.0.2",
+        "jwks-rsa": "^3.2.0",
         "mime": "^3.0.0",
         "semver": "^7.7.1"
     },

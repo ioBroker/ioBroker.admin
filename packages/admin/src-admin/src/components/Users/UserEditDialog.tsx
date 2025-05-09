@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, Grid2, Button } from '@mui/material';
-
 import {
     TextFields as TextFieldsIcon,
     LocalOffer as LocalOfferIcon,
     Description as DescriptionIcon,
     Pageview as PageviewIcon,
+    Person as PersonIcon,
     VpnKey as VpnKeyIcon,
     ColorLens as ColorLensIcon,
     Image as ImageIcon,
     Close as IconCancel,
     Check as IconCheck,
+    PersonOff as PersonOffIcon,
 } from '@mui/icons-material';
 
 import { Utils, IconPicker, type Translate } from '@iobroker/adapter-react-v5';
@@ -31,6 +32,7 @@ import User9 from '../../assets/users/user9.svg';
 import User10 from '../../assets/users/user10.svg';
 import User11 from '../../assets/users/user11.svg';
 import User12 from '../../assets/users/user12.svg';
+import type { AdminConnection } from '@iobroker/socket-client';
 
 const USER_ICONS = [User1, User2, User3, User4, User5, User6, User7, User8, User9, User10, User11, User12];
 
@@ -51,7 +53,9 @@ interface UserEditDialogProps {
     innerWidth: number;
     getText: (text: ioBroker.StringOrTranslated) => string;
     styles: Record<string, React.CSSProperties>;
+    socket: AdminConnection;
 }
+
 interface UserEditDialogState {
     originalId: string | null;
     passwordRepeat: string;
@@ -284,8 +288,52 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                             />
                         </Grid2>
                     </Grid2>
+                    {/* @ts-expect-error needs to be added to types */}
+                    {!this.props.user.common.externalAuthentication.oidc ? (
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            fullWidth
+                            onClick={() => {
+                                const clientId = 'iobroker-local-auth';
+                                const redirectUri = 'http://localhost:8081/sso-callback';
+                                const scope = 'openid email';
+                                const keycloakUrl =
+                                    'https://keycloak.heusinger-it.duckdns.org/realms/iobroker-local/protocol/openid-connect/auth';
+
+                                const authUrl = `${keycloakUrl}?client_id=${clientId}&response_type=code&scope=${scope}&redirect_uri=${redirectUri}&state=${this.props.getText(this.props.user.common.name)}`;
+
+                                window.location.href = authUrl;
+                            }}
+                            startIcon={<PersonIcon />}
+                            sx={{ marginTop: 2 }}
+                        >
+                            {/*TODO: translate*/}
+                            {this.props.t('Add Single-Sign On')}
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            fullWidth
+                            startIcon={<PersonOffIcon />}
+                            sx={{ marginTop: 2 }}
+                            onClick={async () => {
+                                const userObj = await this.props.socket.getObject(this.props.user._id);
+                                // @ts-expect-error needs types
+                                delete userObj.common.externalAuthentication.oidc;
+                                await this.props.socket.setObject(this.props.user._id, userObj);
+                                userObj.common.password = this.props.user.common.password;
+                                this.props.onChange(userObj);
+                            }}
+                        >
+                            {/*TODO: translate*/}
+                            {this.props.t('Disconnect Single-Sign On')}
+                        </Button>
+                    )}
                 </DialogContent>
-                <DialogActions style={this.props.styles.dialogActions}>
+
+                <DialogActions>
                     <Button
                         variant="contained"
                         color="primary"
