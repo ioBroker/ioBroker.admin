@@ -8,7 +8,7 @@ This component requires the [dm-utils](https://github.com/ioBroker/dm-utils) in 
 import React from 'react';
 import DeviceList from '@iobroker/dm-gui-components';
 
-...
+//...
 render() {
    return <DeviceList
       socket={this.props.socket}

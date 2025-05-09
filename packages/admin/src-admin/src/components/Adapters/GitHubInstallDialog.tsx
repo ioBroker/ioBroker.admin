@@ -415,7 +415,9 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 {...params}
                                 onKeyUp={event => {
                                     if (event.key === 'Enter' && this.state.url) {
-                                        const customHistory = [...this.state.customHistory];
+                                        const customHistory = this.state.customHistory.filter(
+                                            url => url !== this.state.url,
+                                        );
                                         customHistory.unshift(this.state.url);
                                         if (customHistory.length > MAX_HISTORY_LENGTH) {
                                             customHistory.pop();
@@ -606,7 +608,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 const _url = `${parts[1]}/ioBroker.${parts[0]}`;
                                 void this.props.installFromUrl(_url, this.state.debug, true);
                             } else if (this.state.currentTab === 'URL') {
-                                const customHistory = [...this.state.customHistory];
+                                const customHistory = this.state.customHistory.filter(url => url !== this.state.url);
                                 customHistory.unshift(this.state.url);
                                 if (customHistory.length > MAX_HISTORY_LENGTH) {
                                     customHistory.pop();

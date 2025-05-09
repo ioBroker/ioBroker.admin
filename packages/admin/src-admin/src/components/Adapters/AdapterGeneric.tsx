@@ -470,6 +470,33 @@ export default abstract class AdapterGeneric<
         ) : null;
     }
 
+    getDependencies(): null | JSX.Element[] {
+        const dependencies = AdapterInstallDialog.getDependencies(this.props.adapterName, this.props.context);
+        if (!dependencies) {
+            return null;
+        }
+        const array: string[] = [];
+        for (const adapter of dependencies) {
+            if (!adapter.installedVersion) {
+                array.push(this.props.context.t('No version of %s', adapter.name, adapter.name));
+            } else if (!adapter.rightVersion) {
+                array.push(
+                    `${this.props.context.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version)}${adapter.installedVersion}`,
+                );
+            }
+        }
+        array.push(this.props.context.t('Wrong dependencies'));
+
+        return array.map((el, i) => (
+            <div
+                key={el}
+                style={!i ? { fontWeight: 'bold', fontSize: 'larger' } : undefined}
+            >
+                {el}
+            </div>
+        ));
+    }
+
     renderVersion(): JSX.Element {
         const allowAdapterUpdate = this.props.context.repository[this.props.adapterName]
             ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate
@@ -498,7 +525,7 @@ export default abstract class AdapterGeneric<
             </Tooltip>
         ) : (
             <Tooltip
-                title={this.props.context.t('Wrong dependencies')}
+                title={this.getDependencies()}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <span style={this.props.cached.rightDependencies ? undefined : this.styles.wrongDependencies}>

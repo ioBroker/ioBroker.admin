@@ -88,6 +88,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### 7.6.17 (2025-05-08)
+
+- (@GermanBluefox) Small changes on GUI, JSONConfig and Device Manager
+
 ### 7.6.16 (2025-05-02)
 
 - (@GermanBluefox) Added debug logs to authentication
@@ -109,10 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 - (@GermanBluefox) Allowed following of the `url` types in the object browser
 - (@GermanBluefox) Allowed login by pressing the enter key
-
-### 7.6.7 (2025-04-15)
-   
-- (@GermanBluefox) Corrected login with password managers
 
 ## License
 
