@@ -301,7 +301,7 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                                 const keycloakUrl =
                                     'https://keycloak.heusinger-it.duckdns.org/realms/iobroker-local/protocol/openid-connect/auth';
 
-                                const authUrl = `${keycloakUrl}?client_id=${clientId}&response_type=code&scope=${scope}&redirect_uri=${redirectUri}&state=${this.props.getText(this.props.user.common.name)}`;
+                                const authUrl = `${keycloakUrl}?client_id=${clientId}&response_type=code&scope=${scope}&redirect_uri=${redirectUri}&state=${encodeURIComponent(JSON.stringify({ method: 'register', user: this.props.getText(this.props.user.common.name) }))}`;
 
                                 window.location.href = authUrl;
                             }}

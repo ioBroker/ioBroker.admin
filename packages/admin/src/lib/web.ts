@@ -41,6 +41,13 @@ interface OidcTokenResponse {
     scope: string;
 }
 
+type SsoState =
+    | {
+          method: 'register';
+          user: string;
+      }
+    | { method: 'login' };
+
 interface JwtFullPayload extends Required<JwtPayload> {
     auth_time: number;
     typ: string;
@@ -531,6 +538,14 @@ class Web {
                 async (req: Request<any, any, any, SsoCallbackQuery>, res: Response): Promise<void> => {
                     const { code, state } = req.query;
 
+                    const stateObj: SsoState = JSON.parse(decodeURIComponent(state));
+
+                    if (stateObj.method === 'login') {
+                        this.adapter.log.warn('Login not yet implemented');
+                        res.status(200).redirect(`http://localhost:3000/?login`);
+                        return;
+                    }
+
                     /**
                      * Get key from Keycloak
                      *
@@ -572,7 +587,7 @@ class Web {
                         });
                     };
 
-                    const tokenUrl = `https://keycloak.heusinger-it.duckdns.org/realms/iobroker-local/protocol/openid-connect/token`;
+                    const tokenUrl = `${KEYCLOAK_ISSUER}/protocol/openid-connect/token`;
 
                     try {
                         const tokenResponse = await fetch(tokenUrl, {
@@ -591,12 +606,12 @@ class Web {
 
                         this.adapter.log.debug(JSON.stringify(jwtVerifiedPayload));
 
-                        const userObj = await this.adapter.getForeignObjectAsync(`system.user.${state}`);
+                        const userObj = await this.adapter.getForeignObjectAsync(`system.user.${stateObj.user}`);
                         // @ts-expect-error needs to be allowed explicitly
                         userObj.common.externalAuthentication ??= {};
                         // @ts-expect-error needs to be allowed explicitly
                         userObj.common.externalAuthentication.oidc = { sub: jwtVerifiedPayload.sub };
-                        await this.adapter.extendForeignObjectAsync(`system.user.${state}`, userObj);
+                        await this.adapter.extendForeignObjectAsync(`system.user.${stateObj.user}`, userObj);
 
                         res.status(200).redirect(`http://localhost:3000/?id_token=${tokenData.id_token}#tab-users`);
                     } catch (e) {

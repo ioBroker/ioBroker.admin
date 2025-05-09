@@ -278,12 +278,13 @@ class Login extends Component<object, LoginState> {
                                 />
                             </Box>
                         ) : (
-                            window.loginHideLogo === 'false' && (
+                            window.loginHideLogo === 'false' ||
+                            (window.loginHideLogo === '@@loginHideLogo@@' && (
                                 <Avatar
                                     sx={styles.avatar}
-                                    src="img/admin.svg"
+                                    src={'img/admin.svg'}
                                 />
-                            )
+                            ))
                         )}
                         <Typography
                             component="h1"
@@ -379,6 +380,25 @@ class Login extends Component<object, LoginState> {
                             style={styles.submit}
                         >
                             {this.state.inProcess ? <CircularProgress size={24} /> : I18n.t('login')}
+                        </Button>
+
+                        <Button
+                            onClick={() => {
+                                const clientId = 'iobroker-local-auth';
+                                const redirectUri = 'http://localhost:8081/sso-callback';
+                                const scope = 'openid email';
+                                const keycloakUrl =
+                                    'https://keycloak.heusinger-it.duckdns.org/realms/iobroker-local/protocol/openid-connect/auth';
+
+                                const authUrl = `${keycloakUrl}?client_id=${clientId}&response_type=code&scope=${scope}&redirect_uri=${redirectUri}&state=${encodeURIComponent(JSON.stringify({ method: 'login' }))}`;
+
+                                window.location.href = authUrl;
+                            }}
+                            fullWidth
+                            variant="contained"
+                            color="secondary"
+                        >
+                            {I18n.t('Use Single-Sign On')}
                         </Button>
                     </Grid2>
                     <Box style={styles.marginTop}>
