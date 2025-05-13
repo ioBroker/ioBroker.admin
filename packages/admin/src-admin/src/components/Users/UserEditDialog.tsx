@@ -32,7 +32,6 @@ import User9 from '../../assets/users/user9.svg';
 import User10 from '../../assets/users/user10.svg';
 import User11 from '../../assets/users/user11.svg';
 import User12 from '../../assets/users/user12.svg';
-import type { AdminConnection } from '@iobroker/socket-client';
 
 const USER_ICONS = [User1, User2, User3, User4, User5, User6, User7, User8, User9, User10, User11, User12];
 
@@ -47,13 +46,13 @@ interface UserEditDialogProps {
     onClose: () => void;
     users: ioBroker.UserObject[];
     user: ioBroker.UserObject;
+    /** If user creation or edit dialog */
     isNew: boolean;
     onChange: (user: ioBroker.UserObject) => void;
     saveData: (originalId: string) => Promise<void>;
     innerWidth: number;
     getText: (text: ioBroker.StringOrTranslated) => string;
     styles: Record<string, React.CSSProperties>;
-    socket: AdminConnection;
 }
 
 interface UserEditDialogState {
@@ -288,40 +287,7 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                             />
                         </Grid2>
                     </Grid2>
-                    {/* @ts-expect-error needs to be added to types */}
-                    {!this.props.user.common.externalAuthentication.oidc ? (
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            fullWidth
-                            onClick={() => {
-                                window.location.href = `/sso?redirectUrl=${encodeURIComponent(`${window.origin}/#tab-users`)}&method=register&user=${this.props.getText(this.props.user.common.name)}`;
-                            }}
-                            startIcon={<PersonIcon />}
-                            sx={{ marginTop: 2 }}
-                        >
-                            {/*TODO: translate*/}
-                            {this.props.t('Add Single-Sign On')}
-                        </Button>
-                    ) : (
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            fullWidth
-                            startIcon={<PersonOffIcon />}
-                            sx={{ marginTop: 2 }}
-                            onClick={async () => {
-                                // @ts-expect-error needs types
-                                delete this.props.user.common.externalAuthentication.oidc;
-                                await this.props.saveData(this.state.originalId);
-                                // TODO: translate
-                                window.alert('Single-Sign On disconnected!');
-                            }}
-                        >
-                            {/*TODO: translate*/}
-                            {this.props.t('Disconnect Single-Sign On')}
-                        </Button>
-                    )}
+                    {!this.props.isNew ? this.renderOidcButton() : null}
                 </DialogContent>
 
                 <DialogActions>
@@ -345,6 +311,46 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                     </Button>
                 </DialogActions>
             </Dialog>
+        );
+    }
+
+    /**
+     * Render the button for OIDC connect/disconnect
+     */
+    renderOidcButton(): JSX.Element {
+        /* @ts-expect-error needs to be added to types */
+        return this.props.user.common?.externalAuthentication?.oidc ? (
+            <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                onClick={() => {
+                    window.location.href = `/sso?redirectUrl=${encodeURIComponent(`${window.origin}/#tab-users`)}&method=register&user=${this.props.getText(this.props.user.common.name)}`;
+                }}
+                startIcon={<PersonIcon />}
+                sx={{ marginTop: 2 }}
+            >
+                {/*TODO: translate*/}
+                {this.props.t('Add Single-Sign On')}
+            </Button>
+        ) : (
+            <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                startIcon={<PersonOffIcon />}
+                sx={{ marginTop: 2 }}
+                onClick={async () => {
+                    // @ts-expect-error needs types
+                    delete this.props.user.common.externalAuthentication.oidc;
+                    await this.props.saveData(this.state.originalId);
+                    // TODO: translate
+                    window.alert('Single-Sign On disconnected!');
+                }}
+            >
+                {/*TODO: translate*/}
+                {this.props.t('Disconnect Single-Sign On')}
+            </Button>
         );
     }
 }

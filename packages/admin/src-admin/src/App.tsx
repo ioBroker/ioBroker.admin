@@ -744,7 +744,6 @@ class App extends Router<AppProps, AppState> {
 
         if (searchParams.has('ssoLoginResponse')) {
             const res = JSON.parse(searchParams.get('ssoLoginResponse'));
-            console.log(JSON.stringify(res, null, 2));
             Connection.saveTokensStatic(res, true);
             window.location.search = '';
         }

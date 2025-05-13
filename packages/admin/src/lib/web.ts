@@ -636,7 +636,7 @@ class Web {
                         this.adapter.log.debug(JSON.stringify(jwtVerifiedPayload));
                     } catch (e) {
                         this.adapter.log.error(`Error getting token: ${e.message}`);
-                        return res.redirect(`${stateObj.redirectUrl}/#tab-users`);
+                        return res.redirect(stateObj.redirectUrl);
                     }
 
                     if (stateObj.method === 'login') {
