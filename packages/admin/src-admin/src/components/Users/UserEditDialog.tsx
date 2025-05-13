@@ -295,15 +295,7 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                             color="secondary"
                             fullWidth
                             onClick={() => {
-                                const clientId = 'iobroker-local-auth';
-                                const redirectUri = 'http://localhost:8081/sso-callback';
-                                const scope = 'openid email';
-                                const keycloakUrl =
-                                    'https://keycloak.heusinger-it.duckdns.org/realms/iobroker-local/protocol/openid-connect/auth';
-
-                                const authUrl = `${keycloakUrl}?client_id=${clientId}&response_type=code&scope=${scope}&redirect_uri=${redirectUri}&state=${encodeURIComponent(JSON.stringify({ method: 'register', user: this.props.getText(this.props.user.common.name) }))}`;
-
-                                window.location.href = authUrl;
+                                window.location.href = `/sso?redirectUrl=${encodeURIComponent(`${window.origin}/#tab-users`)}&method=register&user=${this.props.getText(this.props.user.common.name)}`;
                             }}
                             startIcon={<PersonIcon />}
                             sx={{ marginTop: 2 }}

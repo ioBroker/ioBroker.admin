@@ -41,12 +41,18 @@ interface OidcTokenResponse {
     scope: string;
 }
 
-type SsoState =
-    | {
-          method: 'register';
-          user: string;
-      }
-    | { method: 'login' };
+type SsoBaseState = { redirectUrl: string };
+
+type SsoState = SsoBaseState &
+    (
+        | {
+              method: 'register';
+              user: string;
+          }
+        | {
+              method: 'login';
+          }
+    );
 
 interface JwtFullPayload extends Required<JwtPayload> {
     auth_time: number;
@@ -61,6 +67,14 @@ interface JwtFullPayload extends Required<JwtPayload> {
     given_name: string;
     family_name: string;
     email: string;
+}
+
+interface IobrokerOauthResponse {
+    access_token: string;
+    token_type: string;
+    expires_in: number;
+    refresh_token: string;
+    refresh_token_expires_in: number;
 }
 
 export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
@@ -533,18 +547,33 @@ class Web {
                 res.status(200).send(this.adapter.version);
             });
 
+            this.server.app.get('/sso', (req: Request<any, any, any, SsoState>, res: Response): void => {
+                const scope = 'openid email';
+
+                this.adapter.log.warn(JSON.stringify(req.query));
+
+                const { redirectUrl, method } = req.query;
+
+                let user = '';
+
+                if (req.query.method === 'register') {
+                    user = req.query.user;
+                }
+
+                const redirectUri = `${req.protocol}://${req.get('host')}/sso-callback`;
+                const authUrl = `${KEYCLOAK_ISSUER}/protocol/openid-connect/auth?client_id=${KEYCLOAK_CLIENT_ID}&response_type=code&scope=${scope}&redirect_uri=${redirectUri}&state=${encodeURIComponent(JSON.stringify({ method, redirectUrl, user }))}`;
+
+                res.status(200).redirect(authUrl);
+            });
+
             this.server.app.get(
                 '/sso-callback',
                 async (req: Request<any, any, any, SsoCallbackQuery>, res: Response): Promise<void> => {
+                    // TODO: this needs to be moved in the oauth websever
                     const { code, state } = req.query;
 
+                    const thisHost = `${req.protocol}://${req.get('host')}`;
                     const stateObj: SsoState = JSON.parse(decodeURIComponent(state));
-
-                    if (stateObj.method === 'login') {
-                        this.adapter.log.warn('Login not yet implemented');
-                        res.status(200).redirect(`http://localhost:3000/?login`);
-                        return;
-                    }
 
                     /**
                      * Get key from Keycloak
@@ -589,6 +618,9 @@ class Web {
 
                     const tokenUrl = `${KEYCLOAK_ISSUER}/protocol/openid-connect/token`;
 
+                    let tokenData: OidcTokenResponse;
+                    let jwtVerifiedPayload: JwtFullPayload;
+
                     try {
                         const tokenResponse = await fetch(tokenUrl, {
                             method: 'POST',
@@ -596,28 +628,80 @@ class Web {
                             body: new URLSearchParams({
                                 grant_type: 'authorization_code',
                                 code,
-                                redirect_uri: 'http://localhost:8081/sso-callback',
+                                redirect_uri: `${thisHost}/sso-callback`,
                                 client_id: KEYCLOAK_CLIENT_ID,
                             }),
                         });
 
-                        const tokenData: OidcTokenResponse = await tokenResponse.json();
-                        const jwtVerifiedPayload = await verifyIdToken(tokenData.id_token);
+                        tokenData = await tokenResponse.json();
+                        jwtVerifiedPayload = await verifyIdToken(tokenData.id_token);
 
                         this.adapter.log.debug(JSON.stringify(jwtVerifiedPayload));
-
-                        const userObj = await this.adapter.getForeignObjectAsync(`system.user.${stateObj.user}`);
-                        // @ts-expect-error needs to be allowed explicitly
-                        userObj.common.externalAuthentication ??= {};
-                        // @ts-expect-error needs to be allowed explicitly
-                        userObj.common.externalAuthentication.oidc = { sub: jwtVerifiedPayload.sub };
-                        await this.adapter.extendForeignObjectAsync(`system.user.${stateObj.user}`, userObj);
-
-                        res.status(200).redirect(`http://localhost:3000/?id_token=${tokenData.id_token}#tab-users`);
                     } catch (e) {
                         this.adapter.log.error(`Error getting token: ${e.message}`);
-                        res.status(200).redirect(`http://localhost:3000/#tab-users`);
+                        return res.status(200).redirect(`${stateObj.redirectUrl}/#tab-users`);
                     }
+
+                    if (stateObj.method === 'login') {
+                        const objView = await this.adapter.getObjectViewAsync('system', 'user', {
+                            startkey: 'system.user.',
+                            endkey: 'system.user.\u9999',
+                        });
+
+                        const item = objView.rows.find(
+                            // @ts-expect-error needs to be allowed explicitly
+                            item => item.value.common?.externalAuthentication?.oidc?.sub === jwtVerifiedPayload.sub,
+                        );
+
+                        const username = item.id;
+                        // TODO: password is hashed find another way to authenticate at oauth token endpoint
+                        const password = 'xxxx'; // item.value.common.password;
+
+                        this.adapter.log.warn(`Login as ${username}`);
+
+                        try {
+                            const result = await fetch(`${thisHost}/oauth/token`, {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: new URLSearchParams({
+                                    grant_type: 'password',
+                                    username,
+                                    password,
+                                    stayloggedin: 'false',
+                                    client_id: 'ioBroker',
+                                }),
+                            });
+
+                            const resultBody: IobrokerOauthResponse = await result.json();
+                            this.adapter.log.warn(`${result.status} Status`);
+                            this.adapter.log.warn(JSON.stringify(resultBody));
+
+                            return void res
+                                .status(200)
+                                //.json(resultBody)
+                                .cookie('access_token', resultBody.access_token)
+                                .redirect(stateObj.redirectUrl);
+                        } catch (e) {
+                            this.adapter.log.error(e.message);
+                        }
+
+                        return res.status(200).redirect(stateObj.redirectUrl);
+                    }
+
+                    // user connection flow
+                    const userObj = await this.adapter.getForeignObjectAsync(`system.user.${stateObj.user}`);
+                    // @ts-expect-error needs to be allowed explicitly
+                    userObj.common.externalAuthentication ??= {};
+                    // @ts-expect-error needs to be allowed explicitly
+                    userObj.common.externalAuthentication.oidc = { sub: jwtVerifiedPayload.sub };
+                    await this.adapter.extendForeignObjectAsync(`system.user.${stateObj.user}`, userObj);
+
+                    const redirectUrl = new URL(stateObj.redirectUrl);
+                    redirectUrl.search = `id_token=${tokenData.id_token}`;
+                    res.status(200).redirect(redirectUrl.toString());
                 },
             );
 
