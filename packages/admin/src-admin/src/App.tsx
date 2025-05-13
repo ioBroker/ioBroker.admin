@@ -739,8 +739,14 @@ class App extends Router<AppProps, AppState> {
         if (searchParams.has('id_token')) {
             window.localStorage.setItem('oidc_id_token', searchParams.get('id_token'));
             console.log(`new token ${window.localStorage.getItem('oidc_id_token')}`);
-        } else {
-            console.log(`old token ${window.localStorage.getItem('oidc_id_token')}`);
+            window.location.search = '';
+        }
+
+        if (searchParams.has('ssoLoginResponse')) {
+            const res = JSON.parse(searchParams.get('ssoLoginResponse'));
+            console.log(JSON.stringify(res, null, 2));
+            Connection.saveTokensStatic(res, true);
+            window.location.search = '';
         }
     }
 

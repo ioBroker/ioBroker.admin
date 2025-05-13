@@ -549,9 +549,6 @@ class Web {
 
             this.server.app.get('/sso', (req: Request<any, any, any, SsoState>, res: Response): void => {
                 const scope = 'openid email';
-
-                this.adapter.log.warn(JSON.stringify(req.query));
-
                 const { redirectUrl, method } = req.query;
 
                 let user = '';
@@ -655,9 +652,9 @@ class Web {
 
                         const username = item.id;
                         // TODO: password is hashed find another way to authenticate at oauth token endpoint
-                        const password = 'xxxx'; // item.value.common.password;
+                        const password = 'xxx'; // item.value.common.password;
 
-                        this.adapter.log.warn(`Login as ${username}`);
+                        this.adapter.log.debug(`Login as ${username} via SSO`);
 
                         try {
                             const result = await fetch(`${thisHost}/oauth/token`, {
@@ -676,16 +673,18 @@ class Web {
                             });
 
                             const resultBody: IobrokerOauthResponse = await result.json();
-                            this.adapter.log.warn(`${result.status} Status`);
-                            this.adapter.log.warn(JSON.stringify(resultBody));
+
+                            const redirectUrl = new URL(stateObj.redirectUrl);
+                            redirectUrl.search = new URLSearchParams({
+                                ssoLoginResponse: JSON.stringify(resultBody),
+                            }).toString();
 
                             return void res
                                 .status(200)
-                                //.json(resultBody)
                                 .cookie('access_token', resultBody.access_token)
-                                .redirect(stateObj.redirectUrl);
+                                .redirect(redirectUrl.toString());
                         } catch (e) {
-                            this.adapter.log.error(e.message);
+                            this.adapter.log.error(`Could not get oauth token: ${e.message}`);
                         }
 
                         return res.status(200).redirect(stateObj.redirectUrl);
