@@ -49,7 +49,7 @@ interface UserEditDialogProps {
     user: ioBroker.UserObject;
     isNew: boolean;
     onChange: (user: ioBroker.UserObject) => void;
-    saveData: (originalId: string) => void;
+    saveData: (originalId: string) => Promise<void>;
     innerWidth: number;
     getText: (text: ioBroker.StringOrTranslated) => string;
     styles: Record<string, React.CSSProperties>;
@@ -311,12 +311,11 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                             startIcon={<PersonOffIcon />}
                             sx={{ marginTop: 2 }}
                             onClick={async () => {
-                                const userObj = await this.props.socket.getObject(this.props.user._id);
                                 // @ts-expect-error needs types
-                                delete userObj.common.externalAuthentication.oidc;
-                                await this.props.socket.setObject(this.props.user._id, userObj);
-                                userObj.common.password = this.props.user.common.password;
-                                this.props.onChange(userObj);
+                                delete this.props.user.common.externalAuthentication.oidc;
+                                await this.props.saveData(this.state.originalId);
+                                // TODO: translate
+                                window.alert('Single-Sign On disconnected!');
                             }}
                         >
                             {/*TODO: translate*/}

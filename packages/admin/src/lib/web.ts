@@ -560,7 +560,7 @@ class Web {
                 const redirectUri = `${req.protocol}://${req.get('host')}/sso-callback`;
                 const authUrl = `${KEYCLOAK_ISSUER}/protocol/openid-connect/auth?client_id=${KEYCLOAK_CLIENT_ID}&response_type=code&scope=${scope}&redirect_uri=${redirectUri}&state=${encodeURIComponent(JSON.stringify({ method, redirectUrl, user }))}`;
 
-                res.status(200).redirect(authUrl);
+                res.redirect(authUrl);
             });
 
             this.server.app.get(
@@ -636,7 +636,7 @@ class Web {
                         this.adapter.log.debug(JSON.stringify(jwtVerifiedPayload));
                     } catch (e) {
                         this.adapter.log.error(`Error getting token: ${e.message}`);
-                        return res.status(200).redirect(`${stateObj.redirectUrl}/#tab-users`);
+                        return res.redirect(`${stateObj.redirectUrl}/#tab-users`);
                     }
 
                     if (stateObj.method === 'login') {
@@ -649,6 +649,11 @@ class Web {
                             // @ts-expect-error needs to be allowed explicitly
                             item => item.value.common?.externalAuthentication?.oidc?.sub === jwtVerifiedPayload.sub,
                         );
+
+                        if (!item) {
+                            // no user connected to the SSO
+                            return res.redirect(stateObj.redirectUrl);
+                        }
 
                         const username = item.id;
                         // TODO: password is hashed find another way to authenticate at oauth token endpoint
@@ -680,14 +685,13 @@ class Web {
                             }).toString();
 
                             return void res
-                                .status(200)
                                 .cookie('access_token', resultBody.access_token)
                                 .redirect(redirectUrl.toString());
                         } catch (e) {
                             this.adapter.log.error(`Could not get oauth token: ${e.message}`);
                         }
 
-                        return res.status(200).redirect(stateObj.redirectUrl);
+                        return res.redirect(stateObj.redirectUrl);
                     }
 
                     // user connection flow
@@ -700,7 +704,7 @@ class Web {
 
                     const redirectUrl = new URL(stateObj.redirectUrl);
                     redirectUrl.search = `id_token=${tokenData.id_token}`;
-                    res.status(200).redirect(redirectUrl.toString());
+                    res.redirect(redirectUrl.toString());
                 },
             );
 
