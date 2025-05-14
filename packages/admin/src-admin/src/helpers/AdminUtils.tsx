@@ -508,13 +508,6 @@ class AdminUtils {
             instanceNumber,
         };
     }
-
-    /**
-     * Checks if running in dev mode
-     */
-    static isDevMode(): boolean {
-        return import.meta.env.DEV === true;
-    }
 }
 
 export default AdminUtils;
