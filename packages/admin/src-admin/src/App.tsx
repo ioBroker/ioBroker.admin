@@ -734,11 +734,12 @@ class App extends Router<AppProps, AppState> {
     }
 
     componentDidUpdate(): void {
+        // Due to the fact that the SSO process can only provide is parameters via a callback uri, we need to extract from the search parameters
+        // However, there might be a better place for this instead of using a side effect on every re-render
         const searchParams = new URLSearchParams(window.location.search);
 
         if (searchParams.has('id_token')) {
             window.localStorage.setItem('oidc_id_token', searchParams.get('id_token'));
-            console.log(`new token ${window.localStorage.getItem('oidc_id_token')}`);
             window.location.search = '';
         }
 

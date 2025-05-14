@@ -365,7 +365,6 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                         delete (group.common as any).description;
                     }
                 });
-                console.log('data updated');
                 this.setState({ groups: groupsArray, users });
             });
     };
@@ -659,7 +658,6 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                         onChange={this.changeUserFormData}
                         saveData={this.saveUser}
                         innerWidth={this.state.innerWidth}
-                        socket={this.props.socket}
                     />
                 ) : null}
                 {this.state.groupEditDialog ? (

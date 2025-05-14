@@ -18,7 +18,6 @@
         "@iobroker/dm-utils": "^1.0.10",
         "@iobroker/eslint-config": "^2.0.1",
         "@iobroker/types": "^7.0.7",
-        "@types/jsonwebtoken": "^9.0.9",
         "lerna": "^8.2.1"
     },
     "scripts": {
