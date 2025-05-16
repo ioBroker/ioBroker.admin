@@ -390,7 +390,6 @@ class Login extends Component<object, LoginState> {
                             variant="contained"
                             color="secondary"
                         >
-                            {/*TODO: Translate*/}
                             {I18n.t('Use Single-Sign On')}
                         </Button>
                     </Grid2>

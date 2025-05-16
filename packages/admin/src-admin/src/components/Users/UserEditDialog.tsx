@@ -330,7 +330,6 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                 startIcon={<PersonIcon />}
                 sx={{ marginTop: 2 }}
             >
-                {/*TODO: translate*/}
                 {this.props.t('Add Single-Sign On')}
             </Button>
         ) : (
@@ -344,11 +343,9 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                     // @ts-expect-error needs types
                     delete this.props.user.common.externalAuthentication.oidc;
                     await this.props.saveData(this.state.originalId);
-                    // TODO: translate
                     window.alert('Single-Sign On disconnected!');
                 }}
             >
-                {/*TODO: translate*/}
                 {this.props.t('Disconnect Single-Sign On')}
             </Button>
         );
