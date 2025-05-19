@@ -24,6 +24,7 @@
         "crypto-js": "^4.2.0",
         "json5": "^2.2.3",
         "react-ace": "^14.0.1",
+        "react-dom": "^19.1.0",
         "react-qr-code": "^2.0.15"
     },
     "devDependencies": {
