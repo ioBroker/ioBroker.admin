@@ -278,13 +278,12 @@ class Login extends Component<object, LoginState> {
                                 />
                             </Box>
                         ) : (
-                            window.loginHideLogo === 'false' ||
-                            (window.loginHideLogo === '@@loginHideLogo@@' && (
+                            (window.loginHideLogo === 'false' || window.loginHideLogo === '@@loginHideLogo@@') && (
                                 <Avatar
                                     sx={styles.avatar}
                                     src="img/admin.svg"
                                 />
-                            ))
+                            )
                         )}
                         <Typography
                             component="h1"

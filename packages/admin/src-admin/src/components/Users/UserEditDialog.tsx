@@ -319,7 +319,7 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
      */
     renderOidcButton(): JSX.Element {
         /* @ts-expect-error needs to be added to types */
-        return this.props.user.common?.externalAuthentication?.oidc ? (
+        return !this.props.user.common?.externalAuthentication?.oidc ? (
             <Button
                 variant="contained"
                 color="secondary"
