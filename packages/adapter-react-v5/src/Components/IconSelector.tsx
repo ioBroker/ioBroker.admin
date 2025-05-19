@@ -1964,14 +1964,18 @@ const rooms: { _id: string; name: ioBroker.StringOrTranslated; icon: string }[] 
     },
 ];
 
+export interface IconObject {
+    icon?: string;
+    src?: string;
+    href?: string;
+    name?: ioBroker.StringOrTranslated;
+    _id?: string;
+}
+
+export type IconSelectorIcon = IconObject | string;
+
 interface IconSelectorProps {
-    icons?: {
-        icon?: string;
-        src?: string;
-        href?: string;
-        name?: ioBroker.StringOrTranslated;
-        _id?: string;
-    }[];
+    icons?: IconSelectorIcon[];
     onlyRooms?: boolean;
     onlyDevices?: boolean;
     onSelect?: (icon: string) => void; // one of onSelect or onChange are required

@@ -278,7 +278,7 @@ class Login extends Component<object, LoginState> {
                                 />
                             </Box>
                         ) : (
-                            window.loginHideLogo === 'false' && (
+                            (window.loginHideLogo === 'false' || window.loginHideLogo === '@@loginHideLogo@@') && (
                                 <Avatar
                                     sx={styles.avatar}
                                     src="img/admin.svg"
@@ -379,6 +379,17 @@ class Login extends Component<object, LoginState> {
                             style={styles.submit}
                         >
                             {this.state.inProcess ? <CircularProgress size={24} /> : I18n.t('login')}
+                        </Button>
+
+                        <Button
+                            onClick={() => {
+                                window.location.href = `/sso?redirectUrl=${encodeURIComponent(`${window.origin}/#tab-intro`)}&method=login`;
+                            }}
+                            fullWidth
+                            variant="contained"
+                            color="secondary"
+                        >
+                            {I18n.t('Use Single-Sign On')}
                         </Button>
                     </Grid2>
                     <Box style={styles.marginTop}>

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import type { I18n, AdminConnection, ThemeType, ThemeName } from '@iobroker/adapter-react-v5';
 
 declare module '*.png';

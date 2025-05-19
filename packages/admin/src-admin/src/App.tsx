@@ -733,6 +733,23 @@ class App extends Router<AppProps, AppState> {
         this.setState({ hasGlobalError: error });
     }
 
+    componentDidUpdate(): void {
+        // Due to the fact that the SSO process can only provide is parameters via a callback uri, we need to extract from the search parameters
+        // However, there might be a better place for this instead of using a side effect on every re-render
+        const searchParams = new URLSearchParams(window.location.search);
+
+        if (searchParams.has('id_token')) {
+            window.localStorage.setItem('oidc_id_token', searchParams.get('id_token'));
+            window.location.search = '';
+        }
+
+        if (searchParams.has('ssoLoginResponse')) {
+            const res = JSON.parse(searchParams.get('ssoLoginResponse'));
+            Connection.saveTokensStatic(res, true);
+            window.location.search = '';
+        }
+    }
+
     setUnsavedData(hasUnsavedData: boolean): void {
         if (hasUnsavedData !== this.state.unsavedDataInDialog) {
             this.setState({ unsavedDataInDialog: hasUnsavedData });
@@ -2171,7 +2188,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    handleAlertClose(event?: string, reason?: string): void {
+    handleAlertClose(_event?: string, reason?: string): void {
         if (reason === 'clickaway') {
             return;
         }
