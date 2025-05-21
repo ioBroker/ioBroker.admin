@@ -1,5 +1,7 @@
 import React, { type JSX, Component } from 'react';
 
+import { Box, type SxProps } from '@mui/material';
+
 import { IconNoIcon } from '../icons/IconNoIcon';
 
 function getElementFromSource(src: string): HTMLElement | null {
@@ -47,6 +49,7 @@ interface ImageProps {
     className?: string;
     /* Show image errors (or just show no image)? */
     showError?: boolean;
+    sx?: SxProps;
 }
 
 interface ImageState {
@@ -122,9 +125,11 @@ export class Image extends Component<ImageProps, ImageState> {
             svg.remove();
 
             return (
-                <svg
+                <Box
+                    component="svg"
+                    sx={this.props.sx}
                     className={this.props.className}
-                    style={this.state.color ? { color: this.state.color } : {}}
+                    style={this.state.color ? { color: this.state.color } : undefined}
                     {...svgProps}
                     dangerouslySetInnerHTML={{ __html: inner }}
                 />
@@ -162,7 +167,9 @@ export class Image extends Component<ImageProps, ImageState> {
                     src = Image.REMOTE_PREFIX + src;
                 }
                 return (
-                    <img
+                    <Box
+                        component="img"
+                        sx={this.props.sx}
                         className={this.props.className}
                         src={`https://remote-files.iobroker.in${src}`}
                         alt=""
@@ -174,7 +181,9 @@ export class Image extends Component<ImageProps, ImageState> {
             }
 
             return (
-                <img
+                <Box
+                    component="img"
+                    sx={this.props.sx}
                     className={this.props.className}
                     src={(this.props.imagePrefix || '') + this.state.src}
                     alt=""
