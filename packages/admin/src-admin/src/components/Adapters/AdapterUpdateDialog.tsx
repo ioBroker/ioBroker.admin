@@ -326,7 +326,7 @@ export function checkCondition(
             }
 
             if (show) {
-                messages = messages || [];
+                messages ||= [];
                 messages.push({
                     title: message.title,
                     text: message.text,
