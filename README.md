@@ -88,6 +88,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+- (@GermanBluefox) Added OAuth2 authentication to JSONConfig components
+
 ### 7.6.17 (2025-05-08)
 
 - (@GermanBluefox) Small changes on GUI, JSONConfig and Device Manager

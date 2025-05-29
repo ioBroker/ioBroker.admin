@@ -36,6 +36,7 @@ import ConfigJsonEditor from './ConfigJsonEditor';
 import ConfigLanguage from './ConfigLanguage';
 import ConfigLicense from './ConfigLicense';
 import ConfigNumber from './ConfigNumber';
+import ConfigOauth2 from './ConfigOAuth2';
 import ConfigObjectId from './ConfigObjectId';
 import ConfigPassword from './ConfigPassword';
 import ConfigPattern from './ConfigPattern';
@@ -93,6 +94,7 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     language: ConfigLanguage,
     license: ConfigLicense,
     number: ConfigNumber,
+    oauth2: ConfigOauth2,
     objectId: ConfigObjectId,
     password: ConfigPassword,
     pattern: ConfigPattern,

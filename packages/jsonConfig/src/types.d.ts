@@ -72,6 +72,7 @@ export type ConfigItemType =
     | 'deviceManager'
     | 'topic'
     | 'qrCode'
+    | 'oauth2'
     | 'state';
 
 type ConfigIconType =
@@ -316,6 +317,14 @@ export interface ConfigItemNumber extends ConfigItem {
     readOnly?: boolean;
     /** Unit */
     unit?: string;
+}
+
+export interface ConfigItemOAuth2 extends ConfigItem {
+    type: 'oauth2';
+    saveTokenIn?: string; // default is `oauth2Tokens`
+    identifier: 'spotify' | 'google' | 'dropbox' | 'microsoft' | string;
+    scope?: string; // optional scopes divided by space, e.g. `user-read-private user-read-email`
+    refreshLabel?: ioBroker.StringOrTranslated; // label for the refresh button
 }
 
 export interface ConfigItemQrCode extends ConfigItem {
@@ -978,6 +987,7 @@ export type ConfigItemAny =
     | ConfigItemTabs
     | ConfigItemText
     | ConfigItemNumber
+    | ConfigItemOAuth2
     | ConfigItemColor
     | ConfigItemCheckbox
     | ConfigItemSlider
