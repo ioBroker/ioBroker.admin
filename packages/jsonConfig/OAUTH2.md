@@ -197,5 +197,11 @@ export class SpotifyPremiumAdapter extends Adapter {
             });
         // Your other initialization code...
     }
+    
+    onUnload(callback: () => void): void {
+        this.tokenWorker?.destroy();
+        // Your other unload code...
+        callback();
+    }
 }
 ```
