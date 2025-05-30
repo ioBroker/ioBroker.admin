@@ -198,6 +198,11 @@ export class SpotifyPremiumAdapter extends Adapter {
         // Your other initialization code...
     }
     
+    onStateChange(id: string, state: ioBroker.State | null | undefined): void {
+        this.tokenWorker?.onStateChange(id, state);
+        // Your other state change code...
+    }
+    
     onUnload(callback: () => void): void {
         this.tokenWorker?.destroy();
         // Your other unload code...
