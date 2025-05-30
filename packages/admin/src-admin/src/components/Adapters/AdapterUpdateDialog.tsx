@@ -199,8 +199,8 @@ export function checkCondition(
         // };
 
         objMessages.forEach(message => {
-            let show = !message.condition || !message.condition.rules;
-            if (message.condition && message.condition.rules) {
+            let show = !message.condition?.rules;
+            if (message.condition?.rules) {
                 const results = (
                     Array.isArray(message.condition.rules) ? message.condition.rules : [message.condition.rules]
                 ).map(rule => {
@@ -326,7 +326,7 @@ export function checkCondition(
             }
 
             if (show) {
-                messages = messages || [];
+                messages ||= [];
                 messages.push({
                     title: message.title,
                     text: message.text,

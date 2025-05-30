@@ -158,6 +158,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`language`:**](#language) Selects the user interface language
 - [**`license`:**](#license) shows the license information if not already accepted.
 - [**`number`:**](#number) Numeric input field with min/max values and step size
+- [**`oauth2`:**](#oauth2) Make OAuth2 authentication for the adapter (Admin 7.6.18 or newer)
 - [**`objectId`:**](#objectid) Selects an object ID with name, color, and icon
 - [**`panel`:**](#panel) Tab with items
 - [**`password`:**](#password) Password input field
@@ -512,6 +513,33 @@ saves image as a file of the `adapter.X` object or as base64 in attribute
      }
   }
 ```
+
+### `oauth2`
+(admin >= 6.17.18)
+
+Shows OAuth2 Authentication button to get the refresh and access tokens for the adapter.
+
+To use this, you must first provide the OAuth2 data (client ID, secret, etc.) to ioBroker maintenance team, so they can add it to the cloud.
+
+| Property       | Description                                                                                                                                                   |
+|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `identifier`   | Oauth2 identifier, like `spotify`, `google`, `dropbox`, `microsoft`                                                                                           |                                                                      
+| `saveTokenIn`  | Optional state name where the token will be saved. Default is `oauth2Tokens`. The path is relative to the adapter instance, like `adapterName.X.oauth2Tokens` |
+| `scope`        | Optional scopes divided by space, e.g. `user-read-private user-read-email`                                                                                    |
+| `refreshLabel` | Optional button label for refreshing the token                                                                                                                |
+
+#### Example for `oauth2`
+
+```json
+  "_oauth2": {
+       "type": "oauth2",
+       "identifier": "spotify",
+       "label": "Get Spotify OAuth2 Token",
+       "label": "Refresh Spotify OAuth2 Token",
+       "icon": "data:image/svg+xml;base64,...",
+  }
+```
+See also [OAUTH2.md](OAUTH2.md) for more information.
 
 ### `objectId`
 

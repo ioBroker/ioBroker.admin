@@ -12,11 +12,6 @@ const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
     },
-    icon: {
-        width: 24,
-        height: 24,
-        marginRight: 4,
-    },
 };
 
 interface ConfigInstanceSelectProps extends ConfigGenericProps {
@@ -80,6 +75,7 @@ class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGene
     }
 
     renderItem(_error: string, disabled: boolean /* , defaultValue */): JSX.Element | null {
+        const icon = this.getIcon();
         return (
             <Button
                 variant={this.props.schema.variant || undefined}
@@ -93,13 +89,8 @@ class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGene
                         await this._onClick();
                     }
                 }}
+                startIcon={icon || undefined}
             >
-                {this.props.schema.icon ? (
-                    <Icon
-                        src={this.props.schema.icon}
-                        style={styles.icon}
-                    />
-                ) : null}
                 {this.getText(this.props.schema.label, this.props.schema.noTranslation)}
             </Button>
         );

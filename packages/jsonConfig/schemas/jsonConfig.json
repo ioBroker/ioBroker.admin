@@ -63,6 +63,7 @@
                 "jsonEditor",
                 "language",
                 "number",
+                "oauth2",
                 "objectId",
                 "panel",
                 "password",
@@ -1111,6 +1112,46 @@
             },
             "additionalProperties": false,
             "required": ["type"]
+        },
+        "oauth2Props": {
+            "properties": {
+                "saveTokenIn": {
+                    "description": "State name where the token will be saved. Default is 'oauth2Tokens'. The path is relative to the adapter instance, like 'adapterName.X.oauth2Tokens'",
+                    "type": "string"
+                },
+                "identifier": {
+                    "description": "OAuth2 service identifier. Only known services are supported",
+                    "type": "string"
+                },
+                "scope": {
+                    "description": "Optional scopes divided by space, e.g. `user-read-private user-read-email`",
+                    "type": "string"
+                },
+                "refreshLabel": {
+                    "description": "Button label for refreshing the token",
+                    "type": "string"
+                },
+                "label": true,
+                "type": true,
+                "xs": true,
+                "sm": true,
+                "md": true,
+                "lg": true,
+                "xl": true,
+                "newLine": true,
+                "hidden": true,
+                "hideOnlyControl": true,
+                "disabled": true,
+                "helpLink": true,
+                "help": true,
+                "style": true,
+                "darkStyle": true,
+                "tooltip": true,
+                "expertMode": true,
+                "confirm": true
+            },
+            "additionalProperties": false,
+            "required": ["type", "identifier"]
         },
         "fileSelectorProps": {
             "properties": {
@@ -6530,6 +6571,18 @@
                                     },
                                     "then": {
                                         "$ref": "#/definitions/objectIdProps"
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "properties": {
+                                            "type": {
+                                                "const": "oauth2"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "$ref": "#/definitions/oauth2Props"
                                     }
                                 },
                                 {
