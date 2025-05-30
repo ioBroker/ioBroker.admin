@@ -528,7 +528,7 @@ To use this, you must first provide the OAuth2 data (client ID, secret, etc.) to
 | `scope`        | Optional scopes divided by space, e.g. `user-read-private user-read-email`                                                                                    |
 | `refreshLabel` | Optional button label for refreshing the token                                                                                                                |
 
-#### Example for `image`
+#### Example for `oauth2`
 
 ```json
   "_oauth2": {
@@ -539,6 +539,7 @@ To use this, you must first provide the OAuth2 data (client ID, secret, etc.) to
        "icon": "data:image/svg+xml;base64,...",
   }
 ```
+See also [OAUTH2.md](OAUTH2.md) for more information.
 
 ### `objectId`
 
