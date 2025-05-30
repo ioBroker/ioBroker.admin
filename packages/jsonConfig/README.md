@@ -535,7 +535,7 @@ To use this, you must first provide the OAuth2 data (client ID, secret, etc.) to
        "type": "oauth2",
        "identifier": "spotify",
        "label": "Get Spotify OAuth2 Token",
-       "label": "Refresh Spotify OAuth2 Token",
+       "refreshLabel": "Refresh Spotify OAuth2 Token",
        "icon": "data:image/svg+xml;base64,...",
   }
 ```
