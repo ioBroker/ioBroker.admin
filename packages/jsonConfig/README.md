@@ -1158,6 +1158,7 @@ Special input for ports. It checks automatically if port is used by other instan
 | `buttonValue`     | Optional value, that will be sent for button                                                                                                                                                |
 | `showEnterButton` | Show SET button. The value in this case will be sent only when the button is pressed. You can define the text of the button. Default text is "Set" (Only for "input", "number" or "slider") |
 | `setOnEnterKey`   | The value in this case will be sent only when the "Enter" button is pressed. It can be combined with `showEnterButton`                                                                      |
+| `options`         | Options for `select` in form `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]`. If not defiled, the `common.states` in the object must exist.         |
 
 ### `staticInfo`
 

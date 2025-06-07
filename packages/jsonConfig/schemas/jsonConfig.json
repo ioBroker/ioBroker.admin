@@ -931,6 +931,48 @@
                     "description": "The value in this case will be sent only when the \"Enter\" button is pressed. It can be combined with `showEnterButton`",
                     "type": "boolean"
                 },
+                "options": {
+                    "description": "Options for `select` in form `[\"value1\", \"value2\", ...]` or `[{\"value\": \"value\", \"label\": \"Value1\"}, \"value2\", ...]`. If not defiled, the `common.states` in the object must exist.",
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "label": {
+                                        "oneOf": [
+                                            {
+                                                "description": "Value label",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/multilingual"
+                                            }
+                                        ]
+                                    },
+                                    "value": {
+                                        "oneOf": [
+                                            {
+                                                "type": "number"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ]
+                                    },
+                                    "hidden": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": ["label", "value"]
+                            }
+                        ]
+                    }
+                },
                 "label": true,
                 "type": true,
                 "xs": true,
@@ -2812,7 +2854,35 @@
                                                         "type": "string"
                                                     },
                                                     {
-                                                        "type": "object"
+                                                        "type": "object",
+                                                        "additionalProperties": false,
+                                                        "properties": {
+                                                            "label": {
+                                                                "oneOf": [
+                                                                    {
+                                                                        "description": "Value label",
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "$ref": "#/definitions/multilingual"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "value": {
+                                                                "oneOf": [
+                                                                    {
+                                                                        "type": "number"
+                                                                    },
+                                                                    {
+                                                                        "type": "string"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "hidden": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": ["label", "value"]
                                                     }
                                                 ]
                                             }
@@ -5639,7 +5709,35 @@
                                                             "type": "string"
                                                         },
                                                         {
-                                                            "type": "object"
+                                                            "type": "object",
+                                                            "additionalProperties": false,
+                                                            "properties": {
+                                                                "label": {
+                                                                    "oneOf": [
+                                                                        {
+                                                                            "description": "Value label",
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "$ref": "#/definitions/multilingual"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "value": {
+                                                                    "oneOf": [
+                                                                        {
+                                                                            "type": "number"
+                                                                        },
+                                                                        {
+                                                                            "type": "string"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "hidden": {
+                                                                    "type": "boolean"
+                                                                }
+                                                            },
+                                                            "required": ["label", "value"]
                                                         }
                                                     ]
                                                 }

@@ -741,6 +741,8 @@ export interface ConfigItemState extends ConfigItem {
     showEnterButton?: boolean | ioBroker.StringOrTranslated;
     /** The value in this case will be sent only when the "Enter" button is pressed. It can be combined with `showEnterButton` */
     setOnEnterKey?: boolean;
+    /** Options for `select`. If not defiled, the `common.states` in the object must exist. */
+    options?: (string | ConfigItemSelectOption)[];
 }
 
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {
