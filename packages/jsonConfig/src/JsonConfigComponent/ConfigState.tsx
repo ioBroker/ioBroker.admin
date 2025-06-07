@@ -674,7 +674,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         </div>
                     );
                 }
-            } else if (this.state.obj.common.type === 'number' && this.state.obj.common.write) {
+            } else if (this.state.obj.common.type === 'number' && this.state.obj.common.write && !this.state.controlType) {
                 // Auto-detection of the type
                 const min =
                     this.props.schema.min === undefined
