@@ -1183,6 +1183,9 @@ This control is used mostly in dynamic forms
 | `highlight`         | (optional) Highlight line on mouse over                                                                                                         |
 | `booleanAsCheckbox` | (optional) Show boolean values as checkbox                                                                                                      |
 
+### `infoBox`
+From admin >= 7.6.17
+
 ### `deviceManager`
 
 show device manager. For that, the adapter must support device manager protocol. See iobroker/dm-utils.
