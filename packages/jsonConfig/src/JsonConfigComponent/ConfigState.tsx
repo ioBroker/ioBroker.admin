@@ -205,23 +205,15 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         label: string;
         value: number | string;
         hidden?: string | boolean;
+        color?: string;
     }[] {
         let states: {
             label: string;
             value: number | string;
             hidden?: string | boolean;
+            color?: string;
         }[];
-        if (!this.props.schema.options && this.state.obj.common.states) {
-            states = [];
-            Object.keys(this.state.obj.common.states).forEach(key => {
-                states.push({
-                    value: key,
-                    label: this.getText(this.state.obj.common.states[key], this.props.schema.noTranslation),
-                });
-            });
-        } else if (!states) {
-            states = [];
-        } else {
+        if (this.props.schema.options) {
             states = this.props.schema.options.map(state => {
                 if (typeof state === 'string') {
                     return { value: state, label: this.getText(state, this.props.schema.noTranslation) };
@@ -229,9 +221,21 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 return {
                     value: state.value,
                     label: this.getText(state.label, this.props.schema.noTranslation),
+                    color: state.color,
                 };
             });
+        } else if (this.state.obj.common.states) {
+            states = [];
+            Object.keys(this.state.obj.common.states).forEach(key => {
+                states.push({
+                    value: key,
+                    label: this.getText(this.state.obj.common.states[key], this.props.schema.noTranslation),
+                });
+            });
+        } else {
+            states = [];
         }
+
         return states;
     }
 
@@ -250,6 +254,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 (this.props.schema.options || this.state.obj.common.states))
         ) {
             const states = this.getNormalizedStates();
+            const item = states.find(it => it.value === this.state.stateValue);
 
             content = (
                 <FormControl fullWidth>
@@ -267,11 +272,15 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                                 void this.props.oContext.socket.setState(this.getObjectID(), value, false);
                             });
                         }}
+                        renderValue={(val: string) =>
+                            item?.color ? <div style={{ color: item.color }}>{item.label as string}</div> : val
+                        }
                     >
                         {states.map(item => (
                             <MenuItem
-                                key={item.value}
+                                key={(item.value ?? '').toString()}
                                 value={item.value}
+                                style={{ color: item.color }}
                             >
                                 ${item.label as string}
                             </MenuItem>

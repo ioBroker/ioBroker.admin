@@ -57,6 +57,7 @@
                 "icon",
                 "image",
                 "imageSendTo",
+                "infoBox",
                 "instance",
                 "interface",
                 "ip",
@@ -966,6 +967,10 @@
                                     },
                                     "hidden": {
                                         "type": "boolean"
+                                    },
+                                    "color":  {
+                                        "type": "string",
+                                        "description": "Color of the option"
                                     }
                                 },
                                 "required": ["label", "value"]
@@ -2858,6 +2863,7 @@
                                                         "additionalProperties": false,
                                                         "properties": {
                                                             "label": {
+                                                                "description": "Label of the option",
                                                                 "oneOf": [
                                                                     {
                                                                         "description": "Value label",
@@ -2869,6 +2875,7 @@
                                                                 ]
                                                             },
                                                             "value": {
+                                                                "description": "Value of the option",
                                                                 "oneOf": [
                                                                     {
                                                                         "type": "number"
@@ -2880,6 +2887,10 @@
                                                             },
                                                             "hidden": {
                                                                 "type": "boolean"
+                                                            },
+                                                            "color": {
+                                                                "description": "Color of the option",
+                                                                "type": "string"
                                                             }
                                                         },
                                                         "required": ["label", "value"]
@@ -3135,6 +3146,9 @@
                                             "group": {
                                                 "description": "Is it a group or not",
                                                 "type": "boolean"
+                                            },
+                                            "color": {
+                                                "type": "string"
                                             }
                                         }
                                     }
@@ -5735,6 +5749,9 @@
                                                                 },
                                                                 "hidden": {
                                                                     "type": "boolean"
+                                                                },
+                                                                "color": {
+                                                                    "type": "string"
                                                                 }
                                                             },
                                                             "required": ["label", "value"]
@@ -5854,6 +5871,9 @@
                                                         "group": {
                                                             "description": "Is this a group",
                                                             "type": "boolean"
+                                                        },
+                                                        "color": {
+                                                            "type": "string"
                                                         }
                                                     }
                                                 }
@@ -6441,6 +6461,74 @@
                                                 "required": ["label"]
                                             }
                                         ]
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "properties": {
+                                            "type": {
+                                                "const": "infoBox"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "text": {
+                                                "description": "Text to be shown",
+                                                "oneOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/multilingual"
+                                                    }
+                                                ]
+                                            },
+                                            "title": {
+                                                "description": "Title of the info box",
+                                                "oneOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/multilingual"
+                                                    }
+                                                ]
+                                            },
+                                            "boxType": {
+                                                "description": "Type of the box",
+                                                "type": "string",
+                                                "enum": ["info", "warning", "error", "ok"]
+                                            },
+                                            "closable": {
+                                                "description": "If the box is closeable",
+                                                "type": "boolean"
+                                            },
+                                            "closed": {
+                                                "description": "Use together with `closeable: true`. If the box is closed or not. In this case, it will be controlled from outside",
+                                                "type": "boolean"
+                                            },
+                                            "iconPosition": {
+                                                "description": "Position of the icon",
+                                                "type": "string",
+                                                "enum": ["top", "middle"]
+                                            },
+                                            "type": true,
+                                            "allowSaveWithError": true,
+                                            "xs": true,
+                                            "sm": true,
+                                            "md": true,
+                                            "lg": true,
+                                            "xl": true,
+                                            "newLine": true,
+                                            "hidden": true,
+                                            "hideOnlyControl": true,
+                                            "noTranslation": true,
+                                            "style": true,
+                                            "expertMode": true
+                                        },
+                                        "additionalProperties": false,
+                                        "required": ["type", "text"]
                                     }
                                 },
                                 {
