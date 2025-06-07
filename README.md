@@ -88,6 +88,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+- (@GermanBluefox) Improvements on JSONConfig component `state`
+- (@GermanBluefox) Added `infoBox` JSONConfig component
+
 ### 7.6.18 (2025-05-30)
 
 - (@GermanBluefox) Added OAuth2 authentication to JSONConfig components
