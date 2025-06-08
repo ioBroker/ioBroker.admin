@@ -9,7 +9,8 @@ import {
     ListSubheader,
     Box,
     Chip,
-    ListItemText, Checkbox,
+    ListItemText,
+    Checkbox,
 } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
@@ -33,7 +34,13 @@ interface ConfigInstanceSelectProps extends ConfigGenericProps {
 }
 
 interface ConfigInstanceSelectState extends ConfigGenericState {
-    selectOptions?: { label: string; value: number | string; group?: boolean; hidden?: string | boolean }[];
+    selectOptions?: {
+        label: string;
+        value: number | string;
+        group?: boolean;
+        hidden?: string | boolean;
+        color?: string;
+    }[];
 }
 
 class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstanceSelectState> {
@@ -56,6 +63,7 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
             value: number | string;
             group?: boolean;
             hidden?: string | boolean;
+            color?: string;
         }[] = [];
 
         (this.props.schema.options || []).forEach(item => {
@@ -76,12 +84,14 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                     label: this.getText(item.label, this.props.schema.noTranslation),
                     value: item.value,
                     group: true,
+                    color: item.color,
                 });
                 groupItem.items.forEach(it =>
                     selectOptions.push({
                         label: this.getText(it.label, this.props.schema.noTranslation),
                         value: it.value,
                         hidden: it.hidden,
+                        color: item.color,
                     }),
                 );
             } else {
@@ -89,6 +99,7 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                     label: this.getText(item.label, this.props.schema.noTranslation),
                     value: item.value,
                     hidden: item.hidden,
+                    color: item.color,
                 });
             }
         });
@@ -173,7 +184,7 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                     value={value || '_'}
                     renderValue={(val: string | string[]) =>
                         this.props.schema.multiple ? (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                                 {(val as string[]).map((v: string) => {
                                     const it = selectOptions.find(_item => _item.value === v);
                                     if (it || this.props.schema.showAllValues !== false) {
@@ -187,9 +198,13 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                                     }
                                     return null;
                                 })}
-                            </Box>
+                            </div>
+                        ) : item?.color ? (
+                            <div style={{ color: item.color }}>{item?.label === undefined ? val : item.label}</div>
+                        ) : item?.label === undefined ? (
+                            val
                         ) : (
-                            (item?.label === undefined ? val : item.label)
+                            item.label
                         )
                     }
                     onChange={e => {
@@ -209,7 +224,10 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                     {selectOptions.map((it, i) => {
                         if (it.group) {
                             return (
-                                <ListSubheader key={i}>
+                                <ListSubheader
+                                    key={i}
+                                    style={{ color: it.color }}
+                                >
                                     {it.label}
                                 </ListSubheader>
                             );
@@ -238,7 +256,10 @@ class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstan
                                         }}
                                     />
                                 ) : null}
-                                <ListItemText primary={it.label} />
+                                <ListItemText
+                                    primary={it.label}
+                                    style={{ color: it.color }}
+                                />
                             </MenuItem>
                         );
                     })}

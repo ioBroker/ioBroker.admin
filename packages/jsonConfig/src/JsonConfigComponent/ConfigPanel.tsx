@@ -30,6 +30,7 @@ import ConfigFunc from './ConfigFunc';
 import ConfigIP from './ConfigIP';
 import ConfigImageSendTo from './ConfigImageSendTo';
 import ConfigImageUpload from './ConfigImageUpload';
+import ConfigInfoBox from './ConfigInfoBox';
 import ConfigInstanceSelect from './ConfigInstanceSelect';
 import ConfigInterface from './ConfigInterface';
 import ConfigJsonEditor from './ConfigJsonEditor';
@@ -87,6 +88,7 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     header: ConfigStaticHeader,
     image: ConfigImageUpload,
     imageSendTo: ConfigImageSendTo,
+    infoBox: ConfigInfoBox,
     instance: ConfigInstanceSelect,
     interface: ConfigInterface,
     ip: ConfigIP,

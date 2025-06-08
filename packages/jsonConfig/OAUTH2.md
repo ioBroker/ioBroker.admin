@@ -25,6 +25,7 @@ Here is an example of how to add a component for the Spotify service:
 
 ## Backend code
 Add TokenRefresher.ts to your backend code. This file is responsible for handling the OAuth2 token refresh logic.
+
 ```Typescript
 import axios from 'axios';
 
@@ -190,12 +191,23 @@ export class SpotifyPremiumAdapter extends Adapter {
         this.tokenWorker = new TokenRefresher(this, 'spotify');
         this.tokenWorker.getAccessToken()
             .then(accessToken => {
-                this.log.info('Spotify OAuth2 Token Refresher is ready: ${accessToken');
+                this.log.info(`Spotify OAuth2 Token Refresher is ready: ${accessToken}`);
             })
             .catch(error => {
                 this.log.error(`Error initializing Spotify OAuth2 Token Refresher: ${error}`);
             });
         // Your other initialization code...
+    }
+    
+    onStateChange(id: string, state: ioBroker.State | null | undefined): void {
+        this.tokenWorker?.onStateChange(id, state);
+        // Your other state change code...
+    }
+    
+    onUnload(callback: () => void): void {
+        this.tokenWorker?.destroy();
+        // Your other unload code...
+        callback();
     }
 }
 ```

@@ -10,7 +10,7 @@
         "ldittmar <iobroker@lmdsoft.de>"
     ],
     "engines": {
-        "node": ">=16.0.0"
+        "node": ">=18.0.0"
     },
     "homepage": "https://github.com/ioBroker/ioBroker.admin",
     "repository": {
@@ -24,7 +24,6 @@
     ],
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.3",
-        "@iobroker/i18n": "^0.3.1",
         "@iobroker/socket-classes": "^2.2.18",
         "@iobroker/webserver": "^1.2.8",
         "@iobroker/ws": "^2.1.0",
@@ -38,7 +37,7 @@
         "express-session": "^1.18.1",
         "json5": "^2.2.3",
         "mime": "^3.0.0",
-        "semver": "^7.7.1"
+        "semver": "^7.7.2"
     },
     "devDependencies": {
         "@iobroker/build-tools": "^2.0.15",
