@@ -88,7 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.19 (2025-06-08)
 
 - (@GermanBluefox) Improvements on JSONConfig component `state`
 - (@GermanBluefox) Added `infoBox` JSONConfig component
@@ -111,12 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 - (@GermanBluefox) Added debug logs to authentication
 - (@GermanBluefox) Corrected the delete button if noDelete flag set for table (JSONConfig)
-
-### 7.6.14 (2025-04-23)
-
-- (@GermanBluefox) Added the device type selector and icon to adapter-react-v5
-- (@GermanBluefox) Fixed authentication issues with oauth2
-- (@Jey-Cee) Corrected the device manager icon upload
 
 ## License
 
