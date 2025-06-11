@@ -23,10 +23,13 @@ export {
     type FileViewerState,
 } from './Components/FileViewer';
 export { getSystemIcon, getSelectIdIcon, Icon } from './Components/Icon';
-export { isDeviceIcon, type DeviceType, IconDeviceType } from './Components/IconDeviceType';
 export { IconPicker } from './Components/IconPicker';
 export { IconSelector } from './Components/IconSelector';
 export { Image } from './Components/Image';
+export { DeviceTypeSelector } from './Components/DeviceType/DeviceTypeSelector';
+export { DeviceTypeIcon } from './Components/DeviceType/DeviceTypeIcon';
+export { STATES_NAME_ICONS } from './Components/DeviceType/DeviceTypeOptions';
+export { extendDeviceTypeTranslation } from './Components/DeviceType/deviceTypeTranslations';
 export { Loader } from './Components/Loader';
 export { Logo } from './Components/Logo';
 export { MDUtils } from './Components/MDUtils';
@@ -42,6 +45,7 @@ export {
     getSelectIdIconFromObjects,
     ITEM_IMAGES,
 } from './Components/ObjectBrowser';
+export { InfoBox } from './Components/InfoBox';
 export { Router } from './Components/Router';
 export { SaveCloseButtons } from './Components/SaveCloseButtons';
 export { Schedule, type ScheduleConfig } from './Components/Schedule';
@@ -61,7 +65,8 @@ export { convertCronToText } from './Components/SimpleCron/cronText';
 export { LoaderVendor } from './Components/Loaders/Vendor';
 export { LoaderPT } from './Components/Loaders/PT';
 export { LoaderMV } from './Components/Loaders/MV';
-export { type IconProps } from './icons/IconProps';
+export { type IconProps } from './Components/Icon';
+export { type IconsIconProps } from './icons/types';
 export { IconAdapter } from './icons/IconAdapter';
 export { IconAlias } from './icons/IconAlias';
 export { IconButtonImage } from './icons/IconButtonImage';

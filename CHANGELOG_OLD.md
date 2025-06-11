@@ -1,12 +1,38 @@
 # Older changes
+## 7.6.14 (2025-04-23)
+
+- (@GermanBluefox) Added the device type selector and icon to adapter-react-v5
+- (@GermanBluefox) Fixed authentication issues with oauth2
+- (@Jey-Cee) Corrected the device manager icon upload
+
+## 7.6.8 (2025-04-19)
+
+- (@GermanBluefox) Allowed following of the `url` types in the object browser
+- (@GermanBluefox) Allowed login by pressing the enter key
+
+## 7.6.7 (2025-04-15)
+   
+- (@GermanBluefox) Corrected login with password managers
+
+## 7.6.5 (2025-04-08)
+
+-   (@GermanBluefox) Corrected login with password managers
+-   (@GermanBluefox) Added support for the multiple selection for JSON config
+
+## 7.6.4 (2025-04-01)
+
+-   (@GermanBluefox) Allowed the usage of node-red together with admin with authentication.
+-   (@GermanBluefox) Added some options for JSON-Config `state`
+-   (@GermanBluefox) Added possibility to disable basic authentication
+-   (@GermanBluefox) Changed the order of authentications. Basic authentication will be checked as the last one.
+
+## 7.6.3 (2025-03-15)
+-   (@GermanBluefox) Corrected the layout of JSON tabs
+-   (@mcm1957) Schema at `ioBroker.admin` is now used to validate jsonConfig.json file
+-   (@GermanBluefox) Corrected the small GUI issues
+
 ## 7.6.2 (2025-03-09)
 -   (@GermanBluefox) Corrected loading of custom JSON components
-
-## 7.6.1 (2025-03-08)
--   (@GermanBluefox) Added support for JSON5 in JsonConfig editor component 
--   (@GermanBluefox) GUI build migrated to vite 
--   (@GermanBluefox) Custom JSON components could be now written in TypeScript 
--   (@GermanBluefox) Added support for Tab as JSONConfig
 
 ## 7.6.1 (2025-03-08)
 -   (@GermanBluefox) Added support for JSON5 in JsonConfig editor component 

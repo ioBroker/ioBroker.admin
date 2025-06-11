@@ -670,10 +670,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return !!state?.val && this.isAlive(id);
     }
 
-    isConnected(id: string): boolean | string | null {
+    getConnected(id: string): boolean | string | null {
         const instance = this.state.instances[id];
         return this.states[`${instance.id}.info.connection`]
-            ? (this.states[`${instance.id}.info.connection`].val as string | boolean) && this.isAlive(id)
+            ? this.isAlive(id) && (this.states[`${instance.id}.info.connection`].val as string | boolean)
             : null;
     }
 
@@ -737,7 +737,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const supportCompact = instance.compact || false;
             const alive = this.isAlive(id);
             const connectedToHost = this.isConnectedToHost(id);
-            const connected = this.isConnected(id);
+            const connected: string | boolean | null = this.getConnected(id);
             const name = this.getName(instance.obj);
             const logLevel = (this.states[`${id}.logLevel`]?.val as ioBroker.LogLevel) || instance.loglevel;
             const logLevelObject = instance.loglevel;
@@ -1374,6 +1374,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                                 endAdornment: this.state.filterText ? (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            tabIndex={-1}
                                             size="small"
                                             onClick={() => {
                                                 this.inputRef.current.value = '';

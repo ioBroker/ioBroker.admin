@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.8",
+    "version": "7.6.19",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,84 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.19": {
+        "en": "Improvements on JSONConfig component `state`\nAdded `infoBox` JSONConfig component",
+        "de": "Verbesserungen der JSONConfig-Komponente `state `\nHinzugefügt `infoBox` JSONConfig Komponente",
+        "ru": "Улучшение состояния компонента JSONConfig пункт\nДобавлен компонент «infoBox» JSONConfig",
+        "pt": "Melhorias no componente JSONConfig `state `\nAdicionado `infoBox` componente JSONConfig",
+        "nl": "Verbeteringen in de JSONConfig component state Wat\nToegevoegd ",
+        "fr": "Amélioration de la composante JSONConfig \"\nAjout du composant `infoBox` JSONConfig",
+        "it": "Miglioramenti sul componente JSONConfig `state #\nAggiunto `infoBox` JSONConfig componente",
+        "es": "Mejoras en el componente JSONConfig `estado `\nComponente de `infoBox` JSONConfig",
+        "pl": "Poprawa stanu komponentu JSONConfig '\nDodano 'infoBox' komponent JSONConfig",
+        "uk": "Удосконалення компонентів JSONConfig `state й\nДодано `infoBox` JSONConfig компонент",
+        "zh-cn": "改进JSONConfig组件`状态' `(a). `\n添加了“ infoBox” JSONConfig 组件"
+      },
+      "7.6.18": {
+        "en": "Added OAuth2 authentication to JSONConfig components",
+        "de": "OAuth2 Authentifizierung zu JSONConfig Komponenten hinzugefügt",
+        "ru": "Добавлена аутентификация OAuth2 для компонентов JSONConfig",
+        "pt": "Autenticação OAuth2 adicionada aos componentes JSONConfig",
+        "nl": "OAuth2-authenticatie toegevoegd aan JSONConfig-componenten",
+        "fr": "Ajout de l'authentification OAuth2 aux composants JSONConfig",
+        "it": "Aggiunta autenticazione OAuth2 ai componenti JSONConfig",
+        "es": "Añadido autenticación OAuth2 a componentes JSONConfig",
+        "pl": "Dodano uwierzytelnianie OAuth2 do komponentów JSONConfig",
+        "uk": "Додано автентифікації OAuth2 до компонентів JSONConfig",
+        "zh-cn": "添加 OAuth2 认证到 JSONConfig 组件"
+      },
+      "7.6.17": {
+        "en": "Small changes on GUI, JSONConfig and Device Manager",
+        "de": "Kleine Änderungen an GUI, JSONConfig und Device Manager",
+        "ru": "Небольшие изменения в GUI, JSONConfig и диспетчере устройств",
+        "pt": "Pequenas mudanças no GUI, JSONConfig e Device Manager",
+        "nl": "Kleine wijzigingen op GUI, JSONConfig en Apparaatbeheer",
+        "fr": "Petits changements sur GUI, JSONConfig et Device Manager",
+        "it": "Piccoli cambiamenti su GUI, JSONConfig e Gestione dispositivi",
+        "es": "Pequeños cambios en GUI, JSONConfig y Device Manager",
+        "pl": "Małe zmiany na GUI, JSONConfig i menedżer urządzeń",
+        "uk": "Невеликі зміни в GUI, JSONConfig і диспетчер пристроїв",
+        "zh-cn": "图形用户界面、 JSONConfig 和设备管理器的小变化"
+      },
+      "7.6.16": {
+        "en": "Added debug logs to authentication\nCorrected layout of installation log\nFixed indication of connection state for servers",
+        "de": "Debug Protokolle zur Authentifizierung hinzugefügt\nKorrigiertes Layout des Installationsprotokolls\nFeste Anzeige des Verbindungszustands für Server",
+        "ru": "Добавлены отладочные журналы для аутентификации\nИсправленная компоновка журнала установки\nФиксированная индикация состояния соединения для серверов",
+        "pt": "Registos de depuração adicionados para autenticação\nLayout corrigido do log de instalação\nIndicação fixa do estado de conexão para servidores",
+        "nl": "Debuglogs toegevoegd aan authenticatie\nGecorrigeerde indeling van het installatielogboek\nVaste aanduiding van verbindingsstatus voor servers",
+        "fr": "Ajout des journaux de débogage à l'authentification\nMise en page corrigée du journal d'installation\nIndications fixes de l'état de connexion pour les serveurs",
+        "it": "Aggiunti i log del debug all'autenticazione\nLayout corretto del registro di installazione\nIndicazione fissa dello stato di connessione per i server",
+        "es": "Registros de depuración añadidos a la autenticación\nDiseño corregido del registro de instalación\nIndicación fija del estado de conexión para servidores",
+        "pl": "Dodano logi debugowania do uwierzytelniania\nPoprawiony układ dziennika instalacji\nStałe wskazanie stanu połączenia dla serwerów",
+        "uk": "Додано дебвугові колоди для автентифікації\nВиправлена схема установки колоди\nФіксована індикація стану підключення для серверів",
+        "zh-cn": "添加调试日志到认证\n安装日志的校正布局\n服务器连接状态的固定指示"
+      },
+      "7.6.15": {
+        "en": "Added debug logs to authentication\nCorrected the delete button if noDelete flag set for table (JSONConfig)",
+        "de": "Debug Protokolle zur Authentifizierung hinzugefügt\nKorrektur der Löschtaste, wenn noDelete-Flag-Set für Tabelle (JSONConfig)",
+        "ru": "Добавлены отладочные журналы для аутентификации\nИсправлена кнопка удаления, если для таблицы установлен флаг noDelete (JSONConfig)",
+        "pt": "Registos de depuração adicionados para autenticação\nCorrigido o botão de exclusão se nãoExcluir a bandeira definida para tabela (JSONConfig)",
+        "nl": "Debuglogs toegevoegd aan authenticatie\nDe delete knop corrigeren als geenDelete vlag ingesteld voor tabel (JSONConfig)",
+        "fr": "Ajout des journaux de débogage à l'authentification\nCorrection du bouton de suppression si aucun drapeauDelete est défini pour la table (JSONConfig)",
+        "it": "Aggiunti i log del debug all'autenticazione\nCorretto il pulsante di eliminazione se noCancella la bandiera impostata per la tabella (JSONConfig)",
+        "es": "Registros de depuración añadidos a la autenticación\nCorregido el botón de eliminación si noDelete flag set for table (JSONConfig)",
+        "pl": "Dodano logi debugowania do uwierzytelniania\nPoprawiono przycisk Usuń jeśli nieUsuwanie znacznika dla tabeli (JSONConfig)",
+        "uk": "Додано дебвугові колоди для автентифікації\nВиправлено помилку видалення, якщо не встановлено прапорець для таблиці (JSONConfig)",
+        "zh-cn": "添加调试日志到认证\n如果为表格设置了不删除标记( JSONConfig), 则修改了删除按钮"
+      },
+      "7.6.14": {
+        "en": "Added the device type selector and icon to adapter-react-v5\nFixed authentication issues with oauth2\nCorrected the device manager icon upload",
+        "de": "Hinzufügen der Gerätetyp-Selektor und Icon zu adapter-react-v5\nBehobene Authentifizierungsprobleme mit oauth2\nKorrektur des Gerätemanager-Symbols Upload",
+        "ru": "Добавлен селектор типа устройства и значок для адаптера-реакции-v5\nПроблемы аутентификации с oauth2\nИсправлена загрузка значка диспетчера устройств",
+        "pt": "Adicionado o tipo de dispositivo seletor e ícone para adaptador-react-v5\nProblemas de autenticação corrigidos com oauth2\nCorrigido o upload do ícone do gerenciador de dispositivos",
+        "nl": "De apparaattypekiezer en het pictogram aan adapter-react-v5 toegevoegd\nVaste authenticatieproblemen met oauth2\nDe pictogramupload van de apparaatbeheerder corrigeren",
+        "fr": "Ajout du sélecteur de type de périphérique et de l'icône à l'adaptateur-réact-v5\nProblèmes d'authentification corrigés avec oauth2\nCorrection du téléchargement de l'icône du gestionnaire de périphérique",
+        "it": "Aggiunto il selettore del tipo del dispositivo e l'icona per adattatore-react-v5\nProblemi di autenticazione fissi con oauth2\nCorretto il caricamento dell'icona del gestore del dispositivo",
+        "es": "Añadido el selector de tipo dispositivo e icono a adaptador-react-v5\nCuestiones de autenticación fija con oauth2\nCorregido el icono del administrador del dispositivo subir",
+        "pl": "Dodano przełącznik typu urządzenia i ikonę do adaptera -react- v5\nStałe problemy uwierzytelniania z oauth2\nPoprawiono wysyłanie ikony menedżera urządzeń",
+        "uk": "Додано вибірку типу пристрою та іконку для адаптера-реакт-v5\nВиправлено проблеми автентифікації з oauth2\nВиправлено помилку диспетчера пристрою",
+        "zh-cn": "添加设备类型选择器和图标到适配器- react-v5\n与Oauth2 的固定认证问题\n修正设备管理器图标上传"
+      },
       "7.6.8": {
         "en": "Allowed following of the `url` types in the object browser\nAllowed login by pressing the enter key",
         "de": "Erlaubt nach den `url`-Typen im Objektbrowser\nErlaubte Anmeldung durch Drücken des Eingabeschlüssels",
@@ -31,84 +109,6 @@
         "pl": "Dozwolone śledzenie typów 'url' w przeglądarce obiektu\nDozwolone logowanie poprzez naciśnięcie klawisza enter",
         "uk": "Визначено наступні типи `url` у браузері об’єкта\nДозволений логін, натиснувши кнопку введення",
         "zh-cn": "允许跟踪对象浏览器中的“ url” 类型\n通过按下输入键允许登录"
-      },
-      "7.6.7": {
-        "en": "Corrected login with password managers",
-        "de": "Korrigierte Anmeldung mit Passwortmanagern",
-        "ru": "Исправлен логин с менеджерами паролей",
-        "pt": "Login correto com gestores de senha",
-        "nl": "Gecorrigeerde login met wachtwoordbeheerders",
-        "fr": "Connexion corrigée avec les gestionnaires de mots de passe",
-        "it": "Collegamento corretto con password manager",
-        "es": "Acceso corregido con gestores de contraseña",
-        "pl": "Poprawione logowanie z menedżerami haseł",
-        "uk": "Виправлений логін з менеджерами паролів",
-        "zh-cn": "已更正密码管理器登录"
-      },
-      "7.6.5": {
-        "en": "Corrected login with password managers\nAdded support for the multiple selection for JSON config",
-        "de": "Korrigierte Anmeldung mit Passwortmanagern\nUnterstützung für die Mehrfachauswahl für JSON config",
-        "ru": "Исправлен логин с менеджерами паролей\nДобавлена поддержка множественного выбора конфигурации JSON",
-        "pt": "Login correto com gestores de senha\nAdicionado suporte para a seleção múltipla para JSON config",
-        "nl": "Gecorrigeerde login met wachtwoordbeheerders\nOndersteuning toegevoegd voor de meervoudige selectie voor JSON config",
-        "fr": "Connexion corrigée avec les gestionnaires de mots de passe\nAjout du support pour la sélection multiple pour la configuration JSON",
-        "it": "Collegamento corretto con password manager\nAggiunto il supporto per la selezione multipla per JSON config",
-        "es": "Acceso corregido con gestores de contraseña\nSoporte añadido para la selección múltiple para JSON config",
-        "pl": "Poprawione logowanie z menedżerami haseł\nDodano wsparcie dla wielokrotnego wyboru dla konfiguracji JSON",
-        "uk": "Виправлений логін з менеджерами паролів\nДодано підтримку для декількох вибору для налаштування JSON",
-        "zh-cn": "已更正密码管理器登录\n为 JSON 配置的多重选择添加支持"
-      },
-      "7.6.4": {
-        "en": "Allowed the usage of node-red together with admin with authentication.\nAdded some options for JSON-Config `state`\nAdded possibility to disable basic authentication\nChanged the order of authentications. Basic authentication will be checked as the last one.",
-        "de": "Erlaubte die Verwendung von node-red zusammen mit admin mit Authentifizierung.\nEinige Optionen für JSON-Config `state` hinzugefügt\nZusätzliche Möglichkeit, grundlegende Authentifizierung zu deaktivieren\nÄnderte die Reihenfolge der Authentifizierungen. Die grundlegende Authentifizierung wird als letztes überprüft.",
-        "ru": "Разрешено использование нод-красного вместе с админом с аутентификацией.\nДобавлены некоторые опции для JSON-Config 'state'\nДобавлена возможность отключения базовой аутентификации\nИзменился порядок аутентификации. Базовая аутентификация будет проверяться как последняя.",
-        "pt": "Permitiu o uso do nó-vermelho em conjunto com admin com autenticação.\nAdicionado algumas opções para JSON-Config `state`\nAdicionado possibilidade de desativar a autenticação básica\nAlterou a ordem de autenticação. A autenticação básica será verificada como a última.",
-        "nl": "Toegestaan het gebruik van node-red samen met admin met authenticatie.\nToegevoegd enkele opties voor JSON-Config \nToegevoegde mogelijkheid om basisauthenticatie uit te schakelen\nVeranderde de volgorde van de authenticaties. De basisauthenticatie wordt als laatste gecontroleerd.",
-        "fr": "Permet l'utilisation de node-red avec admin avec authentification.\nAjout de certaines options pour JSON-Config `état`\nPossibilité supplémentaire de désactiver l'authentification de base\nChangement de l'ordre des authentifications. L'authentification de base sera vérifiée comme la dernière.",
-        "it": "Consentito l'utilizzo di nodo-rosso insieme ad admin con l'autenticazione.\nAggiunto alcune opzioni per JSON-Config `state`\nAggiunta possibilità di disabilitare l'autenticazione di base\nModificato l'ordine delle autenticazione. L'autenticazione di base verrà controllata come ultima.",
-        "es": "Permitió el uso de nodo-red junto con el administrador con autenticación.\nAñadido algunas opciones para JSON-Config `state`\nMayor posibilidad de desactivar la autenticación básica\nCambió el orden de autenticaciones. La autenticación básica será revisada como la última.",
-        "pl": "Umożliwił korzystanie z node-red wraz z admin z uwierzytelnianiem.\nDodano kilka opcji dla 'stanu' JSON- Config\nDodano możliwość wyłączenia podstawowego uwierzytelniania\nZmieniłem kolejność uwierzytelniania. Podstawowe uwierzytelnianie zostanie sprawdzone jako ostatnie.",
-        "uk": "Дозволено використання вузла-червоного разом з адміністратором з автентифікацією.\nJSON-Config `state`\nДодана можливість відключити базову автентифікацію\nЗмінено порядок автентифікації. Базова автентитація буде перевірятися як останній.",
-        "zh-cn": "允许使用节点红和具有认证功能的管理员.\n添加了 JSON-Config `状态'的一些选项\n添加禁用基本认证的可能性\n更改认证顺序. 基本认证将被检查为最后一个 ."
-      },
-      "7.6.3": {
-        "en": "Corrected the layout of JSON tabs\nSchema at `ioBroker.admin` is now used to validate jsonConfig.json file\nCorrected the small GUI issues",
-        "de": "Korrektur des Layouts von JSON Tabs\nSchema bei `ioBroker.admin` wird nun verwendet, um jsonConfig zu validieren. json file\nKorrektur der kleinen GUI-Probleme",
-        "ru": "Исправлен макет вкладок JSON\nСхема на «ioBroker.admin» теперь используется для проверки jsonConfig. Файл Джонсона\nИсправлены небольшие проблемы GUI",
-        "pt": "Corrigido o layout das abas JSON\nSchema at `ioBroker.admin` agora é usado para validar jsonConfig. arquivo json\nCorrigido os pequenos problemas de GUI",
-        "nl": "De indeling van JSON-tabbladen corrigeren\nSchema bij  json-bestand\nDe kleine GUI-problemen gecorrigeerd",
-        "fr": "Correction de la mise en page des onglets JSON\nLe schéma à `ioBroker.admin` est maintenant utilisé pour valider jsonConfig. fichier json\nCorrection des petits problèmes d'interface utilisateur",
-        "it": "Corretto il layout delle schede JSON\nLo schema a `ioBroker.admin` è ora usato per convalidare jsonConfig. file json\nCorretto il piccolo problema della GUI",
-        "es": "Corregido el diseño de las pestañas JSON\nSchema en `ioBroker.admin` ahora se utiliza para validar jsonConfig. json file\nCorregidos los pequeños problemas de GUI",
-        "pl": "Poprawiono układ kart JSON\nSchema 'iBroker.admin' jest teraz używana do walidacji jsonConfig. plik json\nNaprawiono małe problemy z GUI",
-        "uk": "Виправлено макет вкладок JSON\nШума в `ioBroker.admin` тепер використовується для перевірки jsonConfig. файл json\nВиправлено маленькі проблеми GUI",
-        "zh-cn": "纠正了 JSON 标签的布局\n“ioBroker.admin”的Schema现在被用来验证jsonConfig。 json 文件\n更正了小型图形用户界面问题"
-      },
-      "7.6.2": {
-        "en": "Corrected loading of custom JSON components",
-        "de": "Korrigierte Beladung von benutzerdefinierten JSON-Komponenten",
-        "ru": "Исправленная загрузка пользовательских компонентов JSON",
-        "pt": "Carregamento correto de componentes JSON personalizados",
-        "nl": "Gecorrigeerd laden van aangepaste JSON-componenten",
-        "fr": "Chargement corrigé des composants JSON personnalisés",
-        "it": "Caricamento corretto dei componenti JSON personalizzati",
-        "es": "Carga corregida de componentes JSON personalizados",
-        "pl": "Poprawiony załadunek niestandardowych komponentów JSON",
-        "uk": "Корисне завантаження компонентів JSON",
-        "zh-cn": "修正自定义 JSON 组件的装入"
-      },
-      "7.6.1": {
-        "en": "Added support for JSON5 in JsonConfig editor component \nGUI build migrated to vite \nCustom JSON components could be now written in TypeScript \nAdded support for Tab as JSONConfig",
-        "de": "Unterstützung für JSON5 in JsonConfig Editor-Komponente hinzugefügt\nGUI bauen migriert zu vite\nBenutzerdefinierte JSON Komponenten könnten jetzt in TypeScript geschrieben werden\nUnterstützung für Tab als JSONConfig hinzugefügt",
-        "ru": "Поддержка JSON5 в компоненте редактора JsonConfig\nGUI build перекочевал в Vite\nНастраиваемые компоненты JSON теперь могут быть записаны в TypeScript\nДобавлена поддержка Tab в виде JSONConfig",
-        "pt": "Adicionado suporte para JSON5 em JsonConfig editor componente\nGUI build migrated to vite\nComponentes JSON personalizados podem agora ser escritos no TypeScript\nAdicionado suporte para Tab como JSONConfig",
-        "nl": "Ondersteuning toegevoegd voor JSON5 in JsonConfig editor component\nGUI build gemigreerd naar vite\nAangepaste JSON-componenten kunnen nu worden geschreven in TypeScript\nOndersteuning toegevoegd voor Tab als JSONConfig",
-        "fr": "Ajout du support pour JSON5 dans le composant de l'éditeur JsonConfig\nGUI build migré vers vite\nLes composants JSON personnalisés peuvent maintenant être écrits dans TypeScript\nAjout du support pour Tab sous JSONConfig",
-        "it": "Aggiunto il supporto per JSON5 in JsonConfig componente editor\nGUI costruire migrato per vite\nI componenti JSON personalizzati potrebbero essere ora scritti in TypeScript\nAggiunto il supporto per Tab come JSONConfig",
-        "es": "Añadido soporte para JSON5 en JsonConfig editor componente\nGUI build migrated to vite\nLos componentes JSON personalizados pueden ser escritos ahora en TipoScript\nAñadido soporte para Tab como JSONConfig",
-        "pl": "Dodano wsparcie dla JSON5 w komponencie edytora JsonConfig\nGUI build migrated to vite\nKomponenty Custom JSON mogą być teraz zapisane w TypeScript\nDodano wsparcie dla Tab jako JSONConfig",
-        "uk": "Додано підтримку JSON5 в JsonConfig компонент редактора\nСтворення графічних інтерфейсів мігрувати\nПризначені для користувача компоненти JSON можуть бути написані в TypeScript\nДодано підтримку Таблиці як JSONConfig",
-        "zh-cn": "在 JsonConfig 编辑器组件中添加对 JSON5 的支持\nGUI 构建迁移到 vite\n自定义 JSON 组件现在可以写入 TypeScript\n添加标签为 JSONConfig 的支持"
       }
     },
     "desc": {

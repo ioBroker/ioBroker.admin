@@ -84,34 +84,33 @@ This project uses icons from [Flaticon](https://www.flaticon.com/).
 ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
+
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.6.8 (2025-04-19)
+### 7.6.19 (2025-06-08)
 
-- (@GermanBluefox) Allowed following of the `url` types in the object browser
-- (@GermanBluefox) Allowed login by pressing the enter key
+- (@GermanBluefox) Improvements on JSONConfig component `state`
+- (@GermanBluefox) Added `infoBox` JSONConfig component
 
-### 7.6.7 (2025-04-15)
-   
-- (@GermanBluefox) Corrected login with password managers
+### 7.6.18 (2025-05-30)
 
-### 7.6.5 (2025-04-08)
+- (@GermanBluefox) Added OAuth2 authentication to JSONConfig components
 
--   (@GermanBluefox) Corrected login with password managers
--   (@GermanBluefox) Added support for the multiple selection for JSON config
+### 7.6.17 (2025-05-08)
 
-### 7.6.4 (2025-04-01)
+- (@GermanBluefox) Small changes on GUI, JSONConfig and Device Manager
 
--   (@GermanBluefox) Allowed the usage of node-red together with admin with authentication.
--   (@GermanBluefox) Added some options for JSON-Config `state`
--   (@GermanBluefox) Added possibility to disable basic authentication
--   (@GermanBluefox) Changed the order of authentications. Basic authentication will be checked as the last one.
+### 7.6.16 (2025-05-02)
 
-### 7.6.3 (2025-03-15)
--   (@GermanBluefox) Corrected the layout of JSON tabs
--   (@mcm1957) Schema at `ioBroker.admin` is now used to validate jsonConfig.json file
--   (@GermanBluefox) Corrected the small GUI issues
+- (@GermanBluefox) Added debug logs to authentication
+- (@GermanBluefox) Corrected layout of installation log
+- (@GermanBluefox) Fixed indication of connection state for servers
+
+### 7.6.15 (2025-04-29)
+
+- (@GermanBluefox) Added debug logs to authentication
+- (@GermanBluefox) Corrected the delete button if noDelete flag set for table (JSONConfig)
 
 ## License
 

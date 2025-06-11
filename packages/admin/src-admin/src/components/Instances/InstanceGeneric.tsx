@@ -361,7 +361,7 @@ export interface InstanceItem {
     name: string;
     stoppedWhenWebExtension: boolean | undefined;
     running: boolean;
-    connected: boolean | string;
+    connected: boolean | string | null;
     connectedToHost: boolean;
     alive: boolean;
     inputOutput: {
@@ -1034,6 +1034,7 @@ export default abstract class InstanceGeneric<
                     ...(this.props.instance.mode === 'daemon' || this.props.instance.mode === 'schedule'
                         ? this.styles[status]
                         : this.styles.transparent),
+                    // Do not check this.props.item.connected === '' as it is a server mode and it is OK
                     ...(this.props.item.connectedToHost && this.props.item.alive && this.props.item.connected === false
                         ? this.styles.orangeDevice
                         : undefined),

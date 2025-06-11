@@ -17,7 +17,7 @@ interface ConfigUUIDState extends ConfigGenericState {
     uuid?: string;
 }
 
-class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
+export default class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
     async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
@@ -37,6 +37,7 @@ class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
                     input: {
                         endAdornment: (
                             <IconButton
+                                tabIndex={-1}
                                 onClick={() => {
                                     Utils.copyToClipboard(this.state.uuid);
                                     window.alert(I18n.t('ra_Copied %s', this.state.uuid));
@@ -58,5 +59,3 @@ class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
         );
     }
 }
-
-export default ConfigUUID;

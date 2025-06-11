@@ -15,8 +15,7 @@ import { platform } from 'node:os';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
 
-import { Adapter, type AdapterOptions, commonTools, controllerDir } from '@iobroker/adapter-core';
-import I18n from '@iobroker/i18n';
+import { Adapter, type AdapterOptions, commonTools, controllerDir, I18n } from '@iobroker/adapter-core';
 import { SocketAdmin, type Server, type Store, type SocketSettings } from '@iobroker/socket-classes';
 import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
@@ -875,7 +874,7 @@ class Admin extends Adapter {
         const settings: SocketSettings = {
             language: this.config.language,
             defaultUser: this.config.defaultUser,
-            ttl: this.config.ttl as number,
+            ttl: this.config.ttl,
             secure: this.config.secure,
             auth: this.config.auth,
             port: this.config.port,

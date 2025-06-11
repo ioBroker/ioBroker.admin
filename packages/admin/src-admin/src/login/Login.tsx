@@ -227,7 +227,7 @@ class Login extends Component<object, LoginState> {
         const motto =
             window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : 'Discover awesome. ';
 
-        if (window.login !== 'true') {
+        if (window.login !== 'true' && window.login !== '@@auth@@') {
             // eslint-disable-next-line no-debugger
             debugger;
             window.location.href = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;

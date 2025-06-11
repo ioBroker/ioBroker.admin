@@ -67,6 +67,12 @@ The best practice is to replace `padding` with `p` and `margin` with `m`, so you
     Before: `<ListItem classes={{ root: this.props.classes.listItem }} >`,
     After: `<ListItem sx={{ '&.MuiListItem-root': styles.listItem }} >`
 
+    Before: `<ListItemText classes={{ primary: this.props.classes.listPrimary, secondary: this.props.classes.listSecondary }} >`,
+    After: `<ListItemText sx={{ '& .MuiListItemText-primary': styles.listPrimary, '& .MuiListItemText-secondary': styles.listSecondary }} >`
+
+    Before: `<FormControlLabel classes={{ label: this.props.classes.checkBoxLabel }} >`,
+    After: `<FormControlLabel sx={{ '& .MuiFormControlLabel-label': styles.checkBoxLabel }} >`
+
     Before: `<Typography component="h2" variant="h6" classes={{ root: this.props.classes.typography }}>`,
     After: `<Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>`
 

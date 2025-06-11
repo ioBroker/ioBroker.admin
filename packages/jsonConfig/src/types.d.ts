@@ -18,61 +18,63 @@ declare module '@mui/material/Button' {
 type CustomCSSProperties = React.CSSProperties;
 
 export type ConfigItemType =
-    | 'tabs'
-    | 'panel'
-    | 'text'
-    | 'number'
-    | 'color'
-    | 'checkbox'
-    | 'slider'
-    | 'ip'
-    | 'user'
-    | 'room'
-    | 'func'
-    | 'select'
-    | 'autocomplete'
-    | 'image'
-    | 'objectId'
-    | 'password'
-    | 'instance'
-    | 'chips'
-    | 'alive'
-    | 'pattern'
-    | 'sendto'
-    | 'setState'
-    | 'staticInfo'
-    | 'staticText'
-    | 'staticLink'
-    | 'staticImage'
-    | 'table'
     | 'accordion'
-    | 'jsonEditor'
-    | 'language'
+    | 'alive'
+    | 'autocomplete'
+    | 'autocompleteSendTo'
+    | 'certCollection'
     | 'certificate'
     | 'certificates'
-    | 'certCollection'
+    | 'checkLicense'
+    | 'checkbox'
+    | 'chips'
+    | 'color'
+    | 'coordinates'
+    | 'cron'
     | 'custom'
     | 'datePicker'
-    | 'timePicker'
-    | 'divider'
-    | 'header'
-    | 'cron'
-    | 'fileSelector'
-    | 'file'
-    | 'imageSendTo'
-    | 'selectSendTo'
-    | 'autocompleteSendTo'
-    | 'textSendTo'
-    | 'coordinates'
-    | 'interface'
-    | 'license'
-    | 'checkLicense'
-    | 'uuid'
-    | 'port'
     | 'deviceManager'
-    | 'topic'
+    | 'divider'
+    | 'file'
+    | 'fileSelector'
+    | 'func'
+    | 'header'
+    | 'image'
+    | 'imageSendTo'
+    | 'infoBox'
+    | 'instance'
+    | 'interface'
+    | 'ip'
+    | 'jsonEditor'
+    | 'language'
+    | 'license'
+    | 'number'
+    | 'oauth2'
+    | 'objectId'
+    | 'panel'
+    | 'password'
+    | 'pattern'
+    | 'port'
     | 'qrCode'
-    | 'state';
+    | 'room'
+    | 'select'
+    | 'selectSendTo'
+    | 'sendto'
+    | 'setState'
+    | 'slider'
+    | 'state'
+    | 'staticImage'
+    | 'staticInfo'
+    | 'staticLink'
+    | 'staticText'
+    | 'table'
+    | 'tabs'
+    | 'text'
+    | 'textSendTo'
+    | 'timePicker'
+    | 'topic'
+    | 'user'
+    | 'uuid';
 
 type ConfigIconType =
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
@@ -220,6 +222,8 @@ export interface ConfigItemSelectOption {
     label: ioBroker.StringOrTranslated;
     /** Value of option */
     value: number | string;
+    /** Color of value */
+    color?: string;
     /** Formula or boolean value to show or hide the option */
     hidden?: string | boolean;
 }
@@ -316,6 +320,14 @@ export interface ConfigItemNumber extends ConfigItem {
     readOnly?: boolean;
     /** Unit */
     unit?: string;
+}
+
+export interface ConfigItemOAuth2 extends ConfigItem {
+    type: 'oauth2';
+    saveTokenIn?: string; // default is `oauth2Tokens`
+    identifier: 'spotify' | 'google' | 'dropbox' | 'microsoft' | string;
+    scope?: string; // optional scopes divided by space, e.g. `user-read-private user-read-email`
+    refreshLabel?: ioBroker.StringOrTranslated; // label for the refresh button
 }
 
 export interface ConfigItemQrCode extends ConfigItem {
@@ -466,7 +478,7 @@ export interface ConfigItemStaticInfo extends Omit<ConfigItem, 'data'> {
     labelIcon?: string;
     /** Unit */
     unit?: ioBroker.StringOrTranslated;
-    /** Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label*/
+    /** Normally, the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label*/
     narrow?: boolean;
     /** Add to label the colon at the end if not exist in label */
     addColon?: boolean;
@@ -490,6 +502,22 @@ export interface ConfigItemStaticInfo extends Omit<ConfigItem, 'data'> {
     booleanAsCheckbox?: boolean;
     /** Show string values as HTML */
     html?: boolean;
+}
+
+export interface ConfigItemInfoBox extends ConfigItem {
+    type: 'infoBox';
+    /** multi-language text */
+    text: ioBroker.StringOrTranslated;
+    /** multi-language title */
+    title?: ioBroker.StringOrTranslated;
+    /** The type determines the color and symbol */
+    boxType?: 'warning' | 'info' | 'error' | 'ok';
+    /** If the box is closeable */
+    closeable?: boolean;
+    /** Use together with `closeable: true`. If the box is closed or not. In this case, it will be controlled from outside */
+    closed?: boolean;
+    /** Icon position */
+    iconPosition?: 'top' | 'middle';
 }
 
 export interface ConfigItemRoom extends ConfigItem {
@@ -516,6 +544,7 @@ export interface ConfigItemSelect extends ConfigItem {
               items: ConfigItemSelectOption[];
               label: ioBroker.StringOrTranslated;
               value?: number | string;
+              color?: string;
               hidden?: string | boolean;
           }
     )[];
@@ -732,6 +761,8 @@ export interface ConfigItemState extends ConfigItem {
     showEnterButton?: boolean | ioBroker.StringOrTranslated;
     /** The value in this case will be sent only when the "Enter" button is pressed. It can be combined with `showEnterButton` */
     setOnEnterKey?: boolean;
+    /** Options for `select`. If not defiled, the `common.states` in the object must exist. */
+    options?: (string | ConfigItemSelectOption)[];
 }
 
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {
@@ -978,10 +1009,12 @@ export type ConfigItemAny =
     | ConfigItemTabs
     | ConfigItemText
     | ConfigItemNumber
+    | ConfigItemOAuth2
     | ConfigItemColor
     | ConfigItemCheckbox
     | ConfigItemSlider
     | ConfigItemIP
+    | ConfigItemInfoBox
     | ConfigItemUser
     | ConfigItemRoom
     | ConfigItemFunc

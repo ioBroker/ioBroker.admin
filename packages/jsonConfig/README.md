@@ -158,6 +158,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`language`:**](#language) Selects the user interface language
 - [**`license`:**](#license) shows the license information if not already accepted.
 - [**`number`:**](#number) Numeric input field with min/max values and step size
+- [**`oauth2`:**](#oauth2) Make OAuth2 authentication for the adapter (Admin 7.6.18 or newer)
 - [**`objectId`:**](#objectid) Selects an object ID with name, color, and icon
 - [**`panel`:**](#panel) Tab with items
 - [**`password`:**](#password) Password input field
@@ -512,6 +513,33 @@ saves image as a file of the `adapter.X` object or as base64 in attribute
      }
   }
 ```
+
+### `oauth2`
+(admin >= 6.17.18)
+
+Shows OAuth2 Authentication button to get the refresh and access tokens for the adapter.
+
+To use this, you must first provide the OAuth2 data (client ID, secret, etc.) to ioBroker maintenance team, so they can add it to the cloud.
+
+| Property       | Description                                                                                                                                                   |
+|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `identifier`   | Oauth2 identifier, like `spotify`, `google`, `dropbox`, `microsoft`                                                                                           |                                                                      
+| `saveTokenIn`  | Optional state name where the token will be saved. Default is `oauth2Tokens`. The path is relative to the adapter instance, like `adapterName.X.oauth2Tokens` |
+| `scope`        | Optional scopes divided by space, e.g. `user-read-private user-read-email`                                                                                    |
+| `refreshLabel` | Optional button label for refreshing the token                                                                                                                |
+
+#### Example for `oauth2`
+
+```json
+  "_oauth2": {
+       "type": "oauth2",
+       "identifier": "spotify",
+       "label": "Get Spotify OAuth2 Token",
+       "refreshLabel": "Refresh Spotify OAuth2 Token",
+       "icon": "data:image/svg+xml;base64,...",
+  }
+```
+See also [OAUTH2.md](OAUTH2.md) for more information.
 
 ### `objectId`
 
@@ -1102,34 +1130,35 @@ Special input for ports. It checks automatically if port is used by other instan
 (admin >= 7.1.0) Show control or information from the state
 (admin >= 7.6.4) attributes `showEnterButton` and `setOnEnterKey`
 
-| Property          | Description                                                                                                                                                                                 |
-|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `oid`             | Which object ID should be taken for the controlling. The ID is without `adapter.X.` prefix                                                                                                  |
-| `system`          | If true, the state will be taken from `system.adapter.X.` and not from `adapter.X`                                                                                                          |
-| `foreign`         | The `oid` is absolute and no need to add `adapter.X` or `system.adapter.X.` to oid                                                                                                          |
-| `control`         | How the value of the state should be shown: `text`, `html`, `input`, `slider`, `select`, `button`, `switch`, `number`                                                                       |
-| `controlled`      | If true, the state will be shown as switch, select, button, slider or text input. Used only if no control property is defined                                                               |
-| `unit`            | Add unit to the value                                                                                                                                                                       |
-| `trueText`        | this text will be shown if the value is true                                                                                                                                                |
-| `trueTextStyle`   | Style of the text if the value is true                                                                                                                                                      |
-| `falseText`       | this text will be shown if the value is false or if the control is a "button"                                                                                                               |
-| `falseTextStyle`  | Style of the text if the value is false or if the control is a "button"                                                                                                                     |
-| `trueImage`       | This image will be shown if the value is true                                                                                                                                               |
-| `falseImage`      | This image will be shown if the value is false or if the control is a "button"                                                                                                              |
-| `min`             | Minimum value for control type slider or number                                                                                                                                             |
-| `max`             | Maximum value for control type slider or number                                                                                                                                             |
-| `step`            | Step value for control type slider or number                                                                                                                                                |
-| `controlDelay`    | delay in ms for slider or number                                                                                                                                                            |
-| `variant`         | Variant of button: `contained`, `outlined`, `text`                                                                                                                                          |
-| `readOnly`        | Defines if the control is read-only                                                                                                                                                         |
-| `narrow`          | Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label                                                        |
-| `blinkOnUpdate`   | Value should blink when updated (true or color)                                                                                                                                             |
-| `size`            | Font size: small, normal, large or number                                                                                                                                                   |
-| `addColon`        | Add to label the colon at the end if not exist in label                                                                                                                                     |
-| `labelIcon`       | Base64 icon for label                                                                                                                                                                       |
-| `buttonValue`     | Optional value, that will be sent for button                                                                                                                                                |
-| `showEnterButton` | Show SET button. The value in this case will be sent only when the button is pressed. You can define the text of the button. Default text is "Set" (Only for "input", "number" or "slider") |
-| `setOnEnterKey`   | The value in this case will be sent only when the "Enter" button is pressed. It can be combined with `showEnterButton`                                                                      |
+| Property          | Description                                                                                                                                                                                          |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `oid`             | Which object ID should be taken for the controlling. The ID is without `adapter.X.` prefix                                                                                                           |
+| `system`          | If true, the state will be taken from `system.adapter.X.` and not from `adapter.X`                                                                                                                   |
+| `foreign`         | The `oid` is absolute and no need to add `adapter.X` or `system.adapter.X.` to oid                                                                                                                   |
+| `control`         | How the value of the state should be shown: `text`, `html`, `input`, `slider`, `select`, `button`, `switch`, `number`                                                                                |
+| `controlled`      | If true, the state will be shown as switch, select, button, slider or text input. Used only if no control property is defined                                                                        |
+| `unit`            | Add unit to the value                                                                                                                                                                                |
+| `trueText`        | this text will be shown if the value is true                                                                                                                                                         |
+| `trueTextStyle`   | Style of the text if the value is true                                                                                                                                                               |
+| `falseText`       | this text will be shown if the value is false or if the control is a "button"                                                                                                                        |
+| `falseTextStyle`  | Style of the text if the value is false or if the control is a "button"                                                                                                                              |
+| `trueImage`       | This image will be shown if the value is true                                                                                                                                                        |
+| `falseImage`      | This image will be shown if the value is false or if the control is a "button"                                                                                                                       |
+| `min`             | Minimum value for control type slider or number                                                                                                                                                      |
+| `max`             | Maximum value for control type slider or number                                                                                                                                                      |
+| `step`            | Step value for control type slider or number                                                                                                                                                         |
+| `controlDelay`    | delay in ms for slider or number                                                                                                                                                                     |
+| `variant`         | Variant of button: `contained`, `outlined`, `text`                                                                                                                                                   |
+| `readOnly`        | Defines if the control is read-only                                                                                                                                                                  |
+| `narrow`          | Normally the title and value are shown on the left and right of the line. With this flag, the value will appear just after the label                                                                 |
+| `blinkOnUpdate`   | Value should blink when updated (true or color)                                                                                                                                                      |
+| `size`            | Font size: small, normal, large or number                                                                                                                                                            |
+| `addColon`        | Add to label the colon at the end if not exist in label                                                                                                                                              |
+| `labelIcon`       | Base64 icon for label                                                                                                                                                                                |
+| `buttonValue`     | Optional value, that will be sent for button                                                                                                                                                         |
+| `showEnterButton` | Show SET button. The value in this case will be sent only when the button is pressed. You can define the text of the button. Default text is "Set" (Only for "input", "number" or "slider")          |
+| `setOnEnterKey`   | The value in this case will be sent only when the "Enter" button is pressed. It can be combined with `showEnterButton`                                                                               |
+| `options`         | Options for `select` in form `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1", "color": "red"}, "value2", ...]`. If not defiled, the `common.states` in the object must exist.  |
 
 ### `staticInfo`
 
@@ -1153,6 +1182,19 @@ This control is used mostly in dynamic forms
 | `size`              | (optional) font size: small, normal, large or number                                                                                            |
 | `highlight`         | (optional) Highlight line on mouse over                                                                                                         |
 | `booleanAsCheckbox` | (optional) Show boolean values as checkbox                                                                                                      |
+
+### `infoBox`
+
+Shows closable static text with optional title and icon. (From admin >= 7.6.19)
+
+| Property       | Description                                                   |
+|----------------|---------------------------------------------------------------|
+| `text`         | Text to be shown                                              |
+| `title`        | (optional) title for info box                                 |
+| `boxType`      | (optional) `warning`, `info`, `error`, `ok`. (Default `info`) |
+| `closeable`    | (optional) If the box is closeable (Default `true`)           |
+| `iconPosition` | (optional) `top`, `middle`  (Default `middle`)                |
+| `closed`       | (optional) Will be shown as closed at the beginning           |
 
 ### `deviceManager`
 

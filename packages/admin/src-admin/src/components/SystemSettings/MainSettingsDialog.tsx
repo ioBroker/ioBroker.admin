@@ -417,6 +417,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                                     endAdornment: value.toString() ? (
                                         <InputAdornment position="end">
                                             <IconButton
+                                                tabIndex={-1}
                                                 size="small"
                                                 onClick={() => this.handleChange({ target: { value: '' } }, i)}
                                             >
@@ -665,6 +666,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                                             endAdornment: this.props.data.common.siteName ? (
                                                 <InputAdornment position="end">
                                                     <IconButton
+                                                        tabIndex={-1}
                                                         size="small"
                                                         onClick={() => this.doChange('siteName', '')}
                                                     >
@@ -730,6 +732,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                                         endAdornment: this.props.data.common.city ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() => this.onChangeCity({ target: { value: '' } })}
                                                 >

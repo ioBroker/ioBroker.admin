@@ -144,6 +144,7 @@ const CustomModal = ({
                                 endAdornment: value ? (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            tabIndex={-1}
                                             size="small"
                                             onClick={() => setValue('')}
                                         >

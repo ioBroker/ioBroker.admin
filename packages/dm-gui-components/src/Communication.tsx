@@ -145,6 +145,8 @@ interface Message {
     origin?: string;
     confirm?: boolean;
     data?: any;
+    /** Inform backend, how long the frontend will wait for an answer */
+    timeout?: number;
 }
 
 interface DmActionResponse extends DmResponse {
@@ -212,7 +214,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 return;
             }
 
-            this.sendActionToInstance('dm:instanceAction', { actionId: action.id });
+            this.sendActionToInstance('dm:instanceAction', { actionId: action.id, timeout: action.timeout });
         };
 
         // eslint-disable-next-line react/no-unused-class-component-methods
@@ -229,7 +231,11 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 return;
             }
 
-            this.sendActionToInstance('dm:deviceAction', { deviceId, actionId: action.id }, refresh);
+            this.sendActionToInstance(
+                'dm:deviceAction',
+                { deviceId, actionId: action.id, timeout: action.timeout },
+                refresh,
+            );
         };
 
         // eslint-disable-next-line react/no-unused-class-component-methods
@@ -263,7 +269,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
             this.responseTimeout = setTimeout(() => {
                 this.setState({ showSpinner: false });
                 window.alert(I18n.t('ra_No response from the backend'));
-            }, 5000);
+            }, messageToSend.timeout || 5000);
 
             const response: DmActionResponse = await this.props.socket.sendTo(
                 this.props.selectedInstance,
@@ -752,11 +758,15 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                 if (showConfirmation.deviceId) {
                                     this.sendActionToInstance(
                                         'dm:deviceAction',
-                                        { actionId: showConfirmation.id, deviceId: showConfirmation.deviceId },
+                                        {
+                                            actionId: showConfirmation.id,
+                                            deviceId: showConfirmation.deviceId,
+                                            timeout: showConfirmation.timeout,
+                                        },
                                         showConfirmation.refresh,
                                     );
                                 } else {
-                                    this.sendActionToInstance('dm:instanceAction', { actionId: showConfirmation.id });
+                                    this.sendActionToInstance('dm:instanceAction', { actionId: showConfirmation.id, timeout: showConfirmation.timeout });
                                 }
                             });
                         }}
@@ -791,6 +801,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     {
                         actionId: showInput.id,
                         deviceId: showInput.deviceId,
+                        timeout: showInput.timeout,
                         value:
                             showInput.inputBefore?.type === 'checkbox'
                                 ? !!this.state.inputValue
@@ -803,6 +814,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
             } else {
                 this.sendActionToInstance('dm:instanceAction', {
                     actionId: showInput.id,
+                    timeout: showInput.timeout,
                     value:
                         showInput.inputBefore?.type === 'checkbox'
                             ? !!this.state.inputValue
@@ -860,6 +872,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                     endAdornment: this.state.inputValue ? (
                                         <InputAdornment position="end">
                                             <IconButton
+                                                tabIndex={-1}
                                                 size="small"
                                                 onClick={() => this.setState({ inputValue: '' })}
                                             >

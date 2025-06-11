@@ -413,6 +413,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                                         endAdornment: this.state.ratingComment ? (
                                             <InputAdornment position="end">
                                                 <IconButton
+                                                    tabIndex={-1}
                                                     size="small"
                                                     onClick={() => this.setState({ ratingComment: '' })}
                                                 >

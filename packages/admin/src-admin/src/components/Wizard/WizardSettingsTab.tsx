@@ -763,6 +763,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                                 endAdornment: this.state.city ? (
                                                     <InputAdornment position="end">
                                                         <IconButton
+                                                            tabIndex={-1}
                                                             size="small"
                                                             onClick={() => this.setState({ city: '' })}
                                                         >
@@ -787,6 +788,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                                 endAdornment: this.state.address ? (
                                                     <InputAdornment position="end">
                                                         <IconButton
+                                                            tabIndex={-1}
                                                             size="small"
                                                             onClick={() => this.setState({ address: '' })}
                                                         >
@@ -820,6 +822,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                                 endAdornment: this.state.longitude ? (
                                                     <InputAdornment position="end">
                                                         <IconButton
+                                                            tabIndex={-1}
                                                             size="small"
                                                             onClick={() => this.setState({ longitude: '' })}
                                                         >
@@ -847,6 +850,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                                 endAdornment: this.state.latitude ? (
                                                     <InputAdornment position="end">
                                                         <IconButton
+                                                            tabIndex={-1}
                                                             size="small"
                                                             onClick={() => this.setState({ latitude: '' })}
                                                         >
