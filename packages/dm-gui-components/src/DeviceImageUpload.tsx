@@ -86,7 +86,7 @@ function DeviceImageUpload(params: DeviceImageUploadProps): React.JSX.Element | 
 
     const imageUploadDiv: React.CSSProperties = {
         position: 'relative',
-        top: '-22px'
+        top: '-22'
     }
 
     return (
