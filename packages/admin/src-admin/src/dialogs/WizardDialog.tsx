@@ -25,6 +25,7 @@ import WizardSettingsTab from '@/components/Wizard/WizardSettingsTab';
 import WizardAuthSSLTab from '@/components/Wizard/WizardAuthSSLTab';
 import WizardPortForwarding from '@/components/Wizard/WizardPortForwarding';
 import WizardAdaptersTab from '@/components/Wizard/WizardAdaptersTab';
+import WizardRoomsTab from '@/components/Wizard/WizardRoomsTab';
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -259,6 +260,19 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
     }
 
     /**
+     * Render the room selection wizard tab
+     */
+    renderRooms(): JSX.Element {
+        return (
+            <WizardRoomsTab
+                t={I18n.t}
+                socket={this.props.socket}
+                onDone={() => this.setState({ activeStep: this.state.activeStep + 1 })}
+            />
+        );
+    }
+
+    /**
      * Render the adapter selection wizard tab
      */
     renderAdapters(): JSX.Element {
@@ -420,6 +434,9 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                                     <StepLabel>{I18n.t('Settings')}</StepLabel>
                                 </Step>
                                 <Step>
+                                    <StepLabel>{I18n.t('Rooms')}</StepLabel>
+                                </Step>
+                                <Step>
                                     <StepLabel>{I18n.t('Adapters')}</StepLabel>
                                 </Step>
                                 <Step>
@@ -438,8 +455,9 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                         <div style={styles.tabPanel}>{this.renderPortForwarding()}</div>
                     ) : null}
                     {this.state.activeStep === 5 ? <div style={styles.tabPanel}>{this.renderSettings()}</div> : null}
-                    {this.state.activeStep === 6 ? <div style={styles.tabPanel}>{this.renderAdapters()}</div> : null}
-                    {this.state.activeStep === 7 ? <div style={styles.tabPanel}>{this.renderFinish()}</div> : null}
+                    {this.state.activeStep === 6 ? <div style={styles.tabPanel}>{this.renderRooms()}</div> : null}
+                    {this.state.activeStep === 7 ? <div style={styles.tabPanel}>{this.renderAdapters()}</div> : null}
+                    {this.state.activeStep === 8 ? <div style={styles.tabPanel}>{this.renderFinish()}</div> : null}
                 </DialogContent>
             </Dialog>
         );
