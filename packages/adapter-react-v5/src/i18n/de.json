@@ -233,6 +233,7 @@
     "ra_Yes": "Ja",
     "ra_You can export all objects or just the selected branch.": "Sie können alle Objekte oder nur den ausgewählten Zweig exportieren.",
     "ra_You can filter entries by entering here some text": "Sie können Einträge filtern, indem Sie hier Text eingeben",
+    "ra_You can use * as wildcard": "Sie können * als Platzhalter verwenden",
     "ra___different__": "unterschiedlich",
     "ra_aclEveryone_read_object": "Jeder kann Objekt lesen",
     "ra_aclEveryone_read_state": "Jeder kann Zustand lesen",

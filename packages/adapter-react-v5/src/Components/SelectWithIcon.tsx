@@ -64,27 +64,31 @@ export class SelectWithIcon extends Component<SelectWithIconProps, SelectWithIco
 
         let list: TextWithIconItem[];
         if (Array.isArray(props.list)) {
-            list = props.list.filter(obj => obj?._id && obj.common).map(obj => ({
-                name: Utils.getObjectNameFromObj(obj, props.lang)
-                    .replace('system.group.', '')
-                    .replace('system.user.', '')
-                    .replace('enum.rooms.', '')
-                    .replace('enum.functions.', ''),
-                value: obj._id,
-                icon: obj.common?.icon,
-                color: obj.common?.color,
-            }));
+            list = props.list
+                .filter(obj => obj?._id && obj.common)
+                .map(obj => ({
+                    name: Utils.getObjectNameFromObj(obj, props.lang)
+                        .replace('system.group.', '')
+                        .replace('system.user.', '')
+                        .replace('enum.rooms.', '')
+                        .replace('enum.functions.', ''),
+                    value: obj._id,
+                    icon: obj.common?.icon,
+                    color: obj.common?.color,
+                }));
         } else {
-            list = Object.values(props.list as Record<string, ioBroker.Object>).filter(obj => obj?._id && obj.common).map(obj => ({
-                name: Utils.getObjectNameFromObj(obj, props.lang)
-                    .replace('system.group.', '')
-                    .replace('system.user.', '')
-                    .replace('enum.rooms.', '')
-                    .replace('enum.functions.', ''),
-                value: obj._id,
-                icon: obj.common?.icon,
-                color: obj.common?.color,
-            }));
+            list = Object.values(props.list)
+                .filter(obj => obj?._id && obj.common)
+                .map(obj => ({
+                    name: Utils.getObjectNameFromObj(obj, props.lang)
+                        .replace('system.group.', '')
+                        .replace('system.user.', '')
+                        .replace('enum.rooms.', '')
+                        .replace('enum.functions.', ''),
+                    value: obj._id,
+                    icon: obj.common?.icon,
+                    color: obj.common?.color,
+                }));
         }
 
         if (props.different && props.value === props.different) {

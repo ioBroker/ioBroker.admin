@@ -37,7 +37,7 @@ init({
         },
     },
     remotes: [],
-})
+});
 
 export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, ConfigCustomState> {
     static runningLoads: Record<string, Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }>> = {};
@@ -169,7 +169,7 @@ export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, Confi
         const CustomComponent: React.FC<ConfigGenericProps> = this.state.Component;
         const schema = this.props.schema || ({} as ConfigItemCustom);
 
-        let item = CustomComponent ? (
+        const item = CustomComponent ? (
             <CustomComponent
                 {...this.props}
                 // @ts-expect-error BF (2024-12-18) Remove after the 7.4 will be mainstream. All following lines

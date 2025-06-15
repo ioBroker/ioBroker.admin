@@ -17,7 +17,11 @@ export default class ConfigInfoBox extends ConfigGeneric<ConfigInfoBoxProps, Con
             <InfoBox
                 type={this.props.schema.boxType || 'info'}
                 closeable={this.props.schema.closeable !== undefined ? this.props.schema.closeable : true}
-                storeId={this.props.schema.closed !== undefined ? undefined : `${!!this.props.oContext.adapterName} ${this.props.attr}`}
+                storeId={
+                    this.props.schema.closed !== undefined
+                        ? undefined
+                        : `${!!this.props.oContext.adapterName} ${this.props.attr}`
+                }
                 closed={this.props.schema.closed}
                 style={{ width: '100%', ...this.props.schema.style }}
             >

@@ -233,6 +233,7 @@
     "ra_Yes": "Так",
     "ra_You can export all objects or just the selected branch.": "Ви можете експортувати всі об’єкти або лише вибрану гілку.",
     "ra_You can filter entries by entering here some text": "Ви можете фільтрувати записи, ввівши тут певний текст",
+    "ra_You can use * as wildcard": "Ви можете використовувати * як символ підстановки",
     "ra___different__": "інший",
     "ra_aclEveryone_read_object": "Кожен може читати об'єкт",
     "ra_aclEveryone_read_state": "Кожен може читати стан",

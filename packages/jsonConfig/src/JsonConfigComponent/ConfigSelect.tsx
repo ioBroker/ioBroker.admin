@@ -7,7 +7,6 @@ import {
     Select,
     MenuItem,
     ListSubheader,
-    Box,
     Chip,
     ListItemText,
     Checkbox,

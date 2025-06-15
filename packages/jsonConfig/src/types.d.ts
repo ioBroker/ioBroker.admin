@@ -325,6 +325,7 @@ export interface ConfigItemNumber extends ConfigItem {
 export interface ConfigItemOAuth2 extends ConfigItem {
     type: 'oauth2';
     saveTokenIn?: string; // default is `oauth2Tokens`
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     identifier: 'spotify' | 'google' | 'dropbox' | 'microsoft' | string;
     scope?: string; // optional scopes divided by space, e.g. `user-read-private user-read-email`
     refreshLabel?: ioBroker.StringOrTranslated; // label for the refresh button

@@ -971,6 +971,18 @@ function ButtonIcon(props?: { style?: React.CSSProperties }): JSX.Element {
     );
 }
 
+/** Converts ioB pattern into regex */
+export function pattern2RegEx(pattern: string): string {
+    pattern = (pattern || '').toString();
+
+    const startsWithWildcard = pattern[0] === '*';
+    const endsWithWildcard = pattern[pattern.length - 1] === '*';
+
+    pattern = pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*');
+
+    return (startsWithWildcard ? '' : '^') + pattern + (endsWithWildcard ? '' : '$');
+}
+
 /**
  * Function that walks through all keys of an object or array and applies a function to each key.
  */
@@ -1108,7 +1120,7 @@ function generateFile(
 
 // d=data, t=target, s=start, e=end, m=middle
 function binarySearch(list: string[], find: string, _start?: number, _end?: number): boolean {
-    _start = _start || 0;
+    _start ||= 0;
     if (_end === undefined) {
         _end = list.length - 1;
         if (!_end) {
@@ -1149,10 +1161,10 @@ export function getSelectIdIconFromObjects(
     imagePrefix?: string,
 ): string | JSX.Element | null {
     // `admin` has prefix '.' and `web` has '../..'
-    imagePrefix = imagePrefix || '.'; // http://localhost:8081';
+    imagePrefix ||= '.'; // http://localhost:8081';
     let src: string | JSX.Element = '';
     const _id_ = `system.adapter.${id}`;
-    const aIcon = id && objects[_id_] && objects[_id_].common && objects[_id_].common.icon;
+    const aIcon = id && objects[_id_]?.common?.icon;
     if (aIcon) {
         // if not BASE64
         if (!aIcon.startsWith('data:image/')) {
@@ -1244,7 +1256,9 @@ function applyFilter(
     objects: Record<string, ioBroker.Object>,
     context?: {
         id?: string;
+        idRx?: RegExp;
         name?: string;
+        nameRx?: RegExp;
         type?: string;
         custom?: string;
         role?: string;
@@ -1256,15 +1270,25 @@ function applyFilter(
     selectedTypes?: string[],
     _depth?: number,
 ): boolean {
-    _depth = _depth || 0;
+    _depth ||= 0;
     let filteredOut = false;
     if (!context) {
         context = {};
         if (filters.id) {
-            context.id = filters.id.toLowerCase();
+            const id = filters.id.toLowerCase();
+            if (id.includes('*')) {
+                context.idRx = new RegExp(pattern2RegEx(filters.id), 'i');
+            } else {
+                context.id = id;
+            }
         }
         if (filters.name) {
-            context.name = filters.name.toLowerCase();
+            const name = filters.name.toLowerCase();
+            if (name.includes('*')) {
+                context.nameRx = new RegExp(pattern2RegEx(name), 'i');
+            } else {
+                context.name = name;
+            }
         }
         if (filters.type) {
             context.type = filters.type.toLowerCase();
@@ -1374,10 +1398,13 @@ function applyFilter(
             }
             filteredOut = !data.fID.includes(context.id);
         }
+        if (!filteredOut && context.idRx) {
+            filteredOut = !context.idRx.test(data.id);
+        }
         if (!filteredOut && context.name) {
             if (common) {
                 if (data.fName === undefined) {
-                    data.fName = (common && getName(common.name, lang)) || '';
+                    data.fName = getName(common.name, lang) || '';
                     data.fName = data.fName.toLowerCase();
                 }
                 filteredOut = !data.fName.includes(context.name);
@@ -1385,6 +1412,16 @@ function applyFilter(
                 filteredOut = true;
             }
         }
+        if (!filteredOut && context.nameRx) {
+            if (common) {
+                if (data.fName === undefined) {
+                    data.fName = getName(common.name, lang) || '';
+                    data.fName = data.fName.toLowerCase();
+                }
+                filteredOut = !context.nameRx.test(data.fName);
+            }
+        }
+
         if (!filteredOut && filters.role && common) {
             if (common) {
                 filteredOut = !(typeof common.role === 'string' && common.role.startsWith(context.role));
@@ -1409,7 +1446,7 @@ function applyFilter(
                 if (context.custom === '_') {
                     filteredOut = !!common.custom;
                 } else {
-                    filteredOut = !common.custom || !common.custom[context.custom];
+                    filteredOut = !common.custom?.[context.custom];
                 }
             } else {
                 filteredOut = true;
@@ -1459,7 +1496,7 @@ function getVisibleItems(
     objects: Record<string, ioBroker.Object>,
     _result?: string[],
 ): string[] {
-    _result = _result || [];
+    _result ||= [];
     const data = item.data;
     if (data.sumVisibility) {
         if (data.id && objects[data.id] && (!type || objects[data.id].type === type)) {
@@ -1715,7 +1752,7 @@ function buildTree(
                                 },
                             };
 
-                            cRoot.children = cRoot.children || [];
+                            cRoot.children ||= [];
                             cRoot.children.push(_cRoot);
                             cRoot = _cRoot;
                             info.ids.push(curPath); // IDs will be added by alphabet
@@ -1756,7 +1793,7 @@ function buildTree(
                     },
                 };
 
-                cRoot.children = cRoot.children || [];
+                cRoot.children ||= [];
                 cRoot.children.push(_cRoot);
                 cRoot = _cRoot;
 
@@ -1847,7 +1884,7 @@ function findNode(root: TreeItem, id: string, _parts?: string[], _path?: string,
         }
     }
     if (found) {
-        _level = _level || 0;
+        _level ||= 0;
         return findNode(found, id, _parts, `${_path}.${_parts[_level + 1]}`, _level + 1);
     }
 
@@ -1863,7 +1900,7 @@ function findRoomsForObject(
     if (!id) {
         return { rooms: [], per: false };
     }
-    rooms = rooms || [];
+    rooms ||= [];
     for (const room of info.roomEnums) {
         const common = info.objects[room]?.common;
 
@@ -1901,7 +1938,7 @@ function findEnumsForObjectAsIds(
     if (!id) {
         return [];
     }
-    funcs = funcs || [];
+    funcs ||= [];
     for (let i = 0; i < info[enumName].length; i++) {
         const common = info.objects[info[enumName][i]]?.common;
         if (common?.members?.includes(id) && !funcs.includes(info[enumName][i])) {
@@ -1922,7 +1959,7 @@ function findFunctionsForObject(
     if (!id) {
         return { funcs: [], pef: false };
     }
-    funcs = funcs || [];
+    funcs ||= [];
     for (let i = 0; i < info.funcEnums.length; i++) {
         const common = info.objects[info.funcEnums[i]]?.common;
 
@@ -1976,7 +2013,7 @@ function formatValue(options: FormatValueOptions): {
         v: string;
         /** value unit */
         u?: string;
-        /** value not replaced by `common.states` */
+        /** value isn't replaced by `common.states` */
         s?: string;
         /** Text for copy to clipboard */
         c?: string;
@@ -2173,8 +2210,8 @@ function prepareSparkData(values: ioBroker.GetHistoryResult, from: number): numb
                 v.push(values[i].val ? 1 : 0);
             } else {
                 // remove nulls
-                values[i - 1].val = values[i - 1].val || 0;
-                values[i].val = values[i].val || 0;
+                values[i - 1].val ||= 0;
+                values[i].val ||= 0;
                 // interpolate
                 const nm1: number = values[i - 1].val as number;
                 const n: number = values[i].val as number;
@@ -2534,6 +2571,7 @@ export interface ObjectAliasEditorProps {
     obj: ioBroker.AnyObject;
     onClose: () => void;
 }
+
 export type ObjectBrowserColumn = 'name' | 'type' | 'role' | 'room' | 'func' | 'val' | 'buttons';
 
 type ObjectBrowserPossibleColumns =
@@ -3199,7 +3237,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 const propsTypes = props.types;
 
                 Object.keys(objects).forEach(id => {
-                    const type = objects[id] && objects[id].type;
+                    const type = objects[id]?.type;
                     // include "folder" types too
                     if (
                         type &&
@@ -3248,8 +3286,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.info = info;
 
             // Show first selected item
-            const node =
-                this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
+            const node = this.state.selected?.length && findNode(this.root, this.state.selected[0]);
 
             this.lastAppliedFilter = null;
 
@@ -3328,17 +3365,20 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 this.selectFirst = '';
             }
 
+            // If the this.state.selected[0] filtered out, disable the filter
+            const item = this.findItem(this.state.selected[0]);
+            if (item?.data && !item.data.visible) {
+                // If the selected ID is not visible, reset filter
+                this.clearFilter();
+            }
+
             if (this.state.selected.length === 1 && this.objects[this.state.selected[0]]) {
                 const name = Utils.getObjectName(this.objects, this.state.selected[0], null, {
                     language: this.props.lang,
                 });
-                if (this.props.onSelect) {
-                    this.props.onSelect(this.state.selected, name, isDouble);
-                }
+                this.props.onSelect?.(this.state.selected, name, isDouble);
             } else if (this.state.selected.length === 1 && this.props.allowNonObjects) {
-                if (this.props.onSelect) {
-                    this.props.onSelect(this.state.selected, null, isDouble);
-                }
+                this.props.onSelect?.(this.state.selected, null, isDouble);
             }
         } else {
             this.localStorage.removeItem(`${this.props.dialogName || 'App'}.objectSelected`);
@@ -3403,7 +3443,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         window.addEventListener('keyup', this.onKeyPress, true);
     }
 
-    onKeyPress = (event: KeyboardEvent) => {
+    onKeyPress = (event: KeyboardEvent): void => {
         if (event.type === 'keydown' && event.ctrlKey && !this.cltrPressed) {
             this.cltrPressed = true;
             if (this.tableRef.current) {
@@ -3415,8 +3455,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 this.tableRef.current.className = '';
             }
         }
-
-    }
+    };
 
     /**
      * Called when component is unmounted.
@@ -3467,9 +3506,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        if (this.props.onObjectDelete) {
-            this.props.onObjectDelete(id, !!item.children?.length, !obj.common?.dontDelete, count + 1);
-        }
+        this.props.onObjectDelete?.(id, !!item.children?.length, !obj.common?.dontDelete, count + 1);
     }
 
     /**
@@ -3774,48 +3811,46 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         {this.state.columnsForAdmin &&
                             Object.keys(this.state.columnsForAdmin)
                                 .sort()
-                                .map(
-                                    adapter =>
-                                        this.state.columnsForAdmin &&
-                                        this.state.columnsForAdmin[adapter].map(column => (
-                                            <ListItemButton
-                                                onClick={() => {
-                                                    if (!this.state.columnsAuto) {
-                                                        const columns = [...(this.state.columns || [])];
-                                                        const id: ObjectBrowserPossibleColumns =
-                                                            `_${adapter}_${column.path}` as ObjectBrowserPossibleColumns;
-                                                        const pos = columns.indexOf(id);
-                                                        if (pos === -1) {
-                                                            columns.push(id);
-                                                            columns.sort();
-                                                        } else {
-                                                            columns.splice(pos, 1);
-                                                        }
-                                                        this.calculateColumnsVisibility(null, columns);
-                                                        this.localStorage.setItem(
-                                                            `${this.props.dialogName || 'App'}.columns`,
-                                                            JSON.stringify(columns),
-                                                        );
-                                                        this.setState({ columns });
+                                .map(adapter =>
+                                    this.state.columnsForAdmin?.[adapter].map(column => (
+                                        <ListItemButton
+                                            onClick={() => {
+                                                if (!this.state.columnsAuto) {
+                                                    const columns = [...(this.state.columns || [])];
+                                                    const id: ObjectBrowserPossibleColumns =
+                                                        `_${adapter}_${column.path}` as ObjectBrowserPossibleColumns;
+                                                    const pos = columns.indexOf(id);
+                                                    if (pos === -1) {
+                                                        columns.push(id);
+                                                        columns.sort();
+                                                    } else {
+                                                        columns.splice(pos, 1);
                                                     }
-                                                }}
-                                                key={`${adapter}_${column.name}`}
-                                            >
-                                                <ListItemIcon>
-                                                    <Checkbox
-                                                        disabled={this.state.columnsAuto}
-                                                        edge="start"
-                                                        checked={
-                                                            !this.state.columnsAuto &&
-                                                            this.state.columns?.includes(
-                                                                `_${adapter}_${column.path}` as ObjectBrowserPossibleColumns,
-                                                            )
-                                                        }
-                                                        disableRipple
-                                                    />
-                                                </ListItemIcon>
-                                                <ListItemText primary={`${column.name} (${adapter})`} />
-                                                {/*
+                                                    this.calculateColumnsVisibility(null, columns);
+                                                    this.localStorage.setItem(
+                                                        `${this.props.dialogName || 'App'}.columns`,
+                                                        JSON.stringify(columns),
+                                                    );
+                                                    this.setState({ columns });
+                                                }
+                                            }}
+                                            key={`${adapter}_${column.name}`}
+                                        >
+                                            <ListItemIcon>
+                                                <Checkbox
+                                                    disabled={this.state.columnsAuto}
+                                                    edge="start"
+                                                    checked={
+                                                        !this.state.columnsAuto &&
+                                                        this.state.columns?.includes(
+                                                            `_${adapter}_${column.path}` as ObjectBrowserPossibleColumns,
+                                                        )
+                                                    }
+                                                    disableRipple
+                                                />
+                                            </ListItemIcon>
+                                            <ListItemText primary={`${column.name} (${adapter})`} />
+                                            {/*
                                 <ListItemSecondaryAction>
                                     <FormControl
                                         variant="standard"
@@ -3838,8 +3873,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                     </FormControl>
                                 </ListItemSecondaryAction>
                                 */}
-                                            </ListItemButton>
-                                        )),
+                                        </ListItemButton>
+                                    )),
                                 )}
                         {this._renderDefinedList(true)}
                     </List>
@@ -3889,8 +3924,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
      * Find an item.
      */
     findItem(id: string, _parts?: string[], _root?: TreeItem | null, _partyId?: string): TreeItem | null {
-        _parts = _parts || id.split('.');
-        _root = _root || this.root;
+        _parts ||= id.split('.');
+        _root ||= this.root;
         if (!_root || !_parts.length) {
             return null;
         }
@@ -3948,7 +3983,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null,
         obj: ioBroker.AdapterObject,
     ): Record<string, CustomAdminColumnStored[]> | null {
-        if (obj.common && obj.common.adminColumns && obj.common.name) {
+        if (obj.common?.adminColumns && obj.common.name) {
             const columns: string | (string | ioBroker.CustomAdminColumn)[] = obj.common.adminColumns;
             let aColumns: (string | ioBroker.CustomAdminColumn)[] | undefined;
             if (columns && typeof columns !== 'object') {
@@ -3999,8 +4034,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 cColumns = null;
             }
 
-            if (cColumns && cColumns.length) {
-                columnsForAdmin = columnsForAdmin || {};
+            if (cColumns?.length) {
+                columnsForAdmin ||= {};
                 columnsForAdmin[obj.common.name] = cColumns.sort((a, b) =>
                     a.path > b.path ? -1 : a.path < b.path ? 1 : 0,
                 );
@@ -4154,7 +4189,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        this.objects = this.objects || {};
+        this.objects ||= {};
 
         if (obj) {
             this.objects[id] = obj;
@@ -4210,7 +4245,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         const filter: ObjectBrowserFilter = { ...this.state.filter };
 
         Object.keys(this.filterRefs).forEach(_name => {
-            if (this.filterRefs[_name] && this.filterRefs[_name].current) {
+            if (this.filterRefs[_name]?.current) {
                 const filterRef: HTMLSelectElement = this.filterRefs[_name].current;
                 for (let i = 0; i < filterRef.children.length; i++) {
                     if (filterRef.children[i].tagName === 'INPUT') {
@@ -4241,7 +4276,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         const filter: ObjectBrowserFilter = { ...this.state.filter };
 
         Object.keys(this.filterRefs).forEach(name => {
-            if (this.filterRefs[name] && this.filterRefs[name].current) {
+            if (this.filterRefs[name]?.current) {
                 const filterRef: HTMLSelectElement = this.filterRefs[name].current;
                 for (let i = 0; i < filterRef.childNodes.length; i++) {
                     const item = filterRef.childNodes[i];
@@ -4256,10 +4291,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         if (JSON.stringify(this.state.filter) !== JSON.stringify(filter)) {
             this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectFilter`, JSON.stringify(filter));
-            this.setState(
-                { filter, filterKey: this.state.filterKey + 1 },
-                () => this.props.onFilterChanged && this.props.onFilterChanged(filter),
-            );
+            this.setState({ filter, filterKey: this.state.filterKey + 1 }, () => this.props.onFilterChanged?.(filter));
         }
     }
 
@@ -4275,6 +4307,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             <FormControl
                 sx={this.styles.filterInput}
                 key={`${filterName}_${this.state.filterKey}`}
+                title={
+                    filterName === 'name' || filterName === 'id'
+                        ? this.props.t('ra_You can use * as wildcard')
+                        : undefined
+                }
                 // style={{ marginTop: 0, marginBottom: 0 }}
                 margin="dense"
             >
@@ -4469,7 +4506,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private onExpandAll(root?: TreeItem, expanded?: string[]): void {
         const _root: TreeItem | null = root || this.root;
-        expanded = expanded || [];
+        expanded ||= [];
 
         _root?.children?.forEach((item: TreeItem) => {
             if (item.data.sumVisibility) {
@@ -4493,7 +4530,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     }
 
     private expandDepth(root: TreeItem, depth: number, expanded: string[]): void {
-        root = root || this.root;
+        root ||= this.root;
         if (depth > 0) {
             root.children?.forEach(item => {
                 if (item.data.sumVisibility) {
@@ -4593,15 +4630,15 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         type: 'enum',
                     } as ioBroker.EnumObject);
 
-                oldObj.common = oldObj.common || ({} as ioBroker.EnumCommon);
+                oldObj.common ||= {} as ioBroker.EnumCommon;
                 oldObj.common.members = [objId];
                 oldObj.type = 'enum';
 
                 await this.props.socket.setObject(id, oldObj);
             } else if (!oldObj.common?.members?.includes(objId)) {
-                oldObj.common = oldObj.common || ({} as ioBroker.EnumCommon);
+                oldObj.common ||= {} as ioBroker.EnumCommon;
                 oldObj.type = 'enum';
-                oldObj.common.members = oldObj.common.members || [];
+                oldObj.common.members ||= [];
                 // add the missing object
                 oldObj.common.members.push(objId);
                 oldObj.common.members.sort();
@@ -4620,7 +4657,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 let enums = null;
                 let val;
                 let ack;
-                if (obj && obj.common && obj.common.enums) {
+                if (obj?.common?.enums) {
                     enums = obj.common.enums;
                     delete obj.common.enums;
                 } else {
@@ -5506,7 +5543,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             <div style={{ height: 15 }}>---</div>
                         </IconButton>
                     ) : null}
-                    {this.props.onObjectDelete && item.children && item.children.length ? (
+                    {this.props.onObjectDelete && item.children?.length ? (
                         <IconButton
                             sx={{
                                 ...styles.cellButtonsButton,
@@ -5827,6 +5864,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     /**
      * This function renders the value in different forms in the table
+     *
      * @param id state ID
      * @param item Item
      * @param narrowStyleWithDetails if use mobile view
@@ -5993,7 +6031,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     }
 
     private _syncEnum(id: string, enumIds: string[], newArray: string[], cb: () => void): void {
-        if (!enumIds || !enumIds.length) {
+        if (!enumIds?.length) {
             if (cb) {
                 cb();
             }
@@ -6021,7 +6059,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (newArray.includes(enumId) && !this.info.objects[enumId].common.members?.includes(id)) {
                 // add to object
                 const obj: ioBroker.Object = JSON.parse(JSON.stringify(this.info.objects[enumId]));
-                obj.common.members = obj.common.members || [];
+                obj.common.members ||= [];
                 obj.common.members.push(id);
                 obj.common.members.sort();
                 promises.push(
@@ -7855,7 +7893,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     resizerMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
         this.storedWidths ||= JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width || 'lg'])) as ScreenWidthOne;
 
-        this.resizerCurrentWidths = this.resizerCurrentWidths || {};
+        this.resizerCurrentWidths ||= {};
         this.resizerActiveDiv = (e.target as HTMLDivElement).parentNode as HTMLDivElement;
         this.resizerActiveName = this.resizerActiveDiv.dataset.name || null;
         if (this.resizerActiveName) {
@@ -8560,7 +8598,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 onClick: () => {
                     this.edit = {
                         val: this.states[id] ? this.states[id].val : '',
-                        q: this.states[id] ? this.states[id].q || 0 : 0,
+                        q: this.states[id]?.q || 0,
                         ack: false,
                         id,
                     };

@@ -233,6 +233,7 @@
     "ra_Yes": "Yes",
     "ra_You can export all objects or just the selected branch.": "You can export all objects or just the selected branch.",
     "ra_You can filter entries by entering here some text": "You can filter entries by entering here some text",
+    "ra_You can use * as wildcard": "You can use * as wildcard",
     "ra___different__": "different",
     "ra_aclEveryone_read_object": "Everyone can read object",
     "ra_aclEveryone_read_state": "Everyone can read state",

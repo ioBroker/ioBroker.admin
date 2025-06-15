@@ -71,7 +71,9 @@ export function DeviceTypeSelector(props: {
         const _typesWords: Partial<Record<Types, string>> = {};
         Object.keys(Types)
             .filter(
-                id => (!props.supportedDevices || props.supportedDevices?.includes(id as Types)) && !props.unsupportedDevices?.includes(id as Types),
+                id =>
+                    (!props.supportedDevices || props.supportedDevices?.includes(id as Types)) &&
+                    !props.unsupportedDevices?.includes(id as Types),
             )
             .forEach(typeId => (_typesWords[typeId as Types] = I18n.t(`type-${Types[typeId as Types]}`)));
 
@@ -79,10 +81,10 @@ export function DeviceTypeSelector(props: {
         const _types: Types[] = Object.keys(_typesWords) as Types[];
 
         _types.sort((a, b) => {
-            if (_typesWords[a as Types] === _typesWords[b as Types]) {
+            if (_typesWords[a] === _typesWords[b]) {
                 return 0;
             }
-            return _typesWords[a as Types]!.localeCompare(_typesWords[b as Types]!, 'de');
+            return _typesWords[a].localeCompare(_typesWords[b], 'de');
         });
 
         extendDeviceTypeTranslation();
