@@ -547,20 +547,11 @@ export class LegacyConnection {
             setTimeout(() => this.fileChange(id, fileName, size), 0),
         );
 
-        this._socket.on(
-            'cmdStdout',
-            (id: string, text: string) => this.onCmdStdoutHandler?.(id, text),
-        );
+        this._socket.on('cmdStdout', (id: string, text: string) => this.onCmdStdoutHandler?.(id, text));
 
-        this._socket.on(
-            'cmdStderr',
-            (id: string, text: string) => this.onCmdStderrHandler?.(id, text),
-        );
+        this._socket.on('cmdStderr', (id: string, text: string) => this.onCmdStderrHandler?.(id, text));
 
-        this._socket.on(
-            'cmdExit',
-            (id: string, exitCode: number) => this.onCmdExitHandler?.(id, exitCode),
-        );
+        this._socket.on('cmdExit', (id: string, exitCode: number) => this.onCmdExitHandler?.(id, exitCode));
     }
 
     /**

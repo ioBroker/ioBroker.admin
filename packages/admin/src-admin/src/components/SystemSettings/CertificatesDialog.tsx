@@ -169,6 +169,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                                     endAdornment: e.title ? (
                                         <InputAdornment position="end">
                                             <IconButton
+                                                disabled={this.props.saving}
                                                 tabIndex={-1}
                                                 size="small"
                                                 onClick={() => this.onChangeText('', e.title, 'title')}
@@ -208,6 +209,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                                     endAdornment: e.data ? (
                                         <InputAdornment position="end">
                                             <IconButton
+                                                disabled={this.props.saving}
                                                 size="small"
                                                 tabIndex={-1}
                                                 onClick={() => this.onChangeText('', e.title, 'data')}
