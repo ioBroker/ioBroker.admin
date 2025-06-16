@@ -4,7 +4,7 @@ import { Grid2, Toolbar, Button, Paper, Box } from '@mui/material';
 
 import { Public as IconCloud, Language as IconCloudPro, Check as IconCheck } from '@mui/icons-material';
 
-import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -66,7 +66,7 @@ interface WizardPortForwardingState {
     secure: boolean;
 }
 
-class WizardPortForwarding extends Component<WizardPortForwardingProps, WizardPortForwardingState> {
+export default class WizardPortForwarding extends Component<WizardPortForwardingProps, WizardPortForwardingState> {
     private readonly focusRef: React.RefObject<HTMLInputElement>;
 
     constructor(props: WizardPortForwardingProps) {
@@ -157,5 +157,3 @@ class WizardPortForwarding extends Component<WizardPortForwardingProps, WizardPo
         );
     }
 }
-
-export default withWidth()(WizardPortForwarding);

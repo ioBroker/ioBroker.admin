@@ -28,7 +28,7 @@ import LicenseTexts from '../LicenseTexts';
 
 const TOOLBAR_HEIGHT = 64;
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     paper: {
         height: '100%',
         maxHeight: '100%',

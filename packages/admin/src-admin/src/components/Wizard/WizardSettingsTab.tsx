@@ -23,7 +23,7 @@ import {
 
 import { Close as CloseIcon, Check as IconCheck, GpsFixed } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 const MyMapComponent: React.FC<{ addMap: (map: any) => any }> = props => {
     const map = useMap();
@@ -144,7 +144,7 @@ interface WizardSettingsTabState {
     zoom: number;
 }
 
-class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettingsTabState> {
+export default class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettingsTabState> {
     /*private OSM: {
         markerSource?: VectorSource;
         markerStyle?: Style;
@@ -228,12 +228,12 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
 
             this.marker = new Marker(center, {
                 draggable: true,
-                title: I18n.t('Resource location'),
-                alt: I18n.t('Resource Location'),
+                title: I18n.t('ioBroker location'),
+                alt: I18n.t('ioBroker location'),
                 riseOnHover: true,
             })
                 .addTo(map)
-                .bindPopup('Popup for any custom information.')
+                .bindPopup(I18n.t('Popup for any custom information.'))
                 .on({ dragend: (evt: DragEndEvent) => this.onMarkerDragend(evt) });
         }
     };
@@ -925,11 +925,8 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                     >
                         {this.props.t('Save')}
                     </Button>
-                    <div style={styles.grow} />
                 </Toolbar>
             </Paper>
         );
     }
 }
-
-export default withWidth()(WizardSettingsTab);

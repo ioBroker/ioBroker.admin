@@ -18,7 +18,7 @@ import {
 
 import { Check as IconCheck } from '@mui/icons-material';
 
-import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -66,7 +66,7 @@ interface WizardAuthSSLTabState {
     secure: boolean;
 }
 
-class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, WizardAuthSSLTabState> {
+export default class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, WizardAuthSSLTabState> {
     constructor(props: WizardAuthSSLTabProps) {
         super(props);
 
@@ -155,5 +155,3 @@ class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, WizardAuthSSLTab
         );
     }
 }
-
-export default withWidth()(WizardAuthSSLTab);
