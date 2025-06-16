@@ -39,7 +39,7 @@ Sleeping Area	Спальное Место	Schlafbereich	Coin Montagne	Area Sleep
 Bedroom	Спальная Комната	Schlafzimmer	Chambre	Camera Da Letto	Slaapkamer	Sypialnia	Quarto	Cuarto	卧室
 Shed	Сбрасывать	Schuppen	Hangar	Capannone	Schuur	Budka	Cabana	Cobertizo	棚
 Swimming Pool	Плавательный Бассейн	Schwimmbad	Piscine	Piscina	Zwembad	Basen	Piscina	Piscina	游泳池
-Dining	Обеденный	Speis	À Manger	Cenare	Dining	Jadalnia	Jantar	Comida	用餐
+Dining	Столовая	Esszimmer	À Manger	Cenare	Dining	Jadalnia	Jantar	Comida	用餐
 Playroom	Игровая Комната	Spielzimmer	Salle De Jeux	Stanza Dei Giochi	Speelkamer	Pokój Zabaw	Sala De Jogos	Cuarto De Jugar	游戏室
 Stairway	Лестница	Stiege	Escalier	Scala	Trap	Klatka Schodowa	Escada	Escalera	楼梯
 Equipment Room	Оборудование Номера	Technikraum	Salle D'Équipement	Stanza Degli Attrezzi	Technische Ruimte	Wyposażenie Pokoi	Sala De Equipamentos	Cuarto De Equipos	机房

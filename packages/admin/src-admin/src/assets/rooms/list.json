@@ -658,16 +658,17 @@
     {
         "_id": "dining",
         "name": {
-            "en": "Dining",
-            "ru": "Обеденная",
-            "de": "Speis",
-            "fr": "À Manger",
-            "it": "Cenare",
-            "nl": "Dining",
+            "en": "Dining room",
+            "ru": "Столовая",
+            "de": "Esszimmer",
+            "fr": "Salle À Manger",
+            "it": "Sala Da Pranzo",
+            "nl": "Eetkamer",
             "pl": "Jadalnia",
-            "pt": "Jantar",
-            "es": "Comida",
-            "zh-cn": "用餐"
+            "pt": "Sala De Jantar",
+            "es": "Comedor",
+            "uk": "Їдальня",
+            "zh-cn": "餐厅"
         },
         "icon": "Dining"
     },

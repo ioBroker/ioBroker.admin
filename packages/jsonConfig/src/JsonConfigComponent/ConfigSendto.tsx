@@ -263,34 +263,30 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                 if (response?.error) {
                     if (this.props.schema.error && this.props.schema.error[response.error]) {
                         let error = this.getText(this.props.schema.error[response.error]);
-                        if (response.args) {
-                            response.args.forEach((arg: string) => (error = error.replace('%s', arg)));
-                        }
+                        response.args?.forEach((arg: string) => (error = error.replace('%s', arg)));
                         this.setState({ _error: error });
                     } else {
-                        this.setState({ _error: response.error ? I18n.t(response.error) : I18n.t('ra_Error') });
+                        this.setState({
+                            _error: response.error
+                                ? typeof response.error === 'string'
+                                    ? I18n.t(response.error)
+                                    : JSON.stringify(response.error)
+                                : I18n.t('ra_Error'),
+                        });
                     }
                 } else {
                     if (response?.command) {
                         // If backend requested to refresh the config
-                        if (this.props.oContext.onBackEndCommand) {
-                            this.props.oContext.onBackEndCommand(response.command);
-                        }
+                        this.props.oContext.onBackEndCommand?.(response.command);
                         return;
                     }
                     if (response?.reloadBrowser && this.props.schema.reloadBrowser) {
                         window.location.reload();
                     } else if (response?.openUrl && this.props.schema.openUrl) {
                         window.open(response.openUrl, response.window || this.props.schema.window || '_blank');
-                    } else if (
-                        response?.result &&
-                        this.props.schema.result &&
-                        this.props.schema.result[response.result]
-                    ) {
+                    } else if (response?.result && this.props.schema.result?.[response.result]) {
                         let text = this.getText(this.props.schema.result[response.result]);
-                        if (response.args) {
-                            response.args.forEach((arg: string) => (text = text.replace('%s', arg)));
-                        }
+                        response.args?.forEach((arg: string) => (text = text.replace('%s', arg)));
                         window.alert(text);
                     }
 
