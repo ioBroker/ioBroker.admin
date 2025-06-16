@@ -11,7 +11,8 @@ import {
     Button,
     LinearProgress,
     IconButton,
-    Box, CircularProgress,
+    Box,
+    CircularProgress,
 } from '@mui/material';
 
 import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
@@ -356,7 +357,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 0,
                 title: 'System settings',
-                component: MainSettingsDialog,
+                component: MainSettingsDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemConfig',
                 name: 'tabConfig',
                 dataAux: 'systemRepositories',
@@ -365,7 +366,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 1,
                 title: 'Repositories',
-                component: RepositoriesDialog,
+                component: RepositoriesDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemRepositories',
                 name: 'tabRepositories',
                 dataAux: 'systemConfig',
@@ -375,7 +376,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 2,
                 title: 'Licenses',
-                component: LicensesDialog,
+                component: LicensesDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemLicenses',
                 name: 'tabLicenses',
                 dataAux: null,
@@ -385,7 +386,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 3,
                 title: 'Certificates',
-                component: CertificatesDialog,
+                component: CertificatesDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemCertificates',
                 name: 'tabCertificates',
                 dataAux: null,
@@ -394,7 +395,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 4,
                 title: "Let's encrypt SSL",
-                component: SSLDialog,
+                component: SSLDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemCertificates',
                 name: 'tabLetsEncrypt',
                 dataAux: null,
@@ -403,7 +404,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 5,
                 title: 'Default ACL',
-                component: ACLDialog,
+                component: ACLDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemConfig',
                 name: 'tabDefaultACL',
                 dataAux: null,
@@ -412,7 +413,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 6,
                 title: 'Statistics',
-                component: StatisticsDialog,
+                component: StatisticsDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemConfig',
                 dataAux: 'diagData',
                 name: 'tabStatistics',

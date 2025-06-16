@@ -16,11 +16,11 @@ import {
     InputLabel,
 } from '@mui/material';
 
-import { I18n, withWidth, type Translate } from '@iobroker/adapter-react-v5';
+import { I18n, type Translate } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
 import AdminUtils from '@/helpers/AdminUtils';
-import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
+import BaseSystemSettingsDialog, { type BaseSystemSettingsDialogProps } from './BaseSystemSettingsDialog';
 
 const styles: Record<string, React.CSSProperties> = {
     tabPanel: {
@@ -60,16 +60,16 @@ type ACLRights = {
 
 type ACLObject = ioBrokerObject<object, { defaultNewAcl: ACLOwners & ACLRights }>;
 
-type ACLObjectProps = {
+interface ACLObjectProps extends BaseSystemSettingsDialogProps {
     t: Translate;
     data: ACLObject;
-    users: ioBroker.Object[];
-    groups: ioBroker.Object[];
+    users: ioBroker.UserObject[];
+    groups: ioBroker.GroupObject[];
     onChange: (data: ACLObject) => void;
     saving: boolean;
-};
+}
 
-class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
+export default class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
     private static permBits: [number, number][] = [
         [0x400, 0x200],
         [0x40, 0x20],
@@ -181,6 +181,13 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
         this.props.onChange(newData);
     }
 
+    static getText(word: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
+        if (typeof word === 'object') {
+            return word[lang] || word.en || '';
+        }
+        return word || '';
+    }
+
     render(): JSX.Element {
         const lang = I18n.getLanguage();
         const users = this.props.users.map((elem, index) => (
@@ -188,9 +195,7 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
                 value={elem._id}
                 key={index}
             >
-                {typeof elem.common.name === 'object'
-                    ? elem.common.name[lang] || elem.common.name.en
-                    : elem.common.name}
+                {ACLDialog.getText(elem.common.name, lang)}
             </MenuItem>
         ));
 
@@ -199,9 +204,7 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
                 value={elem._id}
                 key={index}
             >
-                {typeof elem.common.name === 'object'
-                    ? elem.common.name[lang] || elem.common.name.en
-                    : elem.common.name}
+                {ACLDialog.getText(elem.common.name, lang)}
             </MenuItem>
         ));
 
@@ -293,5 +296,3 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
         );
     }
 }
-
-export default withWidth()(ACLDialog);
