@@ -161,7 +161,7 @@ export function DeviceTypeIcon(props: TypeIconProps): React.JSX.Element | null {
             extendDeviceTypeTranslation();
             setLoaded(true);
         }
-    }, [props.title]);
+    }, [props.title, loaded]);
 
     if (!loaded && props.title) {
         return (
@@ -174,7 +174,8 @@ export function DeviceTypeIcon(props: TypeIconProps): React.JSX.Element | null {
     }
     // src could contain a device type too, so detect if it is a type
     const type: TypesExtended | undefined =
-        props.type || (props.src ? (Object.keys(TYPE_ICONS).find(type => props.src === type) as TypesExtended) : undefined);
+        props.type ||
+        (props.src ? (Object.keys(TYPE_ICONS).find(type => props.src === type) as TypesExtended) : undefined);
 
     if (!type && props.src) {
         return (

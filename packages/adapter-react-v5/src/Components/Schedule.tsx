@@ -284,7 +284,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
             schedule = DEFAULT;
         }
         schedule = { ...DEFAULT, ...schedule };
-        schedule.valid.from = schedule.valid.from || Schedule.now2string();
+        schedule.valid.from ||= Schedule.now2string();
 
         this.refFrom = React.createRef();
         this.refTo = React.createRef();
@@ -296,14 +296,17 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
         };
 
         if (JSON.stringify(schedule) !== this.props.schedule) {
-            setTimeout(() => this.props.onChange && this.props.onChange(JSON.stringify(schedule)), 100);
+            setTimeout(() => this.props.onChange?.(JSON.stringify(schedule)), 100);
         }
     }
 
     onChange(schedule: ScheduleConfig, force?: boolean): void {
         const isDiff = JSON.stringify(schedule) !== JSON.stringify(this.state.schedule);
         if (force || isDiff) {
-            isDiff && this.setState({ schedule, desc: Schedule.state2text(schedule) });
+            if (isDiff) {
+                this.setState({ schedule, desc: Schedule.state2text(schedule) });
+            }
+
             const copy: ScheduleConfig = JSON.parse(JSON.stringify(schedule));
             if (copy.period.once) {
                 const once = copy.period.once;
@@ -377,7 +380,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                 }
             }
 
-            this.props.onChange && this.props.onChange(JSON.stringify(copy), Schedule.state2text(schedule));
+            this.props.onChange?.(JSON.stringify(copy), Schedule.state2text(schedule));
         }
     }
 
@@ -896,7 +899,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 checked={!!isOnce}
                                 onClick={() => {
                                     const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
-                                    _schedule.period.once = _schedule.period.once || Schedule.now2string(true);
+                                    _schedule.period.once ||= Schedule.now2string(true);
                                     _schedule.period.dows = '';
                                     _schedule.period.months = '';
                                     _schedule.period.dates = '';
@@ -1026,7 +1029,7 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                 onClick={() => {
                                     const _schedule: ScheduleConfig = JSON.parse(JSON.stringify(this.state.schedule));
                                     _schedule.period.weeks = schedule.period.weeks ? 0 : 1;
-                                    _schedule.period.dows = schedule.period.dows || '[0]';
+                                    _schedule.period.dows ||= '[0]';
                                     _schedule.period.months = '';
                                     _schedule.period.dates = '';
                                     _schedule.period.years = 0;
@@ -1102,13 +1105,12 @@ export class Schedule extends Component<ScheduleProps, ScheduleState> {
                                                 const _schedule: ScheduleConfig = JSON.parse(
                                                     JSON.stringify(this.state.schedule),
                                                 );
-                                                _schedule.period.months = _schedule.period.months || 1;
+                                                _schedule.period.months ||= 1;
                                                 const dates = [];
                                                 for (let i = 1; i <= 31; i++) {
                                                     dates.push(i);
                                                 }
-                                                _schedule.period.dates =
-                                                    _schedule.period.dates || JSON.stringify(dates);
+                                                _schedule.period.dates ||= JSON.stringify(dates);
                                                 _schedule.period.dows = '';
                                                 _schedule.period.years = 0;
                                                 _schedule.period.yearDate = 0;

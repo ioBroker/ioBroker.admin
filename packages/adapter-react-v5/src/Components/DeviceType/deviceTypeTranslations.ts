@@ -10,17 +10,21 @@ import nlLang from './i18n/nl.json';
 import ukLang from './i18n/uk.json';
 import zhLang from './i18n/zh-cn.json';
 
-export function extendDeviceTypeTranslation() {
-    I18n.extendTranslations({
-        en: enLang,
-        de: deLang,
-        ru: ruLang,
-        pt: ptLang,
-        pl: plLang,
-        fr: frLang,
-        it: itLang,
-        nl: nlLang,
-        uk: ukLang,
-        'zh-cn': zhLang,
-    });
+let translationLoaded = false;
+export function extendDeviceTypeTranslation(): void {
+    if (!translationLoaded) {
+        translationLoaded = true;
+        I18n.extendTranslations({
+            en: enLang,
+            de: deLang,
+            ru: ruLang,
+            pt: ptLang,
+            pl: plLang,
+            fr: frLang,
+            it: itLang,
+            nl: nlLang,
+            uk: ukLang,
+            'zh-cn': zhLang,
+        });
+    }
 }
