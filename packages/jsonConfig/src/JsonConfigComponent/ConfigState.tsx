@@ -273,7 +273,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                             });
                         }}
                         renderValue={(val: string) =>
-                            item?.color ? <div style={{ color: item.color }}>{item.label as string}</div> : val
+                            item?.color ? <div style={{ color: item.color }}>{item.label}</div> : val
                         }
                     >
                         {states.map(item => (
@@ -282,7 +282,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                                 value={item.value}
                                 style={{ color: item.color }}
                             >
-                                ${item.label as string}
+                                ${item.label}
                             </MenuItem>
                         ))}
                     </Select>
@@ -674,7 +674,11 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         </div>
                     );
                 }
-            } else if (this.state.obj.common.type === 'number' && this.state.obj.common.write && !this.state.controlType) {
+            } else if (
+                this.state.obj.common.type === 'number' &&
+                this.state.obj.common.write &&
+                !this.state.controlType
+            ) {
                 // Auto-detection of the type
                 const min =
                     this.props.schema.min === undefined

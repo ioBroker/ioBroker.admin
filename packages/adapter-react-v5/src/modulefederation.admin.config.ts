@@ -13,7 +13,7 @@ const makeShared = (pkgs: string[]): Record<string, { requiredVersion: '*'; sing
  * Admin shares these modules for all components
  *
  * @param packageJson - package.json or list of modules that used in component
- * @return Object with shared modules for "federation"
+ * @returns Object with shared modules for "federation"
  */
 export function moduleFederationShared(
     packageJson?:

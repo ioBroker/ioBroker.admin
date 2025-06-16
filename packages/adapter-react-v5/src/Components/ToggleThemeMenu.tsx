@@ -8,7 +8,7 @@ import {
     Brightness6 as Brightness6Icon,
     Brightness7 as Brightness7Icon,
 } from '@mui/icons-material';
-import { ThemeName } from '../types';
+import type { ThemeName } from '../types';
 
 interface ToggleThemeMenuProps {
     themeName: ThemeName;

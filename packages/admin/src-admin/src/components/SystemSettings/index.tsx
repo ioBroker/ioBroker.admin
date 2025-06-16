@@ -11,7 +11,7 @@ import {
     Button,
     LinearProgress,
     IconButton,
-    Box,
+    Box, CircularProgress,
 } from '@mui/material';
 
 import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
@@ -600,7 +600,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                         disabled={!changed || this.state.saving || tabError}
                         onClick={() => this.onSave()}
                         color="primary"
-                        startIcon={<CheckIcon />}
+                        startIcon={this.state.saving ? <CircularProgress size={20} /> : <CheckIcon />}
                     >
                         {this.props.t('Save & Close')}
                     </Button>
