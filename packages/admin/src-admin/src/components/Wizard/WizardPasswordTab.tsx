@@ -1,12 +1,14 @@
 import React, { createRef, Component, type JSX } from 'react';
 
-import { TextField, Grid2, Toolbar, Button, Paper, Box } from '@mui/material';
+import { TextField, Grid2, Toolbar, Button, Paper, Box, Tooltip } from '@mui/material';
 
 import { Check as IconCheck } from '@mui/icons-material';
 
-import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '../../helpers/AdminUtils';
+
+import backItUpIcon from '../../assets/backitup.png';
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -39,7 +41,7 @@ const styles: Record<string, any> = {
 
 interface WizardPasswordTabProps {
     t: Translate;
-    onDone: (password: string) => void;
+    onDone: (password: string, goToBackItUp?: boolean) => void;
 }
 
 interface WizardPasswordTabState {
@@ -49,7 +51,7 @@ interface WizardPasswordTabState {
     errorPasswordRepeat: boolean | string;
 }
 
-class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPasswordTabState> {
+export default class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPasswordTabState> {
     private readonly focusRef: React.RefObject<HTMLInputElement>;
 
     constructor(props: WizardPasswordTabProps) {
@@ -192,8 +194,38 @@ class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPassword
                         </Grid2>
                     </Grid2>
                 </form>
-                <Toolbar style={styles.toolbar}>
-                    <div style={styles.grow} />
+                <Toolbar
+                    style={{
+                        height: TOOLBAR_HEIGHT,
+                        lineHeight: `${TOOLBAR_HEIGHT}px`,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                    }}
+                >
+                    <Tooltip
+                        title={this.props.t(
+                            'If you just want to restore from backup, you can skip the following wizard steps. You will be redirected to BackItUp tab.',
+                        )}
+                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    >
+                        <span>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                style={{ opacity: 0.4 }}
+                                onClick={() => this.props.onDone('', true)}
+                                startIcon={
+                                    <img
+                                        src={backItUpIcon}
+                                        style={{ width: 22 }}
+                                        alt="BackItUp"
+                                    />
+                                }
+                            >
+                                {this.props.t('Restore from backup')}
+                            </Button>
+                        </span>
+                    </Tooltip>
                     <Button
                         color="primary"
                         variant="contained"
@@ -206,9 +238,10 @@ class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPassword
                         {this.props.t('Set administrator password')}
                     </Button>
                 </Toolbar>
+                <Toolbar style={styles.toolbar}>
+                    <div style={styles.grow} />
+                </Toolbar>
             </Paper>
         );
     }
 }
-
-export default withWidth()(WizardPasswordTab);

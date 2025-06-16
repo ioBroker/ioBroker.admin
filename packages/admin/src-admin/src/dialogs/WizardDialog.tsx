@@ -13,6 +13,7 @@ import {
     type AdminConnection,
     type ThemeName,
     type ThemeType,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import WizardPasswordTab from '@/components/Wizard/WizardPasswordTab';
@@ -106,10 +107,12 @@ interface WizardDialogProps {
     toggleTheme: () => void;
     themeName: ThemeName;
     themeType: ThemeType;
+    theme: IobTheme;
     /** Active host name */
     host: string;
     /** Execute command on given host */
     executeCommand: (cmd: string, host: string, cb: () => void) => void;
+    onNavigate: (tab: string, subTab?: string, param?: string) => void;
 }
 
 interface WizardDialogState {
@@ -120,6 +123,7 @@ interface WizardDialogState {
 
 class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
     private adminInstance: null | ioBroker.AdapterObject = null;
+    private language: ioBroker.Languages = I18n.getLanguage();
 
     constructor(props: WizardDialogProps) {
         super(props);
@@ -173,13 +177,15 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                 socket={this.props.socket}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
-                onDone={async (settings?: { lang: ioBroker.Languages }) => {
+                onDone={async (settings: { lang: ioBroker.Languages }) => {
                     const obj = await this.props.socket.getSystemConfig(true);
                     obj.common.licenseConfirmed = true;
                     if (settings?.lang) {
                         obj.common.language = settings.lang;
                         await this.props.socket.setSystemConfig(obj);
                     }
+                    this.language = settings?.lang || obj.common.language || I18n.getLanguage();
+
                     this.setState({ activeStep: this.state.activeStep + 1 });
                 }}
             />
@@ -190,13 +196,15 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         return (
             <WizardPasswordTab
                 t={I18n.t}
-                socket={this.props.socket}
-                themeName={this.props.themeName}
-                onDone={(pass: string) =>
-                    this.props.socket
-                        .changePassword('admin', pass)
-                        .then(() => this.setState({ activeStep: this.state.activeStep + 1 }))
-                }
+                onDone={async (pass: string, goToBackItUp: boolean): Promise<void> => {
+                    if (goToBackItUp) {
+                        this.props.onNavigate('tab-backitup-0');
+                    } else {
+                        await this.props.socket
+                            .changePassword('admin', pass)
+                            .then(() => this.setState({ activeStep: this.state.activeStep + 1 }));
+                    }
+                }}
             />
         );
     }
@@ -206,7 +214,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
             <WizardSettingsTab
                 t={I18n.t}
                 socket={this.props.socket}
-                themeName={this.props.themeName}
+                theme={this.props.theme}
                 onDone={(settings: {
                     tempUnit: '°C' | '°F';
                     currency: string;
@@ -237,8 +245,6 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                 t={I18n.t}
                 auth={this.state.auth}
                 secure={this.state.secure}
-                socket={this.props.socket}
-                themeName={this.props.themeName}
                 onDone={(settings: any) =>
                     this.setState(settings, () => this.setState({ activeStep: this.state.activeStep + 1 }))
                 }
@@ -250,8 +256,6 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         return (
             <WizardPortForwarding
                 t={I18n.t}
-                socket={this.props.socket}
-                themeName={this.props.themeName}
                 auth={this.state.auth}
                 secure={this.state.secure}
                 onDone={() => this.setState({ activeStep: this.state.activeStep + 1 })}
@@ -266,6 +270,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         return (
             <WizardRoomsTab
                 t={I18n.t}
+                lang={this.language}
                 socket={this.props.socket}
                 onDone={() => this.setState({ activeStep: this.state.activeStep + 1 })}
             />
