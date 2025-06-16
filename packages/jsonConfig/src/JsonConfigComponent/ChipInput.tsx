@@ -3,6 +3,7 @@
  *         Copyright (c) 2014 Call-Em-All (https://github.com/callemall/material-ui)
  */
 import React, { type RefObject, type JSX } from 'react';
+// @ts-expect-error note that ReactDOM.findDOMNode is removed with React 19 so find a future proof solution
 import ReactDOM from 'react-dom';
 
 import { Input, OutlinedInput, InputLabel, Chip, FormControl, FormHelperText, Box } from '@mui/material';
