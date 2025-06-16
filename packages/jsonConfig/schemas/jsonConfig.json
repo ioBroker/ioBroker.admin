@@ -57,12 +57,14 @@
                 "icon",
                 "image",
                 "imageSendTo",
+                "infoBox",
                 "instance",
                 "interface",
                 "ip",
                 "jsonEditor",
                 "language",
                 "number",
+                "oauth2",
                 "objectId",
                 "panel",
                 "password",
@@ -930,6 +932,52 @@
                     "description": "The value in this case will be sent only when the \"Enter\" button is pressed. It can be combined with `showEnterButton`",
                     "type": "boolean"
                 },
+                "options": {
+                    "description": "Options for `select` in form `[\"value1\", \"value2\", ...]` or `[{\"value\": \"value\", \"label\": \"Value1\"}, \"value2\", ...]`. If not defiled, the `common.states` in the object must exist.",
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "label": {
+                                        "oneOf": [
+                                            {
+                                                "description": "Value label",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/multilingual"
+                                            }
+                                        ]
+                                    },
+                                    "value": {
+                                        "oneOf": [
+                                            {
+                                                "type": "number"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ]
+                                    },
+                                    "hidden": {
+                                        "type": "boolean"
+                                    },
+                                    "color":  {
+                                        "type": "string",
+                                        "description": "Color of the option"
+                                    }
+                                },
+                                "required": ["label", "value"]
+                            }
+                        ]
+                    }
+                },
                 "label": true,
                 "type": true,
                 "xs": true,
@@ -1111,6 +1159,46 @@
             },
             "additionalProperties": false,
             "required": ["type"]
+        },
+        "oauth2Props": {
+            "properties": {
+                "saveTokenIn": {
+                    "description": "State name where the token will be saved. Default is 'oauth2Tokens'. The path is relative to the adapter instance, like 'adapterName.X.oauth2Tokens'",
+                    "type": "string"
+                },
+                "identifier": {
+                    "description": "OAuth2 service identifier. Only known services are supported",
+                    "type": "string"
+                },
+                "scope": {
+                    "description": "Optional scopes divided by space, e.g. `user-read-private user-read-email`",
+                    "type": "string"
+                },
+                "refreshLabel": {
+                    "description": "Button label for refreshing the token",
+                    "type": "string"
+                },
+                "label": true,
+                "type": true,
+                "xs": true,
+                "sm": true,
+                "md": true,
+                "lg": true,
+                "xl": true,
+                "newLine": true,
+                "hidden": true,
+                "hideOnlyControl": true,
+                "disabled": true,
+                "helpLink": true,
+                "help": true,
+                "style": true,
+                "darkStyle": true,
+                "tooltip": true,
+                "expertMode": true,
+                "confirm": true
+            },
+            "additionalProperties": false,
+            "required": ["type", "identifier"]
         },
         "fileSelectorProps": {
             "properties": {
@@ -2771,7 +2859,41 @@
                                                         "type": "string"
                                                     },
                                                     {
-                                                        "type": "object"
+                                                        "type": "object",
+                                                        "additionalProperties": false,
+                                                        "properties": {
+                                                            "label": {
+                                                                "description": "Label of the option",
+                                                                "oneOf": [
+                                                                    {
+                                                                        "description": "Value label",
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "$ref": "#/definitions/multilingual"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "value": {
+                                                                "description": "Value of the option",
+                                                                "oneOf": [
+                                                                    {
+                                                                        "type": "number"
+                                                                    },
+                                                                    {
+                                                                        "type": "string"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "hidden": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "color": {
+                                                                "description": "Color of the option",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": ["label", "value"]
                                                     }
                                                 ]
                                             }
@@ -3024,6 +3146,9 @@
                                             "group": {
                                                 "description": "Is it a group or not",
                                                 "type": "boolean"
+                                            },
+                                            "color": {
+                                                "type": "string"
                                             }
                                         }
                                     }
@@ -5598,7 +5723,38 @@
                                                             "type": "string"
                                                         },
                                                         {
-                                                            "type": "object"
+                                                            "type": "object",
+                                                            "additionalProperties": false,
+                                                            "properties": {
+                                                                "label": {
+                                                                    "oneOf": [
+                                                                        {
+                                                                            "description": "Value label",
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "$ref": "#/definitions/multilingual"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "value": {
+                                                                    "oneOf": [
+                                                                        {
+                                                                            "type": "number"
+                                                                        },
+                                                                        {
+                                                                            "type": "string"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "hidden": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "color": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": ["label", "value"]
                                                         }
                                                     ]
                                                 }
@@ -5715,6 +5871,9 @@
                                                         "group": {
                                                             "description": "Is this a group",
                                                             "type": "boolean"
+                                                        },
+                                                        "color": {
+                                                            "type": "string"
                                                         }
                                                     }
                                                 }
@@ -6308,6 +6467,74 @@
                                     "if": {
                                         "properties": {
                                             "type": {
+                                                "const": "infoBox"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "text": {
+                                                "description": "Text to be shown",
+                                                "oneOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/multilingual"
+                                                    }
+                                                ]
+                                            },
+                                            "title": {
+                                                "description": "Title of the info box",
+                                                "oneOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/multilingual"
+                                                    }
+                                                ]
+                                            },
+                                            "boxType": {
+                                                "description": "Type of the box",
+                                                "type": "string",
+                                                "enum": ["info", "warning", "error", "ok"]
+                                            },
+                                            "closable": {
+                                                "description": "If the box is closeable",
+                                                "type": "boolean"
+                                            },
+                                            "closed": {
+                                                "description": "Use together with `closeable: true`. If the box is closed or not. In this case, it will be controlled from outside",
+                                                "type": "boolean"
+                                            },
+                                            "iconPosition": {
+                                                "description": "Position of the icon",
+                                                "type": "string",
+                                                "enum": ["top", "middle"]
+                                            },
+                                            "type": true,
+                                            "allowSaveWithError": true,
+                                            "xs": true,
+                                            "sm": true,
+                                            "md": true,
+                                            "lg": true,
+                                            "xl": true,
+                                            "newLine": true,
+                                            "hidden": true,
+                                            "hideOnlyControl": true,
+                                            "noTranslation": true,
+                                            "style": true,
+                                            "expertMode": true
+                                        },
+                                        "additionalProperties": false,
+                                        "required": ["type", "text"]
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "properties": {
+                                            "type": {
                                                 "const": "staticInfo"
                                             }
                                         }
@@ -6530,6 +6757,18 @@
                                     },
                                     "then": {
                                         "$ref": "#/definitions/objectIdProps"
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "properties": {
+                                            "type": {
+                                                "const": "oauth2"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "$ref": "#/definitions/oauth2Props"
                                     }
                                 },
                                 {

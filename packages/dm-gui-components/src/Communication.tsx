@@ -766,7 +766,10 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                         showConfirmation.refresh,
                                     );
                                 } else {
-                                    this.sendActionToInstance('dm:instanceAction', { actionId: showConfirmation.id, timeout: showConfirmation.timeout });
+                                    this.sendActionToInstance('dm:instanceAction', {
+                                        actionId: showConfirmation.id,
+                                        timeout: showConfirmation.timeout,
+                                    });
                                 }
                             });
                         }}

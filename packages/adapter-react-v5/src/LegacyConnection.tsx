@@ -321,17 +321,16 @@ export class LegacyConnection {
     public systemConfig: ioBroker.SystemConfigObject | null = null;
 
     constructor(props: ConnectionProps) {
-        props = props || { protocol: window.location.protocol, host: window.location.hostname };
+        props ||= { protocol: window.location.protocol, host: window.location.hostname };
         this.props = props;
 
         this.autoSubscribes = this.props.autoSubscribes || [];
         this.autoSubscribeLog = this.props.autoSubscribeLog || false;
 
-        this.props.protocol = this.props.protocol || window.location.protocol;
-        this.props.host = this.props.host || window.location.hostname;
-        this.props.port =
-            this.props.port ||
-            (window.location.port === '3000' ? (LegacyConnection.isWeb() ? 8082 : 8081) : window.location.port);
+        this.props.protocol ||= window.location.protocol;
+        this.props.host ||= window.location.hostname;
+        this.props.port ||=
+            window.location.port === '3000' ? (LegacyConnection.isWeb() ? 8082 : 8081) : window.location.port;
         this.props.ioTimeout = Math.max(this.props.ioTimeout || 20000, 20000);
         this.props.cmdTimeout = Math.max(this.props.cmdTimeout || 5000, 5000);
         this._instanceSubscriptions = {};
@@ -386,7 +385,7 @@ export class LegacyConnection {
             // if in index.html the onLoad function not defined
             if (typeof window.registerSocketOnLoad !== 'function') {
                 // poll if loaded
-                this.scriptLoadCounter = this.scriptLoadCounter || 0;
+                this.scriptLoadCounter ||= 0;
                 this.scriptLoadCounter++;
 
                 if (this.scriptLoadCounter < 30) {
@@ -505,7 +504,7 @@ export class LegacyConnection {
         this._socket.on('reauthenticate', () => LegacyConnection.authenticate());
 
         this._socket.on('log', message => {
-            this.props.onLog && this.props.onLog(message);
+            this.props.onLog?.(message);
             this.onLogHandlers.forEach(cb => cb(message));
         });
 
@@ -548,20 +547,11 @@ export class LegacyConnection {
             setTimeout(() => this.fileChange(id, fileName, size), 0),
         );
 
-        this._socket.on(
-            'cmdStdout',
-            (id: string, text: string) => this.onCmdStdoutHandler && this.onCmdStdoutHandler(id, text),
-        );
+        this._socket.on('cmdStdout', (id: string, text: string) => this.onCmdStdoutHandler?.(id, text));
 
-        this._socket.on(
-            'cmdStderr',
-            (id: string, text: string) => this.onCmdStderrHandler && this.onCmdStderrHandler(id, text),
-        );
+        this._socket.on('cmdStderr', (id: string, text: string) => this.onCmdStderrHandler?.(id, text));
 
-        this._socket.on(
-            'cmdExit',
-            (id: string, exitCode: number) => this.onCmdExitHandler && this.onCmdExitHandler(id, exitCode),
-        );
+        this._socket.on('cmdExit', (id: string, exitCode: number) => this.onCmdExitHandler?.(id, exitCode));
     }
 
     /**
@@ -665,8 +655,10 @@ export class LegacyConnection {
                 return;
             }
             this.loaded = true;
-            this.loadTimer && clearTimeout(this.loadTimer);
-            this.loadTimer = null;
+            if (this.loadTimer) {
+                clearTimeout(this.loadTimer);
+                this.loadTimer = null;
+            }
 
             this.onProgress(PROGRESS.CONNECTED);
             this.firstConnect = false;
@@ -684,15 +676,17 @@ export class LegacyConnection {
                     return;
                 }
                 this.loaded = true;
-                this.loadTimer && clearTimeout(this.loadTimer);
-                this.loadTimer = null;
+                if (this.loadTimer) {
+                    clearTimeout(this.loadTimer);
+                    this.loadTimer = null;
+                }
 
                 this.onProgress(PROGRESS.CONNECTED);
                 this.firstConnect = false;
             }
 
             this.systemConfig = systemConfig;
-            if (this.systemConfig && this.systemConfig.common) {
+            if (this.systemConfig?.common) {
                 this.systemLang = this.systemConfig.common.language;
             } else {
                 // @ts-expect-error userLanguage is not standard
@@ -705,16 +699,18 @@ export class LegacyConnection {
                 }
             }
 
-            this.props.onLanguage && this.props.onLanguage(this.systemLang);
+            this.props.onLanguage?.(this.systemLang);
 
             if (!this.doNotLoadAllObjects) {
                 await this.getObjects();
                 this.onProgress(PROGRESS.READY);
-                this.props.onReady && this.objects && this.props.onReady(this.objects);
+                if (this.props.onReady && this.objects) {
+                    this.props.onReady(this.objects);
+                }
             } else {
                 this.objects = { 'system.config': systemConfig };
                 this.onProgress(PROGRESS.READY);
-                this.props.onReady && this.props.onReady(this.objects);
+                this.props.onReady?.(this.objects);
             }
         } catch (e) {
             this.onError(`Cannot read system config: ${e}`);
@@ -916,7 +912,9 @@ export class LegacyConnection {
             if (this.statesSubscribes[_id]) {
                 if (cb) {
                     const pos = this.statesSubscribes[_id].cbs.indexOf(cb);
-                    pos !== -1 && this.statesSubscribes[_id].cbs.splice(pos, 1);
+                    if (pos !== -1) {
+                        this.statesSubscribes[_id].cbs.splice(pos, 1);
+                    }
                 } else {
                     this.statesSubscribes[_id].cbs = [];
                 }
@@ -1099,9 +1097,11 @@ export class LegacyConnection {
                     sub.cbs = [];
                 }
 
-                if (!sub.cbs || !sub.cbs.length) {
+                if (!sub.cbs?.length) {
                     delete this.filesSubscribes[key];
-                    this.connected && toUnsubscribe.push(pattern);
+                    if (this.connected) {
+                        toUnsubscribe.push(pattern);
+                    }
                 }
             }
         }
@@ -1527,7 +1527,7 @@ export class LegacyConnection {
             update = adapter;
             adapter = '';
         }
-        adapter = adapter || '';
+        adapter ||= '';
 
         if (!update && this._promises[`instances_${adapter}`] instanceof Promise) {
             return this._promises[`instances_${adapter}`] as Promise<ioBroker.InstanceObject[]>;
@@ -1565,7 +1565,7 @@ export class LegacyConnection {
             adapter = '';
         }
 
-        adapter = adapter || '';
+        adapter ||= '';
 
         if (!update && this._promises[`adapter_${adapter}`] instanceof Promise) {
             return this._promises[`adapter_${adapter}`] as Promise<ioBroker.AdapterObject[]>;
@@ -1590,8 +1590,8 @@ export class LegacyConnection {
      * Called internally.
      */
     private _renameGroups(objs: RenameGroupObject[], cb: (err: string | null) => void): void {
-        if (!objs || !objs.length) {
-            cb && cb(null);
+        if (!objs?.length) {
+            cb?.(null);
         } else {
             const obj = objs.pop();
             if (!obj) {
@@ -1605,7 +1605,7 @@ export class LegacyConnection {
             this.setObject(obj._id, obj)
                 .then(() => this.delObject(oldId))
                 .then(() => setTimeout(() => this._renameGroups(objs, cb), 0))
-                .catch((err: string | null) => cb && cb(err));
+                .catch((err: string | null) => cb?.(err));
         }
     }
 
@@ -1642,7 +1642,7 @@ export class LegacyConnection {
             if (obj) {
                 obj._id = newId as ioBroker.ObjectIDs.Group;
                 if (newName !== undefined) {
-                    obj.common = obj.common || ({} as ioBroker.GroupCommon);
+                    obj.common ||= {} as ioBroker.GroupCommon;
                     obj.common.name = newName;
                 }
 
@@ -1891,8 +1891,8 @@ export class LegacyConnection {
             return Promise.reject(new Error(NOT_CONNECTED));
         }
 
-        start = start || '';
-        end = end || '\u9999';
+        start ||= '';
+        end ||= '\u9999';
         return this.getObjectViewCustom('system', type, start, end);
     }
 
@@ -2763,8 +2763,8 @@ export class LegacyConnection {
 
         this._promises.systemConfig = this.getObject('system.config').then(obj => {
             const systemConfig: ioBroker.SystemConfigObject = (obj || {}) as ioBroker.SystemConfigObject;
-            systemConfig.common = systemConfig.common || ({} as ioBroker.SystemConfigCommon);
-            systemConfig.native = systemConfig.native || {};
+            systemConfig.common ||= {} as ioBroker.SystemConfigCommon;
+            systemConfig.native ||= {};
             return systemConfig;
         });
 
@@ -3269,7 +3269,7 @@ export class LegacyConnection {
     }
 
     getAdaptersResetCache(adapter?: string): void {
-        adapter = adapter || '';
+        adapter ||= '';
         delete this._promises.compactAdapters;
         delete this._promises[`adapter_${adapter}`];
     }
@@ -3298,7 +3298,7 @@ export class LegacyConnection {
     }
 
     getAdapternInstancesResetCache(adapter?: string): void {
-        adapter = adapter || '';
+        adapter ||= '';
         delete this._promises.compactInstances;
         delete this._promises[`instances_${adapter}`];
     }
@@ -3316,7 +3316,7 @@ export class LegacyConnection {
             return Promise.reject(new Error('Allowed only in admin'));
         }
 
-        this._promises.installedCompact = this._promises.installedCompact || {};
+        this._promises.installedCompact ||= {};
 
         if (!update && this._promises.installedCompact[host] instanceof Promise) {
             return this._promises.installedCompact[host];
@@ -3555,7 +3555,7 @@ export class LegacyConnection {
                             targetInstance = `system.adapter.${targetInstance}`;
                         }
                         // save callback
-                        this._instanceSubscriptions[targetInstance] = this._instanceSubscriptions[targetInstance] || [];
+                        this._instanceSubscriptions[targetInstance] ||= [];
                         if (
                             !this._instanceSubscriptions[targetInstance].find(
                                 sub => sub.messageType === messageType && sub.callback === callback,
@@ -3643,7 +3643,9 @@ export class LegacyConnection {
      * Send log to ioBroker log
      */
     log(text: string, level?: 'info' | 'debug' | 'warn' | 'error' | 'silly'): void {
-        text && this._socket.emit('log', text, level || 'debug');
+        if (text) {
+            this._socket.emit('log', text, level || 'debug');
+        }
     }
 
     /**

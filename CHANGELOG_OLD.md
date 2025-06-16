@@ -1,4 +1,15 @@
 # Older changes
+## 7.6.14 (2025-04-23)
+
+- (@GermanBluefox) Added the device type selector and icon to adapter-react-v5
+- (@GermanBluefox) Fixed authentication issues with oauth2
+- (@Jey-Cee) Corrected the device manager icon upload
+
+## 7.6.8 (2025-04-19)
+
+- (@GermanBluefox) Allowed following of the `url` types in the object browser
+- (@GermanBluefox) Allowed login by pressing the enter key
+
 ## 7.6.7 (2025-04-15)
    
 - (@GermanBluefox) Corrected login with password managers

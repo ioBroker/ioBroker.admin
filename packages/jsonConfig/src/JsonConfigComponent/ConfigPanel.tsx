@@ -30,12 +30,14 @@ import ConfigFunc from './ConfigFunc';
 import ConfigIP from './ConfigIP';
 import ConfigImageSendTo from './ConfigImageSendTo';
 import ConfigImageUpload from './ConfigImageUpload';
+import ConfigInfoBox from './ConfigInfoBox';
 import ConfigInstanceSelect from './ConfigInstanceSelect';
 import ConfigInterface from './ConfigInterface';
 import ConfigJsonEditor from './ConfigJsonEditor';
 import ConfigLanguage from './ConfigLanguage';
 import ConfigLicense from './ConfigLicense';
 import ConfigNumber from './ConfigNumber';
+import ConfigOauth2 from './ConfigOAuth2';
 import ConfigObjectId from './ConfigObjectId';
 import ConfigPassword from './ConfigPassword';
 import ConfigPattern from './ConfigPattern';
@@ -86,6 +88,7 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     header: ConfigStaticHeader,
     image: ConfigImageUpload,
     imageSendTo: ConfigImageSendTo,
+    infoBox: ConfigInfoBox,
     instance: ConfigInstanceSelect,
     interface: ConfigInterface,
     ip: ConfigIP,
@@ -93,6 +96,7 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     language: ConfigLanguage,
     license: ConfigLicense,
     number: ConfigNumber,
+    oauth2: ConfigOauth2,
     objectId: ConfigObjectId,
     password: ConfigPassword,
     pattern: ConfigPattern,

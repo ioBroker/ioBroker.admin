@@ -1,7 +1,7 @@
 {
     "name": "@iobroker/json-config",
     "description": "This package contains the ioBroker JSON config UI components",
-    "version": "7.6.17",
+    "version": "7.6.19",
     "main": "./build/index.js",
     "types": "./build/index.d.ts",
     "scripts": {
@@ -19,8 +19,8 @@
     },
     "dependencies": {
         "@iobroker/adapter-react-v5": "file:../adapter-react-v5",
-        "@module-federation/runtime": "^0.11.4",
-        "@mui/x-date-pickers": "^7.28.3",
+        "@module-federation/runtime": "^0.15.0",
+        "@mui/x-date-pickers": "^7.29.4",
         "crypto-js": "^4.2.0",
         "json5": "^2.2.3",
         "react-ace": "^14.0.1",
@@ -31,7 +31,7 @@
         "@types/crypto-js": "^4.2.2",
         "@types/json5": "^2.2.0",
         "ajv": "^8.17.1",
-        "tsc-alias": "^1.8.13"
+        "tsc-alias": "^1.8.16"
     },
     "files": [
         "build/",

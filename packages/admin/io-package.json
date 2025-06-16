@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.17",
+    "version": "7.6.19",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,32 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.19": {
+        "en": "Improvements on JSONConfig component `state`\nAdded `infoBox` JSONConfig component",
+        "de": "Verbesserungen der JSONConfig-Komponente `state `\nHinzugefügt `infoBox` JSONConfig Komponente",
+        "ru": "Улучшение состояния компонента JSONConfig пункт\nДобавлен компонент «infoBox» JSONConfig",
+        "pt": "Melhorias no componente JSONConfig `state `\nAdicionado `infoBox` componente JSONConfig",
+        "nl": "Verbeteringen in de JSONConfig component state Wat\nToegevoegd ",
+        "fr": "Amélioration de la composante JSONConfig \"\nAjout du composant `infoBox` JSONConfig",
+        "it": "Miglioramenti sul componente JSONConfig `state #\nAggiunto `infoBox` JSONConfig componente",
+        "es": "Mejoras en el componente JSONConfig `estado `\nComponente de `infoBox` JSONConfig",
+        "pl": "Poprawa stanu komponentu JSONConfig '\nDodano 'infoBox' komponent JSONConfig",
+        "uk": "Удосконалення компонентів JSONConfig `state й\nДодано `infoBox` JSONConfig компонент",
+        "zh-cn": "改进JSONConfig组件`状态' `(a). `\n添加了“ infoBox” JSONConfig 组件"
+      },
+      "7.6.18": {
+        "en": "Added OAuth2 authentication to JSONConfig components",
+        "de": "OAuth2 Authentifizierung zu JSONConfig Komponenten hinzugefügt",
+        "ru": "Добавлена аутентификация OAuth2 для компонентов JSONConfig",
+        "pt": "Autenticação OAuth2 adicionada aos componentes JSONConfig",
+        "nl": "OAuth2-authenticatie toegevoegd aan JSONConfig-componenten",
+        "fr": "Ajout de l'authentification OAuth2 aux composants JSONConfig",
+        "it": "Aggiunta autenticazione OAuth2 ai componenti JSONConfig",
+        "es": "Añadido autenticación OAuth2 a componentes JSONConfig",
+        "pl": "Dodano uwierzytelnianie OAuth2 do komponentów JSONConfig",
+        "uk": "Додано автентифікації OAuth2 до компонентів JSONConfig",
+        "zh-cn": "添加 OAuth2 认证到 JSONConfig 组件"
+      },
       "7.6.17": {
         "en": "Small changes on GUI, JSONConfig and Device Manager",
         "de": "Kleine Änderungen an GUI, JSONConfig und Device Manager",
@@ -83,32 +109,6 @@
         "pl": "Dozwolone śledzenie typów 'url' w przeglądarce obiektu\nDozwolone logowanie poprzez naciśnięcie klawisza enter",
         "uk": "Визначено наступні типи `url` у браузері об’єкта\nДозволений логін, натиснувши кнопку введення",
         "zh-cn": "允许跟踪对象浏览器中的“ url” 类型\n通过按下输入键允许登录"
-      },
-      "7.6.7": {
-        "en": "Corrected login with password managers",
-        "de": "Korrigierte Anmeldung mit Passwortmanagern",
-        "ru": "Исправлен логин с менеджерами паролей",
-        "pt": "Login correto com gestores de senha",
-        "nl": "Gecorrigeerde login met wachtwoordbeheerders",
-        "fr": "Connexion corrigée avec les gestionnaires de mots de passe",
-        "it": "Collegamento corretto con password manager",
-        "es": "Acceso corregido con gestores de contraseña",
-        "pl": "Poprawione logowanie z menedżerami haseł",
-        "uk": "Виправлений логін з менеджерами паролів",
-        "zh-cn": "已更正密码管理器登录"
-      },
-      "7.6.5": {
-        "en": "Corrected login with password managers\nAdded support for the multiple selection for JSON config",
-        "de": "Korrigierte Anmeldung mit Passwortmanagern\nUnterstützung für die Mehrfachauswahl für JSON config",
-        "ru": "Исправлен логин с менеджерами паролей\nДобавлена поддержка множественного выбора конфигурации JSON",
-        "pt": "Login correto com gestores de senha\nAdicionado suporte para a seleção múltipla para JSON config",
-        "nl": "Gecorrigeerde login met wachtwoordbeheerders\nOndersteuning toegevoegd voor de meervoudige selectie voor JSON config",
-        "fr": "Connexion corrigée avec les gestionnaires de mots de passe\nAjout du support pour la sélection multiple pour la configuration JSON",
-        "it": "Collegamento corretto con password manager\nAggiunto il supporto per la selezione multipla per JSON config",
-        "es": "Acceso corregido con gestores de contraseña\nSoporte añadido para la selección múltiple para JSON config",
-        "pl": "Poprawione logowanie z menedżerami haseł\nDodano wsparcie dla wielokrotnego wyboru dla konfiguracji JSON",
-        "uk": "Виправлений логін з менеджерами паролів\nДодано підтримку для декількох вибору для налаштування JSON",
-        "zh-cn": "已更正密码管理器登录\n为 JSON 配置的多重选择添加支持"
       }
     },
     "desc": {

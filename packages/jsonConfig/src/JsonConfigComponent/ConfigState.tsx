@@ -1,6 +1,17 @@
 import React, { type JSX } from 'react';
 
-import { TextField, IconButton, Button, Switch, Slider, Box } from '@mui/material';
+import {
+    TextField,
+    IconButton,
+    Button,
+    Switch,
+    Slider,
+    Box,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+} from '@mui/material';
 
 import { I18n, Icon, type IobTheme } from '@iobroker/adapter-react-v5';
 
@@ -74,6 +85,22 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         const obj: ioBroker.StateObject = (await this.props.oContext.socket.getObject(
             this.getObjectID(),
         )) as ioBroker.StateObject;
+
+        if (obj?.common?.states && !this.props.schema.options) {
+            // Normalize states to object
+            if (Array.isArray(obj?.common?.states)) {
+                // convert array to object
+                const states: Record<string, string> = {};
+                obj.common.states.forEach((state, index) => {
+                    states[index.toString()] = state;
+                });
+                obj.common.states = states;
+            }
+            if (!Object.keys(obj.common.states).length) {
+                obj.common.states = undefined; // remove empty states
+            }
+        }
+
         const controlType = this.props.schema.control || this.detectType(obj);
 
         try {
@@ -133,9 +160,9 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         }
     };
 
-    detectType(obj: ioBroker.StateObject): 'button' | 'switch' | 'slider' | 'input' | 'text' {
-        obj = obj || ({} as ioBroker.StateObject);
-        obj.common = obj.common || ({} as ioBroker.StateCommon);
+    detectType(obj: ioBroker.StateObject): 'button' | 'switch' | 'slider' | 'input' | 'text' | 'select' {
+        obj ||= {} as ioBroker.StateObject;
+        obj.common ||= {} as ioBroker.StateCommon;
 
         // read an object
         if (obj.common.type === 'boolean') {
@@ -153,6 +180,9 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
 
         if (obj.common.type === 'number' && this.props.schema.controlled !== false) {
             if (obj.common.write || this.props.schema.controlled === true) {
+                if (obj.common.states || this.props.schema.options) {
+                    return 'select';
+                }
                 if (obj.common.max !== undefined) {
                     return 'slider';
                 }
@@ -162,10 +192,51 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         }
 
         if (obj.common.write && this.props.schema.controlled !== false) {
+            if (obj.common.states || this.props.schema.options) {
+                return 'select';
+            }
             return 'input';
         }
 
         return 'text';
+    }
+
+    getNormalizedStates(): {
+        label: string;
+        value: number | string;
+        hidden?: string | boolean;
+        color?: string;
+    }[] {
+        let states: {
+            label: string;
+            value: number | string;
+            hidden?: string | boolean;
+            color?: string;
+        }[];
+        if (this.props.schema.options) {
+            states = this.props.schema.options.map(state => {
+                if (typeof state === 'string') {
+                    return { value: state, label: this.getText(state, this.props.schema.noTranslation) };
+                }
+                return {
+                    value: state.value,
+                    label: this.getText(state.label, this.props.schema.noTranslation),
+                    color: state.color,
+                };
+            });
+        } else if (this.state.obj.common.states) {
+            states = [];
+            Object.keys(this.state.obj.common.states).forEach(key => {
+                states.push({
+                    value: key,
+                    label: this.getText(this.state.obj.common.states[key], this.props.schema.noTranslation),
+                });
+            });
+        } else {
+            states = [];
+        }
+
+        return states;
     }
 
     renderItem(_error: string, disabled: boolean /*, defaultValue */): JSX.Element {
@@ -176,6 +247,48 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
         let content: JSX.Element;
 
         if (
+            this.state.controlType === 'select' ||
+            (!this.state.controlType &&
+                (this.state.obj.common.type === 'number' || this.state.obj.common.type === 'string') &&
+                this.state.obj.common.write !== false &&
+                (this.props.schema.options || this.state.obj.common.states))
+        ) {
+            const states = this.getNormalizedStates();
+            const item = states.find(it => it.value === this.state.stateValue);
+
+            content = (
+                <FormControl fullWidth>
+                    <InputLabel>${this.getText(this.props.schema.label)}</InputLabel>
+                    <Select
+                        value={this.state.stateValue}
+                        disabled={!!this.props.schema.readOnly || disabled}
+                        onChange={e => {
+                            this.setState({ stateValue: e.target.value }, (): void => {
+                                let value: string | number = this.state.stateValue as string | number;
+                                if (this.state.obj.common.type === 'number') {
+                                    value = parseFloat((value as unknown as string).toString().replace(',', '.'));
+                                }
+
+                                void this.props.oContext.socket.setState(this.getObjectID(), value, false);
+                            });
+                        }}
+                        renderValue={(val: string) =>
+                            item?.color ? <div style={{ color: item.color }}>{item.label}</div> : val
+                        }
+                    >
+                        {states.map(item => (
+                            <MenuItem
+                                key={(item.value ?? '').toString()}
+                                value={item.value}
+                                style={{ color: item.color }}
+                            >
+                                ${item.label}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            );
+        } else if (
             this.state.controlType === 'button' ||
             (!this.state.controlType &&
                 this.state.obj.common.type === 'boolean' &&
@@ -271,6 +384,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         style={{ flex: 1 }}
                         value={this.state.stateValue}
                         variant="standard"
+                        disabled={!!this.props.schema.readOnly || disabled}
                         slotProps={{
                             input: {
                                 endAdornment:
@@ -301,11 +415,12 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                                 }
                                 this.controlTimeout = setTimeout(async () => {
                                     this.controlTimeout = null;
-                                    await this.props.oContext.socket.setState(
-                                        this.getObjectID(),
-                                        this.state.stateValue,
-                                        false,
-                                    );
+                                    let value: string | number = this.state.stateValue as string | number;
+                                    if (this.state.obj.common.type === 'number') {
+                                        value = parseFloat((value as unknown as string).toString().replace(',', '.'));
+                                    }
+
+                                    await this.props.oContext.socket.setState(this.getObjectID(), value, false);
                                 }, this.props.schema.controlDelay || 0);
                             });
                         }}
@@ -316,9 +431,10 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                             this.props.schema.noTranslation,
                         )}
                     />
-                    {this.props.schema.showEnterButton && (
+                    {this.props.schema.showEnterButton && !this.props.schema.readOnly && (
                         <Button
                             variant="outlined"
+                            disabled={disabled}
                             onClick={() => {
                                 void this.props.oContext.socket.setState(
                                     this.getObjectID(),
@@ -415,7 +531,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 content = (
                     <Switch
                         checked={!!this.state.stateValue}
-                        disabled={!!this.props.schema.readOnly}
+                        disabled={!!this.props.schema.readOnly || disabled}
                         onChange={async () => {
                             if (this.props.schema.confirm) {
                                 this.setState({
@@ -502,7 +618,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         style={{ width: '100%', flexGrow: 1 }}
                         min={min}
                         max={max}
-                        disabled={!!this.props.schema.readOnly}
+                        disabled={!!this.props.schema.readOnly || disabled}
                         step={step}
                         value={this.state.stateValue as number}
                         valueLabelDisplay="auto"
@@ -558,7 +674,11 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         </div>
                     );
                 }
-            } else if (this.state.obj.common.type === 'number' && this.state.obj.common.write) {
+            } else if (
+                this.state.obj.common.type === 'number' &&
+                this.state.obj.common.write &&
+                !this.state.controlType
+            ) {
                 // Auto-detection of the type
                 const min =
                     this.props.schema.min === undefined
@@ -585,6 +705,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                         style={{ width: '100%' }}
                         value={this.state.stateValue}
                         type="number"
+                        disabled={!!this.props.schema.readOnly || disabled}
                         slotProps={{
                             htmlInput: { min, max, step, readOnly: !!this.props.schema.readOnly },
                             input: {
@@ -651,11 +772,26 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 const unit =
                     this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit;
 
+                let mappedValue = this.state.stateValue;
+
+                // if options or states are defined, map the value to the label
+                if (
+                    mappedValue !== null &&
+                    mappedValue !== undefined &&
+                    (this.props.schema.options || this.state.obj.common.states)
+                ) {
+                    const states = this.getNormalizedStates();
+                    const state = states.find(s => s.value === mappedValue);
+                    if (state) {
+                        mappedValue = state.label;
+                    }
+                }
+
                 let value;
                 let key: string;
                 if (this.state.controlType === 'html') {
-                    key = (this.state.stateValue || '').toString();
-                    value = <span dangerouslySetInnerHTML={{ __html: this.state.stateValue as string }} />;
+                    key = (mappedValue || '').toString();
+                    value = <span dangerouslySetInnerHTML={{ __html: mappedValue as string }} />;
                 } else if (this.state.stateValue === null) {
                     value = 'null';
                     key = value;
@@ -663,7 +799,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                     value = 'undefined';
                     key = value;
                 } else {
-                    value = this.state.stateValue.toString();
+                    value = mappedValue.toString();
                     key = value;
                 }
 

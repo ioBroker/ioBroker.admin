@@ -54,9 +54,12 @@ interface CommandDialogState {
     progressText: string;
     closeOnReady: boolean;
     isError: boolean;
+    dialogWidth: number;
 }
 
-class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
+export default class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
+    private paperRef: React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
+
     constructor(props: CommandDialogProps) {
         super(props);
 
@@ -67,7 +70,28 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
                 (((window as any)._localStorage as Storage) || window.localStorage).getItem(
                     'CommandDialog.closeOnReady',
                 ) === 'true',
+            dialogWidth: 0,
         };
+    }
+
+    componentDidMount(): void {
+        window.addEventListener('resize', this.handleResize);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
+    }
+
+    handleResize = () => {
+        if (this.paperRef.current && (this.paperRef.current.offsetWidth || 0) !== this.state.dialogWidth) {
+            this.setState({ dialogWidth: this.paperRef.current.offsetWidth || 0 });
+        }
+    };
+
+    componentDidUpdate(): void {
+        if (this.state.dialogWidth !== (this.paperRef.current?.offsetWidth || 0)) {
+            this.setState({ dialogWidth: this.paperRef.current?.offsetWidth || 0 });
+        }
     }
 
     render(): JSX.Element {
@@ -82,6 +106,7 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
                 onClose={this.props.inBackground ? this.props.onClose : this.props.onInBackground}
                 open={!0}
                 maxWidth="md"
+                ref={this.paperRef}
             >
                 <DialogTitle>
                     {this.state.progressText || this.props.t('Running command')}
@@ -118,7 +143,7 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
                         onSetCommandRunning={(running: boolean) => this.props.onSetCommandRunning(running)}
                     />
                 </DialogContent>
-                <DialogActions style={{ justifyContent: 'space-between' }}>
+                <DialogActions style={{ justifyContent: 'space-between', gap: 8 }}>
                     <FormControlLabel
                         style={{ marginLeft: 16 }}
                         control={
@@ -136,93 +161,37 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
                         }
                         label={this.props.t('close on ready')}
                     />
-                    <div>
-                        <Button
-                            variant="contained"
-                            autoFocus
-                            title={this.props.confirmText || this.props.t('In background')}
-                            disabled={this.props.inBackground}
-                            onClick={this.props.onInBackground}
-                            startIcon={
-                                <Box
-                                    sx={{
-                                        '@media (max-width: 600px)': {
-                                            display: 'none',
-                                        },
-                                    }}
-                                >
-                                    <OpenInBrowserIcon />
-                                </Box>
-                            }
-                            color="primary"
-                            style={{
-                                marginRight: 8,
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    '@media (min-width: 601px)': {
-                                        display: 'none',
-                                    },
-                                }}
-                            >
-                                <OpenInBrowserIcon />
-                            </Box>
-                            <Box
-                                sx={{
-                                    '@media (max-width: 600px)': {
-                                        display: 'none',
-                                    },
-                                }}
-                            >
-                                {this.props.confirmText || this.props.t('In background')}
-                            </Box>
-                        </Button>
-                        <Button
-                            variant="contained"
-                            disabled={!this.props.inBackground}
-                            onClick={this.props.onClose}
-                            color="grey"
-                            style={{
-                                backgroundColor: this.state.isError ? '#834141' : undefined,
-                                color: this.state.isError ? '#fff' : undefined,
-                            }}
-                            startIcon={
-                                <Box
-                                    sx={{
-                                        '@media (max-width: 600px)': {
-                                            display: 'none',
-                                        },
-                                    }}
-                                >
-                                    <CloseIcon />
-                                </Box>
-                            }
-                        >
-                            <Box
-                                sx={{
-                                    '@media (min-width: 601px)': {
-                                        display: 'none',
-                                    },
-                                }}
-                            >
-                                <CloseIcon />
-                            </Box>
-                            <Box
-                                sx={{
-                                    '@media (max-width: 600px)': {
-                                        display: 'none',
-                                    },
-                                }}
-                            >
-                                {this.props.t('Close')}
-                            </Box>
-                        </Button>
-                    </div>
+                    <div style={{ flexGrow: 1 }} />
+                    <Button
+                        variant="contained"
+                        autoFocus
+                        title={this.props.confirmText || this.props.t('In background')}
+                        disabled={this.props.inBackground}
+                        onClick={this.props.onInBackground}
+                        startIcon={this.state.dialogWidth > 600 ? <OpenInBrowserIcon /> : null}
+                        color="primary"
+                    >
+                        {this.state.dialogWidth <= 600 ? (
+                            <OpenInBrowserIcon />
+                        ) : (
+                            this.props.confirmText || this.props.t('In background')
+                        )}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        disabled={!this.props.inBackground}
+                        onClick={this.props.onClose}
+                        color="grey"
+                        style={{
+                            backgroundColor: this.state.isError ? '#834141' : undefined,
+                            color: this.state.isError ? '#fff' : undefined,
+                        }}
+                        startIcon={this.state.dialogWidth > 600 ? <CloseIcon /> : null}
+                    >
+                        {this.state.dialogWidth <= 600 ? <CloseIcon /> : this.props.t('Close')}
+                    </Button>
                 </DialogActions>
             </Dialog>
         );
     }
 }
-
-export default CommandDialog;
