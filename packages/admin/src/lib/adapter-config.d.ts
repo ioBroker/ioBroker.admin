@@ -36,6 +36,8 @@ declare global {
             tmpPath: string;
             tmpPathAllow: boolean;
             ttl: number;
+            /** If the experimental SSO feature is enabled */
+            ssoActive: boolean;
         }
     }
 }

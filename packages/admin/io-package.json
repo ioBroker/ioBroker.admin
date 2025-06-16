@@ -255,7 +255,8 @@
     "loadingBackgroundColor": "",
     "loadingHideLogo": false,
     "loadingBackgroundImage": false,
-    "doNotCheckPublicIP": false
+    "doNotCheckPublicIP": false,
+    "ssoActive": false
   },
   "notifications": [
     {

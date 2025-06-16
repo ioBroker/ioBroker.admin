@@ -318,6 +318,11 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
      * Render the button for OIDC connect/disconnect
      */
     renderOidcButton(): JSX.Element {
+        if (window.ssoActive !== 'true') {
+            // SSO is not active, do not show the button
+            return null;
+        }
+
         /* @ts-expect-error needs to be added to types */
         return !this.props.user.common?.externalAuthentication?.oidc ? (
             <Button
