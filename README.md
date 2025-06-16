@@ -88,7 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.20 (2025-06-16)
 - (@GermanBluefox) Allowed using of * in the filter of objects
 - (@GermanBluefox) Small GUI improvements
 
@@ -111,11 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Added debug logs to authentication
 - (@GermanBluefox) Corrected layout of installation log
 - (@GermanBluefox) Fixed indication of connection state for servers
-
-### 7.6.15 (2025-04-29)
-
-- (@GermanBluefox) Added debug logs to authentication
-- (@GermanBluefox) Corrected the delete button if noDelete flag set for table (JSONConfig)
 
 ## License
 
