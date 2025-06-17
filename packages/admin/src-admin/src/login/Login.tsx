@@ -96,6 +96,8 @@ declare global {
         loginLogo: string;
         loginHideLogo: string;
         loginTitle: string;
+        /** If the SSO feature is active, it is set to string 'true' */
+        ssoActive: string;
     }
 }
 
@@ -278,7 +280,7 @@ class Login extends Component<object, LoginState> {
                                 />
                             </Box>
                         ) : (
-                            window.loginHideLogo === 'false' && (
+                            (window.loginHideLogo === 'false' || window.loginHideLogo === '@@loginHideLogo@@') && (
                                 <Avatar
                                     sx={styles.avatar}
                                     src="img/admin.svg"
@@ -380,6 +382,18 @@ class Login extends Component<object, LoginState> {
                         >
                             {this.state.inProcess ? <CircularProgress size={24} /> : I18n.t('login')}
                         </Button>
+                        {window.ssoActive === 'true' ? (
+                            <Button
+                                onClick={() => {
+                                    window.location.href = `/sso?redirectUrl=${encodeURIComponent(`${window.origin}/#tab-intro`)}&method=login`;
+                                }}
+                                fullWidth
+                                variant="contained"
+                                color="secondary"
+                            >
+                                {I18n.t('Use Single-Sign On')}
+                            </Button>
+                        ) : null}
                     </Grid2>
                     <Box style={styles.marginTop}>
                         <Typography

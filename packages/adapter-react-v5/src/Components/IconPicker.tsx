@@ -4,7 +4,7 @@ import { useDropzone } from 'react-dropzone';
 import { InputLabel, FormControl, IconButton } from '@mui/material';
 import { Clear as ClearIcon } from '@mui/icons-material';
 
-import { IconSelector } from './IconSelector';
+import { IconSelector, type IconSelectorIcon } from './IconSelector';
 import { Icon } from './Icon';
 import { I18n } from '../i18n';
 import { Utils } from './Utils';
@@ -61,13 +61,7 @@ interface IconPickerProps {
     disabled?: boolean;
     /** The icon change callback. */
     onChange: (icon: string) => void;
-    icons?: {
-        icon?: string;
-        src?: string;
-        href?: string;
-        name?: ioBroker.StringOrTranslated;
-        _id?: string;
-    }[];
+    icons?: IconSelectorIcon[];
     onlyRooms?: boolean;
     onlyDevices?: boolean;
 }

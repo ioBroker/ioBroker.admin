@@ -73,7 +73,6 @@
         "react-inlinesvg": "^4.2.0"
     },
     "devDependencies": {
-        "@iobroker/eslint-config": "^2.0.2",
         "@types/node": "^22.15.30",
         "@types/react": "^18.3.23",
         "@types/react-color": "^3.0.13",

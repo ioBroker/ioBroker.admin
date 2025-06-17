@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, Grid2, Button } from '@mui/material';
-
 import {
     TextFields as TextFieldsIcon,
     LocalOffer as LocalOfferIcon,
     Description as DescriptionIcon,
     Pageview as PageviewIcon,
+    Person as PersonIcon,
     VpnKey as VpnKeyIcon,
     ColorLens as ColorLensIcon,
     Image as ImageIcon,
     Close as IconCancel,
     Check as IconCheck,
+    PersonOff as PersonOffIcon,
 } from '@mui/icons-material';
 
 import { Utils, IconPicker, type Translate } from '@iobroker/adapter-react-v5';
@@ -45,13 +46,15 @@ interface UserEditDialogProps {
     onClose: () => void;
     users: ioBroker.UserObject[];
     user: ioBroker.UserObject;
+    /** If user creation or edit dialog */
     isNew: boolean;
     onChange: (user: ioBroker.UserObject) => void;
-    saveData: (originalId: string) => void;
+    saveData: (originalId: string) => Promise<void>;
     innerWidth: number;
     getText: (text: ioBroker.StringOrTranslated) => string;
     styles: Record<string, React.CSSProperties>;
 }
+
 interface UserEditDialogState {
     originalId: string | null;
     passwordRepeat: string;
@@ -284,8 +287,10 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                             />
                         </Grid2>
                     </Grid2>
+                    {!this.props.isNew ? this.renderOidcButton() : null}
                 </DialogContent>
-                <DialogActions style={this.props.styles.dialogActions}>
+
+                <DialogActions>
                     <Button
                         variant="contained"
                         color="primary"
@@ -306,6 +311,48 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                     </Button>
                 </DialogActions>
             </Dialog>
+        );
+    }
+
+    /**
+     * Render the button for OIDC connect/disconnect
+     */
+    renderOidcButton(): JSX.Element {
+        if (window.ssoActive !== 'true') {
+            // SSO is not active, do not show the button
+            return null;
+        }
+
+        /* @ts-expect-error needs to be added to types */
+        return !this.props.user.common?.externalAuthentication?.oidc ? (
+            <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                onClick={() => {
+                    window.location.href = `/sso?redirectUrl=${encodeURIComponent(`${window.origin}/#tab-users`)}&method=register&user=${this.props.getText(this.props.user.common.name)}`;
+                }}
+                startIcon={<PersonIcon />}
+                sx={{ marginTop: 2 }}
+            >
+                {this.props.t('Add Single-Sign On')}
+            </Button>
+        ) : (
+            <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                startIcon={<PersonOffIcon />}
+                sx={{ marginTop: 2 }}
+                onClick={async () => {
+                    // @ts-expect-error needs types
+                    delete this.props.user.common.externalAuthentication.oidc;
+                    await this.props.saveData(this.state.originalId);
+                    window.alert('Single-Sign On disconnected!');
+                }}
+            >
+                {this.props.t('Disconnect Single-Sign On')}
+            </Button>
         );
     }
 }

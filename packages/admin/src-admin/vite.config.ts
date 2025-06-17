@@ -21,6 +21,7 @@ export default defineConfig({
         commonjs(),
     ],
     server: {
+        host: '0.0.0.0',
         port: 3000,
         proxy: {
             '/files': 'http://127.0.0.1:8081',
@@ -28,6 +29,7 @@ export default defineConfig({
             '/session': 'http://127.0.0.1:8081',
             '/log': 'http://127.0.0.1:8081',
             '/lib/js/crypto-js': 'http://127.0.0.1:8081',
+            '/sso': 'http://127.0.0.1:8081'
         },
     },
     base: './',
