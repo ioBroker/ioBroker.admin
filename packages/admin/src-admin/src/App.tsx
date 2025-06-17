@@ -733,9 +733,11 @@ class App extends Router<AppProps, AppState> {
         this.setState({ hasGlobalError: error });
     }
 
-    componentDidUpdate(): void {
-        // Due to the fact that the SSO process can only provide is parameters via a callback uri, we need to extract from the search parameters
-        // However, there might be a better place for this instead of using a side effect on every re-render
+    /**
+     * Check if SSO response parameters are present in the URL.
+     */
+    static checkSsoResponse(): void {
+        // Due to the fact that the SSO process can only provide its parameters via a callback uri, we need to extract from the search parameters
         const searchParams = new URLSearchParams(window.location.search);
 
         if (searchParams.has('id_token')) {
@@ -990,6 +992,9 @@ class App extends Router<AppProps, AppState> {
     }
 
     componentDidMount(): void {
+        // check if we are mounted as SSO response
+        App.checkSsoResponse();
+
         if (!this.state.login) {
             window.addEventListener('hashchange', this.onHashChanged, false);
 
