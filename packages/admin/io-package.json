@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.20",
+    "version": "7.7.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.0": {
+        "en": "Added the concept for single-side-on authentication (SSO)",
+        "de": "Hinzugefügte das Konzept zur einseitigen Authentifizierung (SSO)",
+        "ru": "Добавлена концепция односторонней аутентификации (SSO)",
+        "pt": "Adicionado o conceito de autenticação unilaterais (SSO)",
+        "nl": "Het concept voor eenmalige authenticatie (SSO) toegevoegd",
+        "fr": "Ajout du concept d'authentification simple face-à-face (SSO)",
+        "it": "Aggiunto il concetto per l'autenticazione single-side-on (SSO)",
+        "es": "Añadido el concepto para la autenticación unilateral (SSO)",
+        "pl": "Dodano koncepcję jednostronnego uwierzytelniania (SSO)",
+        "uk": "Додана концепція для односторонньої автентифікації (SSO)",
+        "zh-cn": "添加了单侧认证( SSO) 的概念"
+      },
       "7.6.20": {
         "en": "Allowed using of * in the filter of objects\nSmall GUI improvements",
         "de": "Erlaubt mit * im Filter von Objekten\nKleine GUI Verbesserungen",
@@ -96,19 +109,6 @@
         "pl": "Dodano logi debugowania do uwierzytelniania\nPoprawiono przycisk Usuń jeśli nieUsuwanie znacznika dla tabeli (JSONConfig)",
         "uk": "Додано дебвугові колоди для автентифікації\nВиправлено помилку видалення, якщо не встановлено прапорець для таблиці (JSONConfig)",
         "zh-cn": "添加调试日志到认证\n如果为表格设置了不删除标记( JSONConfig), 则修改了删除按钮"
-      },
-      "7.6.14": {
-        "en": "Added the device type selector and icon to adapter-react-v5\nFixed authentication issues with oauth2\nCorrected the device manager icon upload",
-        "de": "Hinzufügen der Gerätetyp-Selektor und Icon zu adapter-react-v5\nBehobene Authentifizierungsprobleme mit oauth2\nKorrektur des Gerätemanager-Symbols Upload",
-        "ru": "Добавлен селектор типа устройства и значок для адаптера-реакции-v5\nПроблемы аутентификации с oauth2\nИсправлена загрузка значка диспетчера устройств",
-        "pt": "Adicionado o tipo de dispositivo seletor e ícone para adaptador-react-v5\nProblemas de autenticação corrigidos com oauth2\nCorrigido o upload do ícone do gerenciador de dispositivos",
-        "nl": "De apparaattypekiezer en het pictogram aan adapter-react-v5 toegevoegd\nVaste authenticatieproblemen met oauth2\nDe pictogramupload van de apparaatbeheerder corrigeren",
-        "fr": "Ajout du sélecteur de type de périphérique et de l'icône à l'adaptateur-réact-v5\nProblèmes d'authentification corrigés avec oauth2\nCorrection du téléchargement de l'icône du gestionnaire de périphérique",
-        "it": "Aggiunto il selettore del tipo del dispositivo e l'icona per adattatore-react-v5\nProblemi di autenticazione fissi con oauth2\nCorretto il caricamento dell'icona del gestore del dispositivo",
-        "es": "Añadido el selector de tipo dispositivo e icono a adaptador-react-v5\nCuestiones de autenticación fija con oauth2\nCorregido el icono del administrador del dispositivo subir",
-        "pl": "Dodano przełącznik typu urządzenia i ikonę do adaptera -react- v5\nStałe problemy uwierzytelniania z oauth2\nPoprawiono wysyłanie ikony menedżera urządzeń",
-        "uk": "Додано вибірку типу пристрою та іконку для адаптера-реакт-v5\nВиправлено проблеми автентифікації з oauth2\nВиправлено помилку диспетчера пристрою",
-        "zh-cn": "添加设备类型选择器和图标到适配器- react-v5\n与Oauth2 的固定认证问题\n修正设备管理器图标上传"
       }
     },
     "desc": {

@@ -88,7 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.7.0 (2025-06-17)
 - (@foxriver76) Added the concept for single-side-on authentication (SSO)
 
 ### 7.6.20 (2025-06-16)
@@ -108,12 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.6.17 (2025-05-08)
 
 - (@GermanBluefox) Small changes on GUI, JSONConfig and Device Manager
-
-### 7.6.16 (2025-05-02)
-
-- (@GermanBluefox) Added debug logs to authentication
-- (@GermanBluefox) Corrected layout of installation log
-- (@GermanBluefox) Fixed indication of connection state for servers
 
 ## License
 
