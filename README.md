@@ -88,6 +88,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@foxriver76) Added the concept for single-side-on authentication (SSO)
+
 ### 7.6.20 (2025-06-16)
 - (@GermanBluefox) Allowed using of * in the filter of objects
 - (@GermanBluefox) Small GUI improvements
