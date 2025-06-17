@@ -2361,6 +2361,12 @@ class App extends Router<AppProps, AppState> {
                             }
                         });
                     }}
+                    onNavigate={(tab: string, subTab?: string, param?: string) => {
+                        // In wizard mode, many of the objects are not loaded yet.
+                        // So we need to force reloading of the current browser tab
+                        Router.doNavigate(tab, subTab, param);
+                        window.location.reload();
+                    }}
                 />
             );
         }

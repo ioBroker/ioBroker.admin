@@ -96,6 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 - (@GermanBluefox) Improvements on JSONConfig component `state`
 - (@GermanBluefox) Added `infoBox` JSONConfig component
+- (@Jey-Cee) Added the room selection to the wizard
 
 ### 7.6.18 (2025-05-30)
 
