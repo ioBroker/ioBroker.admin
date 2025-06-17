@@ -1,4 +1,10 @@
 # Older changes
+## 7.6.16 (2025-05-02)
+
+- (@GermanBluefox) Added debug logs to authentication
+- (@GermanBluefox) Corrected layout of installation log
+- (@GermanBluefox) Fixed indication of connection state for servers
+
 ## 7.6.15 (2025-04-29)
 
 - (@GermanBluefox) Added debug logs to authentication
