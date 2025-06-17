@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.6.19",
+    "version": "7.6.20",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.6.20": {
+        "en": "Allowed using of * in the filter of objects\nSmall GUI improvements",
+        "de": "Erlaubt mit * im Filter von Objekten\nKleine GUI Verbesserungen",
+        "ru": "Допускается использование * в фильтре объектов\nНебольшие улучшения GUI",
+        "pt": "Permite o uso de * no filtro de objetos\nPequenas melhorias na interface gráfica",
+        "nl": "Toegestaan gebruik van * in het filter van objecten\nKleine GUI verbeteringen",
+        "fr": "Autorisé à utiliser * dans le filtre des objets\nPetites améliorations de l'interface graphique",
+        "it": "Consentito l'utilizzo di * nel filtro degli oggetti\nPiccoli miglioramenti alla GUI",
+        "es": "Permitido el uso de * en el filtro de objetos\nMejoras de la interfaz gráfica",
+        "pl": "Dozwolone stosowanie * w filtrze obiektów\nMałe ulepszenia GUI",
+        "uk": "Дозволяється використання * в фільтрі об'єктів\nМалі покращення інтерфейсу",
+        "zh-cn": "允许在对象过滤中使用 *\n小型图形界面改进"
+      },
       "7.6.19": {
         "en": "Improvements on JSONConfig component `state`\nAdded `infoBox` JSONConfig component",
         "de": "Verbesserungen der JSONConfig-Komponente `state `\nHinzugefügt `infoBox` JSONConfig Komponente",
@@ -96,19 +109,6 @@
         "pl": "Dodano przełącznik typu urządzenia i ikonę do adaptera -react- v5\nStałe problemy uwierzytelniania z oauth2\nPoprawiono wysyłanie ikony menedżera urządzeń",
         "uk": "Додано вибірку типу пристрою та іконку для адаптера-реакт-v5\nВиправлено проблеми автентифікації з oauth2\nВиправлено помилку диспетчера пристрою",
         "zh-cn": "添加设备类型选择器和图标到适配器- react-v5\n与Oauth2 的固定认证问题\n修正设备管理器图标上传"
-      },
-      "7.6.8": {
-        "en": "Allowed following of the `url` types in the object browser\nAllowed login by pressing the enter key",
-        "de": "Erlaubt nach den `url`-Typen im Objektbrowser\nErlaubte Anmeldung durch Drücken des Eingabeschlüssels",
-        "ru": "Допускается следование типам URL в браузере объекта\nРазрешенный вход, нажав клавишу ввода",
-        "pt": "Permitido seguindo os tipos `url` no navegador objeto\nEntrada permitida pressionando a chave de entrada",
-        "nl": "Toegestaan navolgen van de typen in de objectbrowser\nAanmelden toegestaan door op de enter-toets te drukken",
-        "fr": "Autorisé suivant les types `url` dans le navigateur objet\nConnexion autorisée en appuyant sur la touche entrée",
-        "it": "Consentito seguendo i tipi `url` nel browser dell'oggetto\nConsentito login premendo il tasto entrare",
-        "es": "Permitido siguiendo los tipos `url` en el navegador objeto\nAcceso permitido pulsando la tecla de entrada",
-        "pl": "Dozwolone śledzenie typów 'url' w przeglądarce obiektu\nDozwolone logowanie poprzez naciśnięcie klawisza enter",
-        "uk": "Визначено наступні типи `url` у браузері об’єкта\nДозволений логін, натиснувши кнопку введення",
-        "zh-cn": "允许跟踪对象浏览器中的“ url” 类型\n通过按下输入键允许登录"
       }
     },
     "desc": {

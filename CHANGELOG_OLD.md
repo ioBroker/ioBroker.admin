@@ -1,4 +1,9 @@
 # Older changes
+## 7.6.15 (2025-04-29)
+
+- (@GermanBluefox) Added debug logs to authentication
+- (@GermanBluefox) Corrected the delete button if noDelete flag set for table (JSONConfig)
+
 ## 7.6.14 (2025-04-23)
 
 - (@GermanBluefox) Added the device type selector and icon to adapter-react-v5
