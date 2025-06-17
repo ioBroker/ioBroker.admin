@@ -4,7 +4,7 @@ import { Grid2, FormControl, TextField, Paper, InputAdornment, IconButton } from
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import { withWidth, type Translate, type IobTheme } from '@iobroker/adapter-react-v5';
+import { type Translate, type IobTheme } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 import AdminUtils from '@/helpers/AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
@@ -47,7 +47,7 @@ interface SSLDialogProps {
     saving: boolean;
 }
 
-class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
+export default class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
     render(): JSX.Element {
         const { data } = this.props;
         const { letsEncrypt } = data.native || {};
@@ -203,5 +203,3 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
         this.props.onChange(newData);
     }
 }
-
-export default withWidth()(SSLDialog);

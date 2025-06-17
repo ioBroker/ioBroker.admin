@@ -14,7 +14,7 @@ import {
 
 import blueGrey from '@mui/material/colors/blueGrey';
 
-import { withWidth, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
+import { type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
 import AdminUtils from '@/helpers/AdminUtils';
 import Editor from '../../components/Editor';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
@@ -64,7 +64,7 @@ interface StatisticsDialogProps {
     handle: (type: string) => void;
 }
 
-class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
+export default class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
     static getTypes(): { id: string; title: string }[] {
         return [
             {
@@ -101,7 +101,8 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
         return (
             <FormControl
                 variant="standard"
-                style={styles.formControl}
+                fullWidth
+                style={{ marginTop: 8 }}
             >
                 <InputLabel
                     shrink
@@ -112,7 +113,6 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
                 <Select
                     disabled={this.props.saving}
                     variant="standard"
-                    style={styles.formControl}
                     id="statistics"
                     value={common.diag}
                     displayEmpty
@@ -191,7 +191,9 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
                                 variant="h6"
                                 component="div"
                             >
-                                {this.props.t('Sent data:')}
+                                {!this.props.dataAux
+                                    ? this.props.t('No data will be sent')
+                                    : this.props.t('Sent data:')}
                             </Typography>
                         </Paper>
                         <Editor
@@ -205,5 +207,3 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
         );
     }
 }
-
-export default withWidth()(StatisticsDialog);

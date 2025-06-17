@@ -4,7 +4,7 @@ import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRo
 
 import { Refresh as IconRefresh } from '@mui/icons-material';
 
-import { withWidth, Utils, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
+import { Utils, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
@@ -103,7 +103,7 @@ interface LicensesDialogState {
     // readTime: number;
 }
 
-class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, LicensesDialogState> {
+export default class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, LicensesDialogState> {
     constructor(props: LicensesDialogProps) {
         super(props);
 
@@ -315,5 +315,3 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
         );
     }
 }
-
-export default withWidth()(LicensesDialog);

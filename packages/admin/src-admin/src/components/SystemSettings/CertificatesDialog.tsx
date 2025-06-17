@@ -17,7 +17,7 @@ import {
 
 import { Add as AddIcon, Delete as DeleteIcon, Close as CloseIcon } from '@mui/icons-material';
 
-import { withWidth, I18n, type Translate } from '@iobroker/adapter-react-v5';
+import { I18n, type Translate } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
 import AdminUtils from '../../helpers/AdminUtils';
@@ -85,7 +85,10 @@ interface CertificatesDialogState {
     chClass: boolean;
 }
 
-class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProps, CertificatesDialogState> {
+export default class CertificatesDialog extends BaseSystemSettingsDialog<
+    CertificatesDialogProps,
+    CertificatesDialogState
+> {
     constructor(props: CertificatesDialogProps) {
         super(props);
 
@@ -241,7 +244,11 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
         });
         return (
             <div style={styles.tabPanel}>
-                <Dropzone noClick>
+                <Dropzone
+                    noClick
+                    disabled={this.props.saving}
+                    multiple={true}
+                >
                     {({ getRootProps, getInputProps, acceptedFiles, fileRejections }) => (
                         <div
                             {...getRootProps({
@@ -374,5 +381,3 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
         this.props.onChange(newData);
     };
 }
-
-export default withWidth()(CertificatesDialog);
