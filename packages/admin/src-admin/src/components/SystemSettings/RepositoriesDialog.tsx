@@ -27,7 +27,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, withWidth, DialogConfirm, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, DialogConfirm, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
 import { InfoBox } from '@foxriver76/iob-component-lib';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
@@ -150,7 +150,10 @@ interface RepositoriesDialogState {
 const SortableList = SortableContainer<{ value: any }>(({ value }: { value: any }) => value);
 const SortableItem = SortableElement<{ value: any }>(({ value }: { value: any }) => value);
 
-class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProps, RepositoriesDialogState> {
+export default class RepositoriesDialog extends BaseSystemSettingsDialog<
+    RepositoriesDialogProps,
+    RepositoriesDialogState
+> {
     constructor(props: RepositoriesDialogProps) {
         super(props);
         const repos = (
@@ -578,6 +581,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
 
         return (
             <SortableItem
+                disabled={this.props.saving}
                 key={index}
                 index={index}
                 value={result}
@@ -652,7 +656,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
 
         return (
             <div style={{ display: 'flex', marginLeft: 20, flexDirection: 'column' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline' }}>
                     <Typography>
                         {I18n.t('Allow only the following upgrades to be performed automatically:')}
                     </Typography>
@@ -660,6 +664,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                         variant="standard"
                         sx={{ marginLeft: 1, marginBottom: 1 }}
                         value={policy}
+                        disabled={this.props.saving}
                         onChange={e => {
                             const sysConfig = AdminUtils.clone(this.props.dataAux);
 
@@ -730,5 +735,3 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         );
     }
 }
-
-export default withWidth()(RepositoriesDialog);

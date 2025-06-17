@@ -5,23 +5,25 @@ import { type AdminConnection, type Translate, type ThemeType, type ThemeName } 
 import type { AdminGuiConfig } from '@/types';
 
 export interface BaseSystemSettingsDialogProps {
-    adminGuiConfig: AdminGuiConfig;
-    onChange: (data: any, dataAux: any, cb: () => void) => void;
-    data: any;
-    dataAux: any;
-    handle: (type: 'none' | 'extended' | 'no-city') => void;
-    users: ioBroker.UserObject[];
-    groups: ioBroker.GroupObject[];
-    multipleRepos: boolean;
-    activeRepo: string[];
-    repoInfo: Record<string, ioBroker.RepoInfo>;
-    histories: string[];
-    themeName: ThemeName;
-    themeType: ThemeType;
-    host: string;
     t: Translate;
-    socket: AdminConnection;
     saving: boolean;
+    onChange: (data: any, dataAux: any, cb: () => void) => void;
+
+    data?: any;
+    activeRepo?: string[];
+    users?: ioBroker.UserObject[];
+    adminGuiConfig?: AdminGuiConfig;
+    dataAux?: any;
+    handle?: (type: 'none' | 'extended' | 'no-city') => void;
+    groups?: ioBroker.GroupObject[];
+    multipleRepos?: boolean;
+    activeRep?: string[];
+    repoInfo?: Record<string, ioBroker.RepoInfo>;
+    histories?: string[];
+    themeName?: ThemeName;
+    themeType?: ThemeType;
+    host?: string;
+    socket?: AdminConnection;
 }
 
 abstract class BaseSystemSettingsDialog<P = undefined, S extends object = object> extends React.Component<

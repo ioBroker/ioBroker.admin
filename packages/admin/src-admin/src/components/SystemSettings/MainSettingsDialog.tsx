@@ -21,7 +21,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 
 import { Marker, type DragEndEvent, type LatLngTuple, type Map } from 'leaflet';
 
-import { DialogConfirm, withWidth, I18n, type Translate } from '@iobroker/adapter-react-v5';
+import { DialogConfirm, I18n, type Translate } from '@iobroker/adapter-react-v5';
 import { type AdminGuiConfig } from '@/types';
 
 import AdminUtils from '../../helpers/AdminUtils';
@@ -51,9 +51,7 @@ const styles: Record<string, React.CSSProperties> = {
 
 const MyMapComponent: React.FC<{ addMap: (map: any) => any }> = props => {
     const map = useMap();
-    if (props.addMap) {
-        props.addMap(map);
-    }
+    props.addMap?.(map);
     return null;
 };
 
@@ -82,15 +80,17 @@ interface State {
     zoom: number;
     confirm: boolean;
     confirmValue: string;
+    saving: boolean;
 }
 
-class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
+export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
             zoom: 14,
             confirm: false,
             confirmValue: '',
+            saving: this.props.saving,
         };
     }
 
@@ -305,7 +305,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
             ];
 
             this.marker = new Marker(center, {
-                draggable: true,
+                draggable: this.state.saving,
                 title: I18n.t('Resource location'),
                 alt: I18n.t('Resource Location'),
                 riseOnHover: true,
@@ -638,6 +638,23 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
 
         const { zoom } = this.state;
 
+        if (this.state.saving !== this.props.saving) {
+            setTimeout(() => {
+                this.setState(
+                    {
+                        saving: this.props.saving,
+                    },
+                    () => {
+                        if (this.state.saving) {
+                            this.marker?.dragging?.disable();
+                        } else {
+                            this.marker?.dragging?.enable();
+                        }
+                    },
+                );
+            }, 50);
+        }
+
         return (
             <div style={styles.tabPanel}>
                 {this.renderDialogConfirm()}
@@ -811,5 +828,3 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         );
     }
 }
-
-export default withWidth()(MainSettingsDialog);
