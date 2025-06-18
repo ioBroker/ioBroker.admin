@@ -189,13 +189,12 @@ export class SpotifyPremiumAdapter extends Adapter {
     // It is important to call this method in the `onReady` method of your adapter and not in the constructor.
     async onReady(): Promise<void> {
         this.tokenWorker = new TokenRefresher(this, 'spotify');
-        this.tokenWorker.getAccessToken()
-            .then(accessToken => {
-                this.log.info(`Spotify OAuth2 Token Refresher is ready: ${accessToken}`);
-            })
-            .catch(error => {
-                this.log.error(`Error initializing Spotify OAuth2 Token Refresher: ${error}`);
-            });
+        try {
+            const accessToken = await this.tokenWorker.getAccessToken()
+            this.log.info(`Spotify OAuth2 Token Refresher is ready: ${accessToken}`);
+        } catch (error) {
+            this.log.error(`Error initializing Spotify OAuth2 Token Refresher: ${error}`);
+        }
         // Your other initialization code...
     }
     
