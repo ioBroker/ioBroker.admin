@@ -88,6 +88,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Fixing clearing of the filter on the object tab
+
 ### 7.7.0 (2025-06-17)
 - (@foxriver76) Added the concept for single-side-on authentication (SSO)
 
