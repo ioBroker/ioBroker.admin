@@ -98,6 +98,8 @@ interface DialogSelectIDProps {
         selected: string | string[],
         objects: Record<string, ioBroker.Object | null | undefined>,
     ) => Promise<boolean>;
+    /** The z-index of the dialog; default: 1300 */
+    zIndex?: number;
 }
 
 interface DialogSelectIDState {
@@ -204,6 +206,7 @@ export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectI
             <Dialog
                 onClose={() => {}}
                 maxWidth={false}
+                style={{ zIndex: this.props.zIndex || undefined }}
                 sx={{
                     '& .MuiDialog-paper': {
                         height: '95%',
@@ -211,6 +214,7 @@ export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectI
                         width: '100%',
                         maxWidth: '100%',
                         maxHeight: 'calc(100% - 16px)',
+                        zIndex: this.props.zIndex || undefined,
                     },
                 }}
                 fullWidth
