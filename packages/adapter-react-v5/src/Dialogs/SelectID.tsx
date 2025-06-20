@@ -214,7 +214,6 @@ export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectI
                         width: '100%',
                         maxWidth: '100%',
                         maxHeight: 'calc(100% - 16px)',
-                        zIndex: this.props.zIndex || undefined,
                     },
                 }}
                 fullWidth

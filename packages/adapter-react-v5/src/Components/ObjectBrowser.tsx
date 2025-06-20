@@ -3367,7 +3367,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
             // If the this.state.selected[0] filtered out, disable the filter
             const item = this.findItem(this.state.selected[0]);
-            if (item?.data && !item.data.visible) {
+            if (item?.data && !item.data.visible && !item.data.hasVisibleChildren) {
                 // If the selected ID is not visible, reset filter
                 this.clearFilter();
             }
