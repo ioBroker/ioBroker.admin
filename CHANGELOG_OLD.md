@@ -1,4 +1,8 @@
 # Older changes
+## 7.6.17 (2025-05-08)
+
+- (@GermanBluefox) Small changes on GUI, JSONConfig and Device Manager
+
 ## 7.6.16 (2025-05-02)
 
 - (@GermanBluefox) Added debug logs to authentication
