@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.0",
+    "version": "7.7.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.1": {
+        "en": "Fixing clearing of the filter on the object tab",
+        "de": "Festlegen des Löschens des Filters auf der Objekt-Tab",
+        "ru": "Фиксация очистки фильтра на вкладке объекта",
+        "pt": "Corrigindo a limpeza do filtro na aba objeto",
+        "nl": "Repareren van het filter op het objecttabblad",
+        "fr": "Correction de la suppression du filtre dans l'onglet objet",
+        "it": "Fissare la compensazione del filtro sulla scheda oggetto",
+        "es": "Fijación del filtro en la pestaña objeto",
+        "pl": "Ustawienie odczytu filtra na zakładce obiektu",
+        "uk": "Виправлення очищення фільтра на вкладці об'єкта",
+        "zh-cn": "正在修复对象标签上的过滤器"
+      },
       "7.7.0": {
         "en": "Added the concept for single-side-on authentication (SSO)",
         "de": "Hinzugefügte das Konzept zur einseitigen Authentifizierung (SSO)",
@@ -96,19 +109,6 @@
         "pl": "Dodano logi debugowania do uwierzytelniania\nPoprawiony układ dziennika instalacji\nStałe wskazanie stanu połączenia dla serwerów",
         "uk": "Додано дебвугові колоди для автентифікації\nВиправлена схема установки колоди\nФіксована індикація стану підключення для серверів",
         "zh-cn": "添加调试日志到认证\n安装日志的校正布局\n服务器连接状态的固定指示"
-      },
-      "7.6.15": {
-        "en": "Added debug logs to authentication\nCorrected the delete button if noDelete flag set for table (JSONConfig)",
-        "de": "Debug Protokolle zur Authentifizierung hinzugefügt\nKorrektur der Löschtaste, wenn noDelete-Flag-Set für Tabelle (JSONConfig)",
-        "ru": "Добавлены отладочные журналы для аутентификации\nИсправлена кнопка удаления, если для таблицы установлен флаг noDelete (JSONConfig)",
-        "pt": "Registos de depuração adicionados para autenticação\nCorrigido o botão de exclusão se nãoExcluir a bandeira definida para tabela (JSONConfig)",
-        "nl": "Debuglogs toegevoegd aan authenticatie\nDe delete knop corrigeren als geenDelete vlag ingesteld voor tabel (JSONConfig)",
-        "fr": "Ajout des journaux de débogage à l'authentification\nCorrection du bouton de suppression si aucun drapeauDelete est défini pour la table (JSONConfig)",
-        "it": "Aggiunti i log del debug all'autenticazione\nCorretto il pulsante di eliminazione se noCancella la bandiera impostata per la tabella (JSONConfig)",
-        "es": "Registros de depuración añadidos a la autenticación\nCorregido el botón de eliminación si noDelete flag set for table (JSONConfig)",
-        "pl": "Dodano logi debugowania do uwierzytelniania\nPoprawiono przycisk Usuń jeśli nieUsuwanie znacznika dla tabeli (JSONConfig)",
-        "uk": "Додано дебвугові колоди для автентифікації\nВиправлено помилку видалення, якщо не встановлено прапорець для таблиці (JSONConfig)",
-        "zh-cn": "添加调试日志到认证\n如果为表格设置了不删除标记( JSONConfig), 则修改了删除按钮"
       }
     },
     "desc": {

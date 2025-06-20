@@ -88,7 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.7.1 (2025-06-20)
 - (@GermanBluefox) Fixing clearing of the filter on the object tab
 
 ### 7.7.0 (2025-06-17)
@@ -107,10 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.6.18 (2025-05-30)
 
 - (@GermanBluefox) Added OAuth2 authentication to JSONConfig components
-
-### 7.6.17 (2025-05-08)
-
-- (@GermanBluefox) Small changes on GUI, JSONConfig and Device Manager
 
 ## License
 
