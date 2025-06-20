@@ -3479,7 +3479,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         // remove all subscribes
         this.subscribes.forEach(pattern => {
-            console.log(`- unsubscribe ${pattern}`);
+            // console.log(`- unsubscribe ${pattern}`);
             this.props.socket.unsubscribeState(pattern, this.onStateChange);
         });
 
@@ -3535,7 +3535,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     refreshComponent(): void {
         // remove all subscribes
         this.subscribes.forEach(pattern => {
-            console.log(`- unsubscribe ${pattern}`);
+            // console.log(`- unsubscribe ${pattern}`);
             this.props.socket.unsubscribeState(pattern, this.onStateChange);
         });
 
@@ -3953,7 +3953,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
      * Called when a state changes.
      */
     onStateChange = (id: string, state?: ioBroker.State | null): void => {
-        console.log(`> stateChange ${id}`);
+        // console.log(`> stateChange ${id}`);
         if (this.states[id]) {
             const item = this.findItem(id);
             if (item?.data.state) {
@@ -4159,7 +4159,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         filtered: boolean;
         newInnerState: null | { columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null };
     } {
-        console.log(`> objectChange ${id}`);
+        // console.log(`> objectChange ${id}`);
         const type = obj?.type;
 
         // If the object is filtered out, we don't need to update the React state
@@ -4205,7 +4205,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     private subscribe(id: string): void {
         if (!this.subscribes.includes(id)) {
             this.subscribes.push(id);
-            console.log(`+ subscribe ${id}`);
+            // console.log(`+ subscribe ${id}`);
             if (!this.pausedSubscribes) {
                 this.props.socket
                     .subscribeState(id, this.onStateChange)
@@ -4221,7 +4221,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (this.states[id]) {
                 delete this.states[id];
             }
-            console.log(`- unsubscribe ${id}`);
+            // console.log(`- unsubscribe ${id}`);
             this.props.socket.unsubscribeState(id, this.onStateChange);
 
             if (this.pausedSubscribes) {
