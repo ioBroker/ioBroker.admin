@@ -2615,6 +2615,8 @@ export interface ObjectBrowserProps {
     levelPadding?: number;
     /** Allow selection of non-objects (virtual branches) */
     allowNonObjects?: boolean;
+    /** Called when all objects are loaded */
+    onAllLoaded?: () => void;
 
     // components
     objectCustomDialog?: React.FC<ObjectCustomDialogProps>;
@@ -3160,8 +3162,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             });
 
             const objects =
-                (this.props.objectsWorker
-                    ? await this.props.objectsWorker.getObjects(update)
+                (props.objectsWorker
+                    ? await props.objectsWorker.getObjects(update)
                     : await props.socket.getObjects(update, true)) || {};
             if (props.types && Connection.isWeb()) {
                 for (let i = 0; i < props.types.length; i++) {
@@ -3277,10 +3279,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.calculateColumnsVisibility(null, null, columnsForAdmin);
 
             const { info, root } = buildTree(this.objects, {
-                imagePrefix: this.props.imagePrefix,
-                root: this.props.root,
-                lang: this.props.lang,
-                themeType: this.props.themeType,
+                imagePrefix: props.imagePrefix,
+                root: props.root,
+                lang: props.lang,
+                themeType: props.themeType,
             });
             this.root = root;
             this.info = info;
@@ -3296,7 +3298,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 !applyFilter(
                     node,
                     this.state.filter,
-                    this.props.lang,
+                    props.lang,
                     this.objects,
                     undefined,
                     undefined,
@@ -3441,6 +3443,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         window.addEventListener('contextmenu', this.onContextMenu, true);
         window.addEventListener('keydown', this.onKeyPress, true);
         window.addEventListener('keyup', this.onKeyPress, true);
+
+        // Inform dialog that all objects are loaded
+        if (this.props.onAllLoaded) {
+            setTimeout(() => {
+                this.props.onAllLoaded?.();
+            }, 100);
+        }
     }
 
     onKeyPress = (event: KeyboardEvent): void => {
