@@ -88,7 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.7.2 (2025-07-22)
 - (@GermanBluefox) Fixing change of the language in the admin
 
 ### 7.7.1 (2025-06-20)
@@ -106,10 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Improvements on JSONConfig component `state`
 - (@GermanBluefox) Added `infoBox` JSONConfig component
 - (@Jey-Cee) Added the room selection to the wizard
-
-### 7.6.18 (2025-05-30)
-
-- (@GermanBluefox) Added OAuth2 authentication to JSONConfig components
 
 ## License
 
