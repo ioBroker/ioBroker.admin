@@ -1,4 +1,8 @@
 # Older changes
+## 7.6.18 (2025-05-30)
+
+- (@GermanBluefox) Added OAuth2 authentication to JSONConfig components
+
 ## 7.6.17 (2025-05-08)
 
 - (@GermanBluefox) Small changes on GUI, JSONConfig and Device Manager

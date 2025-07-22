@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.1",
+    "version": "7.7.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.2": {
+        "en": "Fixing change of the language in the admin",
+        "de": "Änderung der Sprache im Admin reparieren",
+        "ru": "Изменение языка в админ",
+        "pt": "Corrigindo mudança de idioma no administrador",
+        "nl": "Wijziging van de taal in de administratie",
+        "fr": "Correction du changement de langue dans l'administration",
+        "it": "Risolvere il cambiamento della lingua nell'amministratore",
+        "es": "Cambio de fijación del idioma en el administrador",
+        "pl": "Ustawienie zmiany języka w administratorze",
+        "uk": "Виправлення зміни мови в адміні",
+        "zh-cn": "修改管理语言"
+      },
       "7.7.1": {
         "en": "Fixing clearing of the filter on the object tab",
         "de": "Festlegen des Löschens des Filters auf der Objekt-Tab",
@@ -96,19 +109,6 @@
         "pl": "Małe zmiany na GUI, JSONConfig i menedżer urządzeń",
         "uk": "Невеликі зміни в GUI, JSONConfig і диспетчер пристроїв",
         "zh-cn": "图形用户界面、 JSONConfig 和设备管理器的小变化"
-      },
-      "7.6.16": {
-        "en": "Added debug logs to authentication\nCorrected layout of installation log\nFixed indication of connection state for servers",
-        "de": "Debug Protokolle zur Authentifizierung hinzugefügt\nKorrigiertes Layout des Installationsprotokolls\nFeste Anzeige des Verbindungszustands für Server",
-        "ru": "Добавлены отладочные журналы для аутентификации\nИсправленная компоновка журнала установки\nФиксированная индикация состояния соединения для серверов",
-        "pt": "Registos de depuração adicionados para autenticação\nLayout corrigido do log de instalação\nIndicação fixa do estado de conexão para servidores",
-        "nl": "Debuglogs toegevoegd aan authenticatie\nGecorrigeerde indeling van het installatielogboek\nVaste aanduiding van verbindingsstatus voor servers",
-        "fr": "Ajout des journaux de débogage à l'authentification\nMise en page corrigée du journal d'installation\nIndications fixes de l'état de connexion pour les serveurs",
-        "it": "Aggiunti i log del debug all'autenticazione\nLayout corretto del registro di installazione\nIndicazione fissa dello stato di connessione per i server",
-        "es": "Registros de depuración añadidos a la autenticación\nDiseño corregido del registro de instalación\nIndicación fija del estado de conexión para servidores",
-        "pl": "Dodano logi debugowania do uwierzytelniania\nPoprawiony układ dziennika instalacji\nStałe wskazanie stanu połączenia dla serwerów",
-        "uk": "Додано дебвугові колоди для автентифікації\nВиправлена схема установки колоди\nФіксована індикація стану підключення для серверів",
-        "zh-cn": "添加调试日志到认证\n安装日志的校正布局\n服务器连接状态的固定指示"
       }
     },
     "desc": {
