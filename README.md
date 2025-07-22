@@ -88,6 +88,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Fixing change of the language in the admin
+
 ### 7.7.1 (2025-06-20)
 - (@GermanBluefox) Fixing clearing of the filter on the object tab
 
