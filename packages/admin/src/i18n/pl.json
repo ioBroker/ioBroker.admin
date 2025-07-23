@@ -6,7 +6,7 @@
     "Minimal length is 6 chars": "Minimalna długość to 6 znaków",
     "New password": "Nowe hasło",
     "Offline message": "Instrukcja zmiany hasła. Otwórz CLI, zaloguj się jako użytkownik z uprawnieniami root/sudo i wpisz:\n\"sudo passwd %s\"\nWprowadź nowe hasło po wyświetleniu monitu.",
-    "Password and password repeat are not equal": "Hasło i powtórzenie hasła nie są równe",
+    "Password and password repeat are not equal": "Hasło i powtórzenie hasła nie są jednakowe",
     "Password is too short (min 6 chars)": "Hasło jest za krótkie (min. 6 znaków)",
     "Password repeat": "Powtórz hasło",
     "Password successfully changed for \"%s\"": "Hasło dla \"%s\" zostało pomyślnie zmienione",
