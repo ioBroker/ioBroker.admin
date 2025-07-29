@@ -5969,6 +5969,16 @@
                                             "items": {
                                                 "$ref": "#/definitions/tableItems"
                                             },
+                                            "useCardFor": {
+                                              "description": "Defines for which breakpoints a card should be used",
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string",
+                                                "enum": ["xs", "sm", "md", "lg", "xl"]
+                                              },
+                                              "minItems": 1,
+                                              "uniqueItems": true
+                                            },
                                             "label": true,
                                             "type": true,
                                             "defaultSendTo": true,
