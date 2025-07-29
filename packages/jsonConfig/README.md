@@ -734,6 +734,7 @@ table with items that could be deleted, added, moved up, moved down
 | `uniqueColumns`       | [optional] - specify an array of columns, which need to have unique entries                                                                     |
 | `encryptedAttributes` | [optional] - specify an array of columns, which should be encrypted                                                                             |
 | `compact`             | [optional] - if true, the table will be shown in a compact mode                                                                                 |
+| `useCardFor`          | [optional] - Array of breakpoints in which a table entry should be displayed as a card: ["xs","sm","md","md","lg","xl"]                         |
 
 ### `accordion`
 
