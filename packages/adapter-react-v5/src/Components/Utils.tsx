@@ -45,14 +45,14 @@ const SIGNATURES: Record<string, string> = {
     Qk1: 'bmp',
     AAABAA: 'ico', // 00 00 01 00 according to https://en.wikipedia.org/wiki/List_of_file_signatures
 };
-type SmartNameObj = { [lang in ioBroker.Languages]?: string } & {
+type SmartNameObject = { [lang in ioBroker.Languages]?: string } & {
     /** Which kind of device it is */
     smartType?: string | null;
     /** Which value to set when the ON command is issued */
     byON?: string | null;
 };
 
-type SmartName = null | false | string | SmartNameObj;
+type SmartName = null | false | string | SmartNameObject;
 
 type ClassDictionary = Record<string, any>;
 type ClassValue = ClassArray | ClassDictionary | string | number | null | boolean | undefined;
@@ -950,9 +950,9 @@ export class Utils {
             } else {
                 sureStateObject.common.smartName ||= {};
                 if (!smartType) {
-                    delete (sureStateObject.common.smartName as SmartNameObj).smartType;
+                    delete (sureStateObject.common.smartName as SmartNameObject).smartType;
                 } else {
-                    (sureStateObject.common.smartName as SmartNameObj).smartType = smartType;
+                    (sureStateObject.common.smartName as SmartNameObject).smartType = smartType;
                 }
             }
         }
@@ -965,7 +965,7 @@ export class Utils {
                 sureStateObject.common.custom[instanceId].smartName.byON = byON;
             } else {
                 sureStateObject.common.smartName ||= {};
-                (sureStateObject.common.smartName as SmartNameObj).byON = byON;
+                (sureStateObject.common.smartName as SmartNameObject).byON = byON;
             }
         }
 
@@ -1018,7 +1018,7 @@ export class Utils {
                         }
                     } else if (
                         sureStateObject.common.smartName &&
-                        (sureStateObject.common.smartName as SmartNameObj).byON !== undefined
+                        (sureStateObject.common.smartName as SmartNameObject).byON !== undefined
                     ) {
                         const _smartName: { [lang in ioBroker.Languages]?: string } = sureStateObject.common
                             .smartName as {
