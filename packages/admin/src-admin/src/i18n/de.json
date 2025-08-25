@@ -747,7 +747,7 @@
     "No rating or too few data": "Keine Bewertung oder zu wenige Daten",
     "No restart": "Kein Neustart",
     "No states selected!": "Keine Zustände ausgewählt!",
-    "No stdout outputs": "Kein Ausgabe in Kommandozeile",
+    "No stdout outputs": "Keine Ausgabe in der Kommandozeile",
     "No version of %s": "Die neueste verfügbare Version von \"%s\" ist erforderlich, es ist jedoch nichts installiert. Bitte installiere zuerst \"%s\" und versuche es dann erneut.",
     "Node.js": "Node.js",
     "Node.js update failed: %s": "Node.js-Aktualisierung fehlgeschlagen: %s",
