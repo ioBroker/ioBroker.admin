@@ -88,6 +88,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Reading of same instances was optimized in GUI
+
 ### 7.7.2 (2025-07-22)
 - (@GermanBluefox) Fixing change of the language in the admin
 
