@@ -2,7 +2,7 @@ import React, { Component, type JSX } from 'react';
 import { LinearProgress } from '@mui/material';
 import JSON5 from 'json5';
 
-import { Router, type AdminConnection, type IobTheme, type ThemeName } from '@iobroker/adapter-react-v5';
+import { I18n, Router, type AdminConnection, type IobTheme, type ThemeName } from '@iobroker/adapter-react-v5';
 import { type ConfigItemPanel, type ConfigItemTabs, JsonConfigComponent } from '@iobroker/json-config';
 
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
@@ -50,7 +50,7 @@ interface CustomTabState {
     jsonData: Record<string, any>;
 }
 
-class CustomTab extends Component<CustomTabProps, CustomTabState> {
+export default class CustomTab extends Component<CustomTabProps, CustomTabState> {
     private refIframe: HTMLIFrameElement | null = null;
 
     private registered: boolean = false;
@@ -226,6 +226,38 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             );
         }
 
+        if (
+            this.state.href.startsWith('http://') &&
+            window.location.protocol === 'https:' &&
+            window.location.hostname !== 'localhost'
+        ) {
+            // Show warning that insecure content cannot be loaded
+            return (
+                <div
+                    style={{
+                        padding: 10,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                        flexDirection: 'column',
+                        fontSize: 18,
+                        gap: 20,
+                    }}
+                >
+                    <div>{I18n.t('This content cannot be loaded because it uses insecure HTTP protocol.')}</div>
+                    <div>{I18n.t('But you can open this link in new tab:')}</div>
+                    <a
+                        href={this.state.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {this.state.href}
+                    </a>
+                </div>
+            );
+        }
+
         return (
             <iframe
                 ref={el => (this.refIframe = el)}
@@ -240,5 +272,3 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         );
     }
 }
-
-export default CustomTab;
