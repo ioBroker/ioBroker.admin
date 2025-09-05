@@ -13,6 +13,7 @@ const styles: Record<string, React.CSSProperties> = {
     root: {
         // border:     '0 solid #FFF',
         display: 'block',
+        position: 'relative',
         left: 0,
         top: 0,
         width: '100%',
@@ -48,12 +49,16 @@ interface CustomTabState {
     instanceNumber: number | null;
     schema: ConfigItemPanel | ConfigItemTabs | null;
     jsonData: Record<string, any>;
+    loadingKey: number;
+    loading: boolean;
 }
 
 export default class CustomTab extends Component<CustomTabProps, CustomTabState> {
     private refIframe: HTMLIFrameElement | null = null;
 
     private registered: boolean = false;
+
+    private loadingTimer: ReturnType<typeof setInterval> | null = null;
 
     constructor(props: CustomTabProps) {
         super(props);
@@ -63,6 +68,8 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
             instanceNumber: null,
             schema: null,
             jsonData: {},
+            loadingKey: 0,
+            loading: true,
         };
     }
 
@@ -156,6 +163,11 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
     }
 
     componentWillUnmount(): void {
+        if (this.loadingTimer) {
+            clearInterval(this.loadingTimer);
+            this.loadingTimer = null;
+        }
+
         if (this.registered) {
             this.props.onUnregisterIframeRef(this.refIframe);
             this.registered = false;
@@ -259,16 +271,45 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
         }
 
         return (
-            <iframe
-                ref={el => (this.refIframe = el)}
-                title={this.props.tab}
-                style={styles.root}
-                src={this.state.href}
-                onError={e => {
-                    (e.target as HTMLIFrameElement).onerror = null;
-                    this.setState({ href: this.state.href.replace('tab_m.html', 'tab.html') });
-                }}
-            />
+            <div style={styles.root}>
+                {this.state.loading ? (
+                    <LinearProgress style={{ position: 'absolute', zIndex: 2, width: '100%' }} />
+                ) : null}
+                <iframe
+                    ref={el => (this.refIframe = el)}
+                    title={this.props.tab}
+                    style={{
+                        display: 'block',
+                        position: 'relative',
+                        left: 0,
+                        top: 0,
+                        width: '100%',
+                        height: '100%',
+                        color: 'black',
+                        zIndex: 1,
+                    }}
+                    src={this.state.href}
+                    onLoad={() => {
+                        this.setState({ loading: true });
+                        if (this.loadingTimer) {
+                            clearInterval(this.loadingTimer);
+                            this.loadingTimer = null;
+                        }
+                    }}
+                    onError={e => {
+                        (e.target as HTMLIFrameElement).onerror = null;
+                        if (this.state.href.includes('tab_m.html')) {
+                            this.setState({ href: this.state.href.replace('tab_m.html', 'tab.html') });
+                        } else {
+                            // Poll page periodically as maybe the service not yet startet
+                            this.loadingTimer = setInterval(
+                                () => this.setState({ loadingKey: this.state.loadingKey + 1 }),
+                                3000,
+                            );
+                        }
+                    }}
+                />
+            </div>
         );
     }
 }

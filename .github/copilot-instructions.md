@@ -119,6 +119,11 @@ npm run start -w packages/admin           # Start only admin dev server
 - **Package-specific**: Add to individual package's `package.json`
 - **Rule**: All devDependencies should be in root `package.json` except for inter-workspace dependencies
 
+### Adding change log
+- **Update README.md**: Add to chapter "Changelog" new entry about changes in form `- (@copilot) description of the changes`. Create as a first subchapter `### **WORK IN PROGRESS**`if not exists. Later it will be used by automatic release.
+
+**CRITICAL: do not close the issue after merging of PR into master branch, as this issue must be manually validated before closing!**
+
 ## Troubleshooting
 
 ### Common Issues
