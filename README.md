@@ -85,9 +85,9 @@ ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
 
-<!--
-	### **WORK IN PROGRESS**
--->
+### **WORK IN PROGRESS**
+- (@copilot) Improved CoPilot setup with better issue management and changelog practices
+
 ### 7.7.2 (2025-07-22)
 - (@GermanBluefox) Fixing change of the language in the admin
 
