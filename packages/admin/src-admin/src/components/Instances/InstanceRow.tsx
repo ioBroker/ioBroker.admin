@@ -345,12 +345,14 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                         >
                             {this.renderDeleteButton()}
                         </IsVisible>
-                        <Box
-                            component="div"
-                            sx={styles.visible570}
-                        >
-                            {this.renderSentry()}
-                        </Box>
+                        {this.props.context.expertMode && item.checkSentry && (
+                            <Box
+                                component="div"
+                                sx={styles.visible570}
+                            >
+                                {this.renderSentry()}
+                            </Box>
+                        )}
                         <Box
                             component="div"
                             sx={styles.visible570}
@@ -549,12 +551,14 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                             <Grid2 sx={styles.hidden1230}>{this.renderHost()}</Grid2>
                         ) : null}
                     </Grid2>
-                    <Box
-                        component="div"
-                        sx={styles.hidden570}
-                    >
-                        {this.renderSentry()}
-                    </Box>
+                    {this.props.context.expertMode && item.checkSentry && (
+                        <Box
+                            component="div"
+                            sx={styles.hidden570}
+                        >
+                            {this.renderSentry()}
+                        </Box>
+                    )}
                     <Box
                         component="div"
                         sx={styles.hidden570}
