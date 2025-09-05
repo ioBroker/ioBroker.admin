@@ -290,7 +290,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                     }}
                     src={this.state.href}
                     onLoad={() => {
-                        this.setState({ loading: true });
+                        this.setState({ loading: false });
                         if (this.loadingTimer) {
                             clearInterval(this.loadingTimer);
                             this.loadingTimer = null;
