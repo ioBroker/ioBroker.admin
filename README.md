@@ -84,8 +84,14 @@ This project uses icons from [Flaticon](https://www.flaticon.com/).
 ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
-
+## Changelog
+<!--
+	### **WORK IN PROGRESS**
+-->
 ### **WORK IN PROGRESS**
+- (@GermanBluefox) Reading of same instances was optimized in GUI
+- (@GermanBluefox) Do not show the http page if admin is secured
+- (@GermanBluefox) Show loading progress for custom tabs
 - (@copilot) Improved CoPilot setup with better issue management and changelog practices
 
 ### 7.7.2 (2025-07-22)

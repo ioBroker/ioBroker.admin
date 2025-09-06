@@ -128,7 +128,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
     }
 
     _getValue(): string | string[] {
-        let value =
+        let value: string | string[] | null | undefined =
             this.state.value === null || this.state.value === undefined
                 ? ConfigGeneric.getValue(this.props.data, this.props.attr)
                 : this.state.value;
@@ -156,7 +156,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
 
         const value = this._getValue();
 
-        if (!this.props.alive || (!this.state.running && !this.state.list?.length)) {
+        if (!this.props.alive || (!this.state.running && !Array.isArray(this.state.list))) {
             if (this.props.schema.multiple || this.props.schema.manual === false) {
                 return I18n.t('ra_Cannot retrieve options, as instance is offline');
             }

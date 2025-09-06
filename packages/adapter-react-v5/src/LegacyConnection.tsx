@@ -320,6 +320,10 @@ export class LegacyConnection {
 
     public systemConfig: ioBroker.SystemConfigObject | null = null;
 
+    private objectViewCached:
+        | { [key: string]: Record<string, ioBroker.AnyObject & { type: ioBroker.ObjectType }> }
+        | undefined;
+
     constructor(props: ConnectionProps) {
         props ||= { protocol: window.location.protocol, host: window.location.hostname };
         this.props = props;
@@ -1870,12 +1874,41 @@ export class LegacyConnection {
      * @param start The start ID.
      * @param end The end ID.
      */
-    getObjectViewSystem<T = ioBroker.Object>(
+    async getObjectViewSystem<T extends ioBroker.ObjectType>(
         type: ioBroker.ObjectType,
         start: string,
         end?: string,
-    ): Promise<Record<string, T>> {
-        return this.getObjectViewCustom('system', type, start, end) as Promise<Record<string, T>>;
+    ): Promise<Record<string, ioBroker.AnyObject & { type: T }>> {
+        const key = `${type}_${start || ''}_${end || ''}`;
+        const result = await this.getObjectViewCustom('system', type, start, end);
+        if (this.objectViewCached?.[key]) {
+            // update cached value
+            this.objectViewCached[key] = result;
+        }
+        return result as Record<string, ioBroker.AnyObject & { type: T }>;
+    }
+
+    /**
+     * Query a predefined object view.
+     *
+     * @param type The type of object.
+     * @param start The start ID.
+     * @param [end] The end ID.
+     */
+    async getObjectViewSystemCached<T extends ioBroker.ObjectType>(
+        type: T,
+        start?: string,
+        end?: string,
+    ): Promise<Record<string, ioBroker.AnyObject & { type: T }>> {
+        const key = `${type}_${start || ''}_${end || ''}`;
+        if (this.objectViewCached?.[key]) {
+            return Promise.resolve(this.objectViewCached[key] as any);
+        }
+
+        const result = await this.getObjectViewCustom('system', type, start, end);
+        this.objectViewCached ||= {};
+        this.objectViewCached[key] = result;
+        return result as Record<string, ioBroker.AnyObject & { type: T }>;
     }
 
     /**
