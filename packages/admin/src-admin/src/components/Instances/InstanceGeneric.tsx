@@ -1429,6 +1429,9 @@ export default abstract class InstanceGeneric<
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderSentry(): JSX.Element {
+        if (!this.props.item.checkSentry) {
+            return null;
+        }
         return (
             <Tooltip
                 title="sentry"
