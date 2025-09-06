@@ -41,6 +41,8 @@ interface CustomTabProps {
     isFloatComma: boolean;
     dateFormat: string;
     expertMode: boolean;
+    icon?: string | React.JSX.Element;
+    supportsLoadingMessage?: boolean;
 }
 
 interface CustomTabState {
@@ -167,7 +169,6 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
             clearInterval(this.loadingTimer);
             this.loadingTimer = null;
         }
-
         if (this.registered) {
             this.props.onUnregisterIframeRef(this.refIframe);
             this.registered = false;
@@ -186,8 +187,17 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
         }
     }
 
-    // eslint-disable-next-line class-methods-use-this
     onMessage = (event: MessageEvent & { message: string }): void => {
+        if ((this.props.supportsLoadingMessage && event.data === 'iobLoaded') || event.message === 'iobLoaded') {
+            // iframe loaded
+            this.setState({ loading: false });
+            if (this.loadingTimer) {
+                clearInterval(this.loadingTimer);
+                this.loadingTimer = null;
+            }
+            return;
+        }
+
         if (event.origin !== window.location.origin) {
             return;
         }
@@ -275,6 +285,34 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                 {this.state.loading ? (
                     <LinearProgress style={{ position: 'absolute', zIndex: 2, width: '100%' }} />
                 ) : null}
+                {this.state.loading && this.props.icon ? (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            zIndex: 2,
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            fontSize: 48,
+                        }}
+                    >
+                        {typeof this.props.icon === 'string' ? (
+                            <img
+                                src={this.props.icon}
+                                alt="icon"
+                                style={{
+                                    maxWidth: 200,
+                                    width: '100%',
+                                    opacity: 0.7,
+                                }}
+                            />
+                        ) : (
+                            this.props.icon
+                        )}
+                    </div>
+                ) : null}
                 <iframe
                     ref={el => (this.refIframe = el)}
                     title={this.props.tab}
@@ -287,13 +325,18 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                         height: '100%',
                         color: 'black',
                         zIndex: 1,
+                        borderRadius: 0,
+                        boxShadow: 'none',
+                        border: '0px solid #888',
                     }}
                     src={this.state.href}
                     onLoad={() => {
-                        this.setState({ loading: false });
-                        if (this.loadingTimer) {
-                            clearInterval(this.loadingTimer);
-                            this.loadingTimer = null;
+                        if (!this.props.supportsLoadingMessage) {
+                            this.setState({ loading: false });
+                            if (this.loadingTimer) {
+                                clearInterval(this.loadingTimer);
+                                this.loadingTimer = null;
+                            }
                         }
                     }}
                     onError={e => {
@@ -302,7 +345,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                             this.setState({ href: this.state.href.replace('tab_m.html', 'tab.html') });
                         } else {
                             // Poll page periodically as maybe the service not yet startet
-                            this.loadingTimer = setInterval(
+                            this.loadingTimer ||= setInterval(
                                 () => this.setState({ loadingKey: this.state.loadingKey + 1 }),
                                 3000,
                             );
