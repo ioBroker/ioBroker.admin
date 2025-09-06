@@ -151,3 +151,77 @@ This is a sophisticated ioBroker adapter providing:
 - **Multi-language Support**: Internationalization throughout the interface
 
 The frontend communicates with ioBroker instances via WebSockets on port 8081 (or proxy during development). The admin interface provides comprehensive management of the entire ioBroker ecosystem.
+
+## CoPilot Pull Request and Issue Management
+
+### Issue Handling Guidelines
+When creating PRs that address GitHub issues, follow these specific practices:
+
+**NEVER** use GitHub keywords that automatically close issues (like "fixes", "closes", "resolves") in PR titles or descriptions. Instead:
+
+1. **Link without closing**: Reference issues using neutral language:
+   - Use "Related to #123" instead of "Fixes #123"
+   - Use "Addresses #123" instead of "Closes #123"
+   - Use "Implements #123" instead of "Resolves #123"
+
+2. **Add issue comments**: After creating a PR, add a comment to the referenced issue with:
+   - Link to the PR
+   - Brief description of the changes made
+   - Request for review/testing if applicable
+
+3. **Set issue labels**: When a PR fully addresses an issue, manually set the "fixed" label on the issue (if you have permissions).
+
+### Changelog Management
+**ALWAYS** add a user-focused changelog entry for every PR to the README.md file:
+
+1. **Location**: Add entries under the "### **WORK IN PROGRESS**" section in README.md
+2. **Format**: Follow the existing changelog format:
+   ```
+   - (@your-username) Brief user-focused description of the change
+   ```
+3. **Style**: Keep entries concise and focused on user impact, not technical implementation details
+4. **Examples**:
+   - Good: "Fixed login issues with special characters in passwords"
+   - Bad: "Refactored authentication service to handle URL encoding"
+
+### Example PR Description Template
+```
+## Summary
+Brief description of changes made.
+
+## Related Issues
+Related to #123
+
+## Changes Made
+- List of key changes
+- User-visible improvements
+- Bug fixes
+
+## Testing
+- How changes were tested
+- Manual validation steps performed
+
+## Changelog Entry Added
+- Added entry to WORK IN PROGRESS section in README.md
+```
+
+Remember: Issues should be closed manually by maintainers after proper review and validation, not automatically by PR merges.
+
+### Prohibited Keywords in PR Content
+**NEVER use these keywords in PR titles, descriptions, or commit messages** as they will automatically close issues:
+- "fix", "fixes", "fixed"
+- "close", "closes", "closed"  
+- "resolve", "resolves", "resolved"
+
+Instead use these neutral alternatives:
+- "address", "addresses", "addressed"
+- "implement", "implements", "implemented"  
+- "handle", "handles", "handled"
+- "improve", "improves", "improved"
+- "related to", "regarding", "concerning"
+
+### Required Actions for Every PR
+1. **Update README.md**: Add changelog entry under "### **WORK IN PROGRESS**"
+2. **Reference issues**: Use "Related to #123" format in PR description
+3. **Comment on issues**: Add a comment with PR link and summary
+4. **Test thoroughly**: Include testing details in PR description
