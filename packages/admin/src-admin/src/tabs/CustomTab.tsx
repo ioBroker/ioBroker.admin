@@ -342,7 +342,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                     onError={e => {
                         (e.target as HTMLIFrameElement).onerror = null;
                         if (this.state.href.includes('tab_m.html')) {
-                            this.setState({ href: this.state.href.replace('tab_m.html', 'tab.html') });
+                            this.setState(prevState => ({ href: prevState.href.replace('tab_m.html', 'tab.html') }));
                         } else {
                             // Poll page periodically as maybe the service not yet startet
                             this.loadingTimer ||= setInterval(
