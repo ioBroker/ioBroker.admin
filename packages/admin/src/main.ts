@@ -31,8 +31,8 @@ const { getInstalledInfo } = commonTools;
 const ONE_HOUR_MS = 3_600_000;
 const ERROR_PERMISSION = 'permissionError';
 
-const CURRENT_MAX_MAJOR_NODEJS = 20;
-const CURRENT_MAX_MAJOR_NPM = 8;
+const CURRENT_MAX_MAJOR_NODEJS = 22;
+const CURRENT_MAX_MAJOR_NPM = 10;
 
 let socket: SocketAdmin;
 let webServer: Web;
