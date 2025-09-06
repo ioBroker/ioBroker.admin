@@ -5963,6 +5963,14 @@
                                                     "type": "string"
                                                 }
                                             },
+                                            "useCardFor": {
+                                                "description": "Breakpoint that will be rendered as cards",
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string",
+                                                    "enum": ["xs", "sm", "md", "lg", "xl"]
+                                                }
+                                            },
                                             "allowAddByFilter": {
                                                 "$ref": "#/definitions/allowAddByFilterProp"
                                             },

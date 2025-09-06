@@ -1,10 +1,9 @@
 /*
- * Copyright 2022-2024 Denis Haev (bluefox) <dogafox@gmail.com>
+ * Copyright 2022-2025 Denis Haev (bluefox) <dogafox@gmail.com>
  *
  * MIT License
  *
  */
-// please do not delete React, as without it other projects could not be compiled: ReferenceError: React is not defined
 import React, { type JSX } from 'react';
 
 import { Button, DialogTitle, DialogContent, DialogActions, Dialog } from '@mui/material';
@@ -116,6 +115,8 @@ interface DialogSelectFileProps {
     expertMode?: boolean;
     /** Translate function - optional */
     t?: (text: string, ...args: any[]) => string;
+    /** The z-index of the dialog; default: 1300 */
+    zIndex?: number;
 }
 
 interface DialogSelectFileState {
@@ -208,6 +209,7 @@ export class DialogSelectFile extends React.Component<DialogSelectFileProps, Dia
             <Dialog
                 onClose={() => {}}
                 maxWidth={false}
+                style={{ zIndex: this.props.zIndex || undefined }}
                 sx={{ '& .MuiDialog-paper': { ...styles.dialog, ...styles.dialogMobile } }}
                 fullWidth
                 open={!0}

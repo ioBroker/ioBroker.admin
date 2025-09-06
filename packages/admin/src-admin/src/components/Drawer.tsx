@@ -170,13 +170,14 @@ const tabsInfo: Record<string, { order: number; icon?: JSX.Element; host?: boole
     'tab-files': { order: 110, icon: <FilesIcon /> },
 };
 
-interface AdminTab {
+export interface AdminTab {
     name: string;
     order: number;
     icon?: string | JSX.Element;
     title?: string;
     visible?: boolean;
     color?: string;
+    supportsLoadingMessage?: boolean;
 }
 
 interface DrawerProps {
@@ -206,6 +207,7 @@ interface DrawerProps {
     repository: Record<string, { icon: string; version: string }>;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     theme: IobTheme;
+    provideTabsInfo: (tabs: AdminTab[]) => void;
 }
 
 interface DrawerState {
@@ -422,6 +424,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             name: tab,
                             order: instance.adminTab.order !== undefined ? instance.adminTab.order : 200,
                             icon: instance.adminTab.icon,
+                            // @ts-expect-error defined in js-controller
+                            supportsLoadingMessage: instance.adminTab.supportsLoadingMessage,
                         };
                     }
 
@@ -526,6 +530,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 });
 
                 this.setState({ tabs }, () => {
+                    this.props.provideTabsInfo(this.state.tabs);
                     const newTabsVisible = tabs.map(({ name, visible, color }) => ({ name, visible, color }));
 
                     if (JSON.stringify(newTabsVisible) !== JSON.stringify(tabsVisible)) {
