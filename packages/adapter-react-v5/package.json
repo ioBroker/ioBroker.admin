@@ -60,7 +60,7 @@
         "@iobroker/socket-client": "5.0.2",
         "@iobroker/type-detector": "^4.5.1",
         "@iobroker/types": "^7.0.7",
-        "@mui/icons-material": "^6.5.0",
+        "@mui/icons-material": "^7.3.2",
         "@mui/material": "^6.5.0",
         "@sentry/browser": "^10.8.0",
         "cronstrue": "^2.61.0",
