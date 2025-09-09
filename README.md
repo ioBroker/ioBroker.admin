@@ -89,6 +89,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Fixed step type behavior in chart display - "Schritte" now shows value until next point (step after) instead of step before
+- (@copilot) Added all three step type options (stepStart, stepMiddle, stepEnd) to chart display with clearer descriptions
 - (@GermanBluefox) Reading of same instances was optimized in GUI
 - (@GermanBluefox) Do not show the http page if admin is secured
 - (@GermanBluefox) Show loading progress for custom tabs

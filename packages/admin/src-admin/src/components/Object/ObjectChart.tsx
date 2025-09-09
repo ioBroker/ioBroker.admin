@@ -693,11 +693,11 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             type: 'line',
             step:
                 this.state.stepType === 'stepStart'
-                    ? 'start'
+                    ? 'end'
                     : this.state.stepType === 'stepMiddle'
                       ? 'middle'
                       : this.state.stepType === 'stepEnd'
-                        ? 'end'
+                        ? 'start'
                         : undefined,
             showSymbol: false,
             hoverAnimation: true,
@@ -1558,6 +1558,18 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                             onClick={() => this.onStepChanged('stepStart')}
                         >
                             {this.props.t('stepStart')}
+                        </MenuItem>
+                        <MenuItem
+                            selected={this.state.stepType === 'stepMiddle'}
+                            onClick={() => this.onStepChanged('stepMiddle')}
+                        >
+                            {this.props.t('stepMiddle')}
+                        </MenuItem>
+                        <MenuItem
+                            selected={this.state.stepType === 'stepEnd'}
+                            onClick={() => this.onStepChanged('stepEnd')}
+                        >
+                            {this.props.t('stepEnd')}
                         </MenuItem>
                     </Menu>
                 ) : null}
