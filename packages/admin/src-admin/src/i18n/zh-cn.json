@@ -1515,6 +1515,7 @@
     "notifications wizard category": "此类别中的适配器允许您收到系统中的事件通知并向您发送个性化消息。",
     "npm error": "npm错误",
     "npm_warning": "使用此对话框，您可以直接从 %s 安装 Beta/最新适配器版本。这些版本可能尚未经过全面测试，因此仅当您需要这些版本的修复或新功能时才安装它们。当开发人员认为版本稳定时，它将在稳定存储库中进行更新。",
+    "not maintained": "不再维护",
     "number": "数",
     "object": "设备",
     "object permissions": "设备权限",
