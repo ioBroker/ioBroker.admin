@@ -92,6 +92,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Reading of same instances was optimized in GUI
 - (@GermanBluefox) Do not show the http page if admin is secured
 - (@GermanBluefox) Show loading progress for custom tabs
+- (@copilot) Add option to create instance after installation from git/npm/URL
 
 ### 7.7.2 (2025-07-22)
 - (@GermanBluefox) Fixing change of the language in the admin

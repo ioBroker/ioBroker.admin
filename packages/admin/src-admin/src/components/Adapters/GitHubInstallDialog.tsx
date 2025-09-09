@@ -110,7 +110,7 @@ interface GitHubInstallDialogProps {
     onClose: () => void;
     t: typeof I18n.t;
     /** Method to install adapter */
-    installFromUrl: (adapter: string, debug: boolean, customUrl: boolean) => Promise<void>;
+    installFromUrl: (adapter: string, debug: boolean, customUrl: boolean, createInstance?: boolean) => Promise<void>;
     /** Upload the adapter */
     upload: (adapter: string) => void;
 }
@@ -133,6 +133,8 @@ interface GitHubInstallDialogState {
     currentTab: string;
     /** History of custom commands */
     customHistory: string[];
+    /** If instance should be created after installation */
+    createInstance: boolean;
 }
 
 const MAX_HISTORY_LENGTH = 10;
@@ -157,6 +159,8 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             url: ((window as any)._localstorage || window.localStorage).getItem('App.userUrl') || '',
             currentTab: ((window as any)._localstorage || window.localStorage).getItem('App.gitTab') || 'npm',
             customHistory,
+            createInstance:
+                ((window as any)._localstorage || window.localStorage).getItem('App.createInstance') === 'true',
         };
     }
 
@@ -181,6 +185,23 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             />
                         }
                         label={this.props.t('Debug outputs')}
+                    />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={this.state.createInstance}
+                                onChange={e => {
+                                    ((window as any)._localstorage || window.localStorage).setItem(
+                                        'App.createInstance',
+                                        e.target.checked ? 'true' : 'false',
+                                    );
+                                    this.setState({ createInstance: e.target.checked });
+                                }}
+                            />
+                        }
+                        label={this.props.t('Create instance after installation')}
                     />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
@@ -268,6 +289,23 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             />
                         }
                         label={this.props.t('Debug outputs')}
+                    />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={this.state.createInstance}
+                                onChange={e => {
+                                    ((window as any)._localstorage || window.localStorage).setItem(
+                                        'App.createInstance',
+                                        e.target.checked ? 'true' : 'false',
+                                    );
+                                    this.setState({ createInstance: e.target.checked });
+                                }}
+                            />
+                        }
+                        label={this.props.t('Create instance after installation')}
                     />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
@@ -363,6 +401,23 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             />
                         }
                         label={this.props.t('Debug outputs')}
+                    />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={this.state.createInstance}
+                                onChange={e => {
+                                    ((window as any)._localstorage || window.localStorage).setItem(
+                                        'App.createInstance',
+                                        e.target.checked ? 'true' : 'false',
+                                    );
+                                    this.setState({ createInstance: e.target.checked });
+                                }}
+                            />
+                        }
+                        label={this.props.t('Create instance after installation')}
                     />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -606,7 +661,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             if (this.state.currentTab === 'GitHub') {
                                 const parts = (this.state.autoCompleteValue?.value || '').split('/');
                                 const _url = `${parts[1]}/ioBroker.${parts[0]}`;
-                                void this.props.installFromUrl(_url, this.state.debug, true);
+                                void this.props.installFromUrl(_url, this.state.debug, true, this.state.createInstance);
                             } else if (this.state.currentTab === 'URL') {
                                 const customHistory = this.state.customHistory.filter(url => url !== this.state.url);
                                 customHistory.unshift(this.state.url);
@@ -623,9 +678,15 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                         `iobroker.${this.state.url}`,
                                         this.state.debug,
                                         true,
+                                        this.state.createInstance,
                                     );
                                 } else {
-                                    void this.props.installFromUrl(this.state.url, this.state.debug, true);
+                                    void this.props.installFromUrl(
+                                        this.state.url,
+                                        this.state.debug,
+                                        true,
+                                        this.state.createInstance,
+                                    );
                                 }
                             } else if (this.state.currentTab === 'npm') {
                                 const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];
@@ -638,6 +699,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                         `iobroker.${adapterName}@latest`,
                                         this.state.debug,
                                         true,
+                                        this.state.createInstance,
                                     );
                                     // on npm installations we want to perform an additional upload
                                     this.props.upload(adapterName);

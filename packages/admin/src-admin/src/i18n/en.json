@@ -259,6 +259,7 @@
     "Create a copy": "Create a copy",
     "Create a copy of this object": "Create a copy of this object",
     "Create alias from this ID": "Create alias from this object",
+    "Create instance after installation": "Create instance after installation",
     "Create instances": "Create instances",
     "Create instances automatically": "Create instances automatically",
     "Create instances automatically - Last scan on %s": "Create instances automatically - Last scan on %s",
