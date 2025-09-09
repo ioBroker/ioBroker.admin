@@ -89,6 +89,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Fixed adapter license icon linking to use commercial license URL instead of GitHub license
+- (@copilot) Fixed license icon spacing in list view to maintain consistent layout
 - (@GermanBluefox) Reading of same instances was optimized in GUI
 - (@GermanBluefox) Do not show the http page if admin is secured
 - (@GermanBluefox) Show loading progress for custom tabs
