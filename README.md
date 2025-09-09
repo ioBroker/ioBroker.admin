@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Fixed issue where minus sign could not be entered as first character in jsonConfig number fields
 - (@GermanBluefox) Reading of same instances was optimized in GUI
 - (@GermanBluefox) Do not show the http page if admin is secured
 - (@GermanBluefox) Show loading progress for custom tabs

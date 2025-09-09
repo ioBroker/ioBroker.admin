@@ -81,6 +81,12 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
             return null;
         }
         value = value.toString().trim().replace(',', '.');
+
+        // Allow intermediate state when user is typing a minus sign
+        if (value === '-') {
+            return null;
+        }
+
         const f = value === '' ? 0 : parseFloat(value);
 
         if (value !== '' && Number.isNaN(f)) {
@@ -93,9 +99,6 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
             }
             if (this.props.schema.max !== undefined && f > this.props.schema.max) {
                 return 'ra_Too big';
-            }
-            if (value === '' || value === '-' || Number.isNaN(f)) {
-                return 'ra_Not a number';
             }
 
             return null;
@@ -199,7 +202,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                     }}
                     variant="standard"
                     // because some users want to enter "-" first
-                    type={this.props.schema.min !== undefined && this.props.schema.min >= 0 ? 'number' : 'text'}
+                    type="text"
                     fullWidth
                     slotProps={{
                         htmlInput: {
