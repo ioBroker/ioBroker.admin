@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Fixed JSONConfig sendTo jsonData attribute parser problem where backslashes (\) in text inputs caused JSON parsing errors
 - (@GermanBluefox) Reading of same instances was optimized in GUI
 - (@GermanBluefox) Do not show the http page if admin is secured
 - (@GermanBluefox) Show loading progress for custom tabs
