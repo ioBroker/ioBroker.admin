@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, TextField, CircularProgress, InputAdornment } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -12,7 +12,11 @@ interface ConfigAutocompleteSendToProps extends ConfigGenericProps {
     schema: ConfigItemAutocompleteSendTo;
 }
 
-class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToProps, ConfigAutocompleteState> {
+interface ConfigAutocompleteSendToState extends ConfigAutocompleteState {
+    loading?: boolean;
+}
+
+class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToProps, ConfigAutocompleteSendToState> {
     private initialized = false;
 
     private localContext: string | undefined;
@@ -42,6 +46,11 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                 data = null;
             }
 
+            // Set loading state if showProcess is enabled
+            if (this.props.schema.showProcess) {
+                this.setState({ loading: true });
+            }
+
             void this.props.oContext.socket
                 .sendTo(
                     `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
@@ -65,9 +74,16 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                             label: I18n.t(ConfigGeneric.DIFFERENT_LABEL),
                             value: ConfigGeneric.DIFFERENT_VALUE,
                         });
-                        this.setState({ value: ConfigGeneric.DIFFERENT_VALUE, selectOptions });
+                        this.setState({ value: ConfigGeneric.DIFFERENT_VALUE, selectOptions, loading: false });
                     } else {
-                        this.setState({ value, selectOptions });
+                        this.setState({ value, selectOptions, loading: false });
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error in autocompleteSendTo:', error);
+                    // Clear loading state on error
+                    if (this.props.schema.showProcess) {
+                        this.setState({ loading: false });
                     }
                 });
         } else if (Array.isArray(value)) {
@@ -136,11 +152,16 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                     value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                     error={!!error}
                     disabled={disabled}
-                    slotProps={{
-                        htmlInput: {
-                            maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                        },
+                    inputProps={{
+                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
                     }}
+                    InputProps={this.props.schema.showProcess && this.state.loading ? {
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <CircularProgress size={20} />
+                            </InputAdornment>
+                        )
+                    } : undefined}
                     onChange={e => {
                         const value = e.target.value;
                         this.setState({ value }, () => this.onChange(this.props.attr, (value || '').trim()));
@@ -214,6 +235,19 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                             this.props.schema.noTranslation,
                         )}
                         disabled={disabled}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <>
+                                    {this.props.schema.showProcess && this.state.loading ? (
+                                        <InputAdornment position="end">
+                                            <CircularProgress size={20} />
+                                        </InputAdornment>
+                                    ) : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                            )
+                        }}
                     />
                 )}
             />
