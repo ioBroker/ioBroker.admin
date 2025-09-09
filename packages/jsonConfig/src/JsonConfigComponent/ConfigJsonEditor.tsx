@@ -99,7 +99,11 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
                         onClose={() =>
                             this.setState({ showSelectId: false, value: ConfigGeneric.getValue(data, attr) || {} })
                         }
-                        onApply={isReadOnly ? undefined : () => this.setState({ showSelectId: false }, () => this.onChange(attr, value))}
+                        onApply={
+                            isReadOnly
+                                ? undefined
+                                : () => this.setState({ showSelectId: false }, () => this.onChange(attr, value))
+                        }
                     >
                         <div
                             style={{
@@ -110,8 +114,14 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
                             <Editor
                                 mode={this.props.schema.json5 ? 'json5' : 'json'}
                                 value={typeof value === 'object' ? JSON.stringify(value) : value}
-                                onChange={isReadOnly ? undefined : newValue =>
-                                    this.setState({ value: newValue, jsonError: this.validateJson(newValue) })
+                                onChange={
+                                    isReadOnly
+                                        ? undefined
+                                        : newValue =>
+                                              this.setState({
+                                                  value: newValue,
+                                                  jsonError: this.validateJson(newValue),
+                                              })
                                 }
                                 name="ConfigJsonEditor"
                                 themeType={this.props.oContext.themeType}
