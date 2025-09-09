@@ -104,8 +104,15 @@ import { AdaptersWorker, type AdapterEvent } from './Workers/AdaptersWorker';
 import { ObjectsWorker } from './Workers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from './dialogs/SlowConnectionWarningDialog';
+import TimezoneWarningDialog from './dialogs/TimezoneWarningDialog';
 import IsVisible from './components/IsVisible';
 import type { CompactInstanceInfo } from './components/Adapters/AdapterUpdateDialog';
+import {
+    getClientTimezoneInfo,
+    getServerTimezoneInfo,
+    checkTimezoneDifference,
+    shouldShowTimezoneWarning,
+} from './helpers/timezoneUtils';
 
 import enLocal from './i18n/en.json';
 import deLocal from './i18n/de.json';
@@ -491,6 +498,11 @@ interface AppState {
         lastNewsId: string | undefined;
     } | null;
     askForTokenRefresh: { expireAt: number; resolve: (prolong: boolean) => void; doNotAsk: boolean } | null;
+    showTimezoneWarning?: {
+        clientTimezone: string;
+        serverTimezone: string;
+        offsetDifferenceHours: number;
+    } | null;
 }
 
 class App extends Router<AppProps, AppState> {
@@ -690,6 +702,7 @@ class App extends Router<AppProps, AppState> {
                 showHostWarning: null,
                 adapters: {},
                 askForTokenRefresh: null,
+                showTimezoneWarning: null,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -1220,6 +1233,11 @@ class App extends Router<AppProps, AppState> {
                             const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
                             await this.handleNewNotifications(notifications);
                         }, 3_000);
+
+                        // Check for timezone differences after everything is loaded
+                        setTimeout(() => {
+                            this.checkTimezoneWarning();
+                        }, 5_000);
                     } catch (e) {
                         console.error(`Error in onReady: ${e.stack}`);
                         this.showAlert(`Error in onReady: ${e.stack}`, 'error');
@@ -1555,6 +1573,26 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
+    renderTimezoneWarningDialog(): JSX.Element | null {
+        if (!this.state.showTimezoneWarning) {
+            return null;
+        }
+
+        return (
+            <TimezoneWarningDialog
+                open={true}
+                onClose={(_dismissed: boolean) => {
+                    this.setState({ showTimezoneWarning: null });
+                }}
+                clientTimezone={this.state.showTimezoneWarning.clientTimezone}
+                serverTimezone={this.state.showTimezoneWarning.serverTimezone}
+                offsetDifferenceHours={this.state.showTimezoneWarning.offsetDifferenceHours}
+                theme={this.state.theme}
+                lang={I18n.getLanguage()}
+            />
+        );
+    }
+
     /** Called when notifications detected, updates the notification indicator */
     handleNewNotifications = async (notifications: Record<string, NotificationAnswer>): Promise<void> => {
         const noNotifications: NotificationsCount = {
@@ -1774,6 +1812,35 @@ class App extends Router<AppProps, AppState> {
 
     logsWorkerChanged = (currentHost: string): void => {
         this.logsWorker?.setCurrentHost(currentHost);
+    };
+
+    /**
+     * Check for timezone differences between server and client
+     */
+    checkTimezoneWarning = (): void => {
+        // Check if warning was already dismissed
+        if (localStorage.getItem('App.timezoneWarningDismissed') === 'true') {
+            return;
+        }
+
+        try {
+            const clientInfo = getClientTimezoneInfo();
+            const serverInfo = getServerTimezoneInfo(this.state.systemConfig);
+
+            if (shouldShowTimezoneWarning(this.state.systemConfig, clientInfo, serverInfo)) {
+                const difference = checkTimezoneDifference(clientInfo, serverInfo);
+
+                this.setState({
+                    showTimezoneWarning: {
+                        clientTimezone: difference.clientFormatted,
+                        serverTimezone: difference.serverFormatted,
+                        offsetDifferenceHours: difference.offsetDifferenceHours,
+                    },
+                });
+            }
+        } catch (error) {
+            console.warn('Error checking timezone difference:', error);
+        }
     };
 
     /**
@@ -3178,6 +3245,7 @@ class App extends Router<AppProps, AppState> {
                     {this.renderSlowConnectionWarning()}
                     {this.renderNewsDialog()}
                     {this.renderHostWarningDialog()}
+                    {this.renderTimezoneWarningDialog()}
                     {this.renderNotificationsDialog()}
                     {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
                         <Connecting />
