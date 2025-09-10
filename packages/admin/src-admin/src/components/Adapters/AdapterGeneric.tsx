@@ -502,28 +502,47 @@ export default abstract class AdapterGeneric<
             ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate
             : true;
 
-        return !this.props.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate !== false ? (
-            <Tooltip
-                title={this.props.context.t('Update')}
-                slotProps={{ popper: { sx: this.styles.tooltip } }}
-            >
-                <div
-                    onClick={() => this.setState({ showUpdateDialog: true, showDialog: true })}
-                    style={{
-                        ...this.styles.buttonUpdate,
-                        ...(this.props.cached.rightDependencies ? this.styles.updateAvailable : undefined),
-                    }}
+        if (!this.props.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate !== false) {
+            const installedVersion = this.props.context.installed[this.props.adapterName]?.version;
+            const repositoryVersion = this.props.context.repository[this.props.adapterName].version;
+
+            // Determine if this is an upgrade or downgrade
+            const isUpgrade = installedVersion ? AdminUtils.updateAvailable(installedVersion, repositoryVersion) : true;
+            const isDowngrade = installedVersion && !isUpgrade && installedVersion !== repositoryVersion;
+
+            const tooltipText = isDowngrade ? this.props.context.t('Install') : this.props.context.t('Update');
+
+            const IconComponent = isDowngrade ? ArrowDownwardIcon : isUpgrade ? ArrowUpwardIcon : RefreshIcon;
+
+            return (
+                <Tooltip
+                    title={tooltipText}
+                    slotProps={{ popper: { sx: this.styles.tooltip } }}
                 >
-                    <IconButton
-                        style={this.styles.buttonUpdateIcon}
-                        size="small"
+                    <div
+                        onClick={() => this.setState({ showUpdateDialog: true, showDialog: true })}
+                        style={{
+                            ...this.styles.buttonUpdate,
+                            ...(this.props.cached.rightDependencies ? this.styles.updateAvailable : undefined),
+                            ...(isDowngrade ? { borderColor: '#ff9800' } : undefined), // Orange border for downgrades
+                        }}
                     >
-                        <RefreshIcon />
-                    </IconButton>
-                    {this.props.context.repository[this.props.adapterName].version}
-                </div>
-            </Tooltip>
-        ) : (
+                        <IconButton
+                            style={{
+                                ...this.styles.buttonUpdateIcon,
+                                ...(isDowngrade ? { color: '#ff9800' } : undefined), // Orange icon for downgrades
+                            }}
+                            size="small"
+                        >
+                            <IconComponent />
+                        </IconButton>
+                        {repositoryVersion}
+                    </div>
+                </Tooltip>
+            );
+        }
+
+        return (
             <Tooltip
                 title={this.getDependencies()}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}

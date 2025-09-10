@@ -34,7 +34,6 @@ import CustomSelectButton from '@/components/CustomSelectButton';
 import AdaptersUpdaterDialog from '@/components/Adapters/AdaptersUpdaterDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import IsVisible from '@/components/IsVisible';
-import AdminUtils from '@/helpers/AdminUtils';
 import {
     TabHeader,
     type AdminConnection,
@@ -474,12 +473,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 const version = installed[adapterName].version;
                 const repositoryEntry = repository[adapterName];
 
-                if (
-                    repositoryEntry &&
-                    repositoryEntry.version !== version &&
-                    AdminUtils.updateAvailable(version, repositoryEntry.version) &&
-                    !updateAvailable.includes(adapterName)
-                ) {
+                if (repositoryEntry && repositoryEntry.version !== version && !updateAvailable.includes(adapterName)) {
                     updateAvailable.push(adapterName);
                 }
             }
