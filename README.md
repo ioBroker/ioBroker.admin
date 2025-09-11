@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@copilot) Only show adapters with satisfied dependencies in update all dialog
+- (@copilot) Added new `readOnly` attribute for jsonEditor in jsonConfig - allows opening the editor to view JSON content without allowing modifications
 - (@GermanBluefox) Reading of same instances was optimized in GUI
 - (@GermanBluefox) Do not show the http page if admin is secured
 - (@GermanBluefox) Show loading progress for custom tabs
