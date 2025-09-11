@@ -91,7 +91,7 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
                         {this.renderConnectionType() || <div style={{ marginLeft: 5, width: 24, height: 24 }} />}
                         {this.renderDataSource() || <div style={{ width: 24, height: 24 }} />}
                         {this.renderSentryInfo() || <div style={{ width: 24, height: 24 }} />}
-                        {this.renderLicenseInfo()}
+                        {this.renderLicenseInfo(true)}
                     </div>
                 </TableCell>
                 <TableCell>{this.renderInstalledVersion(true)}</TableCell>

@@ -409,11 +409,11 @@ export default abstract class AdapterGeneric<
         ) : null;
     }
 
-    renderLicenseInfo(): JSX.Element {
+    renderLicenseInfo(maintainSpacing: boolean = false): JSX.Element | null {
         const adapter = this.props.context.repository[this.props.adapterName];
         const link = extractUrlLink(adapter);
 
-        return adapter.licenseInformation?.type ? (
+        const licenseIcon = adapter.licenseInformation?.type ? (
             <Link
                 href={link}
                 target="_blank"
@@ -449,6 +449,13 @@ export default abstract class AdapterGeneric<
                 ) : null}
             </Link>
         ) : null;
+
+        // If maintainSpacing is true and no license icon, return a spacer div
+        if (!licenseIcon && maintainSpacing) {
+            return <div style={{ width: 24, height: 24 }} />;
+        }
+
+        return licenseIcon;
     }
 
     renderSentryInfo(): JSX.Element | null {

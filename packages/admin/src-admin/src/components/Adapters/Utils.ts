@@ -27,10 +27,15 @@ export function extractUrlLink(adapterRepo: RepoAdapterObject): string {
     if (!adapterRepo) {
         return '';
     }
-    let url =
-        adapterRepo.licenseInformation?.link ||
-        // @ts-expect-error licenseUrl is deprecated
-        adapterRepo.licenseUrl;
+
+    // If licenseInformation.link is provided, use it directly for commercial license links
+    if (adapterRepo.licenseInformation?.link) {
+        return adapterRepo.licenseInformation.link;
+    }
+
+    // Check for deprecated licenseUrl
+    // @ts-expect-error licenseUrl is deprecated
+    let url = adapterRepo.licenseUrl;
 
     if (!url || !url.includes('/LICENSE') || !url.includes('raw.githubusercontent.com')) {
         url = adapterRepo.extIcon;
