@@ -1453,6 +1453,10 @@
                     "type": "boolean",
                     "description": "Do not allow to save the value if error in JSON or JSON5"
                 },
+                "readOnly": {
+                    "type": "boolean",
+                    "description": "Open the editor in read-only mode - editor can be opened but content cannot be modified"
+                },
                 "label": true,
                 "type": true,
                 "defaultSendTo": true,

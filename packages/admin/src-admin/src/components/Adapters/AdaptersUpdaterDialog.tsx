@@ -80,6 +80,7 @@ interface AdaptersUpdaterDialogProps {
     noTranslation?: boolean;
     toggleTranslation?: () => void;
     theme: IobTheme;
+    rightDependenciesFunc: (adapterName: string) => boolean;
 }
 
 interface AdaptersUpdaterDialogState {
@@ -258,6 +259,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                         this.setState({ selected });
                                     }}
                                     theme={this.props.theme}
+                                    rightDependenciesFunc={this.props.rightDependenciesFunc}
                                 />
                             </div>
                         </Grid2>
