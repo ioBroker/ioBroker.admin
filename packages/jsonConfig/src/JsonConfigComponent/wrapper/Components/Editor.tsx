@@ -25,7 +25,7 @@ interface EditorProps {
     defaultValue?: string;
     mode?: 'json' | 'css' | 'html' | 'json5';
     name: string;
-    onChange: (newValue: string) => void;
+    onChange?: (newValue: string) => void;
     themeType: string;
     editValueMode?: boolean; // flag that indicates the "value edit mode"
     error?: boolean;
@@ -45,7 +45,7 @@ function Editor(props: EditorProps): JSX.Element {
             theme={props.themeType === 'dark' ? 'clouds_midnight' : 'chrome'}
             value={props.value}
             readOnly={!props.onChange}
-            onChange={newValue => props.onChange(newValue)}
+            onChange={newValue => props.onChange?.(newValue)}
             name={props.name || 'UNIQUE_ID_OF_DIV1'}
             fontSize={props.fontSize || 14}
             setOptions={{
