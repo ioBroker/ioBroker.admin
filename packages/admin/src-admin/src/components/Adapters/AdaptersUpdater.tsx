@@ -115,6 +115,7 @@ interface AdaptersUpdaterProps {
     noTranslation: boolean;
     toggleTranslation: () => void;
     theme: IobTheme;
+    rightDependenciesFunc: (adapterName: string) => boolean;
 }
 
 interface AdaptersUpdaterState {
@@ -174,6 +175,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
      * Get a list of available adapter updates
      * Admin and controller are filtered out,
      * and all adapters that have messages for this update are filtered out too
+     * Also filters out adapters whose dependencies are not met
      */
     detectUpdates(): string[] {
         const updateAvailable: string[] = [];
@@ -201,7 +203,14 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                         this.props.repository[adapter].version,
                     )
                 ) {
-                    updateAvailable.push(adapter);
+                    // Check if dependencies are met before adding to update list
+                    if (this.props.rightDependenciesFunc(adapter)) {
+                        updateAvailable.push(adapter);
+                    } else {
+                        console.log(
+                            `Adapter ${adapter} is filtered out from update all functionality, because its dependencies are not met`,
+                        );
+                    }
                 } else {
                     console.log(
                         `Adapter ${adapter} is filtered out from update all functionality, because it has messages which need to be read before update`,
