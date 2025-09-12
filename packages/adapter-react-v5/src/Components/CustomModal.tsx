@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Button } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Button, useMediaQuery, useTheme } from '@mui/material';
 
 import { Check as CheckIcon, Close as CloseIcon, Language as LanguageIcon } from '@mui/icons-material';
 
@@ -85,6 +85,9 @@ export function CustomModal(props: CustomModalProps): React.JSX.Element {
         setValue(defaultValue || '');
     }, [defaultValue]);
 
+    const muiTheme = useTheme();
+    const isSmallScreen = useMediaQuery(muiTheme.breakpoints.down('md'));
+
     let Icon = null;
 
     if (icon) {
@@ -94,11 +97,12 @@ export function CustomModal(props: CustomModalProps): React.JSX.Element {
     return (
         <Dialog
             open={open}
-            maxWidth={maxWidth || 'md'}
+            maxWidth={isSmallScreen ? false : maxWidth || 'md'}
             fullWidth={!!fullWidth}
+            fullScreen={isSmallScreen}
             disableEscapeKeyDown={false}
             onClose={onClose}
-            sx={{ '& .MuiDialog-paper': styles.modalDialog }}
+            sx={{ '& .MuiDialog-paper': isSmallScreen ? {} : styles.modalDialog }}
         >
             {title && (
                 <DialogTitle>
