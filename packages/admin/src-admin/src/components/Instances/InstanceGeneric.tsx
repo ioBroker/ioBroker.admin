@@ -1,18 +1,5 @@
 import React, { Component, type JSX } from 'react';
-import cronstrue from 'cronstrue';
 import { CronExpressionParser } from 'cron-parser';
-
-import 'cronstrue/locales/en';
-import 'cronstrue/locales/de';
-import 'cronstrue/locales/es';
-import 'cronstrue/locales/fr';
-import 'cronstrue/locales/it';
-import 'cronstrue/locales/nl';
-import 'cronstrue/locales/pl';
-import 'cronstrue/locales/pt_BR';
-import 'cronstrue/locales/ru';
-import 'cronstrue/locales/uk';
-import 'cronstrue/locales/zh_CN';
 
 import {
     Button,
@@ -61,6 +48,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
+    convertCronToText,
 } from '@iobroker/adapter-react-v5';
 import { amber, blue, green, grey, orange, red } from '@mui/material/colors';
 
@@ -1090,7 +1078,7 @@ export default abstract class InstanceGeneric<
         let cronText;
         if (instance.mode === 'schedule' && instance.schedule) {
             try {
-                cronText = cronstrue.toString(instance.schedule, { locale: this.props.context.lang });
+                cronText = convertCronToText(instance.schedule, this.props.context.lang);
             } catch {
                 cronText = instance.schedule;
             }
