@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Fixed misleading cron display for expressions like */59 * * * * - now shows "at minute 00, 59 of every hour" instead of confusing "every 59 minutes"
 - (@copilot) Added loading indicator to JSONConfig autocompleteSendTo component during sendTo operations
 - (@copilot) Mark adapters removed from repository with "not maintained" text instead of empty version field
 - (@copilot) Enhanced responsive design: modals and popups now use full screen on xs and sm breakpoints
