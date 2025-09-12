@@ -159,9 +159,43 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             url: ((window as any)._localstorage || window.localStorage).getItem('App.userUrl') || '',
             currentTab: ((window as any)._localstorage || window.localStorage).getItem('App.gitTab') || 'npm',
             customHistory,
-            createInstance:
-                ((window as any)._localstorage || window.localStorage).getItem('App.createInstance') === 'true',
+            createInstance: GitHubInstallDialog.shouldDefaultCreateInstance(),
         };
+    }
+
+    /** Check if instance creation should be enabled by default (no instances exist) */
+    static shouldDefaultCreateInstance(): boolean {
+        // If user has explicitly set a preference, use that
+        const storedPref = ((window as any)._localstorage || window.localStorage).getItem('App.createInstance');
+        if (storedPref !== null) {
+            return storedPref === 'true';
+        }
+
+        // Default to true if no preference is stored - this will be updated when adapter is selected
+        return true;
+    }
+
+    /** Check if any instances exist for the given adapter */
+    hasExistingInstances(adapterName: string): boolean {
+        if (!adapterName) {
+            return false;
+        }
+
+        // Extract adapter name (remove iobroker. prefix and version if present)
+        const cleanAdapterName = adapterName.replace(/^iobroker\./, '').split('@')[0];
+        const installedInfo = this.props.installed[cleanAdapterName];
+
+        return !!(installedInfo && installedInfo.count > 0);
+    }
+
+    /** Update createInstance state based on selected adapter */
+    updateCreateInstanceForAdapter(adapterName: string): void {
+        // If user hasn't set an explicit preference, auto-set based on existing instances
+        const storedPref = ((window as any)._localstorage || window.localStorage).getItem('App.createInstance');
+        if (storedPref === null) {
+            const shouldCreate = !this.hasExistingInstances(adapterName);
+            this.setState({ createInstance: shouldCreate });
+        }
     }
 
     renderNpm(): JSX.Element | null {
@@ -201,7 +235,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 }}
                             />
                         }
-                        label={this.props.t('Create instance after installation')}
+                        label={this.props.t('Create instance if not already exist')}
                     />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
@@ -215,6 +249,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 newValue,
                             );
                             this.setState({ autoCompleteValue: newValue });
+                            // Update createInstance checkbox based on selected adapter
+                            if (newValue?.value) {
+                                this.updateCreateInstanceForAdapter(newValue.value.split('/')[0]);
+                            }
                         }}
                         options={this.getList()}
                         getOptionLabel={option => option?.name ?? ''}
@@ -305,7 +343,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 }}
                             />
                         }
-                        label={this.props.t('Create instance after installation')}
+                        label={this.props.t('Create instance if not already exist')}
                     />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
@@ -340,6 +378,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 newValue,
                             );
                             this.setState({ autoCompleteValue: newValue });
+                            // Update createInstance checkbox based on selected adapter
+                            if (newValue?.value) {
+                                this.updateCreateInstanceForAdapter(newValue.value.split('/')[0]);
+                            }
                         }}
                         options={this.getList()}
                         getOptionLabel={option => option?.name ?? ''}
@@ -417,7 +459,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 }}
                             />
                         }
-                        label={this.props.t('Create instance after installation')}
+                        label={this.props.t('Create instance if not already exist')}
                     />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
