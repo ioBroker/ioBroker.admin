@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Added the docker checker in JSON config
+- (@copilot) Mark adapters removed from repository with "not maintained" text instead of empty version field
 - (@copilot) Enhanced responsive design: modals and popups now use full screen on xs and sm breakpoints
 - (@copilot) Added logout dropdown menu to user icon for improved user experience
 - (@copilot) Updated OAuth2 documentation in DEVELOPER.md to include both cloud-based and direct callback approaches with clear guidance on when to use each method
