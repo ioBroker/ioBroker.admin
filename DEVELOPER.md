@@ -51,9 +51,29 @@ iobroker upload admin
 
 ## How to Implement OAuth Authentication flow
 
-Since Admin 6.2.14, there is a convenience support for OAuth authentication flows that send the user to the authorization server and then redirect the user back to complete the process.
+ioBroker Admin provides two different approaches for implementing OAuth2 authentication:
 
-### Short explanation: OAuth2.0 Authentication flow
+### 1. Cloud-based OAuth2 (Recommended for new implementations)
+For commonly used services like Spotify, Google Drive, etc., ioBroker provides a cloud-based OAuth2 service that simplifies the authentication process. This approach requires coordination with the ioBroker core team to configure the service.
+
+**Use this approach when:**
+- Integrating with popular services that may already be supported
+- You prefer a managed OAuth2 solution
+- You want simplified token management and automatic refresh
+
+📖 **[Detailed documentation for cloud-based OAuth2](packages/jsonConfig/OAUTH2.md)**
+
+### 2. Direct OAuth2 callback implementation (Legacy approach)
+Since Admin 6.2.14, there is also direct support for OAuth authentication flows that send the user to the authorization server and then redirect the user back to complete the process using admin's callback endpoints.
+
+**Use this approach when:**
+- Integrating with custom or less common services
+- You need full control over the OAuth2 flow
+- The service is not available in the cloud-based solution
+
+The following section describes this direct callback implementation:
+
+### Short explanation: Direct OAuth2.0 callback implementation
 
 There is a possibility to use OAuth2.0 authentication for other services. Admin has an endpoint `oauth2_callbacks`.
 
@@ -61,7 +81,7 @@ The calls like `http(s)://ip:port/oauth2_callbacks/adapterName.X/?state=ABC&code
 
 As mandatory response the admin expects the object like: `{"result": "Show this text to user by success", "error": "ERROR: Result will be ignored"}`. The result or error will be shown to the user. Please send already translated messages.
 
-### Long explanation: Sending user to the Authorization server
+### Long explanation: Sending user to the Authorization server (Direct callback approach)
 
 In JSON-Config, you can use the sendTo component to send a message to your adapter which then as response return a URL. The component can then open this URL automatically in a new tab/window.
 
