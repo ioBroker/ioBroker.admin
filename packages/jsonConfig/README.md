@@ -756,6 +756,7 @@ Button to open a JSON(5) editor. JSON5 is supported from admin version 5.7.3
 | `allowEmpty`           | if true, the JSON will be validated only if the value is not empty    |
 | `json5`                | if JSON5 format allowed (From 7.5.3)                                  |
 | `doNotApplyWithError`  | Do not allow to save the value if error in JSON or JSON5 (From 7.5.3) |
+| `readOnly`             | Open the editor in read-only mode - editor can be opened but content cannot be modified |
 
 ### `language`
 
