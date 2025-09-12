@@ -468,7 +468,7 @@ export default class DockerManager {
             }
 
             const result = await this.#exec(`restart -t ${timeoutSeconds || 5} ${containerInfo.id}`);
-            containers = await this.containerList();
+            // containers = await this.containerList(); // Removed: assignment to containers is unused
             return result;
         } catch (e) {
             return { stdout: '', stderr: e.message.toString() };
