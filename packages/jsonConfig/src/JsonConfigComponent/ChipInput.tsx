@@ -284,7 +284,7 @@ interface ChipInputState {
     variant: 'outlined' | 'standard' | 'filled';
 }
 
-class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
+export default class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
     private readonly labelRef: React.RefObject<HTMLLabelElement>;
 
     private labelNode: HTMLLabelElement | null = null;
@@ -393,7 +393,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
             this.setState({ focusedChip: null });
         }
         const value = event.target.value;
-        let addChipOptions: { clearInputOnFail: boolean };
+        let addChipOptions: { clearInputOnFail: boolean } | undefined;
         switch (this.props.blurBehavior || 'clear') {
             case 'add-or-clear':
                 addChipOptions = { clearInputOnFail: true };
@@ -428,9 +428,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
 
     handleInputFocus = (event: React.FocusEvent<HTMLInputElement>): void => {
         this.setState({ isFocused: true });
-        if (this.props.onFocus) {
-            this.props.onFocus(event);
-        }
+        this.props.onFocus?.(event);
     };
 
     handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -569,7 +567,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
                 let focusedChip = this.state.focusedChip;
                 if (this.state.focusedChip === i) {
                     focusedChip = null;
-                } else if (this.state.focusedChip > i) {
+                } else if (this.state.focusedChip !== null && this.state.focusedChip > i) {
                     focusedChip = this.state.focusedChip - 1;
                 }
                 this.updateChips(chips, { focusedChip });
@@ -661,7 +659,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
                 {
                     value: chip,
                     isDisabled: !!disabled,
-                    isReadOnly: readOnly,
+                    isReadOnly: !!readOnly,
                     isFocused: this.state.focusedChip === i,
                     handleClick: () => this.setState({ focusedChip: i }),
                     handleDelete: () => this.handleDeleteChip(chip, i),
@@ -753,7 +751,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
                             (!hasInput && (shrinkFloatingLabel || label === null || label === undefined)) ||
                             alwaysShowPlaceholder
                                 ? placeholder
-                                : null
+                                : undefined
                         }
                         readOnly={readOnly}
                         {...InputProps}
@@ -773,5 +771,3 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
         );
     }
 }
-
-export default ChipInput;

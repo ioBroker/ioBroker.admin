@@ -491,6 +491,7 @@ interface AppState {
         lastNewsId: string | undefined;
     } | null;
     askForTokenRefresh: { expireAt: number; resolve: (prolong: boolean) => void; doNotAsk: boolean } | null;
+    userMenuAnchor: HTMLElement | null;
 }
 
 class App extends Router<AppProps, AppState> {
@@ -690,6 +691,7 @@ class App extends Router<AppProps, AppState> {
                 showHostWarning: null,
                 adapters: {},
                 askForTokenRefresh: null,
+                userMenuAnchor: null,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -2456,8 +2458,15 @@ class App extends Router<AppProps, AppState> {
                         sx={{
                             ...styles.userBadge,
                             ...(this.state.user.invertBackground ? styles.userBackground : undefined),
+                            ...(this.socket.isSecure ? { cursor: 'pointer' } : {}),
                         }}
                         ref={this.refUser}
+                        {...(this.socket.isSecure
+                            ? {
+                                  onClick: (event: React.MouseEvent<HTMLDivElement>) =>
+                                      this.setState({ userMenuAnchor: event.currentTarget }),
+                              }
+                            : {})}
                     >
                         {this.state.user.icon ? (
                             <Icon
@@ -2477,6 +2486,34 @@ class App extends Router<AppProps, AppState> {
                             {this.state.user.name}
                         </div>
                     </Box>
+
+                    {this.socket.isSecure && (
+                        <Menu
+                            anchorEl={this.state.userMenuAnchor}
+                            open={Boolean(this.state.userMenuAnchor)}
+                            onClose={() => this.setState({ userMenuAnchor: null })}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                        >
+                            <MenuItem
+                                onClick={() => {
+                                    this.setState({ userMenuAnchor: null });
+                                    App.logout();
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <Logout fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>{I18n.t('ra_Logout')}</ListItemText>
+                            </MenuItem>
+                        </Menu>
+                    )}
                 </div>
             );
         }
