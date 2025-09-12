@@ -46,10 +46,8 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                 data = null;
             }
 
-            // Set loading state if showProcess is enabled
-            if (this.props.schema.showProcess) {
-                this.setState({ loading: true });
-            }
+            // Set loading state during sendTo request
+            this.setState({ loading: true });
 
             void this.props.oContext.socket
                 .sendTo(
@@ -79,12 +77,10 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                         this.setState({ value, selectOptions, loading: false });
                     }
                 })
-                .catch((error) => {
+                .catch(error => {
                     console.error('Error in autocompleteSendTo:', error);
                     // Clear loading state on error
-                    if (this.props.schema.showProcess) {
-                        this.setState({ loading: false });
-                    }
+                    this.setState({ loading: false });
                 });
         } else if (Array.isArray(value)) {
             // if __different
@@ -155,13 +151,17 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                     inputProps={{
                         maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
                     }}
-                    InputProps={this.props.schema.showProcess && this.state.loading ? {
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <CircularProgress size={20} />
-                            </InputAdornment>
-                        )
-                    } : undefined}
+                    InputProps={
+                        this.state.loading
+                            ? {
+                                  endAdornment: (
+                                      <InputAdornment position="end">
+                                          <CircularProgress size={20} />
+                                      </InputAdornment>
+                                  ),
+                              }
+                            : undefined
+                    }
                     onChange={e => {
                         const value = e.target.value;
                         this.setState({ value }, () => this.onChange(this.props.attr, (value || '').trim()));
@@ -239,14 +239,14 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                             ...params.InputProps,
                             endAdornment: (
                                 <>
-                                    {this.props.schema.showProcess && this.state.loading ? (
+                                    {this.state.loading ? (
                                         <InputAdornment position="end">
                                             <CircularProgress size={20} />
                                         </InputAdornment>
                                     ) : null}
                                     {params.InputProps.endAdornment}
                                 </>
-                            )
+                            ),
                         }}
                     />
                 )}

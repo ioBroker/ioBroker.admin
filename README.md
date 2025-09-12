@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-- (@copilot) Added showProcess property to JSONConfig autocompleteSendTo component to show loading indicator during sendTo operations
+- (@copilot) Added loading indicator to JSONConfig autocompleteSendTo component during sendTo operations
 - (@GermanBluefox) Reading of same instances was optimized in GUI
 - (@GermanBluefox) Do not show the http page if admin is secured
 - (@GermanBluefox) Show loading progress for custom tabs

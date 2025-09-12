@@ -590,7 +590,6 @@ export interface ConfigItemAutocompleteSendTo extends Omit<ConfigItem, 'data'> {
     /** @deprecated use maxLength */
     max?: string;
     alsoDependsOn?: string[];
-    showProcess?: boolean;
 }
 
 export interface ConfigItemAccordion extends ConfigItem {

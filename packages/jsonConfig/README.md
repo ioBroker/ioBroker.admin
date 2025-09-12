@@ -998,7 +998,6 @@ Shows autocomplete control with the given from the instance values.
 | `freeSolo`      | Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.                                                                                       |
 | `alsoDependsOn` | by change of which attributes, the command must be resent                                                                                                       |
 | `maxLength`     | max length of the text in field                                                                                                                                 |
-| `showProcess`   | Show spinner while request is in progress                                                                                                                       |
 
 To use this option, your adapter must implement message handler:
 
