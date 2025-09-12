@@ -908,6 +908,8 @@ export interface ConfigItemJsonEditor extends ConfigItem {
     json5?: boolean;
     /** Do not allow to save the value if error in JSON or JSON5 */
     doNotApplyWithError?: boolean;
+    /** Open the editor in read-only mode - editor can be opened but content cannot be modified */
+    readOnly?: boolean;
 }
 
 export interface ConfigItemInterface extends ConfigItem {
