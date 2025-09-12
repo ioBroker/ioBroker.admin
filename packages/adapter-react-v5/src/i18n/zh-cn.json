@@ -72,7 +72,6 @@
     "ra_Do not use let's encrypt": "不要使用让我们加密",
     "ra_Docker is not available": "Docker 不可用",
     "ra_Docker is not installed or not running": "Docker 未安装或未运行",
-    "ra_Docker version %s": "Docker 版本 %s",
     "ra_Double click to reset table layout": "双击重置表格布局",
     "ra_Drag 'n' drop some files here, or click to select files": "将一些文件拖放到此处，或单击以选择文件",
     "ra_Drop file here": "将档案放在这里",

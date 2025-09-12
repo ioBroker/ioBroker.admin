@@ -72,7 +72,6 @@
     "ra_Do not use let's encrypt": "Не использовать Let’s Encrypt",
     "ra_Docker is not available": "Докер недоступен",
     "ra_Docker is not installed or not running": "Docker не установлен или не запущен",
-    "ra_Docker version %s": "Версия Docker %s",
     "ra_Double click to reset table layout": "Дважды щелкните, чтобы сбросить макет таблицы",
     "ra_Drag 'n' drop some files here, or click to select files": "Перетащите сюда несколько файлов или щелкните, чтобы выбрать файлы",
     "ra_Drop file here": "Перетащите файл сюда",

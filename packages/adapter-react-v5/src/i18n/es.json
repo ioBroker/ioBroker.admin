@@ -72,7 +72,6 @@
     "ra_Do not use let's encrypt": "No use vamos a cifrar",
     "ra_Docker is not available": "Docker no está disponible",
     "ra_Docker is not installed or not running": "Docker no está instalado o no se está ejecutando",
-    "ra_Docker version %s": "Versión de Docker %s",
     "ra_Double click to reset table layout": "Haga doble clic para restablecer el diseño de la tabla",
     "ra_Drag 'n' drop some files here, or click to select files": "Arrastre y suelte algunos archivos aquí, o haga clic para seleccionar archivos",
     "ra_Drop file here": "Suelta el archivo aquí",

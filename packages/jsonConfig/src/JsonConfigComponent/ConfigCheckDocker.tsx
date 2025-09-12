@@ -81,11 +81,7 @@ class ConfigCheckDocker extends ConfigGeneric<ConfigCheckDockerProps, ConfigChec
                     }
                     label={this.getText(this.props.schema.label)}
                 />
-                <FormHelperText>
-                    {this.state.errorDocker
-                        ? this.state.errorDocker
-                        : I18n.t('ra_Docker version %s', this.state.version || 'unknown')}
-                </FormHelperText>
+                <FormHelperText>{this.state.errorDocker ? this.state.errorDocker : this.state.version}</FormHelperText>
                 {this.props.schema.help ? (
                     <FormHelperText>
                         {this.renderHelp(

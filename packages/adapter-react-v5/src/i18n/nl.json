@@ -72,7 +72,6 @@
     "ra_Do not use let's encrypt": "Gebruik geen let's encrypt",
     "ra_Docker is not available": "Docker is niet beschikbaar",
     "ra_Docker is not installed or not running": "Docker is niet geïnstalleerd of draait niet",
-    "ra_Docker version %s": "Docker-versie %s",
     "ra_Double click to reset table layout": "Dubbelklik om de tafelindeling te resetten",
     "ra_Drag 'n' drop some files here, or click to select files": "Sleep enkele bestanden hierheen, of klik om bestanden te selecteren",
     "ra_Drop file here": "Zet het bestand hier neer",

@@ -72,7 +72,6 @@
     "ra_Do not use let's encrypt": "Do not use let's encrypt",
     "ra_Docker is not available": "Docker is not available",
     "ra_Docker is not installed or not running": "Docker is not installed or not running",
-    "ra_Docker version %s": "Docker version %s",
     "ra_Double click to reset table layout": "Double click to reset table layout",
     "ra_Drag 'n' drop some files here, or click to select files": "Drag 'n' drop some files here, or click to select files",
     "ra_Drop file here": "Drop file here",
