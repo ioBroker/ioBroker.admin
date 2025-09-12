@@ -90,6 +90,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@copilot) Added loading indicator to JSONConfig autocompleteSendTo component during sendTo operations
+- (@copilot) Mark adapters removed from repository with "not maintained" text instead of empty version field
+- (@copilot) Enhanced responsive design: modals and popups now use full screen on xs and sm breakpoints
+- (@copilot) Added logout dropdown menu to user icon for improved user experience
+- (@copilot) Updated OAuth2 documentation in DEVELOPER.md to include both cloud-based and direct callback approaches with clear guidance on when to use each method
+- (@copilot) Only show adapters with satisfied dependencies in update all dialog
+- (@copilot) Added new `readOnly` attribute for jsonEditor in jsonConfig - allows opening the editor to view JSON content without allowing modifications
 - (@GermanBluefox) Reading of same instances was optimized in GUI
 - (@GermanBluefox) Do not show the http page if admin is secured
 - (@GermanBluefox) Show loading progress for custom tabs
