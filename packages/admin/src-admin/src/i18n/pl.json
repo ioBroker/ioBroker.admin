@@ -1515,6 +1515,7 @@
     "notifications wizard category": "Adaptery z tej kategorii umożliwiają otrzymywanie powiadomień o zdarzeniach w Twoim systemie i wysyłanie spersonalizowanych wiadomości.",
     "npm error": "błąd npm",
     "npm_warning": "Korzystając z tego okna dialogowego, możesz zainstalować wersje beta/najnowsze adapterów bezpośrednio z %s. Wersje te potencjalnie nie zostały jeszcze w pełni przetestowane, więc instaluj je tylko wtedy, gdy potrzebujesz poprawek lub nowych funkcji z tych wersji. Gdy programista uzna wersję za stabilną, będzie to aktualizacja w repozytorium Stabilny.",
+    "not maintained": "nie utrzymywane",
     "number": "numer",
     "object": "obiekt",
     "object permissions": "Uprawnienia obiektu",

@@ -1515,6 +1515,7 @@
     "notifications wizard category": "Adapters in this category allow you to be notified of events in your system and send you personalized messages.",
     "npm error": "npm error",
     "npm_warning": "Using this dialog you can install the Beta/Latest adapter versions directly from %s. These versions are potentially not yet fully tested, so install them only if you need fixes or new features from these versions. When the developer consider the version stable it will be updates in the Stable repository.",
+    "not maintained": "not maintained",
     "number": "number",
     "object": "object",
     "object permissions": "Object permissions",

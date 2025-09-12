@@ -1515,6 +1515,7 @@
     "notifications wizard category": "Met adapters in deze categorie kunt u op de hoogte worden gehouden van gebeurtenissen in uw systeem en kunt u gepersonaliseerde berichten sturen.",
     "npm error": "npm fout",
     "npm_warning": "Met behulp van dit dialoogvenster kunt u de bèta/nieuwste adapterversies rechtstreeks vanuit %s installeren. Deze versies zijn mogelijk nog niet volledig getest, dus installeer ze alleen als u fixes of nieuwe functies van deze versies nodig heeft. Wanneer de ontwikkelaar de versie als stabiel beschouwt, zullen het updates zijn in de Stabiele repository.",
+    "not maintained": "niet onderhouden",
     "number": "getal",
     "object": "Objekt",
     "object permissions": "objektrechten",

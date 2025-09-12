@@ -1515,6 +1515,7 @@
     "notifications wizard category": "Mit Adaptern dieser Kategorie kannst du dich über Ereignisse in deinem System benachrichtigen lassen und dir personalisierte Nachrichten senden.",
     "npm error": "NPM Fehler",
     "npm_warning": "Mit diesem Dialog können Beta-/Latest Adapterversionen direkt von %s installiert werden. Diese Versionen sind möglicherweise noch nicht vollständig getestet. Sie sollten daher nur installiert werden, wenn Korrekturen oder neue Funktionen aus diesen Versionen benötigt werden. Wenn der Entwickler die Version als stabil betrachtet, steht diese im Stable-Repository zur Verfügung.",
+    "not maintained": "nicht gewartet",
     "number": "Zahl",
     "object": "Objekt",
     "object permissions": "Objekt-Rechte",

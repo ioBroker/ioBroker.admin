@@ -1515,6 +1515,7 @@
     "notifications wizard category": "Les adaptateurs de cette catégorie vous permettent d'être averti des événements survenus dans votre système et de vous envoyer des messages personnalisés.",
     "npm error": "erreur npm",
     "npm_warning": "À l'aide de cette boîte de dialogue, vous pouvez installer les versions bêta/dernières de l'adaptateur directement à partir de %s. Ces versions ne sont potentiellement pas encore entièrement testées, donc installez-les uniquement si vous avez besoin de correctifs ou de nouvelles fonctionnalités de ces versions. Lorsque le développeur considère que la version est stable, elle sera mise à jour dans le référentiel Stable.",
+    "not maintained": "non maintenu",
     "number": "nombre",
     "object": "objet",
     "object permissions": "autorisations d'objet",
