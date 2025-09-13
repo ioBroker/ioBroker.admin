@@ -2072,6 +2072,22 @@ function formatValue(options: FormatValueOptions): {
             // "null" and undefined could not be here. See `let v = (isCommon && isCommon.type === 'file') ....` above
             v = v ? new Date(v).toString() : v;
         }
+    } else if (isCommon?.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.duration/)) {
+        // Format duration values in HH:mm:ss format
+        if (typeof v === 'number' && v >= 0) {
+            const hours = Math.floor(v / 3600);
+            const minutes = Math.floor((v % 3600) / 60);
+            const seconds = Math.floor(v % 60);
+            v = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        } else if (typeof v === 'string' && Utils.isStringInteger(v)) {
+            const numValue = parseInt(v, 10);
+            if (numValue >= 0) {
+                const hours = Math.floor(numValue / 3600);
+                const minutes = Math.floor((numValue % 3600) / 60);
+                const seconds = Math.floor(numValue % 60);
+                v = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
     } else {
         if (type === 'number') {
             if (!Number.isInteger(v)) {
