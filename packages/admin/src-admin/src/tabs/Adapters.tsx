@@ -1021,7 +1021,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                                         : true
                                     : false;
                             } catch {
-                                result = true;
+                                result = false;
                             }
                         }
                     });
@@ -1043,7 +1043,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                                         : true
                                     : false;
                             } catch {
-                                result = true;
+                                result = false;
                             }
                         }
                     });
@@ -1070,7 +1070,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                                   })
                                 : true;
                         } catch {
-                            result = true;
+                            result = false;
                         }
                     }
                 });
@@ -1080,7 +1080,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 try {
                     result = semver.satisfies(this.state.nodeJsVersion, nodeVersion);
                 } catch {
-                    result = true;
+                    result = false;
                 }
             }
         }
