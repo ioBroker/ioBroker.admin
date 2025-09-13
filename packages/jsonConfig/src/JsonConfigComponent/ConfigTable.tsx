@@ -419,7 +419,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         let firstErrorColumn: string | null = null;
         let firstErrorValue: string | number | null = null;
 
-        // First pass: validate all columns and collect errors
+        // Validate all columns and collect errors
         for (const uniqueCol of this.props.schema.uniqueColumns) {
             const allVals: (string | number)[] = [];
             const found = this.state.value.find(entry => {
