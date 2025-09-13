@@ -21,6 +21,7 @@ import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
+import DockerManager from './lib/DockerManager';
 
 const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
@@ -276,15 +277,27 @@ class Admin extends Adapter {
         } else if (obj.command === 'url') {
             this.log.info(`url: ${JSON.stringify(obj.message)}`);
             // just for test
-            return (
-                obj.callback &&
-                this.sendTo(obj.from, obj.command, { openUrl: obj.message._origin, saveConfig: true }, obj.callback)
-            );
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { openUrl: obj.message._origin, saveConfig: true }, obj.callback);
+            }
+            return;
         } else if (obj.command.startsWith('admin:')) {
             return this.processNotificationsGui(obj);
         } else if (obj.command.startsWith('test:')) {
             // just for test
             this.log.info(`test: ${JSON.stringify(obj.message)}`);
+            return;
+        } else if (obj.command === 'checkDocker') {
+            const dockerManager = new DockerManager(this);
+            void dockerManager
+                .init()
+                .then(() => dockerManager.getDockerDaemonInfo())
+                .then(result => {
+                    if (obj.callback) {
+                        this.sendTo(obj.from, obj.command, result, obj.callback);
+                    }
+                    dockerManager.destroy();
+                });
             return;
         } else if (webServer?.processMessage(obj)) {
             return;
