@@ -162,24 +162,72 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
             const num = parseInt(this.state._value, 10);
 
             if (num) {
-                // filter ports only with the same bind address
-                // todo: IPv6 (v6bind or '::/0')
-                const ports = this.state.ports.filter(
-                    item =>
-                        !this.props.data.bind ||
-                        this.props.data.bind === item.bind ||
-                        this.props.data.bind === '0.0.0.0' ||
-                        item.bind === '0.0.0.0',
-                );
+                // Filter ports that would actually conflict with our configuration
+                // A port conflict occurs when:
+                // 1. Same port AND (no bind address specified OR bind addresses would conflict)
+                // 2. Bind addresses conflict when:
+                //    - Both bind to the same specific IP address, OR
+                //    - One binds to 0.0.0.0/:: (all interfaces) and the other to any address, OR
+                //    - One binds to a specific IP and the other binds to 0.0.0.0/::
+                const currentBind = this.props.data.bind;
+                const ports = this.state.ports.filter(item => {
+                    if (item.port !== num) {
+                        return false; // Different port, no conflict
+                    }
+
+                    // Same port, check if bind addresses would conflict
+                    const itemBind = item.bind;
+                    const itemV6bind = item.v6bind;
+
+                    // If current config has no bind address, use old behavior (check all)
+                    if (!currentBind) {
+                        return true;
+                    }
+
+                    // If other adapter has no bind address, assume it could conflict
+                    if (!itemBind) {
+                        return true;
+                    }
+
+                    // Check for IPv4 conflicts
+                    if (currentBind === '0.0.0.0' || itemBind === '0.0.0.0') {
+                        // One binds to all interfaces, so there's a conflict
+                        return true;
+                    }
+
+                    // Check for IPv6 conflicts
+                    if (currentBind === '::' || itemV6bind === '::') {
+                        // One binds to all IPv6 interfaces, so there's a conflict
+                        return true;
+                    }
+
+                    // Check for exact bind address match
+                    if (currentBind === itemBind || currentBind === itemV6bind) {
+                        return true;
+                    }
+
+                    // Different specific bind addresses, no conflict
+                    return false;
+                });
 
                 let idx = ports.findIndex(item => item.port === num && item.enabled);
                 if (idx !== -1) {
-                    error = I18n.t('ra_Port is already used by %s', this.state.ports[idx].name);
+                    // Find the original port info to get the correct name
+                    const originalPort = this.state.ports.find(
+                        p => p.port === num && p.enabled && ports.some(fp => fp.name === p.name && fp.bind === p.bind),
+                    );
+                    error = I18n.t('ra_Port is already used by %s', originalPort?.name || ports[idx].name);
                 } else {
                     idx = ports.findIndex(item => item.port === num && !item.enabled);
                     if (idx !== -1) {
                         warning = true;
-                        error = I18n.t('ra_Port could be used by %s', this.state.ports[idx].name);
+                        const originalPort = this.state.ports.find(
+                            p =>
+                                p.port === num &&
+                                !p.enabled &&
+                                ports.some(fp => fp.name === p.name && fp.bind === p.bind),
+                        );
+                        error = I18n.t('ra_Port could be used by %s', originalPort?.name || ports[idx].name);
                     }
                 }
             }
