@@ -154,6 +154,14 @@ The frontend communicates with ioBroker instances via WebSockets on port 8081 (o
 
 ## CoPilot Pull Request and Issue Management
 
+### **CRITICAL REQUIREMENTS**
+**NEVER use keywords that automatically close issues.** Issues must be closed manually by maintainers after validation.
+
+**Key Rules:**
+1. Use "Related to #123" instead of "Fixes #123" 
+2. Add "fixed" label when PR fully addresses an issue (if you have permissions)
+3. Issues are closed manually by maintainers, not by PR merge
+
 ### Issue Handling Guidelines
 When creating PRs that address GitHub issues, follow these specific practices:
 
