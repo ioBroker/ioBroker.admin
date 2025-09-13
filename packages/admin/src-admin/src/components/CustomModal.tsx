@@ -10,6 +10,8 @@ import {
     Button,
     InputAdornment,
     type Breakpoint,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 
 import { Check as CheckIcon, Close as CloseIcon, Language as LanguageIcon } from '@mui/icons-material';
@@ -91,6 +93,9 @@ const CustomModal = ({
         setValue(defaultValue);
     }, [defaultValue]);
 
+    const muiTheme = useTheme();
+    const isSmallScreen = useMediaQuery(muiTheme.breakpoints.down('md'));
+
     let Icon: React.FC<{ style?: React.CSSProperties }> | null = null;
 
     if (icon) {
@@ -102,11 +107,12 @@ const CustomModal = ({
     return (
         <Dialog
             open={!0}
-            maxWidth={maxWidth || 'md'}
+            maxWidth={isSmallScreen ? false : maxWidth || 'md'}
             fullWidth={!!fullWidth}
+            fullScreen={isSmallScreen}
             disableEscapeKeyDown={false}
             onClose={onClose}
-            sx={{ '& .MuiPaper-root': styles.modalDialog /* paper: classes.background */ }}
+            sx={{ '& .MuiPaper-root': isSmallScreen ? {} : styles.modalDialog /* paper: classes.background */ }}
         >
             {title && (
                 <DialogTitle>
