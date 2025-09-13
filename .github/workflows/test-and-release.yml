@@ -22,6 +22,41 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
+    # Check if only README.md was changed to potentially skip tests
+    check-changes:
+        runs-on: ubuntu-latest
+        outputs:
+            readme-only: ${{ steps.changes.outputs.readme-only }}
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                  fetch-depth: 0
+
+            - name: Check changed files
+              id: changes
+              run: |
+                  if [ "${{ github.event_name }}" = "pull_request" ]; then
+                      # For PRs, compare against the base branch  
+                      BASE_SHA="${{ github.event.pull_request.base.sha }}"
+                      HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+                      CHANGED_FILES=$(git diff --name-only $BASE_SHA..$HEAD_SHA)
+                  else
+                      # For pushes, compare against the previous commit
+                      CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+                  fi
+
+                  echo "Changed files:"
+                  echo "$CHANGED_FILES"
+
+                  # Check if only README.md was changed
+                  if [ "$CHANGED_FILES" = "README.md" ]; then
+                      echo "Only README.md was changed"
+                      echo "readme-only=true" >> $GITHUB_OUTPUT
+                  else
+                      echo "Other files changed or multiple files including README.md"
+                      echo "readme-only=false" >> $GITHUB_OUTPUT
+                  fi
+
     build:
         runs-on: ubuntu-latest
         steps:
@@ -48,9 +83,11 @@ jobs:
 
     # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
-        if: contains(github.event.head_commit.message, '[skip ci]') == false
+        if: |
+            contains(github.event.head_commit.message, '[skip ci]') == false &&
+            needs.check-changes.outputs.readme-only != 'true'
 
-        needs: [build]
+        needs: [build, check-changes]
 
         runs-on: ${{ matrix.os }}
         strategy:
@@ -75,9 +112,11 @@ jobs:
               run: npm test -w packages/admin/
 
     adapter-tests-gui:
-        if: contains(github.event.head_commit.message, '[skip ci]') == false
+        if: |
+            contains(github.event.head_commit.message, '[skip ci]') == false &&
+            needs.check-changes.outputs.readme-only != 'true'
 
-        needs: [build]
+        needs: [build, check-changes]
 
         runs-on: ubuntu-latest
 
@@ -112,7 +151,7 @@ jobs:
         if: |
             always() &&
             github.event_name == 'pull_request'
-        needs: [adapter-tests-gui]
+        needs: [check-changes, build, adapter-tests-gui]
         runs-on: macos-latest # ubuntu-latest has too few RAM
 
         steps:

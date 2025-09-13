@@ -40,6 +40,7 @@
                 "autocompleteSendTo",
                 "certificate",
                 "certificates",
+                "checkDocker",
                 "checkLicense",
                 "checkbox",
                 "chips",
@@ -1452,6 +1453,10 @@
                 "doNotApplyWithError": {
                     "type": "boolean",
                     "description": "Do not allow to save the value if error in JSON or JSON5"
+                },
+                "readOnly": {
+                    "type": "boolean",
+                    "description": "Open the editor in read-only mode - editor can be opened but content cannot be modified"
                 },
                 "label": true,
                 "type": true,
@@ -4329,6 +4334,42 @@
                         "if": {
                             "properties": {
                                 "type": {
+                                    "const": "checkDocker"
+                                }
+                            }
+                        },
+                        "then": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/tableItemBaseProps"
+                                },
+                                {
+                                    "properties": {
+                                        "attr": true,
+                                        "label": true,
+                                        "type": true,
+                                        "allowSaveWithError": true,
+                                        "xs": true,
+                                        "sm": true,
+                                        "md": true,
+                                        "lg": true,
+                                        "xl": true,
+                                        "newLine": true,
+                                        "hidden": true,
+                                        "hideOnlyControl": true,
+                                        "disabled": true,
+                                        "style": true,
+                                        "darkStyle": true
+                                    },
+                                    "additionalProperties": false
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "type": {
                                     "const": "uuid"
                                 }
                             }
@@ -6814,6 +6855,34 @@
                                             "darkStyle": true,
                                             "noMultiEdit": true,
                                             "noTranslation": true
+                                        },
+                                        "additionalProperties": false
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "properties": {
+                                            "type": {
+                                                "const": "checkDocker"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "label": true,
+                                            "type": true,
+                                            "allowSaveWithError": true,
+                                            "xs": true,
+                                            "sm": true,
+                                            "md": true,
+                                            "lg": true,
+                                            "xl": true,
+                                            "newLine": true,
+                                            "hidden": true,
+                                            "hideOnlyControl": true,
+                                            "disabled": true,
+                                            "style": true,
+                                            "darkStyle": true
                                         },
                                         "additionalProperties": false
                                     }
