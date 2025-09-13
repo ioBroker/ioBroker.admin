@@ -640,7 +640,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         value.forEach(row => {
             const line: string[] = [];
             schema.items.forEach((it: ConfigItemTableIndexed) => {
-                if (row[it.attr]?.includes(';')) {
+                if (row[it.attr] && typeof row[it.attr] === 'string' && row[it.attr].includes(';')) {
                     line.push(`"${row[it.attr]}"`);
                 } else {
                     line.push(row[it.attr] === undefined || row[it.attr] === null ? '' : row[it.attr]);
