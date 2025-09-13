@@ -1558,6 +1558,45 @@ class Admin extends Adapter {
         });
     }
 
+    /**
+     * Add repository read timestamp to the repository data structure
+     */
+    async addRepositoryReadTimestamp(repository: Record<string, any>, activeRepo: string | string[]): Promise<void> {
+        try {
+            const readTime = new Date().toISOString();
+
+            // Add read timestamp to the repository info structure
+            if (repository._repoInfo) {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                (repository._repoInfo as any).repoReadTime = readTime;
+            }
+
+            // Update the system.repositories object to store the read timestamp
+            const repos = await this.getForeignObjectAsync('system.repositories');
+            if (repos?.native?.repositories) {
+                if (Array.isArray(activeRepo)) {
+                    // Handle multiple repositories
+                    for (const repo of activeRepo) {
+                        if (repos.native.repositories[repo]?.json?._repoInfo) {
+                            (repos.native.repositories[repo].json._repoInfo as any).repoReadTime = readTime;
+                        }
+                    }
+                } else {
+                    // Handle single repository
+                    if (repos.native.repositories[activeRepo]?.json?._repoInfo) {
+                        (repos.native.repositories[activeRepo].json._repoInfo as any).repoReadTime = readTime;
+                    }
+                }
+
+                // Save the updated repositories object
+                await this.setForeignObjectAsync('system.repositories', repos);
+                this.log.debug(`Repository read timestamp updated: ${readTime}`);
+            }
+        } catch (err) {
+            this.log.error(`Cannot add repository read timestamp: ${err}`);
+        }
+    }
+
     async checkRevokedVersions(repository: Record<string, ioBroker.RepositoryJsonAdapterContent>): Promise<void> {
         try {
             const adapters = Object.keys(repository);
@@ -1778,7 +1817,7 @@ class Admin extends Adapter {
                                 repo: active,
                                 update: true,
                             },
-                            _repository => {
+                            async _repository => {
                                 if (
                                     (typeof _repository === 'string' || _repository instanceof Error) &&
                                     _repository.toString().includes(ERROR_PERMISSION)
@@ -1786,6 +1825,9 @@ class Admin extends Adapter {
                                     this.log.error('May not read "getRepository"');
                                 } else {
                                     this.log.info('Repository received successfully.');
+
+                                    // Add repository read timestamp to the repository data
+                                    await this.addRepositoryReadTimestamp(_repository as Record<string, any>, active);
 
                                     socket?.repoUpdated();
                                     this.checkRevokedVersions(

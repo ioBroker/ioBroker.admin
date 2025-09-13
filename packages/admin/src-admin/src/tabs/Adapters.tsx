@@ -1620,48 +1620,74 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             return null;
         }
 
-        let repoTimestamp: string | null = null;
+        let repoGeneratedTime: string | null = null;
+        let repoReadTime: string | null = null;
         let repoNames: string[] = [];
 
         // Handle both single and multiple repositories
         if (typeof this.props.systemConfig.common.activeRepo === 'string') {
             const repoInfo = repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo;
-            if (repoInfo?.repoTime) {
-                repoTimestamp = repoInfo.repoTime;
+            if (repoInfo) {
+                repoGeneratedTime = repoInfo.repoTime || null;
+                repoReadTime = (repoInfo as any).repoReadTime || null;
                 const repoName = this.getRepositoryName(repoInfo);
                 if (repoName) {
                     repoNames.push(repoName);
                 }
             }
         } else if (Array.isArray(this.props.systemConfig.common.activeRepo)) {
-            // For multiple repositories, find the oldest timestamp
-            let oldestTimestamp: string | null = null;
+            // For multiple repositories, find the oldest timestamps
+            let oldestGeneratedTime: string | null = null;
+            let oldestReadTime: string | null = null;
             
             this.props.systemConfig.common.activeRepo.forEach(repo => {
                 const repoInfo = repositories[repo]?.json?._repoInfo;
-                if (repoInfo?.repoTime) {
+                if (repoInfo) {
                     const repoName = this.getRepositoryName(repoInfo);
                     if (repoName) {
                         repoNames.push(repoName);
                     }
                     
-                    if (!oldestTimestamp || new Date(repoInfo.repoTime) < new Date(oldestTimestamp)) {
-                        oldestTimestamp = repoInfo.repoTime;
+                    if (repoInfo.repoTime) {
+                        if (!oldestGeneratedTime || new Date(repoInfo.repoTime) < new Date(oldestGeneratedTime)) {
+                            oldestGeneratedTime = repoInfo.repoTime;
+                        }
+                    }
+                    
+                    if ((repoInfo as any).repoReadTime) {
+                        if (!oldestReadTime || new Date((repoInfo as any).repoReadTime) < new Date(oldestReadTime)) {
+                            oldestReadTime = (repoInfo as any).repoReadTime;
+                        }
                     }
                 }
             });
             
-            repoTimestamp = oldestTimestamp;
+            repoGeneratedTime = oldestGeneratedTime;
+            repoReadTime = oldestReadTime;
         }
 
-        if (!repoTimestamp) {
+        // Show read time if available, otherwise show generated time
+        const displayTime = repoReadTime || repoGeneratedTime;
+        if (!displayTime) {
             return null;
         }
 
-        const formattedTime = this.formatRepositoryTimestamp(repoTimestamp);
-        const tooltipTitle = repoNames.length > 1 
-            ? this.t('Repository data last updated: %s (oldest from %s)', formattedTime, repoNames.join(', '))
-            : this.t('Repository data last updated: %s', formattedTime);
+        const formattedTime = this.formatRepositoryTimestamp(displayTime);
+        
+        // Create detailed tooltip with both timestamps
+        let tooltipTitle = '';
+        if (repoNames.length > 1) {
+            tooltipTitle = this.t('Repository timestamps (oldest from %s):', repoNames.join(', '));
+        } else {
+            tooltipTitle = this.t('Repository timestamps:');
+        }
+        
+        if (repoGeneratedTime) {
+            tooltipTitle += `\n${this.t('Generated: %s', this.formatRepositoryTimestamp(repoGeneratedTime))}`;
+        }
+        if (repoReadTime) {
+            tooltipTitle += `\n${this.t('Last read: %s', this.formatRepositoryTimestamp(repoReadTime))}`;
+        }
 
         return (
             <Tooltip
