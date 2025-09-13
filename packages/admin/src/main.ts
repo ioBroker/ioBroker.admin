@@ -1567,8 +1567,7 @@ class Admin extends Adapter {
 
             // Add read timestamp to the repository info structure
             if (repository._repoInfo) {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-                (repository._repoInfo as any).repoReadTime = readTime;
+                repository._repoInfo.repoReadTime = readTime;
             }
 
             // Update the system.repositories object to store the read timestamp
@@ -1578,13 +1577,15 @@ class Admin extends Adapter {
                     // Handle multiple repositories
                     for (const repo of activeRepo) {
                         if (repos.native.repositories[repo]?.json?._repoInfo) {
-                            (repos.native.repositories[repo].json._repoInfo as any).repoReadTime = readTime;
+                            // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                            repos.native.repositories[repo].json._repoInfo.repoReadTime = readTime;
                         }
                     }
                 } else {
                     // Handle single repository
                     if (repos.native.repositories[activeRepo]?.json?._repoInfo) {
-                        (repos.native.repositories[activeRepo].json._repoInfo as any).repoReadTime = readTime;
+                        // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                        repos.native.repositories[activeRepo].json._repoInfo.repoReadTime = readTime;
                     }
                 }
 
@@ -1827,7 +1828,7 @@ class Admin extends Adapter {
                                     this.log.info('Repository received successfully.');
 
                                     // Add repository read timestamp to the repository data
-                                    await this.addRepositoryReadTimestamp(_repository as Record<string, any>, active);
+                                    await this.addRepositoryReadTimestamp(_repository, active);
 
                                     socket?.repoUpdated();
                                     this.checkRevokedVersions(

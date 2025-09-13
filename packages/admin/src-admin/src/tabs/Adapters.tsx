@@ -1622,14 +1622,15 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
 
         let repoGeneratedTime: string | null = null;
         let repoReadTime: string | null = null;
-        let repoNames: string[] = [];
+        const repoNames: string[] = [];
 
         // Handle both single and multiple repositories
         if (typeof this.props.systemConfig.common.activeRepo === 'string') {
             const repoInfo = repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo;
             if (repoInfo) {
                 repoGeneratedTime = repoInfo.repoTime || null;
-                repoReadTime = (repoInfo as any).repoReadTime || null;
+                // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                repoReadTime = repoInfo.repoReadTime || null;
                 const repoName = this.getRepositoryName(repoInfo);
                 if (repoName) {
                     repoNames.push(repoName);
@@ -1639,7 +1640,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             // For multiple repositories, find the oldest timestamps
             let oldestGeneratedTime: string | null = null;
             let oldestReadTime: string | null = null;
-            
+
             this.props.systemConfig.common.activeRepo.forEach(repo => {
                 const repoInfo = repositories[repo]?.json?._repoInfo;
                 if (repoInfo) {
@@ -1647,21 +1648,24 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     if (repoName) {
                         repoNames.push(repoName);
                     }
-                    
+
                     if (repoInfo.repoTime) {
                         if (!oldestGeneratedTime || new Date(repoInfo.repoTime) < new Date(oldestGeneratedTime)) {
                             oldestGeneratedTime = repoInfo.repoTime;
                         }
                     }
-                    
-                    if ((repoInfo as any).repoReadTime) {
-                        if (!oldestReadTime || new Date((repoInfo as any).repoReadTime) < new Date(oldestReadTime)) {
-                            oldestReadTime = (repoInfo as any).repoReadTime;
+
+                    // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                    if (repoInfo.repoReadTime) {
+                        // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                        if (!oldestReadTime || new Date(repoInfo.repoReadTime) < new Date(oldestReadTime)) {
+                            // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                            oldestReadTime = repoInfo.repoReadTime;
                         }
                     }
                 }
             });
-            
+
             repoGeneratedTime = oldestGeneratedTime;
             repoReadTime = oldestReadTime;
         }
@@ -1673,7 +1677,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         }
 
         const formattedTime = this.formatRepositoryTimestamp(displayTime);
-        
+
         // Create detailed tooltip with both timestamps
         let tooltipTitle = '';
         if (repoNames.length > 1) {
@@ -1681,7 +1685,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         } else {
             tooltipTitle = this.t('Repository timestamps:');
         }
-        
+
         if (repoGeneratedTime) {
             tooltipTitle += `\n${this.t('Generated: %s', this.formatRepositoryTimestamp(repoGeneratedTime))}`;
         }
@@ -1737,9 +1741,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 return this.t('%s hours ago', diffHours.toString());
             } else if (diffDays < 30) {
                 return this.t('%s days ago', diffDays.toString());
-            } else {
-                return date.toLocaleDateString(this.props.lang || 'en');
             }
+            return date.toLocaleDateString(this.props.lang || 'en');
         } catch (error) {
             return timestamp;
         }
