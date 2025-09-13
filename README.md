@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@GermanBluefox) Added the docker checker in JSON config
 - (@copilot) Fixed js-controller update notifications to use "The js-controller" instead of "Adapter js-controller"
 - (@copilot) Fixed JSONConfig sendTo jsonData attribute parser problem where backslashes (\) in text inputs caused JSON parsing errors
 - (@copilot) Fixed step type behavior in chart display - "Schritte" now shows value until next point (step after) instead of step before
