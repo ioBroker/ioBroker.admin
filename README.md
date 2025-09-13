@@ -90,6 +90,22 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@copilot) For GitHub-installed adapters, show version + commit hash instead of just version
+- (@copilot) Fixed table export error when table items contain null values
+- (@copilot) Object Browser: Added formatted duration display for values with role "value.duration" - shows time durations in HH:mm:ss format instead of raw seconds
+- (@copilot) Enhanced GitHub Actions to skip tests when only README.md is changed, speeding up CI for Copilot PRs (tested with mixed file changes)
+- (@GermanBluefox) Added the docker checker in JSON config
+- (@copilot) Fixed js-controller update notifications to use "The js-controller" instead of "Adapter js-controller"
+- (@copilot) Fixed JSONConfig sendTo jsonData attribute parser problem where backslashes (\) in text inputs caused JSON parsing errors
+- (@copilot) Fixed step type behavior in chart display - "Schritte" now shows value until next point (step after) instead of step before
+- (@copilot) Added all three step type options (stepStart, stepMiddle, stepEnd) to chart display with clearer descriptions
+- (@copilot) Fixed React error #62 in Files tab caused by malformed CSS calc() function
+- (@copilot) Added loading indicator to JSONConfig autocompleteSendTo component during sendTo operations
+- (@copilot) Mark adapters removed from repository with "not maintained" text instead of empty version field
+- (@copilot) Enhanced responsive design: modals and popups now use full screen on xs and sm breakpoints
+- (@copilot) Added logout dropdown menu to user icon for improved user experience
+- (@copilot) Updated OAuth2 documentation in DEVELOPER.md to include both cloud-based and direct callback approaches with clear guidance on when to use each method
+- (@copilot) Only show adapters with satisfied dependencies in update all dialog
+- (@copilot) Added new `readOnly` attribute for jsonEditor in jsonConfig - allows opening the editor to view JSON content without allowing modifications
 - (@GermanBluefox) Reading of same instances was optimized in GUI
 - (@GermanBluefox) Do not show the http page if admin is secured
 - (@GermanBluefox) Show loading progress for custom tabs

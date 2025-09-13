@@ -956,8 +956,11 @@ export default class ConfigGeneric<
             if (p1 && typeof p1 === 'string' && p1.startsWith('data.')) {
                 const value = ConfigGeneric.getValue(data, p1.replace(/^data\./, ''));
 
-                if (typeof value === 'string' && value.includes('"')) {
-                    return `\${${p1}.replace(/"/g, '\\\\"')}`;
+                if (typeof value === 'string') {
+                    // Handle both backslashes and quotes to ensure valid JSON
+                    if (value.includes('\\') || value.includes('"')) {
+                        return `\${${p1}.replace(/\\\\/g, '\\\\\\\\').replace(/"/g, '\\\\"')}`;
+                    }
                 }
             }
             return _match;
