@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Fixed time difference warning that incorrectly appeared when browser tab was inactive for a while
 - (@copilot) For GitHub-installed adapters, show version + commit hash instead of just version
 - (@copilot) Fixed table export error when table items contain null values
 - (@copilot) Object Browser: Added formatted duration display for values with role "value.duration" - shows time durations in HH:mm:ss format instead of raw seconds

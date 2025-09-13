@@ -91,7 +91,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element => {
                                                       objectRef.current,
                                                       dragProps.item.data.obj._id,
                                                       props.lang,
-                                                  )!
+                                                  )
                                                 : dragProps.item.data.obj.common.icon
                                         }
                                     />

@@ -237,6 +237,8 @@ type ItemElement = ItemCamera | ItemLink;
 interface IntroState {
     /** Difference between client and host time in ms */
     hostTimeDiffMap: Map<string, number>;
+    /** Timestamp when each host's data was last updated */
+    hostDataTimestampMap: Map<string, number>;
     hostsData: Record<string, HostInfoEx>;
     alive: Record<string, boolean>;
     reverseProxy: null | ReverseProxyItem[];
@@ -259,6 +261,9 @@ interface IntroState {
 class Intro extends React.Component<IntroProps, IntroState> {
     /** If server time differs more than MS from client time, show a warning */
     #THRESHOLD_TIME_DIFF_MS = 30 * 60 * 1_000;
+
+    /** Only show time warning if host data is newer than this threshold (5 minutes) */
+    #HOST_DATA_FRESHNESS_THRESHOLD_MS = 5 * 60 * 1_000;
 
     #ONE_MINUTE_MS = 60 * 1_000;
 
@@ -292,6 +297,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             hosts: null,
             /** Difference between client and host time in ms */
             hostTimeDiffMap: new Map(),
+            /** Timestamp when each host's data was last updated */
+            hostDataTimestampMap: new Map(),
             nodeUpdateSupported: false,
             nodeUpdateDialog: null,
         };
@@ -304,15 +311,18 @@ class Intro extends React.Component<IntroProps, IntroState> {
      */
     checkBackendTime(): void {
         const timeDiffMap = this.state.hostTimeDiffMap;
+        const timestampMap = this.state.hostDataTimestampMap;
+        const currentTime = Date.now();
 
         for (const [hostId, hostData] of Object.entries(this.state.hostsData)) {
-            const currDate = new Date();
-            const diff = Math.abs(hostData.time - currDate.getTime());
-
+            const diff = Math.abs(hostData.time - currentTime);
             timeDiffMap.set(hostId, diff);
+
+            // Update timestamp when we check the time
+            timestampMap.set(hostId, currentTime);
         }
 
-        this.setState({ hostTimeDiffMap: timeDiffMap });
+        this.setState({ hostTimeDiffMap: timeDiffMap, hostDataTimestampMap: timestampMap });
     }
 
     /**
@@ -363,10 +373,15 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
         if (hostsId.length) {
             const hostsData: Record<string, HostInfoEx> = JSON.parse(JSON.stringify(this.state.hostsData));
+            const timestampMap = new Map(this.state.hostDataTimestampMap);
+            const currentTime = Date.now();
 
             const results = await Promise.all(hostsId.map(id => this.getHostData(id, alive[id])));
-            results.forEach(res => (hostsData[res.id] = Intro.preprocessHostData(res.data)));
-            this.setState({ alive, hostsData }, () => this.checkBackendTime());
+            results.forEach(res => {
+                hostsData[res.id] = Intro.preprocessHostData(res.data);
+                timestampMap.set(res.id, currentTime);
+            });
+            this.setState({ alive, hostsData, hostDataTimestampMap: timestampMap }, () => this.checkBackendTime());
         }
     };
 
@@ -382,10 +397,15 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
         if (hostsId.length) {
             const hostsData: Record<string, HostInfoEx> = JSON.parse(JSON.stringify(this.state.hostsData));
+            const timestampMap = new Map(this.state.hostDataTimestampMap);
+            const currentTime = Date.now();
 
             void Promise.all(hostsId.map(id => this.getHostData(id))).then(results => {
-                results.forEach(res => (hostsData[res.id] = Intro.preprocessHostData(res.data)));
-                this.setState({ hostsData });
+                results.forEach(res => {
+                    hostsData[res.id] = Intro.preprocessHostData(res.data);
+                    timestampMap.set(res.id, currentTime);
+                });
+                this.setState({ hostsData, hostDataTimestampMap: timestampMap });
             });
         }
     };
@@ -479,6 +499,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
                 const hostData: HostInfoEx | null = this.state.hostsData ? this.state.hostsData[instance.id] : null;
                 const timeDiff = this.state.hostTimeDiffMap.get(instance.id) ?? 0;
+                const dataTimestamp = this.state.hostDataTimestampMap.get(instance.id) ?? 0;
+                const currentTime = Date.now();
+                const isDataFresh = currentTime - dataTimestamp < this.#HOST_DATA_FRESHNESS_THRESHOLD_MS;
+
                 return (
                     <IntroCard
                         key={`${instance.id}_${instance.link}`}
@@ -505,7 +529,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         edit={this.state.edit}
                         offline={hostData && hostData.alive === false}
                         warning={
-                            timeDiff > this.#THRESHOLD_TIME_DIFF_MS
+                            timeDiff > this.#THRESHOLD_TIME_DIFF_MS && isDataFresh
                                 ? this.t(
                                       'Backend time differs by %s minutes',
                                       Math.round(timeDiff / this.#ONE_MINUTE_MS).toString(),
@@ -790,10 +814,18 @@ class Intro extends React.Component<IntroProps, IntroState> {
         const results = await Promise.all(promises);
         const hostsData: Record<string, HostInfoEx> = {};
         const alive: Record<string, boolean> = {};
+        const timestampMap = new Map(this.state.hostDataTimestampMap);
+        const currentTime = Date.now();
+
         results.forEach(res => {
             hostsData[res.id] = Intro.preprocessHostData(res.data);
             alive[res.id] = res.data.alive;
+            timestampMap.set(res.id, currentTime);
         });
+
+        // Update timestamp map in state
+        this.setState({ hostDataTimestampMap: timestampMap });
+
         return { hostsData, alive };
     }
 
