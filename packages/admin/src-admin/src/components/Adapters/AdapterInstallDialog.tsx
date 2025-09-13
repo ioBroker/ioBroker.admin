@@ -286,7 +286,7 @@ export default abstract class AdapterInstallDialog<
                                     : true
                                 : false;
                         } catch {
-                            entry.rightVersion = true;
+                            entry.rightVersion = false;
                         }
                     }
 
@@ -321,7 +321,7 @@ export default abstract class AdapterInstallDialog<
                                     : true
                                 : false;
                         } catch {
-                            entry.rightVersion = true;
+                            entry.rightVersion = false;
                         }
                     }
 
@@ -352,7 +352,7 @@ export default abstract class AdapterInstallDialog<
                                 ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
                                 : true;
                         } catch {
-                            entry.rightVersion = true;
+                            entry.rightVersion = false;
                         }
                     }
 
@@ -372,7 +372,7 @@ export default abstract class AdapterInstallDialog<
                 try {
                     entry.rightVersion = semver.satisfies(context.nodeJsVersion, nodeVersion);
                 } catch {
-                    entry.rightVersion = true;
+                    entry.rightVersion = false;
                 }
 
                 result.push(entry);
