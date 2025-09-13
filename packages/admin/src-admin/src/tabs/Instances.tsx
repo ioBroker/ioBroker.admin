@@ -17,6 +17,9 @@ import {
     Folder as FolderIcon,
     FolderOpen as FolderOpenIcon,
     List as ListIcon,
+    ArrowUpward as ArrowUpwardIcon,
+    ArrowDownward as ArrowDownwardIcon,
+    Sort as SortIcon,
 } from '@mui/icons-material';
 import { FaFilter as FilterListIcon } from 'react-icons/fa';
 
@@ -109,6 +112,9 @@ interface InstancesProps {
     handleNavigation: (tab: string, subTab?: string, param?: string) => void;
 }
 
+type SortColumn = 'name' | 'status' | 'memory' | 'id' | 'host' | 'loglevel';
+type SortDirection = 'asc' | 'desc';
+
 interface InstancesState {
     expertMode: boolean;
     dialog: string | null;
@@ -135,6 +141,8 @@ interface InstancesState {
     filterMode: string | null;
     filterStatus: string | null;
     showFilterDialog: boolean;
+    sortColumn: SortColumn | null;
+    sortDirection: SortDirection;
 }
 
 // every tab should get their data itself from server
@@ -224,6 +232,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     ? null
                     : this.localStorage.getItem('Instances.filterStatus')
                 : null,
+            sortColumn: (this.localStorage.getItem('Instances.sortColumn') as SortColumn) || null,
+            sortDirection: (this.localStorage.getItem('Instances.sortDirection') as SortDirection) || 'asc',
         };
 
         // this.columns = {
@@ -651,6 +661,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return AdminUtils.getText(obj.common.title, this.props.lang);
     }
 
+    getMemoryUsage(id: string): number {
+        const memState = this.states[`${id}.memRss`];
+        return memState ? parseFloat(memState.val as string) || 0 : 0;
+    }
+
     getInputOutput(id: string): { stateInput: number; stateOutput: number } {
         const stateInput = this.states[`${id}.inputCount`];
         const stateOutput = this.states[`${id}.outputCount`];
@@ -829,8 +844,66 @@ class Instances extends Component<InstancesProps, InstancesState> {
             this._cacheList = this._cacheList.filter(item => status === item.status);
         }
 
+        // Apply sorting
+        if (this.state.sortColumn) {
+            this._cacheList = this._cacheList.sort((a, b) => {
+                let comparison = 0;
+                
+                switch (this.state.sortColumn) {
+                    case 'name':
+                        comparison = a.name.localeCompare(b.name);
+                        break;
+                    case 'id':
+                        comparison = a.nameId.localeCompare(b.nameId);
+                        break;
+                    case 'status':
+                        // Define status order: green > orange > red > grey
+                        const statusOrder = { green: 4, orange: 3, orangeDevice: 2, red: 1, grey: 0, blue: 0 };
+                        comparison = (statusOrder[a.status] || 0) - (statusOrder[b.status] || 0);
+                        break;
+                    case 'memory':
+                        if (!a.running || !b.running) {
+                            comparison = a.running === b.running ? 0 : (a.running ? 1 : -1);
+                        } else {
+                            const memA = this.getMemoryUsage(a.id);
+                            const memB = this.getMemoryUsage(b.id);
+                            comparison = memA - memB;
+                        }
+                        break;
+                    case 'host':
+                        comparison = a.host.localeCompare(b.host);
+                        break;
+                    case 'loglevel':
+                        const logOrder = { error: 4, warn: 3, info: 2, debug: 1, silly: 0 };
+                        comparison = (logOrder[a.logLevel] || 0) - (logOrder[b.logLevel] || 0);
+                        break;
+                    default:
+                        comparison = 0;
+                }
+                
+                return this.state.sortDirection === 'desc' ? -comparison : comparison;
+            });
+        }
+
         return this._cacheList;
     }
+
+    onSort = (column: SortColumn): void => {
+        let newDirection: SortDirection = 'asc';
+        
+        if (this.state.sortColumn === column) {
+            // If same column, toggle direction
+            newDirection = this.state.sortDirection === 'asc' ? 'desc' : 'asc';
+        }
+        
+        this._cacheList = null;
+        this.localStorage.setItem('Instances.sortColumn', column);
+        this.localStorage.setItem('Instances.sortDirection', newDirection);
+        this.setState({ 
+            sortColumn: column, 
+            sortDirection: newDirection 
+        });
+    };
 
     clearAllFilters(): void {
         const state: Partial<InstancesState> = {
@@ -840,6 +913,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
             filterMode: null,
             filterStatus: null,
             filterText: '',
+            sortColumn: null,
+            sortDirection: 'asc',
         };
 
         this.localStorage.removeItem('instances.filter');
@@ -848,6 +923,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
         this.localStorage.removeItem('Instances.filterCompactGroup');
         this.localStorage.removeItem('Instances.filterMode');
         this.localStorage.removeItem('Instances.filterStatus');
+        this.localStorage.removeItem('Instances.sortColumn');
+        this.localStorage.removeItem('Instances.sortDirection');
 
         this._cacheList = null;
         this.setState(state as InstancesState, () => {
@@ -1323,6 +1400,41 @@ class Instances extends Component<InstancesProps, InstancesState> {
                             <FilterListIcon style={{ width: 16, height: 16 }} />
                         </IconButton>
                     </Tooltip>
+                    <CustomSelectButton
+                        title={this.t('Sort by')}
+                        t={this.t}
+                        arrayItem={[
+                            { name: 'none' },
+                            { name: 'name' },
+                            { name: 'id' },
+                            { name: 'status' },
+                            { name: 'memory' },
+                            { name: 'host' },
+                            ...(this.props.expertMode ? [{ name: 'loglevel' }] : []),
+                        ]}
+                        buttonIcon={
+                            this.state.sortColumn ? (
+                                this.state.sortDirection === 'asc' ? (
+                                    <ArrowUpwardIcon style={{ marginRight: 4 }} color="primary" />
+                                ) : (
+                                    <ArrowDownwardIcon style={{ marginRight: 4 }} color="primary" />
+                                )
+                            ) : (
+                                <SortIcon style={{ marginRight: 4 }} />
+                            )
+                        }
+                        onClick={value => {
+                            if (value === 'none') {
+                                this._cacheList = null;
+                                this.localStorage.removeItem('Instances.sortColumn');
+                                this.localStorage.removeItem('Instances.sortDirection');
+                                this.setState({ sortColumn: null, sortDirection: 'asc' });
+                            } else {
+                                this.onSort(value as SortColumn);
+                            }
+                        }}
+                        value={this.state.sortColumn || 'none'}
+                    />
                     {/* this.props.expertMode && <Tooltip title="sentry" slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="small"
