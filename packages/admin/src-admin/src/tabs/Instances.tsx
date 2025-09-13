@@ -417,9 +417,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 instance.links = instance.links || [];
                 let link: InstanceLink;
                 if (typeof links[linkName] === 'string') {
-                    link = { link: links[linkName] as string };
+                    link = { link: links[linkName] };
                 } else {
-                    link = links[linkName] as InstanceLink;
+                    link = links[linkName];
                 }
 
                 const urls =
