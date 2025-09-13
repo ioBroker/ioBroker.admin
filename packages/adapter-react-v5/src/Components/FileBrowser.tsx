@@ -1308,7 +1308,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 id={item.id}
                 style={
                     this.state.viewType === TABLE
-                        ? { marginLeft: padding, width: `calc(100% - ${padding}px` }
+                        ? { marginLeft: padding, width: `calc(100% - ${padding}px)` }
                         : undefined
                 }
                 onClick={e => (this.state.viewType === TABLE ? this.select(item.id, e) : this.changeFolder(e, item.id))}
