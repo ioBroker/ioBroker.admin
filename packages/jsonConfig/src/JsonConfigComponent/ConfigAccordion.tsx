@@ -10,6 +10,7 @@ import {
     Toolbar,
     Tooltip,
     Typography,
+    Box,
 } from '@mui/material';
 
 import {
@@ -19,6 +20,7 @@ import {
     ArrowDownward as DownIcon,
     ContentCopy as CopyContentIcon,
     ExpandMore as ExpandMoreIcon,
+    Error as ErrorIcon,
 } from '@mui/icons-material';
 
 import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
@@ -55,6 +57,7 @@ interface ConfigAccordionState extends ConfigGenericState {
     value: Record<string, any>[];
     activeIndex: number;
     iteration: number;
+    accordionErrors: Record<number, Record<string, string>>; // accordion index -> attr -> error
 }
 
 class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordionState> {
@@ -78,6 +81,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
             value,
             activeIndex: -1,
             iteration: 0,
+            accordionErrors: {},
         });
     }
 
@@ -88,6 +92,38 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
         }
         super.componentWillUnmount();
     }
+
+    onAccordionError =
+        (accordionIndex: number) =>
+        (attr: string, error?: string): void => {
+            const newAccordionErrors = { ...this.state.accordionErrors };
+
+            if (!newAccordionErrors[accordionIndex]) {
+                newAccordionErrors[accordionIndex] = {};
+            }
+
+            if (!error) {
+                delete newAccordionErrors[accordionIndex][attr];
+                // Clean up empty accordion error objects
+                if (Object.keys(newAccordionErrors[accordionIndex]).length === 0) {
+                    delete newAccordionErrors[accordionIndex];
+                }
+            } else {
+                newAccordionErrors[accordionIndex][attr] = error;
+            }
+
+            this.setState({ accordionErrors: newAccordionErrors });
+
+            // Also forward to parent
+            this.props.onError(attr, error);
+        };
+
+    hasAccordionErrors = (accordionIndex: number): boolean => {
+        return !!(
+            this.state.accordionErrors[accordionIndex] &&
+            Object.keys(this.state.accordionErrors[accordionIndex]).length > 0
+        );
+    };
 
     itemAccordion(data: Record<string, any>, idx: number): JSX.Element {
         const { value } = this.state;
@@ -125,7 +161,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                     newObj[idx][attr] = valueChange;
                     this.setState({ value: newObj } as ConfigAccordionState, () => this.onChangeWrapper(newObj));
                 }}
-                onError={(error, attr) => this.onError(error, attr)}
+                onError={this.onAccordionError(idx)}
                 table={this.props.table}
             />
         );
@@ -299,7 +335,10 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                             expandIcon={<ExpandMoreIcon />}
                             sx={Utils.getStyle(this.props.oContext.theme, styles.fullWidth, styles.accordionSummary)}
                         >
-                            <Typography style={styles.accordionTitle}>{idx[schema.titleAttr]}</Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
+                                <Typography style={styles.accordionTitle}>{idx[schema.titleAttr]}</Typography>
+                                {this.hasAccordionErrors(i) && <ErrorIcon sx={{ fontSize: 20, color: 'error.main' }} />}
+                            </Box>
                         </AccordionSummary>
                         <AccordionDetails
                             style={{
