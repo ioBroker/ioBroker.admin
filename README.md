@@ -89,6 +89,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Fixed step type behavior in chart display - "Schritte" now shows value until next point (step after) instead of step before
+- (@copilot) Added all three step type options (stepStart, stepMiddle, stepEnd) to chart display with clearer descriptions
 - (@copilot) Fixed React error #62 in Files tab caused by malformed CSS calc() function
 - (@copilot) Added loading indicator to JSONConfig autocompleteSendTo component during sendTo operations
 - (@copilot) Mark adapters removed from repository with "not maintained" text instead of empty version field
