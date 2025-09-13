@@ -1,7 +1,7 @@
 import React, { type JSX } from 'react';
 
-import { Tabs, Tab, IconButton, Toolbar, Menu, MenuItem, ListItemIcon } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { Tabs, Tab, IconButton, Toolbar, Menu, MenuItem, ListItemIcon, Box } from '@mui/material';
+import { Menu as MenuIcon, Error as ErrorIcon } from '@mui/icons-material';
 
 import type { ConfigItemTabs } from '../types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -35,6 +35,7 @@ interface ConfigTabsState extends ConfigGenericState {
     width: number;
     openMenu: HTMLButtonElement | null;
     initialBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    tabErrors: Record<string, Record<string, string>>; // tab -> attr -> error
 }
 
 class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
@@ -77,8 +78,42 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
         }
         this.refDiv = React.createRef();
 
-        Object.assign(this.state, { tab, width: 0, openMenu: null });
+        Object.assign(this.state, { tab, width: 0, openMenu: null, tabErrors: {} });
     }
+
+    onTabError = (attr: string, error?: string): void => {
+        const currentTab = this.state.tab;
+        if (!currentTab) {
+            // Forward to parent if no current tab
+            this.props.onError(attr, error);
+            return;
+        }
+
+        const newTabErrors = { ...this.state.tabErrors };
+
+        if (!newTabErrors[currentTab]) {
+            newTabErrors[currentTab] = {};
+        }
+
+        if (!error) {
+            delete newTabErrors[currentTab][attr];
+            // Clean up empty tab error objects
+            if (Object.keys(newTabErrors[currentTab]).length === 0) {
+                delete newTabErrors[currentTab];
+            }
+        } else {
+            newTabErrors[currentTab][attr] = error;
+        }
+
+        this.setState({ tabErrors: newTabErrors });
+
+        // Also forward to parent
+        this.props.onError(attr, error);
+    };
+
+    hasTabErrors = (tabName: string): boolean => {
+        return !!(this.state.tabErrors[tabName] && Object.keys(this.state.tabErrors[tabName]).length > 0);
+    };
 
     componentWillUnmount(): void {
         if (this.resizeTimeout) {
@@ -257,6 +292,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                             onClose={() => this.setState({ openMenu: null })}
                         >
                             {elements.map(el => {
+                                const hasErrors = this.hasTabErrors(el.name);
                                 return (
                                     <MenuItem
                                         disabled={el.disabled}
@@ -265,9 +301,13 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                                             this.setState({ openMenu: null }, () => this.onMenuChange(el.name));
                                         }}
                                         selected={el.name === this.state.tab}
+                                        sx={hasErrors ? { color: 'error.main' } : undefined}
                                     >
                                         {withIcons ? <ListItemIcon>{el.icon}</ListItemIcon> : null}
-                                        {el.label}
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, width: '100%' }}>
+                                            {el.label}
+                                            {hasErrors && <ErrorIcon sx={{ fontSize: 16, color: 'error.main' }} />}
+                                        </Box>
                                     </MenuItem>
                                 );
                             })}
@@ -285,6 +325,16 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                     onChange={(_e, tab: string): void => this.onMenuChange(tab)}
                 >
                     {elements.map(el => {
+                        const hasErrors = this.hasTabErrors(el.name);
+                        const label = hasErrors ? (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                {el.label}
+                                <ErrorIcon sx={{ fontSize: 16, color: 'error.main' }} />
+                            </Box>
+                        ) : (
+                            el.label
+                        );
+
                         return (
                             <Tab
                                 id={el.name}
@@ -294,7 +344,8 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                                 value={el.name}
                                 iconPosition={this.props.schema.iconPosition || 'start'}
                                 icon={el.icon}
-                                label={el.label}
+                                label={label}
+                                sx={hasErrors ? { '& .MuiTab-wrapper': { color: 'error.main' } } : undefined}
                             />
                         );
                     })}
@@ -329,7 +380,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                     data={this.props.data}
                     originalData={this.props.originalData}
                     onChange={this.props.onChange}
-                    onError={this.props.onError}
+                    onError={this.onTabError}
                     customObj={this.props.customObj}
                     custom={this.props.custom}
                     schema={items[this.state.tab]}
