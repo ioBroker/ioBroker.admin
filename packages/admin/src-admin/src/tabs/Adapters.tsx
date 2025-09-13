@@ -1614,6 +1614,140 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         );
     }
 
+    renderRepositoryTimestamp(): JSX.Element | null {
+        const repositories = this.state.compactRepositories?.native?.repositories;
+        if (!repositories) {
+            return null;
+        }
+
+        let repoGeneratedTime: string | null = null;
+        let repoReadTime: string | null = null;
+        const repoNames: string[] = [];
+
+        // Handle both single and multiple repositories
+        if (typeof this.props.systemConfig.common.activeRepo === 'string') {
+            const repoInfo = repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo;
+            if (repoInfo) {
+                repoGeneratedTime = repoInfo.repoTime || null;
+                // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                repoReadTime = repoInfo.repoReadTime || null;
+                const repoName = this.getRepositoryName(repoInfo);
+                if (repoName) {
+                    repoNames.push(repoName);
+                }
+            }
+        } else if (Array.isArray(this.props.systemConfig.common.activeRepo)) {
+            // For multiple repositories, find the oldest timestamps
+            let oldestGeneratedTime: string | null = null;
+            let oldestReadTime: string | null = null;
+
+            this.props.systemConfig.common.activeRepo.forEach(repo => {
+                const repoInfo = repositories[repo]?.json?._repoInfo;
+                if (repoInfo) {
+                    const repoName = this.getRepositoryName(repoInfo);
+                    if (repoName) {
+                        repoNames.push(repoName);
+                    }
+
+                    if (repoInfo.repoTime) {
+                        if (!oldestGeneratedTime || new Date(repoInfo.repoTime) < new Date(oldestGeneratedTime)) {
+                            oldestGeneratedTime = repoInfo.repoTime;
+                        }
+                    }
+
+                    // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                    if (repoInfo.repoReadTime) {
+                        // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                        if (!oldestReadTime || new Date(repoInfo.repoReadTime) < new Date(oldestReadTime)) {
+                            // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                            oldestReadTime = repoInfo.repoReadTime;
+                        }
+                    }
+                }
+            });
+
+            repoGeneratedTime = oldestGeneratedTime;
+            repoReadTime = oldestReadTime;
+        }
+
+        // Show read time if available, otherwise show generated time
+        const displayTime = repoReadTime || repoGeneratedTime;
+        if (!displayTime) {
+            return null;
+        }
+
+        const formattedTime = this.formatRepositoryTimestamp(displayTime);
+
+        // Create detailed tooltip with both timestamps
+        let tooltipTitle = '';
+        if (repoNames.length > 1) {
+            tooltipTitle = this.t('Repository timestamps (oldest from %s):', repoNames.join(', '));
+        } else {
+            tooltipTitle = this.t('Repository timestamps:');
+        }
+
+        if (repoGeneratedTime) {
+            tooltipTitle += `\n${this.t('Generated: %s', this.formatRepositoryTimestamp(repoGeneratedTime))}`;
+        }
+        if (repoReadTime) {
+            tooltipTitle += `\n${this.t('Last read: %s', this.formatRepositoryTimestamp(repoReadTime))}`;
+        }
+
+        return (
+            <Tooltip
+                title={tooltipTitle}
+                slotProps={{ popper: { sx: styles.tooltip } }}
+            >
+                <Box
+                    component="div"
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginLeft: 1,
+                        fontSize: '0.75rem',
+                        color: 'text.secondary',
+                        cursor: 'help',
+                        whiteSpace: 'nowrap',
+                    }}
+                >
+                    {formattedTime}
+                </Box>
+            </Tooltip>
+        );
+    }
+
+    private getRepositoryName(repoInfo: any): string | null {
+        if (repoInfo?.name) {
+            if (typeof repoInfo.name === 'object') {
+                return repoInfo.name[this.props.lang] || repoInfo.name.en;
+            }
+            return repoInfo.name;
+        }
+        return null;
+    }
+
+    private formatRepositoryTimestamp(timestamp: string): string {
+        try {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now.getTime() - date.getTime();
+            const diffMinutes = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffMinutes < 60) {
+                return this.t('%s minutes ago', diffMinutes.toString());
+            } else if (diffHours < 24) {
+                return this.t('%s hours ago', diffHours.toString());
+            } else if (diffDays < 30) {
+                return this.t('%s days ago', diffDays.toString());
+            }
+            return date.toLocaleDateString(this.props.lang || 'en');
+        } catch (error) {
+            return timestamp;
+        }
+    }
+
     renderHeader(): JSX.Element {
         let updateAllButtonAvailable =
             !this.props.commandRunning &&
@@ -1654,6 +1788,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
+                {this.renderRepositoryTimestamp()}
                 {this.state.tableViewMode && !this.state.oneListView && (
                     <Tooltip
                         title={this.t('expand all')}
