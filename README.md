@@ -89,6 +89,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Fixed js-controller update notifications to use "The js-controller" instead of "Adapter js-controller"
+- (@copilot) Fixed JSONConfig sendTo jsonData attribute parser problem where backslashes (\) in text inputs caused JSON parsing errors
 - (@copilot) Fixed step type behavior in chart display - "Schritte" now shows value until next point (step after) instead of step before
 - (@copilot) Added all three step type options (stepStart, stepMiddle, stepEnd) to chart display with clearer descriptions
 - (@copilot) Fixed React error #62 in Files tab caused by malformed CSS calc() function
