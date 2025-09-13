@@ -19,6 +19,9 @@ import {
     ArrowDownward as DownIcon,
     ContentCopy as CopyContentIcon,
     ExpandMore as ExpandMoreIcon,
+    FileDownload as FileDownloadIcon,
+    FileUpload as FileUploadIcon,
+    AddCircle as AddCircleIcon,
 } from '@mui/icons-material';
 
 import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
@@ -257,6 +260,56 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
         );
     }
 
+    onExport = (): void => {
+        const { value } = this.state;
+        const dataStr = JSON.stringify(value, null, 2);
+        const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
+        
+        const exportFileDefaultName = `accordion_data_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    };
+
+    onImport = (replace: boolean): void => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (event: Event) => {
+            const file = (event.target as HTMLInputElement).files?.[0];
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const jsonData = JSON.parse(e.target?.result as string);
+                    
+                    if (!Array.isArray(jsonData)) {
+                        alert(I18n.t('ra_Invalid JSON format. Expected an array.'));
+                        return;
+                    }
+
+                    let newValue: Record<string, any>[];
+                    if (replace) {
+                        newValue = jsonData;
+                    } else {
+                        newValue = [...this.state.value, ...jsonData];
+                    }
+
+                    this.setState({ value: newValue, activeIndex: -1 }, () => this.onChangeWrapper(newValue));
+                } catch {
+                    alert(I18n.t('ra_Invalid JSON file.'));
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    };
+
     renderItem(/* error, disabled, defaultValue */): JSX.Element | null {
         const { schema } = this.props;
         const { value } = this.state;
@@ -279,13 +332,42 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                             </Typography>
                         ) : null}
                         {!schema.noDelete ? (
-                            <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={this.onAdd}
-                            >
-                                <AddIcon />
-                            </IconButton>
+                            <>
+                                <Tooltip title={I18n.t('ra_Export accordion data')}>
+                                    <IconButton
+                                        size="small"
+                                        color="primary"
+                                        onClick={this.onExport}
+                                    >
+                                        <FileDownloadIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title={I18n.t('ra_Import and replace accordion data')}>
+                                    <IconButton
+                                        size="small"
+                                        color="primary"
+                                        onClick={() => this.onImport(true)}
+                                    >
+                                        <FileUploadIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title={I18n.t('ra_Import and add accordion data')}>
+                                    <IconButton
+                                        size="small"
+                                        color="primary"
+                                        onClick={() => this.onImport(false)}
+                                    >
+                                        <AddCircleIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <IconButton
+                                    size="small"
+                                    color="primary"
+                                    onClick={this.onAdd}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </>
                         ) : null}
                     </Toolbar>
                 ) : null}
