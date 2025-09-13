@@ -15,6 +15,13 @@ import {
     Toolbar,
 } from '@mui/material';
 
+import {
+    Remove as RemoveIcon,
+    KeyboardArrowRight as StepStartIcon,
+    MoreHoriz as StepMiddleIcon,
+    KeyboardArrowLeft as StepEndIcon,
+} from '@mui/icons-material';
+
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import type { EChartsOption, YAXisComponentOption } from 'echarts/types/dist/echarts';
 
@@ -176,6 +183,7 @@ interface ObjectChartState {
     defaultHistory: string;
     chartHeight: number;
     chartWidth: number;
+    windowWidth: number;
     ampm: boolean;
     relativeRange: string;
     splitLine: boolean;
@@ -274,6 +282,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             defaultHistory: '',
             chartHeight: 300,
             chartWidth: 500,
+            windowWidth: window.innerWidth,
             ampm: false,
             relativeRange,
             splitLine: this.localStorage.getItem('App.splitLine') === 'true',
@@ -351,6 +360,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         }
         this.timerResize = setTimeout(() => {
             this.timerResize = null;
+            this.setState({ windowWidth: window.innerWidth });
             this.componentDidUpdate();
         });
     };
@@ -693,11 +703,11 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             type: 'line',
             step:
                 this.state.stepType === 'stepStart'
-                    ? 'start'
+                    ? 'end'
                     : this.state.stepType === 'stepMiddle'
                       ? 'middle'
                       : this.state.stepType === 'stepEnd'
-                        ? 'end'
+                        ? 'start'
                         : undefined,
             showSymbol: false,
             hoverAnimation: true,
@@ -1356,6 +1366,9 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             return null;
         }
 
+        // Mobile detection using Material-UI md breakpoint (960px)
+        const isSmallScreen = this.state.windowWidth < 960;
+
         return (
             <Toolbar>
                 {!this.props.historyInstance && (
@@ -1539,7 +1552,23 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                     variant="outlined"
                     onClick={e => this.setState({ showStepMenu: e.target as HTMLElement })}
                 >
-                    {this.state.stepType ? this.props.t(this.state.stepType) : this.props.t('Step type')}
+                    {isSmallScreen ? (
+                        this.state.stepType === '' ? (
+                            <RemoveIcon />
+                        ) : this.state.stepType === 'stepStart' ? (
+                            <StepStartIcon />
+                        ) : this.state.stepType === 'stepMiddle' ? (
+                            <StepMiddleIcon />
+                        ) : this.state.stepType === 'stepEnd' ? (
+                            <StepEndIcon />
+                        ) : (
+                            this.props.t('Step type')
+                        )
+                    ) : this.state.stepType ? (
+                        this.props.t(this.state.stepType)
+                    ) : (
+                        this.props.t('Step type')
+                    )}
                 </Button>
                 {this.state.showStepMenu ? (
                     <Menu
@@ -1551,13 +1580,25 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                             selected={this.state.stepType === ''}
                             onClick={() => this.onStepChanged('')}
                         >
-                            {this.props.t('None')}
+                            {isSmallScreen ? <RemoveIcon /> : this.props.t('None')}
                         </MenuItem>
                         <MenuItem
                             selected={this.state.stepType === 'stepStart'}
                             onClick={() => this.onStepChanged('stepStart')}
                         >
-                            {this.props.t('stepStart')}
+                            {isSmallScreen ? <StepStartIcon /> : this.props.t('stepStart')}
+                        </MenuItem>
+                        <MenuItem
+                            selected={this.state.stepType === 'stepMiddle'}
+                            onClick={() => this.onStepChanged('stepMiddle')}
+                        >
+                            {isSmallScreen ? <StepMiddleIcon /> : this.props.t('stepMiddle')}
+                        </MenuItem>
+                        <MenuItem
+                            selected={this.state.stepType === 'stepEnd'}
+                            onClick={() => this.onStepChanged('stepEnd')}
+                        >
+                            {isSmallScreen ? <StepEndIcon /> : this.props.t('stepEnd')}
                         </MenuItem>
                     </Menu>
                 ) : null}

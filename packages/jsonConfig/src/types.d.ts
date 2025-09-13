@@ -25,6 +25,7 @@ export type ConfigItemType =
     | 'certCollection'
     | 'certificate'
     | 'certificates'
+    | 'checkDocker'
     | 'checkLicense'
     | 'checkbox'
     | 'chips'
@@ -894,6 +895,10 @@ export interface ConfigItemCheckLicense extends ConfigItem {
     color?: 'primary' | 'secondary';
 }
 
+export interface ConfigItemCheckDocker extends ConfigItem {
+    type: 'checkDocker';
+}
+
 export interface ConfigItemUUID extends ConfigItem {
     type: 'uuid';
 }
@@ -1041,6 +1046,7 @@ export type ConfigItemAny =
     | ConfigItemCertificateSelect
     | ConfigItemCertificates
     | ConfigItemUUID
+    | ConfigItemCheckDocker
     | ConfigItemCheckLicense
     | ConfigItemPattern
     | ConfigItemChip
