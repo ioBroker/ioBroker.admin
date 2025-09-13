@@ -502,6 +502,15 @@ export default abstract class AdapterGeneric<
             ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate
             : true;
 
+        // Check if adapter exists in repository and has a version
+        const repositoryAdapter = this.props.context.repository[this.props.adapterName];
+        const adapterVersion = repositoryAdapter?.version;
+
+        // If no version is available, show "not maintained" message
+        if (!adapterVersion) {
+            return <span style={this.styles.wrongDependencies}>{this.props.context.t('not maintained')}</span>;
+        }
+
         if (!this.props.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate !== false) {
             const installedVersion = this.props.context.installed[this.props.adapterName]?.version;
             const repositoryVersion = this.props.context.repository[this.props.adapterName].version;
@@ -548,7 +557,7 @@ export default abstract class AdapterGeneric<
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <span style={this.props.cached.rightDependencies ? undefined : this.styles.wrongDependencies}>
-                    {this.props.context.repository[this.props.adapterName].version}
+                    {adapterVersion}
                 </span>
             </Tooltip>
         );

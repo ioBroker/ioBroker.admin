@@ -25,6 +25,7 @@ export type ConfigItemType =
     | 'certCollection'
     | 'certificate'
     | 'certificates'
+    | 'checkDocker'
     | 'checkLicense'
     | 'checkbox'
     | 'chips'
@@ -894,6 +895,10 @@ export interface ConfigItemCheckLicense extends ConfigItem {
     color?: 'primary' | 'secondary';
 }
 
+export interface ConfigItemCheckDocker extends ConfigItem {
+    type: 'checkDocker';
+}
+
 export interface ConfigItemUUID extends ConfigItem {
     type: 'uuid';
 }
@@ -908,6 +913,8 @@ export interface ConfigItemJsonEditor extends ConfigItem {
     json5?: boolean;
     /** Do not allow to save the value if error in JSON or JSON5 */
     doNotApplyWithError?: boolean;
+    /** Open the editor in read-only mode - editor can be opened but content cannot be modified */
+    readOnly?: boolean;
 }
 
 export interface ConfigItemInterface extends ConfigItem {
@@ -1039,6 +1046,7 @@ export type ConfigItemAny =
     | ConfigItemCertificateSelect
     | ConfigItemCertificates
     | ConfigItemUUID
+    | ConfigItemCheckDocker
     | ConfigItemCheckLicense
     | ConfigItemPattern
     | ConfigItemChip

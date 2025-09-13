@@ -1515,6 +1515,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 noTranslation={this.props.noTranslation}
                 onClose={reload => this.setState({ showUpdater: false }, () => reload && this.updateAll(true, false))}
                 socket={this.props.socket}
+                rightDependenciesFunc={this.rightDependencies}
             />
         );
     }
