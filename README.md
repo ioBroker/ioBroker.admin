@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Fixed jsonConfig port validation to properly account for bind addresses, allowing the same port on different IP addresses
 - (@copilot) Added error indicators to JSON Config tabs and accordions to improve visibility of validation errors
 - (@copilot) Added export/import functionality for accordion sections in JsonConfig allowing users to save accordion data as JSON files and import them back with replace or add options
 - (@copilot) Fixed time difference warning that incorrectly appeared when browser tab was inactive for a while
