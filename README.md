@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@GermanBluefox) Added icon to `www` folder for windows
 - (@copilot) Confirmed and documented Copilot issue handling guidelines: PRs use neutral language (no "fixes" keywords), issues closed manually by maintainers, and "fixed" labels added when appropriate
 - (@copilot) Enhanced Copilot instructions to make issue management policy more prominent - no auto-closing issues, manual validation required
 - (@copilot) Enhanced repository timestamp display to show both generated and read timestamps - shows when repository data was generated and when it was last read by admin backend
@@ -104,7 +105,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@copilot) Fixed js-controller update notifications to use "The js-controller" instead of "Adapter js-controller"
 - (@copilot) Fixed JSONConfig sendTo jsonData attribute parser problem where backslashes (\) in text inputs caused JSON parsing errors
 - (@copilot) Fixed step type behavior in chart display - "Schritte" now shows value until next point (step after) instead of step before
-- (@copilot) Added all three step type options (stepStart, stepMiddle, stepEnd) to chart display with clearer descriptions
+- (@copilot) Added all three-step type options (stepStart, stepMiddle, stepEnd) to chart display with clearer descriptions
 - (@copilot) Fixed React error #62 in Files tab caused by malformed CSS calc() function
 - (@copilot) Added loading indicator to JSONConfig autocompleteSendTo component during sendTo operations
 - (@copilot) Mark adapters removed from repository with "not maintained" text instead of empty version field

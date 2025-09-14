@@ -7,7 +7,7 @@
         // check JS files
         "allowJs": true,
         "checkJs": true,
-        "outDir": "./build-backend/",
+        "outDir": "./build/",
         "sourceMap": true,
         "inlineSources": true,
 

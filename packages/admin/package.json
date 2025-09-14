@@ -71,10 +71,10 @@
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.admin/issues"
     },
-    "main": "build-backend/main.js",
+    "main": "build/main.js",
     "files": [
         "admin/",
-        "build-backend",
+        "build",
         "docs/",
         "adminWww/",
         "public/",
