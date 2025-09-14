@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Enhanced Copilot instructions to make issue management policy more prominent - no auto-closing issues, manual validation required
 - (@copilot) Enhanced repository timestamp display to show both generated and read timestamps - shows when repository data was generated and when it was last read by admin backend
 - (@copilot) Fixed jsonConfig port validation to properly account for bind addresses, allowing the same port on different IP addresses
 - (@copilot) Added error indicators to JSON Config tabs and accordions to improve visibility of validation errors
