@@ -265,7 +265,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
         const dataStr = JSON.stringify(value, null, 2);
         const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
         
-        const exportFileDefaultName = `accordion_data_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+        const exportFileDefaultName = `config_section_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
         
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
@@ -333,7 +333,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                         ) : null}
                         {!schema.noDelete ? (
                             <>
-                                <Tooltip title={I18n.t('ra_Export accordion data')}>
+                                <Tooltip title={I18n.t('ra_Export configuration section')}>
                                     <IconButton
                                         size="small"
                                         color="primary"
@@ -342,7 +342,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                                         <FileDownloadIcon />
                                     </IconButton>
                                 </Tooltip>
-                                <Tooltip title={I18n.t('ra_Import and replace accordion data')}>
+                                <Tooltip title={I18n.t('ra_Import and replace configuration section')}>
                                     <IconButton
                                         size="small"
                                         color="primary"
@@ -351,7 +351,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                                         <FileUploadIcon />
                                     </IconButton>
                                 </Tooltip>
-                                <Tooltip title={I18n.t('ra_Import and add accordion data')}>
+                                <Tooltip title={I18n.t('ra_Import and add configuration section')}>
                                     <IconButton
                                         size="small"
                                         color="primary"
