@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Added export/import functionality for accordion sections in JsonConfig allowing users to save accordion data as JSON files and import them back with replace or add options
 - (@copilot) Fixed time difference warning that incorrectly appeared when browser tab was inactive for a while
 - (@copilot) For GitHub-installed adapters, show version + commit hash instead of just version
 - (@copilot) Fixed table export error when table items contain null values
