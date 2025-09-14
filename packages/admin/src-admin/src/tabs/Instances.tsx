@@ -427,9 +427,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 instance.links = instance.links || [];
                 let link: InstanceLink;
                 if (typeof links[linkName] === 'string') {
-                    link = { link: links[linkName] as string };
+                    link = { link: links[linkName] };
                 } else {
-                    link = links[linkName] as InstanceLink;
+                    link = links[linkName];
                 }
 
                 const urls =
@@ -848,39 +848,46 @@ class Instances extends Component<InstancesProps, InstancesState> {
         if (this.state.sortColumn) {
             this._cacheList = this._cacheList.sort((a, b) => {
                 let comparison = 0;
-                
+
                 switch (this.state.sortColumn) {
-                    case 'name':
+                    case 'name': {
                         comparison = a.name.localeCompare(b.name);
                         break;
-                    case 'id':
+                    }
+                    case 'id': {
                         comparison = a.nameId.localeCompare(b.nameId);
                         break;
-                    case 'status':
+                    }
+                    case 'status': {
                         // Define status order: green > orange > red > grey
                         const statusOrder = { green: 4, orange: 3, orangeDevice: 2, red: 1, grey: 0, blue: 0 };
                         comparison = (statusOrder[a.status] || 0) - (statusOrder[b.status] || 0);
                         break;
-                    case 'memory':
+                    }
+                    case 'memory': {
                         if (!a.running || !b.running) {
-                            comparison = a.running === b.running ? 0 : (a.running ? 1 : -1);
+                            comparison = a.running === b.running ? 0 : a.running ? 1 : -1;
                         } else {
                             const memA = this.getMemoryUsage(a.id);
                             const memB = this.getMemoryUsage(b.id);
                             comparison = memA - memB;
                         }
                         break;
-                    case 'host':
+                    }
+                    case 'host': {
                         comparison = a.host.localeCompare(b.host);
                         break;
-                    case 'loglevel':
+                    }
+                    case 'loglevel': {
                         const logOrder = { error: 4, warn: 3, info: 2, debug: 1, silly: 0 };
                         comparison = (logOrder[a.logLevel] || 0) - (logOrder[b.logLevel] || 0);
                         break;
-                    default:
+                    }
+                    default: {
                         comparison = 0;
+                    }
                 }
-                
+
                 return this.state.sortDirection === 'desc' ? -comparison : comparison;
             });
         }
@@ -890,18 +897,18 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     onSort = (column: SortColumn): void => {
         let newDirection: SortDirection = 'asc';
-        
+
         if (this.state.sortColumn === column) {
             // If same column, toggle direction
             newDirection = this.state.sortDirection === 'asc' ? 'desc' : 'asc';
         }
-        
+
         this._cacheList = null;
         this.localStorage.setItem('Instances.sortColumn', column);
         this.localStorage.setItem('Instances.sortDirection', newDirection);
-        this.setState({ 
-            sortColumn: column, 
-            sortDirection: newDirection 
+        this.setState({
+            sortColumn: column,
+            sortDirection: newDirection,
         });
     };
 
@@ -1415,9 +1422,15 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         buttonIcon={
                             this.state.sortColumn ? (
                                 this.state.sortDirection === 'asc' ? (
-                                    <ArrowUpwardIcon style={{ marginRight: 4 }} color="primary" />
+                                    <ArrowUpwardIcon
+                                        style={{ marginRight: 4 }}
+                                        color="primary"
+                                    />
                                 ) : (
-                                    <ArrowDownwardIcon style={{ marginRight: 4 }} color="primary" />
+                                    <ArrowDownwardIcon
+                                        style={{ marginRight: 4 }}
+                                        color="primary"
+                                    />
                                 )
                             ) : (
                                 <SortIcon style={{ marginRight: 4 }} />
