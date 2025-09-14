@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 
-const { replaceLink } = require('../build-backend/lib/utils');
+const { replaceLink } = require('../build/lib/utils');
 
 const instances = {
     'system.adapter.admin.0': {

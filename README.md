@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@GermanBluefox) Added icon to `www` folder for windows
 - (@copilot) For GitHub-installed adapters, show version + commit hash instead of just version
 - (@copilot) Fixed table export error when table items contain null values
 - (@copilot) Object Browser: Added formatted duration display for values with role "value.duration" - shows time durations in HH:mm:ss format instead of raw seconds
@@ -97,7 +98,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@copilot) Fixed js-controller update notifications to use "The js-controller" instead of "Adapter js-controller"
 - (@copilot) Fixed JSONConfig sendTo jsonData attribute parser problem where backslashes (\) in text inputs caused JSON parsing errors
 - (@copilot) Fixed step type behavior in chart display - "Schritte" now shows value until next point (step after) instead of step before
-- (@copilot) Added all three step type options (stepStart, stepMiddle, stepEnd) to chart display with clearer descriptions
+- (@copilot) Added all three-step type options (stepStart, stepMiddle, stepEnd) to chart display with clearer descriptions
 - (@copilot) Fixed React error #62 in Files tab caused by malformed CSS calc() function
 - (@copilot) Added loading indicator to JSONConfig autocompleteSendTo component during sendTo operations
 - (@copilot) Mark adapters removed from repository with "not maintained" text instead of empty version field
