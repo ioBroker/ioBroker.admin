@@ -90,6 +90,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@copilot) Fixed jsonConfig port validation to properly account for bind addresses, allowing the same port on different IP addresses
+- (@copilot) Added error indicators to JSON Config tabs and accordions to improve visibility of validation errors
+- (@copilot) Added export/import functionality for accordion sections in JsonConfig allowing users to save accordion data as JSON files and import them back with replace or add options
+- (@copilot) Fixed time difference warning that incorrectly appeared when browser tab was inactive for a while
+- (@copilot) For GitHub-installed adapters, show version + commit hash instead of just version
+- (@copilot) Fixed table export error when table items contain null values
 - (@copilot) Object Browser: Added formatted duration display for values with role "value.duration" - shows time durations in HH:mm:ss format instead of raw seconds
 - (@copilot) Enhanced GitHub Actions to skip tests when only README.md is changed, speeding up CI for Copilot PRs (tested with mixed file changes)
 - (@GermanBluefox) Added the docker checker in JSON config
