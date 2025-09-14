@@ -2,6 +2,23 @@
 
 **CRITICAL: Always follow these instructions first and only fallback to search or bash commands when the information here is incomplete or found to be in error.**
 
+## 🚨 CRITICAL ISSUE MANAGEMENT POLICY
+
+**NEVER automatically close issues with PR merges. All issues must be manually validated before closing.**
+
+### Issue Handling Rules
+1. **NEVER** use keywords that auto-close issues in PR titles, descriptions, or commit messages:
+   - Prohibited: "fix", "fixes", "fixed", "close", "closes", "closed", "resolve", "resolves", "resolved"
+   - Use instead: "address", "implement", "handle", "improve", "related to", "regarding"
+
+2. **Reference issues neutrally**: Use "Related to #123" instead of "Fixes #123"
+
+3. **Add 'fixed' label**: When a PR fully addresses an issue, manually add the "fixed" label to the issue (if you have permissions)
+
+4. **Manual validation required**: Issues should only be closed manually by maintainers after proper review and validation, not automatically by PR merges
+
+---
+
 ioBroker.admin is a complex monorepo that provides the web-based administration interface for ioBroker home automation systems. It consists of a React/TypeScript frontend, Express.js backend, and multiple shared component packages.
 
 ## Working Effectively
@@ -154,6 +171,18 @@ The frontend communicates with ioBroker instances via WebSockets on port 8081 (o
 
 ## CoPilot Pull Request and Issue Management
 
+### **CRITICAL REQUIREMENTS**
+**NEVER use keywords that automatically close issues.** Issues must be closed manually by maintainers after validation.
+
+**Key Rules:**
+1. Use "Related to #123" instead of "Fixes #123" 
+2. Add "fixed" label when PR fully addresses an issue (if you have permissions)
+3. Issues are closed manually by maintainers, not by PR merge
+
+### 🚨 CRITICAL: Issue Auto-Closing Prevention
+
+**PRIMARY RULE: Do not close issues automatically with PR merges. Issues must be manually validated after release.**
+
 ### Issue Handling Guidelines
 When creating PRs that address GitHub issues, follow these specific practices:
 
@@ -169,7 +198,7 @@ When creating PRs that address GitHub issues, follow these specific practices:
    - Brief description of the changes made
    - Request for review/testing if applicable
 
-3. **Set issue labels**: When a PR fully addresses an issue, manually set the "fixed" label on the issue (if you have permissions).
+3. **Set issue labels**: When a PR fully addresses an issue, **ALWAYS** manually set the "fixed" label on the issue (if you have permissions). This is preferred over auto-closing.
 
 ### Changelog Management
 **ALWAYS** add a user-focused changelog entry for every PR to the README.md file:
@@ -209,19 +238,32 @@ Remember: Issues should be closed manually by maintainers after proper review an
 
 ### Prohibited Keywords in PR Content
 **NEVER use these keywords in PR titles, descriptions, or commit messages** as they will automatically close issues:
-- "fix", "fixes", "fixed"
-- "close", "closes", "closed"  
-- "resolve", "resolves", "resolved"
 
-Instead use these neutral alternatives:
-- "address", "addresses", "addressed"
-- "implement", "implements", "implemented"  
-- "handle", "handles", "handled"
-- "improve", "improves", "improved"
-- "related to", "regarding", "concerning"
+#### Absolutely Prohibited Auto-Closing Keywords:
+- "fix", "fixes", "fixed", "fixing"
+- "close", "closes", "closed", "closing"  
+- "resolve", "resolves", "resolved", "resolving"
+
+#### Use These Neutral Alternatives Instead:
+- "address", "addresses", "addressed", "addressing"
+- "implement", "implements", "implemented", "implementing"  
+- "handle", "handles", "handled", "handling"
+- "improve", "improves", "improved", "improving"
+- "update", "updates", "updated", "updating"
+- "related to", "regarding", "concerning", "about"
+- "work on", "working on", "worked on"
+
+#### Safe Linking Phrases:
+- "Related to #123"
+- "Addresses issue #123"
+- "Implements feature requested in #123"
+- "Handles problem described in #123"
+- "Improves situation in #123"
 
 ### Required Actions for Every PR
 1. **Update README.md**: Add changelog entry under "### **WORK IN PROGRESS**"
-2. **Reference issues**: Use "Related to #123" format in PR description
-3. **Comment on issues**: Add a comment with PR link and summary
-4. **Test thoroughly**: Include testing details in PR description
+2. **Reference issues**: Use "Related to #123" format in PR description (NEVER use auto-closing keywords)
+3. **Add 'fixed' label**: If the PR fully addresses an issue, manually add the "fixed" label to the issue
+4. **Comment on issues**: Add a comment with PR link and summary
+5. **Test thoroughly**: Include testing details in PR description
+6. **Manual validation reminder**: Include note that issue requires manual validation before closing
