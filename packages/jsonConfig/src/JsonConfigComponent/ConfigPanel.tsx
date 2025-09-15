@@ -16,6 +16,7 @@ import ConfigCRON from './ConfigCRON';
 import ConfigCertificateSelect from './ConfigCertificateSelect';
 import ConfigCertificates from './ConfigCertificates';
 import ConfigCertCollection from './ConfigCertCollection';
+import ConfigCheckDocker from './ConfigCheckDocker';
 import ConfigCheckLicense from './ConfigCheckLicense';
 import ConfigCheckbox from './ConfigCheckbox';
 import ConfigChip from './ConfigChip';
@@ -72,6 +73,7 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     certificate: ConfigCertificateSelect,
     certificates: ConfigCertificates,
     checkbox: ConfigCheckbox,
+    checkDocker: ConfigCheckDocker,
     checkLicense: ConfigCheckLicense,
     chip: ConfigChip, // deprecated. Use "chips"
     chips: ConfigChip,

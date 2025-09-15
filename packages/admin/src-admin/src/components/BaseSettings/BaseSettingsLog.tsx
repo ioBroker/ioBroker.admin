@@ -122,17 +122,12 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         super(props);
 
         const settings: SettingsLog = this.props.settings || {};
-        settings.transport = settings.transport || {};
+        settings.transport ||= {};
         Object.keys(settings.transport).forEach(id => {
             if (settings.transport[id].type === 'file') {
+                const maxSize = settings.transport[id].maxSize;
                 const multiplier =
-                    typeof settings.transport[id].maxSize === 'string'
-                        ? (settings.transport[id].maxSize as string).includes('k')
-                            ? 0.1
-                            : (settings.transport[id].maxSize as string).includes('g')
-                              ? 10
-                              : 1
-                        : 1;
+                    typeof maxSize === 'string' ? (maxSize.includes('k') ? 0.1 : maxSize.includes('g') ? 10 : 1) : 1;
                 settings.transport[id].maxSize =
                     (parseInt(settings.transport[id].maxSize as string, 10) || 0) * multiplier;
                 settings.transport[id].level = settings.transport[id].level || '';

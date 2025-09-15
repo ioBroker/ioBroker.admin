@@ -57,6 +57,8 @@ const styles: Record<string, any> = {
     }),
 };
 
+const DEFAULT_PORT = 9000;
+
 const DEFAULT_JSONL_OPTIONS = {
     autoCompress: {
         sizeFactor: 2,
@@ -148,7 +150,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         super(props);
 
         const settings: SettingsStates = this.props.settings || {};
-        settings.options = settings.options || {
+        settings.options ||= {
             auth_pass: '',
             retry_max_delay: 2000,
             retry_max_count: 19,
@@ -169,7 +171,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         this.state = {
             type: settings.type || 'file',
             host: Array.isArray(settings.host) ? settings.host.join(',') : settings.host || '127.0.0.1',
-            port: settings.port || 9000,
+            port: settings.port || DEFAULT_PORT,
             connectTimeout: settings.connectTimeout || 2000,
             writeFileInterval: settings.writeFileInterval || 5000,
             dataDir: settings.dataDir || '',
@@ -188,10 +190,9 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
                 settings.jsonlOptions.autoCompress.sizeFactorMinimumSize || 25000,
             jsonlOptions_throttleFS_intervalMs: settings.jsonlOptions.throttleFS.intervalMs || 60000,
             jsonlOptions_throttleFS_maxBufferedCommands: settings.jsonlOptions.throttleFS.maxBufferedCommands || 100,
-            textIP:
-                Array.isArray(settings.host) ||
-                !!(settings.host || '').match(/[^.\d]/) ||
-                (settings.host || '').includes(','),
+            textIP: BaseSettingsStates.calculateTextIP(
+                Array.isArray(settings.host) ? settings.host.join(',') : settings.host || '127.0.0.1',
+            ),
 
             IPs: ['0.0.0.0', '127.0.0.1'],
             loading: true,
@@ -204,6 +205,29 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         this.focusRef = createRef();
     }
 
+    private static calculateTextIP(host: string, IPs?: string[]): boolean {
+        // Handle array host (multiple IPs as array)
+        if (Array.isArray(host)) {
+            return true;
+        }
+
+        // Check if host contains non-IP characters (domain names) or multiple IPs
+        const hasNonIPChars = !!host.match(/[^.\d]/) || host.includes(',');
+
+        // If it looks like a domain or multiple IPs, enable text input
+        if (hasNonIPChars) {
+            return true;
+        }
+
+        // If we have the IPs array and it's a single IP address but not in the available IPs list, enable text input
+        if (IPs) {
+            return !IPs.includes(host);
+        }
+
+        // Initial state: for simple IP addresses, default to false (will be recalculated in componentDidMount)
+        return false;
+    }
+
     componentDidMount(): void {
         void this.props.socket.getIpAddresses(this.props.currentHost).then(_IPs => {
             const IPs = [..._IPs];
@@ -213,15 +237,25 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
             if (!IPs.includes('127.0.0.1')) {
                 IPs.push('127.0.0.1');
             }
-            let textIP: boolean = !!this.state.host.match(/[^.\d]/) || (this.state.host || '').includes(',');
-            if (!textIP && !IPs.includes(this.state.host)) {
-                textIP = true;
-            }
+            const textIP = BaseSettingsStates.calculateTextIP(this.state.host, IPs);
             this.setState(
                 { IPs, loading: false, textIP },
                 () => this.focusRef.current && this.focusRef.current.focus(),
             );
         });
+    }
+
+    componentDidUpdate(prevProps: BaseSettingsStatesProps): void {
+        // Recalculate textIP if the settings change
+        if (prevProps.settings !== this.props.settings) {
+            const settings: SettingsStates = this.props.settings || {};
+            const newHost = Array.isArray(settings.host) ? settings.host.join(',') : settings.host || '127.0.0.1';
+
+            if (newHost !== this.state.host) {
+                const textIP = BaseSettingsStates.calculateTextIP(newHost, this.state.IPs);
+                this.setState({ host: newHost, textIP });
+            }
+        }
     }
 
     onChange(): void {
@@ -294,7 +328,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
                             if (this.state.toConfirmType === 'redis') {
                                 port = 6379;
                             } else {
-                                port = 9000;
+                                port = DEFAULT_PORT;
                             }
                             this.setState(
                                 { type: this.state.toConfirmType || 'file', showWarningDialog: false, port },
@@ -357,7 +391,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
                                                 if (e.target.value === 'redis') {
                                                     port = 6379;
                                                 } else {
-                                                    port = 9000;
+                                                    port = DEFAULT_PORT;
                                                 }
                                                 this.setState({ type: e.target.value, port }, () => this.onChange());
                                             }
@@ -432,7 +466,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
                             />
                         </Grid2>
 
-                        {this.state.type === 'file' ? (
+                        {this.state.type === 'file' || this.state.type === 'jsonl' ? (
                             <Grid2>
                                 <TextField
                                     variant="standard"
@@ -492,6 +526,37 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
                                     }
                                     label={this.props.t('Connect timeout')}
                                 />
+                            </Grid2>
+                        ) : null}
+
+                        {this.state.type === 'file' || this.state.type === 'jsonl' ? (
+                            <Grid2>
+                                <FormControl
+                                    component="fieldset"
+                                    variant="standard"
+                                    style={styles.controlItem}
+                                >
+                                    <FormGroup>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={this.state.noFileCache}
+                                                    onChange={e =>
+                                                        this.setState({ noFileCache: e.target.checked }, () =>
+                                                            this.onChange(),
+                                                        )
+                                                    }
+                                                />
+                                            }
+                                            label={this.props.t('No file cache')}
+                                        />
+                                    </FormGroup>
+                                    <FormHelperText>
+                                        {this.props.t(
+                                            'Always read files from disk and do not cache them in RAM. Used for debugging.',
+                                        )}
+                                    </FormHelperText>
+                                </FormControl>
                             </Grid2>
                         ) : null}
 
