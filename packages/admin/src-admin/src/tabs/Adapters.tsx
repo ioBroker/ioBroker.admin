@@ -1598,11 +1598,12 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 upload={adapterName =>
                     this.props.executeCommand(`upload ${adapterName}${this.props.expertMode ? ' --debug' : ''}`)
                 }
-                installFromUrl={(adapterName, debug, customUrl) =>
+                installFromUrl={(adapterName, debug, customUrl, createInstance) =>
                     this.addInstance({
                         adapterName,
                         debug,
                         customUrl,
+                        createInstance,
                         context,
                     })
                 }
