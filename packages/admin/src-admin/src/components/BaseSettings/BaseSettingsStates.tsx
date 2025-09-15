@@ -57,6 +57,8 @@ const styles: Record<string, any> = {
     }),
 };
 
+const DEFAULT_PORT = 9000;
+
 const DEFAULT_JSONL_OPTIONS = {
     autoCompress: {
         sizeFactor: 2,
@@ -148,7 +150,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         super(props);
 
         const settings: SettingsStates = this.props.settings || {};
-        settings.options = settings.options || {
+        settings.options ||= {
             auth_pass: '',
             retry_max_delay: 2000,
             retry_max_count: 19,
@@ -169,7 +171,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         this.state = {
             type: settings.type || 'file',
             host: Array.isArray(settings.host) ? settings.host.join(',') : settings.host || '127.0.0.1',
-            port: settings.port || 9000,
+            port: settings.port || DEFAULT_PORT,
             connectTimeout: settings.connectTimeout || 2000,
             writeFileInterval: settings.writeFileInterval || 5000,
             dataDir: settings.dataDir || '',
@@ -248,7 +250,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         if (prevProps.settings !== this.props.settings) {
             const settings: SettingsStates = this.props.settings || {};
             const newHost = Array.isArray(settings.host) ? settings.host.join(',') : settings.host || '127.0.0.1';
-            
+
             if (newHost !== this.state.host) {
                 const textIP = BaseSettingsStates.calculateTextIP(newHost, this.state.IPs);
                 this.setState({ host: newHost, textIP });
@@ -326,7 +328,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
                             if (this.state.toConfirmType === 'redis') {
                                 port = 6379;
                             } else {
-                                port = 9000;
+                                port = DEFAULT_PORT;
                             }
                             this.setState(
                                 { type: this.state.toConfirmType || 'file', showWarningDialog: false, port },
@@ -389,7 +391,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
                                                 if (e.target.value === 'redis') {
                                                     port = 6379;
                                                 } else {
-                                                    port = 9000;
+                                                    port = DEFAULT_PORT;
                                                 }
                                                 this.setState({ type: e.target.value, port }, () => this.onChange());
                                             }
@@ -464,7 +466,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
                             />
                         </Grid2>
 
-                        {this.state.type === 'file' ? (
+                        {this.state.type === 'file' || this.state.type === 'jsonl' ? (
                             <Grid2>
                                 <TextField
                                     variant="standard"
@@ -524,6 +526,37 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
                                     }
                                     label={this.props.t('Connect timeout')}
                                 />
+                            </Grid2>
+                        ) : null}
+
+                        {this.state.type === 'file' || this.state.type === 'jsonl' ? (
+                            <Grid2>
+                                <FormControl
+                                    component="fieldset"
+                                    variant="standard"
+                                    style={styles.controlItem}
+                                >
+                                    <FormGroup>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={this.state.noFileCache}
+                                                    onChange={e =>
+                                                        this.setState({ noFileCache: e.target.checked }, () =>
+                                                            this.onChange(),
+                                                        )
+                                                    }
+                                                />
+                                            }
+                                            label={this.props.t('No file cache')}
+                                        />
+                                    </FormGroup>
+                                    <FormHelperText>
+                                        {this.props.t(
+                                            'Always read files from disk and do not cache them in RAM. Used for debugging.',
+                                        )}
+                                    </FormHelperText>
+                                </FormControl>
                             </Grid2>
                         ) : null}
 

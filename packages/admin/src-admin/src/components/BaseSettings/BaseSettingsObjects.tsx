@@ -2,23 +2,24 @@ import React, { createRef, Component, type JSX } from 'react';
 
 import {
     Grid2,
-    InputLabel,
     FormControlLabel,
     Checkbox,
-    Select,
-    Tooltip,
     TextField,
-    FormGroup,
-    MenuItem,
-    FormHelperText,
-    FormControl,
     Paper,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Tooltip,
+    FormHelperText,
+    FormGroup,
     Switch,
     LinearProgress,
     Box,
 } from '@mui/material';
 
-import { withWidth, DialogConfirm, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { DialogConfirm, withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+
 import { type AdminConnection } from '@iobroker/socket-client';
 
 const styles: Record<string, any> = {
@@ -55,6 +56,8 @@ const styles: Record<string, any> = {
         color: theme.palette.mode === 'dark' ? '#ffa500' : '#b17200',
     }),
 };
+
+const DEFAULT_PORT = 9001;
 
 const DEFAULT_JSONL_OPTIONS = {
     autoCompress: {
@@ -168,11 +171,10 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
         this.state = {
             type: settings.type || 'file',
             host: Array.isArray(settings.host) ? settings.host.join(',') : settings.host || '127.0.0.1',
-            port: settings.port || 9001,
-            noFileCache: settings.noFileCache || false,
-            dataDir: settings.dataDir || '',
+            port: settings.port || DEFAULT_PORT,
             connectTimeout: settings.connectTimeout || 2000,
             writeFileInterval: settings.writeFileInterval || 5000,
+            dataDir: settings.dataDir || '',
             options_auth_pass: settings.options.auth_pass || settings.pass || '',
             options_retry_max_delay: settings.options.retry_max_delay || 2000,
             options_retry_max_count: settings.options.retry_max_count || 19,
@@ -197,6 +199,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
             showWarningDialog: false,
             toConfirmType: '',
             originalDBType: settings.type || 'file',
+            noFileCache: settings.noFileCache || false,
         };
 
         this.focusRef = createRef();
@@ -247,7 +250,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
         if (prevProps.settings !== this.props.settings) {
             const settings: SettingsObjects = this.props.settings || {};
             const newHost = Array.isArray(settings.host) ? settings.host.join(',') : settings.host || '127.0.0.1';
-            
+
             if (newHost !== this.state.host) {
                 const textIP = BaseSettingsObjects.calculateTextIP(newHost, this.state.IPs);
                 this.setState({ host: newHost, textIP });
@@ -325,7 +328,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                             if (this.state.toConfirmType === 'redis') {
                                 port = 6379;
                             } else {
-                                port = 9001;
+                                port = DEFAULT_PORT;
                             }
                             this.setState(
                                 { type: this.state.toConfirmType || 'file', showWarningDialog: false, port },
@@ -388,7 +391,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                                                 if (e.target.value === 'redis') {
                                                     port = 6379;
                                                 } else {
-                                                    port = 9001;
+                                                    port = DEFAULT_PORT;
                                                 }
                                                 this.setState({ type: e.target.value, port }, () => this.onChange());
                                             }
@@ -457,12 +460,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                                 style={styles.controlItem}
                                 value={this.state.port}
                                 type="number"
-                                slotProps={{
-                                    htmlInput: {
-                                        min: 1,
-                                        max: 65535,
-                                    },
-                                }}
+                                slotProps={{ htmlInput: { min: 1, max: 65535 } }}
                                 onChange={e => this.setState({ port: e.target.value }, () => this.onChange())}
                                 label={this.props.t('Port')}
                             />
@@ -522,11 +520,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                                     value={this.state.connectTimeout}
                                     helperText={this.props.t('ms')}
                                     type="number"
-                                    slotProps={{
-                                        htmlInput: {
-                                            min: 200,
-                                        },
-                                    }}
+                                    slotProps={{ htmlInput: { min: 200 } }}
                                     onChange={e =>
                                         this.setState({ connectTimeout: e.target.value }, () => this.onChange())
                                     }
@@ -574,11 +568,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                                     value={this.state.writeFileInterval}
                                     helperText={this.props.t('How often the data from RAM will be saved on disk in ms')}
                                     type="number"
-                                    slotProps={{
-                                        htmlInput: {
-                                            min: 200,
-                                        },
-                                    }}
+                                    slotProps={{ htmlInput: { min: 200 } }}
                                     onChange={e =>
                                         this.setState({ writeFileInterval: e.target.value }, () => this.onChange())
                                     }
@@ -750,8 +740,8 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                             <Grid2>
                                 <FormControl
                                     component="fieldset"
-                                    variant="standard"
                                     style={styles.controlItem}
+                                    variant="standard"
                                 >
                                     <FormGroup>
                                         <FormControlLabel
