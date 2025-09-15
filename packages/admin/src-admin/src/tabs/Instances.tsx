@@ -19,7 +19,6 @@ import {
     List as ListIcon,
     ArrowUpward as ArrowUpwardIcon,
     ArrowDownward as ArrowDownwardIcon,
-    Sort as SortIcon,
 } from '@mui/icons-material';
 import { FaFilter as FilterListIcon } from 'react-icons/fa';
 
@@ -1165,12 +1164,30 @@ class Instances extends Component<InstancesProps, InstancesState> {
             <InstanceFilterDialog
                 filterMode={this.state.filterMode}
                 filterStatus={this.state.filterStatus}
+                sortColumn={this.state.sortColumn}
+                sortDirection={this.state.sortDirection}
+                expertMode={this.props.expertMode}
                 onClose={newState => {
                     if (newState) {
                         this._cacheList = null;
                         this.localStorage.setItem('Instances.filterMode', newState.filterMode);
                         this.localStorage.setItem('Instances.filterStatus', newState.filterStatus);
-                        this.setState(newState);
+                        
+                        // Handle sorting state
+                        if (newState.sortColumn) {
+                            this.localStorage.setItem('Instances.sortColumn', newState.sortColumn);
+                            this.localStorage.setItem('Instances.sortDirection', newState.sortDirection);
+                        } else {
+                            this.localStorage.removeItem('Instances.sortColumn');
+                            this.localStorage.removeItem('Instances.sortDirection');
+                        }
+                        
+                        this.setState({
+                            filterMode: newState.filterMode,
+                            filterStatus: newState.filterStatus,
+                            sortColumn: newState.sortColumn,
+                            sortDirection: newState.sortDirection,
+                        });
                     }
                     this.setState({ showFilterDialog: false });
                 }}
@@ -1403,52 +1420,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         <IconButton
                             size="large"
                             onClick={() => this.setState({ showFilterDialog: true })}
-                            sx={this.state.filterMode || this.state.filterStatus ? styles.filterActive : undefined}
+                            sx={this.state.filterMode || this.state.filterStatus || this.state.sortColumn ? styles.filterActive : undefined}
                         >
                             <FilterListIcon style={{ width: 16, height: 16 }} />
                         </IconButton>
                     </Tooltip>
-                    <CustomSelectButton
-                        title={this.t('Sort by')}
-                        t={this.t}
-                        arrayItem={[
-                            { name: 'none' },
-                            { name: 'name' },
-                            { name: 'id' },
-                            { name: 'status' },
-                            { name: 'memory' },
-                            { name: 'host' },
-                            ...(this.props.expertMode ? [{ name: 'loglevel' }] : []),
-                        ]}
-                        buttonIcon={
-                            this.state.sortColumn ? (
-                                this.state.sortDirection === 'asc' ? (
-                                    <ArrowUpwardIcon
-                                        style={{ marginRight: 4 }}
-                                        color="primary"
-                                    />
-                                ) : (
-                                    <ArrowDownwardIcon
-                                        style={{ marginRight: 4 }}
-                                        color="primary"
-                                    />
-                                )
-                            ) : (
-                                <SortIcon style={{ marginRight: 4 }} />
-                            )
-                        }
-                        onClick={value => {
-                            if (value === 'none') {
-                                this._cacheList = null;
-                                this.localStorage.removeItem('Instances.sortColumn');
-                                this.localStorage.removeItem('Instances.sortDirection');
-                                this.setState({ sortColumn: null, sortDirection: 'asc' });
-                            } else {
-                                this.onSort(value as SortColumn);
-                            }
-                        }}
-                        value={this.state.sortColumn || 'none'}
-                    />
                     {/* this.props.expertMode && <Tooltip title="sentry" slotProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="small"

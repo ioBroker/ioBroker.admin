@@ -20,6 +20,8 @@ import {
     Lens as SettingsIcon,
     Check as IconCheck,
     Close as IconClose,
+    ArrowUpward as ArrowUpwardIcon,
+    ArrowDownward as ArrowDownwardIcon,
 } from '@mui/icons-material';
 
 import { green, grey, orange, red } from '@mui/material/colors';
@@ -243,15 +245,28 @@ const statusArray: Record<string, { text: string; _class: string; status: string
     ok: { text: 'enabled and OK', _class: 'statusIcon_green', status: 'green' },
 };
 
+type SortColumn = 'name' | 'status' | 'memory' | 'id' | 'host' | 'loglevel';
+type SortDirection = 'asc' | 'desc';
+
 interface InstanceFilterDialogProps {
-    onClose: (filter?: { filterMode: string; filterStatus: string }) => void;
+    onClose: (filter?: { 
+        filterMode: string; 
+        filterStatus: string;
+        sortColumn: SortColumn | null;
+        sortDirection: SortDirection;
+    }) => void;
     filterMode: string;
     filterStatus: string;
+    sortColumn: SortColumn | null;
+    sortDirection: SortDirection;
+    expertMode: boolean;
 }
 
-const InstanceFilterDialog = ({ onClose, filterMode, filterStatus }: InstanceFilterDialogProps): JSX.Element => {
+const InstanceFilterDialog = ({ onClose, filterMode, filterStatus, sortColumn, sortDirection, expertMode }: InstanceFilterDialogProps): JSX.Element => {
     const [modeCheck, setModeCheck] = useState(filterMode);
     const [statusCheck, setStatusCheck] = useState(filterStatus);
+    const [sortColumnState, setSortColumnState] = useState(sortColumn);
+    const [sortDirectionState, setSortDirectionState] = useState(sortDirection);
 
     return (
         <Dialog
@@ -349,17 +364,75 @@ const InstanceFilterDialog = ({ onClose, filterMode, filterStatus }: InstanceFil
                             ))}
                         </Select>
                     </div>
+                    <div style={styles.rowBlock}>
+                        <FormControlLabel
+                            style={styles.checkbox}
+                            control={
+                                <Checkbox
+                                    checked={!!sortColumnState}
+                                    onChange={e => (e.target.checked ? setSortColumnState('name') : setSortColumnState(null))}
+                                />
+                            }
+                            label={I18n.t('Sort by')}
+                        />
+                        <Select
+                            disabled={!sortColumnState}
+                            variant="standard"
+                            value={sortColumnState || 'none'}
+                            style={styles.select}
+                            onChange={el => {
+                                if (el.target.value === 'none') {
+                                    setSortColumnState(null);
+                                } else {
+                                    setSortColumnState(el.target.value as SortColumn);
+                                }
+                            }}
+                        >
+                            <MenuItem value="none">{I18n.t('none')}</MenuItem>
+                            <MenuItem value="name">{I18n.t('Name')}</MenuItem>
+                            <MenuItem value="id">{I18n.t('ID')}</MenuItem>
+                            <MenuItem value="status">{I18n.t('Status')}</MenuItem>
+                            <MenuItem value="memory">{I18n.t('Memory')}</MenuItem>
+                            <MenuItem value="host">{I18n.t('Host')}</MenuItem>
+                            {expertMode && <MenuItem value="loglevel">{I18n.t('Log level')}</MenuItem>}
+                        </Select>
+                    </div>
+                    {sortColumnState && (
+                        <div style={styles.rowBlock}>
+                            <FormControlLabel
+                                style={styles.checkbox}
+                                control={null}
+                                label={I18n.t('Sort direction')}
+                            />
+                            <Select
+                                variant="standard"
+                                value={sortDirectionState}
+                                style={styles.select}
+                                onChange={el => setSortDirectionState(el.target.value as SortDirection)}
+                            >
+                                <MenuItem value="asc">{I18n.t('Ascending')}</MenuItem>
+                                <MenuItem value="desc">{I18n.t('Descending')}</MenuItem>
+                            </Select>
+                        </div>
+                    )}
                 </Card>
             </DialogContent>
             <DialogActions>
                 <Button
                     variant="contained"
                     autoFocus
-                    disabled={modeCheck === filterMode && filterStatus === statusCheck}
+                    disabled={
+                        modeCheck === filterMode && 
+                        filterStatus === statusCheck && 
+                        sortColumnState === sortColumn && 
+                        sortDirectionState === sortDirection
+                    }
                     onClick={() => {
                         onClose({
                             filterMode: modeCheck,
                             filterStatus: statusCheck,
+                            sortColumn: sortColumnState,
+                            sortDirection: sortDirectionState,
                         });
                     }}
                     color="primary"
