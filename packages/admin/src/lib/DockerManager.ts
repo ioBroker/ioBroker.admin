@@ -363,7 +363,8 @@ export default class DockerManager {
                         }
                         image = newImage;
                     }
-                } else if (!image) {
+                }
+                if (!image) {
                     this.#adapter.log.info(`Pulling image ${container.image} for own container ${container.name}`);
                     try {
                         const result = await this.imagePull(container.image);
