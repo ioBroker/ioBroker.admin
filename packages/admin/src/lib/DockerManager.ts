@@ -704,7 +704,7 @@ export default class DockerManager {
                     containers = await this.containerList();
 
                     if (containers.find(it => it.id === containerInfo.id && it.status === 'running')) {
-                        this.#adapter.log.warn(`Cannot remove container: ${stopResult.stderr || stopResult.stderr}`);
+                        this.#adapter.log.warn(`Cannot remove container: ${stopResult.stderr || stopResult.stdout}`);
                         throw new Error(`Container ${containerInfo.id} still running after stop`);
                     }
                 }
@@ -713,7 +713,7 @@ export default class DockerManager {
 
                 containers = await this.containerList();
                 if (containers.find(it => it.id === containerInfo.id)) {
-                    this.#adapter.log.warn(`Cannot remove container: ${rmResult.stderr || rmResult.stderr}`);
+                    this.#adapter.log.warn(`Cannot remove container: ${rmResult.stderr || rmResult.stdout}`);
                     throw new Error(`Container ${containerInfo.id} still found after stop`);
                 }
             }
