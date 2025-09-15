@@ -424,12 +424,13 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const names = links ? Object.keys(links) : [];
 
             names.forEach(linkName => {
-                instance.links = instance.links || [];
+                instance.links ||= [];
                 let link: InstanceLink;
-                if (typeof links[linkName] === 'string') {
-                    link = { link: links[linkName] };
+                const linkObject = links[linkName];
+                if (typeof linkObject === 'string') {
+                    link = { link: linkObject };
                 } else {
-                    link = links[linkName];
+                    link = linkObject;
                 }
 
                 const urls =

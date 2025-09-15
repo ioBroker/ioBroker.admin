@@ -176,7 +176,7 @@ function clean() {
 }
 
 if (process.argv.includes('--backend-i18n')) {
-    copyFiles(['src/i18n/*'], 'build-backend/i18n');
+    copyFiles(['src/i18n/*'], 'build/i18n');
     syncUtils();
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-configCSS')) {
     syncUtils();

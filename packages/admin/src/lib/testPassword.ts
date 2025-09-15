@@ -4,7 +4,7 @@ import { Writable } from 'node:stream';
 
 let maskOutput = false;
 // this file is used for test on different locales
-// node /opt/iobroker/node_modules/iobroker.admin/build-backend/lib/testPassword
+// node /opt/iobroker/node_modules/iobroker.admin/build/lib/testPassword
 const mutableStdout = new Writable({
     write: (_chunk, _encoding, callback) => {
         if (maskOutput) {

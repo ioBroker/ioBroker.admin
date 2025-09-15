@@ -502,6 +502,15 @@ export default abstract class AdapterGeneric<
             ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate
             : true;
 
+        // Check if adapter exists in repository and has a version
+        const repositoryAdapter = this.props.context.repository[this.props.adapterName];
+        const adapterVersion = repositoryAdapter?.version;
+
+        // If no version is available, show "not maintained" message
+        if (!adapterVersion) {
+            return <span style={this.styles.wrongDependencies}>{this.props.context.t('not maintained')}</span>;
+        }
+
         return !this.props.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate !== false ? (
             <Tooltip
                 title={this.props.context.t('Update')}
@@ -520,7 +529,7 @@ export default abstract class AdapterGeneric<
                     >
                         <RefreshIcon />
                     </IconButton>
-                    {this.props.context.repository[this.props.adapterName].version}
+                    {adapterVersion}
                 </div>
             </Tooltip>
         ) : (
@@ -529,10 +538,35 @@ export default abstract class AdapterGeneric<
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <span style={this.props.cached.rightDependencies ? undefined : this.styles.wrongDependencies}>
-                    {this.props.context.repository[this.props.adapterName].version}
+                    {adapterVersion}
                 </span>
             </Tooltip>
         );
+    }
+
+    /**
+     * Extract commit hash from GitHub installedFrom string
+     *
+     * @param installedFrom - String like "user/repo#commitHash" or "https://github.com/user/repo#commitHash"
+     * @returns Short commit hash (first 7 characters) or null if not a GitHub installation
+     */
+    static extractGitHubCommitHash(installedFrom: string): string | null {
+        if (!installedFrom) {
+            return null;
+        }
+
+        // Extract commit hash from formats like:
+        // "user/repo#commitHash"
+        // "https://github.com/user/repo#commitHash"
+        // "github:user/repo#commitHash"
+        const hashIndex = installedFrom.indexOf('#');
+        if (hashIndex === -1) {
+            return null;
+        }
+
+        const fullHash = installedFrom.substring(hashIndex + 1);
+        // Return first 7 characters for short hash
+        return fullHash.length >= 7 ? fullHash.substring(0, 7) : fullHash;
     }
 
     renderInstalledVersion(isRow?: boolean): JSX.Element | null {
@@ -540,6 +574,14 @@ export default abstract class AdapterGeneric<
         const installedFrom =
             this.props.context.adapters[`system.adapter.${this.props.adapterName}`]?.common?.installedFrom;
         const { adapterName } = this.props;
+
+        // Check if this is a GitHub installation
+        const isGitHubInstall = installedFrom && !installedFrom.startsWith(`iobroker.${adapterName}@`);
+        const commitHash = isGitHubInstall ? AdapterGeneric.extractGitHubCommitHash(installedFrom) : null;
+
+        // For GitHub installations, show version + commit hash
+        const displayVersion =
+            isGitHubInstall && commitHash ? `${this.installedVersion}+${commitHash}` : this.installedVersion;
 
         if (isRow) {
             const enabledCount = installed?.enabled;
@@ -554,13 +596,13 @@ export default abstract class AdapterGeneric<
                 >
                     {this.installedVersion ? (
                         <Grid2>
-                            {this.installedVersion +
+                            {displayVersion +
                                 (installedCount
                                     ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})`
                                     : '')}
                         </Grid2>
                     ) : null}
-                    {installedFrom && !installedFrom.startsWith(`iobroker.${adapterName}@`) && (
+                    {isGitHubInstall && (
                         <Grid2 container>
                             <Tooltip
                                 title={`${this.props.context.t('Non-NPM-Version')}: ${installedFrom}`}
@@ -584,7 +626,7 @@ export default abstract class AdapterGeneric<
             >
                 <div>{this.props.context.t('Installed version')}:</div>
                 <div style={this.styles.cardContentFlex}>
-                    {installedFrom && !installedFrom.startsWith(`iobroker.${adapterName}@`) && (
+                    {isGitHubInstall && (
                         <Tooltip
                             title={`${this.props.context.t('Non-NPM-Version')}: ${installedFrom}`}
                             slotProps={{ popper: { sx: this.styles.tooltip } }}
@@ -595,7 +637,7 @@ export default abstract class AdapterGeneric<
                             />
                         </Tooltip>
                     )}
-                    {this.installedVersion}
+                    {displayVersion}
                 </div>
             </Typography>
         ) : null;

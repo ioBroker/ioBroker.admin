@@ -416,25 +416,40 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             return;
         }
 
+        let firstErrorColumn: string | null = null;
+        let firstErrorValue: string | number | null = null;
+
+        // Validate all columns and collect errors
         for (const uniqueCol of this.props.schema.uniqueColumns) {
             const allVals: (string | number)[] = [];
             const found = this.state.value.find(entry => {
                 const val = entry[uniqueCol];
                 if (allVals.includes(val)) {
+                    // Store the first error we encounter
+                    if (!firstErrorColumn) {
+                        firstErrorColumn = uniqueCol;
+                        firstErrorValue = val;
+                    }
                     this.onError(uniqueCol, 'is not unique');
-                    this.setState({
-                        errorMessage: I18n.t('Non-allowed duplicate entry "%s" in column "%s"', val, uniqueCol),
-                    });
                     return true;
                 }
                 allVals.push(val);
                 return false;
             });
 
+            // Clear error for this column if no duplicates found
             if (!found) {
                 this.onError(uniqueCol, null);
-                this.setState({ errorMessage: '' });
             }
+        }
+
+        // Set error message based on the first error found (or clear if no errors)
+        if (firstErrorColumn) {
+            this.setState({
+                errorMessage: I18n.t('Non-allowed duplicate entry "%s" in column "%s"', firstErrorValue, firstErrorColumn),
+            });
+        } else {
+            this.setState({ errorMessage: '' });
         }
     }
 
@@ -640,7 +655,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         value.forEach(row => {
             const line: string[] = [];
             schema.items.forEach((it: ConfigItemTableIndexed) => {
-                if (row[it.attr]?.includes(';')) {
+                if (row[it.attr] && typeof row[it.attr] === 'string' && row[it.attr].includes(';')) {
                     line.push(`"${row[it.attr]}"`);
                 } else {
                     line.push(row[it.attr] === undefined || row[it.attr] === null ? '' : row[it.attr]);

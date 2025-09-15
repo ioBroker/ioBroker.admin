@@ -546,16 +546,18 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         const disabled = this.jsonConfigs[adapter]?.json?.disabled;
 
         const data = this.combineNewAndOld(instance);
+        const hidden = this.jsonConfigs[adapter].json.hidden;
 
-        if (disabled && this.jsonConfigs[adapter].json.hidden === true) {
+        if (disabled && hidden === true) {
             return null;
         }
 
-        if (typeof this.jsonConfigs[adapter].json.hidden === 'string') {
+        if (typeof hidden === 'string') {
             // evaluate function
             if (
                 this._executeCustom(
                     this.jsonConfigs[adapter].json.hidden,
+                    hidden,
                     data,
                     customObj,
                     instanceObj,
@@ -569,13 +571,12 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         }
 
         let help = null;
-        if (disabled && this.jsonConfigs[adapter].json.help) {
-            if (typeof this.jsonConfigs[adapter].json.help === 'object') {
-                help =
-                    (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>)[this.props.lang] ||
-                    (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>).en;
+        const helpObject = this.jsonConfigs[adapter].json.help;
+        if (disabled && helpObject) {
+            if (typeof helpObject === 'object') {
+                help = helpObject[this.props.lang] || helpObject.en;
             } else {
-                help = this.props.t(this.jsonConfigs[adapter].json.help);
+                help = this.props.t(helpObject);
             }
         }
 
