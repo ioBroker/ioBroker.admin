@@ -969,7 +969,7 @@
                                     "hidden": {
                                         "type": "boolean"
                                     },
-                                    "color":  {
+                                    "color": {
                                         "type": "string",
                                         "description": "Color of the option"
                                     }
@@ -4345,6 +4345,10 @@
                                 },
                                 {
                                     "properties": {
+                                        "hideVersion": {
+                                            "description": "If the information about docker version or error should be hidden (e.g. if used more than one such element on the page the error or version will be shown once",
+                                            "type": "boolean"
+                                        },
                                         "attr": true,
                                         "label": true,
                                         "type": true,
@@ -6869,6 +6873,10 @@
                                     },
                                     "then": {
                                         "properties": {
+                                            "hideVersion": {
+                                                "description": "If the information about docker version or error should be hidden (e.g. if used more than one such element on the page the error or version will be shown once",
+                                                "type": "boolean"
+                                            },
                                             "label": true,
                                             "type": true,
                                             "allowSaveWithError": true,
