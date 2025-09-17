@@ -897,6 +897,8 @@ export interface ConfigItemCheckLicense extends ConfigItem {
 
 export interface ConfigItemCheckDocker extends ConfigItem {
     type: 'checkDocker';
+    /** Hide the version of docker */
+    hideVersion?: boolean;
 }
 
 export interface ConfigItemUUID extends ConfigItem {
