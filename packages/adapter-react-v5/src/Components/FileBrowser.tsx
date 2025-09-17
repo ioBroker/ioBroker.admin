@@ -1,5 +1,5 @@
 /**
- * Copyright 2020-2024, Denis Haev <dogafox@gmail.com>
+ * Copyright 2020-2025, Denis Haev <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -790,6 +790,8 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
     async componentDidMount(): Promise<void> {
         this.mounted = true;
         this.loadFolders().catch(error => console.error(`Cannot load folders: ${error}`));
+        this.browseList = [];
+        this.browseListRunning = false;
 
         this.supportSubscribes = await this.props.socket.checkFeatureSupported('BINARY_STATE_EVENT');
         if (this.supportSubscribes) {
@@ -804,7 +806,11 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         this.mounted = false;
         this.browseList = null;
         this.browseListRunning = false;
-        Object.values(this._tempTimeout).forEach(timer => timer && clearTimeout(timer));
+        Object.values(this._tempTimeout).forEach(timer => {
+            if (timer) {
+                clearTimeout(timer);
+            }
+        });
         this._tempTimeout = {};
     }
 
@@ -873,7 +879,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
             this.browseList[0].processing = true;
             this.props.socket
-                .readDir(this.browseList[0].adapter, this.browseList[0].relPath)
+                .readDir(this.browseList[0].adapter, this.browseList[0].relPath || '')
                 .then(files => {
                     if (this.browseList) {
                         // if component still mounted
@@ -1302,7 +1308,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 id={item.id}
                 style={
                     this.state.viewType === TABLE
-                        ? { marginLeft: padding, width: `calc(100% - ${padding}px` }
+                        ? { marginLeft: padding, width: `calc(100% - ${padding}px)` }
                         : undefined
                 }
                 onClick={e => (this.state.viewType === TABLE ? this.select(item.id, e) : this.changeFolder(e, item.id))}
@@ -1497,6 +1503,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             case 'txt':
             case 'css':
             case 'log':
+            case 'csv':
                 return true;
             default:
                 return false;
@@ -2344,7 +2351,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     aria-labelledby="ar_dialog_file_delete_title"
                 >
                     <DialogTitle id="ar_dialog_file_delete_title">
-                        {this.props.t('ra_Confirm deletion of %s', this.state.deleteItem.split('/').pop())}
+                        {this.props.t('ra_Confirm deletion of %s', this.state.deleteItem.split('/').pop()!)}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>{this.props.t('ra_Are you sure?')}</DialogContentText>
@@ -2388,11 +2395,11 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
         return this.state.viewer ? (
             <FileViewerComponent
-                supportSubscribes={this.supportSubscribes}
+                supportSubscribes={this.supportSubscribes || undefined}
                 key={this.state.viewer}
                 href={this.state.viewer}
-                formatEditFile={this.state.formatEditFile}
-                themeType={this.props.themeType}
+                formatEditFile={this.state.formatEditFile || undefined}
+                themeType={this.props.themeType || 'light'}
                 setStateBackgroundImage={this.setStateBackgroundImage}
                 getStyleBackgroundImage={this.getStyleBackgroundImage}
                 t={this.props.t}

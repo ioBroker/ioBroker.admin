@@ -81,6 +81,11 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
             return null;
         }
         value = value.toString().trim().replace(',', '.');
+        if (value === '-') {
+            // User wants to enter a negative number
+            return null;
+        }
+
         const f = value === '' ? 0 : parseFloat(value);
 
         if (value !== '' && Number.isNaN(f)) {
@@ -182,6 +187,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                 error = I18n.t(error as string);
             }
         }
+        const parsed = parseFloat(this.state._value?.toString().replace(',', '.') || '');
 
         return (
             <FormControl
@@ -198,8 +204,14 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                         },
                     }}
                     variant="standard"
-                    // because some users want to enter "-" first
-                    type={this.props.schema.min !== undefined && this.props.schema.min >= 0 ? 'number' : 'text'}
+                    type={
+                        // because some users want to enter "-" first
+                        Number.isNaN(parsed)
+                            ? 'text'
+                            : this.props.schema.min !== undefined && this.props.schema.min >= 0
+                              ? 'number'
+                              : 'text'
+                    }
                     fullWidth
                     slotProps={{
                         htmlInput: {
@@ -226,9 +238,14 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                             this.onError(this.props.attr); // clear error
                         }
 
-                        this.setState({ _value, oldValue: this.state._value }, () =>
-                            this.onChange(this.props.attr, parseFloat(_value.replace(',', '.'))),
-                        );
+                        this.setState({ _value, oldValue: this.state._value }, () => {
+                            const parsed = parseFloat(_value.toString().replace(',', '.'));
+                            if (!Number.isNaN(parsed)) {
+                                void this.onChange(this.props.attr, parsed);
+                            } else {
+                                void this.onChange(this.props.attr, _value.toString().replace(',', '.'));
+                            }
+                        });
                     }}
                     placeholder={this.getText(this.props.schema.placeholder)}
                     label={this.getText(this.props.schema.label)}
