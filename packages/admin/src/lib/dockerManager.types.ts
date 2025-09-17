@@ -5,6 +5,7 @@ export type DockerContainerInspect = {
     Created: string;
     Path: string;
     Args: string[];
+    Stats?: ContainerStats;
     State: {
         Status: 'created' | 'restarting' | 'running' | 'removing' | 'paused' | 'exited' | 'dead';
         Running: boolean;
@@ -243,7 +244,8 @@ export type DockerImageInspect = {
 
 // Enums & Helper Types
 export type Protocol = 'tcp' | 'udp' | 'sctp';
-export type NetworkMode = 'bridge' | 'host' | 'none' | 'container'; // with container:<id|name> in networkContainer // custom network name
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+export type NetworkMode = 'bridge' | 'host' | 'none' | 'container' | string; // with container:<id|name> in networkContainer // custom network name
 export type RestartPolicy = 'no' | 'always' | 'unless-stopped' | 'on-failure';
 export type LogDriver =
     | 'json-file'
@@ -378,8 +380,8 @@ export interface Security {
     /** user namespace: --userns */
     usernsMode?: string; // e.g. "host", "private"
     /** --ipc / --pid */
-    ipc?: 'none' | 'host';
-    pid?: 'host';
+    ipc?: 'none' | 'host' | 'private';
+    pid?: 'host' | '';
     /** SELinux labels (compose style) */
     selinuxLabels?: string[];
     /** seccomp profile path or "unconfined" */
@@ -597,6 +599,7 @@ export type ContainerInfo = {
     uptime: string;
     ports: string;
     names: string;
+    httpLinks?: { [ip: string]: string[] };
 };
 
 export type ImageInfo = {
@@ -606,58 +609,13 @@ export type ImageInfo = {
     createdSince: string;
     size: number;
 };
-export type GUIResponseInfo = {
-    command: 'info';
-    data?: DiskUsage;
-    version?: string;
-    error?: string;
+export type NetworkDriver = 'bridge' | 'container' | 'host' | 'macvlan' | 'overlay';
+export type NetworkInfo = {
+    name: string;
+    id: string;
+    driver: NetworkDriver;
+    scope: string;
 };
-export type GUIResponseContainers = {
-    command: 'containers';
-    data?: ContainerInfo[];
-    error?: string;
-};
-export type GUIResponseImages = {
-    command: 'images';
-    data?: ImageInfo[];
-    error?: string;
-};
-export type GUIResponseContainer = {
-    command: 'container';
-    data?: DockerContainerInspect | null;
-    container: string;
-    error?: string;
-};
-export type GUIResponseExec = {
-    command: 'exec';
-    data: { containerId: string; code?: number | null; stderr: string; stdout: string };
-    error?: string;
-};
-
-export type GUIResponse =
-    | GUIResponseInfo
-    | GUIResponseContainers
-    | GUIResponseImages
-    | GUIResponseContainer
-    | GUIResponseExec
-    | { command: 'stopped' };
-
-export type GUIRequestInfo = {
-    type: 'info';
-};
-
-export type GUIRequestImages = {
-    type: 'images';
-};
-export type GUIRequestContainers = {
-    type: 'containers';
-};
-export type GUIRequestContainer = {
-    type: 'containers';
-    container: string;
-};
-
-export type GUIRequest = GUIRequestInfo | GUIRequestImages | GUIRequestContainers | GUIRequestContainer;
 
 export type DockerImageTagsResponse = {
     count: number;
