@@ -1458,6 +1458,10 @@
                     "type": "boolean",
                     "description": "Open the editor in read-only mode - editor can be opened but content cannot be modified"
                 },
+                "default": {
+                    "type": "string",
+                    "description": "Default content for JSON Editor"
+                },
                 "label": true,
                 "type": true,
                 "defaultSendTo": true,

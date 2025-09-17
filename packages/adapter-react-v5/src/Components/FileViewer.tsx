@@ -48,7 +48,7 @@ const styles: Record<string, React.CSSProperties> = {
 export const EXTENSIONS = {
     images: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'apng', 'avif', 'webp', 'ico'],
     code: ['js', 'json', 'json5', 'md'],
-    txt: ['log', 'txt', 'html', 'css', 'xml', 'ics'],
+    txt: ['log', 'txt', 'html', 'css', 'xml', 'ics', 'csv'],
     audio: ['mp3', 'wav', 'ogg', 'acc'],
     video: ['mp4', 'mov', 'avi'],
 };

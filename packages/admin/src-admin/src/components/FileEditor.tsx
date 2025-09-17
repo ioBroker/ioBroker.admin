@@ -36,7 +36,7 @@ class FileEditorClass extends FileViewerClass {
             case 'txt':
                 return 'html';
             default:
-                // e.g. ace/mode/text
+                // e.g. ace/mode/text or ace/mode/csv
                 return modelist.getModeForPath(`testFile.${ext}`).mode.split('/').pop();
         }
     }

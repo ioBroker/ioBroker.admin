@@ -109,6 +109,9 @@ interface InstancesProps {
     handleNavigation: (tab: string, subTab?: string, param?: string) => void;
 }
 
+type SortColumn = 'name' | 'status' | 'memory' | 'id' | 'host' | 'loglevel';
+type SortDirection = 'asc' | 'desc';
+
 interface InstancesState {
     expertMode: boolean;
     dialog: string | null;
@@ -132,9 +135,11 @@ interface InstancesState {
     deleteCustomSupported: boolean;
     currentHost: string;
     expandedFolder: string[];
-    filterMode: string | null;
-    filterStatus: string | null;
+    filterMode: 'none' | 'daemon' | 'schedule' | 'once' | null;
+    filterStatus: 'none' | 'disabled' | 'not_alive' | 'alive_not_connected' | 'alive_no_device' | 'ok' | null;
     showFilterDialog: boolean;
+    sortColumn: SortColumn | null;
+    sortDirection: SortDirection;
 }
 
 // every tab should get their data itself from server
@@ -187,6 +192,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
             }
         }
 
+        const filterModeStr = this.localStorage.getItem('Instances.filterMode');
+        const filterStatusStr = this.localStorage.getItem('Instances.filterStatus');
+
         this.state = {
             expertMode: this.props.expertMode,
             dialog: null,
@@ -214,16 +222,25 @@ class Instances extends Component<InstancesProps, InstancesState> {
             expandedFolder,
 
             // filter
-            filterMode: this.localStorage.getItem('Instances.filterMode')
-                ? this.localStorage.getItem('Instances.filterMode') === 'null'
+            filterMode: filterModeStr
+                ? filterModeStr === 'null'
                     ? null
-                    : this.localStorage.getItem('Instances.filterMode')
+                    : (filterModeStr as 'none' | 'daemon' | 'schedule' | 'once' | null)
                 : null,
-            filterStatus: this.localStorage.getItem('Instances.filterStatus')
-                ? this.localStorage.getItem('Instances.filterStatus') === 'null'
+            filterStatus: filterStatusStr
+                ? filterStatusStr === 'null'
                     ? null
-                    : this.localStorage.getItem('Instances.filterStatus')
+                    : (filterStatusStr as
+                          | 'none'
+                          | 'disabled'
+                          | 'not_alive'
+                          | 'alive_not_connected'
+                          | 'alive_no_device'
+                          | 'ok'
+                          | null)
                 : null,
+            sortColumn: (this.localStorage.getItem('Instances.sortColumn') as SortColumn) || null,
+            sortDirection: (this.localStorage.getItem('Instances.sortDirection') as SortDirection) || 'asc',
         };
 
         // this.columns = {
@@ -652,6 +669,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return AdminUtils.getText(obj.common.title, this.props.lang);
     }
 
+    getMemoryUsage(id: string): number {
+        const memState = this.states[`${id}.memRss`];
+        return memState ? parseFloat(memState.val as string) || 0 : 0;
+    }
+
     getInputOutput(id: string): { stateInput: number; stateOutput: number } {
         const stateInput = this.states[`${id}.inputCount`];
         const stateOutput = this.states[`${id}.outputCount`];
@@ -830,6 +852,54 @@ class Instances extends Component<InstancesProps, InstancesState> {
             this._cacheList = this._cacheList.filter(item => status === item.status);
         }
 
+        // Apply sorting
+        if (this.state.sortColumn) {
+            this._cacheList = this._cacheList.sort((a, b) => {
+                let comparison = 0;
+
+                switch (this.state.sortColumn) {
+                    case 'name': {
+                        comparison = a.name.localeCompare(b.name);
+                        break;
+                    }
+                    case 'id': {
+                        comparison = a.nameId.localeCompare(b.nameId);
+                        break;
+                    }
+                    case 'status': {
+                        // Define status order: green > orange > red > grey
+                        const statusOrder = { green: 4, orange: 3, orangeDevice: 2, red: 1, grey: 0, blue: 0 };
+                        comparison = (statusOrder[a.status] || 0) - (statusOrder[b.status] || 0);
+                        break;
+                    }
+                    case 'memory': {
+                        if (!a.running || !b.running) {
+                            comparison = a.running === b.running ? 0 : a.running ? 1 : -1;
+                        } else {
+                            const memA = this.getMemoryUsage(a.id);
+                            const memB = this.getMemoryUsage(b.id);
+                            comparison = memA - memB;
+                        }
+                        break;
+                    }
+                    case 'host': {
+                        comparison = a.host.localeCompare(b.host);
+                        break;
+                    }
+                    case 'loglevel': {
+                        const logOrder = { error: 4, warn: 3, info: 2, debug: 1, silly: 0 };
+                        comparison = (logOrder[a.logLevel] || 0) - (logOrder[b.logLevel] || 0);
+                        break;
+                    }
+                    default: {
+                        comparison = 0;
+                    }
+                }
+
+                return this.state.sortDirection === 'desc' ? -comparison : comparison;
+            });
+        }
+
         return this._cacheList;
     }
 
@@ -841,6 +911,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
             filterMode: null,
             filterStatus: null,
             filterText: '',
+            sortColumn: null,
+            sortDirection: 'asc',
         };
 
         this.localStorage.removeItem('instances.filter');
@@ -849,6 +921,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
         this.localStorage.removeItem('Instances.filterCompactGroup');
         this.localStorage.removeItem('Instances.filterMode');
         this.localStorage.removeItem('Instances.filterStatus');
+        this.localStorage.removeItem('Instances.sortColumn');
+        this.localStorage.removeItem('Instances.sortDirection');
 
         this._cacheList = null;
         this.setState(state as InstancesState, () => {
@@ -1081,12 +1155,30 @@ class Instances extends Component<InstancesProps, InstancesState> {
             <InstanceFilterDialog
                 filterMode={this.state.filterMode}
                 filterStatus={this.state.filterStatus}
+                sortColumn={this.state.sortColumn}
+                sortDirection={this.state.sortDirection}
+                expertMode={this.props.expertMode}
                 onClose={newState => {
                     if (newState) {
                         this._cacheList = null;
                         this.localStorage.setItem('Instances.filterMode', newState.filterMode);
                         this.localStorage.setItem('Instances.filterStatus', newState.filterStatus);
-                        this.setState(newState);
+
+                        // Handle sorting state
+                        if (newState.sortColumn) {
+                            this.localStorage.setItem('Instances.sortColumn', newState.sortColumn);
+                            this.localStorage.setItem('Instances.sortDirection', newState.sortDirection);
+                        } else {
+                            this.localStorage.removeItem('Instances.sortColumn');
+                            this.localStorage.removeItem('Instances.sortDirection');
+                        }
+
+                        this.setState({
+                            filterMode: newState.filterMode,
+                            filterStatus: newState.filterStatus,
+                            sortColumn: newState.sortColumn,
+                            sortDirection: newState.sortDirection,
+                        });
                     }
                     this.setState({ showFilterDialog: false });
                 }}
@@ -1319,7 +1411,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         <IconButton
                             size="large"
                             onClick={() => this.setState({ showFilterDialog: true })}
-                            sx={this.state.filterMode || this.state.filterStatus ? styles.filterActive : undefined}
+                            sx={
+                                this.state.filterMode || this.state.filterStatus || this.state.sortColumn
+                                    ? styles.filterActive
+                                    : undefined
+                            }
                         >
                             <FilterListIcon style={{ width: 16, height: 16 }} />
                         </IconButton>
