@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2023 Denis Haev (bluefox) <dogafox@gmail.com>
+ * Copyright 2018-2025 Denis Haev (bluefox) <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -106,6 +106,7 @@ interface DialogSelectIDState {
     selected: string[];
     name: string | null;
     selectionBlocked: boolean;
+    allLoaded?: boolean; // used to detect if all objects are loaded
 }
 
 export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectIDState> {
@@ -316,7 +317,7 @@ export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectI
                         }}
                         filterFunc={this.filterFunc}
                         title=""
-                        classes={{}}
+                        onAllLoaded={() => this.setState({ allLoaded: true })}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -325,7 +326,7 @@ export class DialogSelectID extends Component<DialogSelectIDProps, DialogSelectI
                         variant="contained"
                         onClick={() => this.handleOk()}
                         startIcon={<IconOk />}
-                        disabled={!this.state.selected.length || this.state.selectionBlocked}
+                        disabled={!this.state.allLoaded || !this.state.selected.length || this.state.selectionBlocked}
                         color="primary"
                     >
                         {this.props.ok || I18n.t('ra_Ok')}
