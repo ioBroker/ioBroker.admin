@@ -7,16 +7,81 @@ import { exec } from 'node:child_process';
 import type {
     ContainerConfig,
     ContainerInfo,
+    ContainerStats,
+    ContainerStatus,
     DiskUsage,
     DockerContainerInspect,
     DockerImageInspect,
     ImageInfo,
+    ContainerName,
+    ImageName,
 } from './dockerManager.types';
 
 const execPromise = promisify(exec);
 
-export type ImageName = string;
-export type ContainerName = string;
+// remove undefined entries recursively
+function removeUndefined(obj: any): any {
+    if (Array.isArray(obj)) {
+        return obj.map(v => (v && typeof v === 'object' ? removeUndefined(v) : v)).filter(v => v !== undefined);
+    } else if (obj && typeof obj === 'object') {
+        return Object.fromEntries(
+            Object.entries(obj)
+                .map(([k, v]) => [k, v && typeof v === 'object' ? removeUndefined(v) : v])
+                .filter(([_, v]) => v !== undefined),
+        );
+    }
+    return obj;
+}
+
+const dockerDefaults: Record<string, any> = {
+    Tty: false,
+    OpenStdin: false,
+    AttachStdin: false,
+    AttachStdout: true,
+    AttachStderr: true,
+    PublishAllPorts: false,
+    RestartPolicy: { Name: 'no', MaximumRetryCount: 0 },
+    LogConfig: { Type: 'json-file', Config: {} },
+    Privileged: false,
+    ReadonlyRootfs: false,
+    Init: false,
+    StopSignal: 'SIGTERM',
+    StopTimeout: undefined,
+    NetworkMode: 'default',
+};
+
+function isDefault(value: any, def: any): boolean {
+    return JSON.stringify(value) === JSON.stringify(def);
+}
+
+function deepCompare(obj1: any, obj2: any, path: string[] = []): string[] {
+    const diffs: string[] = [];
+
+    if (typeof obj1 !== typeof obj2) {
+        diffs.push(path.join('.'));
+    }
+
+    if (typeof obj1 !== 'object' || obj1 === null || obj2 === null) {
+        if (obj1 !== obj2) {
+            diffs.push(path.join('.'));
+        }
+    }
+
+    const keys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
+    for (const key of keys) {
+        // ignore iob* properties as they belong to ioBroker configuration
+        if (key.startsWith('iob')) {
+            continue;
+        }
+        diffs.push(...deepCompare(obj1[key], obj2[key], [...path, key]));
+    }
+
+    return diffs;
+}
+
+export interface DockerManagerAdapterConfig {
+    containers?: ContainerConfig[];
+}
 
 export default class DockerManager {
     #installed: boolean = false;
@@ -25,25 +90,144 @@ export default class DockerManager {
     readonly #waitReady: Promise<void>;
     readonly #adapter: ioBroker.Adapter;
     readonly #ownContainers: ContainerConfig[] = [];
-    readonly #timers: {
-        images?: ReturnType<typeof setInterval>;
-        containers?: ReturnType<typeof setInterval>;
-        info?: ReturnType<typeof setInterval>;
-        container: { [key: string]: ReturnType<typeof setInterval> };
-    } = {
-        container: {},
-    };
+    #monitoringInterval: NodeJS.Timeout | null = null;
+    #ownContainersStats: { [name: string]: ContainerStatus } = {};
 
     constructor(adapter: ioBroker.Adapter, containers?: ContainerConfig[]) {
         this.#adapter = adapter;
         this.#ownContainers = containers || [];
-        this.#waitReady = new Promise<void>(resolve => this.init().then(() => resolve()));
+        this.#waitReady = new Promise<void>(resolve => this.#init().then(() => resolve()));
     }
 
+    /** Wait till the check if docker is installed and the daemon is running is ready */
     isReady(): Promise<void> {
         return this.#waitReady;
     }
 
+    /**
+     * Convert information from inspect to docker configuration to start it
+     *
+     * @param inspect Inspect information
+     */
+    static mapInspectToConfig(inspect: DockerContainerInspect): ContainerConfig {
+        let obj: ContainerConfig = {
+            image: inspect.Config.Image,
+            name: inspect.Name.replace(/^\//, ''),
+            command: inspect.Config.Cmd ?? undefined,
+            entrypoint: inspect.Config.Entrypoint ?? undefined,
+            user: inspect.Config.User ?? undefined,
+            workdir: inspect.Config.WorkingDir ?? undefined,
+            hostname: inspect.Config.Hostname ?? undefined,
+            domainname: inspect.Config.Domainname ?? undefined,
+            macAddress: inspect.NetworkSettings.MacAddress ?? undefined,
+            environment: inspect.Config.Env
+                ? Object.fromEntries(
+                      inspect.Config.Env.map(e => {
+                          const [key, ...rest] = e.split('=');
+                          return [key, rest.join('=')];
+                      }),
+                  )
+                : undefined,
+            labels: inspect.Config.Labels ?? undefined,
+            tty: inspect.Config.Tty,
+            stdinOpen: inspect.Config.OpenStdin,
+            attachStdin: inspect.Config.AttachStdin,
+            attachStdout: inspect.Config.AttachStdout,
+            attachStderr: inspect.Config.AttachStderr,
+            openStdin: inspect.Config.OpenStdin,
+            publishAllPorts: inspect.HostConfig.PublishAllPorts,
+            ports: inspect.HostConfig.PortBindings
+                ? Object.entries(inspect.HostConfig.PortBindings).flatMap(([containerPort, bindings]) =>
+                      bindings.map(binding => ({
+                          containerPort: containerPort.split('/')[0],
+                          protocol: (containerPort.split('/')[1] as 'tcp' | 'udp') || 'tcp',
+                          hostPort: binding.HostPort,
+                          hostIP: binding.HostIp,
+                      })),
+                  )
+                : undefined,
+            mounts: inspect.Mounts?.map(mount => ({
+                type: mount.Type,
+                source: mount.Source,
+                target: mount.Destination,
+                readOnly: mount.RW,
+            })),
+            volumes: inspect.Config.Volumes ? Object.keys(inspect.Config.Volumes) : undefined,
+            extraHosts: inspect.HostConfig.ExtraHosts ?? undefined,
+            dns: {
+                servers: inspect.HostConfig.Dns,
+                search: inspect.HostConfig.DnsSearch,
+                options: inspect.HostConfig.DnsOptions,
+            },
+            networkMode: inspect.HostConfig.NetworkMode,
+            networks: inspect.NetworkSettings.Networks
+                ? Object.entries(inspect.NetworkSettings.Networks).map(([name, net]) => ({
+                      name,
+                      aliases: net.Aliases ?? undefined,
+                      ipv4Address: net.IPAddress,
+                      ipv6Address: net.GlobalIPv6Address,
+                      driverOpts: net.DriverOpts ?? undefined,
+                  }))
+                : undefined,
+            restart: {
+                policy: inspect.HostConfig.RestartPolicy.Name as any,
+                maxRetries: inspect.HostConfig.RestartPolicy.MaximumRetryCount,
+            },
+            resources: {
+                cpuShares: inspect.HostConfig.CpuShares,
+                cpuQuota: inspect.HostConfig.CpuQuota,
+                cpuPeriod: inspect.HostConfig.CpuPeriod,
+                cpusetCpus: inspect.HostConfig.CpusetCpus,
+                memory: inspect.HostConfig.Memory,
+                memorySwap: inspect.HostConfig.MemorySwap,
+                memoryReservation: inspect.HostConfig.MemoryReservation,
+                pidsLimit: inspect.HostConfig.PidsLimit ?? undefined,
+                shmSize: inspect.HostConfig.ShmSize,
+                readOnlyRootFilesystem: inspect.HostConfig.ReadonlyRootfs,
+            },
+            logging: {
+                driver: inspect.HostConfig.LogConfig.Type,
+                options: inspect.HostConfig.LogConfig.Config,
+            },
+            security: {
+                privileged: inspect.HostConfig.Privileged,
+                capAdd: inspect.HostConfig.CapAdd ?? undefined,
+                capDrop: inspect.HostConfig.CapDrop ?? undefined,
+                usernsMode: inspect.HostConfig.UsernsMode ?? undefined,
+                ipc: inspect.HostConfig.IpcMode,
+                pid: inspect.HostConfig.PidMode,
+                seccomp:
+                    inspect.HostConfig.SecurityOpt?.find(opt => opt.startsWith('seccomp='))?.split('=')[1] ?? undefined,
+                apparmor: inspect.AppArmorProfile,
+                groupAdd: inspect.HostConfig.GroupAdd ?? undefined,
+                noNewPrivileges: undefined, // Nicht direkt verfügbar
+            },
+            sysctls: inspect.HostConfig.Sysctls ?? undefined,
+            init: inspect.HostConfig.Init ?? undefined,
+            stop: {
+                signal: inspect.Config.StopSignal ?? undefined,
+                gracePeriodSec: inspect.Config.StopTimeout ?? undefined,
+            },
+            readOnly: inspect.HostConfig.ReadonlyRootfs,
+            timezone: undefined, // Nicht direkt verfügbar
+            __meta: undefined, // Eigene Metadaten
+        };
+
+        obj = removeUndefined(obj);
+        Object.keys(dockerDefaults).forEach(name => {
+            if (isDefault((obj as any)[name], (dockerDefaults as any)[name])) {
+                delete (obj as any)[name];
+            }
+        });
+
+        return obj;
+    }
+
+    /**
+     * Get information about the Docker daemon: is it running and which version
+     *
+     * @returns Object with version and daemonRunning
+     */
     async getDockerDaemonInfo(): Promise<{
         version?: string;
         daemonRunning?: boolean;
@@ -56,7 +240,7 @@ export default class DockerManager {
         };
     }
 
-    async init(): Promise<void> {
+    async #init(): Promise<void> {
         const version = await this.#isDockerInstalled();
         this.#installed = !!version;
         if (version) {
@@ -105,63 +289,117 @@ export default class DockerManager {
         }
     }
 
+    /**
+     * Ensure that the given container is running with the actual configuration
+     *
+     * @param container Container configuration
+     */
+    async #ensureActualConfiguration(container: ContainerConfig): Promise<void> {
+        // Check the configuration of the container
+        const inspect = await this.containerInspect(container.name);
+        if (inspect) {
+            const existingConfig = DockerManager.mapInspectToConfig(inspect);
+            const diffs = deepCompare(existingConfig, container);
+            if (diffs.length) {
+                this.#adapter.log.info(
+                    `Configuration of own container ${container.name} has changed: ${diffs.join(
+                        ', ',
+                    )}. Restarting container...`,
+                );
+                const result = await this.containerReCreate(container);
+                if (result.stderr) {
+                    this.#adapter.log.warn(`Cannot recreate own container ${container.name}: ${result.stderr}`);
+                }
+            }
+
+            // Check if container is running
+            this.#adapter.log.debug(`Configuration of own container ${container.name} is up to date`);
+            const status = await this.containerList(true);
+            const containerInfo = status.find(it => it.names === container.name);
+            if (containerInfo) {
+                if (containerInfo.status !== 'running' && containerInfo.status !== 'restarting') {
+                    // Start the container
+                    this.#adapter.log.info(`Starting own container ${container.name}`);
+                    try {
+                        const result = await this.containerStart(containerInfo.id);
+                        if (result.stderr) {
+                            this.#adapter.log.warn(`Cannot start own container ${container.name}: ${result.stderr}`);
+                        }
+                    } catch (e) {
+                        this.#adapter.log.warn(`Cannot start own container ${container.name}: ${e.message}`);
+                    }
+                } else {
+                    this.#adapter.log.debug(`Own container ${container.name} is already running`);
+                }
+            } else {
+                this.#adapter.log.warn(`Own container ${container.name} not found in container list after recreation`);
+            }
+        }
+    }
+
     async #checkOwnContainers(): Promise<void> {
         if (!this.#ownContainers.length) {
             return;
         }
         const status = await this.containerList(true);
         let images = await this.imageList();
+        let anyStartedOrRunning = false;
         for (let c = 0; c < this.#ownContainers.length; c++) {
             const container = this.#ownContainers[c];
-            if (container.enabled !== false) {
-                // Check if container is running
-                const containerInfo = status.find(it => it.names === container.name);
-                if (containerInfo) {
-                    if (containerInfo.status !== 'running' && containerInfo.status !== 'restarting') {
-                        // Start the container
-                        this.#adapter.log.info(`Starting own container ${container.name}`);
-
-                        try {
-                            const result = await this.containerStart(containerInfo.id);
-                            if (result.stderr) {
-                                this.#adapter.log.warn(
-                                    `Cannot start own container ${container.name}: ${result.stderr}`,
-                                );
-                            }
-                        } catch (e) {
-                            this.#adapter.log.warn(`Cannot start own container ${container.name}: ${e.message}`);
+            if (container.iobEnabled !== false) {
+                let containerInfo = status.find(it => it.names === container.name);
+                let image = images.find(it => `${it.repository}:${it.tag}` === container.image);
+                if (container.iobAutoImageUpdate) {
+                    // ensure that the image is actual
+                    const newImage = await this.imageUpdate(container.image, true);
+                    if (newImage) {
+                        this.#adapter.log.info(
+                            `Image ${container.image} for own container ${container.name} was updated`,
+                        );
+                        if (containerInfo) {
+                            // destroy current container
+                            await this.containerRemove(containerInfo.id);
+                            containerInfo = undefined;
                         }
-                    } else {
-                        this.#adapter.log.debug(`Own container ${container.name} is already running`);
+                        image = newImage;
                     }
-                } else {
-                    // Create and start the container
-                    this.#adapter.log.info(`Creating and starting own container ${container.name}`);
-                    if (!images.find(it => `${it.repository}:${it.tag}` === container.image)) {
-                        this.#adapter.log.info(`Pulling image ${container.image} for own container ${container.name}`);
-                        try {
-                            const result = await this.imagePull(container.image);
-                            if (result.stderr) {
-                                this.#adapter.log.warn(`Cannot pull image ${container.image}: ${result.stderr}`);
-                                continue;
-                            }
-                        } catch (e) {
-                            this.#adapter.log.warn(`Cannot pull image ${container.image}: ${e.message}`);
-                            continue;
-                        }
-                        // Check that image is available now
-                        images = await this.imageList();
-                        if (!images.find(it => `${it.repository}:${it.tag}` === container.image)) {
-                            this.#adapter.log.warn(
-                                `Image ${container.image} for own container ${container.name} not found after pull`,
-                            );
-                            continue;
-                        }
-                    }
+                }
+                if (!image) {
+                    this.#adapter.log.info(`Pulling image ${container.image} for own container ${container.name}`);
                     try {
-                        const result = await this.containerRun(container.image, container);
+                        const result = await this.imagePull(container.image);
+                        if (result.stderr) {
+                            this.#adapter.log.warn(`Cannot pull image ${container.image}: ${result.stderr}`);
+                            continue;
+                        }
+                    } catch (e) {
+                        this.#adapter.log.warn(`Cannot pull image ${container.image}: ${e.message}`);
+                        continue;
+                    }
+                    // Check that image is available now
+                    images = await this.imageList();
+                    image = images.find(it => `${it.repository}:${it.tag}` === container.image);
+                    if (!image) {
+                        this.#adapter.log.warn(
+                            `Image ${container.image} for own container ${container.name} not found after pull`,
+                        );
+                        continue;
+                    }
+                }
+
+                if (containerInfo) {
+                    await this.#ensureActualConfiguration(container);
+                    anyStartedOrRunning ||= !!container.iobMonitoringEnabled;
+                } else {
+                    // Create and start the container, as the container was not found
+                    this.#adapter.log.info(`Creating and starting own container ${container.name}`);
+
+                    try {
+                        const result = await this.containerRun(container);
                         if (result.stderr) {
                             this.#adapter.log.warn(`Cannot start own container ${container.name}: ${result.stderr}`);
+                        } else {
+                            anyStartedOrRunning ||= !!container.iobMonitoringEnabled;
                         }
                     } catch (e) {
                         this.#adapter.log.warn(`Cannot start own container ${container.name}: ${e.message}`);
@@ -169,6 +407,113 @@ export default class DockerManager {
                 }
             }
         }
+
+        if (anyStartedOrRunning) {
+            this.#monitoringInterval ||= setInterval(() => this.#monitorOwnContainers(), 60000);
+        }
+    }
+
+    async #monitorOwnContainers(): Promise<void> {
+        // get the status of containers
+        const containers = await this.containerList();
+        // Check the status of own containers
+        for (let c = 0; c < this.#ownContainers.length; c++) {
+            const container = this.#ownContainers[c];
+            if (container.iobEnabled !== false && container.iobMonitoringEnabled) {
+                // Check if container is running
+                const running = containers.find(it => it.names === container.name);
+                if (!running || (running.status !== 'running' && running.status !== 'restarting')) {
+                    this.#adapter.log.warn(`Own container ${container.name} is not running. Restarting...`);
+                    try {
+                        const result = await this.containerStart(container.name);
+                        if (result.stderr) {
+                            this.#adapter.log.warn(`Cannot start own container ${container.name}: ${result.stderr}`);
+                            this.#ownContainersStats[container.name] = {
+                                ...this.#ownContainersStats[container.name],
+                                status: running?.status || 'unknown',
+                                statusTs: Date.now(),
+                            };
+                            continue;
+                        }
+                    } catch (e) {
+                        this.#adapter.log.warn(`Cannot start own container ${container.name}: ${e.message}`);
+                        this.#ownContainersStats[container.name] = {
+                            ...this.#ownContainersStats[container.name],
+                            status: running?.status || 'unknown',
+                            statusTs: Date.now(),
+                        };
+                        continue;
+                    }
+                }
+
+                // check the stats
+                this.#ownContainersStats[container.name] = {
+                    ...((await this.containerGetRamAndCpuUsage(container.name)) || ({} as ContainerStats)),
+                    status: running?.status || 'unknown',
+                    statusTs: Date.now(),
+                };
+            }
+        }
+    }
+
+    /** Read own container stats */
+    getOwnContainerStats(): { [name: string]: ContainerStatus } {
+        return this.#ownContainersStats;
+    }
+
+    async containerGetRamAndCpuUsage(containerNameOrId: ContainerName): Promise<ContainerStats | null> {
+        try {
+            const { stdout } = await this.#exec(
+                `stats ${containerNameOrId} --no-stream --format "{{.CPUPerc}};{{.MemUsage}};{{.NetIO}};{{.BlockIO}};{{.PIDs}}"`,
+            );
+            // Example: "0.15%;12.34MiB / 512MiB;1.2kB / 2.3kB;0B / 0B;5"
+            const [cpuStr, memStr, netStr, blockIoStr, pid] = stdout.trim().split(';');
+            const [memUsed, memMax] = memStr.split('/').map(it => it.trim());
+            const [netRead, netWrite] = netStr.split('/').map(it => it.trim());
+            const [blockIoRead, blockIoWrite] = blockIoStr.split('/').map(it => it.trim());
+
+            return {
+                ts: Date.now(),
+                cpu: parseFloat(cpuStr.replace('%', '').replace(',', '.')),
+                memUsed: this.#parseSize(memUsed.replace('iB', 'B')),
+                memMax: this.#parseSize(memMax.replace('iB', 'B')),
+                netRead: this.#parseSize(netRead.replace('iB', 'B')),
+                netWrite: this.#parseSize(netWrite.replace('iB', 'B')),
+                processes: parseInt(pid, 10),
+                blockIoRead: this.#parseSize(blockIoRead.replace('iB', 'B')),
+                blockIoWrite: this.#parseSize(blockIoWrite.replace('iB', 'B')),
+            };
+        } catch (e) {
+            this.#adapter.log.debug(`Cannot get stats: ${e.message}`);
+            return null;
+        }
+    }
+
+    /**
+     * Update the image if a newer version is available
+     *
+     * @param image Image name with tag
+     * @param ignoreIfNotExist If true, do not throw error if image does not exist
+     * @returns New image info if image was updated, null if no update was necessary
+     */
+    async imageUpdate(image: ImageName, ignoreIfNotExist?: boolean): Promise<ImageInfo | null> {
+        const list = await this.imageList();
+        const existingImage = list.find(it => `${it.repository}:${it.tag}` === image);
+        if (!existingImage && !ignoreIfNotExist) {
+            throw new Error(`Image ${image} not found`);
+        }
+        // Pull the image
+        const result = await this.imagePull(image);
+        if (result.stderr) {
+            throw new Error(`Cannot pull image ${image}: ${result.stderr}`);
+        }
+        const newList = await this.imageList();
+        const newImage = newList.find(it => `${it.repository}:${it.tag}` === image);
+        if (!newImage) {
+            throw new Error(`Image ${image} not found after pull`);
+        }
+        // If image ID has changed, image was updated
+        return !existingImage || existingImage.id !== newImage.id ? newImage : null;
     }
 
     #exec(command: string): Promise<{ stdout: string; stderr: string }> {
@@ -202,6 +547,7 @@ export default class DockerManager {
         }
     }
 
+    /** Get disk usage information */
     async discUsage(): Promise<DiskUsage> {
         const { stdout } = await this.#exec(`system df`);
         const result: DiskUsage = { total: { size: 0, reclaimable: 0 } };
@@ -215,8 +561,8 @@ export default class DockerManager {
         for (const line of lines) {
             const parts = line.trim().split(/\s+/);
             if (parts.length >= 5 && parts[0] !== 'TYPE') {
-                let size: number;
-                let reclaimable: number;
+                let size: number | undefined;
+                let reclaimable: number | undefined;
 
                 if (parts[0] === 'Images') {
                     const sizeStr = parts[3];
@@ -263,13 +609,14 @@ export default class DockerManager {
                         reclaimable: reclaimable,
                     };
                 }
-                result.total.size += size;
-                result.total.reclaimable += reclaimable;
+                result.total.size += size || 0;
+                result.total.reclaimable += reclaimable || 0;
             }
         }
         return result;
     }
 
+    /** Pull an image from the registry */
     async imagePull(image: ImageName): Promise<{ stdout: string; stderr: string }> {
         try {
             const result = await this.#exec(`pull ${image}`);
@@ -283,6 +630,7 @@ export default class DockerManager {
         }
     }
 
+    /** Autocomplete image names from Docker Hub */
     async imageNameAutocomplete(partialName: string): Promise<
         {
             name: string;
@@ -314,22 +662,69 @@ export default class DockerManager {
         }
     }
 
-    async containerRun(image: ImageName, config: ContainerConfig): Promise<{ stdout: string; stderr: string }> {
+    /**
+     * Create and start a container with the given configuration. No checks are done.
+     */
+    async containerRun(config: ContainerConfig): Promise<{ stdout: string; stderr: string }> {
         try {
-            return await this.#exec(`run ${this.#toDockerRun({ ...config, image })}`);
+            return await this.#exec(`run ${this.#toDockerRun(config)}`);
         } catch (e) {
             return { stdout: '', stderr: e.message.toString() };
         }
     }
 
-    async containerCreate(image: ImageName, config: ContainerConfig): Promise<{ stdout: string; stderr: string }> {
+    /**
+     * Create a container with the given configuration without starting it. No checks are done.
+     */
+    async containerCreate(config: ContainerConfig): Promise<{ stdout: string; stderr: string }> {
         try {
-            return await this.#exec(`create ${this.#toDockerRun({ ...config, image })}`);
+            return await this.#exec(`create ${this.#toDockerRun(config)}`);
         } catch (e) {
             return { stdout: '', stderr: e.message.toString() };
         }
     }
 
+    /**
+     * Recreate a container
+     *
+     * This function checks if a container is running, stops it if necessary,
+     * removes it and creates a new one with the given configuration.
+     *
+     * @param config new configuration
+     * @returns stdout and stderr of the create command
+     */
+    async containerReCreate(config: ContainerConfig): Promise<{ stdout: string; stderr: string }> {
+        try {
+            // Get if the container is running
+            let containers = await this.containerList();
+            // find ID of container
+            const containerInfo = containers.find(it => it.names === config.name);
+            if (containerInfo) {
+                if (containerInfo.status === 'running' || containerInfo.status === 'restarting') {
+                    const stopResult = await this.#exec(`stop ${containerInfo.id}`);
+                    containers = await this.containerList();
+
+                    if (containers.find(it => it.id === containerInfo.id && it.status === 'running')) {
+                        this.#adapter.log.warn(`Cannot remove container: ${stopResult.stderr || stopResult.stdout}`);
+                        throw new Error(`Container ${containerInfo.id} still running after stop`);
+                    }
+                }
+                // Remove container
+                const rmResult = await this.#exec(`rm ${containerInfo.id}`);
+
+                containers = await this.containerList();
+                if (containers.find(it => it.id === containerInfo.id)) {
+                    this.#adapter.log.warn(`Cannot remove container: ${rmResult.stderr || rmResult.stdout}`);
+                    throw new Error(`Container ${containerInfo.id} still found after stop`);
+                }
+            }
+            return await this.#exec(`create ${this.#toDockerRun(config)}`);
+        } catch (e) {
+            return { stdout: '', stderr: e.message.toString() };
+        }
+    }
+
+    /** List all images */
     async imageList(): Promise<ImageInfo[]> {
         try {
             const { stdout } = await this.#exec(
@@ -355,6 +750,7 @@ export default class DockerManager {
         }
     }
 
+    /** Build an image from a Dockerfile */
     async imageBuild(dockerfilePath: string, tag: string): Promise<{ stdout: string; stderr: string }> {
         try {
             return await this.#exec(`build -t ${tag} -f ${dockerfilePath} .`);
@@ -363,6 +759,7 @@ export default class DockerManager {
         }
     }
 
+    /** Tag an image with a new tag */
     async imageTag(imageId: ImageName, newTag: string): Promise<{ stdout: string; stderr: string }> {
         try {
             return await this.#exec(`tag ${imageId} ${newTag}`);
@@ -371,6 +768,7 @@ export default class DockerManager {
         }
     }
 
+    /** Remove an image */
     async imageRemove(imageId: ImageName): Promise<{ stdout: string; stderr: string }> {
         try {
             const result = await this.#exec(`rmi ${imageId}`);
@@ -384,6 +782,7 @@ export default class DockerManager {
         }
     }
 
+    /** Inspect an image */
     async imageInspect(imageId: ImageName): Promise<DockerImageInspect | null> {
         try {
             const { stdout } = await this.#exec(`inspect ${imageId}`);
@@ -411,6 +810,11 @@ export default class DockerManager {
         return 0;
     }
 
+    /**
+     * Stop a container
+     *
+     * @param container Container name or ID
+     */
     async containerStop(container: ContainerName): Promise<{ stdout: string; stderr: string }> {
         try {
             let containers = await this.containerList();
@@ -431,6 +835,11 @@ export default class DockerManager {
         }
     }
 
+    /**
+     * Start a container
+     *
+     * @param container Container name or ID
+     */
     async containerStart(container: ContainerName): Promise<{ stdout: string; stderr: string }> {
         try {
             let containers = await this.containerList();
@@ -455,26 +864,38 @@ export default class DockerManager {
         }
     }
 
+    /**
+     * Restart a container
+     *
+     * This function restarts a container by its name or ID.
+     * It accepts an optional timeout in seconds to wait before killing the container (default is 5 seconds).
+     *
+     * @param container Container name or ID
+     * @param timeoutSeconds Timeout in seconds to wait before killing the container (default: 5)
+     */
     async containerRestart(
         container: ContainerName,
         timeoutSeconds?: number,
     ): Promise<{ stdout: string; stderr: string }> {
         try {
-            let containers = await this.containerList();
+            const containers = await this.containerList();
             // find ID of container
             const containerInfo = containers.find(it => it.names === container || it.id === container);
             if (!containerInfo) {
                 throw new Error(`Container ${container} not found`);
             }
 
-            const result = await this.#exec(`restart -t ${timeoutSeconds || 5} ${containerInfo.id}`);
-            // containers = await this.containerList(); // Removed: assignment to containers is unused
-            return result;
+            return await this.#exec(`restart -t ${timeoutSeconds || 5} ${containerInfo.id}`);
         } catch (e) {
             return { stdout: '', stderr: e.message.toString() };
         }
     }
 
+    /**
+     * Remove the container and if necessary, stop it first
+     *
+     * @param container Container name or ID
+     */
     async containerRemove(container: ContainerName): Promise<{ stdout: string; stderr: string }> {
         try {
             let containers = await this.containerList();
@@ -482,6 +903,14 @@ export default class DockerManager {
             const containerInfo = containers.find(it => it.names === container || it.id === container);
             if (!containerInfo) {
                 throw new Error(`Container ${container} not found`);
+            }
+            // ensure that container is stopped
+            if (containerInfo.status === 'running' || containerInfo.status === 'restarting') {
+                // stop container
+                const result = await this.#exec(`stop ${containerInfo.id}`);
+                if (result.stderr) {
+                    throw new Error(`Cannot stop container ${container}: ${result.stderr}`);
+                }
             }
 
             const result = await this.#exec(`rm ${container}`);
@@ -496,6 +925,11 @@ export default class DockerManager {
         }
     }
 
+    /**
+     * List all containers
+     *
+     * @param all If true, list all containers. If false, list only running containers. Default is true.
+     */
     async containerList(all: boolean = true): Promise<ContainerInfo[]> {
         try {
             const { stdout } = await this.#exec(
@@ -519,6 +953,14 @@ export default class DockerManager {
         }
     }
 
+    /**
+     * Get the logs of a container
+     *
+     * @param containerNameOrId Container name or ID
+     * @param options Options for logs
+     * @param options.tail Number of lines to show from the end of the logs
+     * @param options.follow If true, follow the logs (not implemented yet)
+     */
     async containerLogs(
         containerNameOrId: ContainerName,
         options: { tail?: number; follow?: boolean } = {},
@@ -530,6 +972,7 @@ export default class DockerManager {
             }
             if (options.follow) {
                 args.push(`--follow`);
+                throw new Error('Follow option is not implemented yet');
             }
             const result = await this.#exec(`logs${args.length ? ` ${args.join(' ')}` : ''} ${containerNameOrId}`);
             return (result.stdout || result.stderr).split('\n').filter(line => line.trim() !== '');
@@ -541,6 +984,7 @@ export default class DockerManager {
         }
     }
 
+    /** Inspect a container */
     async containerInspect(containerNameOrId: string): Promise<DockerContainerInspect | null> {
         try {
             const { stdout } = await this.#exec(`inspect ${containerNameOrId}`);
@@ -746,22 +1190,22 @@ export default class DockerManager {
         return args.join(' ');
     }
 
-    destroy(): void {
-        // destroy all timers
-        Object.keys(this.#timers.container).forEach((id: string) => {
-            clearTimeout(this.#timers.container[id]);
-        });
-        if (this.#timers.images) {
-            clearInterval(this.#timers.images);
-            delete this.#timers.images;
+    /** Stop own containers if necessary */
+    async destroy(): Promise<void> {
+        if (this.#monitoringInterval) {
+            clearInterval(this.#monitoringInterval);
+            this.#monitoringInterval = null;
         }
-        if (this.#timers.containers) {
-            clearInterval(this.#timers.containers);
-            delete this.#timers.containers;
-        }
-        if (this.#timers.info) {
-            clearInterval(this.#timers.info);
-            delete this.#timers.info;
+
+        for (const container of this.#ownContainers) {
+            if (container.iobEnabled !== false && container.iobStopOnUnload) {
+                this.#adapter.log.info(`Stopping own container ${container.name} on destroy`);
+                try {
+                    await this.containerStop(container.name);
+                } catch (e) {
+                    this.#adapter.log.warn(`Cannot stop own container ${container.name} on destroy: ${e.message}`);
+                }
+            }
         }
     }
 }

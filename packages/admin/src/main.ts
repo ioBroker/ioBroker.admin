@@ -289,15 +289,12 @@ class Admin extends Adapter {
             return;
         } else if (obj.command === 'checkDocker') {
             const dockerManager = new DockerManager(this);
-            void dockerManager
-                .init()
-                .then(() => dockerManager.getDockerDaemonInfo())
-                .then(result => {
-                    if (obj.callback) {
-                        this.sendTo(obj.from, obj.command, result, obj.callback);
-                    }
-                    dockerManager.destroy();
-                });
+            void dockerManager.getDockerDaemonInfo().then(result => {
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, result, obj.callback);
+                }
+                void dockerManager.destroy();
+            });
             return;
         } else if (webServer?.processMessage(obj)) {
             return;

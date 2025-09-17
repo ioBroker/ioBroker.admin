@@ -90,6 +90,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@copilot) Implemented sortable columns for instances table (name, status, memory, ID, host, loglevel)
+- (@copilot) Fixed adapter license icon linking to use commercial license URL instead of GitHub license
+- (@copilot) Fixed license icon spacing in list view to maintain consistent layout
+- (@GermanBluefox) Allows entering minus values with JsonConfig number component
 - (@copilot) Fixed textIP checkbox inconsistency between Objects and States tabs for same host configuration
 - (@GermanBluefox) Added icon to `www` folder for windows
 - (@copilot) Confirmed and documented Copilot issue handling guidelines: PRs use neutral language (no "fixes" keywords), issues closed manually by maintainers, and "fixed" labels added when appropriate
