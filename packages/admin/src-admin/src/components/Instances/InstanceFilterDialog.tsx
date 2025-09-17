@@ -20,8 +20,7 @@ import {
     Lens as SettingsIcon,
     Check as IconCheck,
     Close as IconClose,
-    ArrowUpward as ArrowUpwardIcon,
-    ArrowDownward as ArrowDownwardIcon,
+    Delete,
 } from '@mui/icons-material';
 
 import { green, grey, orange, red } from '@mui/material/colors';
@@ -249,22 +248,31 @@ type SortColumn = 'name' | 'status' | 'memory' | 'id' | 'host' | 'loglevel';
 type SortDirection = 'asc' | 'desc';
 
 interface InstanceFilterDialogProps {
-    onClose: (filter?: { 
-        filterMode: string; 
-        filterStatus: string;
+    onClose: (filter?: {
+        filterMode: 'none' | 'daemon' | 'schedule' | 'once' | null;
+        filterStatus: 'none' | 'disabled' | 'not_alive' | 'alive_not_connected' | 'alive_no_device' | 'ok' | null;
         sortColumn: SortColumn | null;
         sortDirection: SortDirection;
     }) => void;
-    filterMode: string;
-    filterStatus: string;
+    filterMode: 'none' | 'daemon' | 'schedule' | 'once' | null;
+    filterStatus: 'none' | 'disabled' | 'not_alive' | 'alive_not_connected' | 'alive_no_device' | 'ok' | null;
     sortColumn: SortColumn | null;
     sortDirection: SortDirection;
     expertMode: boolean;
 }
 
-const InstanceFilterDialog = ({ onClose, filterMode, filterStatus, sortColumn, sortDirection, expertMode }: InstanceFilterDialogProps): JSX.Element => {
-    const [modeCheck, setModeCheck] = useState(filterMode);
-    const [statusCheck, setStatusCheck] = useState(filterStatus);
+const InstanceFilterDialog = ({
+    onClose,
+    filterMode,
+    filterStatus,
+    sortColumn,
+    sortDirection,
+    expertMode,
+}: InstanceFilterDialogProps): JSX.Element => {
+    const [modeCheck, setModeCheck] = useState<'none' | 'daemon' | 'schedule' | 'once' | null>(filterMode);
+    const [statusCheck, setStatusCheck] = useState<
+        'none' | 'disabled' | 'not_alive' | 'alive_not_connected' | 'alive_no_device' | 'ok' | null
+    >(filterStatus);
     const [sortColumnState, setSortColumnState] = useState(sortColumn);
     const [sortDirectionState, setSortDirectionState] = useState(sortDirection);
 
@@ -309,7 +317,7 @@ const InstanceFilterDialog = ({ onClose, filterMode, filterStatus, sortColumn, s
                                 if (el.target.value === 'none') {
                                     setModeCheck(null);
                                 } else {
-                                    setModeCheck(el.target.value);
+                                    setModeCheck(el.target.value as 'none' | 'daemon' | 'schedule' | 'once' | null);
                                 }
                             }}
                         >
@@ -343,7 +351,16 @@ const InstanceFilterDialog = ({ onClose, filterMode, filterStatus, sortColumn, s
                                 if (el.target.value === 'none') {
                                     setStatusCheck(null);
                                 } else {
-                                    setStatusCheck(el.target.value);
+                                    setStatusCheck(
+                                        el.target.value as
+                                            | 'none'
+                                            | 'disabled'
+                                            | 'not_alive'
+                                            | 'alive_not_connected'
+                                            | 'alive_no_device'
+                                            | 'ok'
+                                            | null,
+                                    );
                                 }
                             }}
                         >
@@ -370,7 +387,9 @@ const InstanceFilterDialog = ({ onClose, filterMode, filterStatus, sortColumn, s
                             control={
                                 <Checkbox
                                     checked={!!sortColumnState}
-                                    onChange={e => (e.target.checked ? setSortColumnState('name') : setSortColumnState(null))}
+                                    onChange={e =>
+                                        e.target.checked ? setSortColumnState('name') : setSortColumnState(null)
+                                    }
                                 />
                             }
                             label={I18n.t('Sort by')}
@@ -399,11 +418,7 @@ const InstanceFilterDialog = ({ onClose, filterMode, filterStatus, sortColumn, s
                     </div>
                     {sortColumnState && (
                         <div style={styles.rowBlock}>
-                            <FormControlLabel
-                                style={styles.checkbox}
-                                control={null}
-                                label={I18n.t('Sort direction')}
-                            />
+                            <div style={styles.checkbox}>{I18n.t('Sort direction')}</div>
                             <Select
                                 variant="standard"
                                 value={sortDirectionState}
@@ -419,12 +434,33 @@ const InstanceFilterDialog = ({ onClose, filterMode, filterStatus, sortColumn, s
             </DialogContent>
             <DialogActions>
                 <Button
+                    color="grey"
+                    variant="contained"
+                    disabled={
+                        (sortColumnState || 'none') === 'none' &&
+                        (statusCheck || 'none') === 'none' &&
+                        (modeCheck || 'none') === 'none'
+                    }
+                    onClick={() => {
+                        onClose({
+                            filterMode: null,
+                            filterStatus: null,
+                            sortColumn: null,
+                            sortDirection: 'asc',
+                        });
+                    }}
+                    startIcon={<Delete />}
+                >
+                    {I18n.t('Reset')}
+                </Button>
+                <div style={{ flexGrow: 1 }} />
+                <Button
                     variant="contained"
                     autoFocus
                     disabled={
-                        modeCheck === filterMode && 
-                        filterStatus === statusCheck && 
-                        sortColumnState === sortColumn && 
+                        modeCheck === filterMode &&
+                        filterStatus === statusCheck &&
+                        sortColumnState === sortColumn &&
                         sortDirectionState === sortDirection
                     }
                     onClick={() => {

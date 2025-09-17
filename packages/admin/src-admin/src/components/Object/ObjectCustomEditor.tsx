@@ -556,7 +556,6 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             // evaluate function
             if (
                 this._executeCustom(
-                    this.jsonConfigs[adapter].json.hidden,
                     hidden,
                     data,
                     customObj,

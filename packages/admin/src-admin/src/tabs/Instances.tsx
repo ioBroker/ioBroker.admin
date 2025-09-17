@@ -17,8 +17,6 @@ import {
     Folder as FolderIcon,
     FolderOpen as FolderOpenIcon,
     List as ListIcon,
-    ArrowUpward as ArrowUpwardIcon,
-    ArrowDownward as ArrowDownwardIcon,
 } from '@mui/icons-material';
 import { FaFilter as FilterListIcon } from 'react-icons/fa';
 
@@ -137,8 +135,8 @@ interface InstancesState {
     deleteCustomSupported: boolean;
     currentHost: string;
     expandedFolder: string[];
-    filterMode: string | null;
-    filterStatus: string | null;
+    filterMode: 'none' | 'daemon' | 'schedule' | 'once' | null;
+    filterStatus: 'none' | 'disabled' | 'not_alive' | 'alive_not_connected' | 'alive_no_device' | 'ok' | null;
     showFilterDialog: boolean;
     sortColumn: SortColumn | null;
     sortDirection: SortDirection;
@@ -194,6 +192,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
             }
         }
 
+        const filterModeStr = this.localStorage.getItem('Instances.filterMode');
+        const filterStatusStr = this.localStorage.getItem('Instances.filterStatus');
+
         this.state = {
             expertMode: this.props.expertMode,
             dialog: null,
@@ -221,15 +222,22 @@ class Instances extends Component<InstancesProps, InstancesState> {
             expandedFolder,
 
             // filter
-            filterMode: this.localStorage.getItem('Instances.filterMode')
-                ? this.localStorage.getItem('Instances.filterMode') === 'null'
+            filterMode: filterModeStr
+                ? filterModeStr === 'null'
                     ? null
-                    : this.localStorage.getItem('Instances.filterMode')
+                    : (filterModeStr as 'none' | 'daemon' | 'schedule' | 'once' | null)
                 : null,
-            filterStatus: this.localStorage.getItem('Instances.filterStatus')
-                ? this.localStorage.getItem('Instances.filterStatus') === 'null'
+            filterStatus: filterStatusStr
+                ? filterStatusStr === 'null'
                     ? null
-                    : this.localStorage.getItem('Instances.filterStatus')
+                    : (filterStatusStr as
+                          | 'none'
+                          | 'disabled'
+                          | 'not_alive'
+                          | 'alive_not_connected'
+                          | 'alive_no_device'
+                          | 'ok'
+                          | null)
                 : null,
             sortColumn: (this.localStorage.getItem('Instances.sortColumn') as SortColumn) || null,
             sortDirection: (this.localStorage.getItem('Instances.sortDirection') as SortDirection) || 'asc',
@@ -895,23 +903,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return this._cacheList;
     }
 
-    onSort = (column: SortColumn): void => {
-        let newDirection: SortDirection = 'asc';
-
-        if (this.state.sortColumn === column) {
-            // If same column, toggle direction
-            newDirection = this.state.sortDirection === 'asc' ? 'desc' : 'asc';
-        }
-
-        this._cacheList = null;
-        this.localStorage.setItem('Instances.sortColumn', column);
-        this.localStorage.setItem('Instances.sortDirection', newDirection);
-        this.setState({
-            sortColumn: column,
-            sortDirection: newDirection,
-        });
-    };
-
     clearAllFilters(): void {
         const state: Partial<InstancesState> = {
             playArrow: 0,
@@ -1172,7 +1163,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         this._cacheList = null;
                         this.localStorage.setItem('Instances.filterMode', newState.filterMode);
                         this.localStorage.setItem('Instances.filterStatus', newState.filterStatus);
-                        
+
                         // Handle sorting state
                         if (newState.sortColumn) {
                             this.localStorage.setItem('Instances.sortColumn', newState.sortColumn);
@@ -1181,7 +1172,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                             this.localStorage.removeItem('Instances.sortColumn');
                             this.localStorage.removeItem('Instances.sortDirection');
                         }
-                        
+
                         this.setState({
                             filterMode: newState.filterMode,
                             filterStatus: newState.filterStatus,
@@ -1420,7 +1411,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         <IconButton
                             size="large"
                             onClick={() => this.setState({ showFilterDialog: true })}
-                            sx={this.state.filterMode || this.state.filterStatus || this.state.sortColumn ? styles.filterActive : undefined}
+                            sx={
+                                this.state.filterMode || this.state.filterStatus || this.state.sortColumn
+                                    ? styles.filterActive
+                                    : undefined
+                            }
                         >
                             <FilterListIcon style={{ width: 16, height: 16 }} />
                         </IconButton>
