@@ -1503,6 +1503,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             case 'txt':
             case 'css':
             case 'log':
+            case 'csv':
                 return true;
             default:
                 return false;
