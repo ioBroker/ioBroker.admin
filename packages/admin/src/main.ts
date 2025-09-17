@@ -21,6 +21,7 @@ import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
+import DockerManager from './lib/DockerManager';
 
 const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
@@ -31,8 +32,8 @@ const { getInstalledInfo } = commonTools;
 const ONE_HOUR_MS = 3_600_000;
 const ERROR_PERMISSION = 'permissionError';
 
-const CURRENT_MAX_MAJOR_NODEJS = 20;
-const CURRENT_MAX_MAJOR_NPM = 8;
+const CURRENT_MAX_MAJOR_NODEJS = 22;
+const CURRENT_MAX_MAJOR_NPM = 10;
 
 let socket: SocketAdmin;
 let webServer: Web;
@@ -276,15 +277,24 @@ class Admin extends Adapter {
         } else if (obj.command === 'url') {
             this.log.info(`url: ${JSON.stringify(obj.message)}`);
             // just for test
-            return (
-                obj.callback &&
-                this.sendTo(obj.from, obj.command, { openUrl: obj.message._origin, saveConfig: true }, obj.callback)
-            );
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { openUrl: obj.message._origin, saveConfig: true }, obj.callback);
+            }
+            return;
         } else if (obj.command.startsWith('admin:')) {
             return this.processNotificationsGui(obj);
         } else if (obj.command.startsWith('test:')) {
             // just for test
             this.log.info(`test: ${JSON.stringify(obj.message)}`);
+            return;
+        } else if (obj.command === 'checkDocker') {
+            const dockerManager = new DockerManager(this);
+            void dockerManager.getDockerDaemonInfo().then(result => {
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, result, obj.callback);
+                }
+                void dockerManager.destroy();
+            });
             return;
         } else if (webServer?.processMessage(obj)) {
             return;
@@ -1545,6 +1555,46 @@ class Admin extends Adapter {
         });
     }
 
+    /**
+     * Add repository read timestamp to the repository data structure
+     */
+    async addRepositoryReadTimestamp(repository: Record<string, any>, activeRepo: string | string[]): Promise<void> {
+        try {
+            const readTime = new Date().toISOString();
+
+            // Add read timestamp to the repository info structure
+            if (repository._repoInfo) {
+                repository._repoInfo.repoReadTime = readTime;
+            }
+
+            // Update the system.repositories object to store the read timestamp
+            const repos = await this.getForeignObjectAsync('system.repositories');
+            if (repos?.native?.repositories) {
+                if (Array.isArray(activeRepo)) {
+                    // Handle multiple repositories
+                    for (const repo of activeRepo) {
+                        if (repos.native.repositories[repo]?.json?._repoInfo) {
+                            // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                            repos.native.repositories[repo].json._repoInfo.repoReadTime = readTime;
+                        }
+                    }
+                } else {
+                    // Handle single repository
+                    if (repos.native.repositories[activeRepo]?.json?._repoInfo) {
+                        // @ts-expect-error - type will be extended in other repository to include repoReadTime
+                        repos.native.repositories[activeRepo].json._repoInfo.repoReadTime = readTime;
+                    }
+                }
+
+                // Save the updated repositories object
+                await this.setForeignObjectAsync('system.repositories', repos);
+                this.log.debug(`Repository read timestamp updated: ${readTime}`);
+            }
+        } catch (err) {
+            this.log.error(`Cannot add repository read timestamp: ${err}`);
+        }
+    }
+
     async checkRevokedVersions(repository: Record<string, ioBroker.RepositoryJsonAdapterContent>): Promise<void> {
         try {
             const adapters = Object.keys(repository);
@@ -1765,7 +1815,7 @@ class Admin extends Adapter {
                                 repo: active,
                                 update: true,
                             },
-                            _repository => {
+                            async _repository => {
                                 if (
                                     (typeof _repository === 'string' || _repository instanceof Error) &&
                                     _repository.toString().includes(ERROR_PERMISSION)
@@ -1773,6 +1823,9 @@ class Admin extends Adapter {
                                     this.log.error('May not read "getRepository"');
                                 } else {
                                     this.log.info('Repository received successfully.');
+
+                                    // Add repository read timestamp to the repository data
+                                    await this.addRepositoryReadTimestamp(_repository, active);
 
                                     socket?.repoUpdated();
                                     this.checkRevokedVersions(

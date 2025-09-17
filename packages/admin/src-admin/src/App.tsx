@@ -82,6 +82,7 @@ import type { InstanceConfig } from '@/tabs/EasyMode';
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer, {
     STATES as DrawerStates,
+    type AdminTab,
     DRAWER_FULL_WIDTH,
     DRAWER_COMPACT_WIDTH,
     DRAWER_EDIT_WIDTH,
@@ -490,48 +491,31 @@ interface AppState {
         lastNewsId: string | undefined;
     } | null;
     askForTokenRefresh: { expireAt: number; resolve: (prolong: boolean) => void; doNotAsk: boolean } | null;
+    userMenuAnchor: HTMLElement | null;
 }
 
 class App extends Router<AppProps, AppState> {
     private readonly translations: Record<ioBroker.Languages, Record<string, string>>;
-
     private _tempAllStored = true;
-
     private refConfigIframe: HTMLIFrameElement | null = null;
-
     private readonly refUser: RefObject<HTMLDivElement>;
-
     private readonly refUserDiv: RefObject<HTMLDivElement>;
-
     private expireInSecInterval: ReturnType<typeof setInterval> | null = null;
-
     private readonly toggleThemePossible: boolean;
-
     private adminGuiConfig: AdminGuiConfig;
-
     private logsWorker: LogsWorker | null;
-
     private instancesWorker: InstancesWorker | null;
-
     private hostsWorker: HostsWorker | null;
-
     private adaptersWorker: AdaptersWorker | null;
-
     private objectsWorker: ObjectsWorker | null;
-
     private guiSettings: ObjectGuiSettings;
-
     private localStorageTimer: ReturnType<typeof setTimeout> | null = null;
-
     private languageSet: boolean;
-
     private socket: AdminConnection;
-
     private adminInstance: string = '';
-
     private newsInstance: number = 0;
-
     private doNotAskSessionExpiration: number = 0;
+    private tabsInfo: AdminTab[] | null = null;
 
     constructor(props: AppProps) {
         super(props);
@@ -707,6 +691,7 @@ class App extends Router<AppProps, AppState> {
                 showHostWarning: null,
                 adapters: {},
                 askForTokenRefresh: null,
+                userMenuAnchor: null,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -2107,8 +2092,9 @@ class App extends Router<AppProps, AppState> {
                     </Suspense>
                 );
             }
-            const m = this.state.currentTab.tab.match(/^tab-([-\w]+)(-\d+)?$/);
+            const m = this.state.currentTab.tab.match(/^tab-([-\w]+?)(?:-(\d+))?$/);
             if (m) {
+                const tab = this.tabsInfo?.find(it => it.name === m[0] || it.name === `tab-${m[1]}`);
                 // /adapter/javascript/tab.html
                 return (
                     <Suspense fallback={<Connecting />}>
@@ -2131,6 +2117,8 @@ class App extends Router<AppProps, AppState> {
                                     this.refConfigIframe = null;
                                 }
                             }}
+                            icon={tab?.icon}
+                            supportsLoadingMessage={tab?.supportsLoadingMessage}
                         />
                     </Suspense>
                 );
@@ -2470,8 +2458,15 @@ class App extends Router<AppProps, AppState> {
                         sx={{
                             ...styles.userBadge,
                             ...(this.state.user.invertBackground ? styles.userBackground : undefined),
+                            ...(this.socket.isSecure ? { cursor: 'pointer' } : {}),
                         }}
                         ref={this.refUser}
+                        {...(this.socket.isSecure
+                            ? {
+                                  onClick: (event: React.MouseEvent<HTMLDivElement>) =>
+                                      this.setState({ userMenuAnchor: event.currentTarget }),
+                              }
+                            : {})}
                     >
                         {this.state.user.icon ? (
                             <Icon
@@ -2491,6 +2486,34 @@ class App extends Router<AppProps, AppState> {
                             {this.state.user.name}
                         </div>
                     </Box>
+
+                    {this.socket.isSecure && (
+                        <Menu
+                            anchorEl={this.state.userMenuAnchor}
+                            open={Boolean(this.state.userMenuAnchor)}
+                            onClose={() => this.setState({ userMenuAnchor: null })}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                        >
+                            <MenuItem
+                                onClick={() => {
+                                    this.setState({ userMenuAnchor: null });
+                                    App.logout();
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <Logout fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>{I18n.t('ra_Logout')}</ListItemText>
+                            </MenuItem>
+                        </Menu>
+                    )}
                 </div>
             );
         }
@@ -3154,6 +3177,9 @@ class App extends Router<AppProps, AppState> {
                                 repository={this.state.repository}
                                 installed={this.state.installed}
                                 theme={this.state.theme}
+                                provideTabsInfo={(tabs: AdminTab[]): void => {
+                                    this.tabsInfo = tabs;
+                                }}
                             />
                         </DndProvider>
                         <Paper

@@ -20,7 +20,6 @@
                 port: {
                     type: 'port',
                     min: 1,
-                    max: 65565,
                     label: 'Port',
                     xs: 12,
                     sm: 12,
