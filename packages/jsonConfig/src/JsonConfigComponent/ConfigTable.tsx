@@ -260,6 +260,7 @@ interface ConfigTableState extends ConfigGenericState {
     uploadFile: boolean | 'dragging';
     icon: boolean;
     width: number;
+    tableErrors: Record<number, Record<string, string>>;
 }
 
 function encrypt(secret: string, value: string): string {
@@ -348,6 +349,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 iteration: 0,
                 filterOn: [],
                 width: 0,
+                tableErrors: {},
             },
             () => this.validateUniqueProps(),
         );
@@ -399,7 +401,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                         this.onChangeWrapper(newObj, true);
                     });
                 }}
-                onError={(error: string, attr?: string) => this.onError(error, attr)}
+                onError={this.onTableRowError(idx)}
                 originalData={this.props.originalData}
                 schema={schemaItem as ConfigItemPanel}
                 table
@@ -446,12 +448,44 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         // Set error message based on the first error found (or clear if no errors)
         if (firstErrorColumn) {
             this.setState({
-                errorMessage: I18n.t('Non-allowed duplicate entry "%s" in column "%s"', firstErrorValue, firstErrorColumn),
+                errorMessage: I18n.t(
+                    'Non-allowed duplicate entry "%s" in column "%s"',
+                    firstErrorValue,
+                    firstErrorColumn,
+                ),
             });
         } else {
             this.setState({ errorMessage: '' });
         }
     }
+
+    /**
+     * Handle errors from table row components
+     */
+    onTableRowError =
+        (rowIndex: number) =>
+        (attr: string, error?: string): void => {
+            const newTableErrors = { ...this.state.tableErrors };
+
+            if (!newTableErrors[rowIndex]) {
+                newTableErrors[rowIndex] = {};
+            }
+
+            if (!error) {
+                delete newTableErrors[rowIndex][attr];
+                // Clean up empty row error objects
+                if (Object.keys(newTableErrors[rowIndex]).length === 0) {
+                    delete newTableErrors[rowIndex];
+                }
+            } else {
+                newTableErrors[rowIndex][attr] = error;
+            }
+
+            this.setState({ tableErrors: newTableErrors });
+
+            // Forward error to parent component
+            this.props.onError(attr, error);
+        };
 
     static descendingComparator(a: Record<string, any>, b: Record<string, any>, orderBy: string): number {
         if (b[orderBy] < a[orderBy]) {
@@ -642,8 +676,38 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
         newValue.splice(index, 1);
 
-        this.setState({ value: newValue, iteration: this.state.iteration + 10_000 }, () =>
-            this.applyFilter(false, null, () => this.onChangeWrapper(newValue)),
+        // Clear errors for deleted row and shift remaining error indices
+        const newTableErrors = { ...this.state.tableErrors };
+
+        // Clear errors for the deleted row
+        if (newTableErrors[index]) {
+            // Clear all errors for this row from parent
+            Object.keys(newTableErrors[index]).forEach(attr => {
+                this.props.onError(attr, undefined);
+            });
+            delete newTableErrors[index];
+        }
+
+        // Shift error indices for rows after the deleted one
+        const shiftedErrors: Record<number, Record<string, string>> = {};
+        Object.keys(newTableErrors).forEach(rowIndexStr => {
+            const rowIndex = parseInt(rowIndexStr, 10);
+            if (rowIndex > index) {
+                // Move errors from rowIndex to rowIndex - 1
+                shiftedErrors[rowIndex - 1] = newTableErrors[rowIndex];
+            } else {
+                // Keep errors at same index for rows before deleted row
+                shiftedErrors[rowIndex] = newTableErrors[rowIndex];
+            }
+        });
+
+        this.setState(
+            {
+                value: newValue,
+                iteration: this.state.iteration + 10_000,
+                tableErrors: shiftedErrors,
+            },
+            () => this.applyFilter(false, null, () => this.onChangeWrapper(newValue)),
         );
     };
 
