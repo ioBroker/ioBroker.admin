@@ -10,9 +10,12 @@ export class AdaptersWorker extends GenericWorker<'adapter'> {
 
     private repoTimer: ReturnType<typeof setTimeout> | null;
 
+    private lastActiveRepo: string | string[] | undefined;
+
     constructor(socket: AdminConnection) {
         super(socket, 'system.adapter', 'adapter');
         this.repositoryHandlers = [];
+        this.lastActiveRepo = undefined;
     }
 
     protected checkObjectId(id: string, obj: ioBroker.AdapterObject | null | undefined): boolean {
@@ -34,6 +37,22 @@ export class AdaptersWorker extends GenericWorker<'adapter'> {
         }, 500);
     };
 
+    systemConfigChangeHandler = (id: string, obj: ioBroker.SystemConfigObject | null | undefined): void => {
+        // Only handle system.config object changes
+        if (id !== 'system.config' || !obj?.common) {
+            return;
+        }
+
+        const currentActiveRepo = obj.common.activeRepo;
+
+        // Check if activeRepo has changed
+        if (JSON.stringify(this.lastActiveRepo) !== JSON.stringify(currentActiveRepo)) {
+            this.lastActiveRepo = currentActiveRepo;
+            // Trigger repository refresh using the same mechanism as repository changes
+            this.repoChangeHandler();
+        }
+    };
+
     registerRepositoryHandler(cb: () => void): void {
         if (!this.repositoryHandlers.includes(cb)) {
             this.repositoryHandlers.push(cb);
@@ -42,6 +61,19 @@ export class AdaptersWorker extends GenericWorker<'adapter'> {
                 this.socket
                     .subscribeObject('system.repositories', this.repoChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
+
+                // Also subscribe to system.config to watch for activeRepo changes
+                this.socket
+                    .subscribeObject('system.config', this.systemConfigChangeHandler)
+                    .catch(e => window.alert(`Cannot subscribe on system.config: ${e}`));
+
+                // Initialize lastActiveRepo from current system config
+                this.socket
+                    .getCompactSystemConfig()
+                    .then(config => {
+                        this.lastActiveRepo = config.common.activeRepo;
+                    })
+                    .catch(e => console.warn(`Cannot get initial system config: ${e}`));
             }
         }
     }
@@ -56,6 +88,10 @@ export class AdaptersWorker extends GenericWorker<'adapter'> {
             this.socket
                 .unsubscribeObject('system.repositories', this.repoChangeHandler)
                 .catch(e => window.alert(`Cannot unsubscribe on object: ${e}`));
+
+            this.socket
+                .unsubscribeObject('system.config', this.systemConfigChangeHandler)
+                .catch(e => window.alert(`Cannot unsubscribe on system.config: ${e}`));
         }
     }
 }
