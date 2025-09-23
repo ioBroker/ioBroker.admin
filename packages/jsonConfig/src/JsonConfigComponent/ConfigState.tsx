@@ -68,7 +68,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
     };
 
     getObjectID(): string {
-        let oid = this.props.schema.oid;
+        let oid = (this.props.schema.oid || '').toString();
         if (oid.includes('${')) {
             oid = this.getPattern(oid, null, true);
         }
