@@ -1111,6 +1111,10 @@ shows the license information if not already accepted. One of attributes `texts`
 Special component to check if Docker is installed and running.
 If docker is installed, a checkbox will be shown to allow the usage of docker.
 
+| Property      | Description                                                                                                                                                    |
+|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `hideVersion` | If the information about docker version or error should be hidden (e.g. if used more than one such element on the page the error or version will be shown once |
+
 ### `checkLicense`
 
 Very special component to check the license online. It's required exactly `license` and `useLicenseManager` properties in native.
