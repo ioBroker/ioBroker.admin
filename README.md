@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot) Fixed JSONCONFIG table validator bug where validation errors persisted after deleting table rows
 - (@GermanBluefox) Made small fix for JsonConfig component `state`
 - (@copilot) Fixed repository refresh issue: repositories are now automatically refreshed when switching repository source (stable/latest) without requiring manual "Check for updates"
 - (@copilot) Added CSV file editing support in file browser - CSV files can now be edited directly in the file manager

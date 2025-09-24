@@ -300,9 +300,9 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
         const { value } = this.state;
         const dataStr = JSON.stringify(value, null, 2);
         const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
-        
+
         const exportFileDefaultName = `config_section_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
-        
+
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
         linkElement.setAttribute('download', exportFileDefaultName);
@@ -323,7 +323,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
             reader.onload = e => {
                 try {
                     const jsonData = JSON.parse(e.target?.result as string);
-                    
+
                     if (!Array.isArray(jsonData)) {
                         alert(I18n.t('ra_Invalid JSON format. Expected an array.'));
                         return;
