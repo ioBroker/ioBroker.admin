@@ -272,7 +272,7 @@
                     sm: 12,
                     md: 8,
                     lg: 4,
-                    accept: 'image/png',
+                    accept: { 'image/png': [] },
                     label: 'Upload image',
                     crop: true,
                 },
