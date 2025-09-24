@@ -89,6 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@GermanBluefox) Made small fix for JsonConfig component `state`
 - (@copilot) Fixed repository refresh issue: repositories are now automatically refreshed when switching repository source (stable/latest) without requiring manual "Check for updates"
 - (@copilot) Added CSV file editing support in file browser - CSV files can now be edited directly in the file manager
 - (@copilot) Implemented sortable columns for instances table (name, status, memory, ID, host, loglevel)
@@ -124,8 +125,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Reading of same instances was optimized in GUI
 - (@GermanBluefox) Do not show the http page if admin is secured
 - (@GermanBluefox) Show loading progress for custom tabs
-
-### 7.7.2 (2025-07-22)
 - (@GermanBluefox) Fixing change of the language in the admin
 
 ### 7.7.1 (2025-06-20)
