@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-- Many GUI changes: See previous changelog
+- Many GUI changes: See previous changelog below for details
 
 ### 7.7.2 (2025-09-24)
 - (@copilot) Fixed JSONCONFIG table validator bug where validation errors persisted after deleting table rows
