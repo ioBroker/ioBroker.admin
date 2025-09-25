@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- Many GUI changes: See previous changelog below for details
+
+### 7.7.2 (2025-09-24)
 - (@copilot) Fixed JSONCONFIG table validator bug where validation errors persisted after deleting table rows
 - (@GermanBluefox) Made small fix for JsonConfig component `state`
 - (@copilot) Fixed repository refresh issue: repositories are now automatically refreshed when switching repository source (stable/latest) without requiring manual "Check for updates"
@@ -97,15 +100,15 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@copilot) Fixed adapter license icon linking to use commercial license URL instead of GitHub license
 - (@copilot) Fixed license icon spacing in list view to maintain consistent layout
 - (@GermanBluefox) Allows entering minus values with JsonConfig number component
-- (@copilot) Fixed textIP checkbox inconsistency between Objects and States tabs for same host configuration
+- (@copilot) Fixed textIP checkbox inconsistency between Objects and States tabs for the same host configuration
 - (@GermanBluefox) Added icon to `www` folder for windows
 - (@copilot) Confirmed and documented Copilot issue handling guidelines: PRs use neutral language (no "fixes" keywords), issues closed manually by maintainers, and "fixed" labels added when appropriate
 - (@copilot) Enhanced Copilot instructions to make issue management policy more prominent - no auto-closing issues, manual validation required
 - (@copilot) Enhanced repository timestamp display to show both generated and read timestamps - shows when repository data was generated and when it was last read by admin backend
 - (@copilot) Fixed jsonConfig port validation to properly account for bind addresses, allowing the same port on different IP addresses
-- (@copilot) Added error indicators to JSON Config tabs and accordions to improve visibility of validation errors
+- (@copilot) Added error indicators to JSON Config tabs and accordions to improve the visibility of validation errors
 - (@copilot) Added export/import functionality for accordion sections in JsonConfig allowing users to save accordion data as JSON files and import them back with replace or add options
-- (@copilot) Fixed time difference warning that incorrectly appeared when browser tab was inactive for a while
+- (@copilot) Fixed time difference warning that incorrectly appeared when the browser tab was inactive for a while
 - (@copilot) For GitHub-installed adapters, show version + commit hash instead of just version
 - (@copilot) Fixed table export error when table items contain null values
 - (@copilot) Object Browser: Added formatted duration display for values with role "value.duration" - shows time durations in HH:mm:ss format instead of raw seconds
@@ -115,7 +118,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@copilot) Fixed JSONConfig sendTo jsonData attribute parser problem where backslashes (\) in text inputs caused JSON parsing errors
 - (@copilot) Fixed step type behavior in chart display - "Schritte" now shows value until next point (step after) instead of step before
 - (@copilot) Added all three-step type options (stepStart, stepMiddle, stepEnd) to chart display with clearer descriptions
-- (@copilot) Fixed React error #62 in Files tab caused by malformed CSS calc() function
+- (@copilot) Fixed React error #62 in the Files tab caused by malformed CSS calc() function
 - (@copilot) Added loading indicator to JSONConfig autocompleteSendTo component during sendTo operations
 - (@copilot) Mark adapters removed from repository with "not maintained" text instead of empty version field
 - (@copilot) Enhanced responsive design: modals and popups now use full screen on xs and sm breakpoints
