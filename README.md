@@ -89,6 +89,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot, @SimonFischer04) Corrected instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)
+- (@copilot, @SimonFischer04) Fixed intro page reverse proxy link remapping so links are correctly rewritten immediately and after navigating away and back (load reverseProxy config before instance scan and use prefix startsWith matching)
 - (@copilot) Added CSV file editing support in file browser - CSV files can now be edited directly in the file manager
 - (@copilot) Implemented sortable columns for instances table (name, status, memory, ID, host, loglevel)
 - (@copilot) Fixed adapter license icon linking to use commercial license URL instead of GitHub license

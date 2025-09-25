@@ -25,7 +25,7 @@ import type { HostInfo } from '@iobroker/socket-client';
 import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
 import type { HostsWorker, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import AdminUtils from '@/helpers/AdminUtils';
-import { replaceLink } from '@/helpers/utils';
+import { replaceLink, applyReverseProxyToLink, ReverseProxyItem } from '@/helpers/utils';
 import IntroCard from '@/components/Intro/IntroCard';
 import EditIntroLinkDialog from '@/components/Intro/EditIntroLinkDialog';
 
@@ -137,11 +137,6 @@ type HostInfoEx = HostInfo & {
     _npmNewest: string;
     _npmNewestNext: string;
 };
-
-interface ReverseProxyItem {
-    globalPath: string;
-    paths: { path: string; instance: string }[];
-}
 
 interface LinkItem {
     id: string;
@@ -267,9 +262,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     #ONE_MINUTE_MS = 60 * 1_000;
 
-    /** // e.g. /admin/; */
-    private readonly currentProxyPath = window.location.pathname;
-
     private introLinksOriginal?: string;
 
     private deactivatedOriginal?: string[];
@@ -329,16 +321,21 @@ class Intro extends React.Component<IntroProps, IntroState> {
      * React lifecycle hook called when component did mount
      */
     async componentDidMount(): Promise<void> {
+        // Fetch reverse proxy config & feature support first
+        const [obj, nodeUpdateSupported] = await Promise.all([
+            this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`),
+            this.props.socket.checkFeatureSupported('CONTROLLER_OS_PACKAGE_UPGRADE'),
+        ]);
+        const reverseProxy = obj?.native?.reverseProxy || [];
+        // Ensure state updated before generating links so addLinks sees reverseProxy
+        await new Promise<void>(resolve =>
+            this.setState({ reverseProxy, nodeUpdateSupported }, () => resolve()),
+        );
+
         await this.getData();
         this.props.instancesWorker.registerHandler(this.getDataDelayed);
         this.props.hostsWorker.registerHandler(this.updateHosts);
         this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
-
-        const nodeUpdateSupported = await this.props.socket.checkFeatureSupported('CONTROLLER_OS_PACKAGE_UPGRADE');
-
-        // read reverse proxy settings
-        const obj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
-        this.setState({ nodeUpdateSupported, reverseProxy: obj?.native?.reverseProxy || [] });
         this.checkBackendTime();
     }
 
@@ -829,29 +826,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
         return { hostsData, alive };
     }
 
-    static applyReverseProxy(
-        webReverseProxyPath: ReverseProxyItem,
-        instances: Record<string, ioBroker.InstanceObject>,
-        instance: IntroInstanceItem,
-    ): void {
-        webReverseProxyPath?.paths.forEach(item => {
-            if (item.instance === instance.id) {
-                instance.link = item.path;
-            } else if (item.instance.startsWith('web.')) {
-                // if this is a web instance, check if it is the same as the current instance
-                const _obj = instances[`system.adapter.${item.instance}`];
-                if (_obj?.native?.port && instance.link.includes(`:${_obj.native.port}`)) {
-                    // replace
-                    const regExp = new RegExp(`^.*:${_obj.native.port}/`);
-                    if (instance.link) {
-                        instance.link = instance.link.replace(regExp, item.path);
-                    }
-                    console.log(instance.link);
-                }
-            }
-        });
-    }
-
     addLinks(
         linkItem: LinkItem,
         common: ioBroker.InstanceCommon,
@@ -880,15 +854,20 @@ class Intro extends React.Component<IntroProps, IntroState> {
             hosts,
         });
 
+        const reverseProxy = this.state.reverseProxy;
         let webReverseProxyPath: ReverseProxyItem | null = null;
-        if (this.state.reverseProxy?.length) {
-            webReverseProxyPath = this.state.reverseProxy.find(item => item.globalPath === this.currentProxyPath);
+        if (reverseProxy?.length) {
+            const currentPath = window.location.pathname;
+            webReverseProxyPath = reverseProxy.find(p => {
+                if (!p.globalPath) { return false; }
+                const gp = p.globalPath.endsWith('/') ? p.globalPath : `${p.globalPath}/`;
+                return currentPath === gp || currentPath.startsWith(gp);
+            }) || null;
         }
         if (_urls.length === 1) {
             instance.link = _urls[0].url;
             instance.port = _urls[0].port;
-
-            Intro.applyReverseProxy(webReverseProxyPath, instances, instance);
+            instance.link = applyReverseProxyToLink(instance.link, instance.id, instances, webReverseProxyPath) || instance.link;
 
             // if a link already exists => ignore
             const lll = introInstances.find(item => item.link === instance.link);
@@ -903,7 +882,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
                 if (!lll) {
                     const item = { ...instance, link: url.url, port: url.port };
-                    Intro.applyReverseProxy(webReverseProxyPath, instances, item);
+                    item.link = applyReverseProxyToLink(item.link, instance.id, instances, webReverseProxyPath) || item.link;
                     introInstances.push(item);
                 } else {
                     console.log(`Double links: "${instance.id}" and "${lll.id}"`);
