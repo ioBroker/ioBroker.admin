@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.2",
+    "version": "7.7.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.3": {
+        "en": "Many GUI changes: See previous changelog below for details",
+        "de": "Viele GUI Änderungen: Siehe vorheriges Changelog unten für Details",
+        "ru": "Многие изменения GUI: Смотрите предыдущий Changelog ниже для получения подробной информации",
+        "pt": "Muitas alterações na GUI: Veja o changelog anterior abaixo para detalhes",
+        "nl": "Veel GUI-wijzigingen: Zie vorige changelog hieronder voor details",
+        "fr": "De nombreux changements d'interface utilisateur : Voir ci-dessous pour plus de détails",
+        "it": "Molti cambiamenti della GUI: Vedere precedente changelog qui sotto per i dettagli",
+        "es": "Muchos cambios GUI: Ver el cambio anterior a continuación para más detalles",
+        "pl": "Wiele zmian GUI: Szczegółowe informacje znajdują się w poprzednim changelogu poniżej",
+        "uk": "Багато інтерфейсних змін: Перегляньте попередній блок змін нижче для деталей",
+        "zh-cn": "许多 GUI 更改 : 详情见下文以前的更改日志"
+      },
       "7.7.2": {
         "en": "Fixing change of the language in the admin",
         "de": "Änderung der Sprache im Admin reparieren",
@@ -96,19 +109,6 @@
         "pl": "Dodano uwierzytelnianie OAuth2 do komponentów JSONConfig",
         "uk": "Додано автентифікації OAuth2 до компонентів JSONConfig",
         "zh-cn": "添加 OAuth2 认证到 JSONConfig 组件"
-      },
-      "7.6.17": {
-        "en": "Small changes on GUI, JSONConfig and Device Manager",
-        "de": "Kleine Änderungen an GUI, JSONConfig und Device Manager",
-        "ru": "Небольшие изменения в GUI, JSONConfig и диспетчере устройств",
-        "pt": "Pequenas mudanças no GUI, JSONConfig e Device Manager",
-        "nl": "Kleine wijzigingen op GUI, JSONConfig en Apparaatbeheer",
-        "fr": "Petits changements sur GUI, JSONConfig et Device Manager",
-        "it": "Piccoli cambiamenti su GUI, JSONConfig e Gestione dispositivi",
-        "es": "Pequeños cambios en GUI, JSONConfig y Device Manager",
-        "pl": "Małe zmiany na GUI, JSONConfig i menedżer urządzeń",
-        "uk": "Невеликі зміни в GUI, JSONConfig і диспетчер пристроїв",
-        "zh-cn": "图形用户界面、 JSONConfig 和设备管理器的小变化"
       }
     },
     "desc": {

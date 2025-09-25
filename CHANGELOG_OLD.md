@@ -1,4 +1,10 @@
 # Older changes
+## 7.6.19 (2025-06-08)
+
+- (@GermanBluefox) Improvements on JSONConfig component `state`
+- (@GermanBluefox) Added `infoBox` JSONConfig component
+- (@Jey-Cee) Added the room selection to the wizard
+
 ## 7.6.18 (2025-05-30)
 
 - (@GermanBluefox) Added OAuth2 authentication to JSONConfig components

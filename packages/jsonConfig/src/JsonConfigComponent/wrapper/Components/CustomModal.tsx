@@ -1,6 +1,16 @@
 import React, { type JSX, useEffect, useState } from 'react';
 
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Button, useMediaQuery, useTheme } from '@mui/material';
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    TextField,
+    Button,
+    useMediaQuery,
+    useTheme,
+} from '@mui/material';
 
 import { Check as CheckIcon, Close as CloseIcon, Language as LanguageIcon } from '@mui/icons-material';
 

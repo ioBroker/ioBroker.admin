@@ -54,6 +54,8 @@ export interface ConnectionProps {
     onObjectChange?: ioBroker.ObjectChangeHandler;
     /** Language callback */
     onLanguage?: (lang: ioBroker.Languages) => void;
+    /** Special access token */
+    token?: string;
 }
 
 export interface OldObject {
