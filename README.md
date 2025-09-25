@@ -77,6 +77,75 @@ You can add the following lines into Reverse Proxy tab to let Intro tab run behi
 
 So all links of instances that use web server, like `eventlist`, `vis`, `material` and so on will use `https://iobroker.mydomain.com/ioBrokerWeb/` path
 
+### Extended reverse proxy example (with screenshots)
+
+Below is a more complete example showing how a reverse proxy (e.g. Nginx Proxy Manager) can be configured and how the Admin UI resolves links after mapping.
+
+> NOTE: At the moment the admin UI itself still needs to be effectively served from the web root `/` of the host. login and other hardcoded urls do not yet respect another base path (see limitation discussion here: https://github.com/ioBroker/ioBroker.admin/issues/1660#issuecomment-2360056439).
+
+#### 1. Base host / root mapping
+
+Map the public root (or a dedicated host like `https://iobroker.example.com/`) directly to your Admin instance (default port 8081):
+
+<img src="assets/revproxy_nginxpm_root.png" alt="Nginx Proxy Manager: root mapping to admin" width="640" />
+
+#### 2. Custom locations for other services
+
+Add additional custom locations for web / REST / other adapter frontends. Each location forwards to the respective local port (e.g. web.0 on 8082, rest-api.0 on 8093):
+
+<img src="assets/revproxy_nginxpm_customlocations.png" alt="Nginx Proxy Manager: custom locations" width="640" />
+
+Example custom locations (Nginx style):
+```
+/location /web/  => http://LOCAL_IOBROKER_IP:8082/
+/location /welcome/  => http://LOCAL_IOBROKER_IP:1234/
+/location /esphome/  => http://LOCAL_IOBROKER_IP:6052/
+```
+(Adjust paths/ports for your environment.)
+
+#### 3. Configure mappings in Admin Reverse Proxy tab
+
+Enter the same paths so that Intro / Instances pages rewrite adapter links correctly:
+
+| Global path | Instance     | Instance path behind proxy |
+|-------------|--------------|----------------------------|
+| `/`         | `web.0`      | `/web/`                    |
+|             | `rest-api.0` | `/api/`                    |
+|             | `esphome.0`  | `/esphome/`                |
+
+> If you keep Admin on `/` you usually do not need to list `admin.0`, but adding it does not hurt and can make intent explicit.
+
+After saving, the Intro screen rewrites links so that all web‑served adapters open under the correct prefixed paths:
+
+<img src="assets/revproxy_admin.png" alt="Admin Intro page after reverse proxy mapping" width="640" />
+
+#### 4. Limitations & compatibility
+
+* Admin root requirement: As stated above, full relocation of Admin itself under a sub‑path (e.g. `/admin/`) is not yet supported.
+* Adapter path awareness: Not every adapter UI is currently path‑aware. While generic `localLink` rewriting covers many cases, some UIs still assume they are hosted at the domain root. Known examples:
+  * `vis` (classic) – NOT fully working behind a sub‑path today.
+  * `vis-2` – generally more path tolerant, but custom widgets or legacy resources may still use absolute paths.
+  * Any adapter serving hard‑coded absolute URLs (starting with `/`) may need manual fixes until updated upstream.
+* Mixed content: If you terminate TLS at the proxy (HTTPS) but contact adapters over HTTP internally, make sure all external links are rewritten to HTTPS to avoid browser mixed-content blocks.
+* WebSocket forwarding: Ensure `Upgrade` and `Connection` headers are passed through. In Nginx this typically means adding:
+```
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+```
+(old checking the websocket support box, if using proxy manager)
+* Trailing slashes: Always keep a trailing slash in the mapped path (e.g. `/web/`) and location, so nginx does path rewriting. 
+This makes simple cases like the welcome adapter above work, because it only sees a / path -> correctly serves its index.html.
+
+#### 5. Quick troubleshooting checklist
+
+| Symptom | Likely cause | Action |
+|---------|--------------|--------|
+| Blank or partial Admin UI | Admin mounted under sub‑path only | Keep Admin at `/` (see limitation) |
+| Adapter link opens wrong host/port | Missing entry in Reverse Proxy tab | Add mapping row and save |
+| 404 for adapter JS/CSS | Missing trailing slash in location | Add trailing slash to location and mapping |
+| WebSocket errors in console | Proxy not forwarding upgrade headers | Add `proxy_set_header Upgrade` / `Connection` headers |
+| vis UI broken | Adapter not path‑aware | Keep on root or wait for adapter update |
+
 ## Used icons
 
 This project uses icons from [Flaticon](https://www.flaticon.com/).
@@ -89,6 +158,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@copilot, @SimonFischer04) Added extended reverse proxy example section with screenshots, limitations (admin root requirement), and adapter compatibility notes
 - (@copilot, @SimonFischer04) Corrected instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)
 - (@copilot, @SimonFischer04) Fixed intro page reverse proxy link remapping so links are correctly rewritten immediately and after navigating away and back (load reverseProxy config before instance scan and use prefix startsWith matching)
 - (@copilot) Added CSV file editing support in file browser - CSV files can now be edited directly in the file manager

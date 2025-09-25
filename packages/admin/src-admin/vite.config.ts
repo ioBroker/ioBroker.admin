@@ -31,6 +31,7 @@ export default defineConfig({
             '/lib/js/crypto-js': 'http://127.0.0.1:8081',
             '/sso': 'http://127.0.0.1:8081'
         },
+        allowedHosts: ['iot.fischerserver.eu', 'iobroker-simonpc.revproxy.home.arpa']
     },
     base: './',
     resolve: {
