@@ -88,7 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.7.3 (2025-09-25)
 - Many GUI changes: See previous changelog below for details
 
 ### 7.7.2 (2025-09-24)
@@ -140,12 +140,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.6.20 (2025-06-16)
 - (@GermanBluefox) Allowed using of * in the filter of objects
 - (@GermanBluefox) Small GUI improvements
-
-### 7.6.19 (2025-06-08)
-
-- (@GermanBluefox) Improvements on JSONConfig component `state`
-- (@GermanBluefox) Added `infoBox` JSONConfig component
-- (@Jey-Cee) Added the room selection to the wizard
 
 ## License
 
