@@ -440,7 +440,6 @@ export function replaceLink(
     return [{ url: link, port }];
 }
 
-// Reverse proxy support (moved function as requested). EXACT logic from Instances original static method.
 export interface ReverseProxyItem {
     globalPath: string;
     paths: { path: string; instance: string }[];
