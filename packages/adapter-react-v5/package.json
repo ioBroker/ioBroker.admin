@@ -78,6 +78,6 @@
         "@types/react-color": "^3.0.13",
         "ajv": "^8.17.1",
         "ts-node": "^10.9.2",
-        "typescript": "~5.8.3"
+        "typescript": "~5.9.3"
     }
 }
