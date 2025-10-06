@@ -439,3 +439,32 @@ export function replaceLink(
     }
     return [{ url: link, port }];
 }
+
+export interface ReverseProxyItem {
+    globalPath: string;
+    paths: { path: string; instance: string }[];
+}
+
+// New util returning rewritten link (used by Intro & Instances simplified usage)
+export function applyReverseProxyToLink(
+    link: string | undefined,
+    instanceId: string,
+    instances: Record<string, ioBroker.InstanceObject>,
+    webReverseProxyPath: ReverseProxyItem | null,
+): string | undefined {
+    if (!link || !webReverseProxyPath) {
+        return link;
+    }
+    webReverseProxyPath.paths.forEach(item => {
+        if (item.instance === instanceId) {
+            link = item.path;
+        } else if (item.instance.startsWith('web.')) {
+            const webObj = instances[`system.adapter.${item.instance}`];
+            if (webObj?.native?.port && link.includes(`:${webObj.native.port}`)) {
+                const regExp = new RegExp(`^.*:${webObj.native.port}/`);
+                link = link.replace(regExp, item.path);
+            }
+        }
+    });
+    return link;
+}
