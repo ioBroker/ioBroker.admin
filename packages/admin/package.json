@@ -61,7 +61,7 @@
         "less": "^4.4.1",
         "puppeteer": "^24.23.0",
         "src-rx": "file:src-admin",
-        "typescript": "~5.8.3"
+        "typescript": "~5.9.3"
     },
     "overrides": {
         "oauth2-server": {
