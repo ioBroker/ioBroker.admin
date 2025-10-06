@@ -29,6 +29,7 @@
     },
     "devDependencies": {
         "@devbookhq/splitter": "^1.4.2",
+        "@emotion/styled": "^11.14.1",
         "@fnando/sparkline": "^0.3.10",
         "@foxriver76/iob-component-lib": "^0.2.0",
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
@@ -40,6 +41,7 @@
         "@mui/x-date-pickers": "~7.28.3",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^2.1.0",
+        "@sentry/browser": "^10.17.0",
         "@tsconfig/node16": "^16.1.4",
         "@types/ace": "^0.0.52",
         "@types/crypto-js": "^4.2.2",
