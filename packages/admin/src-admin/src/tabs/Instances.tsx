@@ -36,7 +36,7 @@ import {
 import type { HostInfo } from '@iobroker/socket-client';
 
 import AdminUtils from '@/helpers/AdminUtils';
-import { replaceLink } from '@/helpers/utils';
+import { replaceLink, applyReverseProxyToLink, type ReverseProxyItem } from '@/helpers/utils';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import type { InstanceLink } from '@/components/Instances/LinksDialog';
 import Config from './Config';
@@ -140,6 +140,7 @@ interface InstancesState {
     showFilterDialog: boolean;
     sortColumn: SortColumn | null;
     sortDirection: SortDirection;
+    reverseProxy?: ReverseProxyItem[] | null;
 }
 
 // every tab should get their data itself from server
@@ -279,6 +280,14 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     async componentDidMount(): Promise<void> {
         this.props.instancesWorker.registerHandler(this.getInstances);
+        // Load reverse proxy configuration first so link generation can map immediately
+        try {
+            const adminObj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
+            const reverseProxy = adminObj?.native?.reverseProxy || [];
+            await new Promise<void>(resolve => this.setState({ reverseProxy }, () => resolve()));
+        } catch (e) {
+            console.warn('Cannot read reverseProxy config for Instances page:', e);
+        }
         await this.updateData();
         const deleteCustomSupported = await this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM');
         if (deleteCustomSupported) {
@@ -475,6 +484,31 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     });
                 }
             });
+
+            // Reverse proxy mapping (similar to Intro) applied after links prepared
+            if (instance.links?.length && this.state.reverseProxy?.length) {
+                const currentPath = window.location.pathname;
+                const proxyConfig = this.state.reverseProxy.find(p => {
+                    if (!p.globalPath) { return false; }
+                    const gp = p.globalPath.endsWith('/') ? p.globalPath : `${p.globalPath}/`;
+                    return currentPath === gp || currentPath.startsWith(gp);
+                }) || null;
+                if (proxyConfig) {
+                    instance.links.forEach(l => {
+                        l.link = applyReverseProxyToLink(l.link, instance.id, instancesFromWorker, proxyConfig) || l.link;
+                    });
+                }
+                // De-duplicate links after mapping (reverse proxy may collapse multiple original URLs)
+                if (instance.links.length > 1) {
+                    const seen = new Set<string>();
+                    instance.links = instance.links.filter(l => {
+                        if (!l.link) { return false; }
+                        if (seen.has(l.link)) { return false; }
+                        seen.add(l.link);
+                        return true;
+                    });
+                }
+            }
 
             if (instance.stoppedWhenWebExtension) {
                 const eId =
