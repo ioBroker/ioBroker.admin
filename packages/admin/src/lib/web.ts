@@ -181,9 +181,7 @@ interface AdminAdapter extends ioBroker.Adapter {
     config: AdminAdapterConfig;
 }
 
-/**
- * Webserver class
- */
+/** Webserver class */
 class Web {
     server: {
         app: null | Express;
