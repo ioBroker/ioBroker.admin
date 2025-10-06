@@ -65,7 +65,7 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
     return (
         <Card
             style={style}
-            ref={drop}
+            ref={drop as unknown as React.Ref<HTMLDivElement>}
             sx={Utils.getStyle(props.theme, props.styles.userGroupCard2, backgroundColor)}
         >
             <div style={props.styles.right}>

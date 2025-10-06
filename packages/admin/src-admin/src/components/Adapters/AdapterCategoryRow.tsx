@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import { Grid2 as Grid, IconButton, TableCell, TableRow, Typography } from '@mui/material';
+import { Grid, IconButton, TableCell, TableRow, Typography } from '@mui/material';
 
 import { blue, green } from '@mui/material/colors';
 

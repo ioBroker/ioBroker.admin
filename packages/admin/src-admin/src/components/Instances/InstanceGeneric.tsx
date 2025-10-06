@@ -907,7 +907,9 @@ export default abstract class InstanceGeneric<
                         variant="standard"
                         value={this.state.tier}
                         fullWidth
-                        onChange={el => this.setState({ tier: parseInt(el.target.value as string, 10) as 1 | 2 | 3 })}
+                        onChange={el =>
+                            this.setState({ tier: parseInt(el.target.value as unknown as string, 10) as 1 | 2 | 3 })
+                        }
                     >
                         {arrayTier.map(el => (
                             <MenuItem

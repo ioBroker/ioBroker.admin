@@ -130,6 +130,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element => {
                 <Box
                     key={dragProps.item.data.id}
                     sx={dragProps.style}
+                    // @ts-expect-error tbd
                     ref={dragRef}
                     style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}
                 >

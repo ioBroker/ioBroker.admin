@@ -163,7 +163,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
 };
 
 const UserBlockDrag: React.FC<UserBlockProps> = props => {
-    const widthRef = useRef<HTMLDivElement>();
+    const widthRef = useRef<HTMLDivElement | null>(null);
     const [{ isDragging }, dragRef, preview] = useDrag({
         type: 'user',
         item: () => ({
@@ -191,7 +191,10 @@ const UserBlockDrag: React.FC<UserBlockProps> = props => {
     }, [preview]);
 
     return (
-        <div ref={dragRef}>
+        <div
+            // @ts-expect-error tbd
+            ref={dragRef}
+        >
             <div ref={widthRef}>
                 <UserBlock
                     isDragging={isDragging}

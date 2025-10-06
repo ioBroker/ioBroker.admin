@@ -1,7 +1,7 @@
 import React, { Component, type JSX } from 'react';
 
 import {
-    Grid2,
+    Grid,
     Toolbar,
     FormControlLabel,
     Checkbox,
@@ -84,19 +84,19 @@ export default class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, W
                     noValidate
                     autoComplete="off"
                 >
-                    <Grid2
+                    <Grid
                         container
                         direction="column"
                     >
-                        <Grid2>
+                        <Grid>
                             <Box
                                 component="h2"
                                 sx={styles.title}
                             >
                                 {this.props.t('It is suggested to enable the authentication in admin')}
                             </Box>
-                        </Grid2>
-                        <Grid2 style={styles.inputLine}>
+                        </Grid>
+                        <Grid style={styles.inputLine}>
                             <FormGroup>
                                 <FormControlLabel
                                     style={styles.input}
@@ -114,8 +114,8 @@ export default class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, W
                                     )}
                                 </FormHelperText>
                             </FormGroup>
-                        </Grid2>
-                        <Grid2>
+                        </Grid>
+                        <Grid>
                             <FormControl
                                 variant="standard"
                                 style={styles.input}
@@ -137,8 +137,8 @@ export default class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, W
                                         : this.props.t('Your communication with admin is not encrypted')}
                                 </FormHelperText>
                             </FormControl>
-                        </Grid2>
-                    </Grid2>
+                        </Grid>
+                    </Grid>
                 </form>
                 <Toolbar style={styles.toolbar}>
                     <div style={styles.grow} />

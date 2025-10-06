@@ -1262,7 +1262,9 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         if (this.chartValues) {
             return (
                 <ReactEchartsCore
-                    ref={e => (this.echartsReact = e)}
+                    ref={e => {
+                        this.echartsReact = e;
+                    }}
                     echarts={echarts}
                     option={this.getOption()}
                     notMerge

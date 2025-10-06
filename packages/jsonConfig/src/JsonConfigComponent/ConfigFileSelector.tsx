@@ -273,7 +273,7 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
             }
 
             this.props.oContext.socket
-                .writeFile64(this.objectID, this.path + file.name, reader.result as ArrayBufferLike)
+                .writeFile64(this.objectID, this.path + file.name, reader.result)
                 .then(() => this.updateFiles())
                 .then(() =>
                     // Automatically select the new uploaded file
@@ -331,7 +331,7 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
                 const oContext = new AudioContext();
                 const buf = ConfigFileSelector.base64ToArrayBuffer(data.file);
                 void oContext.decodeAudioData(
-                    buf,
+                    buf as ArrayBuffer,
                     (buffer: AudioBuffer): void => {
                         const source = oContext.createBufferSource(); // creates a sound source
                         source.buffer = buffer; // tell the source which sound to play

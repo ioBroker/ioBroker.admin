@@ -14,7 +14,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Grid2,
+    Grid,
     IconButton,
     Typography,
     Box,
@@ -384,7 +384,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                             .filter(line => !!line);
 
                         result.push(
-                            <Grid2 key={version}>
+                            <Grid key={version}>
                                 <Typography sx={styles.versionHeader}>
                                     {version}
                                     {latestVersion === version ? (
@@ -411,7 +411,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                                         {`• ${value}`}
                                     </Typography>
                                 ))}
-                            </Grid2>,
+                            </Grid>,
                         );
                     }
                 } catch {
@@ -469,33 +469,33 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                         </Typography>
                     </DialogTitle>
                     <DialogContent dividers>
-                        <Grid2
+                        <Grid
                             container
                             direction="column"
                             spacing={2}
                             wrap="nowrap"
                         >
                             {news.length ? (
-                                <Grid2>
+                                <Grid>
                                     <Typography
                                         variant="h6"
                                         gutterBottom
                                     >
                                         {I18n.t('Change log')}
                                     </Typography>
-                                    <Grid2
+                                    <Grid
                                         container
                                         spacing={2}
                                         direction="column"
                                         wrap="nowrap"
                                     >
                                         {news}
-                                    </Grid2>
-                                </Grid2>
+                                    </Grid>
+                                </Grid>
                             ) : (
                                 I18n.t('No change log available')
                             )}
-                        </Grid2>
+                        </Grid>
                     </DialogContent>
                     <DialogActions style={styles.wrapperButton}>
                         <Button

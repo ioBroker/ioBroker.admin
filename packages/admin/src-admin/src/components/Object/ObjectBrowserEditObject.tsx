@@ -24,7 +24,7 @@ import {
     Fab,
     FormControl,
     FormControlLabel,
-    Grid2,
+    Grid,
     IconButton,
     InputAdornment,
     InputLabel,
@@ -1959,12 +1959,12 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             const funcVisible = json.common?.alias?.read !== undefined || json.common?.alias?.write !== undefined;
 
             return (
-                <Grid2
+                <Grid
                     container
                     direction="column"
                     style={styles.marginTop}
                 >
-                    <Grid2>
+                    <Grid>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -1980,9 +1980,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             }
                             label={this.props.t('Different IDs for read and write')}
                         />
-                    </Grid2>
+                    </Grid>
                     {typeof json.common?.alias?.id !== 'object' ? (
-                        <Grid2>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Alias state')}
@@ -2013,11 +2013,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             >
                                 ...
                             </Fab>
-                        </Grid2>
+                        </Grid>
                     ) : null}
 
                     {typeof json.common?.alias?.id === 'object' ? (
-                        <Grid2>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Alias read state')}
@@ -2048,11 +2048,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             >
                                 ...
                             </Fab>
-                        </Grid2>
+                        </Grid>
                     ) : null}
 
                     {typeof json.common?.alias?.id === 'object' ? (
-                        <Grid2>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Alias write state')}
@@ -2083,9 +2083,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             >
                                 ...
                             </Fab>
-                        </Grid2>
+                        </Grid>
                     ) : null}
-                    <Grid2 style={styles.marginTop}>
+                    <Grid style={styles.marginTop}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -2109,9 +2109,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             }
                             label={this.props.t('Use convert functions')}
                         />
-                    </Grid2>
+                    </Grid>
                     {funcVisible ? (
-                        <Grid2>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Read converter')}
@@ -2144,10 +2144,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 }
                                 margin="normal"
                             />
-                        </Grid2>
+                        </Grid>
                     ) : null}
                     {funcVisible ? (
-                        <Grid2>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Write converter')}
@@ -2180,9 +2180,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 onChange={e => this.setAliasItem(json, 'write', e.target.value)}
                                 margin="normal"
                             />
-                        </Grid2>
+                        </Grid>
                     ) : null}
-                </Grid2>
+                </Grid>
             );
         } catch {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;

@@ -6,7 +6,6 @@ import { type AdminConnection, I18n, type ThemeName, type ThemeType, type IobThe
 
 import type { BackEndCommand, ConfigItemPanel, ConfigItemTabs, JsonConfigContext } from '../types';
 import type ConfigGeneric from './ConfigGeneric';
-// eslint-disable-next-line no-duplicate-imports
 import { type DeviceManagerPropsProps } from './ConfigGeneric';
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
@@ -42,7 +41,7 @@ interface JsonConfigComponentProps {
     instanceObj?: ioBroker.InstanceObject;
     customObj?: ioBroker.Object;
     customs?: Record<string, typeof ConfigGeneric>;
-    DeviceManager?: React.FC<DeviceManagerPropsProps>;
+    DeviceManager?: React.FC<DeviceManagerPropsProps> | Promise<React.FC<DeviceManagerPropsProps>>;
     style?: React.CSSProperties;
     theme: IobTheme;
     expertMode?: boolean;

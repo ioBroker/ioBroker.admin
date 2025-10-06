@@ -1,6 +1,6 @@
 import React, { Component, type JSX } from 'react';
 
-import { Grid2, Button } from '@mui/material';
+import { Grid2 as Grid, Button } from '@mui/material';
 
 import {
     Info as IconInfo,
@@ -1080,7 +1080,7 @@ export default class ConfigGeneric<
 
             if (schema.hideOnlyControl) {
                 const item = (
-                    <Grid2
+                    <Grid
                         size={{
                             xs: schema.xs || DEFAULT_SM_SIZE, // if xs is not defined, take the full width
                             sm: schema.sm || undefined,
@@ -1141,7 +1141,7 @@ export default class ConfigGeneric<
         }
 
         const item = (
-            <Grid2
+            <Grid
                 title={this.getText(schema.tooltip)}
                 size={{
                     xs: schema.xs || 12, // if xs is not defined, take the full width
@@ -1159,12 +1159,12 @@ export default class ConfigGeneric<
                 }}
             >
                 {this.props.schema.defaultSendTo && this.props.schema.button ? (
-                    <Grid2
+                    <Grid
                         container
                         style={{ width: '100%' }}
                     >
-                        <Grid2 flex={1}>{renderedItem}</Grid2>
-                        <Grid2>
+                        <Grid flex={1}>{renderedItem}</Grid>
+                        <Grid>
                             <Button
                                 disabled={disabled}
                                 variant="outlined"
@@ -1180,12 +1180,12 @@ export default class ConfigGeneric<
                             >
                                 {this.getText(this.props.schema.button as ioBroker.StringOrTranslated)}
                             </Button>
-                        </Grid2>
-                    </Grid2>
+                        </Grid>
+                    </Grid>
                 ) : (
                     renderedItem
                 )}
-            </Grid2>
+            </Grid>
         );
 
         if (schema.newLine) {

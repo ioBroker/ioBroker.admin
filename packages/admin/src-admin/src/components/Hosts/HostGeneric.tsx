@@ -817,7 +817,7 @@ export default abstract class HostGeneric<
                 badgeContent={this.state.hostNotifications.warning + this.state.hostNotifications.other}
                 style={genericStyles.badge}
                 color={this.state.hostNotifications.warning > 0 ? 'error' : 'secondary'}
-                onClick={e => {
+                onClick={(e: React.MouseEvent<HTMLDivElement>): void => {
                     e.stopPropagation();
                     this.props.showAdaptersWarning(
                         { [this.props.hostId]: this.state.hostNotifications.notifications },

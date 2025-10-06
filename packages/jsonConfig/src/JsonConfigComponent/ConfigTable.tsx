@@ -11,7 +11,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Grid2,
+    Grid2 as Grid,
     IconButton,
     InputAdornment,
     Paper,
@@ -1235,7 +1235,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
         if (importExportVisible || schema.items.find(item => item.sort || item.filter)) {
             return (
-                <Grid2
+                <Grid
                     size={{
                         xs: schema.xs || 12, // if xs is not defined, take the full width
                         sm: schema.sm || undefined,
@@ -1292,7 +1292,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                             </Accordion>
                         </Paper>
                     </Card>
-                </Grid2>
+                </Grid>
             );
         }
 
@@ -1307,7 +1307,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         }
         const doAnyFilterSet = this.isAnyFilterSet();
         return (
-            <Grid2
+            <Grid
                 size={{
                     xs: schema.xs || 12, // if xs is not defined, take the full width
                     sm: schema.sm || undefined,
@@ -1332,7 +1332,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                         </Table>
                     </Paper>
                 </Card>
-            </Grid2>
+            </Grid>
         );
     }
 
@@ -1348,12 +1348,12 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         const doAnyFilterSet = this.isAnyFilterSet();
 
         return (
-            <Grid2 container>
+            <Grid container>
                 {this.showImportDialog()}
                 {this.showTypeOfImportDialog()}
                 {this.enhancedFilterCard()}
                 {visibleValue.map((idx, i) => (
-                    <Grid2
+                    <Grid
                         key={`${idx}_${i}`}
                         size={{
                             xs: schema.xs || 12, // if xs is not defined, take the full width
@@ -1460,10 +1460,10 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                 </Table>
                             </Paper>
                         </Card>
-                    </Grid2>
+                    </Grid>
                 ))}
                 {this.enhancedBottomCard()}
-            </Grid2>
+            </Grid>
         );
     }
 

@@ -17,7 +17,7 @@ import {
     MenuItem,
     FormControl,
     Select,
-    Grid2,
+    Grid,
     Fab,
     Typography,
     Switch,
@@ -535,32 +535,32 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                         onSubmit={() => false}
                         style={{ ...styles.dialogForm, height: '100%' }}
                     >
-                        <Grid2
+                        <Grid
                             container
                             direction="row"
                             spacing={2}
                             style={{ height: '100%' }}
                         >
-                            <Grid2
+                            <Grid
                                 size={{ xs: this.state.chart && this.state.chartEnabled ? 6 : 12 }}
                                 style={{ height: '100%' }}
                             >
-                                <Grid2
+                                <Grid
                                     container
                                     direction="column"
                                     spacing={2}
                                     style={{ marginTop: 0, height: '100%' }}
                                 >
                                     {this.props.expertMode ? (
-                                        <Grid2>
-                                            <Grid2
+                                        <Grid>
+                                            <Grid
                                                 container
                                                 direction="row"
                                                 spacing={2}
                                                 style={{ marginTop: 0 }}
                                             >
                                                 {this.props.expertMode ? (
-                                                    <Grid2>
+                                                    <Grid>
                                                         <FormControl style={styles.formControl}>
                                                             <InputLabel style={{ marginTop: 10, marginLeft: -14 }}>
                                                                 {this.props.t('Value type')}
@@ -571,12 +571,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                                 onChange={e => {
                                                                     this.setState(
                                                                         {
-                                                                            type: e.target.value as
-                                                                                | 'states'
-                                                                                | 'string'
-                                                                                | 'number'
-                                                                                | 'boolean'
-                                                                                | 'json',
+                                                                            type: e.target.value,
                                                                             valid:
                                                                                 e.target.value === 'number'
                                                                                     ? ObjectBrowserValue.isNumberValid({
@@ -615,13 +610,13 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                                 ) : null}
                                                             </Select>
                                                         </FormControl>
-                                                    </Grid2>
+                                                    </Grid>
                                                 ) : null}
-                                                {this.state.type === 'json' ? <Grid2 flex={1}></Grid2> : null}
-                                            </Grid2>
-                                        </Grid2>
+                                                {this.state.type === 'json' ? <Grid flex={1}></Grid> : null}
+                                            </Grid>
+                                        </Grid>
                                     ) : null}
-                                    <Grid2
+                                    <Grid
                                         flex={this.state.type === 'json' && this.state.fullScreen ? 1 : undefined}
                                         style={{ paddingTop: 0 }}
                                     >
@@ -643,15 +638,15 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                         : undefined
                                                 }
                                             >
-                                                <Grid2
+                                                <Grid
                                                     component="label"
                                                     container
                                                     alignItems="center"
                                                     spacing={1}
                                                 >
-                                                    <Grid2 style={{ marginRight: 10 }}>{this.props.t('Value')}:</Grid2>
-                                                    <Grid2>FALSE</Grid2>
-                                                    <Grid2>
+                                                    <Grid style={{ marginRight: 10 }}>{this.props.t('Value')}:</Grid>
+                                                    <Grid>FALSE</Grid>
+                                                    <Grid>
                                                         <Switch
                                                             autoFocus
                                                             defaultChecked={
@@ -665,9 +660,9 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                                 this.setState({ targetValue: e.target.checked })
                                                             }
                                                         />
-                                                    </Grid2>
-                                                    <Grid2>TRUE</Grid2>
-                                                </Grid2>
+                                                    </Grid>
+                                                    <Grid>TRUE</Grid>
+                                                </Grid>
                                             </Typography>
                                         ) : this.state.type === 'number' ? (
                                             <TextField
@@ -730,22 +725,22 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                 onChange={e => this.setState({ targetValue: e.target.value })}
                                             />
                                         )}
-                                    </Grid2>
+                                    </Grid>
 
                                     {(this.props.role === 'date' || this.props.role?.startsWith('date.')) &&
                                     this.state.type === 'number' ? (
-                                        <Grid2
+                                        <Grid
                                             style={{ display: 'flex', gap: '5px' }}
                                             size={{ xs: 6 }}
                                         >
                                             {this.renderTimePicker()}
-                                        </Grid2>
+                                        </Grid>
                                     ) : null}
 
-                                    {this.props.expertMode ? <Grid2>{ackCheckbox}</Grid2> : null}
+                                    {this.props.expertMode ? <Grid>{ackCheckbox}</Grid> : null}
 
                                     {this.props.expertMode ? (
-                                        <Grid2>
+                                        <Grid>
                                             <FormControl
                                                 variant="standard"
                                                 style={styles.quality}
@@ -803,20 +798,20 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                 defaultValue={this.expire}
                                                 onChange={e => (this.expire = Number(e.target.value))}
                                             />
-                                        </Grid2>
+                                        </Grid>
                                     ) : null}
-                                </Grid2>
-                            </Grid2>
+                                </Grid>
+                            </Grid>
                             {this.state.chart && this.state.chartEnabled && this.state.type !== 'json' ? (
-                                <Grid2
+                                <Grid
                                     size={{ xs: 6 }}
                                     style={{ minHeight: 300 }}
                                     sx={{ display: { sm: 'none', md: 'inline-block' } }}
                                 >
                                     {this.renderChart()}
-                                </Grid2>
+                                </Grid>
                             ) : null}
-                        </Grid2>
+                        </Grid>
                     </form>
                 </DialogContent>
                 <DialogActions sx={styles.wrapperButton}>

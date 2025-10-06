@@ -192,7 +192,7 @@ interface JsonConfigProps {
     t: typeof I18n.t;
     configStored: (notChanged: boolean) => void;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-    DeviceManager?: React.FC<DeviceManagerPropsProps>;
+    DeviceManager?: React.FC<DeviceManagerPropsProps> | Promise<React.FC<DeviceManagerPropsProps>>;
 }
 
 interface JsonConfigState {

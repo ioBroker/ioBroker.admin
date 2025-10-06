@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import { Avatar, Grid2, TableCell, TableRow, Tooltip } from '@mui/material';
+import { Avatar, Grid, TableCell, TableRow, Tooltip } from '@mui/material';
 
 import AdapterGeneric, {
     type AdapterGenericProps,
@@ -49,7 +49,7 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
             <TableRow hover>
                 <TableCell />
                 <TableCell>
-                    <Grid2
+                    <Grid
                         container
                         spacing={1}
                         alignItems="center"
@@ -59,24 +59,24 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
                             title={this.props.adapterName}
                             slotProps={{ popper: { sx: this.styles.tooltip } }}
                         >
-                            <Grid2 style={this.styles.paddingNone}>
+                            <Grid style={this.styles.paddingNone}>
                                 <Avatar
                                     variant="square"
                                     alt={this.props.cached.title}
                                     src={this.props.cached.image}
                                     style={this.styles.smallAvatar}
                                 />
-                            </Grid2>
+                            </Grid>
                         </Tooltip>
                         {allowAdapterRating !== false ? (
-                            <Grid2 style={this.styles.nameCell}>
+                            <Grid style={this.styles.nameCell}>
                                 <div>{this.props.cached.title}</div>
                                 {this.renderRating()}
-                            </Grid2>
+                            </Grid>
                         ) : (
-                            <Grid2>{this.props.cached.title}</Grid2>
+                            <Grid>{this.props.cached.title}</Grid>
                         )}
-                    </Grid2>
+                    </Grid>
                 </TableCell>
                 {!this.props.context.descHidden && (
                     <TableCell
@@ -96,12 +96,12 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
                 </TableCell>
                 <TableCell>{this.renderInstalledVersion(true)}</TableCell>
                 <TableCell>
-                    <Grid2
+                    <Grid
                         container
                         alignItems="center"
                     >
                         {this.renderVersion()}
-                    </Grid2>
+                    </Grid>
                 </TableCell>
                 <TableCell style={{ fontSize: 'smaller' }}>
                     {adapter?.licenseInformation?.license || adapter?.license}

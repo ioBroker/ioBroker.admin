@@ -13,7 +13,7 @@ import {
     DialogTitle,
     FormControl,
     FormControlLabel,
-    Grid2,
+    Grid,
     IconButton,
     Input,
     InputAdornment,
@@ -932,20 +932,20 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                             <Typography gutterBottom>
                                 {getTranslation(this.state.showInput.inputBefore.label)}
                             </Typography>
-                            <Grid2
+                            <Grid
                                 container
                                 spacing={2}
                                 alignItems="center"
                             >
-                                <Grid2>
+                                <Grid>
                                     <Slider
                                         value={typeof this.state.inputValue === 'number' ? this.state.inputValue : 0}
                                         onChange={(_event: Event, newValue: number) =>
                                             this.setState({ inputValue: newValue })
                                         }
                                     />
-                                </Grid2>
-                                <Grid2>
+                                </Grid>
+                                <Grid>
                                     <Input
                                         value={this.state.inputValue}
                                         size="small"
@@ -987,8 +987,8 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                             type: 'number',
                                         }}
                                     />
-                                </Grid2>
-                            </Grid2>
+                                </Grid>
+                            </Grid>
                         </Box>
                     ) : null}
                 </DialogContent>

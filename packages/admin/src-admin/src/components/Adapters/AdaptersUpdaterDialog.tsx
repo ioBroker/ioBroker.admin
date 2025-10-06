@@ -6,7 +6,7 @@ import {
     DialogTitle,
     Button,
     Dialog,
-    Grid2,
+    Grid,
     FormControlLabel,
     Toolbar,
     IconButton,
@@ -233,12 +233,12 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                     sx={{ '&.MuiDialogContent-root': styles.content }}
                     style={{ height: '100%' }}
                 >
-                    <Grid2
+                    <Grid
                         container
                         direction="row"
                         sx={styles.container}
                     >
-                        <Grid2 style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
+                        <Grid style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
                             <div style={{ height: '100%', overflow: 'auto' }}>
                                 <AdaptersUpdater
                                     finished={this.state.finished}
@@ -262,9 +262,9 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                     rightDependenciesFunc={this.props.rightDependenciesFunc}
                                 />
                             </div>
-                        </Grid2>
+                        </Grid>
                         {!!this.state.current && (
-                            <Grid2
+                            <Grid
                                 style={{
                                     height: '100%',
                                     overflow: 'hidden',
@@ -291,9 +291,9 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                         }
                                     }}
                                 />
-                            </Grid2>
+                            </Grid>
                         )}
-                    </Grid2>
+                    </Grid>
                     <Toolbar
                         variant="dense"
                         disableGutters

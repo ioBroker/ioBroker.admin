@@ -7,7 +7,7 @@ import {
     Checkbox,
     CircularProgress,
     FormControlLabel,
-    Grid2,
+    Grid,
     IconButton,
     Link,
     Paper,
@@ -257,7 +257,7 @@ class Login extends Component<object, LoginState> {
         } else {
             content = (
                 <Paper sx={styles.paper}>
-                    <Grid2
+                    <Grid
                         container
                         direction="column"
                         alignItems="center"
@@ -394,7 +394,7 @@ class Login extends Component<object, LoginState> {
                                 {I18n.t('Use Single-Sign On')}
                             </Button>
                         ) : null}
-                    </Grid2>
+                    </Grid>
                     <Box style={styles.marginTop}>
                         <Typography
                             variant="body2"

@@ -214,7 +214,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
                                     setUnique(!!objects[buildId(names[el.target.value])]);
                                 }
 
-                                setType(el.target.value as ioBrokerObject['type']);
+                                setType(el.target.value);
                             }}
                         >
                             {types.map(el => (
@@ -244,7 +244,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
                                         'App.lastStateType',
                                         el.target.value,
                                     );
-                                    setStateType(el.target.value as keyof typeof stateDefValues);
+                                    setStateType(el.target.value);
                                 }}
                             >
                                 {stateTypeArray.map(el => (

@@ -1,6 +1,6 @@
 import React, { createRef, Component, type JSX } from 'react';
 
-import { Grid2, FormControlLabel, Checkbox, TextField, Paper } from '@mui/material';
+import { Grid, FormControlLabel, Checkbox, TextField, Paper } from '@mui/material';
 
 import { withWidth, type Translate } from '@iobroker/adapter-react-v5';
 
@@ -103,12 +103,12 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
     render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
-                <Grid2 style={styles.gridSettings}>
-                    <Grid2
+                <Grid style={styles.gridSettings}>
+                    <Grid
                         container
                         direction="column"
                     >
-                        <Grid2>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Host name')}
@@ -119,8 +119,8 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                     'You can change the host name, but be aware, that all instances must be assigned anew',
                                 )}
                             />
-                        </Grid2>
-                        <Grid2>
+                        </Grid>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Check disk space interval')}
@@ -137,8 +137,8 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                     'How oft the disk will be checked. Do not set it to low, because it can affect system performance. Value is in ms',
                                 )}
                             />
-                        </Grid2>
-                        <Grid2>
+                        </Grid>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Instance statistics update interval')}
@@ -155,8 +155,8 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                     'How oft the instance statistics will be updated. Used RAM, CPU and so on. Value is in ms',
                                 )}
                             />
-                        </Grid2>
-                        <Grid2 style={styles.controlItem}>
+                        </Grid>
+                        <Grid style={styles.controlItem}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -173,8 +173,8 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                     'When enabled adapter instances can run in one or few processes to save RAM usage.',
                                 )}
                             </div>
-                        </Grid2>
-                        <Grid2 style={styles.controlItem}>
+                        </Grid>
+                        <Grid style={styles.controlItem}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -189,8 +189,8 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                 label={this.props.t("Allow shell's commands")}
                             />
                             <div>{this.props.t('Allow execution of sendToHost("shell", "cli command")')}</div>
-                        </Grid2>
-                        <Grid2>
+                        </Grid>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Limit RAM size for controller')}
@@ -204,14 +204,14 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                 }
                                 helperText={this.props.t('MB')}
                             />
-                        </Grid2>
-                        <Grid2>
-                            <Grid2
+                        </Grid>
+                        <Grid>
+                            <Grid
                                 container
                                 direction="row"
                                 style={styles.controlItem}
                             >
-                                <Grid2>
+                                <Grid>
                                     <TextField
                                         variant="standard"
                                         label={this.props.t('Show warning im log if RAM less than')}
@@ -225,8 +225,8 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                         }
                                         helperText={this.props.t('MB')}
                                     />
-                                </Grid2>
-                                <Grid2>
+                                </Grid>
+                                <Grid>
                                     <TextField
                                         variant="standard"
                                         label={this.props.t('Show error in log if RAM less than')}
@@ -240,11 +240,11 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                         }
                                         helperText={this.props.t('MB')}
                                     />
-                                </Grid2>
-                            </Grid2>
-                        </Grid2>
-                    </Grid2>
-                </Grid2>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
             </Paper>
         );
     }

@@ -5,7 +5,7 @@ import { Marker, type DragEndEvent, type LatLngTuple, type Map } from 'leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import {
-    Grid2,
+    Grid,
     Toolbar,
     InputLabel,
     MenuItem,
@@ -321,31 +321,31 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
 
         return (
             <Paper style={styles.paper}>
-                <Grid2
+                <Grid
                     container
                     direction="column"
                     style={styles.mainGrid}
                 >
-                    <Grid2 style={styles.gridSettings}>
-                        <Grid2
+                    <Grid style={styles.gridSettings}>
+                        <Grid
                             container
                             direction="column"
                             style={{ width: 'calc(100% - 16px)' }}
                         >
-                            <Grid2>
+                            <Grid>
                                 <Box
                                     component="h2"
                                     sx={styles.title}
                                 >
                                     {this.props.t('Important main settings')}
                                 </Box>
-                            </Grid2>
-                            <Grid2
+                            </Grid>
+                            <Grid
                                 container
                                 direction="column"
                                 style={styles.settingsGrid}
                             >
-                                <Grid2 style={{ textAlign: 'left' }}>
+                                <Grid style={{ textAlign: 'left' }}>
                                     <FormControl
                                         variant="standard"
                                         style={styles.controlItem}
@@ -354,14 +354,14 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                         <Select
                                             variant="standard"
                                             value={this.state.tempUnit}
-                                            onChange={e => this.setState({ tempUnit: e.target.value as '°C' | '°F' })}
+                                            onChange={e => this.setState({ tempUnit: e.target.value })}
                                         >
                                             <MenuItem value="°C">°C</MenuItem>
                                             <MenuItem value="°F">°F</MenuItem>
                                         </Select>
                                     </FormControl>
-                                </Grid2>
-                                <Grid2>
+                                </Grid>
+                                <Grid>
                                     <Autocomplete
                                         freeSolo
                                         options={CURRENCY}
@@ -382,8 +382,8 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                             />
                                         )}
                                     />
-                                </Grid2>
-                                <Grid2 style={{ textAlign: 'left' }}>
+                                </Grid>
+                                <Grid style={{ textAlign: 'left' }}>
                                     <FormControl
                                         variant="standard"
                                         style={styles.controlItem}
@@ -399,8 +399,8 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                             <MenuItem value="MM/DD/YYYY">MM/DD/YYYY</MenuItem>
                                         </Select>
                                     </FormControl>
-                                </Grid2>
-                                <Grid2 style={{ textAlign: 'left' }}>
+                                </Grid>
+                                <Grid style={{ textAlign: 'left' }}>
                                     <FormControl
                                         variant="standard"
                                         style={styles.controlItem}
@@ -421,8 +421,8 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                             </MenuItem>
                                         </Select>
                                     </FormControl>
-                                </Grid2>
-                                <Grid2 style={{ textAlign: 'left' }}>
+                                </Grid>
+                                <Grid style={{ textAlign: 'left' }}>
                                     <FormControl
                                         variant="standard"
                                         style={styles.controlItem}
@@ -750,8 +750,8 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                             <MenuItem value="Zimbabwe">{this.props.t('Zimbabwe')}</MenuItem>
                                         </Select>
                                     </FormControl>
-                                </Grid2>
-                                <Grid2>
+                                </Grid>
+                                <Grid>
                                     <TextField
                                         variant="standard"
                                         label={this.props.t('City')}
@@ -774,8 +774,8 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                             },
                                         }}
                                     />
-                                </Grid2>
-                                <Grid2>
+                                </Grid>
+                                <Grid>
                                     <TextField
                                         variant="standard"
                                         label={this.props.t('Address')}
@@ -805,8 +805,8 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                     >
                                         <GpsFixed />
                                     </Fab>
-                                </Grid2>
-                                <Grid2>
+                                </Grid>
+                                <Grid>
                                     <TextField
                                         variant="standard"
                                         label={this.props.t('Longitude')}
@@ -833,8 +833,8 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                             },
                                         }}
                                     />
-                                </Grid2>
-                                <Grid2>
+                                </Grid>
+                                <Grid>
                                     <TextField
                                         variant="standard"
                                         label={this.props.t('Latitude')}
@@ -861,8 +861,8 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                             },
                                         }}
                                     />
-                                </Grid2>
-                                <Grid2 style={{ textAlign: 'left' }}>
+                                </Grid>
+                                <Grid style={{ textAlign: 'left' }}>
                                     <FormControl
                                         variant="standard"
                                         style={styles.controlItem}
@@ -871,19 +871,17 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                         <Select
                                             variant="standard"
                                             value={this.state.firstDayOfWeek}
-                                            onChange={e =>
-                                                this.setState({ firstDayOfWeek: e.target.value as 'sunday' | 'monday' })
-                                            }
+                                            onChange={e => this.setState({ firstDayOfWeek: e.target.value })}
                                         >
                                             <MenuItem value="monday">{this.props.t('monday')}</MenuItem>
                                             <MenuItem value="sunday">{this.props.t('sunday')}</MenuItem>
                                         </Select>
                                     </FormControl>
-                                </Grid2>
-                            </Grid2>
-                        </Grid2>
-                    </Grid2>
-                    <Grid2 style={styles.mapGrid}>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid style={styles.mapGrid}>
                         <MapContainer
                             style={styles.map}
                             center={center}
@@ -900,8 +898,8 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                             <TileLayer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />
                             <MyMapComponent addMap={map => this.onMap(map)} />
                         </MapContainer>
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
                 <Toolbar style={styles.toolbar}>
                     <div style={styles.grow} />
                     <Button

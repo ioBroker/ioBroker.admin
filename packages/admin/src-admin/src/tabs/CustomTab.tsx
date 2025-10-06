@@ -314,7 +314,9 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                     </div>
                 ) : null}
                 <iframe
-                    ref={el => (this.refIframe = el)}
+                    ref={el => {
+                        this.refIframe = el;
+                    }}
                     title={this.props.tab}
                     style={{
                         display: 'block',

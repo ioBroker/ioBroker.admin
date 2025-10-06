@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import { Grid2, FormControl, TextField, Paper, InputAdornment, IconButton } from '@mui/material';
+import { Grid, FormControl, TextField, Paper, InputAdornment, IconButton } from '@mui/material';
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
@@ -73,11 +73,11 @@ export default class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> 
                         dangerouslySetInnerHTML={{ __html: this.props.t('letsnecrypt_help') }}
                     />
                 </div>
-                <Grid2
+                <Grid
                     container
                     spacing={6}
                 >
-                    <Grid2 size={{ md: 3, xs: 12 }}>
+                    <Grid size={{ md: 3, xs: 12 }}>
                         <FormControl
                             variant="standard"
                             style={styles.formControl}
@@ -113,8 +113,8 @@ export default class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> 
                                 }}
                             />
                         </FormControl>
-                    </Grid2>
-                    <Grid2 size={{ md: 3, xs: 12 }}>
+                    </Grid>
+                    <Grid size={{ md: 3, xs: 12 }}>
                         <FormControl
                             variant="standard"
                             style={styles.formControl}
@@ -150,8 +150,8 @@ export default class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> 
                                 }}
                             />
                         </FormControl>
-                    </Grid2>
-                    <Grid2 size={{ md: 3, xs: 12 }}>
+                    </Grid>
+                    <Grid size={{ md: 3, xs: 12 }}>
                         <FormControl
                             variant="standard"
                             style={styles.formControl}
@@ -185,8 +185,8 @@ export default class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> 
                                 }}
                             />
                         </FormControl>
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
             </div>
         );
     }

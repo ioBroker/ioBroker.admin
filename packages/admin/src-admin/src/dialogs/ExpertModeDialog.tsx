@@ -7,7 +7,7 @@ import {
     DialogContent,
     FormControlLabel,
     Checkbox,
-    Grid2,
+    Grid,
     DialogTitle,
     IconButton,
     Typography,
@@ -74,8 +74,8 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({
                 style={styles.overflowHidden}
                 dividers
             >
-                <Grid2 container>
-                    <Grid2 style={styles.width100}>
+                <Grid container>
+                    <Grid style={styles.width100}>
                         <Box
                             component="div"
                             sx={styles.root}
@@ -131,8 +131,8 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({
                                 </IconButton>
                             </div>
                         </Box>
-                    </Grid2>
-                    <Grid2>
+                    </Grid>
+                    <Grid>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -143,8 +143,8 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({
                             }
                             label={I18n.t('Do not show this dialog in this browser session any more')}
                         />
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
             </DialogContent>
             <DialogActions>
                 <Button

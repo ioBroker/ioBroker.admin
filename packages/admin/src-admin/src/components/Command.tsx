@@ -2,7 +2,7 @@ import React, { Component, type JSX } from 'react';
 
 import { amber, blue, red } from '@mui/material/colors';
 
-import { Box, Grid2, LinearProgress, Paper, Switch, Typography } from '@mui/material';
+import { Box, Grid, LinearProgress, Paper, Switch, Typography } from '@mui/material';
 
 import { Router, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 
@@ -333,14 +333,14 @@ export default class Command extends Component<CommandProps, CommandState> {
 
     render(): JSX.Element {
         return (
-            <Grid2
+            <Grid
                 style={this.props.noSpacing ? { height: '100%', width: '100%' } : {}}
                 container
                 direction="column"
                 spacing={this.props.noSpacing ? 0 : 2}
             >
                 {this.props.showElement === undefined || this.props.showElement === true ? (
-                    <Grid2>
+                    <Grid>
                         {!this.state.stopped && (
                             <LinearProgress
                                 style={this.props.commandError ? { backgroundColor: '#f44336' } : null}
@@ -354,7 +354,7 @@ export default class Command extends Component<CommandProps, CommandState> {
                                 }
                             />
                         )}
-                    </Grid2>
+                    </Grid>
                 ) : null}
                 <div
                     style={{
@@ -417,12 +417,12 @@ export default class Command extends Component<CommandProps, CommandState> {
                         </div>
                     ) : null}
                 </div>
-                <Grid2 style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
+                <Grid style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
                     {this.state.moreChecked && (
                         <Paper style={this.props.noSpacing ? styles.logNoSpacing : styles.log}>{this.getLog()}</Paper>
                     )}
-                </Grid2>
-            </Grid2>
+                </Grid>
+            </Grid>
         );
     }
 }

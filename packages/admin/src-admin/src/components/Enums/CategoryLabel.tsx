@@ -31,6 +31,7 @@ const CategoryLabel = (props: CategoryLabelProps): JSX.Element => {
 
     return (
         <span
+            // @ts-expect-error tbd
             ref={drop}
             style={{ ...props.styles.categoryTitle, color: textColor }}
         >

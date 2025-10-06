@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Grid2, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Grid, Button } from '@mui/material';
 
 import {
     TextFields as TextFieldsIcon,
@@ -108,12 +108,12 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
         >
             <DialogTitle style={{ ...styles.dialogTitle, padding: 12 }}>{props.t('Enum parameters')}</DialogTitle>
             <DialogContent sx={{ '&.MuiDialogContent-root': styles.contentRoot }}>
-                <Grid2
+                <Grid
                     container
                     spacing={2}
                     style={styles.dialog}
                 >
-                    <Grid2 size={{ xs: 12, md: 6 }}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <IOTextField
                             label="Name"
                             t={props.t}
@@ -133,8 +133,8 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
                             icon={TextFieldsIcon}
                             styles={styles}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <IOTextField
                             label="ID edit"
                             t={props.t}
@@ -148,8 +148,8 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
                             icon={LocalOfferIcon}
                             styles={styles}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <IOTextField
                             label="ID preview"
                             t={props.t}
@@ -158,8 +158,8 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
                             icon={PageviewIcon}
                             styles={styles}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <IOTextField
                             label="Description"
                             t={props.t}
@@ -172,8 +172,8 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
                             icon={DescriptionIcon}
                             styles={styles}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <IconPicker
                             label="Icon"
                             onlyDevices={props.enum._id.startsWith('enum.functions.')}
@@ -188,8 +188,8 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
                             icon={ImageIcon}
                             customStyles={styles}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, md: 6 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <IOColorPicker
                             label="Color"
                             value={props.enum.common.color}
@@ -204,8 +204,8 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
                             styles={styles}
                             t={props.t}
                         />
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
             </DialogContent>
             <DialogActions style={styles.dialogActions}>
                 <Button

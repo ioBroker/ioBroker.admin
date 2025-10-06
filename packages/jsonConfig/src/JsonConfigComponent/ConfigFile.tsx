@@ -88,7 +88,7 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
                 const oContext = new AudioContext();
                 const buf = ConfigFileSelector.base64ToArrayBuffer(data.file);
                 void oContext.decodeAudioData(
-                    buf,
+                    buf as ArrayBuffer,
                     (buffer: AudioBuffer): void => {
                         const source = oContext.createBufferSource(); // creates a sound source
                         source.buffer = buffer; // tell the source which sounds to play

@@ -9,7 +9,7 @@ import {
     Tooltip,
     Typography,
     Rating,
-    Grid2,
+    Grid,
     Link,
     TextField,
     InputAdornment,
@@ -595,22 +595,22 @@ export default abstract class AdapterGeneric<
             const installedCount = installed?.count;
 
             return (
-                <Grid2
+                <Grid
                     container
                     wrap="nowrap"
                     alignItems="center"
                     spacing={1}
                 >
                     {this.installedVersion ? (
-                        <Grid2>
+                        <Grid>
                             {displayVersion +
                                 (installedCount
                                     ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})`
                                     : '')}
-                        </Grid2>
+                        </Grid>
                     ) : null}
                     {isGitHubInstall && (
-                        <Grid2 container>
+                        <Grid container>
                             <Tooltip
                                 title={`${this.props.context.t('Non-NPM-Version')}: ${installedFrom}`}
                                 slotProps={{ popper: { sx: this.styles.tooltip } }}
@@ -620,9 +620,9 @@ export default abstract class AdapterGeneric<
                                     style={this.styles.versionWarn}
                                 />
                             </Tooltip>
-                        </Grid2>
+                        </Grid>
                     )}
-                </Grid2>
+                </Grid>
             );
         }
 

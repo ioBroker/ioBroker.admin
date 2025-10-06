@@ -5,7 +5,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Grid2,
+    Grid,
     Button,
     Checkbox,
     FormControlLabel,
@@ -135,14 +135,14 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
     };
 
     return (
-        <Grid2
+        <Grid
             container
             spacing={props.innerWidth < 500 ? 1 : 4}
             style={props.styles.dialog}
             key="PermissionsTab"
         >
             {mapObject(props.group.common.acl || {}, (block, blockKey) => (
-                <Grid2
+                <Grid
                     size={{ xs: 12, md: 12 }}
                     key={blockKey}
                 >
@@ -174,9 +174,9 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
                             labelPlacement="top"
                         />
                     ))}
-                </Grid2>
+                </Grid>
             ))}
-        </Grid2>
+        </Grid>
     );
 }
 
@@ -256,12 +256,12 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
         const name = this.props.getText(this.props.group.common.name);
 
         const mainTab = (
-            <Grid2
+            <Grid
                 container
                 spacing={this.props.innerWidth < 500 ? 1 : 4}
                 style={this.props.styles.dialog}
             >
-                <Grid2 size={{ xs: 12, md: 6 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="Name"
                         t={this.props.t}
@@ -281,8 +281,8 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
                         icon={TextFieldsIcon}
                         styles={this.props.styles}
                     />
-                </Grid2>
-                <Grid2 size={{ xs: 12, md: 6 }}>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="ID edit"
                         t={this.props.t}
@@ -296,8 +296,8 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
                         icon={LocalOfferIcon}
                         styles={this.props.styles}
                     />
-                </Grid2>
-                <Grid2 size={{ xs: 12, md: 6 }}>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="ID preview"
                         t={this.props.t}
@@ -306,8 +306,8 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
                         icon={PageviewIcon}
                         styles={this.props.styles}
                     />
-                </Grid2>
-                <Grid2 size={{ xs: 12, md: 6 }}>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <IOTextField
                         label="Description"
                         t={this.props.t}
@@ -320,8 +320,8 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
                         icon={DescriptionIcon}
                         styles={this.props.styles}
                     />
-                </Grid2>
-                <Grid2 size={{ xs: 12, md: 6 }}>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <IconPicker
                         label="Icon"
                         icons={GROUPS_ICONS}
@@ -337,8 +337,8 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
                         icon={ImageIcon}
                         // classes={this.props.classes}
                     />
-                </Grid2>
-                <Grid2 size={{ xs: 12, md: 6 }}>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <IOColorPicker
                         label="Color"
                         t={this.props.t}
@@ -353,8 +353,8 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
                         style={this.props.styles.colorPicker}
                         styles={this.props.styles}
                     />
-                </Grid2>
-            </Grid2>
+                </Grid>
+            </Grid>
         );
 
         const selectedTab = [mainTab, PermissionsTab(this.props)][this.state.tab];

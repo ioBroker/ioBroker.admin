@@ -7,7 +7,7 @@ import {
     DialogContent,
     DialogTitle,
     FormControl,
-    Grid2,
+    Grid,
     IconButton,
     InputLabel,
     MenuItem,
@@ -212,7 +212,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
 
     renderOneMessage(message: Message, index: number): JSX.Element {
         return (
-            <Grid2 key={index}>
+            <Grid key={index}>
                 <Typography sx={styles[`messageTitle_${message.level || 'warn'}`]}>
                     {this.getText(message.title, this.props.noTranslation) || ''}
                 </Typography>
@@ -236,14 +236,14 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                         {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
                     </Button>
                 ) : null}
-            </Grid2>
+            </Grid>
         );
     }
 
     renderMessages(): JSX.Element | null {
         if (this.messages) {
             return (
-                <Grid2
+                <Grid
                     container
                     spacing={2}
                     direction="column"
@@ -251,7 +251,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                     sx={{ marginBottom: 1 }}
                 >
                     {this.messages.map((message, i) => this.renderOneMessage(message, i))}
-                </Grid2>
+                </Grid>
             );
         }
         return null;
@@ -299,7 +299,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                 <DialogContent dividers>
                     {this.renderMessages()}
                     {!checkDeps && this.props.expertMode ? (
-                        <Grid2
+                        <Grid
                             container
                             direction="column"
                         >
@@ -327,7 +327,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                                     {this.getAvailableInstances()}
                                 </Select>
                             </FormControl>
-                        </Grid2>
+                        </Grid>
                     ) : null}
                     <Box
                         component="div"

@@ -35,6 +35,7 @@ import {
     ArrowBack,
     MoreVert,
 } from '@mui/icons-material';
+import type { Theme } from '@mui/material/styles';
 
 import {
     Icon,
@@ -479,7 +480,11 @@ class Config extends Component<ConfigProps, ConfigState> {
         if (this.state.checkedExist) {
             return (
                 <iframe
-                    ref={el => this && (this.refIframe = el)}
+                    ref={el => {
+                        if (this) {
+                            this.refIframe = el;
+                        }
+                    }}
                     title="config"
                     style={this.props.style}
                     src={src}
@@ -755,7 +760,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                             ) : null}
                             <Box
                                 component="span"
-                                sx={(theme: IobTheme): any => ({
+                                sx={(theme: Theme): any => ({
                                     [theme.breakpoints.down('md')]: {
                                         display: 'none',
                                     },
@@ -767,7 +772,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                             {`${this.props.adapter}.${this.props.instance}`}
                             <Box
                                 component="div"
-                                sx={(theme: IobTheme): any => ({
+                                sx={(theme: Theme): any => ({
                                     [theme.breakpoints.down('sm')]: {
                                         display: 'none',
                                     },
@@ -777,7 +782,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                             </Box>
                             <Box
                                 component="span"
-                                sx={(theme: IobTheme): any => ({
+                                sx={(theme: Theme): any => ({
                                     [theme.breakpoints.up('sm')]: {
                                         display: 'none',
                                     },

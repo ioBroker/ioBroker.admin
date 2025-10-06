@@ -2,7 +2,7 @@ import React, { createRef, type JSX } from 'react';
 import semver from 'semver';
 
 import {
-    Grid2,
+    Grid,
     Button,
     IconButton,
     LinearProgress,
@@ -1743,7 +1743,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 return this.t('%s days ago', diffDays.toString());
             }
             return date.toLocaleDateString(this.props.lang || 'en');
-        } catch (error) {
+        } catch {
             return timestamp;
         }
     }
@@ -2149,9 +2149,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return (
             <TabContainer>
                 {this.state.update && (
-                    <Grid2>
+                    <Grid>
                         <LinearProgress />
-                    </Grid2>
+                    </Grid>
                 )}
 
                 {this.renderHeader()}

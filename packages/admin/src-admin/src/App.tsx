@@ -19,7 +19,7 @@ import {
     DialogContentText,
     DialogTitle,
     FormControlLabel,
-    Grid2 as Grid,
+    Grid,
     IconButton,
     ListItemIcon,
     ListItemText,

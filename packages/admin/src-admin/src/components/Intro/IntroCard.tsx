@@ -8,7 +8,7 @@ import {
     CardMedia,
     Collapse,
     Divider,
-    Grid2,
+    Grid,
     IconButton,
     Link,
     Typography,
@@ -269,7 +269,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
         }
 
         return (
-            <Grid2
+            <Grid
                 size={{
                     xs: 12,
                     sm: 6,
@@ -347,7 +347,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                         </Box>
                         <div style={{ ...styles.contentContainer, ...editClass }}>
                             <CardContent style={styles.content}>
-                                <Grid2
+                                <Grid
                                     container
                                     direction="column"
                                     wrap="nowrap"
@@ -361,7 +361,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                                         {this.props.title}
                                     </Typography>
                                     {this.renderContent()}
-                                </Grid2>
+                                </Grid>
                             </CardContent>
                             {this.props.action?.link && <Divider />}
                             {this.props.action?.link && (
@@ -447,7 +447,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                         {this.renderDialogs()}
                     </Card>
                 </Link>
-            </Grid2>
+            </Grid>
         );
     }
 }

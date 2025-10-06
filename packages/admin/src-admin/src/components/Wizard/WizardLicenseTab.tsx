@@ -3,7 +3,7 @@ import React, { createRef, Component, type JSX } from 'react';
 import {
     Toolbar,
     MenuItem,
-    Grid2,
+    Grid,
     Select,
     FormControlLabel,
     Checkbox,
@@ -237,12 +237,12 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
     render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
-                <Grid2
+                <Grid
                     container
                     style={styles.gridDiv}
                     direction="column"
                 >
-                    <Grid2>
+                    <Grid>
                         <FormControl
                             variant="standard"
                             style={styles.languageSelect}
@@ -299,12 +299,12 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
                                 </Button>
                             </div>
                         </div>
-                    </Grid2>
-                    <Grid2>
+                    </Grid>
+                    <Grid>
                         <h1>{this.props.t('License terms')}</h1>
-                    </Grid2>
-                    <Grid2 style={styles.licenseDiv}>{WizardLicenseTab.renderLicenseText()}</Grid2>
-                </Grid2>
+                    </Grid>
+                    <Grid style={styles.licenseDiv}>{WizardLicenseTab.renderLicenseText()}</Grid>
+                </Grid>
                 <Toolbar style={styles.toolbar}>
                     <div style={styles.grow} />
                     <Button

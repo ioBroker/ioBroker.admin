@@ -1,6 +1,6 @@
 import React, { createRef, Component, type JSX } from 'react';
 
-import { TextField, Grid2, Toolbar, Button, Paper, Box, Tooltip } from '@mui/material';
+import { TextField, Grid, Toolbar, Button, Paper, Box, Tooltip } from '@mui/material';
 
 import { Check as IconCheck } from '@mui/icons-material';
 
@@ -79,19 +79,19 @@ export default class WizardPasswordTab extends Component<WizardPasswordTabProps,
                     noValidate
                     autoComplete="off"
                 >
-                    <Grid2
+                    <Grid
                         container
                         direction="column"
                     >
-                        <Grid2>
+                        <Grid>
                             <Box
                                 component="h2"
                                 sx={styles.title}
                             >
                                 {this.props.t('You must set the administrator password')}
                             </Box>
-                        </Grid2>
-                        <Grid2>
+                        </Grid>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 disabled
@@ -103,8 +103,8 @@ export default class WizardPasswordTab extends Component<WizardPasswordTabProps,
                                 }}
                                 helperText={this.props.t('Administrator name cannot be changed')}
                             />
-                        </Grid2>
-                        <Grid2>
+                        </Grid>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 slotProps={{
@@ -148,8 +148,8 @@ export default class WizardPasswordTab extends Component<WizardPasswordTabProps,
                                     'Password must be at least 8 characters long and have numbers, upper and lower case letters',
                                 )}
                             />
-                        </Grid2>
-                        <Grid2>
+                        </Grid>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 slotProps={{
@@ -191,8 +191,8 @@ export default class WizardPasswordTab extends Component<WizardPasswordTabProps,
                                 }}
                                 helperText={this.state.errorPasswordRepeat || ''}
                             />
-                        </Grid2>
-                    </Grid2>
+                        </Grid>
+                    </Grid>
                 </form>
                 <Toolbar
                     style={{

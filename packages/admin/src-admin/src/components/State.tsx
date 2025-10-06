@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import { Grid2, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 
 import { CheckCircle as CheckCircleIcon, Cancel as CancelIcon } from '@mui/icons-material';
 
@@ -27,20 +27,20 @@ interface StateProps {
 
 function State(props: StateProps): JSX.Element {
     return (
-        <Grid2
+        <Grid
             container
             style={styles.wrapperContent}
             alignItems="center"
             direction="row"
             spacing={1}
         >
-            <Grid2>
+            <Grid>
                 {props.state ? <CheckCircleIcon style={styles.checkIcon} /> : <CancelIcon style={styles.cancelIcon} />}
-            </Grid2>
-            <Grid2>
+            </Grid>
+            <Grid>
                 <Typography>{props.children}</Typography>
-            </Grid2>
-        </Grid2>
+            </Grid>
+        </Grid>
     );
 }
 

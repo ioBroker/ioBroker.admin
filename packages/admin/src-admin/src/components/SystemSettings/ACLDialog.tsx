@@ -1,7 +1,7 @@
 import React, { Fragment, type JSX } from 'react';
 
 import {
-    Grid2,
+    Grid,
     Typography,
     FormControl,
     Checkbox,
@@ -209,7 +209,7 @@ export default class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> 
         ));
 
         const objectRights = ACLDialog.getTypes().map((ee, ii) => (
-            <Grid2
+            <Grid
                 size={{ lg: 4, xs: 12, md: 6 }}
                 key={ii}
             >
@@ -220,7 +220,7 @@ export default class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> 
                     {this.props.t(ee.title)}
                 </Typography>
                 {this.getTable(ee.type)}
-            </Grid2>
+            </Grid>
         ));
 
         return (
@@ -231,11 +231,11 @@ export default class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> 
                 >
                     {this.props.t('Access control list')}
                 </Typography>
-                <Grid2
+                <Grid
                     container
                     spacing={3}
                 >
-                    <Grid2 size={{ lg: 3, xs: 12, md: 6 }}>
+                    <Grid size={{ lg: 3, xs: 12, md: 6 }}>
                         <FormControl
                             variant="standard"
                             style={styles.formControl}
@@ -259,8 +259,8 @@ export default class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> 
                                 {users}
                             </Select>
                         </FormControl>
-                    </Grid2>
-                    <Grid2 size={{ lg: 3, xs: 12, md: 6 }}>
+                    </Grid>
+                    <Grid size={{ lg: 3, xs: 12, md: 6 }}>
                         <FormControl
                             variant="standard"
                             style={styles.formControl}
@@ -284,14 +284,14 @@ export default class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> 
                                 {groups}
                             </Select>
                         </FormControl>
-                    </Grid2>
-                </Grid2>
-                <Grid2
+                    </Grid>
+                </Grid>
+                <Grid
                     container
                     spacing={3}
                 >
                     {objectRights}
-                </Grid2>
+                </Grid>
             </div>
         );
     }

@@ -35,7 +35,6 @@ import { dictionary } from './dictionary';
 
 declare global {
     /** If config has been changed */
-    // eslint-disable-next-line no-var
     var changed: boolean;
 
     interface Window {

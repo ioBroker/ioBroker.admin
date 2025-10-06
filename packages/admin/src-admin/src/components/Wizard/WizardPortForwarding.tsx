@@ -1,6 +1,6 @@
 import React, { createRef, Component, type JSX } from 'react';
 
-import { Grid2, Toolbar, Button, Paper, Box } from '@mui/material';
+import { Grid, Toolbar, Button, Paper, Box } from '@mui/material';
 
 import { Public as IconCloud, Language as IconCloudPro, Check as IconCheck } from '@mui/icons-material';
 
@@ -87,19 +87,19 @@ export default class WizardPortForwarding extends Component<WizardPortForwarding
                     noValidate
                     autoComplete="off"
                 >
-                    <Grid2
+                    <Grid
                         container
                         direction="column"
                     >
-                        <Grid2>
+                        <Grid>
                             <Box
                                 component="h2"
                                 sx={styles.title}
                             >
                                 {this.props.t('Important information about port forwarding')}
                             </Box>
-                        </Grid2>
-                        <Grid2>
+                        </Grid>
+                        <Grid>
                             {!this.props.auth ? <div style={styles.error}>{this.props.t('Warning!')}</div> : null}
                             {this.props.auth && !this.props.secure ? (
                                 <div style={styles.warning}>{this.props.t('Be aware!')}</div>
@@ -113,15 +113,15 @@ export default class WizardPortForwarding extends Component<WizardPortForwarding
                                     'Do not expose iobroker Admin or Web interfaces to the internet directly via the port forwarding!',
                                 )}
                             </div>
-                        </Grid2>
-                        <Grid2 style={{ marginTop: 16 }}>
+                        </Grid>
+                        <Grid style={{ marginTop: 16 }}>
                             <div style={styles.text}>
                                 {this.props.t(
                                     'The Cloud services from iobroker.net/pro can help here to do that securely:',
                                 )}
                             </div>
-                        </Grid2>
-                        <Grid2 style={{ marginTop: 16 }}>
+                        </Grid>
+                        <Grid style={{ marginTop: 16 }}>
                             <Button
                                 style={styles.button}
                                 color="secondary"
@@ -139,8 +139,8 @@ export default class WizardPortForwarding extends Component<WizardPortForwarding
                             >
                                 ioBroker.net
                             </Button>
-                        </Grid2>
-                    </Grid2>
+                        </Grid>
+                    </Grid>
                 </form>
                 <Toolbar style={styles.toolbar}>
                     <div style={styles.grow} />

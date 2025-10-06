@@ -55,13 +55,13 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@iobroker/js-controller-common": "^7.0.7",
-        "@iobroker/js-controller-common-db": "^7.0.7",
+        "@iobroker/js-controller-common": "^7.0.8-alpha.7-20250928-40cb80c18",
+        "@iobroker/js-controller-common-db": "^7.0.8-alpha.7-20250928-40cb80c18",
         "@iobroker/socket-client": "5.0.2",
         "@iobroker/type-detector": "^4.5.1",
-        "@iobroker/types": "^7.0.7",
-        "@mui/icons-material": "^6.5.0",
-        "@mui/material": "^6.5.0",
+        "@iobroker/types": "^7.0.8-alpha.7-20250928-40cb80c18",
+        "@mui/icons-material": "~6.5.0",
+        "@mui/material": "~6.5.0",
         "@sentry/browser": "^10.8.0",
         "cronstrue": "^2.61.0",
         "file-selector": "^2.1.2",
@@ -73,11 +73,11 @@
         "react-inlinesvg": "^4.2.0"
     },
     "devDependencies": {
-        "@types/node": "^22.15.30",
+        "@types/node": "^24.7.0",
         "@types/react": "^18.3.23",
         "@types/react-color": "^3.0.13",
         "ajv": "^8.17.1",
         "ts-node": "^10.9.2",
-        "typescript": "~5.8.3"
+        "typescript": "~5.9.3"
     }
 }

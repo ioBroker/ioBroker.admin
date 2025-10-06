@@ -378,6 +378,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
         );
 
         if (this.props.iconDragRef) {
+            // @ts-expect-error tbd
             icon = <span ref={this.props.iconDragRef}>{icon}</span>;
         }
 
@@ -666,6 +667,7 @@ const EnumBlockDrag = (props: EnumBlockDragProps): JSX.Element => {
 
     return AdminUtils.isTouchDevice() ? (
         <div
+            // @ts-expect-error tbd
             ref={drop}
             style={{ opacity: canDrop && isOver ? 0.5 : 1 }}
         >
@@ -679,10 +681,14 @@ const EnumBlockDrag = (props: EnumBlockDragProps): JSX.Element => {
         </div>
     ) : (
         <div
+            // @ts-expect-error tbd
             ref={drop}
             style={{ opacity: canDrop && isOver ? 0.5 : 1 }}
         >
-            <div ref={dragRef}>
+            <div
+                // @ts-expect-error tbd
+                ref={dragRef}
+            >
                 <div ref={widthRef}>
                     <EnumBlock
                         isDragging={isDragging}
