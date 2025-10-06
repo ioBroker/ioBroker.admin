@@ -127,7 +127,7 @@ After saving, the Intro screen rewrites links so that all web‑served adapters 
   * `vis-2` – generally more path tolerant, but custom widgets or legacy resources may still use absolute paths.
   * Any adapter serving hard‑coded absolute URLs (starting with `/`) may need manual fixes until updated upstream.
 * Mixed content: If you terminate TLS at the proxy (HTTPS) but contact adapters over HTTP internally, make sure all external links are rewritten to HTTPS to avoid browser mixed-content blocks.
-* WebSocket forwarding: Ensure `Upgrade` and `Connection` headers are passed through. In Nginx this typically means adding:
+* WebSocket forwarding: Ensure `Upgrade` and `Connection` headers are passed through. In Nginx, this typically means adding:
 ```
 proxy_set_header Upgrade $http_upgrade;
 proxy_set_header Connection "upgrade";
@@ -138,13 +138,13 @@ This makes simple cases like the welcome adapter above work, because it only see
 
 #### 5. Quick troubleshooting checklist
 
-| Symptom | Likely cause | Action |
-|---------|--------------|--------|
-| Blank or partial Admin UI | Admin mounted under sub‑path only | Keep Admin at `/` (see limitation) |
-| Adapter link opens wrong host/port | Missing entry in Reverse Proxy tab | Add mapping row and save |
-| 404 for adapter JS/CSS | Missing trailing slash in location | Add trailing slash to location and mapping |
-| WebSocket errors in console | Proxy not forwarding upgrade headers | Add `proxy_set_header Upgrade` / `Connection` headers |
-| vis UI broken | Adapter not path‑aware | Keep on root or wait for adapter update |
+| Symptom                            | Likely cause                         | Action                                                |
+|------------------------------------|--------------------------------------|-------------------------------------------------------|
+| Blank or partial Admin UI          | Admin mounted under sub‑path only    | Keep Admin at `/` (see limitation)                    |
+| Adapter link opens wrong host/port | Missing entry in Reverse Proxy tab   | Add mapping row and save                              |
+| 404 for adapter JS/CSS             | Missing trailing slash in location   | Add trailing slash to location and mapping            |
+| WebSocket errors in console        | Proxy not forwarding upgrade headers | Add `proxy_set_header Upgrade` / `Connection` headers |
+| vis UI broken                      | Adapter not path‑aware               | Keep on root or wait for adapter update               |
 
 ## Used icons
 
