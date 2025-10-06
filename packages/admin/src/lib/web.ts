@@ -467,7 +467,7 @@ class Web {
             this.server.app.disable('x-powered-by');
 
             // enable use of i-frames together with HTTPS
-            this.server.app.get('/*', (_req: Request, res: Response, next: NextFunction): void => {
+            this.server.app.get('/*any', (_req: Request, res: Response, next: NextFunction): void => {
                 res.header('X-Frame-Options', 'SAMEORIGIN');
                 next(); // http://expressjs.com/guide.html#passing-route control
             });
@@ -523,7 +523,7 @@ class Web {
                 next();
             });
 
-            this.server.app.get('*/_socket/info.js', (_req: Request, res: Response): void => {
+            this.server.app.get(/.*\/_socket\/info\.js/, (_req: Request, res: Response): void => {
                 res.set('Content-Type', 'application/javascript');
                 res.status(200).send(this.getInfoJs());
             });
@@ -667,7 +667,7 @@ class Web {
                 res.status(200).send('ioBroker');
             });
 
-            this.server.app.get('/validate_config/*', async (req: Request, res: Response): Promise<void> => {
+            this.server.app.get('/validate_config/*any', async (req: Request, res: Response): Promise<void> => {
                 const adapterName = req.url.split('/').pop();
 
                 await this.validateJsonConfig(adapterName.toLowerCase());
@@ -676,7 +676,7 @@ class Web {
             });
 
             // send log files
-            this.server.app.get('/log/*', (req: Request, res: Response): void => {
+            this.server.app.get('/log/*any', (req: Request, res: Response): void => {
                 let parts = decodeURIComponent(req.url).split('/');
                 if (parts.length === 5) {
                     // remove first "/"
