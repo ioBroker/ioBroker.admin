@@ -14,7 +14,10 @@ interface ConfigCertificateSelectState extends ConfigGenericState {
     selectOptions?: { label: string; value: string }[];
 }
 
-class ConfigCertificateSelect extends ConfigGeneric<ConfigCertificateSelectProps, ConfigCertificateSelectState> {
+export default class ConfigCertificateSelect extends ConfigGeneric<
+    ConfigCertificateSelectProps,
+    ConfigCertificateSelectState
+> {
     async componentDidMount(): Promise<void> {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -92,5 +95,3 @@ class ConfigCertificateSelect extends ConfigGeneric<ConfigCertificateSelectProps
         );
     }
 }
-
-export default ConfigCertificateSelect;

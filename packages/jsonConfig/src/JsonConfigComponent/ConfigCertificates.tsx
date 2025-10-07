@@ -154,7 +154,7 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
                         displayEmpty
                         disabled={!!disabled}
                         value={certPublic || ''}
-                        renderValue={() => this.getText(itemCertPublic?.label)}
+                        renderValue={() => this.getText(itemCertPublic?.label, true)}
                         onChange={e => this.onChange(this.props.schema.certPublicName || 'certPublic', e.target.value)}
                     >
                         {this.state.certsPublicOptions?.map((item, i) => (
@@ -163,7 +163,7 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
                                 value={item.value}
                                 style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}
                             >
-                                {this.getText(item.label)}
+                                {this.getText(item.label, true)}
                             </MenuItem>
                         ))}
                     </Select>
@@ -179,7 +179,7 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
                         displayEmpty
                         disabled={!!disabled}
                         value={certPrivate || ''}
-                        renderValue={() => this.getText(itemCertPrivate?.label)}
+                        renderValue={() => this.getText(itemCertPrivate?.label, true)}
                         onChange={e =>
                             this.onChange(this.props.schema.certPrivateName || 'certPrivate', e.target.value)
                         }
@@ -190,7 +190,7 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
                                 value={item.value}
                                 style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}
                             >
-                                {this.getText(item.label)}
+                                {this.getText(item.label, true)}
                             </MenuItem>
                         ))}
                     </Select>
@@ -206,7 +206,7 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
                         displayEmpty
                         disabled={!!disabled}
                         value={certChained || ''}
-                        renderValue={() => this.getText(itemCertChained?.label)}
+                        renderValue={() => this.getText(itemCertChained?.label, true)}
                         onChange={e =>
                             this.onChange(this.props.schema.certChainedName || 'certChained', e.target.value)
                         }
@@ -217,7 +217,7 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
                                 value={item.value}
                                 style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}
                             >
-                                {this.getText(item.label)}
+                                {this.getText(item.label, true)}
                             </MenuItem>
                         ))}
                     </Select>
