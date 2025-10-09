@@ -1107,7 +1107,7 @@ shows the license information if not already accepted. One of attributes `texts`
 | `checkBox`   | If defined, the checkbox with the given name will be shown. If checked, the agreed button will be enabled. |
 
 ### `checkDocker`
-- (admin >= 7.1.0) initial implementation
+- (admin >= 7.7.2) initial implementation
 
 Special component to check if Docker is installed and running.
 If docker is installed, a checkbox will be shown to allow the usage of docker.
