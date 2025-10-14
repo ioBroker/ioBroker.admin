@@ -986,8 +986,7 @@ export class Utils {
             if (
                 smartName &&
                 (!smartName[language] ||
-                    (smartName[language] === sureStateObject.common.name &&
-                        (!sureStateObject.common.role || sureStateObject.common.role.includes('button'))))
+                    (smartName[language] === sureStateObject.common.name && !sureStateObject.common.role))
             ) {
                 delete smartName[language];
                 let empty = true;
