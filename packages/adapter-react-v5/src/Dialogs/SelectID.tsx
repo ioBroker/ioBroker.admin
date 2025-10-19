@@ -24,11 +24,11 @@ import type { IobTheme } from '../types';
 export interface SelectIDFilters {
     id?: string;
     name?: string;
-    room?: string;
-    func?: string;
-    role?: string;
-    type?: string;
-    custom?: string;
+    room?: string[];
+    func?: string[];
+    role?: string[];
+    type?: string[];
+    custom?: string[];
 }
 
 interface DialogSelectIDProps {
