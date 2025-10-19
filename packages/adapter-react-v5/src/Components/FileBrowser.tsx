@@ -2351,7 +2351,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     aria-labelledby="ar_dialog_file_delete_title"
                 >
                     <DialogTitle id="ar_dialog_file_delete_title">
-                        {this.props.t('ra_Confirm deletion of %s', this.state.deleteItem.split('/').pop()!)}
+                        {this.props.t('ra_Confirm deletion of %s', this.state.deleteItem.split('/').pop())}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>{this.props.t('ra_Are you sure?')}</DialogContentText>

@@ -385,11 +385,11 @@ export interface ConfigItemObjectId extends ConfigItem {
     filters?: {
         id?: string;
         name?: string;
-        room?: string;
-        func?: string;
-        role?: string;
-        type?: string;
-        custom?: string;
+        room?: string[];
+        func?: string[];
+        role?: string[];
+        type?: string[];
+        custom?: string[];
     };
     /** Cannot be used together with `type` settings. It is a function that will be called for every object and must return true or false. Example: `obj.common.type === 'number'` */
     filterFunc?: (obj: ioBroker.Object) => boolean;

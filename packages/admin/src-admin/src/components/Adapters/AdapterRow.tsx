@@ -88,9 +88,9 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
                 )}
                 <TableCell>
                     <div style={this.styles.flex}>
-                        {this.renderConnectionType() || <div style={{ marginLeft: 5, width: 24, height: 24 }} />}
-                        {this.renderDataSource() || <div style={{ width: 24, height: 24 }} />}
-                        {this.renderSentryInfo() || <div style={{ width: 24, height: 24 }} />}
+                        {this.renderConnectionType() || <div style={{ width: 24, height: 24 }} />}
+                        {this.renderDataSource() || <div style={{ marginLeft: 5, width: 24, height: 24 }} />}
+                        {this.renderSentryInfo() || <div style={{ marginLeft: 5, width: 24, height: 24 }} />}
                         {this.renderLicenseInfo(true)}
                     </div>
                 </TableCell>

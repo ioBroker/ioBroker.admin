@@ -21,7 +21,7 @@ import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
-import DockerManager from './lib/DockerManager';
+import { DockerManager } from '@iobroker/plugin-docker';
 
 const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
@@ -288,7 +288,17 @@ class Admin extends Adapter {
             this.log.info(`test: ${JSON.stringify(obj.message)}`);
             return;
         } else if (obj.command === 'checkDocker') {
-            const dockerManager = new DockerManager(this);
+            const dockerManager = new DockerManager({
+                logger: {
+                    level: this.common?.loglevel || 'info',
+                    silly: this.log.silly.bind(this.log),
+                    debug: this.log.debug.bind(this.log),
+                    info: this.log.info.bind(this.log),
+                    warn: this.log.warn.bind(this.log),
+                    error: this.log.error.bind(this.log),
+                },
+                namespace: this.namespace,
+            });
             void dockerManager.getDockerDaemonInfo().then(result => {
                 if (obj.callback) {
                     this.sendTo(obj.from, obj.command, result, obj.callback);

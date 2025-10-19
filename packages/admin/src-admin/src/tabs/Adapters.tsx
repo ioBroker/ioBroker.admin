@@ -1743,7 +1743,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 return this.t('%s days ago', diffDays.toString());
             }
             return date.toLocaleDateString(this.props.lang || 'en');
-        } catch (error) {
+        } catch {
             return timestamp;
         }
     }

@@ -1259,9 +1259,9 @@ function applyFilter(
         idRx?: RegExp;
         name?: string;
         nameRx?: RegExp;
-        type?: string;
-        custom?: string;
-        role?: string;
+        type?: string[];
+        custom?: string[];
+        role?: string[];
         room?: string[];
         func?: string[];
     },
@@ -1290,26 +1290,32 @@ function applyFilter(
                 context.name = name;
             }
         }
-        if (filters.type) {
-            context.type = filters.type.toLowerCase();
+        if (filters.type?.length) {
+            context.type = filters.type.map(f => f.toLowerCase());
         }
-        if (filters.custom) {
-            context.custom = filters.custom.toLowerCase();
+        if (filters.custom?.length) {
+            context.custom = filters.custom.map(c => c.toLowerCase());
         }
-        if (filters.role) {
-            context.role = filters.role.toLowerCase();
+        if (filters.role?.length) {
+            context.role = filters.role.map(r => r.toLowerCase());
         }
-        if (filters.room) {
-            context.room = (objects[filters.room] as ioBroker.EnumObject)?.common?.members || [];
+        if (filters.room?.length) {
+            context.room = [];
+            filters.room.forEach(room => {
+                context.room = context.room.concat((objects[room] as ioBroker.EnumObject)?.common?.members || []);
+            });
         }
-        if (filters.func) {
-            context.func = (objects[filters.func] as ioBroker.EnumObject)?.common?.members || [];
+        if (filters.func?.length) {
+            context.func = [];
+            filters.func.forEach(func => {
+                context.func = context.func.concat((objects[func] as ioBroker.EnumObject)?.common?.members || []);
+            });
         }
     }
 
     const data = item.data;
 
-    if (data && data.id) {
+    if (data?.id) {
         const common: ioBroker.StateCommon = data.obj?.common as ioBroker.StateCommon;
 
         if (customFilter) {
@@ -1422,31 +1428,27 @@ function applyFilter(
             }
         }
 
-        if (!filteredOut && filters.role && common) {
-            if (common) {
-                filteredOut = !(typeof common.role === 'string' && common.role.startsWith(context.role));
-            } else {
-                filteredOut = true;
-            }
+        if (!filteredOut && filters.role?.length && common) {
+            filteredOut = !(typeof common.role === 'string' && context.role.find(role => common.role.startsWith(role)));
         }
-        if (!filteredOut && context.room) {
+        if (!filteredOut && context.room?.length) {
             filteredOut = !context.room.find(id => id === data.id || data.id.startsWith(`${id}.`));
         }
-        if (!filteredOut && context.func) {
+        if (!filteredOut && context.func?.length) {
             filteredOut = !context.func.find(id => id === data.id || data.id.startsWith(`${id}.`));
         }
-        if (!filteredOut && context.type) {
-            filteredOut = !(data.obj && data.obj.type && data.obj.type === context.type);
+        if (!filteredOut && context.type?.length) {
+            filteredOut = !(data.obj?.type && context.type.includes(data.obj.type));
         }
         if (!filteredOut && selectedTypes) {
-            filteredOut = !(data.obj && data.obj.type && selectedTypes.includes(data.obj.type));
+            filteredOut = !(data.obj?.type && selectedTypes.includes(data.obj.type));
         }
-        if (!filteredOut && context.custom) {
+        if (!filteredOut && context.custom?.length) {
             if (common) {
-                if (context.custom === '_') {
+                if (context.custom.includes('_')) {
                     filteredOut = !!common.custom;
-                } else {
-                    filteredOut = !common.custom?.[context.custom];
+                } else if (common.custom) {
+                    filteredOut = !context.custom.find(custom => common.custom[custom]);
                 }
             } else {
                 filteredOut = true;
@@ -2447,22 +2449,22 @@ let objectsAlreadyLoaded = false;
 export interface ObjectBrowserFilter {
     id?: string;
     name?: string;
-    room?: string;
-    func?: string;
-    role?: string;
-    type?: string;
-    custom?: string;
+    room?: string[];
+    func?: string[];
+    role?: string[];
+    type?: string[];
+    custom?: string[];
     expertMode?: boolean;
 }
 
 const DEFAULT_FILTER: ObjectBrowserFilter = {
     id: '',
     name: '',
-    room: '',
-    func: '',
-    role: '',
-    type: '',
-    custom: '',
+    room: [],
+    func: [],
+    role: [],
+    type: [],
+    custom: [],
     expertMode: false,
 };
 
@@ -2775,45 +2777,25 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         hasSomeCustoms: false,
         aliasesMap: {},
     };
-
     private localStorage: Storage = ((window as any)._localStorage as Storage) || window.localStorage;
-
     private lastAppliedFilter: string | null = null;
-
     private readonly tableRef: React.RefObject<HTMLDivElement>;
-
     private readonly filterRefs: Record<string, React.RefObject<HTMLSelectElement>>;
-
     private pausedSubscribes: boolean = false;
-
     private selectFirst: string;
-
     private root: TreeItem | null = null;
-
     private readonly states: Record<string, ioBroker.State> = {};
-
     private subscribes: string[] = [];
-
     private unsubscribeTimer: ReturnType<typeof setTimeout> | null = null;
-
     private statesUpdateTimer: ReturnType<typeof setTimeout> | null = null;
-
     private objectsUpdateTimer: ReturnType<typeof setTimeout> | null = null;
-
     private filterTimer: ReturnType<typeof setTimeout> | null = null;
-
     private readonly visibleCols: ObjectBrowserPossibleColumns[];
-
     private readonly texts: Record<string, string>;
-
     private readonly possibleCols: ObjectBrowserPossibleColumns[];
-
     private readonly imagePrefix: string;
-
     private adapterColumns: AdapterColumn[] = [];
-
     private styleTheme: string = '';
-
     private edit: {
         val: string | number | boolean | null;
         q: number;
@@ -2825,45 +2807,25 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         q: 0,
         ack: false,
     };
-
     private readonly levelPadding: number;
-
     private customWidth: boolean = false;
-
     private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
-
     private resizerNextName: string | null = null;
-
     private resizerActiveName: string | null = null;
-
     private resizerCurrentWidths: Record<string, number> = {};
-
     private resizeLeft: boolean = false;
-
     private resizerOldWidth: number = 0;
-
     private resizerMin: number = 0;
-
     private resizerNextMin: number = 0;
-
     private resizerOldWidthNext: number = 0;
-
     private resizerPosition: number = 0;
-
     private resizerActiveDiv: HTMLDivElement | null = null;
-
     private resizerNextDiv: HTMLDivElement | null = null;
-
     private storedWidths: ScreenWidthOne | null = null;
-
     private systemConfig: ioBroker.SystemConfigObject;
-
     public objects: Record<string, ioBroker.Object>;
-
     private defaultHistory: string = '';
-
     private cltrPressed = false;
-
     private columnsVisibility: {
         id?: number | string;
         name?: number | string;
@@ -2879,13 +2841,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         val?: number;
         buttons?: number;
     } = {};
-
     private changedIds: null | string[] = null;
-
     private contextMenu: null | { item: any; ts: number } = null;
-
     private recordStates: string[] = [];
-
     private styles: {
         cellIdIconFolder?: React.CSSProperties;
         cellIdIconDocument?: React.CSSProperties;
@@ -2908,13 +2866,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         aliasReadWrite?: React.CSSProperties;
         aliasAlone?: React.CSSProperties;
     } = {};
-
     private customColumnDialog: null | {
         value: boolean | number | string;
         type: 'boolean' | 'number' | 'string';
         initValue: boolean | number | string;
     } = null;
-
     /** Namespaces which are allowed to be edited by non-expert users */
     static #NON_EXPERT_NAMESPACES = ['0_userdata.0.', 'alias.0.'];
 
@@ -2959,6 +2915,22 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             filter = { ...props.defaultFilters };
         } else {
             filter = { ...DEFAULT_FILTER };
+        }
+        // Migrate old filters to new one
+        if (typeof filter.room === 'string') {
+            filter.room = [filter.room];
+        }
+        if (typeof filter.func === 'string') {
+            filter.func = [filter.func];
+        }
+        if (typeof filter.role === 'string') {
+            filter.role = [filter.role];
+        }
+        if (typeof filter.type === 'string') {
+            filter.type = [filter.type];
+        }
+        if (typeof filter.custom === 'string') {
+            filter.custom = [filter.custom];
         }
 
         filter.expertMode =
@@ -3397,6 +3369,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 this.props.onSelect?.(this.state.selected, name, isDouble);
             } else if (this.state.selected.length === 1 && this.props.allowNonObjects) {
                 this.props.onSelect?.(this.state.selected, null, isDouble);
+            } else {
+                // we have more than one state
+                // Check if all IDs are objects
+                if (!this.props.allowNonObjects || !this.state.selected.find(id => !this.objects[id])) {
+                    this.props.onSelect?.(this.state.selected, null, isDouble);
+                }
             }
         } else {
             this.localStorage.removeItem(`${this.props.dialogName || 'App'}.objectSelected`);
@@ -4269,12 +4247,30 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         this.filterTimer = null;
         const filter: ObjectBrowserFilter = { ...this.state.filter };
 
-        Object.keys(this.filterRefs).forEach(_name => {
+        Object.keys(this.filterRefs).forEach((_name: keyof ObjectBrowserFilter): void => {
             if (this.filterRefs[_name]?.current) {
                 const filterRef: HTMLSelectElement = this.filterRefs[_name].current;
                 for (let i = 0; i < filterRef.children.length; i++) {
                     if (filterRef.children[i].tagName === 'INPUT') {
-                        (filter as Record<string, string>)[_name] = (filterRef.children[i] as HTMLInputElement).value;
+                        if (
+                            _name === 'role' ||
+                            _name === 'type' ||
+                            _name === 'func' ||
+                            _name === 'custom' ||
+                            _name === 'room'
+                        ) {
+                            const value = (filterRef.children[i] as HTMLInputElement).value;
+                            if (value) {
+                                filter[_name] = value.split(',');
+                            } else {
+                                filter[_name] = undefined;
+                            }
+                        } else {
+                            (filter as Record<string, string>)[_name] = (
+                                filterRef.children[i] as HTMLInputElement
+                            ).value;
+                        }
+
                         break;
                     }
                 }
@@ -4376,7 +4372,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         );
     }
 
-    private getFilterSelect(name: string, values?: (string | InputSelectItem)[]): JSX.Element {
+    private getFilterSelect(
+        name: 'room' | 'func' | 'type' | 'custom' | 'role',
+        values?: (string | InputSelectItem)[],
+    ): JSX.Element {
         const hasIcons = !!values?.find(item => (item as InputSelectItem).icon);
 
         return (
@@ -4387,13 +4386,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     ref={this.filterRefs[name]}
                     sx={styles.headerCellInput}
                     className="no-underline"
+                    multiple
                     onChange={() => {
                         if (this.filterTimer) {
                             clearTimeout(this.filterTimer);
                         }
                         this.filterTimer = setTimeout(() => this.onFilter(), 400);
                     }}
-                    defaultValue={(this.state.filter as Record<string, string>)[name] || ''}
+                    defaultValue={this.state.filter[name] || []}
                     inputProps={{ name, id: name }}
                     displayEmpty
                 >
@@ -4438,7 +4438,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             size="small"
                             onClick={() => {
                                 const newFilter: ObjectBrowserFilter = { ...this.state.filter };
-                                (newFilter as Record<string, string>)[name] = '';
+                                delete newFilter[name];
                                 (this.filterRefs[name].current?.childNodes[1] as HTMLInputElement).value = '';
                                 this.localStorage.setItem(
                                     `${this.props.dialogName || 'App'}.objectFilter`,

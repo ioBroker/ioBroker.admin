@@ -161,6 +161,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@copilot, @SimonFischer04) Added extended reverse proxy example section with screenshots, limitations (admin root requirement), and adapter compatibility notes
 - (@copilot, @SimonFischer04) Fixed instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)
 - (@copilot, @SimonFischer04) Fixed intro page reverse proxy link remapping so links are correctly rewritten immediately and after navigating away and back (load reverseProxy config before instance scan and use prefix startsWith matching)
+- (@GermanBluefox) Fixed multi-selection in the select ID dialog
 
 ### 7.7.3 (2025-09-25)
 - Many GUI changes: See previous changelog below for details
