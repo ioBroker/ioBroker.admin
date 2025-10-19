@@ -9,8 +9,8 @@ import { Tooltip, LinearProgress, Tabs, Tab, TextField, Popover, MenuItem, MenuL
 
 import {
     Add as AddIcon,
-    KeyboardArrowDown as DownIcon,
-    KeyboardArrowUp as UpIcon,
+    UnfoldMore as ExpandIcon,
+    UnfoldLess as CollapseIcon,
     Clear as ClearIcon,
 } from '@mui/icons-material';
 import { FaRegFolder as IconCollapsed, FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
@@ -1024,7 +1024,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                             );
                                         }}
                                     >
-                                        <UpIcon />
+                                        <CollapseIcon />
                                     </IconButton>
                                 </Tooltip>
                                 <Tooltip
@@ -1044,7 +1044,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                             );
                                         }}
                                     >
-                                        <DownIcon />
+                                        <ExpandIcon />
                                     </IconButton>
                                 </Tooltip>
                                 {showFolderIcons && (
