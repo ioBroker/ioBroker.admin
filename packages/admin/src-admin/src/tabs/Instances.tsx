@@ -488,22 +488,30 @@ class Instances extends Component<InstancesProps, InstancesState> {
             // Reverse proxy mapping (similar to Intro) applied after links prepared
             if (instance.links?.length && this.state.reverseProxy?.length) {
                 const currentPath = window.location.pathname;
-                const proxyConfig = this.state.reverseProxy.find(p => {
-                    if (!p.globalPath) { return false; }
-                    const gp = p.globalPath.endsWith('/') ? p.globalPath : `${p.globalPath}/`;
-                    return currentPath === gp || currentPath.startsWith(gp);
-                }) || null;
+                const proxyConfig =
+                    this.state.reverseProxy.find(p => {
+                        if (!p.globalPath) {
+                            return false;
+                        }
+                        const gp = p.globalPath.endsWith('/') ? p.globalPath : `${p.globalPath}/`;
+                        return currentPath === gp || currentPath.startsWith(gp);
+                    }) || null;
                 if (proxyConfig) {
                     instance.links.forEach(l => {
-                        l.link = applyReverseProxyToLink(l.link, instance.id, instancesFromWorker, proxyConfig) || l.link;
+                        l.link =
+                            applyReverseProxyToLink(l.link, instance.id, instancesFromWorker, proxyConfig) || l.link;
                     });
                 }
                 // De-duplicate links after mapping (reverse proxy may collapse multiple original URLs)
                 if (instance.links.length > 1) {
                     const seen = new Set<string>();
                     instance.links = instance.links.filter(l => {
-                        if (!l.link) { return false; }
-                        if (seen.has(l.link)) { return false; }
+                        if (!l.link) {
+                            return false;
+                        }
+                        if (seen.has(l.link)) {
+                            return false;
+                        }
                         seen.add(l.link);
                         return true;
                     });

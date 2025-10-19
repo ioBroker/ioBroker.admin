@@ -25,7 +25,7 @@ import type { HostInfo } from '@iobroker/socket-client';
 import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
 import type { HostsWorker, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import AdminUtils from '@/helpers/AdminUtils';
-import { replaceLink, applyReverseProxyToLink, ReverseProxyItem } from '@/helpers/utils';
+import { replaceLink, applyReverseProxyToLink, type ReverseProxyItem } from '@/helpers/utils';
 import IntroCard from '@/components/Intro/IntroCard';
 import EditIntroLinkDialog from '@/components/Intro/EditIntroLinkDialog';
 
@@ -328,9 +328,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         ]);
         const reverseProxy = obj?.native?.reverseProxy || [];
         // Ensure state updated before generating links so addLinks sees reverseProxy
-        await new Promise<void>(resolve =>
-            this.setState({ reverseProxy, nodeUpdateSupported }, () => resolve()),
-        );
+        await new Promise<void>(resolve => this.setState({ reverseProxy, nodeUpdateSupported }, () => resolve()));
 
         await this.getData();
         this.props.instancesWorker.registerHandler(this.getDataDelayed);
@@ -858,16 +856,20 @@ class Intro extends React.Component<IntroProps, IntroState> {
         let webReverseProxyPath: ReverseProxyItem | null = null;
         if (reverseProxy?.length) {
             const currentPath = window.location.pathname;
-            webReverseProxyPath = reverseProxy.find(p => {
-                if (!p.globalPath) { return false; }
-                const gp = p.globalPath.endsWith('/') ? p.globalPath : `${p.globalPath}/`;
-                return currentPath === gp || currentPath.startsWith(gp);
-            }) || null;
+            webReverseProxyPath =
+                reverseProxy.find(p => {
+                    if (!p.globalPath) {
+                        return false;
+                    }
+                    const gp = p.globalPath.endsWith('/') ? p.globalPath : `${p.globalPath}/`;
+                    return currentPath === gp || currentPath.startsWith(gp);
+                }) || null;
         }
         if (_urls.length === 1) {
             instance.link = _urls[0].url;
             instance.port = _urls[0].port;
-            instance.link = applyReverseProxyToLink(instance.link, instance.id, instances, webReverseProxyPath) || instance.link;
+            instance.link =
+                applyReverseProxyToLink(instance.link, instance.id, instances, webReverseProxyPath) || instance.link;
 
             // if a link already exists => ignore
             const lll = introInstances.find(item => item.link === instance.link);
@@ -882,7 +884,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
                 if (!lll) {
                     const item = { ...instance, link: url.url, port: url.port };
-                    item.link = applyReverseProxyToLink(item.link, instance.id, instances, webReverseProxyPath) || item.link;
+                    item.link =
+                        applyReverseProxyToLink(item.link, instance.id, instances, webReverseProxyPath) || item.link;
                     introInstances.push(item);
                 } else {
                     console.log(`Double links: "${instance.id}" and "${lll.id}"`);

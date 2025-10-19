@@ -1,7 +1,6 @@
 import React, { Component, type JSX } from 'react';
 
 import {
-    Box,
     Button,
     Checkbox,
     Dialog,
@@ -78,11 +77,11 @@ export default class CommandDialog extends Component<CommandDialogProps, Command
         window.addEventListener('resize', this.handleResize);
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         window.removeEventListener('resize', this.handleResize);
     }
 
-    handleResize = () => {
+    handleResize = (): void => {
         if (this.paperRef.current && (this.paperRef.current.offsetWidth || 0) !== this.state.dialogWidth) {
             this.setState({ dialogWidth: this.paperRef.current.offsetWidth || 0 });
         }
