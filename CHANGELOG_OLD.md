@@ -1,4 +1,8 @@
 # Older changes
+## 7.6.20 (2025-06-16)
+- (@GermanBluefox) Allowed using of * in the filter of objects
+- (@GermanBluefox) Small GUI improvements
+
 ## 7.6.19 (2025-06-08)
 
 - (@GermanBluefox) Improvements on JSONConfig component `state`
