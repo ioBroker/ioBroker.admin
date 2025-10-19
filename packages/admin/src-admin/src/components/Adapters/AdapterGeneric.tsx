@@ -380,7 +380,10 @@ export default abstract class AdapterGeneric<
     renderDataSource(): JSX.Element | null {
         const dataSource = this.props.context.repository[this.props.adapterName]?.dataSource;
         return dataSource ? (
-            <div style={this.styles.marginLeft5}>
+            <div
+                style={this.styles.marginLeft5}
+                title={dataSource}
+            >
                 {dataSource === 'poll' ? (
                     <Tooltip
                         title={this.props.context.t('The device or service will be periodically asked')}
@@ -404,7 +407,9 @@ export default abstract class AdapterGeneric<
                     >
                         <RemoveIcon style={this.styles.classAssumption} />
                     </Tooltip>
-                ) : null}
+                ) : (
+                    <div style={{ width: 24, height: 24 }} />
+                )}
             </div>
         ) : null;
     }
