@@ -1125,6 +1125,10 @@
                     "description": "Cannot be used together with `types` settings. Example: `{type: ['channel', 'device']}` - show only channels and devices",
                     "type": "string"
                 },
+                "filterFunc": {
+                    "description": "Cannot be used together with `types` settings. It is a function that will be called for every object and must return true or false. Example: `obj.common.type === 'number'`",
+                    "type": "string"
+                },
                 "placeholder": {
                     "description": "Placeholder (for text control)",
                     "type": "string"
