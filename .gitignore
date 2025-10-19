@@ -40,3 +40,6 @@ packages/admin/README.md
 /packages/adapter-react-v5/i18n/
 /packages/adapter-react-v5/index.css
 /packages/admin/src-admin/.__mf__temp
+
+#ignore .commitinfo created by ioBroker release script
+.commitinfo
