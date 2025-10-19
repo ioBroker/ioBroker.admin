@@ -157,7 +157,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.7.4 (2025-10-19)
 - (@copilot) Added missing filterFunc property to jsonConfig objectId schema to match documentation and implementation
 - (@copilot, @SimonFischer04) Added extended reverse proxy example section with screenshots, limitations (admin root requirement), and adapter compatibility notes
 - (@copilot, @SimonFischer04) Fixed instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)
@@ -212,10 +212,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.7.0 (2025-06-17)
 - (@foxriver76) Added the concept for single-side-on authentication (SSO)
-
-### 7.6.20 (2025-06-16)
-- (@GermanBluefox) Allowed using of * in the filter of objects
-- (@GermanBluefox) Small GUI improvements
 
 ## License
 
