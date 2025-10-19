@@ -653,6 +653,12 @@
                     "sm": 6,
                     "label": "Object ID"
                 },
+                "myObjectIdWithFilterFunc": {
+                    "type": "objectId",
+                    "sm": 6,
+                    "label": "Object ID with filterFunc",
+                    "filterFunc": "obj.common.type === 'number'"
+                },
                 "myLanguage": {
                     "newLine": true,
                     "type": "language",
