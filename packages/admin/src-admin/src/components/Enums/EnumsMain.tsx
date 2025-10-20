@@ -210,7 +210,7 @@ interface EnumsListState {
     splitSizes: [number, number];
 }
 
-class EnumsList extends Component<EnumsListProps, EnumsListState> {
+export default class EnumsList extends Component<EnumsListProps, EnumsListState> {
     private readonly cachedIcons: Record<string, string>;
 
     private fastUpdate: boolean;
@@ -1150,5 +1150,3 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         );
     }
 }
-
-export default EnumsList;

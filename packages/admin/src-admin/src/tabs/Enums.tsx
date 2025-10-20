@@ -19,7 +19,7 @@ interface EnumsProps {
     theme: IobTheme;
 }
 
-function Enums(props: EnumsProps): JSX.Element {
+export default function Enums(props: EnumsProps): JSX.Element {
     return (
         <TabContainer>
             <TabContent style={{ display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
@@ -34,5 +34,3 @@ function Enums(props: EnumsProps): JSX.Element {
         </TabContainer>
     );
 }
-
-export default Enums;
