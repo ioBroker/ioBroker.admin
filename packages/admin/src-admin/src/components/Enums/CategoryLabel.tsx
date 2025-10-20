@@ -6,6 +6,7 @@ import { Tooltip, IconButton, Box } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 import { Icon, type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
+import AdminUtils from '@/helpers/AdminUtils';
 
 interface CategoryLabelProps {
     categoryData: Record<string, any>;
@@ -36,7 +37,7 @@ export default function CategoryLabel(props: CategoryLabelProps): JSX.Element {
             style={{ ...props.styles.categoryTitle, color: textColor }}
             sx={{
                 '.enum-button': {
-                    visibility: 'hidden',
+                    visibility: AdminUtils.isTouchDevice() ? 'visible' : 'hidden',
                 },
                 '&:hover .enum-button': {
                     visibility: 'visible',
