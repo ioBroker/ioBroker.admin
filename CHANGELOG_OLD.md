@@ -1,7 +1,4 @@
 # Older changes
-## 7.7.0 (2025-06-17)
-- (@foxriver76) Added the concept for single-side-on authentication (SSO)
-
 ## 7.6.20 (2025-06-16)
 - (@GermanBluefox) Allowed using of * in the filter of objects
 - (@GermanBluefox) Small GUI improvements
