@@ -157,7 +157,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.7.5 (2025-10-21)
 - (@GermanBluefox) Improvement of categories: drag&drop, visibility
 
 ### 7.7.4 (2025-10-19)
@@ -212,9 +212,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.7.1 (2025-06-20)
 - (@GermanBluefox) Fixing clearing of the filter on the object tab
-
-### 7.7.0 (2025-06-17)
-- (@foxriver76) Added the concept for single-side-on authentication (SSO)
 
 ## License
 
