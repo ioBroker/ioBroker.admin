@@ -78,7 +78,7 @@ const name2Id = (name: string): string =>
 
 const getShortId = (_id: string): string => _id.split('.').pop();
 
-const getText = (text: ioBroker.StringOrTranslated, lang: ioBroker.Language): string =>
+const getText = (text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string =>
     text && typeof text === 'object' ? text[lang] || text.en : (text as string) || '';
 
 const changeShortId = (_id: string, short: string): string => {
