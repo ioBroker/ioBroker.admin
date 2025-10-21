@@ -41,7 +41,7 @@ jobs:
               env:
                   VERSION_BUMP: ${{ inputs.versionBump }}
               run: |
-                  git config --global user.email "dogafox@gmail.com"
+                  git config --global user.email "moritz.heusinger@gmail.com"
                   git config --global user.name "Github Action"
 
                   npm run release -- ${VERSION_BUMP}
@@ -74,8 +74,8 @@ jobs:
               with:
                   token: ${{ secrets.PR_TOKEN }}
                   commit-message: '[OFFICIAL RELEASE] ${{ steps.version.outputs.result }}'
-                  committer: GermanBluefox <dogafox@gmail.com>
-                  author: GermanBluefox <dogafox@gmail.com>
+                  committer: foxriver76 <moritz.heusinger@gmail.com>
+                  author: foxriver76 <moritz.heusinger@gmail.com>
                   signoff: false
                   branch: official-release
                   delete-branch: true
@@ -84,5 +84,5 @@ jobs:
                       ${{ steps.extract_release.outputs.BODY }}
                   labels: |
                       automated pr 🔧
-                  assignees: GermanBluefox
+                  assignees: foxriver76
                   draft: false
