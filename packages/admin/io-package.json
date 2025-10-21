@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.4",
+    "version": "7.7.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -19,6 +19,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.5": {
+        "en": "Improvement of categories: drag&drop, visibility",
+        "de": "Verbesserung der Kategorien: Drag&drop, Sichtbarkeit",
+        "ru": "Улучшение категорий: drag&drop, видимость",
+        "pt": "Melhoria das categorias: drag&drop, visibilidade",
+        "nl": "Verbetering van categorieën: drag&drop, zichtbaarheid",
+        "fr": "Amélioration des catégories : traînée, visibilité",
+        "it": "Miglioramento delle categorie: drag&drop, visibilità",
+        "es": "Mejora de las categorías: arrastrar",
+        "pl": "Poprawa kategorii: drag & drop, widoczność",
+        "uk": "Покращення категорій: перетягування, видимість",
+        "zh-cn": "类别改进:拖放、可见度"
+      },
       "7.7.4": {
         "en": "Added missing filterFunc property to jsonConfig objectId schema to match documentation and implementation\nAdded extended reverse proxy example section with screenshots, limitations (admin root requirement), and adapter compatibility notes\nFixed instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)\nFixed intro page reverse proxy link remapping so links are correctly rewritten immediately and after navigating away and back (load reverseProxy config before instance scan and use prefix startsWith matching)\nFixed multi-selection in the select ID dialog",
         "de": "Hinzugefügt fehlende filterFunc Eigenschaft zu jsonConfig Objekt Id Schema zur Anpassung der Dokumentation und Implementierung\nErweiterte Reverse-Proxy-Beispiel-Abschnitt mit Screenshots, Einschränkungen (Admin-Root-Anforderung) und Adapter-Kompatibilitätshinweise hinzugefügt\nFixed Instanzs Seite Reverse Proxy Link Mapping so Adapter localLinks werden auf die konfigurierten Proxypfade neu geschrieben (Prefix Matching + Web Port Ersatz, mit doppeltem Link Kollaps)\nFeste intro-Seite Reverse-Proxy-Link-Remapping, so dass Links richtig neu geschrieben werden sofort und nach navigieren weg und zurück ( laden reverseProxy config vor Instanz-Scan und verwenden Präfix beginnt Mit Anpassung)\nBehobene Mehrfachauswahl im Auswahl-ID-Dialog",
@@ -96,19 +109,6 @@
         "pl": "Dozwolone stosowanie * w filtrze obiektów\nMałe ulepszenia GUI",
         "uk": "Дозволяється використання * в фільтрі об'єктів\nМалі покращення інтерфейсу",
         "zh-cn": "允许在对象过滤中使用 *\n小型图形界面改进"
-      },
-      "7.6.19": {
-        "en": "Improvements on JSONConfig component `state`\nAdded `infoBox` JSONConfig component",
-        "de": "Verbesserungen der JSONConfig-Komponente `state `\nHinzugefügt `infoBox` JSONConfig Komponente",
-        "ru": "Улучшение состояния компонента JSONConfig пункт\nДобавлен компонент «infoBox» JSONConfig",
-        "pt": "Melhorias no componente JSONConfig `state `\nAdicionado `infoBox` componente JSONConfig",
-        "nl": "Verbeteringen in de JSONConfig component state Wat\nToegevoegd ",
-        "fr": "Amélioration de la composante JSONConfig \"\nAjout du composant `infoBox` JSONConfig",
-        "it": "Miglioramenti sul componente JSONConfig `state #\nAggiunto `infoBox` JSONConfig componente",
-        "es": "Mejoras en el componente JSONConfig `estado `\nComponente de `infoBox` JSONConfig",
-        "pl": "Poprawa stanu komponentu JSONConfig '\nDodano 'infoBox' komponent JSONConfig",
-        "uk": "Удосконалення компонентів JSONConfig `state й\nДодано `infoBox` JSONConfig компонент",
-        "zh-cn": "改进JSONConfig组件`状态' `(a). `\n添加了“ infoBox” JSONConfig 组件"
       }
     },
     "desc": {
