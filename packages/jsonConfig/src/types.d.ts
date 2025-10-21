@@ -79,41 +79,41 @@ export type ConfigItemType =
 
 type ConfigIconType =
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'edit'
+    | 'add'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     | 'auth'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'send'
+    | 'book'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'web'
+    | 'delete'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'warning'
+    | 'edit'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     | 'error'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'group'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'help'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     | 'info'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'pair'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'refresh'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     | 'search'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'book'
+    | 'send'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'help'
+    | 'unpair'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     | 'upload'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     | 'user'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'group'
+    | 'warning'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'delete'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'refresh'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'add'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'unpair'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'pair'
+    | 'web'
     | string;
 
 export interface ConfigItemConfirmData {
