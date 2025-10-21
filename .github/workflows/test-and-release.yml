@@ -16,6 +16,10 @@ on:
             - 'v?[0-9]+.[0-9]+.[0-9]+-**'
     pull_request: {}
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
 # Cancel previous PR/branch runs when a new commit is pushed
 concurrency:
     group: ${{ github.ref }}
@@ -207,7 +211,9 @@ jobs:
 
             - name: 'Build backend'
               if: steps.automerge.outputs.mergeResult == 'merged'
-              run: npm run build:backend -w packages/admin
+              run: |
+                  npm install -g npm@latest
+                  npm run build:backend -w packages/admin
 
             - name: Publish package to npm
               if: steps.automerge.outputs.mergeResult == 'merged'
