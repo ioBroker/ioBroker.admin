@@ -6,7 +6,7 @@ on:
 jobs:
     auto-approve:
         if: |
-            github.actor == 'GermanBluefox' &&
+            github.actor == 'foxriver76' &&
             github.event.label.name == 'automated pr 🔧'
 
         runs-on: ubuntu-latest
