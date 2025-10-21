@@ -1,11 +1,12 @@
 import React, { type JSX } from 'react';
 import { useDrop } from 'react-dnd';
 
-import { Tooltip, IconButton } from '@mui/material';
+import { Tooltip, IconButton, Box } from '@mui/material';
 
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 import { Icon, type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
+import AdminUtils from '@/helpers/AdminUtils';
 
 interface CategoryLabelProps {
     categoryData: Record<string, any>;
@@ -17,7 +18,7 @@ interface CategoryLabelProps {
     themeType: ThemeType;
 }
 
-const CategoryLabel = (props: CategoryLabelProps): JSX.Element => {
+export default function CategoryLabel(props: CategoryLabelProps): JSX.Element {
     const [, drop] = useDrop(() => ({
         accept: ['enum'],
         drop: () => ({ enumId: props.categoryData._id }),
@@ -30,9 +31,18 @@ const CategoryLabel = (props: CategoryLabelProps): JSX.Element => {
     const textColor = Utils.getInvertedColor(props.categoryData.common.color, props.themeType, true);
 
     return (
-        <span
+        <Box
+            component="span"
             ref={drop}
             style={{ ...props.styles.categoryTitle, color: textColor }}
+            sx={{
+                '.enum-button': {
+                    visibility: AdminUtils.isTouchDevice() ? 'visible' : 'hidden',
+                },
+                '&:hover .enum-button': {
+                    visibility: 'visible',
+                },
+            }}
         >
             {props.categoryData.common.icon ? (
                 <Icon
@@ -44,6 +54,7 @@ const CategoryLabel = (props: CategoryLabelProps): JSX.Element => {
                 ? props.categoryData.common.name
                 : props.categoryData.common.name[props.lang] || props.categoryData.common.name.en}
             <IconButton
+                className="enum-button"
                 size="small"
                 style={{ color: textColor }}
                 onClick={() => {
@@ -60,6 +71,7 @@ const CategoryLabel = (props: CategoryLabelProps): JSX.Element => {
             </IconButton>
             {props.categoryData.common.dontDelete ? null : (
                 <IconButton
+                    className="enum-button"
                     size="small"
                     style={{ color: textColor }}
                     onClick={() => props.showEnumDeleteDialog(props.categoryData)}
@@ -73,8 +85,6 @@ const CategoryLabel = (props: CategoryLabelProps): JSX.Element => {
                     </Tooltip>
                 </IconButton>
             )}
-        </span>
+        </Box>
     );
-};
-
-export default CategoryLabel;
+}

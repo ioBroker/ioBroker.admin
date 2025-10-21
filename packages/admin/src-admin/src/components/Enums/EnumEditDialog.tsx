@@ -1,4 +1,4 @@
-import React, { type JSX } from 'react';
+import React from 'react';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, Grid2, Button } from '@mui/material';
 
@@ -66,35 +66,35 @@ interface EnumEditDialogProps {
     getName: (text: ioBroker.StringOrTranslated) => string;
     innerWidth: number;
 }
+const name2Id = (name: string): string =>
+    name
+        .replace(Utils.FORBIDDEN_CHARS, '_')
+        .replace(/\s/g, '_')
+        .replace(/\./g, '_')
+        .replace(/,/g, '_')
+        .replace(/__/g, '_')
+        .replace(/__/g, '_')
+        .toLowerCase();
 
-function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
+const getShortId = (_id: string): string => _id.split('.').pop();
+
+const getText = (text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string =>
+    text && typeof text === 'object' ? text[lang] || text.en : (text as string) || '';
+
+const changeShortId = (_id: string, short: string): string => {
+    const idArray = _id.split('.');
+    idArray[idArray.length - 1] = short;
+    return idArray.join('.');
+};
+
+export default function EnumEditDialog(props: EnumEditDialogProps): React.JSX.Element {
     const idExists = props.enums.find(enumItem => enumItem._id === props.enum._id);
 
-    let canSave = props.enum._id !== 'system.enum.';
+    let canSave = !!getShortId(props.enum._id) && !!props.getName(props.enum.common.name);
 
-    if (props.isNew && idExists) {
+    if (props.isNew && idExists && canSave) {
         canSave = false;
     }
-
-    const getShortId = (_id: string): string => _id.split('.').pop();
-
-    const name2Id = (name: string): string =>
-        name
-            .replace(Utils.FORBIDDEN_CHARS, '_')
-            .replace(/\s/g, '_')
-            .replace(/\./g, '_')
-            .replace(/,/g, '_')
-            .replace(/__/g, '_')
-            .replace(/__/g, '_');
-
-    const getText = (text: ioBroker.StringOrTranslated): string =>
-        text && typeof text === 'object' ? text[props.lang] || text.en : (text as string) || '';
-
-    const changeShortId = (_id: string, short: string): string => {
-        const idArray = _id.split('.');
-        idArray[idArray.length - 1] = short;
-        return idArray.join('.');
-    };
 
     return (
         <Dialog
@@ -119,7 +119,7 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
                             t={props.t}
                             value={props.getName(props.enum.common.name)}
                             onChange={(value: string) => {
-                                const newData = props.enum;
+                                const newData: ioBroker.EnumObject = JSON.parse(JSON.stringify(props.enum));
                                 if (
                                     !props.enum.common.dontDelete &&
                                     name2Id(props.getName(newData.common.name)) === getShortId(newData._id)
@@ -141,7 +141,7 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
                             disabled={props.enum.common.dontDelete}
                             value={props.enum._id.split('.')[props.enum._id.split('.').length - 1]}
                             onChange={(value: string) => {
-                                const newData = JSON.parse(JSON.stringify(props.enum));
+                                const newData: ioBroker.EnumObject = JSON.parse(JSON.stringify(props.enum));
                                 newData._id = changeShortId(newData._id, name2Id(value));
                                 props.onChange(newData);
                             }}
@@ -163,7 +163,7 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
                         <IOTextField
                             label="Description"
                             t={props.t}
-                            value={getText((props.enum.common as EnumCommon).desc)}
+                            value={getText((props.enum.common as EnumCommon).desc, props.lang)}
                             onChange={(value: string) => {
                                 const newData = props.enum;
                                 (newData.common as EnumCommon).desc = value;
@@ -230,5 +230,3 @@ function EnumEditDialog(props: EnumEditDialogProps): JSX.Element {
         </Dialog>
     );
 }
-
-export default EnumEditDialog;

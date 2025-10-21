@@ -497,16 +497,19 @@ export default abstract class AdapterGeneric<
                 );
             }
         }
-        array.push(this.props.context.t('Wrong dependencies'));
 
-        return array.map((el, i) => (
-            <div
-                key={el}
-                style={!i ? { fontWeight: 'bold', fontSize: 'larger' } : undefined}
-            >
-                {el}
-            </div>
-        ));
+        if (array.length) {
+            array.unshift(this.props.context.t('Wrong dependencies'));
+            return array.map((el, i) => (
+                <div
+                    key={el}
+                    style={!i ? { fontWeight: 'bold', fontSize: 'larger' } : undefined}
+                >
+                    {el}
+                </div>
+            ));
+        }
+        return null;
     }
 
     renderVersion(): JSX.Element {
@@ -514,7 +517,7 @@ export default abstract class AdapterGeneric<
             ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate
             : true;
 
-        // Check if adapter exists in repository and has a version
+        // Check if adapter exists in the repository and has a version
         const repositoryAdapter = this.props.context.repository[this.props.adapterName];
         const adapterVersion = repositoryAdapter?.version;
 

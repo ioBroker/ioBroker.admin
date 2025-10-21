@@ -77,44 +77,68 @@ export type ConfigItemType =
     | 'user'
     | 'uuid';
 
-type ConfigIconType =
+export type ConfigIconType =
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'edit'
+    | 'add'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'auth'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'send'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'web'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'warning'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'error'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'info'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'search'
+    | 'backlight'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     | 'book'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'delete'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'dimmer'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'edit'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'error'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'group'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     | 'help'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'identify'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'info'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'light'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'lines'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'next'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'pair'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'pause'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'play'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'previous'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'qrcode'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'refresh'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'search'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'send'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'settings'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'socket'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'stop'
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    | 'unpair'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     | 'upload'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     | 'user'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'group'
+    | 'warning'
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'delete'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'refresh'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'add'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'unpair'
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    | 'pair'
-    | string;
+    | 'web'
+    | string; // base 64 string
 
 export interface ConfigItemConfirmData {
     condition: string;
