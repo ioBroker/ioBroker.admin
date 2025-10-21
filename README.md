@@ -157,10 +157,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.7.5 (2025-10-21)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Improvement of categories: drag&drop, visibility
-
-### 7.7.4 (2025-10-19)
 - (@copilot) Added missing filterFunc property to jsonConfig objectId schema to match documentation and implementation
 - (@copilot, @SimonFischer04) Added extended reverse proxy example section with screenshots, limitations (admin root requirement), and adapter compatibility notes
 - (@copilot, @SimonFischer04) Fixed instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)
