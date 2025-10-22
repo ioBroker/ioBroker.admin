@@ -18,7 +18,7 @@
         "@iobroker/dm-utils": "^1.0.10",
         "@iobroker/eslint-config": "^2.0.1",
         "@iobroker/types": "^7.0.7",
-        "lerna": "^8.2.2"
+        "lerna": "^8.2.4"
     },
     "scripts": {
         "build": "npm run clean && lerna run build",
