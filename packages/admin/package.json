@@ -9,6 +9,13 @@
         "hobbyquaker <hq@ccu.io>",
         "ldittmar <iobroker@lmdsoft.de>"
     ],
+    "nx": {
+        "implicitDependencies": [
+            "@iobroker/json-config",
+            "@iobroker/adapter-react-v5",
+            "@iobroker/dm-gui-components"
+        ]
+    },
     "engines": {
         "node": ">=18.0.0"
     },
@@ -90,10 +97,10 @@
         "test:rule": "mocha test/rule --exit",
         "test:gui": "mocha test/*.gui.js --exit",
         "prepublishOnly": "npm run build",
-        "build": "npm run build:backend",
-        "build:all": "npm run build:frontend && npm run build:backend",
-        "tsc:backend": "tsc -p tsconfig.build.json",
+        "build": "npm run build:frontend && npm run build:backend",
         "build:backend": "tsc -p tsconfig.build.json && node tasks --backend-i18n",
+        "build:frontend": "node tasks",
+        "build:all": "npm run build:frontend && npm run build:backend",
         "clean": "rimraf src-admin/build",
         "lint-backend": "eslint -c eslint.config.mjs src",
         "react-0-configCSS": "node tasks --react-0-configCSS",
@@ -104,7 +111,6 @@
         "react-3-build": "node tasks --react-3-build",
         "react-5-copy": "node tasks --react-5-copy",
         "react-6-patch": "node tasks --react-6-patch",
-        "build:frontend": "node tasks",
         "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"
     },
     "author": "bluefox <dogafox@gmail.com>"

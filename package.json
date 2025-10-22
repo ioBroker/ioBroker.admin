@@ -2,8 +2,7 @@
     "name": "iobroker.admin-mono",
     "private": true,
     "workspaces": [
-        "packages/*",
-        "packages/*/*"
+        "packages/*"
     ],
     "dependencies": {
         "@iobroker/adapter-react-v5": "file:packages/adapter-react-v5",
