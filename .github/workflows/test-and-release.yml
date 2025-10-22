@@ -17,8 +17,9 @@ on:
     pull_request: {}
 
 permissions:
-  id-token: write  # Required for OIDC
-  contents: read
+    id-token: write  # Required for OIDC
+    contents: write
+    pull-requests: read
 
 # Cancel previous PR/branch runs when a new commit is pushed
 concurrency:
