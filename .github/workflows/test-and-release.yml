@@ -171,6 +171,8 @@ jobs:
                   UPDATE_LABELS: 'automated pr 🔧'
                   MERGE_METHOD: 'squash'
                   MERGE_COMMIT_MESSAGE: 'pull-request-title-and-description'
+                  MERGE_RETRIES: "50"
+                  MERGE_RETRY_SLEEP: "30000"
 
             - name: Checkout repository
               if: steps.automerge.outputs.mergeResult == 'merged'
