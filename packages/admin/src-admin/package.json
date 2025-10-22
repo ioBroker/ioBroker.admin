@@ -30,9 +30,9 @@
         ]
     },
     "dependencies": {
-        "@iobroker/adapter-react-v5": "workspace:*",
-        "@iobroker/dm-gui-components": "workspace:*",
-        "@iobroker/json-config": "workspace:*",
+        "@iobroker/adapter-react-v5": "file:../../adapter-react-v5",
+        "@iobroker/dm-gui-components": "file:../../dm-gui-components",
+        "@iobroker/json-config": "file:../../jsonConfig",
         "http-proxy-middleware": "^3.0.5"
     },
     "devDependencies": {
