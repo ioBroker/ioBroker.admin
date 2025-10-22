@@ -100,7 +100,6 @@
         "build": "npm run build:frontend && npm run build:backend",
         "build:backend": "tsc -p tsconfig.build.json && node tasks --backend-i18n",
         "build:frontend": "node tasks",
-        "build:all": "npm run build:frontend && npm run build:backend",
         "clean": "rimraf src-admin/build",
         "lint-backend": "eslint -c eslint.config.mjs src",
         "react-0-configCSS": "node tasks --react-0-configCSS",
