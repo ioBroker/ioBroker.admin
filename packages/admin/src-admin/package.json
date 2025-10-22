@@ -4,6 +4,7 @@
     "homepage": ".",
     "type": "module",
     "scripts": {
+        "clean": "rimraf build",
         "start": "vite --port 3000",
         "lint": "eslint -c eslint.config.mjs src",
         "build": "tsc && vite build",
@@ -105,5 +106,5 @@
             }
         ]
     ],
-    "version": "7.7.8"
+    "version": "7.7.9"
 }
