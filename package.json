@@ -2,7 +2,8 @@
     "name": "iobroker.admin-mono",
     "private": true,
     "workspaces": [
-        "packages/*"
+        "packages/*",
+        "packages/*/*"
     ],
     "dependencies": {
         "@iobroker/adapter-react-v5": "file:packages/adapter-react-v5",
@@ -17,11 +18,11 @@
         "@alcalzone/release-script-plugin-license": "^3.7.0",
         "@iobroker/dm-utils": "^1.0.10",
         "@iobroker/eslint-config": "^2.0.1",
-        "@iobroker/types": "^7.0.7",
-        "lerna": "^8.2.4"
+        "@iobroker/types": "^7.0.8-alpha.7-20250928-40cb80c18",
+        "lerna": "^9.0.0"
     },
     "scripts": {
-        "build": "npm run clean && lerna run build",
+        "build": "npm run clean && lerna run build --concurrency 1",
         "clean": "lerna run clean",
         "install-monorepo": "npm i && npm i -w packages/adapter-react-v5 && npm i -w packages/dm-gui-components && npm i -w packages/jsonConfig && npm i -w packages/admin && cd packages/admin/src-admin && npm i -f",
         "npm": "npm run install-monorepo",

@@ -4,6 +4,7 @@
     "homepage": ".",
     "type": "module",
     "scripts": {
+        "clean": "rimraf build",
         "start": "vite --port 3000",
         "lint": "eslint -c eslint.config.mjs src",
         "build": "tsc && vite build",
@@ -21,10 +22,17 @@
         "not dead",
         "not op_mini all"
     ],
+    "nx": {
+        "implicitDependencies": [
+            "@iobroker/json-config",
+            "@iobroker/adapter-react-v5",
+            "@iobroker/dm-gui-components"
+        ]
+    },
     "dependencies": {
-        "@iobroker/adapter-react-v5": "file:../../adapter-react-v5",
-        "@iobroker/dm-gui-components": "file:../../dm-gui-components",
-        "@iobroker/json-config": "file:../../jsonConfig",
+        "@iobroker/adapter-react-v5": "workspace:*",
+        "@iobroker/dm-gui-components": "workspace:*",
+        "@iobroker/json-config": "workspace:*",
         "http-proxy-middleware": "^3.0.5"
     },
     "devDependencies": {

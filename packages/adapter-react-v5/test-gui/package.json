@@ -10,7 +10,7 @@
     },
     "scripts": {
         "start": "vite",
-        "build": "tsc && vite build",
+        "build_gui": "tsc && vite build",
         "preview": "vite preview",
         "lint": "eslint -c eslint.config.mjs src",
         "tsc": "tsc -p tsconfig.json"

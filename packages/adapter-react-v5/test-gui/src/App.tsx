@@ -18,11 +18,12 @@ import langEs from '../../src/i18n/es.json';
 import langPl from '../../src/i18n/pl.json';
 import langUk from '../../src/i18n/uk.json';
 import langZhCn from '../../src/i18n/zh-cn.json';
-import I18n from '../../src/i18n';
-import Cron from '../../src/Dialogs/Cron';
+import { I18n } from '../../src/i18n';
+import { DialogCron } from '../../src/Dialogs/Cron';
+import { IobTheme } from '../../src';
 
 class App extends Component {
-    private theme: Theme;
+    private readonly theme: Theme;
 
     constructor(props: any) {
         super(props);
@@ -52,11 +53,11 @@ class App extends Component {
         return (
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.theme}>
-                    <Cron
+                    <DialogCron
                         onClose={() => {}}
                         onOk={() => {}}
                         cron="0 0 * * *"
-                        theme={this.theme}
+                        theme={this.theme as IobTheme}
                     />
                 </ThemeProvider>
             </StyledEngineProvider>
