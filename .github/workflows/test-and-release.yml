@@ -188,15 +188,6 @@ jobs:
               with:
                   node-version: 20
 
-            - name: Determine version
-              if: steps.automerge.outputs.mergeResult == 'merged'
-              id: version
-              uses: actions/github-script@v8
-              with:
-                  result-encoding: string
-                  script: |
-                    return require('./lerna.json').version;
-
             - name: Extract the commit body
               if: steps.automerge.outputs.mergeResult == 'merged'
               id: extract_release
@@ -210,21 +201,20 @@ jobs:
 
             - name: Install Dependencies
               if: steps.automerge.outputs.mergeResult == 'merged'
-              run: npm run install-monorepo
+              run: npm i
 
             - name: 'Build backend'
               if: steps.automerge.outputs.mergeResult == 'merged'
               run: |
-                  npm install -g npm@latest
-                  npm run build:backend -w packages/admin
+                  npm run build
 
             - name: Publish package to npm
               if: steps.automerge.outputs.mergeResult == 'merged'
               run: |
+                  npm install -g npm@latest
                   npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
                   npm whoami
-                  git checkout -- package-lock.json
-                  npx lerna publish from-package --yes
+                  npm run publish
 
             - name: Create Github Release
               if: steps.automerge.outputs.mergeResult == 'merged'

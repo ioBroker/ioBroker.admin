@@ -197,7 +197,7 @@ interface AdaptersState extends AdapterInstallDialogState {
     adminUpgradeTo: string;
 }
 
-class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
+export default class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     private readonly inputRef: React.RefObject<HTMLInputElement>;
 
     private readonly countRef: React.RefObject<HTMLDivElement>;
@@ -1629,7 +1629,6 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             const repoInfo = repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo;
             if (repoInfo) {
                 repoGeneratedTime = repoInfo.repoTime || null;
-                // @ts-expect-error - type will be extended in other repository to include repoReadTime
                 repoReadTime = repoInfo.repoReadTime || null;
                 const repoName = this.getRepositoryName(repoInfo);
                 if (repoName) {
@@ -1655,11 +1654,8 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                         }
                     }
 
-                    // @ts-expect-error - type will be extended in other repository to include repoReadTime
                     if (repoInfo.repoReadTime) {
-                        // @ts-expect-error - type will be extended in other repository to include repoReadTime
                         if (!oldestReadTime || new Date(repoInfo.repoReadTime) < new Date(oldestReadTime)) {
-                            // @ts-expect-error - type will be extended in other repository to include repoReadTime
                             oldestReadTime = repoInfo.repoReadTime;
                         }
                     }
@@ -2191,5 +2187,3 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         );
     }
 }
-
-export default Adapters;

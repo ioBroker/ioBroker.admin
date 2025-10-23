@@ -85,7 +85,6 @@ ioBroker.admin is a complex monorepo that provides the web-based administration 
 │   ├── adapter-react-v5/        # React components for ioBroker adapters
 │   ├── dm-gui-components/       # Device management UI components  
 │   └── jsonConfig/              # JSON-based configuration system
-├── lerna.json                   # Lerna monorepo configuration
 └── package.json                 # Root package with workspace scripts
 ```
 

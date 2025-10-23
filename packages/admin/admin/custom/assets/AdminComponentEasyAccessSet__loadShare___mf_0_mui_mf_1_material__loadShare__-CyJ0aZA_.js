@@ -1,1 +1,0 @@
-import{A as _,i as t}from"./AdminComponentEasyAccessSet__mf_v__runtimeInit__mf_v__-JbSPU0nV.js";const{loadShare:o}=t,{initPromise:s}=_,n=s.then(e=>o("@mui/material",{customShareInfo:{shareConfig:{singleton:!0,strictVersion:!1,requiredVersion:"*"}}})),a=await n.then(e=>e());var r=a;export{r as A};

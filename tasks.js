@@ -1,17 +1,11 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { statSync, existsSync, writeFileSync, readFileSync } = require('node:fs');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const less = require('less');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { join } = require('node:path');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const {
     deleteFoldersRecursive,
     buildReact,
     patchHtmlFile,
     npmInstall,
     copyFiles,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
 } = require('@iobroker/build-tools');
 
 const srcRx = 'src-admin/';
@@ -26,7 +20,7 @@ async function build() {
         writeFileSync(`${__dirname}/src-admin/public/lib/js/socket.io.js`, socketNew);
         writeFileSync(
             `${__dirname}/src-admin/public/lib/js/socket.io.js.map`,
-            readFileSync(`${__dirname}/../../node_modules/@iobroker/ws/dist/esm/socket.io.min.js.map`),
+            readFileSync(`${__dirname}/node_modules/@iobroker/ws/dist/esm/socket.io.min.js.map`),
         );
     }
 

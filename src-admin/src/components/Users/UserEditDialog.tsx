@@ -60,7 +60,7 @@ interface UserEditDialogState {
     passwordRepeat: string;
 }
 
-class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState> {
+export default class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState> {
     constructor(props: UserEditDialogProps) {
         super(props);
         this.state = {
@@ -323,7 +323,6 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
             return null;
         }
 
-        /* @ts-expect-error needs to be added to types */
         return !this.props.user.common?.externalAuthentication?.oidc ? (
             <Button
                 variant="contained"
@@ -345,7 +344,6 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
                 startIcon={<PersonOffIcon />}
                 sx={{ marginTop: 2 }}
                 onClick={async () => {
-                    // @ts-expect-error needs types
                     delete this.props.user.common.externalAuthentication.oidc;
                     await this.props.saveData(this.state.originalId);
                     window.alert('Single-Sign On disconnected!');
@@ -356,5 +354,3 @@ class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState>
         );
     }
 }
-
-export default UserEditDialog;
