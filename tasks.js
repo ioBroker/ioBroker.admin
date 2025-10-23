@@ -33,7 +33,7 @@ async function build() {
         readFileSync(`${rootFolder}/src-admin/node_modules/@fnando/sparkline/dist/sparkline.js.map`),
     );
 
-    const ace = `${rootFolder}/node_modules/ace-builds/src-min-noconflict/`;
+    const ace = `${rootFolder}/src-admin/node_modules/ace-builds/src-min-noconflict/`;
     writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, readFileSync(`${ace}worker-json.js`));
     writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`, readFileSync(`${ace}ext-searchbox.js`));
 
