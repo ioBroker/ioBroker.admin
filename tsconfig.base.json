@@ -2,10 +2,25 @@
     "compilerOptions": {
         "module": "esnext",
         "target": "esnext",
-        "baseUrl": ".",
-        "jsx": "preserve",
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "baseUrl": "./",
+        "allowSyntheticDefaultImports": true,
+        "checkJs": false,
+        "noEmit": false,
+        "outDir": "./build",
+        "sourceMap": true,
+        "sourceRoot": "./src",
+        "noImplicitAny": true,
+        "skipLibCheck": true,
+        "lib": ["es2018", "DOM"],
+        "jsx": "react",
+        "types": ["@iobroker/types"],
+        "paths": {
+            "@/*": ["./src/*"],
+        }
     },
-    "include": ["packages/"],
-    "exclude": ["**/node_modules", "**/dist"]
+    "exclude": ["**/node_modules", "**/build", "adminWww/**"],
+    "include": ["**/*.js", "**/*.ts", "**/*.d.ts",
+        "eslint.config.mjs"
+    ],
 }

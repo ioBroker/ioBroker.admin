@@ -1,6 +1,5 @@
 {
-    "plugins": ["iobroker", "license", "lerna"],
-    "ioPackage": "packages/admin",
+    "plugins": ["iobroker", "license"],
     "exec": {
         "before_commit": "npm run build"
     }

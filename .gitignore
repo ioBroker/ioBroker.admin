@@ -1,6 +1,5 @@
 node_modules
 .idea
-.nx
 **/src/.eslintcache
 **/src/.cache
 tmp/
@@ -11,16 +10,8 @@ admin/i18n/*/flat.txt
 admin/i18n/flat.txt
 admin/words.js
 .vscode
-/lib/ws.js
-/lib/socketCommon.js
-/lib/socketCommands.js
-/lib/socketAdmin.js
-/lib/socketCommandsAdmin.js
-/lib/passportSocket.js
 **/build
-packages/admin/src-admin/package-lock.json
-packages/admin/package-lock.json
-packages/admin/src/package-lock.json
+src-admin/package-lock.json
 **/src/public_aes
 **/src/public/js/adapter-settings-aes.js
 testSentry.bat
@@ -29,17 +20,10 @@ testSentry.bat
 # ioBroker dev-server
 .dev-server/
 
-# Lerna
-lerna-debug.log
-
-packages/admin/build-backend
-/packages/admin/admin/custom/
-packages/admin/README.md
-/packages/jsonConfig/test/testSchema.js
-/packages/jsonConfig/test/testSchema.js.map
-/packages/adapter-react-v5/i18n/
-/packages/adapter-react-v5/index.css
-/packages/admin/src-admin/.__mf__temp
+build-backend
+/admin/custom/
+README.md
+/src-admin/.__mf__temp
 
 #ignore .commitinfo created by ioBroker release script
 .commitinfo

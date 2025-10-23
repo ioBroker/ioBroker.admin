@@ -1,0 +1,1 @@
+import{A as _,i as o}from"./AdminComponentEasyAccessSet__mf_v__runtimeInit__mf_v__-JbSPU0nV.js";const{loadShare:r}=o,{initPromise:t}=_,a=t.then(e=>r("@iobroker/adapter-react-v5",{customShareInfo:{shareConfig:{singleton:!0,strictVersion:!1,requiredVersion:"*"}}})),s=await a.then(e=>e());var i=s;export{i as A};
