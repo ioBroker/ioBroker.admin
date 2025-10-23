@@ -27,48 +27,13 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    # Check if only README.md was changed to potentially skip tests
-    check-changes:
-        runs-on: ubuntu-latest
-        outputs:
-            readme-only: ${{ steps.changes.outputs.readme-only }}
-        steps:
-            - uses: actions/checkout@v5
-              with:
-                  fetch-depth: 0
-
-            - name: Check changed files
-              id: changes
-              run: |
-                  if [ "${{ github.event_name }}" = "pull_request" ]; then
-                      # For PRs, compare against the base branch  
-                      BASE_SHA="${{ github.event.pull_request.base.sha }}"
-                      HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-                      CHANGED_FILES=$(git diff --name-only $BASE_SHA..$HEAD_SHA)
-                  else
-                      # For pushes, compare against the previous commit
-                      CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
-                  fi
-
-                  echo "Changed files:"
-                  echo "$CHANGED_FILES"
-
-                  # Check if only README.md was changed
-                  if [ "$CHANGED_FILES" = "README.md" ]; then
-                      echo "Only README.md was changed"
-                      echo "readme-only=true" >> $GITHUB_OUTPUT
-                  else
-                      echo "Other files changed or multiple files including README.md"
-                      echo "readme-only=false" >> $GITHUB_OUTPUT
-                  fi
-
     build:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v5
             - uses: actions/setup-node@v5
               with:
-                  node-version: 20.x
+                  node-version: 22.x
 
             - name: Install Dependencies
               run: npm run npm
@@ -92,7 +57,7 @@ jobs:
             contains(github.event.head_commit.message, '[skip ci]') == false &&
             needs.check-changes.outputs.readme-only != 'true'
 
-        needs: [build, check-changes]
+        needs: [build]
 
         runs-on: ${{ matrix.os }}
         strategy:
@@ -121,7 +86,7 @@ jobs:
             contains(github.event.head_commit.message, '[skip ci]') == false &&
             needs.check-changes.outputs.readme-only != 'true'
 
-        needs: [build, check-changes]
+        needs: [build]
 
         runs-on: ubuntu-latest
 
@@ -152,99 +117,73 @@ jobs:
                   path: tmp/screenshots/**/*.png
                   retention-days: 3
 
-    auto-merge:
+    deploy:
+        # Trigger this step only when a commit on master is tagged with a version number
         if: |
-            always() &&
-            github.event_name == 'pull_request'
-        needs: [check-changes, build, adapter-tests-gui]
+            contains(github.event.head_commit.message, '[skip ci]') == false &&
+            github.event_name == 'push' &&
+            startsWith(github.ref, 'refs/tags/v')
+
+        needs: [build, adapter-tests-gui]
         runs-on: macos-latest # ubuntu-latest has too few RAM
 
         steps:
-            - id: automerge
-              name: automerge
-              uses: 'pascalgn/automerge-action@v0.16.4'
-              env:
-                  GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-                  MERGE_LABELS: 'automated pr 🔧'
-                  MERGE_FILTER_AUTHOR: 'foxriver76'
-                  MERGE_FORKS: 'false'
-                  MERGE_DELETE_BRANCH: 'false'
-                  UPDATE_LABELS: 'automated pr 🔧'
-                  MERGE_METHOD: 'squash'
-                  MERGE_COMMIT_MESSAGE: 'pull-request-title-and-description'
-                  MERGE_RETRIES: "50"
-                  MERGE_RETRY_SLEEP: "30000"
+          - name: Checkout code
+            uses: actions/checkout@v2
 
-            - name: Checkout repository
-              if: steps.automerge.outputs.mergeResult == 'merged'
-              uses: actions/checkout@v5
-              with:
-                  fetch-depth: 0 # Fetch the history, or this action won't work
-                  ref: 'master'
+          - name: Use Node.js 20.x
+            uses: actions/setup-node@v1
+            with:
+              node-version: 20.x
 
-            - name: Use Node.js 20
-              if: steps.automerge.outputs.mergeResult == 'merged'
-              uses: actions/setup-node@v5
-              with:
-                  node-version: 20
+          - name: Extract the version and commit body from the tag
+            id: extract_release
+            # The body may be multiline, therefore we need to escape some characters
+            run: |
+              VERSION="${{ github.ref }}"
+              VERSION=${VERSION##*/v}
+              echo "::set-output name=VERSION::$VERSION"
+              BODY=$(git show -s --format=%b)
+              BODY="${BODY//'%'/'%25'}"
+              BODY="${BODY//$'\n'/'%0A'}"
+              BODY="${BODY//$'\r'/'%0D'}"
+              echo "::set-output name=BODY::$BODY"
+          - name: Install dependencies
+            run: npm ci
 
-            - name: Extract the commit body
-              if: steps.automerge.outputs.mergeResult == 'merged'
-              id: extract_release
-              # The body may be multiline, therefore we need to escape some characters
-              run: |
-                  BODY=$(git show -s --format=%b)
-                  BODY="${BODY//'%'/'%25'}"
-                  BODY="${BODY//$'\n'/'%0A'}"
-                  BODY="${BODY//$'\r'/'%0D'}"
-                  echo "::set-output name=BODY::$BODY"
+          - name: Publish package to npm
+            run: |
+              npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+              npm whoami
+              npm publish
+          - name: Create Github Release
+            uses: actions/create-release@v1
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            with:
+              tag_name: ${{ github.ref }}
+              release_name: Release v${{ steps.extract_release.outputs.VERSION }}
+              draft: false
+              # Prerelease versions create pre-releases on GitHub
+              prerelease: ${{ contains(steps.extract_release.outputs.VERSION, '-') }}
+              body: ${{ steps.extract_release.outputs.BODY }}
 
-            - name: Install Dependencies
-              if: steps.automerge.outputs.mergeResult == 'merged'
-              run: npm i
+          - name: Notify Sentry.io about the release
+            run: |
+                npm i -g @sentry/cli
+                export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+                export SENTRY_URL=https://sentry.iobroker.net
+                export SENTRY_ORG=iobroker
+                export SENTRY_PROJECT=iobroker-admin
+                export SENTRY_VERSION=iobroker.admin@${{ steps.version.outputs.result }}
+                export SENTRY_RELEASE=${{ steps.version.outputs.result }}
+                sentry-cli releases new $SENTRY_VERSION
+                sentry-cli releases finalize $SENTRY_VERSION
+                sentry-cli sourcemaps inject ./adminWww
+                sentry-cli sourcemaps upload ./adminWww
 
-            - name: 'Build backend'
-              if: steps.automerge.outputs.mergeResult == 'merged'
-              run: |
-                  npm run build
+            # Add the following line BEFORE finalize if repositories are connected in Sentry
+            # sentry-cli releases set-commits $SENTRY_VERSION --auto
 
-            - name: Publish package to npm
-              if: steps.automerge.outputs.mergeResult == 'merged'
-              run: |
-                  npm install -g npm@latest
-                  npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-                  npm whoami
-                  npm run publish
-
-            - name: Create Github Release
-              if: steps.automerge.outputs.mergeResult == 'merged'
-              uses: ncipollo/release-action@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  tag: v${{ steps.version.outputs.result }}
-                  name: Release v${{ steps.version.outputs.result }}
-                  draft: false
-                  prerelease: ${{ contains(steps.version.outputs.result, '-') }}
-                  body: ${{ steps.extract_release.outputs.BODY }}
-
-            - name: Notify Sentry.io about the release
-              if: steps.automerge.outputs.mergeResult == 'merged'
-              run: |
-                  npm i -g @sentry/cli
-                  export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-                  export SENTRY_URL=https://sentry.iobroker.net
-                  export SENTRY_ORG=iobroker
-                  export SENTRY_PROJECT=iobroker-admin
-                  export SENTRY_VERSION=iobroker.admin@${{ steps.version.outputs.result }}
-                  export SENTRY_RELEASE=${{ steps.version.outputs.result }}
-                  sentry-cli releases new $SENTRY_VERSION
-                  sentry-cli releases finalize $SENTRY_VERSION
-                  sentry-cli sourcemaps inject ./adminWww
-                  sentry-cli sourcemaps upload ./adminWww
-
-              # Add the following line BEFORE finalize if repositories are connected in Sentry
-              # sentry-cli releases set-commits $SENTRY_VERSION --auto
-
-              # Add the following line BEFORE finalize if sourcemap uploads are needed
-              # sentry-cli releases files $SENTRY_VERSION upload-sourcemaps build/
+            # Add the following line BEFORE finalize if sourcemap uploads are needed
+            # sentry-cli releases files $SENTRY_VERSION upload-sourcemaps build/
