@@ -1,8 +1,8 @@
+// Specialized tsconfig for the admin directory,
+// includes DOM typings and configures the admin build
 {
+    "extends": "../tsconfig.json",
     "compilerOptions": {
-        "module": "esnext",
-        "target": "esnext",
-        "moduleResolution": "node",
         "baseUrl": "./",
         "allowSyntheticDefaultImports": true,
         "checkJs": false,
@@ -10,6 +10,7 @@
         "outDir": "./build",
         "sourceMap": true,
         "sourceRoot": "./src",
+        "resolveJsonModule": true,
         "noImplicitAny": true,
         "skipLibCheck": true,
         "lib": ["es2018", "DOM"],
@@ -19,8 +20,5 @@
             "@/*": ["./src/*"],
         }
     },
-    "exclude": ["**/node_modules", "**/build", "adminWww/**"],
-    "include": ["**/*.js", "**/*.ts", "**/*.d.ts",
-        "eslint.config.mjs"
-    ],
+    "include": ["./src/**/*", "./src/types.d.ts"]
 }

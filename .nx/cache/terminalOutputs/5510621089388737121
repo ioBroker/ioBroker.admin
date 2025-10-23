@@ -1,0 +1,212 @@
+
+> @iobroker/json-config@7.7.13 build
+> tsc && tsc-alias && node after_build
+
+src/JsonConfig.tsx(19,8): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfig.tsx(222,14): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(236,51): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(236,84): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(242,43): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(243,45): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(251,34): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(259,65): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(259,91): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(271,18): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(272,25): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(279,18): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(280,25): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(300,26): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(300,97): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(315,33): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(335,33): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(342,39): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(347,41): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(347,67): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(348,38): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(360,28): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(364,30): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(365,30): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(366,30): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(368,26): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(368,51): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(375,26): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(385,36): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(386,40): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(386,66): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(391,53): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(395,46): error TS7006: Parameter 'attr' implicitly has an 'any' type.
+src/JsonConfig.tsx(410,19): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(420,26): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(461,38): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(461,70): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(468,28): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(468,58): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(493,28): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(493,64): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(506,23): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(514,19): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(524,26): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(531,33): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(549,33): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(638,23): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(638,43): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(644,49): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(647,67): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(650,54): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(667,28): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(676,18): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(680,38): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(685,25): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(686,18): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(693,40): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(694,18): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(694,43): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(702,125): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(708,19): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(708,39): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(718,31): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(720,34): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(721,37): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(722,37): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(723,39): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(724,36): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(725,40): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(726,38): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(727,34): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(728,34): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(729,38): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(730,32): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(731,38): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(732,44): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(734,54): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(738,55): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(742,34): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(744,34): error TS2339: Property 'setState' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(747,41): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(748,33): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(755,33): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(757,30): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(757,59): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(757,88): error TS2339: Property 'props' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(759,38): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(759,58): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfig.tsx(760,35): error TS2339: Property 'state' does not exist on type 'JsonConfig'.
+src/JsonConfigComponent/ChipInput.tsx(12,54): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigAccordion.tsx(29,44): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigAlive.tsx(3,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigAlive.tsx(33,19): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigAlive.tsx(55,31): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigAutocomplete.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigAutocompleteSendTo.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigAutocompleteSendTo.tsx(80,24): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigCertCollection.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigCertificates.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigCertificates.tsx(51,30): error TS7006: Parameter 'el' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigCertificateSelect.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigCertificateSelect.tsx(25,21): error TS7006: Parameter 'el' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigCertificateSelect.tsx(39,18): error TS7006: Parameter 'el' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigCheckbox.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigCheckDocker.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigCheckLicense.tsx(22,52): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigCheckLicense.tsx(657,32): error TS7006: Parameter 'isYes' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigChip.tsx(8,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigColor.tsx(8,23): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigCoordinates.tsx(7,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigCRON.tsx(5,34): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigCRON.tsx(86,31): error TS7006: Parameter 'value_' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigCustom.tsx(7,31): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigCustom.tsx(8,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigFile.tsx(12,34): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigFile.tsx(150,23): error TS7006: Parameter '_value' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigFileSelector.tsx(27,44): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigFileSelector.tsx(166,24): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigFileSelector.tsx(179,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigFileSelector.tsx(284,24): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigFileSelector.tsx(299,26): error TS7006: Parameter 'isOk' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigFileSelector.tsx(306,40): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigFunc.tsx(5,36): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigFunc.tsx(23,68): error TS7006: Parameter 'enums' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigGeneric.tsx(37,8): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigGeneric.tsx(382,26): error TS7006: Parameter 'isOk' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigImageSendTo.tsx(49,23): error TS7006: Parameter 'image' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigImageUpload.tsx(5,29): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigImageUpload.tsx(36,23): error TS7006: Parameter 'exist' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigImageUpload.tsx(95,44): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigImageUpload.tsx(99,31): error TS7006: Parameter 'base64' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigImageUpload.tsx(116,40): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInfoBox.tsx(5,25): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigInstanceSelect.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigInstanceSelect.tsx(37,25): error TS7006: Parameter 'instances' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInstanceSelect.tsx(40,50): error TS7006: Parameter 'instance' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInstanceSelect.tsx(42,50): error TS7006: Parameter 'instance' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInstanceSelect.tsx(46,50): error TS7006: Parameter 'instance' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInstanceSelect.tsx(52,50): error TS7006: Parameter 'instance' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInstanceSelect.tsx(55,104): error TS7006: Parameter 'instance' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInstanceSelect.tsx(89,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInstanceSelect.tsx(134,27): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Translated'.
+src/JsonConfigComponent/ConfigInterface.tsx(46,19): error TS7006: Parameter 'obj' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInterface.tsx(51,83): error TS7006: Parameter '_ip' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInterface.tsx(56,46): error TS7006: Parameter '_ip' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInterface.tsx(62,73): error TS7006: Parameter '_ip' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInterface.tsx(63,53): error TS7006: Parameter '_ip' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigInterface.tsx(70,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigIP.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigIP.tsx(23,19): error TS7006: Parameter 'ips' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigIP.tsx(26,38): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigIP.tsx(29,38): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigIP.tsx(31,38): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigIP.tsx(34,38): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigIP.tsx(36,29): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigIP.tsx(45,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigJsonEditor.tsx(6,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigLanguage.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigLanguage.tsx(144,48): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigLicense.tsx(16,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigNumber.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigOAuth2.tsx(6,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigObjectId.tsx(5,32): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigObjectId.tsx(94,31): error TS7006: Parameter 'value_' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigPanel.tsx(7,60): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigPassword.tsx(7,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigPattern.tsx(5,39): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigPort.tsx(5,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigRoom.tsx(5,36): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigRoom.tsx(25,19): error TS7006: Parameter 'enums' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigRoom.tsx(40,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigSelect.tsx(15,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigSelectSendTo.tsx(22,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigSelectSendTo.tsx(106,27): error TS7006: Parameter 'list' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigSelectSendTo.tsx(107,28): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigSendto.tsx(7,65): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigSendto.tsx(349,26): error TS7006: Parameter 'isOk' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigSetState.tsx(7,37): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigSetState.tsx(72,26): error TS7006: Parameter 'isOk' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigState.tsx(16,43): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigStaticDivider.tsx(5,38): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigStaticHeader.tsx(5,31): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigStaticInfo.tsx(5,50): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigStaticText.tsx(5,38): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigTable.tsx(48,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigText.tsx(7,39): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigTextSendTo.tsx(5,45): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigTextSendTo.tsx(62,23): error TS7006: Parameter 'result' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigTextSendTo.tsx(75,24): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigUser.tsx(5,35): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/ConfigUser.tsx(31,19): error TS7006: Parameter 'users' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigUser.tsx(37,25): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigUser.tsx(46,25): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigUser.tsx(57,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/ConfigUUID.tsx(7,29): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/index.tsx(5,91): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+src/JsonConfigComponent/index.tsx(143,21): error TS2578: Unused '@ts-expect-error' directive.
+src/JsonConfigComponent/index.tsx(172,19): error TS7006: Parameter 'systemConfig' implicitly has an 'any' type.
+src/JsonConfigComponent/index.tsx(175,27): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/JsonConfigComponent/index.tsx(187,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/JsonConfigComponent/wrapper/Components/CustomModal.tsx(17,22): error TS2307: Cannot find module '@iobroker/adapter-react-v5' or its corresponding type declarations.
+npm error Lifecycle script `build` failed with error:
+npm error code 2
+npm error path C:\iot\ioBroker.admin\packages\jsonConfig
+npm error workspace @iobroker/json-config@7.7.13
+npm error location C:\iot\ioBroker.admin\packages\jsonConfig
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c tsc && tsc-alias && node after_build

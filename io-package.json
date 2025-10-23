@@ -1,0 +1,798 @@
+{
+  "common": {
+    "name": "admin",
+    "version": "7.7.13",
+    "titleLang": {
+      "en": "Admin",
+      "de": "Admin",
+      "ru": "Админ",
+      "pt": "Admin",
+      "pl": "Admin",
+      "fr": "Admin",
+      "nl": "Admin",
+      "it": "Admin",
+      "es": "Admin",
+      "uk": "Admin",
+      "zh-cn": "Admin"
+    },
+    "title": "Admin",
+    "connectionType": "local",
+    "dataSource": "push",
+    "news": {
+      "7.7.3": {
+        "en": "Many GUI changes: See previous changelog below for details",
+        "de": "Viele GUI Änderungen: Siehe vorheriges Changelog unten für Details",
+        "ru": "Многие изменения GUI: Смотрите предыдущий Changelog ниже для получения подробной информации",
+        "pt": "Muitas alterações na GUI: Veja o changelog anterior abaixo para detalhes",
+        "nl": "Veel GUI-wijzigingen: Zie vorige changelog hieronder voor details",
+        "fr": "De nombreux changements d'interface utilisateur : Voir ci-dessous pour plus de détails",
+        "it": "Molti cambiamenti della GUI: Vedere precedente changelog qui sotto per i dettagli",
+        "es": "Muchos cambios GUI: Ver el cambio anterior a continuación para más detalles",
+        "pl": "Wiele zmian GUI: Szczegółowe informacje znajdują się w poprzednim changelogu poniżej",
+        "uk": "Багато інтерфейсних змін: Перегляньте попередній блок змін нижче для деталей",
+        "zh-cn": "许多 GUI 更改 : 详情见下文以前的更改日志"
+      },
+      "7.7.2": {
+        "en": "Fixing change of the language in the admin",
+        "de": "Änderung der Sprache im Admin reparieren",
+        "ru": "Изменение языка в админ",
+        "pt": "Corrigindo mudança de idioma no administrador",
+        "nl": "Wijziging van de taal in de administratie",
+        "fr": "Correction du changement de langue dans l'administration",
+        "it": "Risolvere il cambiamento della lingua nell'amministratore",
+        "es": "Cambio de fijación del idioma en el administrador",
+        "pl": "Ustawienie zmiany języka w administratorze",
+        "uk": "Виправлення зміни мови в адміні",
+        "zh-cn": "修改管理语言"
+      },
+      "7.7.1": {
+        "en": "Fixing clearing of the filter on the object tab",
+        "de": "Festlegen des Löschens des Filters auf der Objekt-Tab",
+        "ru": "Фиксация очистки фильтра на вкладке объекта",
+        "pt": "Corrigindo a limpeza do filtro na aba objeto",
+        "nl": "Repareren van het filter op het objecttabblad",
+        "fr": "Correction de la suppression du filtre dans l'onglet objet",
+        "it": "Fissare la compensazione del filtro sulla scheda oggetto",
+        "es": "Fijación del filtro en la pestaña objeto",
+        "pl": "Ustawienie odczytu filtra na zakładce obiektu",
+        "uk": "Виправлення очищення фільтра на вкладці об'єкта",
+        "zh-cn": "正在修复对象标签上的过滤器"
+      },
+      "7.7.0": {
+        "en": "Added the concept for single-side-on authentication (SSO)",
+        "de": "Hinzugefügte das Konzept zur einseitigen Authentifizierung (SSO)",
+        "ru": "Добавлена концепция односторонней аутентификации (SSO)",
+        "pt": "Adicionado o conceito de autenticação unilaterais (SSO)",
+        "nl": "Het concept voor eenmalige authenticatie (SSO) toegevoegd",
+        "fr": "Ajout du concept d'authentification simple face-à-face (SSO)",
+        "it": "Aggiunto il concetto per l'autenticazione single-side-on (SSO)",
+        "es": "Añadido el concepto para la autenticación unilateral (SSO)",
+        "pl": "Dodano koncepcję jednostronnego uwierzytelniania (SSO)",
+        "uk": "Додана концепція для односторонньої автентифікації (SSO)",
+        "zh-cn": "添加了单侧认证( SSO) 的概念"
+      },
+      "7.6.20": {
+        "en": "Allowed using of * in the filter of objects\nSmall GUI improvements",
+        "de": "Erlaubt mit * im Filter von Objekten\nKleine GUI Verbesserungen",
+        "ru": "Допускается использование * в фильтре объектов\nНебольшие улучшения GUI",
+        "pt": "Permite o uso de * no filtro de objetos\nPequenas melhorias na interface gráfica",
+        "nl": "Toegestaan gebruik van * in het filter van objecten\nKleine GUI verbeteringen",
+        "fr": "Autorisé à utiliser * dans le filtre des objets\nPetites améliorations de l'interface graphique",
+        "it": "Consentito l'utilizzo di * nel filtro degli oggetti\nPiccoli miglioramenti alla GUI",
+        "es": "Permitido el uso de * en el filtro de objetos\nMejoras de la interfaz gráfica",
+        "pl": "Dozwolone stosowanie * w filtrze obiektów\nMałe ulepszenia GUI",
+        "uk": "Дозволяється використання * в фільтрі об'єктів\nМалі покращення інтерфейсу",
+        "zh-cn": "允许在对象过滤中使用 *\n小型图形界面改进"
+      }
+    },
+    "desc": {
+      "en": "The configuration of ioBroker via Web-Interface",
+      "de": "Die Konfiguration von ioBroker über das Web-Interface",
+      "ru": "Конфигурация ioBroker через веб-интерфейс",
+      "pt": "A configuração do ioBroker via Web-Interface",
+      "fr": "La configuration de ioBroker via Web-Interface",
+      "nl": "De configuratie van ioBroker via de webinterface",
+      "it": "La configurazione di ioBroker tramite interfaccia Web",
+      "es": "La configuración de ioBroker a través de la interfaz web",
+      "pl": "Konfiguracja ioBroker za pomocą interfejsu WWW",
+      "uk": "Конфігурація ioBroker через веб-інтерфейс",
+      "zh-cn": "配置ioBroker的Web界面"
+    },
+    "docs": {
+      "en": "docs/en/admin.md",
+      "ru": "docs/ru/admin.md",
+      "de": [
+        "docs/de/admin.md",
+        "docs/de/admin/tab-adapters.md",
+        "docs/de/admin/tab-instances.md",
+        "docs/de/admin/tab-objects.md",
+        "docs/de/admin/tab-states.md",
+        "docs/de/admin/tab-groups.md",
+        "docs/de/admin/tab-users.md",
+        "docs/de/admin/tab-events.md",
+        "docs/de/admin/tab-hosts.md",
+        "docs/de/admin/tab-enums.md",
+        "docs/de/admin/tab-log.md",
+        "docs/de/admin/tab-system.md"
+      ],
+      "pt": "docs/pt/admin.md",
+      "nl": "docs/nl/admin.md",
+      "es": "docs/es/admin.md",
+      "fr": "docs/fr/admin.md",
+      "it": "docs/it/admin.md",
+      "pl": "docs/pl/admin.md",
+      "zh-cn": "docs/zh-cn/admin.md"
+    },
+    "materialize": true,
+    "mode": "daemon",
+    "platform": "Javascript/Node.js",
+    "loglevel": "info",
+    "icon": "admin.svg",
+    "messagebox": true,
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.svg",
+    "keywords": [
+      "setup",
+      "config",
+      "update",
+      "upgrade",
+      "system",
+      "konfiguration",
+      "administration",
+      "einrichtung",
+      "wartung"
+    ],
+    "compact": true,
+    "readme": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
+    "authors": [
+      "bluefox <bluefox@ccu.io>",
+      "hobbyquaker <hq@ccu.io>"
+    ],
+    "dependencies": [
+      {
+        "js-controller": ">=3.3.22"
+      }
+    ],
+    "type": "general",
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
+    "logTransporter": true,
+    "stopBeforeUpdate": true,
+    "eraseOnUpload": true,
+    "nogit": true,
+    "welcomeScreenPro": [
+      {
+        "link": "admin/index.html",
+        "name": "Admin",
+        "img": "admin/img/admin.svg",
+        "color": "pink",
+        "order": 5,
+        "localLinks": "_default",
+        "localLink": true
+      }
+    ],
+    "localLinks": {
+      "_default": {
+        "link": "%protocol%://%bind%:%port%",
+        "name": {
+          "en": "Admin",
+          "ru": "Админ"
+        },
+        "pro": "admin/index.html",
+        "icon": "admin/img/admin.svg",
+        "color": "pink",
+        "order": 5,
+        "intro": true
+      }
+    },
+    "plugins": {
+      "sentry": {
+        "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
+      }
+    },
+    "adminUI": {
+      "config": "json"
+    },
+    "tier": 1
+  },
+  "native": {
+    "autoUpdate": 24,
+    "port": 8081,
+    "auth": false,
+    "secure": false,
+    "bind": "0.0.0.0",
+    "cache": false,
+    "accessLimit": false,
+    "accessApplyRights": false,
+    "accessAllowedConfigs": [],
+    "accessAllowedTabs": [],
+    "allowInternalAccess": {
+      "node-red": "admin"
+    },
+    "leCollection": false,
+    "certPublic": "",
+    "certPrivate": "",
+    "certChained": "",
+    "ttl": 3600,
+    "defaultUser": "admin",
+    "tmpPath": "/tmp",
+    "tmpPathAllow": false,
+    "thresholdValue": 200,
+    "loginBackgroundColor": "",
+    "loginBackgroundImage": false,
+    "loginHideLogo": false,
+    "loginMotto": "",
+    "language": "",
+    "reverseProxy": [],
+    "loadingBackgroundColor": "",
+    "loadingHideLogo": false,
+    "loadingBackgroundImage": false,
+    "doNotCheckPublicIP": false,
+    "ssoActive": false
+  },
+  "notifications": [
+    {
+      "scope": "admin",
+      "name": {
+        "en": "Administration",
+        "de": "Administration",
+        "ru": "Администрация",
+        "pt": "Administração",
+        "nl": "Administratie",
+        "fr": "Administration",
+        "it": "Amministrazione",
+        "es": "Administración",
+        "pl": "Administracja",
+        "uk": "Адміністрація",
+        "zh-cn": "行政部门"
+      },
+      "description": {
+        "en": "These notifications represent news regarding installed adapters or general ioBroker information.",
+        "de": "Diese Benachrichtigungen enthalten Neuigkeiten zu installierten Adaptern oder allgemeine ioBroker-Informationen.",
+        "ru": "Эти уведомления представляют новости о установленных адаптерах или общей информации ioBroker.",
+        "pt": "Estas notificações representam notícias sobre adaptadores instalados ou informações gerais do ioBroker.",
+        "nl": "Deze berichten zijn nieuws over geïnstalleerde adapters of algemene ioBroker informatie.",
+        "fr": "Ces notifications représentent des nouvelles concernant les adaptateurs installés ou les informations générales ioBroker.",
+        "it": "Queste notifiche rappresentano notizie riguardanti adattatori installati o informazioni generali su ioBroker.",
+        "es": "Estas notificaciones representan noticias sobre adaptadores instalados o información general ioBroker.",
+        "pl": "Noty te reprezentują informacje dotyczące zainstalowanych adapterów lub ogólnie dostępnych informacji ioBrokera.",
+        "uk": "Ці повідомлення представляють новини про встановлені адаптери або загальні відомості про ioBroker.",
+        "zh-cn": "这些通知是有关安装的适应器或一般的气箱信息的新闻。."
+      },
+      "categories": [
+        {
+          "category": "adapterUpdates",
+          "name": {
+            "en": "Adapter updates",
+            "de": "Adapter-Updates",
+            "ru": "Обновления адаптера",
+            "pt": "Actualizações do adaptador",
+            "nl": "Adapter updates",
+            "fr": "Mises à jour de l'adaptateur",
+            "it": "Aggiornamenti dell'adattatore",
+            "es": "Actualizaciones de adaptadores",
+            "pl": "Aktualizacje adapterów",
+            "uk": "Оновлення адаптерів",
+            "zh-cn": "适配器更新"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "New adapter updates are available for your ioBroker.",
+            "de": "Es sind neue Adapter Updates für deinen ioBroker verfügbar.",
+            "ru": "Для вашего ioBroker доступны новые обновления адаптера.",
+            "pt": "Estão disponíveis novas actualizações de adaptadores para o seu ioBroker.",
+            "nl": "Nieuwe adapterupdates zijn beschikbaar voor uw ioBroker.",
+            "fr": "De nouvelles mises à jour de l'adaptateur sont disponibles pour ton ioBroker.",
+            "it": "Sono disponibili nuovi aggiornamenti dell'adattatore per il vostro ioBroker.",
+            "es": "Hay nuevas actualizaciones de adaptadores disponibles para su ioBroker.",
+            "pl": "Dostępne są nowe aktualizacje adaptera dla ioBroker.",
+            "uk": "Для вашого ioBroker доступні нові оновлення адаптерів.",
+            "zh-cn": "您的 ioBroker 可以使用新的适配器更新。"
+          },
+          "regex": [],
+          "limit": 1
+        },
+        {
+          "category": "infoNews",
+          "name": {
+            "en": "General news",
+            "de": "Allgemeine Nachrichten",
+            "ru": "Общие новости",
+            "pt": "Notícia geral",
+            "nl": "Generaal",
+            "fr": "Nouvelles générales",
+            "it": "Notizie generali",
+            "es": "Noticias generales",
+            "pl": "Strona oficjalna",
+            "uk": "Новини",
+            "zh-cn": "新闻"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "These messages represent general news, which just have informal purpose and do not need to be read immediately.",
+            "de": "Diese Nachrichten stellen allgemeine Nachrichten dar, die nur informellen Zweck haben und nicht sofort gelesen werden müssen.",
+            "ru": "Эти сообщения представляют собой общие новости, которые просто имеют неформальную цель и не нужно читать немедленно.",
+            "pt": "Essas mensagens representam notícias gerais, que apenas têm um propósito informal e não precisam ser lidas imediatamente.",
+            "nl": "Deze berichten vertegenwoordigen algemene nieuws, wat informeel doel heeft en niet onmiddellijk hoeft te worden gelezen.",
+            "fr": "Ces messages représentent des nouvelles générales, qui ont juste un but informel et ne doivent pas être lus immédiatement.",
+            "it": "Questi messaggi rappresentano notizie generali, che hanno solo scopo informale e non devono essere letti immediatamente.",
+            "es": "Estos mensajes representan noticias generales, que sólo tienen un propósito informal y no necesitan ser leídos inmediatamente.",
+            "pl": "Wiadomości te reprezentują ogólnokrajowe wiadomości, które tylko mają nieformalny cel i nie muszą być odczytane natychmiast.",
+            "uk": "Ці повідомлення представляють загальні новини, які просто мають неформальне призначення і не потрібно негайно прочитати.",
+            "zh-cn": "这些信息是一般新闻,这只是非正式目的,不需要立即阅读。."
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "warningNews",
+          "name": {
+            "en": "Important news",
+            "de": "Wichtige Nachrichten",
+            "ru": "Важные новости",
+            "pt": "Notícia importante",
+            "nl": "Belangrijk nieuws",
+            "fr": "Nouvelles importantes",
+            "it": "Notizie importanti",
+            "es": "Noticias importantes",
+            "pl": "Important news",
+            "uk": "Новини",
+            "zh-cn": "重要的新闻"
+          },
+          "severity": "info",
+          "description": {
+            "en": "These messages represent adapter warnings and important changes in the near future.",
+            "de": "Diese Nachrichten stellen Adapterwarnungen und wichtige Veränderungen in der nahen Zukunft dar.",
+            "ru": "Эти сообщения представляют предупреждение о адаптере и важные изменения в ближайшем будущем.",
+            "pt": "Estas mensagens representam avisos de adaptadores e mudanças importantes no futuro próximo.",
+            "nl": "Deze berichten vertegenwoordigen adapter waarschuwingen en belangrijke veranderingen in de nabije toekomst.",
+            "fr": "Ces messages représentent des avertissements d'adaptateur et des changements importants dans un proche avenir.",
+            "it": "Questi messaggi rappresentano avvisi di adattatore e cambiamenti importanti nel prossimo futuro.",
+            "es": "Estos mensajes representan advertencias de adaptador y cambios importantes en el futuro cercano.",
+            "pl": "Wiadomości te reprezentują ostrzeżenia adaptatora i ważne zmiany w najbliższej przyszłości.",
+            "uk": "Ці повідомлення представляють попередження та важливі зміни в найближчому майбутньому.",
+            "zh-cn": "这些信息是适应的预警和近期的重要变化。."
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "dangerNews",
+          "name": {
+            "en": "Very important news",
+            "de": "Sehr wichtige Nachrichten",
+            "ru": "Очень важные новости",
+            "pt": "Notícia muito importante",
+            "nl": "Heel belangrijk",
+            "fr": "Nouvelles très importantes",
+            "it": "Notizie molto importanti",
+            "es": "Noticias muy importantes",
+            "pl": "Ważne wiadomości",
+            "uk": "Останні новини",
+            "zh-cn": "非常重要的新闻"
+          },
+          "severity": "alert",
+          "description": {
+            "en": "These notifications are very important. They may give you a hint that an adapter upgrade is required right now to maintain functionality.",
+            "de": "Diese Benachrichtigungen sind sehr wichtig. Sie können Ihnen einen Hinweis geben, dass ein Adapter-Upgrade jetzt erforderlich ist, um die Funktionalität zu erhalten.",
+            "ru": "Эти уведомления очень важны. Они могут дать вам подсказку, что обновление адаптера требуется прямо сейчас для поддержания функциональности.",
+            "pt": "Estas notificações são muito importantes. Eles podem lhe dar uma dica de que uma atualização do adaptador é necessária agora para manter a funcionalidade.",
+            "nl": "Deze berichten zijn heel belangrijk. Ze kunnen je een hint geven dat een adapter upgrade nu nodig is om functionaliteit te behouden.",
+            "fr": "Ces notifications sont très importantes. Ils peuvent vous donner un indice qu'une mise à niveau d'adaptateur est nécessaire pour maintenir la fonctionnalité.",
+            "it": "Queste notifiche sono molto importanti. Essi possono dare un suggerimento che un aggiornamento adattatore è necessario in questo momento per mantenere la funzionalità.",
+            "es": "Estas notificaciones son muy importantes. Pueden darle una pista de que se requiere una actualización del adaptador ahora mismo para mantener la funcionalidad.",
+            "pl": "Te informacje są bardzo ważne. Mogą dać wskazówki, że ulepszanie adapteru jest niezbędne do utrzymania funkcji.",
+            "uk": "Ці повідомлення дуже важливі. Вони можуть надати вам підказку, що оновлення адаптера потрібно прямо зараз для підтримки функціональності.",
+            "zh-cn": "这些通知非常重要。 他们可以向你说明,适应人员升级现在需要保持功能。."
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "wellKnownPassword",
+          "name": {
+            "en": "Unchanged default password",
+            "de": "Unverändertes Standardpasswort",
+            "ru": "Неизмененный пароль по умолчанию",
+            "pt": "Senha padrão inalterada",
+            "nl": "Onveranderd standaardwachtwoord",
+            "fr": "Mot de passe par défaut inchangé",
+            "it": "Password predefinita non modificata",
+            "es": "Contraseña predeterminada sin cambios",
+            "pl": "Niezmienione domyślne hasło",
+            "uk": "Незмінений пароль за замовчуванням",
+            "zh-cn": "未更改的默认密码"
+          },
+          "severity": "alert",
+          "description": {
+            "en": "Your Linux system uses a user with the unchanged default password. This can lead to the system being hacked from the outside. It is strongly recommended to change the password.",
+            "de": "Ihr Linux-System verwendet einen Benutzer mit unverändertem Standardpasswort. Dies kann dazu führen, dass das System von außen gehackt wird. Es wird dringend empfohlen, das Passwort zu ändern.",
+            "ru": "Ваша система Linux использует пользователя с неизмененным паролем по умолчанию. Это может привести к взлому системы извне. Настоятельно рекомендуется изменить пароль.",
+            "pt": "Seu sistema Linux usa um usuário com a senha padrão inalterada. Isso pode levar ao sistema ser hackeado de fora. É altamente recomendável alterar a senha.",
+            "nl": "Uw Linux-systeem gebruikt een gebruiker met het ongewijzigde standaardwachtwoord. Dit kan ertoe leiden dat het systeem van buitenaf wordt gehackt. Het wordt sterk aanbevolen om het wachtwoord te wijzigen.",
+            "fr": "Votre système Linux utilise un utilisateur avec le mot de passe par défaut inchangé. Cela peut entraîner le piratage du système depuis l'extérieur. Il est fortement recommandé de changer le mot de passe.",
+            "it": "Il tuo sistema Linux utilizza un utente con la password predefinita non modificata. Questo può portare al sistema che viene hackerato dall'esterno. Si consiglia vivamente di cambiare la password.",
+            "es": "Su sistema Linux utiliza un usuario con la contraseña predeterminada sin cambios. Esto puede llevar a que el sistema sea hackeado desde el exterior. Se recomienda encarecidamente cambiar la contraseña.",
+            "pl": "Twój system Linux używa użytkownika z niezmienionym domyślnym hasłem. Może to prowadzić do włamania do systemu z zewnątrz. Zaleca się zmianę hasła.",
+            "uk": "Ваша система Linux використовує користувача з незміненим паролем за замовчуванням. Це може призвести до взлому системи ззовні. Настійно рекомендується змінити пароль.",
+            "zh-cn": "您的 Linux 系统使用具有未更改的默认密码的用户。 这可能导致系统被从外部黑客攻击。 强烈建议更改密码。"
+          },
+          "regex": [],
+          "limit": 1
+        }
+      ]
+    }
+  ],
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": {
+          "en": "Information",
+          "de": "Information",
+          "ru": "Информация",
+          "pt": "Em formação",
+          "nl": "Informatie",
+          "fr": "Information",
+          "it": "Informazione",
+          "es": "Información",
+          "pl": "Informacja",
+          "uk": "Інформація",
+          "zh-cn": "信息"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "",
+      "type": "meta",
+      "common": {
+        "name": {
+          "en": "user files and images for background",
+          "de": "Benutzerdateien und Bilder für den Hintergrund",
+          "ru": "пользовательские файлы и изображения для фона",
+          "pt": "arquivos e imagens do usuário para plano de fundo",
+          "nl": "gebruikersbestanden en afbeeldingen voor achtergrond",
+          "fr": "fichiers utilisateur et images pour l'arrière-plan",
+          "it": "file utente e immagini per lo sfondo",
+          "es": "archivos de usuario e imágenes para el fondo",
+          "pl": "pliki użytkownika i obrazy w tle",
+          "uk": "файли користувача та зображення для фону",
+          "zh-cn": "背景的用户文件和图像"
+        },
+        "type": "meta.user"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connected",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": {
+          "en": "Info about connected socket clients",
+          "de": "Informationen über verbundene Socket-Clients",
+          "ru": "Информация о подключенных клиентах сокетов",
+          "pt": "Informações sobre clientes de soquete conectados",
+          "nl": "Info over aangesloten socket-clients",
+          "fr": "Informations sur les clients socket connectés",
+          "it": "Informazioni sui client socket connessi",
+          "es": "Información sobre clientes de socket conectados",
+          "pl": "Informacje o podłączonych klientach gniazd",
+          "uk": "Інформація про підключених клієнтів сокетів",
+          "zh-cn": "有关已连接套接字客户端的信息"
+        },
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": {
+          "en": "HTTP server started",
+          "de": "HTTP-Server gestartet",
+          "ru": "HTTP-сервер запущен",
+          "pt": "Servidor HTTP iniciado",
+          "nl": "HTTP-server gestart",
+          "fr": "Serveur HTTP démarré",
+          "it": "Server HTTP avviato",
+          "es": "Servidor HTTP iniciado",
+          "pl": "Uruchomiono serwer HTTP",
+          "uk": "HTTP-сервер запущено",
+          "zh-cn": "HTTP 服务器已启动"
+        },
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.newsFeed",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Last news feed as JSON",
+          "de": "Letzter Newsfeed als JSON",
+          "ru": "Лента последних новостей в формате JSON",
+          "pt": "Último feed de notícias como JSON",
+          "nl": "Laatste nieuwsfeed als JSON",
+          "fr": "Dernier fil d'actualité au format JSON",
+          "it": "Ultimo feed di notizie come JSON",
+          "es": "Últimas noticias como JSON",
+          "pl": "Ostatni kanał wiadomości jako JSON",
+          "uk": "Останній новинний канал у форматі JSON",
+          "zh-cn": "最后一个新闻提要为 JSON"
+        },
+        "type": "json",
+        "read": true,
+        "write": false
+      }
+    },
+    {
+      "_id": "info.newsETag",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Etag for news feed",
+          "de": "Etag für Newsfeed",
+          "ru": "Etag для новостной ленты",
+          "pt": "Etag para feed de notícias",
+          "nl": "Etag voor nieuwsfeed",
+          "fr": "Etag pour le fil d'actualité",
+          "it": "Etag per il feed di notizie",
+          "es": "Etag para noticias",
+          "pl": "Etag dla kanału informacyjnego",
+          "uk": "Etag для новинного каналу",
+          "zh-cn": "用于新闻提要的 Etag"
+        },
+        "type": "string",
+        "read": true,
+        "write": false
+      }
+    },
+    {
+      "_id": "info.newsLastId",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Last news ID",
+          "de": "Letzte Nachrichten-ID",
+          "ru": "Идентификатор последней новости",
+          "pt": "ID da última notícia",
+          "nl": "Laatste nieuws-ID",
+          "fr": "Identifiant des dernières nouvelles",
+          "it": "Ultime notizie ID",
+          "es": "ID de última noticia",
+          "pl": "Identyfikator ostatnich wiadomości",
+          "uk": "Ідентифікатор останніх новин",
+          "zh-cn": "最新消息 ID"
+        },
+        "type": "string",
+        "read": true,
+        "write": false
+      }
+    },
+    {
+      "_id": "info.updatesList",
+      "type": "state",
+      "common": {
+        "role": "indicator.updates",
+        "name": {
+          "en": "List of adapters to update",
+          "de": "Liste der zu aktualisierenden Adapter",
+          "ru": "Список адаптеров для обновления",
+          "pt": "Lista de adaptadores para atualizar",
+          "nl": "Lijst met adapters die moeten worden bijgewerkt",
+          "fr": "Liste des adaptateurs à mettre à jour",
+          "it": "Elenco degli adattatori da aggiornare",
+          "es": "Lista de adaptadores para actualizar",
+          "pl": "Lista adapterów do aktualizacji",
+          "uk": "Список адаптерів для оновлення",
+          "zh-cn": "要更新的适配器列表"
+        },
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    }
+  ],
+  "schemas": {
+    "systemConfig": {
+      "label": "System config",
+      "path": "common",
+      "json": {
+        "type": "panel",
+        "items": {
+          "city": {
+            "newLine": true,
+            "type": "text",
+            "label": "City",
+            "sm": 12,
+            "md": 6,
+            "lg": 3
+          },
+          "country": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "max-length": 2,
+            "type": "text",
+            "label": "Country"
+          },
+          "address": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Address"
+          },
+          "longitude": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "number",
+            "label": "Longitude"
+          },
+          "latitude": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "number",
+            "label": "Latitude"
+          },
+          "language": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "language",
+            "label": "Language"
+          },
+          "tempUnit": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "noTranslation": true,
+            "options": [
+              {
+                "label": "°C",
+                "value": "°C"
+              },
+              {
+                "label": "°F",
+                "value": "°F"
+              }
+            ],
+            "label": "Temperature unit"
+          },
+          "currency": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Currency"
+          },
+          "dateFormat": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Date format"
+          },
+          "isFloatComma": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "checkbox",
+            "label": "Float divider sign"
+          },
+          "defaultHistory": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "instance",
+            "adapter": "_dataSources",
+            "label": "Default History"
+          },
+          "defaultLogLevel": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "noTranslation": true,
+            "options": [
+              {
+                "label": "silly",
+                "value": "silly"
+              },
+              {
+                "label": "debug",
+                "value": "debug"
+              },
+              {
+                "label": "info",
+                "value": "info"
+              },
+              {
+                "label": "warn",
+                "value": "warn"
+              },
+              {
+                "label": "error",
+                "value": "error"
+              }
+            ],
+            "label": "Default log level"
+          },
+          "diag": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "options": [
+              {
+                "value": "none",
+                "label": "diag-type-note-none"
+              },
+              {
+                "value": "normal",
+                "label": "diag-type-note-normal"
+              },
+              {
+                "value": "no-city",
+                "label": "diag-type-note-no-city"
+              },
+              {
+                "value": "extended",
+                "label": "diag-type-note-extended"
+              }
+            ],
+            "label": "Diagnostics level"
+          },
+          "firstDayOfWeek": {
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "select",
+            "options": [
+              {
+                "label": "monday",
+                "value": "monday"
+              },
+              {
+                "label": "sunday",
+                "value": "sunday"
+              }
+            ],
+            "label": "First day of week"
+          },
+          "siteName": {
+            "newLine": true,
+            "sm": 12,
+            "md": 6,
+            "lg": 3,
+            "type": "text",
+            "label": "Site name"
+          }
+        }
+      }
+    }
+  }
+}
