@@ -109,7 +109,11 @@
         "react-3-build": "node tasks --react-3-build",
         "react-5-copy": "node tasks --react-5-copy",
         "react-6-patch": "node tasks --react-6-patch",
-        "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}"
+        "release": "release-script",
+        "release-patch": "release-script patch --yes",
+        "release-minor": "release-script minor --yes",
+        "release-major": "release-script major --yes",
+        "update-packages": "npx -y npm-check-updates --upgrade"
     },
     "author": "bluefox <dogafox@gmail.com>"
 }
