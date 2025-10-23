@@ -21,6 +21,7 @@
         "@iobroker/adapter-react-v5": "file:../adapter-react-v5",
         "@module-federation/runtime": "^0.15.0",
         "@mui/x-date-pickers": "^7.29.4",
+        "date-fns": "^3.6.0",
         "crypto-js": "^4.2.0",
         "json5": "^2.2.3",
         "react-ace": "^14.0.1",
@@ -29,6 +30,8 @@
     "devDependencies": {
         "@types/crypto-js": "^4.2.2",
         "@types/json5": "^2.2.0",
+        "@types/react": "^18.3.26",
+        "@types/react-dom": "^18.3.7",
         "ajv": "^8.17.1",
         "tsc-alias": "^1.8.16"
     },

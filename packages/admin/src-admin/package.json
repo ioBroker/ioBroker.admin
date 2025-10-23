@@ -33,7 +33,6 @@
         "@fnando/sparkline": "^0.3.10",
         "@foxriver76/iob-component-lib": "^0.2.0",
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
-        "@iobroker/admin-component-easy-access": "^2.0.1",
         "@iobroker/dm-utils": "^1.0.10",
         "@iobroker/socket-client": "^4.1.3",
         "@module-federation/runtime": "^0.15.0",
@@ -106,5 +105,5 @@
             }
         ]
     ],
-    "version": "7.7.9"
+    "version": "7.7.10"
 }

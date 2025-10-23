@@ -32,11 +32,11 @@ async function build() {
 
     writeFileSync(
         `${src}public/lib/js/sparkline.js`,
-        readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js`),
+        readFileSync(`${rootFolder}/packages/admin/src-admin/node_modules/@fnando/sparkline/dist/sparkline.js`),
     );
     writeFileSync(
         `${src}public/lib/js/sparkline.js.map`,
-        readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js.map`),
+        readFileSync(`${rootFolder}/packages/admin/src-admin/node_modules/@fnando/sparkline/dist/sparkline.js.map`),
     );
 
     const ace = `${rootFolder}/node_modules/ace-builds/src-min-noconflict/`;
