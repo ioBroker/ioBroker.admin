@@ -48,6 +48,7 @@
         "semver": "^7.7.2"
     },
     "devDependencies": {
+        "@iobroker/admin-component-easy-access": "^2.0.1",
         "@iobroker/build-tools": "^2.0.15",
         "@iobroker/legacy-testing": "^2.0.2",
         "@iobroker/testing": "^5.1.1",
@@ -66,7 +67,6 @@
         "colorette": "^2.0.20",
         "less": "^4.4.1",
         "puppeteer": "^24.23.0",
-        "src-rx": "file:src-admin",
         "typescript": "~5.8.3"
     },
     "overrides": {
