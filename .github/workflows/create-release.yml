@@ -32,10 +32,10 @@ jobs:
               run: npm ci -f
 
             - name: 'Build backend'
-              run: npm run build:backend -w packages/admin
+              run: npm run build:backend
 
             - name: Test
-              run: npm test -w packages/admin/
+              run: npm test
 
             - name: Prepare release
               env:
@@ -52,7 +52,7 @@ jobs:
               with:
                   result-encoding: string
                   script: |
-                      const package = require('./packages/admin/package.json');
+                      const package = require('./package.json');
                       return package.version
 
             - name: Extract the commit body

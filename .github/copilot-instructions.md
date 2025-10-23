@@ -98,7 +98,7 @@ ioBroker.admin is a complex monorepo that provides the web-based administration 
 ### Key Commands Reference
 ```bash
 # Quick setup (run once)
-PUPPETEER_SKIP_DOWNLOAD=true npm run install-monorepo
+PUPPETEER_SKIP_DOWNLOAD=true npm run npm
 
 # Development workflow
 npm run build              # Build all packages (1-2 min)
