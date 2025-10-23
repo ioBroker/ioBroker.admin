@@ -21,7 +21,7 @@
         "lerna": "^9.0.0"
     },
     "scripts": {
-        "build": "npm run clean && lerna run build --concurrency 1",
+        "build": "npm run clean && cd packages/adapter-react-v5 && npm run build && cd ../jsonConfig && npm run build && cd ../dm-gui-components && npm run build && cd ../admin && npm run build",
         "clean": "lerna run clean",
         "install-monorepo": "npm i && npm i -w packages/adapter-react-v5 && npm i -w packages/dm-gui-components && npm i -w packages/jsonConfig && npm i -w packages/admin && cd packages/admin/src-admin && npm i -f",
         "npm": "npm run install-monorepo",
