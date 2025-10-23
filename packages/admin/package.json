@@ -48,8 +48,11 @@
         "semver": "^7.7.2"
     },
     "devDependencies": {
+        "@iobroker/adapter-react-v5": "file:../adapter-react-v5",
         "@iobroker/admin-component-easy-access": "^2.0.1",
         "@iobroker/build-tools": "^2.0.15",
+        "@iobroker/dm-gui-components": "file:../dm-gui-components",
+        "@iobroker/json-config": "file:../jsonConfig",
         "@iobroker/legacy-testing": "^2.0.2",
         "@iobroker/testing": "^5.1.1",
         "@types/archiver": "^6.0.3",
