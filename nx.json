@@ -16,6 +16,13 @@
             "dependsOn": ["build"]
         }
     },
+    "projects": {
+        "admin": {
+            "implicitDependencies": ["jsonConfig", "adapter-react-v5", "dm-gui-components"]
+        },
+        "jsonConfig": { "implicitDependencies": ["adapter-react-v5"] },
+        "dm-gui-components": { "implicitDependencies": ["jsonConfig", "adapter-react-v5"] }
+    },
     "$schema": "./node_modules/nx/schemas/nx-schema.json",
     "namedInputs": {
         "default": ["{projectRoot}/**/*", "sharedGlobals"],
