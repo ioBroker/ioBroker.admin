@@ -7,7 +7,7 @@
         "clean": "rimraf build",
         "start": "vite --port 3000",
         "lint": "eslint -c eslint.config.mjs src",
-        "build": "tsc && vite build",
+        "build": "vite build",
         "preview": "vite preview --port 3000",
         "check-ts": "tsc --noEmit --checkJS false",
         "tsc": "tsc --project tsconfig.json",

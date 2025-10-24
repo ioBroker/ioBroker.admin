@@ -12,8 +12,6 @@ import {
     type SelectChangeEvent,
 } from '@mui/material';
 
-import blueGrey from '@mui/material/colors/blueGrey';
-
 import { type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
 import AdminUtils from '@/helpers/AdminUtils';
 import Editor from '../../components/Editor';
@@ -27,11 +25,10 @@ const styles: Record<string, React.CSSProperties> = {
         height: '100% ',
         overflow: 'auto',
         padding: 15,
-        // backgroundColor: blueGrey[ 50 ]
     },
     note: {
         padding: 15,
-        backgroundColor: blueGrey[500],
+        backgroundColor: '#607d8b',
         color: '#FFF',
         overflow: 'auto',
         flex: 'none',

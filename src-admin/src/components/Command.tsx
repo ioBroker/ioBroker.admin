@@ -1,7 +1,5 @@
 import React, { Component, type JSX } from 'react';
 
-import { amber, blue, red } from '@mui/material/colors';
-
 import { Box, Grid2, LinearProgress, Paper, Switch, Typography } from '@mui/material';
 
 import { Router, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
@@ -23,13 +21,13 @@ const styles: Record<string, React.CSSProperties> = {
         overflowY: 'auto',
     },
     error: {
-        color: red[500],
+        color: '#f44336',
     },
     info: {
-        color: blue[500],
+        color: '#2196f3',
     },
     warn: {
-        color: amber[500],
+        color: '#ffc107',
     },
 };
 

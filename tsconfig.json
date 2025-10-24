@@ -1,11 +1,26 @@
 {
-    "extends": "./tsconfig.base.json",
     "compilerOptions": {
+        "module": "esnext",
+        "target": "esnext",
+        "moduleResolution": "node",
+        "baseUrl": "./",
+        "allowSyntheticDefaultImports": true,
+        "checkJs": false,
+        "noEmit": false,
+        "outDir": "./build",
+        "sourceMap": true,
+        "sourceRoot": "./src",
+        "noImplicitAny": true,
+        "skipLibCheck": true,
+        "lib": ["es2018", "DOM"],
+        "jsx": "react",
+        "types": ["@iobroker/types"],
         "paths": {
-            "@iobroker/jsonConfig": ["./packages/jsonConfig/src"],
-            "@iobroker/dm-gui-components": ["./packages/dm-gui-components/src"],
-            "@iobroker/adapter-react-v5": ["./packages/adapter-react-v5/src"],
-            "iobroker.admin": ["./packages/admin/src-admin/src"]
+            "@/*": ["./src/*"],
         }
-    }
+    },
+    "exclude": ["**/node_modules", "**/build", "adminWww/**"],
+    "include": ["**/*.js", "**/*.ts", "**/*.d.ts",
+        "eslint.config.mjs"
+    ],
 }

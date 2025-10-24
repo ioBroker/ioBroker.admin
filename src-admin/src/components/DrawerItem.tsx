@@ -3,8 +3,6 @@ import React, { type JSX } from 'react';
 import { Badge, Grid2, ListItemButton, ListItemIcon, ListItemText, Tooltip, Checkbox } from '@mui/material';
 import { DragHandle } from '@mui/icons-material';
 
-import { amber } from '@mui/material/colors';
-
 import { Utils, ColorPicker, type IobTheme } from '@iobroker/adapter-react-v5';
 import AdminUtils from '../helpers/AdminUtils';
 
@@ -32,7 +30,7 @@ const styles: Record<string, any> = {
         height: 40,
     },
     warn: {
-        backgroundColor: amber[500],
+        backgroundColor: '#ffc107',
     },
 };
 
