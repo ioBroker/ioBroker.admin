@@ -990,7 +990,7 @@ class App extends Router<AppProps, AppState> {
             }
 
             this.socket = new Connection({
-                protocol: window.location.protocol,
+                protocol: window.location.protocol as 'http:' | 'https:',
                 host: window.location.hostname,
 
                 name: 'admin',
