@@ -87,9 +87,9 @@ function copyAllFiles() {
     // copy crypto-js
     copyFiles(
         [
-            `${rootFolder}/node_modules/crypto-js/**/*.*`,
-            `!${rootFolder}/node_modules/crypto-js/CONTRIBUTING.md`,
-            `!${rootFolder}/node_modules/crypto-js/README.md`,
+            `${srcRx}node_modules/crypto-js/**/*.*`,
+            `!${srcRx}node_modules/crypto-js/CONTRIBUTING.md`,
+            `!${srcRx}node_modules/crypto-js/README.md`,
         ],
         `${dest}lib/js/crypto-js`,
     );

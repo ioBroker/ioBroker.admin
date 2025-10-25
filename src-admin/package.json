@@ -7,7 +7,7 @@
         "clean": "rimraf build",
         "start": "vite --port 3000",
         "lint": "eslint -c eslint.config.mjs src",
-        "build": "tsc && vite build",
+        "build": "vite build",
         "preview": "vite preview --port 3000",
         "check-ts": "tsc --noEmit --checkJS false",
         "tsc": "tsc --project tsconfig.json",
@@ -24,9 +24,9 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/adapter-react-v5": "^8.0.3",
-        "@iobroker/dm-gui-components": "^8.0.2",
-        "@iobroker/json-config": "^8.0.2",
+        "@iobroker/adapter-react-v5": "^8.0.4",
+        "@iobroker/dm-gui-components": "^8.0.3",
+        "@iobroker/json-config": "^8.0.4",
         "ace-builds": "^1.43.4",
         "http-proxy-middleware": "^3.0.5"
     },
@@ -107,5 +107,5 @@
             }
         ]
     ],
-    "version": "7.7.15"
+    "version": "7.7.17"
 }
