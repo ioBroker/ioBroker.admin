@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.18",
+    "version": "7.7.19",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.19": {
+        "en": "Updated schema location for JsonConfig",
+        "de": "Aktualisierter Schemaort für JsonConfig",
+        "ru": "Обновлено местоположение схемы для JsonConfig",
+        "pt": "Localização atualizada do esquema para o JsonConfig",
+        "nl": "Bijgewerkt schema locatie voor JsonConfig",
+        "fr": "Emplacement du schéma mis à jour pour JsonConfig",
+        "it": "Posizione schema aggiornata per JsonConfig",
+        "es": "Ubicación actualizada del esquema para JsonConfig",
+        "pl": "Aktualizacja lokalizacji schematu dla JsonConfig",
+        "uk": "Оновлене розташування схеми для JsonConfig",
+        "zh-cn": "JsonConfig 更新了计划位置"
+      },
       "7.7.18": {
         "en": "Improvement of categories: drag&drop, visibility\nAdded missing filterFunc property to jsonConfig objectId schema to match documentation and implementation\nAdded extended reverse proxy example section with screenshots, limitations (admin root requirement), and adapter compatibility notes\nFixed instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)\nFixed intro page reverse proxy link remapping so links are correctly rewritten immediately and after navigating away and back (load reverseProxy config before instance scan and use prefix startsWith matching)\nFixed multi-selection in the select ID dialog",
         "de": "Verbesserung der Kategorien: Drag&drop, Sichtbarkeit\nHinzugefügt fehlende filterFunc Eigenschaft zu jsonConfig Objekt Id Schema zur Anpassung der Dokumentation und Implementierung\nErweiterte Reverse-Proxy-Beispiel-Abschnitt mit Screenshots, Einschränkungen (Admin-Root-Anforderung) und Adapter-Kompatibilitätshinweise hinzugefügt\nFixed Instanzs Seite Reverse Proxy Link Mapping so Adapter localLinks werden auf die konfigurierten Proxypfade neu geschrieben (Prefix Matching + Web Port Ersatz, mit doppeltem Link Kollaps)\nFeste intro-Seite Reverse-Proxy-Link-Remapping, so dass Links richtig neu geschrieben werden sofort und nach navigieren weg und zurück ( laden reverseProxy config vor Instanz-Scan und verwenden Präfix beginnt Mit Anpassung)\nBehobene Mehrfachauswahl im Auswahl-ID-Dialog",
