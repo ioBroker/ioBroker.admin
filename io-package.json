@@ -15,7 +15,6 @@
       "uk": "Admin",
       "zh-cn": "Admin"
     },
-    "title": "Admin",
     "connectionType": "local",
     "dataSource": "push",
     "news": {
@@ -136,7 +135,6 @@
       "pl": "docs/pl/admin.md",
       "zh-cn": "docs/zh-cn/admin.md"
     },
-    "materialize": true,
     "mode": "daemon",
     "platform": "Javascript/Node.js",
     "loglevel": "info",
@@ -163,7 +161,7 @@
     ],
     "dependencies": [
       {
-        "js-controller": ">=3.3.22"
+        "js-controller": ">=6.0.11"
       }
     ],
     "type": "general",
