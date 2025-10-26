@@ -157,6 +157,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Updated schema location for JsonConfig
+
 ### 7.7.18 (2025-10-25)
 - (@GermanBluefox) Improvement of categories: drag&drop, visibility
 - (@copilot) Added missing filterFunc property to jsonConfig objectId schema to match documentation and implementation

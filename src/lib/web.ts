@@ -195,8 +195,8 @@ class Web {
 
     /** URL to the JSON config schema */
     private readonly JSON_CONFIG_SCHEMA_URL =
-        'https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/jsonConfig/schemas/jsonConfig.json';
-    // 'https://raw.githubusercontent.com/ioBroker/adapter-react-v5/main/schemas/jsonConfig.json';
+        // 'https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/jsonConfig/schemas/jsonConfig.json';
+        'https://raw.githubusercontent.com/ioBroker/json-config/main/schemas/jsonConfig.json';
 
     private store: Store | null = null;
     private indexHTML: string;
