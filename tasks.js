@@ -1,12 +1,7 @@
 const { statSync, existsSync, writeFileSync, readFileSync } = require('node:fs');
 const less = require('less');
-const {
-    deleteFoldersRecursive,
-    buildReact,
-    patchHtmlFile,
-    npmInstall,
-    copyFiles,
-} = require('@iobroker/build-tools');
+const { deleteFoldersRecursive, buildReact, patchHtmlFile, npmInstall, copyFiles } = require('@iobroker/build-tools');
+const axios = require('axios');
 
 const srcRx = 'src-admin/';
 const src = `${__dirname}/${srcRx}`;
@@ -43,7 +38,7 @@ async function build() {
     }
 }
 
-function syncUtils() {
+async function syncUtils() {
     const stat1 = statSync(`${__dirname}/src-admin/src/helpers/utils.ts`);
     const stat2 = statSync(`${__dirname}/src/lib/utils.ts`);
     const data1 = readFileSync(`${__dirname}/src-admin/src/helpers/utils.ts`).toString();
@@ -55,6 +50,13 @@ function syncUtils() {
             writeFileSync(`${__dirname}/src-admin/src/helpers/utils.ts`, data2);
         }
     }
+
+    // Copy JSON config description and schema from 'https://github.com/ioBroker/json-config' to packages
+    let response = await axios('https://raw.githubusercontent.com/ioBroker/json-config/main/schemas/jsonConfig.json');
+    writeFileSync(`${__dirname}/packages/jsonConfig/schemas/jsonConfig.json`, JSON.stringify(response.data, null, 2));
+
+    response = await axios('https://raw.githubusercontent.com/ioBroker/json-config/main/README.md');
+    writeFileSync(`${__dirname}/packages/jsonConfig/README.md`, response.data);
 }
 
 function copyAllFiles() {
