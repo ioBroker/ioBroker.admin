@@ -271,8 +271,8 @@ class Web {
         return this.oauth2Model?.processMessage(msg);
     }
 
-    async prepareIndex(): Promise<string> {
-        let template = readFileSync(join(this.wwwDir, 'index.html')).toString('utf8');
+    async prepareIndex(index: string): Promise<string> {
+        let template = readFileSync(join(this.wwwDir, index)).toString('utf8');
         const m = template.match(/(["']?@@\w+@@["']?)/g);
         for (let pattern of m) {
             pattern = pattern.replace(/@/g, '').replace(/'/g, '').replace(/"/g, '');
@@ -341,6 +341,16 @@ class Web {
 
     getInfoJs(): string {
         const result = [`window.sysLang = "${this.systemLanguage}";`];
+        if (uuid?.length === 38) {
+            result.push(`window.vendorPrefix = "${uuid.substring(0, 2)}";`);
+        }
+        if (this.adapter.config.loadingBackgroundColor) {
+            result.push(`window.loadingBackgroundColor = "${this.adapter.config.loadingBackgroundColor}";`);
+        }
+
+        if (this.adapter.config.loadingBackgroundImage) {
+            result.push(`window.loadingBackgroundImage = "${this.adapter.config.loadingBackgroundImage}";`);
+        }
 
         return result.join('\n');
     }
@@ -459,8 +469,8 @@ class Web {
             this.server.app.use(compression());
 
             this.settings.ttl = Math.round(this.settings.ttl) || 3_600;
-            this.settings.accessAllowedConfigs = this.settings.accessAllowedConfigs || [];
-            this.settings.accessAllowedTabs = this.settings.accessAllowedTabs || [];
+            this.settings.accessAllowedConfigs ||= [];
+            this.settings.accessAllowedTabs ||= [];
 
             this.server.app.disable('x-powered-by');
 
@@ -863,13 +873,13 @@ class Web {
                 });
 
                 this.server.app.get('/index.html', async (_req: Request, res: Response): Promise<void> => {
-                    this.indexHTML = this.indexHTML || (await this.prepareIndex());
+                    this.indexHTML ||= await this.prepareIndex('/index.html');
                     res.header('Content-Type', 'text/html');
                     res.status(200).send(this.indexHTML);
                 });
 
                 this.server.app.get('/', async (_req: Request, res: Response): Promise<void> => {
-                    this.indexHTML = this.indexHTML || (await this.prepareIndex());
+                    this.indexHTML ||= await this.prepareIndex('/index.html');
                     res.header('Content-Type', 'text/html');
                     res.status(200).send(this.indexHTML);
                 });
@@ -1171,15 +1181,15 @@ class Web {
             .getForeignObjectAsync('system.config')
             .then(obj => {
                 this.systemConfig = obj || {};
-                this.systemConfig.native = this.systemConfig.native || {};
-                this.systemConfig.native.vendor = this.systemConfig.native.vendor || {};
-                this.systemConfig.native.vendor.admin = this.systemConfig.native.vendor.admin || {};
-                this.systemConfig.native.vendor.admin.login = this.systemConfig.native.vendor.admin.login || {};
+                this.systemConfig.native ||= {};
+                this.systemConfig.native.vendor ||= {};
+                this.systemConfig.native.vendor.admin ||= {};
+                this.systemConfig.native.vendor.admin.login ||= {};
 
                 return this.adapter.getForeignObjectAsync('system.meta.uuid');
             })
             .then(obj => {
-                if (obj && obj.native) {
+                if (obj?.native) {
                     uuid = obj.native.uuid;
                 }
 

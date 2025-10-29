@@ -157,6 +157,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Small optimisations
+
 ### 7.7.19 (2025-10-26)
 - (@GermanBluefox) Updated schema location for JsonConfig
 

@@ -55,9 +55,6 @@ import {
 } from '@iobroker/socket-client';
 
 import {
-    LoaderPT,
-    LoaderMV,
-    LoaderVendor,
     Loader,
     I18n,
     Router,
@@ -3078,17 +3075,7 @@ class App extends Router<AppProps, AppState> {
             return (
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
-                        {window.vendorPrefix === 'PT' ? <LoaderPT themeType={this.state.themeType} /> : null}
-                        {window.vendorPrefix === 'MV' ? <LoaderMV themeType={this.state.themeType} /> : null}
-                        {window.vendorPrefix &&
-                        window.vendorPrefix !== 'PT' &&
-                        window.vendorPrefix !== 'MV' &&
-                        window.vendorPrefix !== '@@vendorPrefix@@' ? (
-                            <LoaderVendor themeType={this.state.themeType} />
-                        ) : null}
-                        {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? (
-                            <Loader themeType={this.state.themeType} />
-                        ) : null}
+                        <Loader themeType={this.state.themeType} />
                         {this.renderAlertSnackbar()}
                     </ThemeProvider>
                 </StyledEngineProvider>
