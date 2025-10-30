@@ -40,13 +40,56 @@ export type ioBrokerObject<Native extends object = object, Common extends object
 export interface AdminGuiConfig {
     admin?: {
         menu?: {
-            editable?: false;
-            [tabName: string]: false;
+            // Settings for left menu
+            editable?: false; // Hide edit button in menu
+            'tab-hosts'?: false; // Hide hosts item (See all https://github.com/ioBroker/ioBroker.admin/blob/master/src-rx/src/components/Drawer.js#L142)
+            'tab-files'?: false; // Hide files item
+            'tab-users'?: false; // Hide users item
+            'tab-intro'?: false; // Hide intro item
+            'tab-info'?: false; // Hide info item
+            'tab-adapters'?: false; // Hide adapters item
+            'tab-instances'?: false; // Hide instances item
+            'tab-objects'?: false; // Hide objects item
+            'tab-enums'?: false; // Hide enums item
+            'tab-devices'?: false; // Hide devices item
+            'tab-logs'?: false; // Hide logs item
+            'tab-scenes'?: false; // Hide scenes item
+            'tab-events'?: false; // Hide events item
+            'tab-javascript'?: false; // Hide javascript item
+            'tab-text2command-0'?: false; // Hide text2command-0 item
+            'tab-echarts'?: false; // Hide echarts item
+            [tabName: string]: false | undefined;
         };
-        settings?: { [tabName: string]: false; activeRepo?: false };
+        appBar: {
+            discovery?: false;
+            systemSettings?: false;
+            toggleTheme?: false;
+            expertMode?: false;
+            hostSelector?: false;
+        };
+        settings?: {
+            tabConfig?: false; // Main config tab
+            tabRepositories?: false; // Repositories tab
+            tabCertificates?: false; // Certificates tab
+            tabLetsEncrypt?: false; // Let's Encrypt tab
+            tabDefaultACL?: false; // Default ACL tab
+            tabStatistics?: false; // Statistics tab
+
+            language?: false;
+            tempUnit?: false;
+            currency?: false;
+            dateFormat?: false;
+            isFloatComma?: false;
+            defaultHistory?: false;
+            activeRepo?: false;
+            expertMode?: false;
+            defaultLogLevel?: false;
+        };
         adapters?: {
-            allowAdapterRating?: false;
-            gitHubInstall?: false;
+            gitHubInstall?: false; // hide button install from GitHub/npm
+            statistics?: false; // hide statistics on the right top
+            filterUpdates?: false; // hide button filter updates in adapter tab
+            allowAdapterRating?: false; // do not show and do not load adapter ratings
         };
         login?: {
             title?: string;
@@ -54,9 +97,6 @@ export interface AdminGuiConfig {
             link?: string;
         };
     };
-    name?: string;
-    icon?: string;
-    // logo?: string;
     ico?: string;
     uuidPrefix?: string;
 }
