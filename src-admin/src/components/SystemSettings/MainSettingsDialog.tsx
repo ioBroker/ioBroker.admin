@@ -328,7 +328,10 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
         }
 
         // if disabled by vendor settings
-        if (this.props.adminGuiConfig.admin.settings && this.props.adminGuiConfig.admin.settings[e.id] === false) {
+        if (
+            this.props.adminGuiConfig.admin.settings &&
+            (this.props.adminGuiConfig.admin.settings as { [id: string]: boolean })[e.id] === false
+        ) {
             return null;
         }
 
