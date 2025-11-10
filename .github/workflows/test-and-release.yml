@@ -31,7 +31,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v5
-            - uses: actions/setup-node@v5
+            - uses: actions/setup-node@v6
               with:
                   node-version: 22.x
 
@@ -68,7 +68,7 @@ jobs:
         steps:
             - uses: actions/checkout@v5
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v5
+              uses: actions/setup-node@v6
               with:
                   node-version: ${{ matrix.node-version }}
 
@@ -93,7 +93,7 @@ jobs:
         steps:
             - uses: actions/checkout@v5
             - name: Use Node.js 20.x
-              uses: actions/setup-node@v5
+              uses: actions/setup-node@v6
               with:
                   node-version: 20.x
 
@@ -112,7 +112,7 @@ jobs:
             - name: Archive screenshots
               if: always()
               # if: failure()
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                   path: tmp/screenshots/**/*.png
                   retention-days: 3
@@ -129,10 +129,10 @@ jobs:
 
         steps:
           - name: Checkout code
-            uses: actions/checkout@v2
+            uses: actions/checkout@v5
 
           - name: Use Node.js 20.x
-            uses: actions/setup-node@v1
+            uses: actions/setup-node@v6
             with:
               node-version: 20.x
 
