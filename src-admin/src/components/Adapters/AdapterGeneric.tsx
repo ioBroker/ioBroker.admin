@@ -1075,7 +1075,14 @@ export default abstract class AdapterGeneric<
         const url = extractUrlLink(adapter);
         const licenseType = adapter.licenseInformation?.license || adapter.license;
 
-        if (licenseType !== 'MIT') {
+        if (
+            licenseType !== 'MIT' &&
+            licenseType !== 'Apache-2.0' &&
+            licenseType !== 'ISC' &&
+            licenseType !== 'BSD-3-Clause' &&
+            licenseType !== 'BSD-2-Clause' &&
+            licenseType
+        ) {
             this.setState({
                 showLicenseDialog: {
                     url,

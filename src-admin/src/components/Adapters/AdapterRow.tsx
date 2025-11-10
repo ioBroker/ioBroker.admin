@@ -35,7 +35,7 @@ const styles: Record<string, any> = {
     },
 };
 
-class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState> {
+export default class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState> {
     protected styles: Record<string, any> = styles;
 
     render(): JSX.Element {
@@ -120,5 +120,3 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
         );
     }
 }
-
-export default AdapterRow;

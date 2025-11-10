@@ -249,7 +249,7 @@ admin/i18n/en.json
 Additionally, user can provide the path to `i18n` files, `i18n`: `customI18n` and provide files in admin:
 
 ```json5
-  i18n: "customI18n",
+  "i18n": "customI18n",
 ```
 
 ```text
@@ -444,9 +444,9 @@ Select function from `enum.func` (With color and icon) - (only Admin6)
 
 #### Example for `select options`
 
-```json
+```json5
 [
-  {"label": {"en": "option 1"}, "value": 1}, ...
+  {"label": {"en": "option 1"}, "value": 1}, //...
 ]
 ```
 or
@@ -1393,7 +1393,7 @@ Component must look like
     schema={schema}
     customInstancesEditor={CustomInstancesEditor}
     data={common.native}
-    onError={(error, attribute) => error can be true/false or text. Attribute is optional}
+    onError={(error, attribute) => {/* error can be true/false or text. Attribute is optional */}}
     onChanged={(newData, isChanged) => console.log('Changed ' + isChanged)}
 />
 ```
@@ -1504,7 +1504,7 @@ The following variables are available in JS function in custom settings:
     theme={this.props.theme}
     name="accessAllowedConfigs"
     onChange={(newData, isChanged) => {}}
-    onError={error => error can be true/false or text}
+    onError={error => /* error can be true/false or text */ {}}
 />
 ```
 
@@ -1599,6 +1599,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.0.6 (2025-11-10)
+- (@GermanBluefox) Added width to many table elements
+
 ### 8.0.5 (2025-10-25)
 - (@GermanBluefox) Do not translate certificates names
 - (@GermanBluefox) Update packages
