@@ -55,7 +55,7 @@
     "@types/body-parser": "^1.19.6",
     "@types/compression": "^1.8.1",
     "@types/connect-flash": "^0.0.40",
-    "@types/cookie-parser": "^1.4.9",
+    "@types/cookie-parser": "^1.4.10",
     "@types/express-fileupload": "^1.5.1",
     "@types/express-session": "^1.18.2",
     "@types/mime": "3.0.4",
