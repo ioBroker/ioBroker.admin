@@ -523,7 +523,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             if (!this.state.licenseManager && tab.name === 'tabLicenses') {
                 return false;
             }
-            return this.props.adminGuiConfig.admin.settings[tab.name] !== false;
+            return (this.props.adminGuiConfig.admin.settings as { [id: string]: boolean })[tab.name] !== false;
         });
 
         console.log(`get state: ${tabError}`);
