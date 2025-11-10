@@ -49,7 +49,7 @@
     "@iobroker/dm-utils": "^1.0.13",
     "@iobroker/eslint-config": "^2.2.0",
     "@iobroker/legacy-testing": "^2.0.2",
-    "@iobroker/testing": "^5.1.1",
+    "@iobroker/testing": "^5.2.2",
     "@iobroker/types": "^7.0.7",
     "@types/archiver": "^6.0.3",
     "@types/body-parser": "^1.19.6",
