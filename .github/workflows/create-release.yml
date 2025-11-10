@@ -24,7 +24,7 @@ jobs:
                   fetch-depth: 0 # Fetch the history, or this action won't work
 
             - name: Use Node.js 20.x
-              uses: actions/setup-node@v5
+              uses: actions/setup-node@v6
               with:
                   node-version: 20.x
 
