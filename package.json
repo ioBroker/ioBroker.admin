@@ -37,7 +37,7 @@
     "express-fileupload": "^1.5.2",
     "express-session": "^1.18.2",
     "json5": "^2.2.3",
-    "mime": "^3.0.0",
+    "mime": "^4.1.0",
     "semver": "^7.7.3"
   },
   "devDependencies": {
@@ -58,7 +58,7 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/express-fileupload": "^1.5.1",
     "@types/express-session": "^1.18.2",
-    "@types/mime": "3.0.4",
+    "@types/mime": "4.0.0",
     "@types/passport": "^1.0.17",
     "@types/passport-local": "^1.0.38",
     "@types/semver": "^7.7.1",
