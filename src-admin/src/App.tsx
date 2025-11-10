@@ -2859,16 +2859,18 @@ class App extends Router<AppProps, AppState> {
                                     style={styles.wrapperName}
                                 >
                                     <Typography>admin</Typography>
-                                    {!this.adminGuiConfig.icon && this.state.versionAdmin && (
-                                        <Typography
-                                            style={{
-                                                ...styles.styleVersion,
-                                                color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080',
-                                            }}
-                                        >
-                                            v{this.state.versionAdmin}
-                                        </Typography>
-                                    )}
+                                    {!this.adminGuiConfig.icon &&
+                                        !this.adminGuiConfig.ico &&
+                                        this.state.versionAdmin && (
+                                            <Typography
+                                                style={{
+                                                    ...styles.styleVersion,
+                                                    color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080',
+                                                }}
+                                            >
+                                                v{this.state.versionAdmin}
+                                            </Typography>
+                                        )}
                                 </Box>
                             ) : null}
                             <Grid>
@@ -2877,7 +2879,7 @@ class App extends Router<AppProps, AppState> {
                                     onClick={event => event.preventDefault()}
                                     style={{ color: 'inherit', textDecoration: 'none' }}
                                 >
-                                    {this.adminGuiConfig.icon ? (
+                                    {this.adminGuiConfig.icon || this.adminGuiConfig.ico ? (
                                         <div
                                             style={{
                                                 height: 50,
@@ -2889,7 +2891,7 @@ class App extends Router<AppProps, AppState> {
                                             }}
                                         >
                                             <img
-                                                src={this.adminGuiConfig.icon}
+                                                src={this.adminGuiConfig.icon || this.adminGuiConfig.ico}
                                                 alt="logo"
                                                 style={{ maxWidth: '100%', maxHeight: '100%' }}
                                             />

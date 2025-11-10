@@ -60,7 +60,7 @@ export interface AdminGuiConfig {
             'tab-echarts'?: false; // Hide echarts item
             [tabName: string]: false | undefined;
         };
-        appBar: {
+        appBar?: {
             discovery?: false;
             systemSettings?: false;
             toggleTheme?: false;
@@ -97,7 +97,9 @@ export interface AdminGuiConfig {
             link?: string;
         };
     };
+    /** @deprecated, use icon instead */
     ico?: string;
+    icon?: string;
     uuidPrefix?: string;
 }
 
