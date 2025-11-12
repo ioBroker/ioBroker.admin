@@ -39,6 +39,7 @@ import ObjectEditOfAccessControl from '../components/Object/ObjectEditOfAccessCo
 import ObjectViewFileDialog from '../components/Object/ObjectViewFileDialog';
 import ObjectAliasEditor from '../components/Object/ObjectAliasEditor';
 import ObjectMoveRenameDialog from '../components/Object/ObjectMoveRenameDialog';
+import { ObjectImportFromTextDialog } from '@/components/Object/ObjectImportFromText';
 
 const IconDeleteAll = IconDeleteOne;
 const styles: Record<string, React.CSSProperties> = {
@@ -81,11 +82,8 @@ interface ObjectsState {
 
 class Objects extends Component<ObjectsProps, ObjectsState> {
     private readonly dialogName: string;
-
     private filters: Record<string, any>;
-
     private readonly t: Translate;
-
     private readonly wordCache: Record<string, string>;
 
     constructor(props: ObjectsProps) {
@@ -272,6 +270,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
                 objectBrowserViewFile={ObjectViewFileDialog}
                 objectBrowserAliasEditor={ObjectAliasEditor}
                 objectMoveRenameDialog={ObjectMoveRenameDialog}
+                objectBrowserInsertJsonObjects={ObjectImportFromTextDialog}
                 router={Router}
                 enableStateValueEdit
                 onObjectDelete={(id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) =>

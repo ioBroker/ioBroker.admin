@@ -1681,7 +1681,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2066,7 +2067,8 @@
                     "tooltip": true,
                     "expertMode": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2121,7 +2123,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2186,7 +2189,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2358,7 +2362,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2427,7 +2432,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2524,7 +2530,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2764,7 +2771,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2833,7 +2841,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3459,7 +3468,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3553,7 +3563,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3633,7 +3644,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3691,7 +3703,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3748,7 +3761,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3805,7 +3819,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3873,7 +3888,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3935,7 +3951,8 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4378,7 +4395,8 @@
                     "default": true,
                     "defaultFunc": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "width": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4604,7 +4622,8 @@
                     "style": true,
                     "darkStyle": true,
                     "noMultiEdit": true,
-                    "noTranslation": true
+                    "noTranslation": true,
+                    "width": true
                   },
                   "additionalProperties": false
                 }
@@ -4644,7 +4663,8 @@
                     "hideOnlyControl": true,
                     "disabled": true,
                     "style": true,
-                    "darkStyle": true
+                    "darkStyle": true,
+                    "width": true
                   },
                   "additionalProperties": false
                 }
@@ -4683,7 +4703,8 @@
                     "style": true,
                     "darkStyle": true,
                     "noMultiEdit": true,
-                    "noTranslation": true
+                    "noTranslation": true,
+                    "width": true
                   },
                   "additionalProperties": false
                 }
@@ -4730,7 +4751,8 @@
                 "tooltip": true,
                 "expertMode": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "width": true
               },
               "additionalProperties": false,
               "required": [
@@ -4829,7 +4851,8 @@
                 "tooltip": true,
                 "expertMode": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "width": true
               },
               "additionalProperties": false,
               "required": [
@@ -4898,7 +4921,8 @@
                 "tooltip": true,
                 "expertMode": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "width": true
               },
               "additionalProperties": false,
               "required": [

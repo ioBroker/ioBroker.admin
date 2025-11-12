@@ -445,7 +445,14 @@ export default abstract class AdapterInstallDialog<
         const url = extractUrlLink(adapter);
         const licenseType = adapter.licenseInformation?.license || adapter.license;
 
-        if (licenseType === 'MIT') {
+        if (
+            licenseType === 'MIT' ||
+            licenseType === 'Apache-2.0' ||
+            licenseType === 'ISC' ||
+            licenseType === 'BSD-3-Clause' ||
+            licenseType === 'BSD-2-Clause' ||
+            !licenseType
+        ) {
             this.addInstance({ adapterName, context }).catch(e => window.alert(`Cannot add instance: ${e}`));
         } else {
             this.setState({ showLicenseDialog: { url, adapterName, licenseType }, showDialog: true });
