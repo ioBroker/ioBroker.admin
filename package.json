@@ -51,7 +51,7 @@
     "@iobroker/legacy-testing": "^2.0.2",
     "@iobroker/testing": "^5.2.2",
     "@iobroker/types": "^7.0.7",
-    "@types/archiver": "^6.0.3",
+    "@types/archiver": "^7.0.0",
     "@types/body-parser": "^1.19.6",
     "@types/compression": "^1.8.1",
     "@types/connect-flash": "^0.0.40",
