@@ -111,7 +111,7 @@ interface LoginState {
     loggingIn: boolean;
 }
 
-class Login extends Component<object, LoginState> {
+export default class Login extends Component<object, LoginState> {
     private readonly passwordRef: React.RefObject<HTMLInputElement>;
 
     constructor(props: object) {
@@ -267,10 +267,11 @@ class Login extends Component<object, LoginState> {
                                 sx={{
                                     width: 100,
                                     height: 100,
-                                    backgroundColor: (theme: Theme) =>
-                                        theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
                                     borderRadius: '5px',
                                     padding: '5px',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
                                 }}
                             >
                                 <img
@@ -440,5 +441,3 @@ class Login extends Component<object, LoginState> {
         );
     }
 }
-
-export default Login;

@@ -574,10 +574,10 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         onClick={event => event.preventDefault()}
                         style={{ color: 'inherit', textDecoration: 'none' }}
                     >
-                        {this.props.adminGuiConfig.icon || this.props.adminGuiConfig.ico ? (
+                        {this.props.adminGuiConfig.icon ? (
                             <div style={{ height: 50, width: 102, lineHeight: '50px' }}>
                                 <img
-                                    src={this.props.adminGuiConfig.icon || this.props.adminGuiConfig.ico}
+                                    src={this.props.adminGuiConfig.icon}
                                     alt="logo"
                                     style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }}
                                 />
@@ -591,7 +591,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             />
                         )}
                     </a>
-                    {!this.props.adminGuiConfig.icon && !this.props.adminGuiConfig.ico && this.props.versionAdmin && (
+                    {!this.props.adminGuiConfig.icon && this.props.versionAdmin && (
                         <Typography sx={styles.styleVersion}>v{this.props.versionAdmin}</Typography>
                     )}
                 </div>

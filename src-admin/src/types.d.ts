@@ -97,8 +97,11 @@ export interface AdminGuiConfig {
             link?: string;
         };
     };
-    /** @deprecated, use icon instead */
+    /** Favicon */
     ico?: string;
+    /** Logo in the top left corner */
+    logo?: string;
+    /** Small logo for the login screen (quadrat) */
     icon?: string;
     uuidPrefix?: string;
 }

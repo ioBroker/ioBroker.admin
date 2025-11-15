@@ -2860,7 +2860,6 @@ class App extends Router<AppProps, AppState> {
                                 >
                                     <Typography>admin</Typography>
                                     {!this.adminGuiConfig.icon &&
-                                        !this.adminGuiConfig.ico &&
                                         this.state.versionAdmin && (
                                             <Typography
                                                 style={{
@@ -2879,7 +2878,7 @@ class App extends Router<AppProps, AppState> {
                                     onClick={event => event.preventDefault()}
                                     style={{ color: 'inherit', textDecoration: 'none' }}
                                 >
-                                    {this.adminGuiConfig.icon || this.adminGuiConfig.ico ? (
+                                    {this.adminGuiConfig.icon ? (
                                         <div
                                             style={{
                                                 height: 50,
@@ -2891,7 +2890,7 @@ class App extends Router<AppProps, AppState> {
                                             }}
                                         >
                                             <img
-                                                src={this.adminGuiConfig.icon || this.adminGuiConfig.ico}
+                                                src={this.adminGuiConfig.icon}
                                                 alt="logo"
                                                 style={{ maxWidth: '100%', maxHeight: '100%' }}
                                             />
