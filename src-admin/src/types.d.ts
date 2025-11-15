@@ -104,6 +104,8 @@ export interface AdminGuiConfig {
     /** Small logo for the login screen (quadrat) */
     icon?: string;
     uuidPrefix?: string;
+    /** If javascriptPassword must be added to system.config.native.javascriptPassword by first start */
+    javascriptPassword?: boolean;
 }
 
 export interface CompactAdapterInfo {
