@@ -1,4 +1,7 @@
 # Older changes
+## 7.7.1 (2025-06-20)
+- (@GermanBluefox) Fixing clearing of the filter on the object tab
+
 ## 7.7.0 (2025-06-17)
 - (@foxriver76) Added the concept for single-side-on authentication (SSO)
 

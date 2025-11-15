@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.19",
+    "version": "7.7.20",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.20": {
+        "en": "Small optimizations\nAllowed to upload objects via text",
+        "de": "Kleine Optimierungen\nErlaubt, Objekte per Text hochzuladen",
+        "ru": "Небольшие оптимизации\nРазрешено загружать объекты через текст",
+        "pt": "Pequenas otimizações\nPermite enviar objetos através de texto",
+        "nl": "Kleine optimaliseringen\nObjecten via tekst uploaden is toegestaan",
+        "fr": "Petites optimisations\nPermet de télécharger des objets par texte",
+        "it": "Piccole ottimizzazioni\nConsente di caricare oggetti tramite testo",
+        "es": "Pequeñas optimizaciones\nPermitido subir objetos a través de texto",
+        "pl": "Małe optymalizacje\nDozwolone wysyłanie obiektów przez tekst",
+        "uk": "Малі оптимізації\nДопускається завантаження об'єктів через текст",
+        "zh-cn": "小优化\n允许通过文本上传对象"
+      },
       "7.7.19": {
         "en": "Updated schema location for JsonConfig",
         "de": "Aktualisierter Schemaort für JsonConfig",
@@ -95,19 +108,6 @@
         "pl": "Dodano koncepcję jednostronnego uwierzytelniania (SSO)",
         "uk": "Додана концепція для односторонньої автентифікації (SSO)",
         "zh-cn": "添加了单侧认证( SSO) 的概念"
-      },
-      "7.6.20": {
-        "en": "Allowed using of * in the filter of objects\nSmall GUI improvements",
-        "de": "Erlaubt mit * im Filter von Objekten\nKleine GUI Verbesserungen",
-        "ru": "Допускается использование * в фильтре объектов\nНебольшие улучшения GUI",
-        "pt": "Permite o uso de * no filtro de objetos\nPequenas melhorias na interface gráfica",
-        "nl": "Toegestaan gebruik van * in het filter van objecten\nKleine GUI verbeteringen",
-        "fr": "Autorisé à utiliser * dans le filtre des objets\nPetites améliorations de l'interface graphique",
-        "it": "Consentito l'utilizzo di * nel filtro degli oggetti\nPiccoli miglioramenti alla GUI",
-        "es": "Permitido el uso de * en el filtro de objetos\nMejoras de la interfaz gráfica",
-        "pl": "Dozwolone stosowanie * w filtrze obiektów\nMałe ulepszenia GUI",
-        "uk": "Дозволяється використання * в фільтрі об'єктів\nМалі покращення інтерфейсу",
-        "zh-cn": "允许在对象过滤中使用 *\n小型图形界面改进"
       }
     },
     "desc": {
