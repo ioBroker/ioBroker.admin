@@ -1085,7 +1085,7 @@ class Admin extends Adapter {
                 await this.setStateAsync('info.newsETag', newEtag, true);
             }
         } catch (e) {
-            this.log.error(`Cannot update news: ${e.message}`);
+            this.log.warn(`Cannot update news: ${e.response ? e.response.data : e.message || e.code}`);
         }
 
         this.timerNews = setTimeout(() => this.updateNews(), 24 * ONE_HOUR_MS + 1);
@@ -1996,7 +1996,9 @@ class Admin extends Adapter {
             void this.updateRegister().catch(e => this.log.error(`Cannot update repository: ${e}`));
         }
 
-        void this.updateNews().catch(e => this.log.error(`Cannot update news: ${e}`));
+        void this.updateNews().catch(e =>
+            this.log.error(`Cannot update news: ${e.response ? e.response.data : e.message || e.code}`),
+        );
         this.updateIcons();
         void this.validateUserData0().catch(e => this.log.error(`Cannot validate 0_userdata: ${e}`));
         void this.checkWellKnownPasswords().catch(e => this.log.error(`Cannot check well known passwords: ${e}`));
