@@ -141,6 +141,7 @@ const styles: Record<string, any> = {
         cursor: 'pointer',
         position: 'relative',
         top: 20,
+        marginTop: '10px',
         transition: 'all 0.6s ease',
         '&:hover': {
             transform: 'rotate(90deg)',
@@ -444,9 +445,9 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'value.precipitation.night.forecast.0', type: 'number', w: false },
     { role: 'value.precipitation.today', type: 'number', w: false },
     { role: 'value.precipitation.type', type: 'number', w: false },
-    { role: 'value.prepitation.forecast.0', type: 'number', w: false },
-    { role: 'value.prepitation.forecast.1', type: 'number', w: false },
-    { role: 'value.prepitation.forecast.1', type: 'number', w: false },
+    { role: 'value.precipitation.forecast.0', type: 'number', w: false },
+    { role: 'value.precipitation.forecast.1', type: 'number', w: false },
+    { role: 'value.precipitation.forecast.1', type: 'number', w: false },
     { role: 'value.pressure', type: 'number', w: false },
     { role: 'value.pressure.forecast.0', type: 'number', w: false },
     { role: 'value.pressure.forecast.1', type: 'number', w: false },
@@ -486,7 +487,7 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'value.warning', type: 'number', w: false },
     { role: 'value.waste', type: 'number', w: false },
     { role: 'value.water', type: 'number', w: false },
-    { role: 'waether.title', type: 'string', w: false },
+    { role: 'whether.title', type: 'string', w: false },
     { role: 'weather.chart.url', type: 'string', w: false },
     { role: 'weather.chart.url.forecast', type: 'string', w: false },
     { role: 'weather.direction.wind', type: 'number', w: false },
@@ -1442,7 +1443,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
-    buttonRemoveKey(nameKey: string, cb: () => void): JSX.Element {
+    buttonRemoveKey(nameKey: string, cb: () => void, style?: React.CSSProperties): JSX.Element {
         const { t } = this.props;
         return (
             <Tooltip
@@ -1452,6 +1453,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 <Box
                     component="div"
                     sx={styles.close}
+                    style={style}
                     onClick={cb}
                 />
             </Tooltip>
@@ -1544,13 +1546,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: name ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    tabIndex={-1}
-                                                    size="small"
-                                                    onClick={() => this.setCommonItem(json, 'name', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear text')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        tabIndex={-1}
+                                                        size="small"
+                                                        onClick={() => this.setCommonItem(json, 'name', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                     },
@@ -1576,13 +1583,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         input: {
                                             endAdornment: desc ? (
                                                 <InputAdornment position="end">
-                                                    <IconButton
-                                                        tabIndex={-1}
-                                                        size="small"
-                                                        onClick={() => this.setCommonItem(json, 'desc', '')}
+                                                    <Tooltip
+                                                        title={I18n.t('Clear text')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
                                                     >
-                                                        <IconClose />
-                                                    </IconButton>
+                                                        <IconButton
+                                                            tabIndex={-1}
+                                                            size="small"
+                                                            onClick={() => this.setCommonItem(json, 'desc', '')}
+                                                        >
+                                                            <IconClose />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </InputAdornment>
                                             ) : null,
                                         },
@@ -1625,7 +1637,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             ))}
                                         </Select>
                                     </FormControl>
-                                    {this.buttonRemoveKey('State type', () => this.removeCommonItem(json, 'type'))}
+                                    {this.buttonRemoveKey('State type', () => this.removeCommonItem(json, 'type'), {
+                                        marginTop: 20,
+                                    })}
                                 </Box>
                             ) : (
                                 ObjectBrowserEditObject.buttonAddKey('State type', () =>
@@ -1753,7 +1767,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             />
                                         )}
                                     />
-                                    {this.buttonRemoveKey('Role', () => this.removeCommonItem(json, 'role'))}
+                                    {this.buttonRemoveKey('Role', () => this.removeCommonItem(json, 'role'), {
+                                        marginTop: 20,
+                                    })}
                                 </Box>
                             ) : (
                                 ObjectBrowserEditObject.buttonAddKey('Role', () => this.setCommonItem(json, 'role', ''))
@@ -1774,13 +1790,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         input: {
                                             endAdornment: json.common.color ? (
                                                 <InputAdornment position="end">
-                                                    <IconButton
-                                                        tabIndex={-1}
-                                                        size="small"
-                                                        onClick={() => this.setCommonItem(json, 'color', '')}
+                                                    <Tooltip
+                                                        title={I18n.t('Clear field')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
                                                     >
-                                                        <IconClose />
-                                                    </IconButton>
+                                                        <IconButton
+                                                            tabIndex={-1}
+                                                            size="small"
+                                                            onClick={() => this.setCommonItem(json, 'color', '')}
+                                                        >
+                                                            <IconClose />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </InputAdornment>
                                             ) : null,
                                         },
@@ -1898,13 +1919,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             input: {
                                                 endAdornment: json.common.unit ? (
                                                     <InputAdornment position="end">
-                                                        <IconButton
-                                                            tabIndex={-1}
-                                                            size="small"
-                                                            onClick={() => this.setCommonItem(json, 'unit', '')}
+                                                        <Tooltip
+                                                            title={I18n.t('Clear field')}
+                                                            slotProps={{ popper: { sx: styles.tooltip } }}
                                                         >
-                                                            <IconClose />
-                                                        </IconButton>
+                                                            <IconButton
+                                                                tabIndex={-1}
+                                                                size="small"
+                                                                onClick={() => this.setCommonItem(json, 'unit', '')}
+                                                            >
+                                                                <IconClose />
+                                                            </IconButton>
+                                                        </Tooltip>
                                                     </InputAdornment>
                                                 ) : null,
                                             },
@@ -1992,13 +2018,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: json.common?.alias?.id ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    tabIndex={-1}
-                                                    size="large"
-                                                    onClick={() => this.setAliasItem(json, 'id', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear field')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        tabIndex={-1}
+                                                        size="large"
+                                                        onClick={() => this.setAliasItem(json, 'id', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                     },
@@ -2027,13 +2058,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: json.common?.alias?.id?.read ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    size="large"
-                                                    tabIndex={-1}
-                                                    onClick={() => this.setAliasItem(json, 'id.read', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear field')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        size="large"
+                                                        tabIndex={-1}
+                                                        onClick={() => this.setAliasItem(json, 'id.read', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                     },
@@ -2062,13 +2098,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: json.common?.alias?.id?.write ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    size="large"
-                                                    tabIndex={-1}
-                                                    onClick={() => this.setAliasItem(json, 'id.write', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear field')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        size="large"
+                                                        tabIndex={-1}
+                                                        onClick={() => this.setAliasItem(json, 'id.write', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                     },
@@ -2122,13 +2163,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: json.common?.alias?.read ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    size="large"
-                                                    tabIndex={-1}
-                                                    onClick={() => this.setAliasItem(json, 'read', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear field')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        size="large"
+                                                        tabIndex={-1}
+                                                        onClick={() => this.setAliasItem(json, 'read', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                         startAdornment: (
@@ -2161,13 +2207,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: json.common?.alias?.write ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    size="large"
-                                                    tabIndex={-1}
-                                                    onClick={() => this.setAliasItem(json, 'write', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear field')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        size="large"
+                                                        tabIndex={-1}
+                                                        onClick={() => this.setAliasItem(json, 'write', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                         startAdornment: (
@@ -2227,13 +2278,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             input: {
                                 endAdornment: this.state.newId ? (
                                     <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            tabIndex={-1}
-                                            onClick={() => this.setState({ newId: '' })}
+                                        <Tooltip
+                                            title={I18n.t('Clear field')}
+                                            slotProps={{ popper: { sx: styles.tooltip } }}
                                         >
-                                            <IconClose />
-                                        </IconButton>
+                                            <IconButton
+                                                size="small"
+                                                tabIndex={-1}
+                                                onClick={() => this.setState({ newId: '' })}
+                                            >
+                                                <IconClose />
+                                            </IconButton>
+                                        </Tooltip>
                                     </InputAdornment>
                                 ) : null,
                             },
