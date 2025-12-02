@@ -198,8 +198,8 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
         void fetch(`https://rating.iobroker.net/adapter/${this.props.adapter}?uuid=${this.props.uuid}`)
             .then(res => res.json())
             .then((votings: RatingDialogVotings) => {
-                votings = votings || {};
-                votings.rating = votings.rating || {};
+                votings ||= {};
+                votings.rating ||= {};
                 const versions = Object.keys(votings.rating);
                 versions.sort((a, b) =>
                     votings.rating[a].ts > votings.rating[b].ts
