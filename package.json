@@ -33,7 +33,7 @@
     "archiver": "^7.0.1",
     "body-parser": "^2.2.1",
     "compression": "^1.8.1",
-    "express": "^5.1.0",
+    "express": "^5.2.0",
     "express-fileupload": "^1.5.2",
     "express-session": "^1.18.2",
     "json5": "^2.2.3",
