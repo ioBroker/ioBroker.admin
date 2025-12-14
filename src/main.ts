@@ -1584,14 +1584,12 @@ class Admin extends Adapter {
                     // Handle multiple repositories
                     for (const repo of activeRepo) {
                         if (repos.native.repositories[repo]?.json?._repoInfo) {
-                            // @ts-expect-error - type will be extended in other repository to include repoReadTime
                             repos.native.repositories[repo].json._repoInfo.repoReadTime = readTime;
                         }
                     }
                 } else {
                     // Handle single repository
                     if (repos.native.repositories[activeRepo]?.json?._repoInfo) {
-                        // @ts-expect-error - type will be extended in other repository to include repoReadTime
                         repos.native.repositories[activeRepo].json._repoInfo.repoReadTime = readTime;
                     }
                 }
