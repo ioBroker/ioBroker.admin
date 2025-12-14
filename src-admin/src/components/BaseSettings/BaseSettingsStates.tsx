@@ -72,8 +72,8 @@ const DEFAULT_JSONL_OPTIONS = {
 
 export interface SettingsStates {
     type?: 'file' | 'jsonl' | 'redis';
-    host?: string;
-    port?: number;
+    host?: string | string[];
+    port?: number | number[];
     pass?: string;
     connectTimeout?: number;
     writeFileInterval?: number;
@@ -115,8 +115,8 @@ interface BaseSettingsStatesProps {
 
 interface BaseSettingsStatesState {
     type: 'file' | 'jsonl' | 'redis';
-    host: string;
-    port: number | string;
+    host: string | string[];
+    port: number | string | number[] | string[];
     connectTimeout: number | string;
     writeFileInterval: number | string;
     dataDir: string;
@@ -157,16 +157,16 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
             db: 0,
             family: 0,
         };
-        settings.backup = settings.backup || {
+        settings.backup ||= {
             disabled: false,
             files: 24,
             hours: 48,
             period: 120,
             path: '',
         };
-        settings.jsonlOptions = settings.jsonlOptions || DEFAULT_JSONL_OPTIONS;
-        settings.jsonlOptions.autoCompress = settings.jsonlOptions.autoCompress || DEFAULT_JSONL_OPTIONS.autoCompress;
-        settings.jsonlOptions.throttleFS = settings.jsonlOptions.throttleFS || DEFAULT_JSONL_OPTIONS.throttleFS;
+        settings.jsonlOptions ||= DEFAULT_JSONL_OPTIONS;
+        settings.jsonlOptions.autoCompress ||= DEFAULT_JSONL_OPTIONS.autoCompress;
+        settings.jsonlOptions.throttleFS ||= DEFAULT_JSONL_OPTIONS.throttleFS;
 
         this.state = {
             type: settings.type || 'file',
@@ -219,7 +219,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
             return true;
         }
 
-        // If we have the IPs array and it's a single IP address but not in the available IPs list, enable text input
+        // If we have the IPs array, and it's a single IP address but not in the available IPs list, enable text input
         if (IPs) {
             return !IPs.includes(host);
         }
@@ -237,7 +237,10 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
             if (!IPs.includes('127.0.0.1')) {
                 IPs.push('127.0.0.1');
             }
-            const textIP = BaseSettingsStates.calculateTextIP(this.state.host, IPs);
+            const textIP = BaseSettingsStates.calculateTextIP(
+                Array.isArray(this.state.host) ? this.state.host[0] : this.state.host,
+                IPs,
+            );
             this.setState(
                 { IPs, loading: false, textIP },
                 () => this.focusRef.current && this.focusRef.current.focus(),
