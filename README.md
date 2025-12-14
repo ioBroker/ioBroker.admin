@@ -157,7 +157,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.7.21 (2025-12-14)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Layout fix in edit object dialog
 
 ### 7.7.20 (2025-11-15)
