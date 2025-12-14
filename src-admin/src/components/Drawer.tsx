@@ -424,7 +424,6 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             name: tab,
                             order: instance.adminTab.order !== undefined ? instance.adminTab.order : 200,
                             icon: instance.adminTab.icon,
-                            // @ts-expect-error defined in js-controller
                             supportsLoadingMessage: instance.adminTab.supportsLoadingMessage,
                         };
                     }

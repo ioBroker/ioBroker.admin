@@ -72,8 +72,8 @@ const DEFAULT_JSONL_OPTIONS = {
 
 export interface SettingsObjects {
     type?: 'file' | 'jsonl' | 'redis';
-    host?: string;
-    port?: number;
+    host?: string | string[];
+    port?: number | number[];
     pass?: string;
     connectTimeout?: number;
     writeFileInterval?: number;
@@ -116,7 +116,7 @@ interface BaseSettingsObjectsProps {
 interface BaseSettingsObjectsState {
     type: 'file' | 'jsonl' | 'redis';
     host: string;
-    port: number | string;
+    port: number | string | number[] | string[];
     connectTimeout: number | string;
     writeFileInterval: number | string;
     dataDir: string;

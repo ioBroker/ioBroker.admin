@@ -97,13 +97,13 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
         // we are updating some slave => try to find the common ip address
         const host = await this.props.socket.getObject(this.props.hostId);
         const settings = await this.props.socket.readBaseSettings(this.props.hostId);
-        let hostIp = settings?.config?.objects?.host;
+        let hostIp: string | string[] = settings?.config?.objects?.host;
 
         if (!hostIp || hostIp === 'localhost') {
             return;
         }
 
-        hostIp = ipaddr.parse(hostIp).toString();
+        hostIp = ipaddr.parse(Array.isArray(hostIp) ? hostIp[0] : hostIp).toString();
 
         if (!host?.native?.hardware?.networkInterfaces) {
             return;
