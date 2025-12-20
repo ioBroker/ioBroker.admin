@@ -97,20 +97,30 @@ Add additional custom locations for web / REST / other adapter frontends. Each l
 
 Example custom locations (Nginx style):
 ```
-/location /web/  => http://LOCAL_IOBROKER_IP:8082/
-/location /welcome/  => http://LOCAL_IOBROKER_IP:1234/
-/location /esphome/  => http://LOCAL_IOBROKER_IP:6052/
+/web/  => http://LOCAL_IOBROKER_IP:8082/
+/welcome/  => http://LOCAL_IOBROKER_IP:PORT_CONFIGURED_IN_WELCOME_INSTANCE_SETTINGS/
+/esphome/  => http://LOCAL_IOBROKER_IP:6052/
+```
+If you have views imported from vis into vis-2, it is possible images / ... are still used from the old vis path. 
+In this case (or to be on the safe side - just also configuring them should not break other things) you probably also want to add these locations (NOTE: no trailing / here!):
+```
+/vis.0 => http://LOCAL_IOBROKER_IP:8082
+/vis/widgets => http://LOCAL_IOBROKER_IP:8082
+/vis-2/widgets => http://LOCAL_IOBROKER_IP:8082
+/icons-mfd-svg => http://LOCAL_IOBROKER_IP:8082
+/icons-material-png => http://LOCAL_IOBROKER_IP:8082
 ```
 (Adjust paths/ports for your environment.)
 
 #### 3. Configure mappings in Admin Reverse Proxy tab
 
-Enter the same paths so that Intro / Instances pages rewrite adapter links correctly:
+Enter the same paths so that Intro / Instances pages rewrite adapter links correctly. Also add paths for all adapters running as web extension (like rest-api, ...). Obviously you only need to configure what you are actually using. Here are some examples:
 
 | Global path | Instance     | Instance path behind proxy |
 |-------------|--------------|----------------------------|
 | `/`         | `web.0`      | `/web/`                    |
-|             | `rest-api.0` | `/api/`                    |
+|             | `welcome.0`  | `/welcome/`                |
+|             | `rest-api.0` | `/web/rest-api/`           |
 |             | `esphome.0`  | `/esphome/`                |
 
 > If you keep Admin on `/` you usually do not need to list `admin.0`, but adding it does not hurt and can make intent explicit.
@@ -125,26 +135,26 @@ After saving, the Intro screen rewrites links so that all web‑served adapters 
 * Adapter path awareness: Not every adapter UI is currently path‑aware. While generic `localLink` rewriting covers many cases, some UIs still assume they are hosted at the domain root. Known examples:
   * `vis` (classic) – NOT fully working behind a sub‑path today.
   * `vis-2` – generally more path tolerant, but custom widgets or legacy resources may still use absolute paths.
-  * Any adapter serving hard‑coded absolute URLs (starting with `/`) may need manual fixes until updated upstream.
+  * Any adapter serving hard‑coded absolute URLs (starting with `/`) may need manual fixes until updated upstream. Please open issues in the respective adapter repositories to notify maintainers.
 * Mixed content: If you terminate TLS at the proxy (HTTPS) but contact adapters over HTTP internally, make sure all external links are rewritten to HTTPS to avoid browser mixed-content blocks.
 * WebSocket forwarding: Ensure `Upgrade` and `Connection` headers are passed through. In Nginx, this typically means adding:
 ```
 proxy_set_header Upgrade $http_upgrade;
 proxy_set_header Connection "upgrade";
 ```
-(old checking the websocket support box, if using proxy manager)
-* Trailing slashes: Always keep a trailing slash in the mapped path (e.g. `/web/`) and location, so nginx does path rewriting. 
-This makes simple cases like the welcome adapter above work, because it only sees a / path -> correctly serves its index.html.
+(or checking the websocket support box, if using proxy manager)
+* Trailing slashes: Often a trailing slash in the mapped path (e.g. `/web/`) and location are required for path unaware adapters. 
+Then nginx does path rewriting, which makes most cases like the welcome adapter above work, because it only sees a / path -> correctly serves its index.html.
 
 #### 5. Quick troubleshooting checklist
 
-| Symptom                            | Likely cause                         | Action                                                |
-|------------------------------------|--------------------------------------|-------------------------------------------------------|
-| Blank or partial Admin UI          | Admin mounted under sub‑path only    | Keep Admin at `/` (see limitation)                    |
-| Adapter link opens wrong host/port | Missing entry in Reverse Proxy tab   | Add mapping row and save                              |
-| 404 for adapter JS/CSS             | Missing trailing slash in location   | Add trailing slash to location and mapping            |
-| WebSocket errors in console        | Proxy not forwarding upgrade headers | Add `proxy_set_header Upgrade` / `Connection` headers |
-| vis UI broken                      | Adapter not path‑aware               | Keep on root or wait for adapter update               |
+| Symptom                            | Likely cause                         | Action                                                                                                                                                       |
+|------------------------------------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Blank or partial Admin UI          | Admin mounted under sub‑path only    | Keep Admin at `/` (see limitation)                                                                                                                           |
+| Adapter link opens wrong host/port | Missing entry in Reverse Proxy tab   | Add mapping row and save                                                                                                                                     |
+| 404 for adapter JS/CSS             | Missing trailing slash in location   | Add trailing slash to location and mapping                                                                                                                   |
+| WebSocket errors in console        | Proxy not forwarding upgrade headers | Add `proxy_set_header Upgrade` / `Connection` headers                                                                                                        |
+| other (loading) issue              | Adapter not path‑aware               | Keep on root or wait for adapter update. Please open an issue in the adapters repository so the maintainers are aware about it and the issue can be tracked. |
 
 ## Used icons
 
