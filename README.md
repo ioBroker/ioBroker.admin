@@ -108,6 +108,7 @@ In this case (or to be on the safe side - just also configuring them should not 
 /vis/widgets => http://LOCAL_IOBROKER_IP:8082
 /vis-2/widgets => http://LOCAL_IOBROKER_IP:8082
 /icons-mfd-svg => http://LOCAL_IOBROKER_IP:8082
+/icons-material-png => http://LOCAL_IOBROKER_IP:8082
 ```
 (Adjust paths/ports for your environment.)
 
