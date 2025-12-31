@@ -192,4 +192,4 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2025 bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>
