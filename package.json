@@ -31,7 +31,7 @@
     "@iobroker/ws-server": "^4.3.9",
     "ajv": "^8.17.1",
     "archiver": "^7.0.1",
-    "body-parser": "^2.2.1",
+    "body-parser": "^2.2.2",
     "compression": "^1.8.1",
     "express": "^5.2.1",
     "express-fileupload": "^1.5.2",
