@@ -65,7 +65,7 @@
     "@types/validator": "^13.15.10",
     "colorette": "^2.0.20",
     "less": "^4.4.2",
-    "puppeteer": "^24.33.0",
+    "puppeteer": "^24.34.0",
     "typescript": "~5.9.3"
   },
   "overrides": {
