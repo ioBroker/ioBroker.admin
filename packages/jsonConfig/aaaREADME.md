@@ -5,7 +5,7 @@ Sources for files
 - packages/jsonConfig/README.md and
 - packages/jsonConfig/schemas/jsonConfig.json
 
-are located at repository ioBroker/json-config. 
+are located at repository [ioBroker/json-config](https://github.com/ioBroker/json-config). 
 
 **Do not modify those files within repository ioBroker/ioBroker.admin.**
 
