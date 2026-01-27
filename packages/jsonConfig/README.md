@@ -137,6 +137,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`certificateCollection`:**](#certificatecollection) Selects a collection for Let's Encrypt certificates
 - [**`certificates`:**](#certificates) Universal type for managing different certificate types (from Admin 6.4.0)
 - [**`checkbox`:**](#checkbox) Checkbox for boolean values
+- [**`checkDocker`:**](#checkdocker) Special component to check if the docker available and if yes, you can activate a checkbox (from Admin 7.8.0)
 - [**`checkLicense`:**](#checklicense) Very special component to check the license online
 - [**`chips`:**](#chips) User can enter words that are added to an array
 - [**`color`:**](#color) Color picker
@@ -245,10 +246,10 @@ admin/i18n/de.json
 admin/i18n/en.json
 ```
 
-Additionally, user can provide the path to `i18n` files, `i18n`: `customI18n` and provide files in admin:
+Additionally, user can provide the path to `i18n` files, `i18n`: `customI18n` and provide files in admin (admin >= 7.7.20):
 
 ```json5
-  i18n: "customI18n",
+  "i18n": "customI18n",
 ```
 
 ```text
@@ -443,9 +444,9 @@ Select function from `enum.func` (With color and icon) - (only Admin6)
 
 #### Example for `select options`
 
-```json
+```json5
 [
-  {"label": {"en": "option 1"}, "value": 1}, ...
+  {"label": {"en": "option 1"}, "value": 1}, //...
 ]
 ```
 or
@@ -1086,7 +1087,7 @@ Determines current location and used `system.config` coordinates if not possible
 
 ### `interface`
 
-Selects the interface of the host, where the instance runs
+Select the interface of the host, where the instance runs
 
 | Property         | Description                                                    |
 |------------------|----------------------------------------------------------------|
@@ -1104,6 +1105,16 @@ shows the license information if not already accepted. One of attributes `texts`
 | `title`      | Title of the license dialog                                                                                |
 | `agreeText`  | Text of the agreed button                                                                                  |
 | `checkBox`   | If defined, the checkbox with the given name will be shown. If checked, the agreed button will be enabled. |
+
+### `checkDocker`
+- (admin >= 7.7.2) initial implementation
+
+Special component to check if Docker is installed and running.
+If docker is installed, a checkbox will be shown to allow the usage of docker.
+
+| Property      | Description                                                                                                                                                    |
+|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `hideVersion` | If the information about docker version or error should be hidden (e.g. if used more than one such element on the page the error or version will be shown once |
 
 ### `checkLicense`
 
@@ -1128,8 +1139,8 @@ Special input for ports. It checks automatically if port is used by other instan
 
 ### `state`
 
-(admin >= 7.1.0) Show control or information from the state
-(admin >= 7.6.4) attributes `showEnterButton` and `setOnEnterKey`
+- (admin >= 7.1.0) Show control or information from the state
+- (admin >= 7.6.4) attributes `showEnterButton` and `setOnEnterKey`
 
 | Property          | Description                                                                                                                                                                                          |
 |-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1203,31 +1214,34 @@ show device manager. For that, the adapter must support device manager protocol.
 
 Here is an example of how to show device manager in a tab:
 
-```json
-"_deviceManager": {
-  "type": "panel",
-  "label": "Device manager",
-  "items": {
-    "_dm": {
-      "type": "deviceManager",
-      "sm": 12,
-      "style": {
-        "width": "100%",
-        "height": "100%",
-        "overflow": "hidden"
-      }
+```json5
+{
+    //...
+    "_deviceManager": {
+        "type": "panel",
+        "label": "Device manager",
+        "items": {
+            "_dm": {
+                "type": "deviceManager",
+                "sm": 12,
+                "style": {
+                    "width": "100%",
+                    "height": "100%",
+                    "overflow": "hidden"
+                }
+            }
+        },
+        "style": {
+            "width": "100%",
+            "height": "100%",
+            "overflow": "hidden"
+        },
+        "innerStyle": {
+            "width": "100%",
+            "height": "100%",
+            "overflow": "hidden"
+        }
     }
-  },
-  "style": {
-    "width": "100%",
-    "height": "100%",
-    "overflow": "hidden"
-  },
-  "innerStyle": {
-    "width": "100%",
-    "height": "100%",
-    "overflow": "hidden"
-  }
 }
 ```
 
@@ -1278,30 +1292,30 @@ In the Settings of the Web developer tools, you can create your own devices with
 
 ### Further options
 
-| option                   | description                                                                                                                                                                          |
-|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `type`                   | If element has no attribute `type`, assume it has default type 'panel'. Type of an element. For currently available options see [Common Control Elements:](#common-control-elements) |
-| `newLine`                | should be shown from new line                                                                                                                                                        |
-| `label`                  | String or object like {en: 'Name', ru: 'Имя'}                                                                                                                                        |
-| `hidden`                 | JS function that could use `native.attribute` for calculation                                                                                                                        |
-| `hideOnlyControl`        | if hidden the place will be shown, but no control                                                                                                                                    |
-| `disabled`               | JS function that could use `native.attribute` for calculation                                                                                                                        |
-| `help`                   | help text (multi-language)                                                                                                                                                           |
-| `helpLink`               | href to help (could be used only together with `help`)                                                                                                                               |
-| `style`                  | CSS style in ReactJS notation: `radiusBorder` and not `radius-border`.                                                                                                               |
-| `darkStyle`              | CSS style for dark mode                                                                                                                                                              |
-| `validator`              | JS function: true no error, false - error                                                                                                                                            |
-| `validatorErrorText`     | Text to show if validator fails                                                                                                                                                      |
-| `validatorNoSaveOnError` | disable save button if error                                                                                                                                                         |
-| `tooltip`                | optional tooltip                                                                                                                                                                     |
-| `default`                | default value                                                                                                                                                                        |
-| `defaultFunc`            | JS function to calculate default value                                                                                                                                               |
-| `placeholder`            | placeholder (for text control)                                                                                                                                                       |
-| `noTranslation`          | do not translate selects or other options (not for help, label or placeholder)                                                                                                       |
-| `onChange`               | Structure in form `{"alsoDependsOn": ["attr1", "attr2"], "calculateFunc": "data.attr1 + data.attr2", "ignoreOwnChanges": true}`                                                      |
-| `doNotSave`              | Do not save this attribute as used only for internal calculations                                                                                                                    |
-| `noMultiEdit`            | if this flag set to true, this field will not be shown if user selected more than one object for edit.                                                                               |
-| `expertMode`             | if this flag set to true, this field will be shown only if the expert mode is true  (from Admin 7.4.3)                                                                                                 |
+| option                   | description                                                                                                                                                                           |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `type`                   | If element has no attribute `type`, assume it has default type 'panel'. Type of an element. For currently available options see [Common Control Elements:](#common-control-elements)  |
+| `newLine`                | should be shown from new line                                                                                                                                                         |
+| `label`                  | String or object like {en: 'Name', ru: 'Имя'}                                                                                                                                         |
+| `hidden`                 | JS function that could use `native.attribute` for calculation                                                                                                                         |
+| `hideOnlyControl`        | if hidden the place will be shown, but no control                                                                                                                                     |
+| `disabled`               | JS function that could use `native.attribute` for calculation                                                                                                                         |
+| `help`                   | help text (multi-language)                                                                                                                                                            |
+| `helpLink`               | href to help (could be used only together with `help`)                                                                                                                                |
+| `style`                  | CSS style in ReactJS notation: `radiusBorder` and not `radius-border`.                                                                                                                |
+| `darkStyle`              | CSS style for dark mode                                                                                                                                                               |
+| `validator`              | JS function: true no error, false - error                                                                                                                                             |
+| `validatorErrorText`     | Text to show if validator fails                                                                                                                                                       |
+| `validatorNoSaveOnError` | disable save button if error                                                                                                                                                          |
+| `tooltip`                | optional tooltip                                                                                                                                                                      |
+| `default`                | default value                                                                                                                                                                         |
+| `defaultFunc`            | JS function to calculate default value                                                                                                                                                |
+| `placeholder`            | placeholder (for text control)                                                                                                                                                        |
+| `noTranslation`          | do not translate selects or other options (not for help, label or placeholder)                                                                                                        |
+| `onChange`               | Structure in form `{"alsoDependsOn": ["attr1", "attr2"], "calculateFunc": "data.attr1 + data.attr2", "ignoreOwnChanges": true}`                                                       |
+| `doNotSave`              | Do not save this attribute as used only for internal calculations                                                                                                                     |
+| `noMultiEdit`            | if this flag set to true, this field will not be shown if user selected more than one object for edit.                                                                                |
+| `expertMode`             | if this flag set to true, this field will be shown only if the expert mode is true  (from Admin 7.4.3)                                                                                |
 
 ### Options with detailed configuration
 
@@ -1379,7 +1393,7 @@ Component must look like
     schema={schema}
     customInstancesEditor={CustomInstancesEditor}
     data={common.native}
-    onError={(error, attribute) => error can be true/false or text. Attribute is optional}
+    onError={(error, attribute) => {/* error can be true/false or text. Attribute is optional */}}
     onChanged={(newData, isChanged) => console.log('Changed ' + isChanged)}
 />
 ```
@@ -1490,7 +1504,7 @@ The following variables are available in JS function in custom settings:
     theme={this.props.theme}
     name="accessAllowedConfigs"
     onChange={(newData, isChanged) => {}}
-    onError={error => error can be true/false or text}
+    onError={error => /* error can be true/false or text */ {}}
 />
 ```
 
@@ -1576,3 +1590,51 @@ Create an issue here: https://github.com/ioBroker/ioBroker.admin/issues
 
 ## For maintainer
 To update the location of JsonConfig schema, create pull request to this file: https://github.com/ioBroker/ioBroker.admin/blob/master/packages/jsonConfig/schemas/jsonConfig.json
+
+## For developer
+The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd9d7cc240fb4980625f0de6cf7bd8dfd06/src/api/json/catalog.json#L3214
+
+<!--
+	Placeholder for the next version (at the beginning of the line):
+	### **WORK IN PROGRESS**
+-->
+## Changelog
+### 8.0.6 (2025-11-10)
+- (@GermanBluefox) Added width to many table elements
+
+### 8.0.5 (2025-10-25)
+- (@GermanBluefox) Do not translate certificates names
+- (@GermanBluefox) Update packages
+
+### 8.0.3 (2025-10-23)
+- (@GermanBluefox) Do not translate certificates names
+
+### 8.0.2 (2025-10-23)
+- (@GermanBluefox) Renamed gui-components to adapter-react-v5
+
+### 8.0.1 (2025-10-23)
+- (@GermanBluefox) initial commit
+
+## License
+
+The MIT License (MIT)
+
+Copyright (c) 2019-2025 @GermanBluefox <dogafox@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

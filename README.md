@@ -77,6 +77,85 @@ You can add the following lines into Reverse Proxy tab to let Intro tab run behi
 
 So all links of instances that use web server, like `eventlist`, `vis`, `material` and so on will use `https://iobroker.mydomain.com/ioBrokerWeb/` path
 
+### Extended reverse proxy example (with screenshots)
+
+Below is a more complete example showing how a reverse proxy (e.g. Nginx Proxy Manager) can be configured and how the Admin UI resolves links after mapping.
+
+> NOTE: At the moment the admin UI itself still needs to be effectively served from the web root `/` of the host. login and other hardcoded urls do not yet respect another base path (see limitation discussion here: https://github.com/ioBroker/ioBroker.admin/issues/1660#issuecomment-2360056439).
+
+#### 1. Base host / root mapping
+
+Map the public root (or a dedicated host like `https://iobroker.example.com/`) directly to your Admin instance (default port 8081):
+
+<img src="assets/revproxy_nginxpm_root.png" alt="Nginx Proxy Manager: root mapping to admin" width="640" />
+
+#### 2. Custom locations for other services
+
+Add additional custom locations for web / REST / other adapter frontends. Each location forwards to the respective local port (e.g. web.0 on 8082, rest-api.0 on 8093):
+
+<img src="assets/revproxy_nginxpm_customlocations.png" alt="Nginx Proxy Manager: custom locations" width="640" />
+
+Example custom locations (Nginx style):
+```
+/web/  => http://LOCAL_IOBROKER_IP:8082/
+/welcome/  => http://LOCAL_IOBROKER_IP:PORT_CONFIGURED_IN_WELCOME_INSTANCE_SETTINGS/
+/esphome/  => http://LOCAL_IOBROKER_IP:6052/
+```
+If you have views imported from vis into vis-2, it is possible images / ... are still used from the old vis path. 
+In this case (or to be on the safe side - just also configuring them should not break other things) you probably also want to add these locations (NOTE: no trailing / here!):
+```
+/vis.0 => http://LOCAL_IOBROKER_IP:8082
+/vis/widgets => http://LOCAL_IOBROKER_IP:8082
+/vis-2/widgets => http://LOCAL_IOBROKER_IP:8082
+/icons-mfd-svg => http://LOCAL_IOBROKER_IP:8082
+/icons-material-png => http://LOCAL_IOBROKER_IP:8082
+```
+(Adjust paths/ports for your environment.)
+
+#### 3. Configure mappings in Admin Reverse Proxy tab
+
+Enter the same paths so that Intro / Instances pages rewrite adapter links correctly. Also add paths for all adapters running as web extension (like rest-api, ...). Obviously you only need to configure what you are actually using. Here are some examples:
+
+| Global path | Instance     | Instance path behind proxy |
+|-------------|--------------|----------------------------|
+| `/`         | `web.0`      | `/web/`                    |
+|             | `welcome.0`  | `/welcome/`                |
+|             | `rest-api.0` | `/web/rest-api/`           |
+|             | `esphome.0`  | `/esphome/`                |
+
+> If you keep Admin on `/` you usually do not need to list `admin.0`, but adding it does not hurt and can make intent explicit.
+
+After saving, the Intro screen rewrites links so that all web‑served adapters open under the correct prefixed paths:
+
+<img src="assets/revproxy_admin.png" alt="Admin Intro page after reverse proxy mapping" width="640" />
+
+#### 4. Limitations & compatibility
+
+* Admin root requirement: As stated above, full relocation of Admin itself under a sub‑path (e.g. `/admin/`) is not yet supported.
+* Adapter path awareness: Not every adapter UI is currently path‑aware. While generic `localLink` rewriting covers many cases, some UIs still assume they are hosted at the domain root. Known examples:
+  * `vis` (classic) – NOT fully working behind a sub‑path today.
+  * `vis-2` – generally more path tolerant, but custom widgets or legacy resources may still use absolute paths.
+  * Any adapter serving hard‑coded absolute URLs (starting with `/`) may need manual fixes until updated upstream. Please open issues in the respective adapter repositories to notify maintainers.
+* Mixed content: If you terminate TLS at the proxy (HTTPS) but contact adapters over HTTP internally, make sure all external links are rewritten to HTTPS to avoid browser mixed-content blocks.
+* WebSocket forwarding: Ensure `Upgrade` and `Connection` headers are passed through. In Nginx, this typically means adding:
+```
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+```
+(or checking the websocket support box, if using proxy manager)
+* Trailing slashes: Often a trailing slash in the mapped path (e.g. `/web/`) and location are required for path unaware adapters. 
+Then nginx does path rewriting, which makes most cases like the welcome adapter above work, because it only sees a / path -> correctly serves its index.html.
+
+#### 5. Quick troubleshooting checklist
+
+| Symptom                            | Likely cause                         | Action                                                                                                                                                       |
+|------------------------------------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Blank or partial Admin UI          | Admin mounted under sub‑path only    | Keep Admin at `/` (see limitation)                                                                                                                           |
+| Adapter link opens wrong host/port | Missing entry in Reverse Proxy tab   | Add mapping row and save                                                                                                                                     |
+| 404 for adapter JS/CSS             | Missing trailing slash in location   | Add trailing slash to location and mapping                                                                                                                   |
+| WebSocket errors in console        | Proxy not forwarding upgrade headers | Add `proxy_set_header Upgrade` / `Connection` headers                                                                                                        |
+| other (loading) issue              | Adapter not path‑aware               | Keep on root or wait for adapter update. Please open an issue in the adapters repository so the maintainers are aware about it and the issue can be tracked. |
+
 ## Used icons
 
 This project uses icons from [Flaticon](https://www.flaticon.com/).
@@ -89,36 +168,31 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-- (@copilot) Added logout dropdown menu to user icon for improved user experience
-- (@copilot) Updated OAuth2 documentation in DEVELOPER.md to include both cloud-based and direct callback approaches with clear guidance on when to use each method
-- (@copilot) Only show adapters with satisfied dependencies in update all dialog
-- (@copilot) Added new `readOnly` attribute for jsonEditor in jsonConfig - allows opening the editor to view JSON content without allowing modifications
-- (@GermanBluefox) Reading of same instances was optimized in GUI
-- (@GermanBluefox) Do not show the http page if admin is secured
-- (@GermanBluefox) Show loading progress for custom tabs
-- (@copilot) Add option to create instance after installation from git/npm/URL
+- (@GermanBluefox) Added support of device manager in the admin tabs
 
-### 7.7.2 (2025-07-22)
-- (@GermanBluefox) Fixing change of the language in the admin
+### 7.7.22 (2025-12-15)
+- (@GermanBluefox) Layout fix in the edit object dialog
 
-### 7.7.1 (2025-06-20)
-- (@GermanBluefox) Fixing clearing of the filter on the object tab
+### 7.7.20 (2025-11-15)
+- (@GermanBluefox) Small optimizations
+- (@GermanBluefox) Allowed to upload objects via text
 
-### 7.7.0 (2025-06-17)
-- (@foxriver76) Added the concept for single-side-on authentication (SSO)
+### 7.7.19 (2025-10-26)
+- (@GermanBluefox) Updated schema location for JsonConfig
 
-### 7.6.20 (2025-06-16)
-- (@GermanBluefox) Allowed using of * in the filter of objects
-- (@GermanBluefox) Small GUI improvements
+### 7.7.18 (2025-10-25)
+- (@GermanBluefox) Improvement of categories: drag&drop, visibility
+- (@copilot) Added missing filterFunc property to jsonConfig objectId schema to match documentation and implementation
+- (@copilot, @SimonFischer04) Added extended reverse proxy example section with screenshots, limitations (admin root requirement), and adapter compatibility notes
+- (@copilot, @SimonFischer04) Fixed instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)
+- (@copilot, @SimonFischer04) Fixed intro page reverse proxy link remapping so links are correctly rewritten immediately and after navigating away and back (load reverseProxy config before instance scan and use prefix startsWith matching)
+- (@GermanBluefox) Fixed multi-selection in the select ID dialog
 
-### 7.6.19 (2025-06-08)
-
-- (@GermanBluefox) Improvements on JSONConfig component `state`
-- (@GermanBluefox) Added `infoBox` JSONConfig component
-- (@Jey-Cee) Added the room selection to the wizard
+### 7.7.3 (2025-09-25)
+- Many GUI changes: See previous changelog below for details
 
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2025 bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>

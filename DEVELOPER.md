@@ -4,20 +4,17 @@
 
 If you want to contribute to the Admin adapter, follow these steps:
 
-Install all packages all in one via
+Install all packages all-in-one via
 
 ```bash
-npm run install-monorepo
+npm run npm
 ```
 
 or step-by-step
 
 ```bash
 npm i -f
-npm i -w packages/adapter-react-v5 -f
-npm i -w packages/jsonConfig -f
-npm i -w packages/dm-gui-components -f
-npm i -w packages/admin -f
+cd src-admin && npm i -f && cd ..
 ```
 
 Build the project

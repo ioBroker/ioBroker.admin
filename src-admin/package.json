@@ -1,0 +1,111 @@
+{
+    "name": "src-rx",
+    "private": true,
+    "homepage": ".",
+    "type": "module",
+    "scripts": {
+        "clean": "rimraf build",
+        "start": "vite --port 3000",
+        "lint": "eslint -c eslint.config.mjs src",
+        "build": "vite build",
+        "preview": "vite preview --port 3000",
+        "check-ts": "tsc --noEmit --checkJS false",
+        "tsc": "tsc --project tsconfig.json",
+        "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}",
+        "npm": "npm i -f",
+        "update-packages": "npx -y npm-check-updates --upgrade"
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not op_mini all"
+    ],
+    "dependencies": {
+        "@iobroker/adapter-react-v5": "^8.0.13",
+        "@iobroker/dm-gui-components": "^8.0.4",
+        "@iobroker/json-config": "^8.0.6",
+        "ace-builds": "^1.43.5",
+        "http-proxy-middleware": "^3.0.5"
+    },
+    "devDependencies": {
+        "@devbookhq/splitter": "^1.4.2",
+        "@fnando/sparkline": "^0.3.10",
+        "@foxriver76/iob-component-lib": "^0.2.0",
+        "@honkhonk/vite-plugin-svgr": "^1.1.0",
+        "@iobroker/dm-utils": "^1.0.13",
+        "@iobroker/socket-client": "^5.0.3",
+        "@module-federation/runtime": "^0.21.6",
+        "@module-federation/vite": "^1.9.3",
+        "@originjs/vite-plugin-commonjs": "^1.0.3",
+        "@react-leaflet/core": "^3.0.0",
+        "@tsconfig/node16": "^16.1.8",
+        "@types/ace": "^0.0.52",
+        "@types/crypto-js": "^4.2.2",
+        "@types/leaflet": "^1.9.21",
+        "@types/less": "^3.0.8",
+        "@types/lodash": "^4.17.21",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "^25.0.2",
+        "@types/react": "^18.3.27",
+        "@types/react-color": "^3.0.13",
+        "@types/react-dom": "^18.3.7",
+        "@vitejs/plugin-react": "^5.1.2",
+        "buffer": "^6.0.3",
+        "cron-parser": "^5.4.0",
+        "crypto-js": "^4.2.0",
+        "date-fns": "^4.1.0",
+        "echarts": "^5.6.0",
+        "echarts-for-react": "^3.0.5",
+        "ipaddr.js": "^2.3.0",
+        "json5": "^2.2.3",
+        "leaflet": "^1.9.4",
+        "leaflet-geosearch": "^4.2.2",
+        "less": "^4.4.2",
+        "lodash": "^4.17.21",
+        "moment": "^2.30.1",
+        "monaco-editor": "^0.55.1",
+        "react": "^18.3.1",
+        "react-ace": "^13.0.0",
+        "react-dnd": "^16.0.1",
+        "react-dnd-html5-backend": "^16.0.1",
+        "react-dnd-multi-backend": "^9.0.0",
+        "react-dnd-preview": "^9.0.0",
+        "react-dnd-touch-backend": "^16.0.1",
+        "react-dom": "^18.3.1",
+        "react-icons": "~5.5.0",
+        "react-leaflet": "^4.2.1",
+        "react-markdown": "^9.1.0",
+        "react-monaco-editor": "^0.59.0",
+        "react-qr-code": "^2.0.18",
+        "react-showdown": "^2.3.1",
+        "react-sortable-hoc": "^2.0.0",
+        "semver": "^7.7.3",
+        "tsconfig-paths-webpack-plugin": "^4.2.0",
+        "vite": "7.2.7",
+        "vite-plugin-commonjs": "^0.10.4",
+        "vite-plugin-svgr": "^4.5.0",
+        "vite-tsconfig-paths": "^5.1.4"
+    },
+    "resolutions": {
+        "webpack": "5.95.0"
+    },
+    "proxya": "http://127.0.0.1:8081",
+    "plugins": [
+        [
+            "@babel/plugin-proposal-decorators",
+            {
+                "legacy": true
+            }
+        ],
+        [
+            "@babel/plugin-proposal-class-properties",
+            {
+                "loose": true
+            }
+        ]
+    ],
+    "version": "7.7.22"
+}
