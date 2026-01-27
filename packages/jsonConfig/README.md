@@ -53,7 +53,7 @@ This guide explains how to define configuration options for your ioBroker adapte
 }
 ```
 
-_If the attribute name starts with "\_" it will not be saved in the object._
+_If the attribute name starts with "\_", it will not be saved in the object._
 
 ## Example of a jsonConfig with multiple tabs
 
@@ -472,10 +472,10 @@ or
 
 ### `autocomplete`
 
-| Property   | Description                                                                                                   |
-|------------|---------------------------------------------------------------------------------------------------------------|
-| `options`  | `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]` (keys must be unique) |
-| `freeSolo` | Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.                                     |
+| Property   | Description                                                                                                                      |
+|------------|----------------------------------------------------------------------------------------------------------------------------------|
+| `options`  | `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]` (keys and names (values) must be unique) |
+| `freeSolo` | Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.                                                        |
 
 ### `image`
 
@@ -894,7 +894,7 @@ only Admin6.
 
 ### `imageSendTo`
 
-shows image that was received from backend as base64 string
+shows the image received from the backend as base64 string
 
 | Property   | Description                                                                                                                                                 |
 |------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1003,7 +1003,7 @@ Shows autocomplete control with the given from the instance values.
 
 To use this option, your adapter must implement message handler:
 
-The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]` (keys must be unique)
+The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]` (keys and names (values) must be unique)
 See `selectSendTo` for handler example
 
 ### `textSendTo`
@@ -1589,7 +1589,7 @@ onMessage = (obj: ioBroker.Message): void => {
 Create an issue here: https://github.com/ioBroker/ioBroker.admin/issues
 
 ## For maintainer
-To update the location of JsonConfig schema, create pull request to this file: https://github.com/ioBroker/ioBroker.admin/blob/master/packages/jsonConfig/schemas/jsonConfig.json
+To update the location of JsonConfig schema, create a pull request to this file: https://github.com/ioBroker/ioBroker.admin/blob/master/packages/jsonConfig/schemas/jsonConfig.json
 
 ## For developer
 The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd9d7cc240fb4980625f0de6cf7bd8dfd06/src/api/json/catalog.json#L3214
@@ -1599,6 +1599,13 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.0.8 (2026-01-27)
+- (@GermanBluefox) Fixing the `alive` component
+- (@GermanBluefox) Fixing the `datePicker` component
+
+### 8.0.7 (2026-01-27)
+- (@GermanBluefox) Updated adapter-react-v5
+
 ### 8.0.6 (2025-11-10)
 - (@GermanBluefox) Added width to many table elements
 
@@ -1619,7 +1626,7 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 
 The MIT License (MIT)
 
-Copyright (c) 2019-2025 @GermanBluefox <dogafox@gmail.com>
+Copyright (c) 2019-2026 @GermanBluefox <dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

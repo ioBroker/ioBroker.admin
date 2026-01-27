@@ -169,6 +169,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Added support of device manager in the admin tabs
+- (@GermanBluefox) Corrected JSON Config issues
 
 ### 7.7.22 (2025-12-15)
 - (@GermanBluefox) Layout fix in the edit object dialog

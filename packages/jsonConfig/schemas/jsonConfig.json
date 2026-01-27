@@ -13,6 +13,132 @@
       },
       "additionalProperties": false
     },
+    "customFilter": {
+      "type": "object",
+      "description": "JSON schema for the ObjectBrowserCustomFilter interface from TypeScript.\n\nNote: ioBroker-specific enums (e.g., ObjectType, CommonType) are allowed here as strings or arrays of strings; typical values are mentioned in the description.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "Object type(s) in Object Browser, e.g., 'state', 'channel', 'device'. Can be a string or an array of strings.",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": [
+                "state",
+                "channel",
+                "device",
+                "folder",
+                "meta",
+                "adapter",
+                "instance",
+                "host",
+                "enum",
+                "group",
+                "user",
+                "script",
+                "chart",
+                "schedule"
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "state",
+                  "channel",
+                  "device",
+                  "folder",
+                  "meta",
+                  "adapter",
+                  "instance",
+                  "host",
+                  "enum",
+                  "group",
+                  "user",
+                  "script",
+                  "chart",
+                  "schedule"
+                ]
+              },
+              "minItems": 1
+            }
+          ]
+        },
+        "common": {
+          "description": "Filter on common.* properties of the object (e.g., type, role, custom)",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "description": "Data type of the state, e.g., 'number', 'string', 'boolean', 'object', 'array', 'mixed'. Accepts string or array of strings.",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "number",
+                    "string",
+                    "boolean",
+                    "object",
+                    "array",
+                    "mixed"
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "number",
+                      "string",
+                      "boolean",
+                      "object",
+                      "array",
+                      "mixed"
+                    ]
+                  },
+                  "minItems": 1
+                }
+              ]
+            },
+            "role": {
+              "description": "Role(s) of the state, e.g., 'switch', 'button' or beginning of roles. String or array of strings.",
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                }
+              ]
+            },
+            "custom": {
+              "description": "Special filter for common.custom:\n- \"_\" => no custom set (literal underscore)\n- \"_dataSources\" => only data sources (history/sql/influx etc.)\n- true => any non-empty custom\n- \"adapter.\" or \"adapter.0\" or general string => specific custom (or prefix)\nAccepts: boolean true, string or array of strings.",
+              "oneOf": [
+                {
+                  "type": "boolean",
+                  "const": true
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
     "i18n": {
       "description": "If translations will be provided via files, e.g. in admin/i18n/de/translations.json or provide the path to the i18n folder if it's custom or provide the translations inside this attribute as an object",
       "oneOf": [
@@ -1205,7 +1331,14 @@
         },
         "customFilter": {
           "description": "Cannot be used together with `types` settings. Example: `{type: ['channel', 'device']}` - show only channels and devices",
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/customFilter"
+            }
+          ]
         },
         "filterFunc": {
           "description": "Cannot be used together with `types` settings. It is a function that will be called for every object and must return true or false. Example: `obj.common.type === 'number'`",
@@ -2471,8 +2604,15 @@
                 {
                   "properties": {
                     "accept": {
-                      "description": "HTML accept attribute, like { 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }",
-                      "type": "object"
+                      "description": "HTML accept attribute, like { 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }. String is possible, but deprecated",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object"
+                        }
+                      ]
                     },
                     "crop": {
                       "description": "If true, allow user to crop the image (only for non svg)",
@@ -4541,7 +4681,14 @@
                 },
                 "customFilter": {
                   "description": "Cannot be used together with `types` settings. Example: `{type: ['channel', 'device']}` - show only channels and devices",
-                  "type": "string"
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/customFilter"
+                    }
+                  ]
                 },
                 "placeholder": {
                   "description": "Placeholder (for text control)",
@@ -5826,8 +5973,15 @@
                   "then": {
                     "properties": {
                       "accept": {
-                        "description": "HTML accept attribute, like { 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }",
-                        "type": "object"
+                        "description": "HTML accept attribute, like { 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }. String is possible, but deprecated",
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object"
+                          }
+                        ]
                       },
                       "crop": {
                         "description": "If true, allow user to crop the image (only for non svg)",

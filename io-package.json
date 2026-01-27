@@ -31,19 +31,6 @@
         "uk": "Налаштування макета у діалоговому вікні редагування об'єкта",
         "zh-cn": "编辑对象对话框中的布局修正"
       },
-      "7.7.21": {
-        "en": "Layout fix in edit object dialog",
-        "de": "Layout fix in Objekt bearbeiten Dialog",
-        "ru": "Установка исправления в диалоге объектов редактирования",
-        "pt": "Corrigir a disposição na janela de edição do objecto",
-        "nl": "Opmaakfix in het dialoogvenster Bewerken van objecten",
-        "fr": "Disposition de la correction dans la boîte de dialogue d'édition des objets",
-        "it": "Layout corretto nella finestra di dialogo oggetto di modifica",
-        "es": "Ajuste en el diálogo de objeto de edición",
-        "pl": "Naprawianie układu w oknie edycji obiektu",
-        "uk": "Налаштування макета у діалоговому вікні редагування об'єкта",
-        "zh-cn": "编辑对象对话框中的布局修正"
-      },
       "7.7.20": {
         "en": "Small optimizations\nAllowed to upload objects via text",
         "de": "Kleine Optimierungen\nErlaubt, Objekte per Text hochzuladen",
