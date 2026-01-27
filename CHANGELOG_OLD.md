@@ -1,4 +1,7 @@
 # Older changes
+## 7.7.3 (2025-09-25)
+- Many GUI changes: See previous changelog below for details
+
 ## 7.7.2 (2025-09-24)
 - (@copilot) Fixed JSONCONFIG table validator bug where validation errors persisted after deleting table rows
 - (@GermanBluefox) Made small fix for JsonConfig component `state`

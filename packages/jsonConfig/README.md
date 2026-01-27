@@ -246,7 +246,7 @@ admin/i18n/de.json
 admin/i18n/en.json
 ```
 
-Additionally, user can provide the path to `i18n` files, `i18n`: `customI18n` and provide files in admin (admin >= 7.7.20):
+Additionally, user can provide the path to `i18n` files, `i18n`: `customI18n` and provide files in admin:
 
 ```json5
   "i18n": "customI18n",
