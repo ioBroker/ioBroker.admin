@@ -167,8 +167,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added support of device manager in the admin tabs
+
 ### 7.7.22 (2025-12-15)
-- (@GermanBluefox) Layout fix in edit object dialog
+- (@GermanBluefox) Layout fix in the edit object dialog
 
 ### 7.7.20 (2025-11-15)
 - (@GermanBluefox) Small optimizations
@@ -192,4 +195,4 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2025 bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>
