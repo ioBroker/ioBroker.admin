@@ -59,7 +59,7 @@ const STYLES: Record<string, Style> = {
     107: { backgroundColor: 'white' }, // ANSI_BRIGHT_BG_WHITE
 };
 
-class AdminUtils {
+export default class AdminUtils {
     /**
      * Perform JSON parse/stringify with type inference
      *
@@ -213,32 +213,32 @@ class AdminUtils {
         if (obj?.common) {
             if (!obj.common.adminUI) {
                 if (obj.common.noConfig) {
-                    obj.common.adminUI = obj.common.adminUI || {};
+                    obj.common.adminUI ||= {};
                     obj.common.adminUI.config = 'none';
                 } else if (obj.common.jsonConfig) {
-                    obj.common.adminUI = obj.common.adminUI || {};
+                    obj.common.adminUI ||= {};
                     obj.common.adminUI.config = 'json';
                 } else if (obj.common.materialize) {
-                    obj.common.adminUI = obj.common.adminUI || {};
+                    obj.common.adminUI ||= {};
                     obj.common.adminUI.config = 'materialize';
                 } else {
-                    obj.common.adminUI = obj.common.adminUI || {};
+                    obj.common.adminUI ||= {};
                     obj.common.adminUI.config = 'html';
                 }
 
                 if (obj.common.jsonCustom) {
-                    obj.common.adminUI = obj.common.adminUI || {};
+                    obj.common.adminUI ||= {};
                     obj.common.adminUI.custom = 'json';
                 } else if (obj.common.supportCustoms) {
-                    obj.common.adminUI = obj.common.adminUI || {};
+                    obj.common.adminUI ||= {};
                     obj.common.adminUI.custom = 'json';
                 }
 
                 if (obj.common.materializeTab && obj.common.adminTab) {
-                    obj.common.adminUI = obj.common.adminUI || {};
+                    obj.common.adminUI ||= {};
                     obj.common.adminUI.tab = 'materialize';
                 } else if (obj.common.adminTab) {
-                    obj.common.adminUI = obj.common.adminUI || {};
+                    obj.common.adminUI ||= {};
                     obj.common.adminUI.tab = 'html';
                 }
 
@@ -352,8 +352,8 @@ class AdminUtils {
     static SUPPORTED_DOC_LANGUAGES: ioBroker.Languages[] = ['en', 'de', 'ru', 'zh-cn'];
 
     static checkPassword(password: string, passwordRepeat?: string): false | string {
-        password = password || '';
-        passwordRepeat = passwordRepeat || '';
+        password ||= '';
+        passwordRepeat ||= '';
         if (
             password &&
             passwordRepeat &&
@@ -509,5 +509,3 @@ class AdminUtils {
         };
     }
 }
-
-export default AdminUtils;

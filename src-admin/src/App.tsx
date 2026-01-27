@@ -2859,17 +2859,16 @@ class App extends Router<AppProps, AppState> {
                                     style={styles.wrapperName}
                                 >
                                     <Typography>admin</Typography>
-                                    {!this.adminGuiConfig.icon &&
-                                        this.state.versionAdmin && (
-                                            <Typography
-                                                style={{
-                                                    ...styles.styleVersion,
-                                                    color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080',
-                                                }}
-                                            >
-                                                v{this.state.versionAdmin}
-                                            </Typography>
-                                        )}
+                                    {!this.adminGuiConfig.icon && this.state.versionAdmin && (
+                                        <Typography
+                                            style={{
+                                                ...styles.styleVersion,
+                                                color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080',
+                                            }}
+                                        >
+                                            v{this.state.versionAdmin}
+                                        </Typography>
+                                    )}
                                 </Box>
                             ) : null}
                             <Grid>

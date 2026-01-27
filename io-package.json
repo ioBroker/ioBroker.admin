@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.20",
+    "version": "7.7.22",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,32 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.22": {
+        "en": "Layout fix in edit object dialog",
+        "de": "Layout fix in Objekt bearbeiten Dialog",
+        "ru": "Установка исправления в диалоге объектов редактирования",
+        "pt": "Corrigir a disposição na janela de edição do objecto",
+        "nl": "Opmaakfix in het dialoogvenster Bewerken van objecten",
+        "fr": "Disposition de la correction dans la boîte de dialogue d'édition des objets",
+        "it": "Layout corretto nella finestra di dialogo oggetto di modifica",
+        "es": "Ajuste en el diálogo de objeto de edición",
+        "pl": "Naprawianie układu w oknie edycji obiektu",
+        "uk": "Налаштування макета у діалоговому вікні редагування об'єкта",
+        "zh-cn": "编辑对象对话框中的布局修正"
+      },
+      "7.7.21": {
+        "en": "Layout fix in edit object dialog",
+        "de": "Layout fix in Objekt bearbeiten Dialog",
+        "ru": "Установка исправления в диалоге объектов редактирования",
+        "pt": "Corrigir a disposição na janela de edição do objecto",
+        "nl": "Opmaakfix in het dialoogvenster Bewerken van objecten",
+        "fr": "Disposition de la correction dans la boîte de dialogue d'édition des objets",
+        "it": "Layout corretto nella finestra di dialogo oggetto di modifica",
+        "es": "Ajuste en el diálogo de objeto de edición",
+        "pl": "Naprawianie układu w oknie edycji obiektu",
+        "uk": "Налаштування макета у діалоговому вікні редагування об'єкта",
+        "zh-cn": "编辑对象对话框中的布局修正"
+      },
       "7.7.20": {
         "en": "Small optimizations\nAllowed to upload objects via text",
         "de": "Kleine Optimierungen\nErlaubt, Objekte per Text hochzuladen",
@@ -82,32 +108,6 @@
         "pl": "Ustawienie zmiany języka w administratorze",
         "uk": "Виправлення зміни мови в адміні",
         "zh-cn": "修改管理语言"
-      },
-      "7.7.1": {
-        "en": "Fixing clearing of the filter on the object tab",
-        "de": "Festlegen des Löschens des Filters auf der Objekt-Tab",
-        "ru": "Фиксация очистки фильтра на вкладке объекта",
-        "pt": "Corrigindo a limpeza do filtro na aba objeto",
-        "nl": "Repareren van het filter op het objecttabblad",
-        "fr": "Correction de la suppression du filtre dans l'onglet objet",
-        "it": "Fissare la compensazione del filtro sulla scheda oggetto",
-        "es": "Fijación del filtro en la pestaña objeto",
-        "pl": "Ustawienie odczytu filtra na zakładce obiektu",
-        "uk": "Виправлення очищення фільтра на вкладці об'єкта",
-        "zh-cn": "正在修复对象标签上的过滤器"
-      },
-      "7.7.0": {
-        "en": "Added the concept for single-side-on authentication (SSO)",
-        "de": "Hinzugefügte das Konzept zur einseitigen Authentifizierung (SSO)",
-        "ru": "Добавлена концепция односторонней аутентификации (SSO)",
-        "pt": "Adicionado o conceito de autenticação unilaterais (SSO)",
-        "nl": "Het concept voor eenmalige authenticatie (SSO) toegevoegd",
-        "fr": "Ajout du concept d'authentification simple face-à-face (SSO)",
-        "it": "Aggiunto il concetto per l'autenticazione single-side-on (SSO)",
-        "es": "Añadido el concepto para la autenticación unilateral (SSO)",
-        "pl": "Dodano koncepcję jednostronnego uwierzytelniania (SSO)",
-        "uk": "Додана концепція для односторонньої автентифікації (SSO)",
-        "zh-cn": "添加了单侧认证( SSO) 的概念"
       }
     },
     "desc": {
@@ -154,7 +154,7 @@
     "icon": "admin.svg",
     "messagebox": true,
     "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.svg",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.svg",
     "keywords": [
       "setup",
       "config",

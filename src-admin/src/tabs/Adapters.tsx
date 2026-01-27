@@ -382,9 +382,9 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
     }
 
     onAdaptersChanged = (events: (AdapterEvent | InstanceEvent)[]): void => {
-        this.tempAdapters = this.tempAdapters || JSON.parse(JSON.stringify(this.state.adapters || {}));
-        this.tempInstalled = this.tempInstalled || JSON.parse(JSON.stringify(this.state.installed || {}));
-        this.tempInstances = this.tempInstances || JSON.parse(JSON.stringify(this.state.compactInstances || {}));
+        this.tempAdapters ||= JSON.parse(JSON.stringify(this.state.adapters || {}));
+        this.tempInstalled ||= JSON.parse(JSON.stringify(this.state.installed || {}));
+        this.tempInstances ||= JSON.parse(JSON.stringify(this.state.compactInstances || {}));
 
         events.forEach(event => {
             // detect if adapter or instance
@@ -462,10 +462,10 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         const { cb, installedLocal } = options;
         let { installedGlobal } = options;
 
-        adapters = adapters || this.state.adapters;
+        adapters ||= this.state.adapters;
         const installed = installedLocal || this.state.installed;
-        installedGlobal = installedGlobal || this.state.installedGlobal;
-        repository = repository || this.state.repository;
+        installedGlobal ||= this.state.installedGlobal;
+        repository ||= this.state.repository;
 
         const updateAvailable: string[] = [];
 
@@ -636,8 +636,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         list.sort((a, b) => {
             if (sortPopularFirst) {
                 if (adapters[b].stat === adapters[a].stat) {
-                    titles[a] = titles[a] || Adapters.getAdapterTitle(a, adapters, lang);
-                    titles[b] = titles[b] || Adapters.getAdapterTitle(b, adapters, lang);
+                    titles[a] ||= Adapters.getAdapterTitle(a, adapters, lang);
+                    titles[b] ||= Adapters.getAdapterTitle(b, adapters, lang);
 
                     return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
                 }
@@ -651,8 +651,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     return 1;
                 }
                 if ((adapters[a] as AdapterCacheEntry).daysAgo === (adapters[b] as AdapterCacheEntry).daysAgo) {
-                    titles[a] = titles[a] || Adapters.getAdapterTitle(a, adapters, lang);
-                    titles[b] = titles[b] || Adapters.getAdapterTitle(b, adapters, lang);
+                    titles[a] ||= Adapters.getAdapterTitle(a, adapters, lang);
+                    titles[b] ||= Adapters.getAdapterTitle(b, adapters, lang);
 
                     return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
                 }
@@ -672,8 +672,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 if (sortByName) {
                     return a > b ? 1 : a < b ? -1 : 0;
                 }
-                titles[a] = titles[a] || Adapters.getAdapterTitle(a, adapters, lang);
-                titles[b] = titles[b] || Adapters.getAdapterTitle(b, adapters, lang);
+                titles[a] ||= Adapters.getAdapterTitle(a, adapters, lang);
+                titles[b] ||= Adapters.getAdapterTitle(b, adapters, lang);
 
                 return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
             }
@@ -688,8 +688,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 return a > b ? 1 : a < b ? -1 : 0;
             }
             // sort by real language name and not by adapter name
-            titles[a] = titles[a] || Adapters.getAdapterTitle(a, adapters, lang);
-            titles[b] = titles[b] || Adapters.getAdapterTitle(b, adapters, lang);
+            titles[a] ||= Adapters.getAdapterTitle(a, adapters, lang);
+            titles[b] ||= Adapters.getAdapterTitle(b, adapters, lang);
 
             return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
         });
@@ -701,8 +701,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         hostData?: HostInfo,
         compactRepositories?: CompactSystemRepository | null,
     ): Promise<void> {
-        hostData = hostData || this.state.hostData;
-        ratings = ratings || this.state.ratings;
+        hostData ||= this.state.hostData;
+        ratings ||= this.state.ratings;
         compactInstances = compactInstances || this.state.compactInstances;
         if (!compactRepositories?._id) {
             compactRepositories = this.state.compactRepositories;
@@ -779,6 +779,10 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 return;
             }
             const adapter: RepoAdapterObject & { rating?: AdapterRatingInfo } = repository[adapterName];
+            if (typeof adapter !== 'object') {
+                console.error(`[${adapterName}] ${adapterName} is not an object.`);
+                return;
+            }
             if (adapter.keywords) {
                 adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
             }
@@ -791,7 +795,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     `${this.t('Total rating:')} ${adapter.rating.rating.r} (${
                         adapter.rating.rating.c
                     } ${this.getWordVotes(adapter.rating.rating.c)})`,
-                    _installed && _installed.version && adapter.rating[_installed.version]
+                    _installed?.version && adapter.rating[_installed.version]
                         ? `${this.t('Rating for')} v${_installed.version}: ${adapter.rating[_installed.version].r} (${
                               adapter.rating[_installed.version].c
                           } ${this.getWordVotes(adapter.rating.rating.c)})`

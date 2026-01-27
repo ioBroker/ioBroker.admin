@@ -97,20 +97,30 @@ Add additional custom locations for web / REST / other adapter frontends. Each l
 
 Example custom locations (Nginx style):
 ```
-/location /web/  => http://LOCAL_IOBROKER_IP:8082/
-/location /welcome/  => http://LOCAL_IOBROKER_IP:1234/
-/location /esphome/  => http://LOCAL_IOBROKER_IP:6052/
+/web/  => http://LOCAL_IOBROKER_IP:8082/
+/welcome/  => http://LOCAL_IOBROKER_IP:PORT_CONFIGURED_IN_WELCOME_INSTANCE_SETTINGS/
+/esphome/  => http://LOCAL_IOBROKER_IP:6052/
+```
+If you have views imported from vis into vis-2, it is possible images / ... are still used from the old vis path. 
+In this case (or to be on the safe side - just also configuring them should not break other things) you probably also want to add these locations (NOTE: no trailing / here!):
+```
+/vis.0 => http://LOCAL_IOBROKER_IP:8082
+/vis/widgets => http://LOCAL_IOBROKER_IP:8082
+/vis-2/widgets => http://LOCAL_IOBROKER_IP:8082
+/icons-mfd-svg => http://LOCAL_IOBROKER_IP:8082
+/icons-material-png => http://LOCAL_IOBROKER_IP:8082
 ```
 (Adjust paths/ports for your environment.)
 
 #### 3. Configure mappings in Admin Reverse Proxy tab
 
-Enter the same paths so that Intro / Instances pages rewrite adapter links correctly:
+Enter the same paths so that Intro / Instances pages rewrite adapter links correctly. Also add paths for all adapters running as web extension (like rest-api, ...). Obviously you only need to configure what you are actually using. Here are some examples:
 
 | Global path | Instance     | Instance path behind proxy |
 |-------------|--------------|----------------------------|
 | `/`         | `web.0`      | `/web/`                    |
-|             | `rest-api.0` | `/api/`                    |
+|             | `welcome.0`  | `/welcome/`                |
+|             | `rest-api.0` | `/web/rest-api/`           |
 |             | `esphome.0`  | `/esphome/`                |
 
 > If you keep Admin on `/` you usually do not need to list `admin.0`, but adding it does not hurt and can make intent explicit.
@@ -125,26 +135,26 @@ After saving, the Intro screen rewrites links so that all web‑served adapters 
 * Adapter path awareness: Not every adapter UI is currently path‑aware. While generic `localLink` rewriting covers many cases, some UIs still assume they are hosted at the domain root. Known examples:
   * `vis` (classic) – NOT fully working behind a sub‑path today.
   * `vis-2` – generally more path tolerant, but custom widgets or legacy resources may still use absolute paths.
-  * Any adapter serving hard‑coded absolute URLs (starting with `/`) may need manual fixes until updated upstream.
+  * Any adapter serving hard‑coded absolute URLs (starting with `/`) may need manual fixes until updated upstream. Please open issues in the respective adapter repositories to notify maintainers.
 * Mixed content: If you terminate TLS at the proxy (HTTPS) but contact adapters over HTTP internally, make sure all external links are rewritten to HTTPS to avoid browser mixed-content blocks.
 * WebSocket forwarding: Ensure `Upgrade` and `Connection` headers are passed through. In Nginx, this typically means adding:
 ```
 proxy_set_header Upgrade $http_upgrade;
 proxy_set_header Connection "upgrade";
 ```
-(old checking the websocket support box, if using proxy manager)
-* Trailing slashes: Always keep a trailing slash in the mapped path (e.g. `/web/`) and location, so nginx does path rewriting. 
-This makes simple cases like the welcome adapter above work, because it only sees a / path -> correctly serves its index.html.
+(or checking the websocket support box, if using proxy manager)
+* Trailing slashes: Often a trailing slash in the mapped path (e.g. `/web/`) and location are required for path unaware adapters. 
+Then nginx does path rewriting, which makes most cases like the welcome adapter above work, because it only sees a / path -> correctly serves its index.html.
 
 #### 5. Quick troubleshooting checklist
 
-| Symptom                            | Likely cause                         | Action                                                |
-|------------------------------------|--------------------------------------|-------------------------------------------------------|
-| Blank or partial Admin UI          | Admin mounted under sub‑path only    | Keep Admin at `/` (see limitation)                    |
-| Adapter link opens wrong host/port | Missing entry in Reverse Proxy tab   | Add mapping row and save                              |
-| 404 for adapter JS/CSS             | Missing trailing slash in location   | Add trailing slash to location and mapping            |
-| WebSocket errors in console        | Proxy not forwarding upgrade headers | Add `proxy_set_header Upgrade` / `Connection` headers |
-| vis UI broken                      | Adapter not path‑aware               | Keep on root or wait for adapter update               |
+| Symptom                            | Likely cause                         | Action                                                                                                                                                       |
+|------------------------------------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Blank or partial Admin UI          | Admin mounted under sub‑path only    | Keep Admin at `/` (see limitation)                                                                                                                           |
+| Adapter link opens wrong host/port | Missing entry in Reverse Proxy tab   | Add mapping row and save                                                                                                                                     |
+| 404 for adapter JS/CSS             | Missing trailing slash in location   | Add trailing slash to location and mapping                                                                                                                   |
+| WebSocket errors in console        | Proxy not forwarding upgrade headers | Add `proxy_set_header Upgrade` / `Connection` headers                                                                                                        |
+| other (loading) issue              | Adapter not path‑aware               | Keep on root or wait for adapter update. Please open an issue in the adapters repository so the maintainers are aware about it and the issue can be tracked. |
 
 ## Used icons
 
@@ -157,6 +167,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added support of device manager in the admin tabs
+
+### 7.7.22 (2025-12-15)
+- (@GermanBluefox) Layout fix in the edit object dialog
+
 ### 7.7.20 (2025-11-15)
 - (@GermanBluefox) Small optimizations
 - (@GermanBluefox) Allowed to upload objects via text
@@ -174,46 +190,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.7.3 (2025-09-25)
 - Many GUI changes: See previous changelog below for details
-
-### 7.7.2 (2025-09-24)
-- (@copilot) Fixed JSONCONFIG table validator bug where validation errors persisted after deleting table rows
-- (@GermanBluefox) Made small fix for JsonConfig component `state`
-- (@copilot) Fixed repository refresh issue: repositories are now automatically refreshed when switching repository source (stable/latest) without requiring manual "Check for updates"
-- (@copilot) Added CSV file editing support in file browser - CSV files can now be edited directly in the file manager
-- (@copilot) Implemented sortable columns for instances table (name, status, memory, ID, host, loglevel)
-- (@copilot) Fixed adapter license icon linking to use commercial license URL instead of GitHub license
-- (@copilot) Fixed license icon spacing in list view to maintain consistent layout
-- (@GermanBluefox) Allows entering minus values with JsonConfig number component
-- (@copilot) Fixed textIP checkbox inconsistency between Objects and States tabs for the same host configuration
-- (@GermanBluefox) Added icon to `www` folder for windows
-- (@copilot) Confirmed and documented Copilot issue handling guidelines: PRs use neutral language (no "fixes" keywords), issues closed manually by maintainers, and "fixed" labels added when appropriate
-- (@copilot) Enhanced Copilot instructions to make issue management policy more prominent - no auto-closing issues, manual validation required
-- (@copilot) Enhanced repository timestamp display to show both generated and read timestamps - shows when repository data was generated and when it was last read by admin backend
-- (@copilot) Fixed jsonConfig port validation to properly account for bind addresses, allowing the same port on different IP addresses
-- (@copilot) Added error indicators to JSON Config tabs and accordions to improve the visibility of validation errors
-- (@copilot) Added export/import functionality for accordion sections in JsonConfig allowing users to save accordion data as JSON files and import them back with replace or add options
-- (@copilot) Fixed time difference warning that incorrectly appeared when the browser tab was inactive for a while
-- (@copilot) For GitHub-installed adapters, show version + commit hash instead of just version
-- (@copilot) Fixed table export error when table items contain null values
-- (@copilot) Object Browser: Added formatted duration display for values with role "value.duration" - shows time durations in HH:mm:ss format instead of raw seconds
-- (@copilot) Enhanced GitHub Actions to skip tests when only README.md is changed, speeding up CI for Copilot PRs (tested with mixed file changes)
-- (@GermanBluefox) Added the docker checker in JSON config
-- (@copilot) Fixed js-controller update notifications to use "The js-controller" instead of "Adapter js-controller"
-- (@copilot) Fixed JSONConfig sendTo jsonData attribute parser problem where backslashes (\) in text inputs caused JSON parsing errors
-- (@copilot) Fixed step type behavior in chart display - "Schritte" now shows value until next point (step after) instead of step before
-- (@copilot) Added all three-step type options (stepStart, stepMiddle, stepEnd) to chart display with clearer descriptions
-- (@copilot) Fixed React error #62 in the Files tab caused by malformed CSS calc() function
-- (@copilot) Added loading indicator to JSONConfig autocompleteSendTo component during sendTo operations
-- (@copilot) Mark adapters removed from repository with "not maintained" text instead of empty version field
-- (@copilot) Enhanced responsive design: modals and popups now use full screen on xs and sm breakpoints
-- (@copilot) Added logout dropdown menu to user icon for improved user experience
-- (@copilot) Updated OAuth2 documentation in DEVELOPER.md to include both cloud-based and direct callback approaches with clear guidance on when to use each method
-- (@copilot) Only show adapters with satisfied dependencies in update all dialog
-- (@copilot) Added new `readOnly` attribute for jsonEditor in jsonConfig - allows opening the editor to view JSON content without allowing modifications
-- (@GermanBluefox) Reading of same instances was optimized in GUI
-- (@GermanBluefox) Do not show the http page if admin is secured
-- (@GermanBluefox) Show loading progress for custom tabs
-- (@GermanBluefox) Fixing change of the language in the admin
 
 ## License
 

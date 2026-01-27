@@ -15,8 +15,6 @@ import {
     Typography,
 } from '@mui/material';
 
-import type { Theme } from '@mui/material/styles';
-
 import { Visibility } from '@mui/icons-material';
 
 import { type IobTheme, I18n, Connection } from '@iobroker/adapter-react-v5';

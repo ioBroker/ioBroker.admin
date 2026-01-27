@@ -141,6 +141,7 @@ const styles: Record<string, any> = {
         cursor: 'pointer',
         position: 'relative',
         top: 20,
+        marginTop: '10px',
         transition: 'all 0.6s ease',
         '&:hover': {
             transform: 'rotate(90deg)',
@@ -241,31 +242,42 @@ function valueBlink(theme: IobTheme, color: string): any {
 export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: boolean; r?: boolean }[] = [
     { role: 'button', type: 'boolean', r: false, w: true },
     { role: 'button.close.blind', type: 'boolean', r: false, w: true },
+    { role: 'button.close.tilt', type: 'boolean', r: false, w: true },
     { role: 'button.fastforward', type: 'boolean', r: false, w: true },
     { role: 'button.forward', type: 'boolean', r: false, w: true },
     { role: 'button.long', type: 'boolean', r: false, w: true },
     { role: 'button.mode', type: 'boolean', r: false, w: true },
     { role: 'button.mode.auto', type: 'boolean', r: false, w: true },
+    { role: 'button.mode.manual', type: 'boolean', r: false, w: true },
     { role: 'button.mode.silent', type: 'boolean', r: false, w: true },
     { role: 'button.next', type: 'boolean', r: false, w: true },
     { role: 'button.open.blind', type: 'boolean', r: false, w: true },
     { role: 'button.open.door', type: 'boolean', r: false, w: true },
+    { role: 'button.open.tilt', type: 'boolean', r: false, w: true },
+    { role: 'button.open.window', type: 'boolean', r: false, w: true },
+    { role: 'button.pause', type: 'boolean', w: true },
+    { role: 'button.play', type: 'boolean', w: true },
+    { role: 'button.press', type: 'boolean', r: false, w: true },
+    { role: 'button.press', type: 'boolean', r: true, w: false },
+    { role: 'button.prev', type: 'boolean', w: true },
+    { role: 'button.resume', type: 'boolean', r: false, w: true },
+    { role: 'button.start', type: 'boolean', r: false, w: true },
     { role: 'button.pause', type: 'boolean', r: false, w: true },
     { role: 'button.stop', type: 'boolean', r: false, w: true },
     { role: 'button.stop.tilt', type: 'boolean', r: false, w: true },
     { role: 'button.volume.up', type: 'boolean', r: false, w: true },
     { role: 'chart', type: 'string' },
-    { role: 'date', type: 'string' },
     { role: 'date', type: 'number' },
-    { role: 'date.end', type: 'string' },
+    { role: 'date', type: 'string' },
     { role: 'date.end', type: 'number' },
+    { role: 'date.end', type: 'string' },
     { role: 'date.forecast.1', type: 'string' },
-    { role: 'date.start', type: 'string' },
     { role: 'date.start', type: 'number' },
-    { role: 'date.sunrise', type: 'string' },
+    { role: 'date.start', type: 'string' },
     { role: 'date.sunrise', type: 'number' },
-    { role: 'date.sunset', type: 'string' },
+    { role: 'date.sunrise', type: 'string' },
     { role: 'date.sunset', type: 'number' },
+    { role: 'date.sunset', type: 'string' },
     { role: 'dayofweek', type: 'number' },
     { role: 'html', type: 'string' },
     { role: 'indicator', type: 'boolean', w: false },
@@ -286,9 +298,10 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'info.hardware', type: 'string', w: false },
     { role: 'info.ip', type: 'string', w: false },
     { role: 'info.mac', type: 'string', w: false },
+    { role: 'info.model', type: 'string', w: false },
     { role: 'info.name', type: 'string', w: false },
-    { role: 'info.port', type: 'string', w: false },
     { role: 'info.port', type: 'number', w: false },
+    { role: 'info.port', type: 'string', w: false },
     { role: 'info.serial', type: 'string', w: false },
     { role: 'info.standby', type: 'string', w: false },
     { role: 'info.status', w: false },
@@ -296,11 +309,15 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'level', type: 'number', w: true },
     { role: 'level.bass', type: 'number', w: true },
     { role: 'level.blind', type: 'number', w: true },
+    { role: 'level.brightness', type: 'number', w: true },
     { role: 'level.color.blue', type: 'number', w: true },
     { role: 'level.color.hue', type: 'number', w: true },
     { role: 'level.color.luminance', type: 'number', w: true },
     { role: 'level.color.red', type: 'number', w: true },
+    { role: 'level.color.rgb', type: 'string', w: true },
+    { role: 'level.color.rgbw', type: 'string', w: true },
     { role: 'level.color.saturation', type: 'number', w: true },
+    { role: 'level.color.temperature', type: 'number', w: true },
     { role: 'level.curtain', type: 'number', w: true },
     { role: 'level.mode.airconditioner', type: 'number', w: true },
     { role: 'level.mode.cleanup', type: 'number', w: true },
@@ -315,12 +332,12 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'level.valve', type: 'number', w: true },
     { role: 'level.volume', type: 'number', w: true },
     { role: 'level.volume.group', type: 'number', w: true },
-    { role: 'list', type: 'string' },
     { role: 'list', type: 'array' },
+    { role: 'list', type: 'string' },
     { role: 'location', type: 'string' },
     { role: 'media.add', type: 'string' },
-    { role: 'media.bitrate', type: 'string' },
     { role: 'media.bitrate', type: 'number' },
+    { role: 'media.bitrate', type: 'string' },
     { role: 'media.broadcastDate', type: 'string' },
     { role: 'media.browser', type: 'string' },
     { role: 'media.clear', type: 'boolean' },
@@ -361,6 +378,7 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'sensor.alarm.flood', type: 'boolean', w: false },
     { role: 'sensor.alarm.power', type: 'boolean', w: false },
     { role: 'sensor.alarm.secure', type: 'boolean', w: false },
+    { role: 'sensor.contact', type: 'boolean', w: false },
     { role: 'sensor.door', type: 'boolean', w: false },
     { role: 'sensor.light', type: 'boolean', w: false },
     { role: 'sensor.lock', type: 'boolean', w: false },
@@ -369,11 +387,13 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'sensor.rain', type: 'boolean', w: false },
     { role: 'sensor.window', type: 'boolean', w: false },
     { role: 'state', type: 'mixed' },
+    { role: 'string.date', type: 'number' },
     { role: 'switch', type: 'boolean', w: true },
     { role: 'switch.enable', type: 'boolean', w: true },
     { role: 'switch.gate', type: 'boolean', w: true },
     { role: 'switch.gate', type: 'boolean', w: true },
     { role: 'switch.light', type: 'boolean', w: true },
+    { role: 'switch.lock', type: 'boolean', w: true },
     { role: 'switch.lock.door', type: 'boolean', w: true },
     { role: 'switch.lock.window', type: 'boolean', w: true },
     { role: 'switch.mode', type: 'boolean', w: true },
@@ -389,19 +409,26 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'text', type: 'string' },
     { role: 'text.phone', type: 'string' },
     { role: 'text.url', type: 'string' },
+    { role: 'time.interval', type: 'number' },
+    { role: 'time.span', type: 'number' },
+    { role: 'time.timeout', type: 'number' },
     { role: 'url', type: 'string' },
     { role: 'url.audio', type: 'string' },
     { role: 'url.blank', type: 'string' },
     { role: 'url.cam', type: 'string' },
+    { role: 'url.icon', type: 'string' },
     { role: 'url.same', type: 'string' },
     { role: 'value', type: 'number', w: false },
     { role: 'value.battery', type: 'number', w: false },
     { role: 'value.blind', type: 'number', w: false },
     { role: 'value.blood.sugar', type: 'number', w: false },
     { role: 'value.brightness', type: 'number', w: false },
+    { role: 'value.co2', type: 'number', w: false },
     { role: 'value.clouds', type: 'number', w: false },
     { role: 'value.current', type: 'number', w: false },
     { role: 'value.curtain', type: 'number', w: false },
+    { role: 'value.date', type: 'string', w: false },
+    { role: 'value.datetime', type: 'string', w: false },
     { role: 'value.default', type: 'number', w: false },
     { role: 'value.direction', type: 'number', w: false },
     { role: 'value.direction.max.wind', type: 'number', w: false },
@@ -410,6 +437,7 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'value.direction.wind.forecast.0', type: 'number', w: false },
     { role: 'value.direction.wind.forecast.1', type: 'number', w: false },
     { role: 'value.distance', type: 'number', w: false },
+    { role: 'value.energy', type: 'number', w: false },
     { role: 'value.fill', type: 'number', w: false },
     { role: 'value.gate', type: 'number', w: false },
     { role: 'value.gps', type: 'number', w: false },
@@ -440,13 +468,13 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'value.precipitation.chance', type: 'number', w: false },
     { role: 'value.precipitation.day.forecast.0', type: 'number', w: false },
     { role: 'value.precipitation.forecast.0', type: 'number', w: false },
+    { role: 'value.precipitation.forecast.0', type: 'number', w: false },
+    { role: 'value.precipitation.forecast.1', type: 'number', w: false },
+    { role: 'value.precipitation.forecast.1', type: 'number', w: false },
     { role: 'value.precipitation.hour', type: 'number', w: false },
     { role: 'value.precipitation.night.forecast.0', type: 'number', w: false },
     { role: 'value.precipitation.today', type: 'number', w: false },
     { role: 'value.precipitation.type', type: 'number', w: false },
-    { role: 'value.prepitation.forecast.0', type: 'number', w: false },
-    { role: 'value.prepitation.forecast.1', type: 'number', w: false },
-    { role: 'value.prepitation.forecast.1', type: 'number', w: false },
     { role: 'value.pressure', type: 'number', w: false },
     { role: 'value.pressure.forecast.0', type: 'number', w: false },
     { role: 'value.pressure.forecast.1', type: 'number', w: false },
@@ -486,7 +514,6 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'value.warning', type: 'number', w: false },
     { role: 'value.waste', type: 'number', w: false },
     { role: 'value.water', type: 'number', w: false },
-    { role: 'waether.title', type: 'string', w: false },
     { role: 'weather.chart.url', type: 'string', w: false },
     { role: 'weather.chart.url.forecast', type: 'string', w: false },
     { role: 'weather.direction.wind', type: 'number', w: false },
@@ -500,7 +527,11 @@ export const DEFAULT_ROLES: { role: string; type?: ioBroker.CommonType; w?: bool
     { role: 'weather.state', type: 'number', w: false },
     { role: 'weather.state', type: 'string', w: false },
     { role: 'weather.state.forecast.0', type: 'string', w: false },
+    { role: 'weather.sunrise', type: 'string', w: false },
+    { role: 'weather.sunset', type: 'string', w: false },
     { role: 'weather.state.forecast.1', type: 'string', w: false },
+    { role: 'weather.temperature', type: 'number', w: false },
+    { role: 'weather.title', type: 'string', w: false },
     { role: 'weather.title.forecast.0', type: 'string', w: false },
     { role: 'weather.title.short', type: 'string', w: false },
     { role: 'weather.type', type: 'number', w: false },
@@ -1442,7 +1473,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
-    buttonRemoveKey(nameKey: string, cb: () => void): JSX.Element {
+    buttonRemoveKey(nameKey: string, cb: () => void, style?: React.CSSProperties): JSX.Element {
         const { t } = this.props;
         return (
             <Tooltip
@@ -1452,6 +1483,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 <Box
                     component="div"
                     sx={styles.close}
+                    style={style}
                     onClick={cb}
                 />
             </Tooltip>
@@ -1544,13 +1576,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: name ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    tabIndex={-1}
-                                                    size="small"
-                                                    onClick={() => this.setCommonItem(json, 'name', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear text')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        tabIndex={-1}
+                                                        size="small"
+                                                        onClick={() => this.setCommonItem(json, 'name', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                     },
@@ -1576,13 +1613,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         input: {
                                             endAdornment: desc ? (
                                                 <InputAdornment position="end">
-                                                    <IconButton
-                                                        tabIndex={-1}
-                                                        size="small"
-                                                        onClick={() => this.setCommonItem(json, 'desc', '')}
+                                                    <Tooltip
+                                                        title={I18n.t('Clear text')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
                                                     >
-                                                        <IconClose />
-                                                    </IconButton>
+                                                        <IconButton
+                                                            tabIndex={-1}
+                                                            size="small"
+                                                            onClick={() => this.setCommonItem(json, 'desc', '')}
+                                                        >
+                                                            <IconClose />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </InputAdornment>
                                             ) : null,
                                         },
@@ -1625,7 +1667,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             ))}
                                         </Select>
                                     </FormControl>
-                                    {this.buttonRemoveKey('State type', () => this.removeCommonItem(json, 'type'))}
+                                    {this.buttonRemoveKey('State type', () => this.removeCommonItem(json, 'type'), {
+                                        marginTop: 20,
+                                    })}
                                 </Box>
                             ) : (
                                 ObjectBrowserEditObject.buttonAddKey('State type', () =>
@@ -1753,7 +1797,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             />
                                         )}
                                     />
-                                    {this.buttonRemoveKey('Role', () => this.removeCommonItem(json, 'role'))}
+                                    {this.buttonRemoveKey('Role', () => this.removeCommonItem(json, 'role'), {
+                                        marginTop: 20,
+                                    })}
                                 </Box>
                             ) : (
                                 ObjectBrowserEditObject.buttonAddKey('Role', () => this.setCommonItem(json, 'role', ''))
@@ -1774,13 +1820,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         input: {
                                             endAdornment: json.common.color ? (
                                                 <InputAdornment position="end">
-                                                    <IconButton
-                                                        tabIndex={-1}
-                                                        size="small"
-                                                        onClick={() => this.setCommonItem(json, 'color', '')}
+                                                    <Tooltip
+                                                        title={I18n.t('Clear field')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
                                                     >
-                                                        <IconClose />
-                                                    </IconButton>
+                                                        <IconButton
+                                                            tabIndex={-1}
+                                                            size="small"
+                                                            onClick={() => this.setCommonItem(json, 'color', '')}
+                                                        >
+                                                            <IconClose />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </InputAdornment>
                                             ) : null,
                                         },
@@ -1898,13 +1949,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                             input: {
                                                 endAdornment: json.common.unit ? (
                                                     <InputAdornment position="end">
-                                                        <IconButton
-                                                            tabIndex={-1}
-                                                            size="small"
-                                                            onClick={() => this.setCommonItem(json, 'unit', '')}
+                                                        <Tooltip
+                                                            title={I18n.t('Clear field')}
+                                                            slotProps={{ popper: { sx: styles.tooltip } }}
                                                         >
-                                                            <IconClose />
-                                                        </IconButton>
+                                                            <IconButton
+                                                                tabIndex={-1}
+                                                                size="small"
+                                                                onClick={() => this.setCommonItem(json, 'unit', '')}
+                                                            >
+                                                                <IconClose />
+                                                            </IconButton>
+                                                        </Tooltip>
                                                     </InputAdornment>
                                                 ) : null,
                                             },
@@ -1992,13 +2048,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: json.common?.alias?.id ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    tabIndex={-1}
-                                                    size="large"
-                                                    onClick={() => this.setAliasItem(json, 'id', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear field')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        tabIndex={-1}
+                                                        size="large"
+                                                        onClick={() => this.setAliasItem(json, 'id', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                     },
@@ -2027,13 +2088,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: json.common?.alias?.id?.read ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    size="large"
-                                                    tabIndex={-1}
-                                                    onClick={() => this.setAliasItem(json, 'id.read', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear field')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        size="large"
+                                                        tabIndex={-1}
+                                                        onClick={() => this.setAliasItem(json, 'id.read', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                     },
@@ -2062,13 +2128,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: json.common?.alias?.id?.write ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    size="large"
-                                                    tabIndex={-1}
-                                                    onClick={() => this.setAliasItem(json, 'id.write', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear field')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        size="large"
+                                                        tabIndex={-1}
+                                                        onClick={() => this.setAliasItem(json, 'id.write', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                     },
@@ -2122,13 +2193,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: json.common?.alias?.read ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    size="large"
-                                                    tabIndex={-1}
-                                                    onClick={() => this.setAliasItem(json, 'read', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear field')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        size="large"
+                                                        tabIndex={-1}
+                                                        onClick={() => this.setAliasItem(json, 'read', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                         startAdornment: (
@@ -2161,13 +2237,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     input: {
                                         endAdornment: json.common?.alias?.write ? (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    size="large"
-                                                    tabIndex={-1}
-                                                    onClick={() => this.setAliasItem(json, 'write', '')}
+                                                <Tooltip
+                                                    title={I18n.t('Clear field')}
+                                                    slotProps={{ popper: { sx: styles.tooltip } }}
                                                 >
-                                                    <IconClose />
-                                                </IconButton>
+                                                    <IconButton
+                                                        size="large"
+                                                        tabIndex={-1}
+                                                        onClick={() => this.setAliasItem(json, 'write', '')}
+                                                    >
+                                                        <IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ) : null,
                                         startAdornment: (
@@ -2227,13 +2308,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             input: {
                                 endAdornment: this.state.newId ? (
                                     <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            tabIndex={-1}
-                                            onClick={() => this.setState({ newId: '' })}
+                                        <Tooltip
+                                            title={I18n.t('Clear field')}
+                                            slotProps={{ popper: { sx: styles.tooltip } }}
                                         >
-                                            <IconClose />
-                                        </IconButton>
+                                            <IconButton
+                                                size="small"
+                                                tabIndex={-1}
+                                                onClick={() => this.setState({ newId: '' })}
+                                            >
+                                                <IconClose />
+                                            </IconButton>
+                                        </Tooltip>
                                     </InputAdornment>
                                 ) : null,
                             },

@@ -72,8 +72,8 @@ const DEFAULT_JSONL_OPTIONS = {
 
 export interface SettingsObjects {
     type?: 'file' | 'jsonl' | 'redis';
-    host?: string;
-    port?: number;
+    host?: string | string[];
+    port?: number | number[];
     pass?: string;
     connectTimeout?: number;
     writeFileInterval?: number;
@@ -116,7 +116,7 @@ interface BaseSettingsObjectsProps {
 interface BaseSettingsObjectsState {
     type: 'file' | 'jsonl' | 'redis';
     host: string;
-    port: number | string;
+    port: number | string | number[] | string[];
     connectTimeout: number | string;
     writeFileInterval: number | string;
     dataDir: string;
@@ -150,23 +150,23 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
         super(props);
 
         const settings: SettingsObjects = this.props.settings || {};
-        settings.options = settings.options || {
+        settings.options ||= {
             auth_pass: '',
             retry_max_delay: 2000,
             retry_max_count: 19,
             db: 0,
             family: 0,
         };
-        settings.backup = settings.backup || {
+        settings.backup ||= {
             disabled: false,
             files: 24,
             hours: 48,
             period: 120,
             path: '',
         };
-        settings.jsonlOptions = settings.jsonlOptions || DEFAULT_JSONL_OPTIONS;
-        settings.jsonlOptions.autoCompress = settings.jsonlOptions.autoCompress || DEFAULT_JSONL_OPTIONS.autoCompress;
-        settings.jsonlOptions.throttleFS = settings.jsonlOptions.throttleFS || DEFAULT_JSONL_OPTIONS.throttleFS;
+        settings.jsonlOptions ||= DEFAULT_JSONL_OPTIONS;
+        settings.jsonlOptions.autoCompress ||= DEFAULT_JSONL_OPTIONS.autoCompress;
+        settings.jsonlOptions.throttleFS ||= DEFAULT_JSONL_OPTIONS.throttleFS;
 
         this.state = {
             type: settings.type || 'file',
