@@ -246,7 +246,7 @@ admin/i18n/de.json
 admin/i18n/en.json
 ```
 
-Additionally, user can provide the path to `i18n` files, `i18n`: `customI18n` and provide files in admin (admin >= 7.7.20):
+Additionally, user can provide the path to `i18n` files, `i18n`: `customI18n` and provide files in admin:
 
 ```json5
   "i18n": "customI18n",
@@ -1599,6 +1599,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.0.7 (2026-01-27)
+- (@GermanBluefox) Updated adapter-react-v5
+
 ### 8.0.6 (2025-11-10)
 - (@GermanBluefox) Added width to many table elements
 
@@ -1619,7 +1622,7 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 
 The MIT License (MIT)
 
-Copyright (c) 2019-2025 @GermanBluefox <dogafox@gmail.com>
+Copyright (c) 2019-2026 @GermanBluefox <dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
