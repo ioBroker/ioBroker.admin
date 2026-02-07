@@ -35,7 +35,7 @@
     "compression": "^1.8.1",
     "express": "^5.2.1",
     "express-fileupload": "^1.5.2",
-    "express-session": "^1.18.2",
+    "express-session": "^1.19.0",
     "json5": "^2.2.3",
     "mime": "^3.0.0",
     "semver": "^7.7.3"
