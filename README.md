@@ -12,7 +12,7 @@
 
 User interface for configuration and administration of ioBroker.
 
-**This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
+**This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information on how to disable the error reporting, see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
 
 ## JSON config schema
 
@@ -30,18 +30,18 @@ The JSON config schema description can be found at [JSON config schema](/package
 
 ## Scheduled restart
 
-Some adapters are not stable or connection disappears after one or two days.
+Some adapters are not stable, or the connection disappears after one or two days.
 To fix this, there is a scheduled restart setting.
 To activate scheduled restart, just define CRON condition when to restart adapter.
 
-It is suggested to restart in the night, when no one use the adapter, e.g. `0 3 * * *` - at 3:00 every day.
+It is suggested to restart in the night, when no one uses the adapter, e.g. `0 3 * * *` - at 3:00 every day.
 
 ## Let's Encrypt Certificates
 
 To manage and update, let's encrypt certificates you need to use [`iobroker.acme`](https://github.com/iobroker-community-adapters/ioBroker.acme) adapter.
 
 You will have so-called "collections" of certificates. Each collection has its own domains.
-You can select in configuration of admin adapter if and which collection to use.
+You can select in the configuration of the admin adapter if and which a collection to use.
 
 ## Simple instance's settings page
 
@@ -56,7 +56,7 @@ If this option is disabled, the simple configuration page could be accessed unde
 
 Please be sure that you forward not only the http/https requests, but the web-socket traffic too. It is essential for communication.
 
-From version 6.1.0 you have the possibility to tune intro page for usage with reverse proxy.
+From version 6.1.0 you have the possibility to tune the intro page for usage with reverse proxy.
 
 ### Example
 
@@ -66,7 +66,7 @@ And you set up e.g., nginx to forward the requests to the `http://local-iobroker
 The same is with your web instance: `https://iobroker.mydomain.com/ioBrokerWeb/ => http://local-iobroker.IP:8082`.
 And with rest-api instance: `https://iobroker.mydomain.com/ioBrokerAPI/ => http://local-iobroker.IP:8093`.
 
-You can add the following lines into Reverse Proxy tab to let Intro tab run behind reverse proxy properly:
+You can add the following lines into the Reverse Proxy tab to let the Intro tab run behind the reverse proxy properly:
 
 | Global path       | Instance      | Instance path behind proxy |
 |-------------------|---------------|----------------------------|
@@ -91,7 +91,7 @@ Map the public root (or a dedicated host like `https://iobroker.example.com/`) d
 
 #### 2. Custom locations for other services
 
-Add additional custom locations for web / REST / other adapter frontends. Each location forwards to the respective local port (e.g. web.0 on 8082, rest-api.0 on 8093):
+Add additional custom locations for web / REST / other adapter frontends. Each location forwards to the respective local port (e.g. `web.0` on 8082, rest-api.0 on 8093):
 
 <img src="assets/revproxy_nginxpm_customlocations.png" alt="Nginx Proxy Manager: custom locations" width="640" />
 
@@ -112,9 +112,9 @@ In this case (or to be on the safe side - just also configuring them should not 
 ```
 (Adjust paths/ports for your environment.)
 
-#### 3. Configure mappings in Admin Reverse Proxy tab
+#### 3. Configure mappings in the Admin Reverse Proxy tab
 
-Enter the same paths so that Intro / Instances pages rewrite adapter links correctly. Also add paths for all adapters running as web extension (like rest-api, ...). Obviously you only need to configure what you are actually using. Here are some examples:
+Enter the same paths so that Intro / Instances pages rewrite adapter links correctly. Also add paths for all adapters running as web extension (like rest-api, ...). Obviously, you only need to configure what you are actually using. Here are some examples:
 
 | Global path | Instance     | Instance path behind proxy |
 |-------------|--------------|----------------------------|

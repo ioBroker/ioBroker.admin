@@ -184,6 +184,8 @@
         "func",
         "header",
         "icon",
+        "iframe",
+        "iframeSendTo",
         "image",
         "imageSendTo",
         "infoBox",
@@ -2678,6 +2680,164 @@
                     "type"
                   ]
                 }
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "iframe"
+                }
+              }
+            },
+            "then": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                },
+                {
+                  "properties": {
+                    "url": {
+                      "description": "URL to display in the iframe",
+                      "type": "string"
+                    },
+                    "allowFullscreen": {
+                      "description": "Allow fullscreen mode (default: false)",
+                      "type": "boolean"
+                    },
+                    "sandbox": {
+                      "description": "Sandbox attributes for security restrictions (e.g., 'allow-same-origin allow-scripts')",
+                      "type": "string"
+                    },
+                    "lazyLoad": {
+                      "description": "Lazy loading: 'lazy' or 'eager' (default: 'lazy')",
+                      "type": "string",
+                      "enum": [
+                        "lazy",
+                        "eager"
+                      ]
+                    },
+                    "frameBorder": {
+                      "description": "Frame border width (default: 0)",
+                      "type": "number"
+                    },
+                    "reloadOnShow": {
+                      "description": "Reload iframe when it becomes visible in the viewport",
+                      "type": "boolean"
+                    },
+                    "innerStyle": {
+                      "description": "CSS styles for the iframe element",
+                      "type": "object"
+                    },
+                    "attr": true,
+                    "label": true,
+                    "type": true,
+                    "defaultSendTo": true,
+                    "allowSaveWithError": true,
+                    "xs": true,
+                    "sm": true,
+                    "md": true,
+                    "lg": true,
+                    "xl": true,
+                    "newLine": true,
+                    "hidden": true,
+                    "hideOnlyControl": true,
+                    "disabled": true,
+                    "helpLink": true,
+                    "help": true,
+                    "style": true,
+                    "darkStyle": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "width": true
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "iframeSendTo"
+                }
+              }
+            },
+            "then": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                }
+              ],
+              "properties": {
+                "attr": true,
+                "width": true,
+                "title": true,
+                "filter": true,
+                "sort": true,
+                "command": {
+                  "description": "Command to be sent.",
+                  "type": "string"
+                },
+                "jsonData": {
+                  "description": "Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+                  "type": "string"
+                },
+                "data": {
+                  "description": "Data to be sent as JSON.",
+                  "type": "object"
+                },
+                "height": {
+                  "description": "Height of iframe in px",
+                  "type": "number"
+                },
+                "alsoDependsOn": {
+                  "$ref": "#/definitions/alsoDependsOnSendProp"
+                },
+                "noTranslation": true,
+                "type": true,
+                "sm": true,
+                "md": true,
+                "lg": true,
+                "newLine": true,
+                "xs": true,
+                "xl": true,
+                "label": true,
+                "hidden": true,
+                "hideOnlyControl": true,
+                "disabled": true,
+                "help": true,
+                "helpLink": true,
+                "style": true,
+                "darkStyle": true,
+                "validator": true,
+                "validatorNoSaveOnError": true,
+                "validatorErrorText": true,
+                "tooltip": true,
+                "default": true,
+                "defaultFunc": true,
+                "defaultSendTo": true,
+                "allowSaveWithError": true,
+                "onChange": true,
+                "confirm": true
+              },
+              "additionalProperties": false,
+              "required": [
+                "type"
               ]
             }
           },
@@ -5627,6 +5787,142 @@
                       "data": {
                         "description": "Data to be sent as JSON.",
                         "type": "object"
+                      },
+                      "label": true,
+                      "type": true,
+                      "xs": true,
+                      "sm": true,
+                      "md": true,
+                      "lg": true,
+                      "xl": true,
+                      "newLine": true,
+                      "hidden": true,
+                      "hideOnlyControl": true,
+                      "disabled": true,
+                      "helpLink": true,
+                      "help": true,
+                      "style": true,
+                      "darkStyle": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "confirm": true
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "command"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "iframe"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "url": {
+                        "description": "URL to display in the iframe",
+                        "type": "string"
+                      },
+                      "allowFullscreen": {
+                        "description": "Allow fullscreen mode (default: false)",
+                        "type": "boolean"
+                      },
+                      "sandbox": {
+                        "description": "Sandbox attributes for security restrictions (e.g., 'allow-same-origin allow-scripts')",
+                        "type": "string"
+                      },
+                      "lazyLoad": {
+                        "description": "Lazy loading: 'lazy' or 'eager' (default: 'lazy')",
+                        "type": "string",
+                        "enum": [
+                          "lazy",
+                          "eager"
+                        ]
+                      },
+                      "frameBorder": {
+                        "description": "Frame border width (default: 0)",
+                        "type": "number"
+                      },
+                      "reloadOnShow": {
+                        "description": "Reload iframe when it becomes visible in the viewport",
+                        "type": "boolean"
+                      },
+                      "innerStyle": {
+                        "description": "CSS styles for the iframe element",
+                        "type": "object"
+                      },
+                      "label": true,
+                      "type": true,
+                      "xs": true,
+                      "sm": true,
+                      "md": true,
+                      "lg": true,
+                      "xl": true,
+                      "newLine": true,
+                      "hidden": true,
+                      "hideOnlyControl": true,
+                      "disabled": true,
+                      "helpLink": true,
+                      "help": true,
+                      "style": true,
+                      "darkStyle": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "confirm": true
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "iframeSendTo"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "alsoDependsOn": {
+                        "$ref": "#/definitions/alsoDependsOnSendProp"
+                      },
+                      "command": {
+                        "description": "Command to be sent.",
+                        "type": "string"
+                      },
+                      "jsonData": {
+                        "description": "Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+                        "type": "string"
+                      },
+                      "data": {
+                        "description": "Data to be sent as JSON.",
+                        "type": "object"
+                      },
+                      "height": {
+                        "description": "Height of iframe in px",
+                        "type": "number"
                       },
                       "label": true,
                       "type": true,

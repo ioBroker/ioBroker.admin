@@ -25,9 +25,11 @@ This guide explains how to define configuration options for your ioBroker adapte
    - In your adapter's `io-package.json` file, add the following line under the `common` section:
 
    ```json
-   "common": {
-       "adminUI": {
-           "config": "json"
+   {
+       "common": {
+           "adminUI": {
+               "config": "json"
+           }
        }
    }
    ```
@@ -150,6 +152,8 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`fileSelector`:**](#fileselector) Allows users to select files from the system (only Admin6)
 - [**`func`:**](#func) Selects a function from the enum.func list (Admin 6 only)
 - [**`header`:**](#header) Creates a heading with different sizes (h1-h5)
+- [**`iframe`:**](#iframe) Show Iframe with given URL
+- [**`iframeSendTo`:**](#iframe) Show Iframe with URL from backend
 - [**`image`:**](#image) Uploads or displays an image
 - [**`imageSendTo`:**](#imagesendto) Displays an image received from the backend and sends data based on a command
 - [**`instance`:**](#instance) Selects an adapter instance
@@ -919,6 +923,66 @@ adapter.on("message", (obj) => {
 });
 ```
 
+### `iframe`
+
+Shows an iframe with the specified URL. (from Admin 7.7.24)
+
+| Property          | Description                                                                              |
+|-------------------|------------------------------------------------------------------------------------------|
+| `url`             | URL to display in the iframe. If defined, it will be static element                      |
+| `allowFullscreen` | Allow fullscreen mode (default: `false`)                                                 |
+| `sandbox`         | Sandbox attributes for security restrictions (e.g., `"allow-same-origin allow-scripts"`) |
+| `loading`         | Lazy loading: `lazy` or `eager` (default: `lazy`)                                        |
+| `frameBorder`     | Frame border width (default: `0`)                                                        |
+| `reloadOnShow`    | Reload iframe when it becomes visible in the viewport                                    |
+
+#### Example for `iframe`
+
+```json
+{
+  "type": "iframe",
+  "url": "https://example.com",
+  "allowFullscreen": true,
+  "sandbox": "allow-same-origin allow-scripts",
+  "loading": "lazy",
+  "reloadOnShow": false
+}
+```
+
+### `iframeSendTo`
+
+Shows an iframe with a URL received from the backend. (from Admin 7.7.24)
+
+| Property   | Description                                                                                                                                                 |
+|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `command`  | sendTo command                                                                                                                                              |
+| `jsonData` | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend                                         |
+| `data`     | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined. |
+
+The backend must return a URL as a string.
+
+#### Example for `iframeSendTo`
+
+```json
+{
+  "type": "iframeSendTo",
+  "command": "getUrl",
+  "jsonData": "{\"param\": \"${data.value}\"}",
+  "height": 600
+}
+```
+
+#### Example of code in back-end for `iframeSendTo`
+
+```js
+adapter.on("message", (obj) => {
+  if (obj.command === "getUrl") {
+    const url = "https://example.com?param=" + obj.message.param;
+    adapter.sendTo(obj.from, obj.command, url, obj.callback);
+  }
+});
+```
+
 ### `selectSendTo`
 
 Shows the drop-down menu with the given from the instance values.
@@ -1599,6 +1663,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.1.1 (2026-02-06)
+- (@GermanBluefox) Added `iframe` and `iframeSendTo` components
+
 ### 8.0.8 (2026-01-27)
 - (@GermanBluefox) Fixing the `alive` component
 - (@GermanBluefox) Fixing the `datePicker` component
