@@ -18,19 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.7.25": {
-        "en": "Added iframe support for JSON Config",
-        "de": "Unterstützung für JSON Config hinzugefügt",
-        "ru": "Добавлена поддержка iframe для JSON Config",
-        "pt": "Adicionado suporte iframe para o JSON Config",
-        "nl": "Iframe ondersteuning toegevoegd voor JSON Config",
-        "fr": "Ajout du support iframe pour JSON Config",
-        "it": "Aggiunto supporto iframe per JSON Config",
-        "es": "Soporte de iframe añadido para JSON Config",
-        "pl": "Dodano obsługę iframe dla konfiguracji JSON",
-        "uk": "Додано підтримку iframe для JSON Config",
-        "zh-cn": "为 JSON 配置添加了 iframe 支持"
-      },
       "7.7.23": {
         "en": "Added support of device manager in the admin tabs\nCorrected JSON Config issues",
         "de": "Unterstützung des Gerätemanagers in den Admin-Tabs hinzugefügt\nJSON wurde korrigiert Konflikte",
