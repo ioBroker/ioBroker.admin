@@ -1,4 +1,5 @@
 import 'ace-builds/src-noconflict/ace';
+import 'react-ace';
 // Ensure @emotion packages are included in the Module Federation shared scope
 import '@emotion/react';
 import '@emotion/styled';
