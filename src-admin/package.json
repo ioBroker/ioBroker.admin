@@ -24,13 +24,15 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/adapter-react-v5": "^8.0.17",
+        "@iobroker/adapter-react-v5": "^8.0.19",
         "@iobroker/dm-gui-components": "^8.0.9",
         "@iobroker/json-config": "^8.1.1",
         "ace-builds": "^1.43.6",
         "http-proxy-middleware": "^3.0.5"
     },
     "devDependencies": {
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.1",
         "@devbookhq/splitter": "^1.4.2",
         "@fnando/sparkline": "^0.3.10",
         "@foxriver76/iob-component-lib": "^0.2.0",
@@ -57,8 +59,8 @@
         "cron-parser": "^5.5.0",
         "crypto-js": "^4.2.0",
         "date-fns": "^4.1.0",
-        "echarts": "^6.0.0",
-        "echarts-for-react": "^3.0.6",
+        "echarts": "^5.6.0",
+        "echarts-for-react": "^3.0.5",
         "ipaddr.js": "^2.3.0",
         "json5": "^2.2.3",
         "leaflet": "^1.9.4",
