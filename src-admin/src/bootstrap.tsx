@@ -1,12 +1,16 @@
 import 'ace-builds/src-noconflict/ace';
-import 'react-ace';
-import 'leaflet';
-import 'leaflet-geosearch';
-import 'react-dropzone';
-import 'semver';
-// Ensure @emotion packages are included in the Module Federation shared scope
 import '@emotion/react';
 import '@emotion/styled';
+import '@iobroker/adapter-react-v5';
+import '@iobroker/json-config';
+import '@iobroker/dm-gui-components';
+import 'date-fns';
+import 'date-fns/locale';
+import 'leaflet';
+import 'leaflet-geosearch';
+import 'react-ace';
+import 'react-dropzone';
+import 'semver';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/browser';
