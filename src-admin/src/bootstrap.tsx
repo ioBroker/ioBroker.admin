@@ -1,5 +1,9 @@
 import 'ace-builds/src-noconflict/ace';
 import 'react-ace';
+import 'leaflet';
+import 'leaflet-geosearch';
+import 'react-dropzone';
+import 'semver';
 // Ensure @emotion packages are included in the Module Federation shared scope
 import '@emotion/react';
 import '@emotion/styled';
