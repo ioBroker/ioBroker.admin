@@ -1,4 +1,7 @@
 import 'ace-builds/src-noconflict/ace';
+// Ensure @emotion packages are included in the Module Federation shared scope
+import '@emotion/react';
+import '@emotion/styled';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/browser';
