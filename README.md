@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.7.24 (2026-02-08)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Added iframe support for JSON Config
 
 ### 7.7.23 (2026-01-27)
