@@ -1,4 +1,12 @@
 # Older changes
+## 7.7.18 (2025-10-25)
+- (@GermanBluefox) Improvement of categories: drag&drop, visibility
+- (@copilot) Added missing filterFunc property to jsonConfig objectId schema to match documentation and implementation
+- (@copilot, @SimonFischer04) Added an extended reverse proxy example section with screenshots, limitations (admin root requirement), and adapter compatibility notes
+- (@copilot, @SimonFischer04) Fixed instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)
+- (@copilot, @SimonFischer04) Fixed intro page reverse proxy link remapping so links are correctly rewritten immediately and after navigating away and back (load reverseProxy config before instance scan and use prefix startsWith matching)
+- (@GermanBluefox) Fixed multi-selection in the select ID dialog
+
 ## 7.7.3 (2025-09-25)
 - Many GUI changes: See previous changelog below for details
 

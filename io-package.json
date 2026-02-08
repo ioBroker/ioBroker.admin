@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.23",
+    "version": "7.7.24",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.24": {
+        "en": "Added iframe support for JSON Config",
+        "de": "Unterstützung für JSON Config hinzugefügt",
+        "ru": "Добавлена поддержка iframe для JSON Config",
+        "pt": "Adicionado suporte iframe para o JSON Config",
+        "nl": "Iframe ondersteuning toegevoegd voor JSON Config",
+        "fr": "Ajout du support iframe pour JSON Config",
+        "it": "Aggiunto supporto iframe per JSON Config",
+        "es": "Soporte de iframe añadido para JSON Config",
+        "pl": "Dodano obsługę iframe dla konfiguracji JSON",
+        "uk": "Додано підтримку iframe для JSON Config",
+        "zh-cn": "为 JSON 配置添加了 iframe 支持"
+      },
       "7.7.23": {
         "en": "Added support of device manager in the admin tabs\nCorrected JSON Config issues",
         "de": "Unterstützung des Gerätemanagers in den Admin-Tabs hinzugefügt\nJSON wurde korrigiert Konflikte",
@@ -95,19 +108,6 @@
         "pl": "Wiele zmian GUI: Szczegółowe informacje znajdują się w poprzednim changelogu poniżej",
         "uk": "Багато інтерфейсних змін: Перегляньте попередній блок змін нижче для деталей",
         "zh-cn": "许多 GUI 更改 : 详情见下文以前的更改日志"
-      },
-      "7.7.2": {
-        "en": "Fixing change of the language in the admin",
-        "de": "Änderung der Sprache im Admin reparieren",
-        "ru": "Изменение языка в админ",
-        "pt": "Corrigindo mudança de idioma no administrador",
-        "nl": "Wijziging van de taal in de administratie",
-        "fr": "Correction du changement de langue dans l'administration",
-        "it": "Risolvere il cambiamento della lingua nell'amministratore",
-        "es": "Cambio de fijación del idioma en el administrador",
-        "pl": "Ustawienie zmiany języka w administratorze",
-        "uk": "Виправлення зміни мови в адміні",
-        "zh-cn": "修改管理语言"
       }
     },
     "desc": {

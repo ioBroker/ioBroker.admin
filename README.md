@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.7.24 (2026-02-08)
 - (@GermanBluefox) Added iframe support for JSON Config
 
 ### 7.7.23 (2026-01-27)
@@ -183,14 +183,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.7.19 (2025-10-26)
 - (@GermanBluefox) Updated schema location for JsonConfig
-
-### 7.7.18 (2025-10-25)
-- (@GermanBluefox) Improvement of categories: drag&drop, visibility
-- (@copilot) Added missing filterFunc property to jsonConfig objectId schema to match documentation and implementation
-- (@copilot, @SimonFischer04) Added an extended reverse proxy example section with screenshots, limitations (admin root requirement), and adapter compatibility notes
-- (@copilot, @SimonFischer04) Fixed instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)
-- (@copilot, @SimonFischer04) Fixed intro page reverse proxy link remapping so links are correctly rewritten immediately and after navigating away and back (load reverseProxy config before instance scan and use prefix startsWith matching)
-- (@GermanBluefox) Fixed multi-selection in the select ID dialog
 
 ## License
 
