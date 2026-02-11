@@ -218,7 +218,8 @@
         "textSendTo",
         "timePicker",
         "user",
-        "uuid"
+        "uuid",
+        "yamlEditor"
       ]
     },
     "numberProps": {
@@ -1708,6 +1709,54 @@
         "default": {
           "type": "string",
           "description": "Default content for JSON Editor"
+        },
+        "label": true,
+        "type": true,
+        "defaultSendTo": true,
+        "allowSaveWithError": true,
+        "xs": true,
+        "sm": true,
+        "md": true,
+        "lg": true,
+        "xl": true,
+        "newLine": true,
+        "hidden": true,
+        "hideOnlyControl": true,
+        "disabled": true,
+        "style": true,
+        "darkStyle": true,
+        "noMultiEdit": true,
+        "tooltip": true,
+        "expertMode": true,
+        "noTranslation": true
+      },
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ]
+    },
+    "yamlEditorProps": {
+      "properties": {
+        "validateYaml": {
+          "description": "if false, the text will be not validated as YAML",
+          "type": "boolean",
+          "default": true
+        },
+        "allowEmpty": {
+          "type": "boolean",
+          "description": "if true, the YAML will be validated only if the value is not empty"
+        },
+        "doNotApplyWithError": {
+          "type": "boolean",
+          "description": "Do not allow to save the value if error in YAML"
+        },
+        "readOnly": {
+          "type": "boolean",
+          "description": "Open the editor in read-only mode - editor can be opened but content cannot be modified"
+        },
+        "default": {
+          "type": "string",
+          "description": "Default content for YAML Editor"
         },
         "label": true,
         "type": true,
@@ -6857,6 +6906,10 @@
                           ]
                         }
                       },
+                      "titleAttribute": {
+                        "description": "Define the name of the attribute of the item which should be shown as a title of the item in cards mode.",
+                        "type": "string"
+                      },
                       "allowAddByFilter": {
                         "$ref": "#/definitions/allowAddByFilterProp"
                       },
@@ -7903,6 +7956,18 @@
                   },
                   "then": {
                     "$ref": "#/definitions/jsonEditorProps"
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "yamlEditor"
+                      }
+                    }
+                  },
+                  "then": {
+                    "$ref": "#/definitions/yamlEditorProps"
                   }
                 },
                 {

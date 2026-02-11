@@ -143,6 +143,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`checkLicense`:**](#checklicense) Very special component to check the license online
 - [**`chips`:**](#chips) User can enter words that are added to an array
 - [**`color`:**](#color) Color picker
+- [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
 - [**`cron`:**](#cron) Configures cron expressions for scheduling tasks
 - [**`custom`:**](#custom) Integrates custom components for specific functionalities (Admin 6 only)
 - [**`datePicker`:**](#datepicker) Allows users to select a date
@@ -152,8 +153,8 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`fileSelector`:**](#fileselector) Allows users to select files from the system (only Admin6)
 - [**`func`:**](#func) Selects a function from the enum.func list (Admin 6 only)
 - [**`header`:**](#header) Creates a heading with different sizes (h1-h5)
-- [**`iframe`:**](#iframe) Show Iframe with given URL
-- [**`iframeSendTo`:**](#iframe) Show Iframe with URL from backend
+- [**`iframe`:**](#iframe) Show Iframe with given URL (admin >= 7.7.28)
+- [**`iframeSendTo`:**](#iframe) Show Iframe with URL from backend (admin >= 7.7.28)
 - [**`image`:**](#image) Uploads or displays an image
 - [**`imageSendTo`:**](#imagesendto) Displays an image received from the backend and sends data based on a command
 - [**`instance`:**](#instance) Selects an adapter instance
@@ -181,7 +182,6 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`staticInfo`:**](#staticinfo) Shows static information in preformatted form, like "Title: value unit" (admin >= 7.3.3)
 - [**`staticLink`:**](#staticlink) Creates a static link
 - [**`staticText`:**](#statictext) Displays static text (e.g., description)
-- [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
 - [**`table`:**](#table) Table with rows that can be added, deleted, or reordered
 - [**`tabs`:**](#tabs) Tabs with items
 - [**`text`:**](#text) Single- or multi-line text input field
@@ -189,6 +189,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`timePicker`:**](#timepicker) Allows users to select a time
 - [**`user`:**](#user) Selects a user from the `system.user` list
 - [**`uuid`:**](#uuid) Show iobroker UUID
+- [**`yamlEditor`:**](#yamleditor) YAML editor for complex configuration data (admin >= 7.7.30)
 
 By leveraging JSON configuration, you can create a user-friendly and \
 adaptable configuration experience for your ioBroker adapter.
@@ -383,7 +384,7 @@ show checkbox
 show slider (only Admin6)
 
 | Property | Description                   |
-| -------- | ----------------------------- |
+|----------|-------------------------------|
 | `min`    | (default 0)                   |
 | `max`    | (default 100)                 |
 | `step`   | (default `(max - min) / 100`) |
@@ -394,7 +395,7 @@ show slider (only Admin6)
 show data in a QR Code (admin >= 7.0.18)
 
 | Property  | Description                           |
-| --------- | ------------------------------------- |
+|-----------|---------------------------------------|
 | `data`    | the data to be encoded in the QR Code |
 | `size`    | size of the QR code                   |
 | `fgColor` | Foreground color                      |
@@ -738,6 +739,8 @@ table with items that could be deleted, added, moved up, moved down
 | `import`              | [optional] - if import button should be shown. Import from csv file.                                                                            |
 | `uniqueColumns`       | [optional] - specify an array of columns, which need to have unique entries                                                                     |
 | `encryptedAttributes` | [optional] - specify an array of columns, which should be encrypted                                                                             |
+| `useCardFor`          | [optional] - Breakpoint that will be rendered as cards: ["xs", "sm", "md", "lg", "xl"]                                                          |
+| `titleAttribute`      | [optional] - Define the name of the attribute of the item which should be shown as a title of the item in cards mode.                           |
 | `compact`             | [optional] - if true, the table will be shown in a compact mode                                                                                 |
 
 ### `accordion`
@@ -755,12 +758,23 @@ accordion with items that could be deleted, added, moved up, moved down (Admin 6
 
 Button to open a JSON(5) editor. JSON5 is supported from admin version 5.7.3
 
-| Property               | Description                                                           |
-|------------------------|-----------------------------------------------------------------------|
-| `validateJson`         | if false, the text will be not validated as JSON                      |
-| `allowEmpty`           | if true, the JSON will be validated only if the value is not empty    |
-| `json5`                | if JSON5 format allowed (From 7.5.3)                                  |
-| `doNotApplyWithError`  | Do not allow to save the value if error in JSON or JSON5 (From 7.5.3) |
+| Property               | Description                                                                             |
+|------------------------|-----------------------------------------------------------------------------------------|
+| `validateJson`         | if false, the text will be not validated as JSON                                        |
+| `allowEmpty`           | if true, the JSON will be validated only if the value is not empty                      |
+| `json5`                | if JSON5 format allowed (From 7.5.3)                                                    |
+| `doNotApplyWithError`  | Do not allow to save the value if error in JSON or JSON5 (From 7.5.3)                   |
+| `readOnly`             | Open the editor in read-only mode - editor can be opened but content cannot be modified |
+
+### `yamlEditor`
+
+Button to open a YAML editor with syntax validation. (From admin version 7.7.30)
+
+| Property               | Description                                                                             |
+|------------------------|-----------------------------------------------------------------------------------------|
+| `validateYaml`         | if false, the text will be not validated as YAML                                        |
+| `allowEmpty`           | if true, the YAML will be validated only if the value is not empty                      |
+| `doNotApplyWithError`  | Do not allow to save the value if error in YAML                                         |
 | `readOnly`             | Open the editor in read-only mode - editor can be opened but content cannot be modified |
 
 ### `language`
@@ -925,7 +939,7 @@ adapter.on("message", (obj) => {
 
 ### `iframe`
 
-Shows an iframe with the specified URL. (from Admin 7.7.24)
+Shows an iframe with the specified URL. (from Admin 7.7.28)
 
 | Property          | Description                                                                              |
 |-------------------|------------------------------------------------------------------------------------------|
@@ -951,7 +965,7 @@ Shows an iframe with the specified URL. (from Admin 7.7.24)
 
 ### `iframeSendTo`
 
-Shows an iframe with a URL received from the backend. (from Admin 7.7.24)
+Shows an iframe with a URL received from the backend. (from Admin 7.7.28)
 
 | Property   | Description                                                                                                                                                 |
 |------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1587,8 +1601,8 @@ For that you must define in `io-package.json` in `common` part following:
          // all following parameters are optional
          "icon": "AABBCC", // base64 icon. If not provided, the adapter icon will be taken
          "name": "TabName", // String or multi-language object for menu label 
-         "singleton": true, // Tab will not have an instance number and for all instances will exist only one menu item. 
-         "order": 10, // Order in admin tab (0 is disabled, 1 - first after static menu items, 200 is last) 
+         "singleton": true, // Tab will not have an instance number, and for all instances will exist only one menu item. 
+         "order": 10, // Order in the admin tab (0 is disabled, 1 - first after static menu items, 200 is last) 
       },
       // ....
    }
@@ -1663,6 +1677,13 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.1.9 (2026-02-10)
+- (@GermanBluefox) Hiding the whole line in the table if shown as card and the line is empty
+- (@GermanBluefox) Added the header to table in the card mode
+
+### 8.1.3 (2026-02-09)
+- (@GermanBluefox) Added component `yamlEditor` for editing yaml files in admin
+
 ### 8.1.1 (2026-02-06)
 - (@GermanBluefox) Added `iframe` and `iframeSendTo` components
 
