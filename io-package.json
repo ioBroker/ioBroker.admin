@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.29",
+    "version": "7.7.30",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,7 +18,7 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.7.29": {
+      "7.7.30": {
         "en": "Added better table layout for JSON Config",
         "de": "Zusätzliche bessere Tabellenlayout für JSON Config",
         "ru": "Улучшенная компоновка стола для JSON Config",
