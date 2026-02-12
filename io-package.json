@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.29",
+    "version": "7.7.30",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.30": {
+        "en": "Added better table layout for JSON Config",
+        "de": "Zusätzliche bessere Tabellenlayout für JSON Config",
+        "ru": "Улучшенная компоновка стола для JSON Config",
+        "pt": "Adicionado melhor layout da tabela para a configuração do JSON",
+        "nl": "Betere tabelindeling voor JSON-configuratie toegevoegd",
+        "fr": "Ajout d'une meilleure mise en page pour JSON Config",
+        "it": "Aggiunto migliore layout della tabella per JSON Config",
+        "es": "Añadido mejor diseño de mesa para JSON Config",
+        "pl": "Dodano lepszy układ tabeli dla konfiguracji JSON",
+        "uk": "Додано кращий макет таблиці для JSON Config",
+        "zh-cn": "为 JSON 配置添加了更好的表格布局"
+      },
       "7.7.28": {
         "en": "Added iframe support for JSON Config",
         "de": "Unterstützung für JSON Config hinzugefügt",
