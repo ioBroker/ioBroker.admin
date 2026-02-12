@@ -143,7 +143,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`checkLicense`:**](#checklicense) Very special component to check the license online
 - [**`chips`:**](#chips) User can enter words that are added to an array
 - [**`color`:**](#color) Color picker
-- [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
+- [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form `latitude,longitude`
 - [**`cron`:**](#cron) Configures cron expressions for scheduling tasks
 - [**`custom`:**](#custom) Integrates custom components for specific functionalities (Admin 6 only)
 - [**`datePicker`:**](#datepicker) Allows users to select a date
@@ -572,7 +572,7 @@ object ID: show it with name, color and icon
 
 `{common: {custom: '_dataSources'}}`
 
-##### show only objects of custom settings for specific adapter (all instances)
+##### show only objects of custom settings for a specific adapter (all instances)
 
 `{common: {custom: 'adapterName.'}}`
 
@@ -648,7 +648,7 @@ Just text: Instance is running, Instance is not running
 
 ### `pattern`
 
-read-only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)
+The read-only field with a pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)
 Text input with the read-only flag, that shows a pattern.
 
 | Property          | Description           |
@@ -658,7 +658,7 @@ Text input with the read-only flag, that shows a pattern.
 
 ### `sendTo`
 
-button that sends request to instance (<https://github.com/iobroker-community-adapters/ioBroker.email/blob/master/admin/index_m.html#L128>)
+Button that sends a request to the current instance (<https://github.com/iobroker-community-adapters/ioBroker.email/blob/master/admin/index_m.html#L128>)
 
 | Property        | Description                                                                                                                                                                                                                                  |
 |-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -876,7 +876,7 @@ Shows CRON settings. You have 3 options:
 | `simple`  | show simple CRON settings                     |
 
 ### `fileSelector`
-Select a file from one folder as drop down menu. And if you want you can upload a new file to this folder.
+Select a file from one folder as a drop-down menu. And if you want, you can upload a new file to this folder.
 
 only Admin6
 
@@ -1079,7 +1079,7 @@ Shows autocomplete control with the given from the instance values.
 | `alsoDependsOn` | by change of which attributes, the command must be resent                                                                                                       |
 | `maxLength`     | max length of the text in field                                                                                                                                 |
 
-To use this option, your adapter must implement message handler:
+To use this option, your adapter must implement a message handler:
 
 The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]` (keys and names (values) must be unique)
 See `selectSendTo` for handler example
@@ -1104,7 +1104,7 @@ The result of command must be a string or object with the following parameters:
 {
   text: "text to show", // mandatory
   style: { color: "red" }, // optional
-  icon: "search", // optional. It could be base64 or link to image in the same folder as jsonConfig.json file
+  icon: "search", // optional. It could be base64 or link to an image in the same folder as jsonConfig.json file
   // possible predefined names: edit, rename, delete, refresh, add, search, unpair, pair, identify, play, stop, pause, forward, backward, next, previous, lamp, backlight, dimmer, socket, settings, group, user, qrcode, connection, no-connection, visible
   iconStyle: { width: 30 }, // optional
 }
@@ -1153,7 +1153,7 @@ adapter.on("message", (obj) => {
 
 ### `coordinates`
 
-Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
+Determines current location and used `system.config` coordinates if not possible in form `latitude,longitude`
 
 | Property        | Description                                                                                                                                                            |
 |-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1174,7 +1174,7 @@ Select the interface of the host, where the instance runs
 
 ### `license`
 
-shows the license information if not already accepted. One of attributes `texts` or `licenseUrl` must be defined. When the license is accepted, the defined configuration attribute will be set to `true`.
+It shows the license information if not already accepted. One of attributes `texts` or `licenseUrl` must be defined. When the license is accepted, the defined configuration attribute will be set to `true`.
 
 | Property     | Description                                                                                                |
 |--------------|------------------------------------------------------------------------------------------------------------|
@@ -1209,7 +1209,7 @@ Show iobroker UUID
 
 ### `port`
 
-Special input for ports. It checks automatically if port is used by other instances and shows a warning
+Special input for ports. It checks automatically if the port is used by other instances and shows a warning
 
 | Property | Description                                                                                                                   |
 |----------|-------------------------------------------------------------------------------------------------------------------------------|
@@ -1290,7 +1290,7 @@ Shows closable static text with optional title and icon. (From admin >= 7.6.19)
 
 show device manager. For that, the adapter must support device manager protocol. See iobroker/dm-utils.
 
-Here is an example of how to show device manager in a tab:
+Here is an example of how to show the device manager in a tab:
 
 ```json5
 {
@@ -1331,7 +1331,7 @@ These options are used to define the width of elements on different screen sizes
 
 Valid numbers are 1 to 12.
 
-If you specify a number, for example 6, then the width of the element will be 6/12 (50%) of the screen width or for example 3, then the width of the element will be 3/12 (25%) of the screen width.
+If you specify a number, for example, 6, then the width of the element will be 6/12 (50%) of the screen width or, for example, 3, then the width of the element will be 3/12 (25%) of the screen width.
 Assign numbers to the different layout options specify the width of the element for the different screen sizes.
 
 | option | description                              |
@@ -1442,7 +1442,7 @@ Example:
 In this case input must be text, where shown `__different__`, with the autocomplete option of three possible values.
 Users can select from dropdown 1000, 2000 or 3000 or input their own new value, e.g., 500.
 
-Boolean must support indeterminate if value is [false, true]
+Boolean must support indeterminate if a value is [false, true]
 
 For non changed `__different__` the value different must be returned:
 
@@ -1520,7 +1520,7 @@ If the `alive` status changes, so all fields must be updated, validated, disable
 
 The following variables are available in JS function in adapter settings:
 
-- `data` - native settings for this instance or current line in the table (to access all settings use globalData)
+- `data` - native settings for this instance or current line in the table (to access all settings, use globalData)
 - `_system` - system configuration
 - `_alive` - is instance being alive
 - `_common` - common settings for this instance
@@ -1560,7 +1560,7 @@ const isValid = func(
 
 The following variables are available in JS function in custom settings:
 
-- `data` - current custom settings or current line in the table (to access all settings use globalData)
+- `data` - current custom settings or current line in the table (to access all settings, use globalData)
 - `originalData` - Unchanged data
 - `_system` - system configuration
 - `instanceObj` - adapter instance object
@@ -1677,12 +1677,15 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.1.10 (2026-02-12)
+- (@GermanBluefox) Added the copy-to-clipboard dialog for `sendTo`
+
 ### 8.1.9 (2026-02-10)
 - (@GermanBluefox) Hiding the whole line in the table if shown as card and the line is empty
-- (@GermanBluefox) Added the header to table in the card mode
+- (@GermanBluefox) Added the header to the table in the card mode
 
 ### 8.1.3 (2026-02-09)
-- (@GermanBluefox) Added component `yamlEditor` for editing yaml files in admin
+- (@GermanBluefox) Added component `yamlEditor` for editing YAML files in admin
 
 ### 8.1.1 (2026-02-06)
 - (@GermanBluefox) Added `iframe` and `iframeSendTo` components
