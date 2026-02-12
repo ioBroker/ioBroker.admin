@@ -371,13 +371,21 @@ class Config extends Component<ConfigProps, ConfigState> {
     onStateChange = (id: string, state?: ioBroker.State | null): void => {
         const instanceId = `system.adapter.${this.props.adapter}.${this.props.instance}`;
         if (id === `${instanceId}.alive`) {
-            this.setState({ alive: !!state?.val });
+            if (!!state?.val !== this.state.alive) {
+                this.setState({ alive: !!state?.val });
+            }
         } else if (id === `${instanceId}.connected`) {
-            this.setState({ connectedToHost: !!state?.val });
+            if (!!state?.val !== this.state.connectedToHost) {
+                this.setState({ connectedToHost: !!state?.val});
+            }
         } else if (id === `${this.props.adapter}.${this.props.instance}.info.connection`) {
-            this.setState({ connected: state ? !!state.val : null });
+            if ((state ? !!state.val : null) !== this.state.connected) {
+                this.setState({ connected: state ? !!state.val : null });
+            }
         } else if (id === `${this.props.adapter}.${this.props.instance}.info.extension`) {
-            this.setState({ extension: state ? !!state.val : null });
+            if ((state ? !!state.val : null) !== this.state.extension) {
+                this.setState({ extension: state ? !!state.val : null });
+            }
         } else if (id === `${instanceId}.logLevel`) {
             this.setState({ tempLogLevel: state ? (state.val as ioBroker.LogLevel) : null });
         }

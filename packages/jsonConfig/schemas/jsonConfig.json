@@ -13,6 +13,132 @@
       },
       "additionalProperties": false
     },
+    "customFilter": {
+      "type": "object",
+      "description": "JSON schema for the ObjectBrowserCustomFilter interface from TypeScript.\n\nNote: ioBroker-specific enums (e.g., ObjectType, CommonType) are allowed here as strings or arrays of strings; typical values are mentioned in the description.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "Object type(s) in Object Browser, e.g., 'state', 'channel', 'device'. Can be a string or an array of strings.",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": [
+                "state",
+                "channel",
+                "device",
+                "folder",
+                "meta",
+                "adapter",
+                "instance",
+                "host",
+                "enum",
+                "group",
+                "user",
+                "script",
+                "chart",
+                "schedule"
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "state",
+                  "channel",
+                  "device",
+                  "folder",
+                  "meta",
+                  "adapter",
+                  "instance",
+                  "host",
+                  "enum",
+                  "group",
+                  "user",
+                  "script",
+                  "chart",
+                  "schedule"
+                ]
+              },
+              "minItems": 1
+            }
+          ]
+        },
+        "common": {
+          "description": "Filter on common.* properties of the object (e.g., type, role, custom)",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "description": "Data type of the state, e.g., 'number', 'string', 'boolean', 'object', 'array', 'mixed'. Accepts string or array of strings.",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "number",
+                    "string",
+                    "boolean",
+                    "object",
+                    "array",
+                    "mixed"
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "number",
+                      "string",
+                      "boolean",
+                      "object",
+                      "array",
+                      "mixed"
+                    ]
+                  },
+                  "minItems": 1
+                }
+              ]
+            },
+            "role": {
+              "description": "Role(s) of the state, e.g., 'switch', 'button' or beginning of roles. String or array of strings.",
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                }
+              ]
+            },
+            "custom": {
+              "description": "Special filter for common.custom:\n- \"_\" => no custom set (literal underscore)\n- \"_dataSources\" => only data sources (history/sql/influx etc.)\n- true => any non-empty custom\n- \"adapter.\" or \"adapter.0\" or general string => specific custom (or prefix)\nAccepts: boolean true, string or array of strings.",
+              "oneOf": [
+                {
+                  "type": "boolean",
+                  "const": true
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
     "i18n": {
       "description": "If translations will be provided via files, e.g. in admin/i18n/de/translations.json or provide the path to the i18n folder if it's custom or provide the translations inside this attribute as an object",
       "oneOf": [
@@ -58,6 +184,8 @@
         "func",
         "header",
         "icon",
+        "iframe",
+        "iframeSendTo",
         "image",
         "imageSendTo",
         "infoBox",
@@ -90,7 +218,8 @@
         "textSendTo",
         "timePicker",
         "user",
-        "uuid"
+        "uuid",
+        "yamlEditor"
       ]
     },
     "numberProps": {
@@ -1205,7 +1334,14 @@
         },
         "customFilter": {
           "description": "Cannot be used together with `types` settings. Example: `{type: ['channel', 'device']}` - show only channels and devices",
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/customFilter"
+            }
+          ]
         },
         "filterFunc": {
           "description": "Cannot be used together with `types` settings. It is a function that will be called for every object and must return true or false. Example: `obj.common.type === 'number'`",
@@ -1573,6 +1709,54 @@
         "default": {
           "type": "string",
           "description": "Default content for JSON Editor"
+        },
+        "label": true,
+        "type": true,
+        "defaultSendTo": true,
+        "allowSaveWithError": true,
+        "xs": true,
+        "sm": true,
+        "md": true,
+        "lg": true,
+        "xl": true,
+        "newLine": true,
+        "hidden": true,
+        "hideOnlyControl": true,
+        "disabled": true,
+        "style": true,
+        "darkStyle": true,
+        "noMultiEdit": true,
+        "tooltip": true,
+        "expertMode": true,
+        "noTranslation": true
+      },
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ]
+    },
+    "yamlEditorProps": {
+      "properties": {
+        "validateYaml": {
+          "description": "if false, the text will be not validated as YAML",
+          "type": "boolean",
+          "default": true
+        },
+        "allowEmpty": {
+          "type": "boolean",
+          "description": "if true, the YAML will be validated only if the value is not empty"
+        },
+        "doNotApplyWithError": {
+          "type": "boolean",
+          "description": "Do not allow to save the value if error in YAML"
+        },
+        "readOnly": {
+          "type": "boolean",
+          "description": "Open the editor in read-only mode - editor can be opened but content cannot be modified"
+        },
+        "default": {
+          "type": "string",
+          "description": "Default content for YAML Editor"
         },
         "label": true,
         "type": true,
@@ -2471,8 +2655,15 @@
                 {
                   "properties": {
                     "accept": {
-                      "description": "HTML accept attribute, like { 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }",
-                      "type": "object"
+                      "description": "HTML accept attribute, like { 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }. String is possible, but deprecated",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object"
+                        }
+                      ]
                     },
                     "crop": {
                       "description": "If true, allow user to crop the image (only for non svg)",
@@ -2538,6 +2729,164 @@
                     "type"
                   ]
                 }
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "iframe"
+                }
+              }
+            },
+            "then": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                },
+                {
+                  "properties": {
+                    "url": {
+                      "description": "URL to display in the iframe",
+                      "type": "string"
+                    },
+                    "allowFullscreen": {
+                      "description": "Allow fullscreen mode (default: false)",
+                      "type": "boolean"
+                    },
+                    "sandbox": {
+                      "description": "Sandbox attributes for security restrictions (e.g., 'allow-same-origin allow-scripts')",
+                      "type": "string"
+                    },
+                    "lazyLoad": {
+                      "description": "Lazy loading: 'lazy' or 'eager' (default: 'lazy')",
+                      "type": "string",
+                      "enum": [
+                        "lazy",
+                        "eager"
+                      ]
+                    },
+                    "frameBorder": {
+                      "description": "Frame border width (default: 0)",
+                      "type": "number"
+                    },
+                    "reloadOnShow": {
+                      "description": "Reload iframe when it becomes visible in the viewport",
+                      "type": "boolean"
+                    },
+                    "innerStyle": {
+                      "description": "CSS styles for the iframe element",
+                      "type": "object"
+                    },
+                    "attr": true,
+                    "label": true,
+                    "type": true,
+                    "defaultSendTo": true,
+                    "allowSaveWithError": true,
+                    "xs": true,
+                    "sm": true,
+                    "md": true,
+                    "lg": true,
+                    "xl": true,
+                    "newLine": true,
+                    "hidden": true,
+                    "hideOnlyControl": true,
+                    "disabled": true,
+                    "helpLink": true,
+                    "help": true,
+                    "style": true,
+                    "darkStyle": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "width": true
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "iframeSendTo"
+                }
+              }
+            },
+            "then": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                }
+              ],
+              "properties": {
+                "attr": true,
+                "width": true,
+                "title": true,
+                "filter": true,
+                "sort": true,
+                "command": {
+                  "description": "Command to be sent.",
+                  "type": "string"
+                },
+                "jsonData": {
+                  "description": "Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+                  "type": "string"
+                },
+                "data": {
+                  "description": "Data to be sent as JSON.",
+                  "type": "object"
+                },
+                "height": {
+                  "description": "Height of iframe in px",
+                  "type": "number"
+                },
+                "alsoDependsOn": {
+                  "$ref": "#/definitions/alsoDependsOnSendProp"
+                },
+                "noTranslation": true,
+                "type": true,
+                "sm": true,
+                "md": true,
+                "lg": true,
+                "newLine": true,
+                "xs": true,
+                "xl": true,
+                "label": true,
+                "hidden": true,
+                "hideOnlyControl": true,
+                "disabled": true,
+                "help": true,
+                "helpLink": true,
+                "style": true,
+                "darkStyle": true,
+                "validator": true,
+                "validatorNoSaveOnError": true,
+                "validatorErrorText": true,
+                "tooltip": true,
+                "default": true,
+                "defaultFunc": true,
+                "defaultSendTo": true,
+                "allowSaveWithError": true,
+                "onChange": true,
+                "confirm": true
+              },
+              "additionalProperties": false,
+              "required": [
+                "type"
               ]
             }
           },
@@ -4541,7 +4890,14 @@
                 },
                 "customFilter": {
                   "description": "Cannot be used together with `types` settings. Example: `{type: ['channel', 'device']}` - show only channels and devices",
-                  "type": "string"
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/customFilter"
+                    }
+                  ]
                 },
                 "placeholder": {
                   "description": "Placeholder (for text control)",
@@ -5518,6 +5874,142 @@
                   "if": {
                     "properties": {
                       "type": {
+                        "const": "iframe"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "url": {
+                        "description": "URL to display in the iframe",
+                        "type": "string"
+                      },
+                      "allowFullscreen": {
+                        "description": "Allow fullscreen mode (default: false)",
+                        "type": "boolean"
+                      },
+                      "sandbox": {
+                        "description": "Sandbox attributes for security restrictions (e.g., 'allow-same-origin allow-scripts')",
+                        "type": "string"
+                      },
+                      "lazyLoad": {
+                        "description": "Lazy loading: 'lazy' or 'eager' (default: 'lazy')",
+                        "type": "string",
+                        "enum": [
+                          "lazy",
+                          "eager"
+                        ]
+                      },
+                      "frameBorder": {
+                        "description": "Frame border width (default: 0)",
+                        "type": "number"
+                      },
+                      "reloadOnShow": {
+                        "description": "Reload iframe when it becomes visible in the viewport",
+                        "type": "boolean"
+                      },
+                      "innerStyle": {
+                        "description": "CSS styles for the iframe element",
+                        "type": "object"
+                      },
+                      "label": true,
+                      "type": true,
+                      "xs": true,
+                      "sm": true,
+                      "md": true,
+                      "lg": true,
+                      "xl": true,
+                      "newLine": true,
+                      "hidden": true,
+                      "hideOnlyControl": true,
+                      "disabled": true,
+                      "helpLink": true,
+                      "help": true,
+                      "style": true,
+                      "darkStyle": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "confirm": true
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "iframeSendTo"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "alsoDependsOn": {
+                        "$ref": "#/definitions/alsoDependsOnSendProp"
+                      },
+                      "command": {
+                        "description": "Command to be sent.",
+                        "type": "string"
+                      },
+                      "jsonData": {
+                        "description": "Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+                        "type": "string"
+                      },
+                      "data": {
+                        "description": "Data to be sent as JSON.",
+                        "type": "object"
+                      },
+                      "height": {
+                        "description": "Height of iframe in px",
+                        "type": "number"
+                      },
+                      "label": true,
+                      "type": true,
+                      "xs": true,
+                      "sm": true,
+                      "md": true,
+                      "lg": true,
+                      "xl": true,
+                      "newLine": true,
+                      "hidden": true,
+                      "hideOnlyControl": true,
+                      "disabled": true,
+                      "helpLink": true,
+                      "help": true,
+                      "style": true,
+                      "darkStyle": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "confirm": true
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "command"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
                         "const": "header"
                       }
                     }
@@ -5826,8 +6318,15 @@
                   "then": {
                     "properties": {
                       "accept": {
-                        "description": "HTML accept attribute, like { 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }",
-                        "type": "object"
+                        "description": "HTML accept attribute, like { 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }. String is possible, but deprecated",
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object"
+                          }
+                        ]
                       },
                       "crop": {
                         "description": "If true, allow user to crop the image (only for non svg)",
@@ -6406,6 +6905,10 @@
                             "xl"
                           ]
                         }
+                      },
+                      "titleAttribute": {
+                        "description": "Define the name of the attribute of the item which should be shown as a title of the item in cards mode.",
+                        "type": "string"
                       },
                       "allowAddByFilter": {
                         "$ref": "#/definitions/allowAddByFilterProp"
@@ -7453,6 +7956,18 @@
                   },
                   "then": {
                     "$ref": "#/definitions/jsonEditorProps"
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "yamlEditor"
+                      }
+                    }
+                  },
+                  "then": {
+                    "$ref": "#/definitions/yamlEditorProps"
                   }
                 },
                 {

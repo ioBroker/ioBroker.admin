@@ -494,9 +494,9 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         title: el,
                     };
 
-                    // If installed, take the icon from local web server
+                    // If installed, take the icon from the local web server
                     if (this.props.installed[name] && name !== 'admin') {
-                        item.icon = `/adapter/${el}/${adapter.icon.split('/admin/').pop()}`;
+                        item.icon = `/adapter/${el}/${(adapter.icon || '').split('/admin/').pop()}`;
                     }
 
                     return item;
