@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.7.28",
+    "version": "7.7.29",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.7.29": {
+        "en": "Added better table layout for JSON Config",
+        "de": "Zusätzliche bessere Tabellenlayout für JSON Config",
+        "ru": "Улучшенная компоновка стола для JSON Config",
+        "pt": "Adicionado melhor layout da tabela para a configuração do JSON",
+        "nl": "Betere tabelindeling voor JSON-configuratie toegevoegd",
+        "fr": "Ajout d'une meilleure mise en page pour JSON Config",
+        "it": "Aggiunto migliore layout della tabella per JSON Config",
+        "es": "Añadido mejor diseño de mesa para JSON Config",
+        "pl": "Dodano lepszy układ tabeli dla konfiguracji JSON",
+        "uk": "Додано кращий макет таблиці для JSON Config",
+        "zh-cn": "为 JSON 配置添加了更好的表格布局"
+      },
       "7.7.28": {
         "en": "Added iframe support for JSON Config",
         "de": "Unterstützung für JSON Config hinzugefügt",
@@ -95,19 +108,6 @@
         "pl": "Poprawa kategorii: drag & drop, widoczność\nDodano brakującą właściwość filterFunc do obiektu jsonConfig Id schemat pasujący do dokumentacji i wdrożenia\nDodano rozszerzoną sekcję z przykładami reverse proxy z zrzutami ekranu, ograniczeniami (wymaganie administratora root) i notatkami o kompatybilności adaptera\nPoprawione instancje strony reverse proxy link mapowanie więc adapter localLinki są przepisywane do skonfigurowanych ścieżek proxy (przedrostek dopasowanie + wymiana portu web, z duplikatem zawalca link)\nNaprawiono intro strona reverse proxy link remapping więc linki są poprawnie przepisywane natychmiast i po nawigacji z powrotem i z powrotem (załadunek reverseProxy config przed instancją skanowanie i użycie prefix rozpoczyna Z dopasowaniem)\nNaprawiono wielofunkcyjny wybór w oknie wyboru ID",
         "uk": "Покращення категорій: перетягування, видимість\nДодано відсутні фільтрФунц властивість jsonConfig об'єкт Id schema відповідати документації та реалізації\nДодано розширений зворотний проксі приклад розділ знімками, обмеження (потужність кореневих обов'язків), і примітки сумісності адаптера\nВиправлені екземпляри сторінки зворотного проксі посилання на картографування так адаптер локальнихLinks перезаписуються на налаштовані проксі-стежки (підтвердження відповідності + заміна веб-порту, з дублікатом посилання)\nВиправлено intro page зворотний проксі посилання remapping так зв'язки є правильним повторенням і після навігації і назад (завантаження зворотного налаштування перед скануванням екземпляра і використанням префікса починається З узгодженням)\nВиправлено багатовизначення у діалоговому вікні \"Вибір ID\"",
         "zh-cn": "类别改进:拖放、可见度\n将缺失的过滤器Func属性添加到 jsonConfig 对象 使文件与执行工作相符的Id计划\n添加带有截图、限制( admin root 要求) 和适配器兼容性说明的扩展反向代理示例部分\n固定实例 页面反向代理链接映射 因此适配器 localLinks 重写到配置的代理路径( 前缀匹配 + 网页端口替换, 重复链接崩溃)\n固定的内页反向代理链接重映射, 因此链接在浏览后立即正确重写( 在实例扫描和使用前缀开始前加载反向Proxy配置) 与匹配)\n选定 ID 对话框中的固定多选择"
-      },
-      "7.7.3": {
-        "en": "Many GUI changes: See previous changelog below for details",
-        "de": "Viele GUI Änderungen: Siehe vorheriges Changelog unten für Details",
-        "ru": "Многие изменения GUI: Смотрите предыдущий Changelog ниже для получения подробной информации",
-        "pt": "Muitas alterações na GUI: Veja o changelog anterior abaixo para detalhes",
-        "nl": "Veel GUI-wijzigingen: Zie vorige changelog hieronder voor details",
-        "fr": "De nombreux changements d'interface utilisateur : Voir ci-dessous pour plus de détails",
-        "it": "Molti cambiamenti della GUI: Vedere precedente changelog qui sotto per i dettagli",
-        "es": "Muchos cambios GUI: Ver el cambio anterior a continuación para más detalles",
-        "pl": "Wiele zmian GUI: Szczegółowe informacje znajdują się w poprzednim changelogu poniżej",
-        "uk": "Багато інтерфейсних змін: Перегляньте попередній блок змін нижче для деталей",
-        "zh-cn": "许多 GUI 更改 : 详情见下文以前的更改日志"
       }
     },
     "desc": {

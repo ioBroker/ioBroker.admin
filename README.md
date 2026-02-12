@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.7.29 (2026-02-11)
 - (@GermanBluefox) Added better table layout for JSON Config
 
 ### 7.7.28 (2026-02-08)
@@ -183,9 +183,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.7.20 (2025-11-15)
 - (@GermanBluefox) Small optimizations
 - (@GermanBluefox) Allowed to upload objects via text
-
-### 7.7.19 (2025-10-26)
-- (@GermanBluefox) Updated schema location for JsonConfig
 
 ## License
 
