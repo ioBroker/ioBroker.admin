@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.7.31 (2026-02-16)
 - (@GermanBluefox) Added better table layout for JSON Config
 
 ### 7.7.28 (2026-02-08)

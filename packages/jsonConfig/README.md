@@ -1677,7 +1677,7 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 8.1.10 (2026-02-12)
+### 8.1.11 (2026-02-12)
 - (@GermanBluefox) Added the copy-to-clipboard dialog for `sendTo`
 
 ### 8.1.9 (2026-02-10)

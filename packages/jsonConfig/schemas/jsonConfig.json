@@ -7855,7 +7855,10 @@
                       "hideOnlyControl": true,
                       "disabled": true,
                       "style": true,
-                      "darkStyle": true
+                      "darkStyle": true,
+                      "helpLink": true,
+                      "help": true,
+                      "noTranslation": true
                     },
                     "additionalProperties": false
                   }
