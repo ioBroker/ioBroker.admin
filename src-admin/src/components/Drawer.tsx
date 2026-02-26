@@ -16,6 +16,7 @@ import {
     PersonOutline as PersonOutlineIcon,
     Storage as StorageIcon,
     FileCopy as FilesIcon,
+    DeveloperBoard as DeviceManagerIcon,
 } from '@mui/icons-material';
 
 import {
@@ -168,6 +169,7 @@ const tabsInfo: Record<string, { order: number; icon?: JSX.Element; host?: boole
     'tab-eventlist-2': { order: 82, instance: 2 },
     'tab-hosts': { order: 100, icon: <StorageIcon /> },
     'tab-files': { order: 110, icon: <FilesIcon /> },
+    'tab-devicemanager': { order: 120, icon: <DeviceManagerIcon /> },
 };
 
 export interface AdminTab {
@@ -460,6 +462,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 'tab-hosts',
                 'tab-users',
                 'tab-enums',
+                'tab-devicemanager',
             ];
             // DEV ONLY
             const tabNames = Object.keys(tabsInfo).filter(name => READY_TO_USE.includes(name));
