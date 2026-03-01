@@ -843,7 +843,7 @@ class App extends Router<AppProps, AppState> {
         }
         if (state?.val) {
             this.guiSettings = obj;
-            this.guiSettings.native = this.guiSettings.native || { localStorage: {}, sessionStorage: {} };
+            this.guiSettings.native ||= { localStorage: {}, sessionStorage: {} };
             if (!this.guiSettings.native.localStorage) {
                 this.guiSettings.native = { localStorage: this.guiSettings.native, sessionStorage: {} };
             }
@@ -1140,11 +1140,11 @@ class App extends Router<AppProps, AppState> {
                         }
 
                         // create Workers
-                        this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1_000);
-                        this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                        this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
-                        this.adaptersWorker = this.adaptersWorker || new AdaptersWorker(this.socket);
-                        this.objectsWorker = this.objectsWorker || new ObjectsWorker(this.socket);
+                        this.logsWorker ||= new LogsWorker(this.socket, 1_000);
+                        this.instancesWorker ||= new InstancesWorker(this.socket);
+                        this.hostsWorker ||= new HostsWorker(this.socket);
+                        this.adaptersWorker ||= new AdaptersWorker(this.socket);
+                        this.objectsWorker ||= new ObjectsWorker(this.socket);
 
                         const newState: Partial<AppState> = {
                             lang: this.socket.systemLang,
@@ -1368,11 +1368,11 @@ class App extends Router<AppProps, AppState> {
             console.warn(`Cannot get state ${newState.currentHost}.alive: ${e}`);
         }
 
-        if (!alive || !alive.val) {
+        if (!alive?.val) {
             // find first the live host
             for (let h = 0; h < newState.hosts.length; h++) {
                 alive = await this.socket.getState(`${newState.hosts[h]._id}.alive`);
-                if (alive && alive.val) {
+                if (alive?.val) {
                     newState.currentHost = newState.hosts[h]._id;
                     newState.currentHostName = newState.hosts[h].common.name;
                 }
@@ -1727,7 +1727,7 @@ class App extends Router<AppProps, AppState> {
     }
 
     async readRepoAndInstalledInfo(currentHost: string, hosts?: CompactHost[] | null, update?: boolean): Promise<void> {
-        hosts = hosts || this.state.hosts;
+        hosts ||= this.state.hosts;
 
         const repository: CompactRepository = await this.socket
             .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
@@ -2261,7 +2261,7 @@ class App extends Router<AppProps, AppState> {
             this.handleDrawerState(DrawerStates.closed as 1);
         }
 
-        tab = tab || (this.state.currentTab && this.state.currentTab.tab) || '';
+        tab ||= this.state.currentTab?.tab || '';
 
         this.setTitle(tab.replace('tab-', ''));
     };
