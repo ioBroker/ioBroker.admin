@@ -46,7 +46,7 @@
         "@alcalzone/release-script-plugin-license": "^5.1.1",
         "@iobroker/admin-component-easy-access": "^2.0.1",
         "@iobroker/build-tools": "^3.0.1",
-        "@iobroker/dm-utils": "github:ioBroker/dm-utils#incremental-loading",
+        "@iobroker/dm-utils": "^3.0.0",
         "@iobroker/eslint-config": "^2.2.0",
         "@iobroker/legacy-testing": "^2.0.2",
         "@iobroker/testing": "^5.2.2",
