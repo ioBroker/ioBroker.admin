@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.0",
+    "version": "7.8.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,7 +18,7 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.8.0": {
+      "7.8.2": {
         "en": "Added the device manager tab in the admin",
         "de": "Hinzufügen der Geräte-Manager-Tab im Admin",
         "ru": "Добавлена вкладка диспетчер устройств в admin",
