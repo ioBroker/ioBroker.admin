@@ -875,12 +875,14 @@ class Web {
                 this.server.app.get('/index.html', async (_req: Request, res: Response): Promise<void> => {
                     this.indexHTML ||= await this.prepareIndex('/index.html');
                     res.header('Content-Type', 'text/html');
+                    res.header('Cache-Control', 'no-cache');
                     res.status(200).send(this.indexHTML);
                 });
 
                 this.server.app.get('/', async (_req: Request, res: Response): Promise<void> => {
                     this.indexHTML ||= await this.prepareIndex('/index.html');
                     res.header('Content-Type', 'text/html');
+                    res.header('Cache-Control', 'no-cache');
                     res.status(200).send(this.indexHTML);
                 });
 
