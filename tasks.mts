@@ -1,4 +1,6 @@
 import { statSync, existsSync, writeFileSync, readFileSync } from 'node:fs';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import less from 'less';
 import buildTools from '@iobroker/build-tools';
 import axios from 'axios';
@@ -6,7 +8,7 @@ import axios from 'axios';
 const { deleteFoldersRecursive, buildReact, patchHtmlFile, npmInstall, copyFiles } = buildTools;
 
 const srcRx = 'src-admin/';
-const dirName = import.meta.dirname;
+const dirName = dirname(fileURLToPath(import.meta.url));
 const src = `${dirName}/${srcRx}`;
 const rootFolder = dirName;
 const dest = 'adminWww/';

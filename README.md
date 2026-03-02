@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.8.1 (2026-03-02)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Added the device manager tab in the admin
 
 ### 7.7.31 (2026-02-16)
