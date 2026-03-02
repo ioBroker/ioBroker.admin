@@ -1,4 +1,8 @@
 # Older changes
+## 7.7.20 (2025-11-15)
+- (@GermanBluefox) Small optimizations
+- (@GermanBluefox) Allowed to upload objects via text
+
 ## 7.7.19 (2025-10-26)
 - (@GermanBluefox) Updated schema location for JsonConfig
 
