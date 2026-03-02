@@ -40,7 +40,7 @@ export type ioBrokerObject<Native extends object = object, Common extends object
 export interface AdminGuiConfig {
     admin?: {
         menu?: {
-            // Settings for left menu
+            // Settings for the left menu
             editable?: false; // Hide edit button in menu
             'tab-hosts'?: false; // Hide hosts item (See all https://github.com/ioBroker/ioBroker.admin/blob/master/src-rx/src/components/Drawer.js#L142)
             'tab-files'?: false; // Hide files item
@@ -58,6 +58,7 @@ export interface AdminGuiConfig {
             'tab-javascript'?: false; // Hide javascript item
             'tab-text2command-0'?: false; // Hide text2command-0 item
             'tab-echarts'?: false; // Hide echarts item
+            'tab-devicemanager'?: false; // Hide device manager
             [tabName: string]: false | undefined;
         };
         appBar?: {

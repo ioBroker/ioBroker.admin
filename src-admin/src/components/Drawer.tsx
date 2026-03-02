@@ -16,6 +16,7 @@ import {
     PersonOutline as PersonOutlineIcon,
     Storage as StorageIcon,
     FileCopy as FilesIcon,
+    DeveloperBoard as DeviceManagerIcon,
 } from '@mui/icons-material';
 
 import {
@@ -168,6 +169,7 @@ const tabsInfo: Record<string, { order: number; icon?: JSX.Element; host?: boole
     'tab-eventlist-2': { order: 82, instance: 2 },
     'tab-hosts': { order: 100, icon: <StorageIcon /> },
     'tab-files': { order: 110, icon: <FilesIcon /> },
+    'tab-devicemanager': { order: 120, icon: <DeviceManagerIcon /> },
 };
 
 export interface AdminTab {
@@ -217,6 +219,7 @@ interface DrawerState {
     hostNotifications: NotificationsCount;
     hostsUpdate: number;
     adaptersUpdate: number;
+    deviceManagerVisible: boolean;
 }
 
 class Drawer extends Component<DrawerProps, DrawerState> {
@@ -234,11 +237,10 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             hostNotifications: { other: 0, warning: 0 },
             hostsUpdate: Drawer.calculateHostUpdates(this.props.hosts, this.props.repository),
             adaptersUpdate: Drawer.calculateAdapterUpdates(this.props.installed, this.props.repository),
+            deviceManagerVisible: false,
         };
 
         this.refEditButton = React.createRef();
-
-        this.getTabs().catch(e => window.alert(`Cannot get tabs: ${e}`));
     }
 
     static getDerivedStateFromProps(props: DrawerProps, state: DrawerState): Partial<DrawerState> | null {
@@ -298,10 +300,17 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
     instanceChangedHandler = (): Promise<void> => this.getTabs(true);
 
+    async isDeviceManagerVisible(): Promise<boolean> {
+        const instances: Record<string, ioBroker.InstanceObject> = await this.props.instancesWorker.getObjects();
+        const result = Object.values(instances).find(it => it?.common?.supportedMessages?.deviceManager);
+        return !!result;
+    }
+
     componentDidMount(): void {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
+        this.getTabs().catch(e => window.alert(`Cannot get tabs: ${e}`));
 
-        void this.onNotificationsHandler().then(() => {
+        void this.onNotificationsHandler().then(async (): Promise<void> => {
             this.props.hostsWorker.registerNotificationHandler(this.onNotificationsHandler);
 
             if (!this.logsHandlerRegistered) {
@@ -461,6 +470,10 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 'tab-users',
                 'tab-enums',
             ];
+            if (await this.isDeviceManagerVisible()) {
+                READY_TO_USE.push('tab-devicemanager');
+            }
+
             // DEV ONLY
             const tabNames = Object.keys(tabsInfo).filter(name => READY_TO_USE.includes(name));
 

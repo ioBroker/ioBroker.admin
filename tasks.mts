@@ -1,21 +1,24 @@
-const { statSync, existsSync, writeFileSync, readFileSync } = require('node:fs');
-const less = require('less');
-const { deleteFoldersRecursive, buildReact, patchHtmlFile, npmInstall, copyFiles } = require('@iobroker/build-tools');
-const axios = require('axios');
+import { statSync, existsSync, writeFileSync, readFileSync } from 'node:fs';
+import less from 'less';
+import buildTools from '@iobroker/build-tools';
+import axios from 'axios';
+
+const { deleteFoldersRecursive, buildReact, patchHtmlFile, npmInstall, copyFiles } = buildTools;
 
 const srcRx = 'src-admin/';
-const src = `${__dirname}/${srcRx}`;
-const rootFolder = __dirname;
+const dirName = import.meta.dirname;
+const src = `${dirName}/${srcRx}`;
+const rootFolder = dirName;
 const dest = 'adminWww/';
 
-async function build() {
-    const socketNew = readFileSync(`${__dirname}/node_modules/@iobroker/ws/dist/esm/socket.io.min.js`).toString();
-    const socketOld = readFileSync(`${__dirname}/src-admin/public/lib/js/socket.io.js`).toString();
+async function build(): Promise<void> {
+    const socketNew = readFileSync(`${dirName}/node_modules/@iobroker/ws/dist/esm/socket.io.min.js`).toString();
+    const socketOld = readFileSync(`${dirName}/src-admin/public/lib/js/socket.io.js`).toString();
     if (socketNew !== socketOld) {
-        writeFileSync(`${__dirname}/src-admin/public/lib/js/socket.io.js`, socketNew);
+        writeFileSync(`${dirName}/src-admin/public/lib/js/socket.io.js`, socketNew);
         writeFileSync(
-            `${__dirname}/src-admin/public/lib/js/socket.io.js.map`,
-            readFileSync(`${__dirname}/node_modules/@iobroker/ws/dist/esm/socket.io.min.js.map`),
+            `${dirName}/src-admin/public/lib/js/socket.io.js.map`,
+            readFileSync(`${dirName}/node_modules/@iobroker/ws/dist/esm/socket.io.min.js.map`),
         );
     }
 
@@ -29,43 +32,52 @@ async function build() {
     );
 
     const ace = `${rootFolder}/src-admin/node_modules/ace-builds/src-min-noconflict/`;
-    writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, readFileSync(`${ace}worker-json.js`));
-    writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`, readFileSync(`${ace}ext-searchbox.js`));
+    writeFileSync(`${dirName}/${srcRx}public/lib/js/ace/worker-json.js`, readFileSync(`${ace}worker-json.js`));
+    writeFileSync(`${dirName}/${srcRx}public/lib/js/ace/ext-searchbox.js`, readFileSync(`${ace}ext-searchbox.js`));
 
-    await buildReact(src, { rootDir: __dirname, vite: true, tsc: true, exec: true, ramSize: 7000 });
-    if (existsSync(`${__dirname}/adminWww/index.html`)) {
+    await buildReact(src, { rootDir: dirName, vite: true, tsc: true, exec: true, ramSize: 7000 });
+    if (existsSync(`${dirName}/adminWww/index.html`)) {
         throw new Error('Front-end was not build to end!');
     }
 }
 
-async function syncUtils() {
-    const stat1 = statSync(`${__dirname}/src-admin/src/helpers/utils.ts`);
-    const stat2 = statSync(`${__dirname}/src/lib/utils.ts`);
-    const data1 = readFileSync(`${__dirname}/src-admin/src/helpers/utils.ts`).toString();
-    const data2 = readFileSync(`${__dirname}/src/lib/utils.ts`).toString();
+async function syncUtils(): Promise<void> {
+    const stat1 = statSync(`${dirName}/src-admin/src/helpers/utils.ts`);
+    const stat2 = statSync(`${dirName}/src/lib/utils.ts`);
+    const data1 = readFileSync(`${dirName}/src-admin/src/helpers/utils.ts`).toString();
+    const data2 = readFileSync(`${dirName}/src/lib/utils.ts`).toString();
     if (data1 !== data2) {
         if (stat1.mtimeMs > stat2.mtimeMs) {
-            writeFileSync(`${__dirname}/src/lib/utils.ts`, data1);
+            writeFileSync(`${dirName}/src/lib/utils.ts`, data1);
         } else {
-            writeFileSync(`${__dirname}/src-admin/src/helpers/utils.ts`, data2);
+            writeFileSync(`${dirName}/src-admin/src/helpers/utils.ts`, data2);
         }
     }
 
-    // Copy JSON config description and schema from 'https://github.com/ioBroker/json-config' to packages
-    let response = await axios('https://raw.githubusercontent.com/ioBroker/json-config/main/schemas/jsonConfig.json');
-    writeFileSync(`${__dirname}/packages/jsonConfig/schemas/jsonConfig.json`, JSON.stringify(response.data, null, 2));
-
-    response = await axios('https://raw.githubusercontent.com/ioBroker/json-config/main/README.md');
-    writeFileSync(`${__dirname}/packages/jsonConfig/README.md`, response.data);
+    try {
+        // Copy JSON config description and schema from 'https://github.com/ioBroker/json-config' to packages
+        let response = await axios(
+            'https://raw.githubusercontent.com/ioBroker/json-config/main/schemas/jsonConfig.json',
+        );
+        writeFileSync(`${dirName}/packages/jsonConfig/schemas/jsonConfig.json`, JSON.stringify(response.data, null, 2));
+    } catch (e) {
+        console.error('Cannot update jsonConfig.json. Not critical!', e);
+    }
+    try {
+        let response = await axios('https://raw.githubusercontent.com/ioBroker/json-config/main/README.md');
+        writeFileSync(`${dirName}/packages/jsonConfig/README.md`, response.data);
+    } catch (e) {
+        console.error('Cannot update README.md. Not critical!', e);
+    }
 }
 
-function copyAllFiles() {
-    deleteFoldersRecursive(`${__dirname}/build`);
-    deleteFoldersRecursive(`${__dirname}/admin/custom`);
-    deleteFoldersRecursive(`${__dirname}/${srcRx}public/lib/js/crypto-js`);
-    deleteFoldersRecursive(`${__dirname}/../dm-gui-components/build/src`);
-    deleteFoldersRecursive(`${__dirname}/../jsonConfig/build/src`);
-    syncUtils();
+async function copyAllFiles(): Promise<void> {
+    deleteFoldersRecursive(`${dirName}/build`);
+    deleteFoldersRecursive(`${dirName}/admin/custom`);
+    deleteFoldersRecursive(`${dirName}/${srcRx}public/lib/js/crypto-js`);
+    deleteFoldersRecursive(`${dirName}/../dm-gui-components/build/src`);
+    deleteFoldersRecursive(`${dirName}/../jsonConfig/build/src`);
+    await syncUtils();
 
     copyFiles([`${srcRx}build/**/*`, `!${srcRx}build/index.html`, `!${srcRx}build/static/js/*.js`], dest);
 
@@ -78,10 +90,10 @@ function copyAllFiles() {
             ],
             `admin/`,
         );
-    } else if (existsSync(`${__dirname}/node_modules/@iobroker/admin-component-easy-access`)) {
-        copyFiles(`${__dirname}/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
-    } else if (existsSync(`${__dirname}/node_modules/src-admin/@iobroker/admin-component-easy-access`)) {
-        copyFiles(`${__dirname}/src-admin/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
+    } else if (existsSync(`${dirName}/node_modules/@iobroker/admin-component-easy-access`)) {
+        copyFiles(`${dirName}/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
+    } else if (existsSync(`${dirName}/node_modules/src-admin/@iobroker/admin-component-easy-access`)) {
+        copyFiles(`${dirName}/src-admin/node_modules/@iobroker/admin-component-easy-access/admin/**/*`, `admin/`);
     } else {
         console.error('Cannot find admin-component-easy-access');
         process.exit(1);
@@ -120,7 +132,7 @@ function copyAllFiles() {
     );
 }
 
-async function configCSS() {
+async function configCSS(): Promise<void> {
     const selectID = await less.render(readFileSync(`./${srcRx}less/selectID.less`).toString('utf8'), {
         filename: 'selectID.less',
         compress: true,
@@ -143,7 +155,7 @@ async function configCSS() {
     writeFileSync(`./${srcRx}public/css/adapter.css`, selectID.css + adapterLess.css + materializeCorrect.css);
 }
 
-async function iobCSS() {
+async function iobCSS(): Promise<void> {
     const selectID = await less.render(readFileSync(`./${srcRx}less/selectID.less`).toString('utf8'), {
         filename: 'selectID.less',
         compress: true,
@@ -153,7 +165,7 @@ async function iobCSS() {
     writeFileSync(`./${srcRx}public/lib/css/iob/selectID.css`, selectID.css);
 }
 
-async function treeTableCSS() {
+async function treeTableCSS(): Promise<void> {
     const treeTable = await less.render(readFileSync(`./${srcRx}less/jquery.treetable.theme.less`).toString('utf8'), {
         filename: 'selectID.less',
         compress: true,
@@ -162,54 +174,64 @@ async function treeTableCSS() {
     writeFileSync(`./${srcRx}public/lib/css/jquery.treetable.theme.css`, treeTable.css);
 }
 
-function clean() {
-    deleteFoldersRecursive(`${__dirname}/${dest}`, ['404.html', 'oauthError.html', 'oauthSuccess.html']);
-    deleteFoldersRecursive(`${__dirname}/${srcRx}/build`);
+function clean(): void {
+    deleteFoldersRecursive(`${dirName}/${dest}`, ['404.html', 'oauthError.html', 'oauthSuccess.html']);
+    deleteFoldersRecursive(`${dirName}/${srcRx}/build`);
 }
 
 if (process.argv.includes('--backend-i18n')) {
     copyFiles(['src/i18n/*'], 'build/i18n');
-    syncUtils();
-} else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-configCSS')) {
-    syncUtils();
-    configCSS().catch(e => {
+    syncUtils().catch((e: unknown) => {
         console.error(e);
         process.exit(1);
     });
+} else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-configCSS')) {
+    syncUtils()
+        .then(() => configCSS())
+        .catch((e: unknown) => {
+            console.error(e);
+            process.exit(1);
+        });
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-iobCSS')) {
-    iobCSS().catch(e => {
+    iobCSS().catch((e: unknown) => {
         console.error(e);
         process.exit(1);
     });
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-treeTableCSS')) {
-    treeTableCSS().catch(e => {
+    treeTableCSS().catch((e: unknown) => {
         console.error(e);
         process.exit(1);
     });
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-1-clean')) {
-    syncUtils();
-    clean();
+    syncUtils()
+        .then(() => clean())
+        .catch((e: unknown) => {
+            console.error(e);
+            process.exit(1);
+        });
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-2-npm')) {
     if (!existsSync(`${src}node_modules`)) {
-        npmInstall(src).catch(e => {
+        npmInstall(src).catch((e: unknown) => {
             console.error(e);
             process.exit(1);
         });
     }
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-3-build')) {
-    build().catch(e => {
+    build().catch((e: unknown) => {
         console.error(e);
         process.exit(1);
     });
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-5-copy')) {
-    copyAllFiles();
+    copyAllFiles().catch((e: unknown) => {
+        console.error(e);
+        process.exit(1);
+    });
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-6-patch')) {
-    patchHtmlFile(`${dest}/index.html`).catch(e => {
+    patchHtmlFile(`${dest}/index.html`).catch((e: unknown) => {
         console.error(e);
         process.exit(1);
     });
 } else {
-    syncUtils();
     configCSS()
         .then(async () => {
             clean();
@@ -220,10 +242,10 @@ if (process.argv.includes('--backend-i18n')) {
             await iobCSS();
             await treeTableCSS();
             await build();
-            copyAllFiles();
+            await copyAllFiles();
             await patchHtmlFile(`${dest}/index.html`);
         })
-        .catch(e => {
+        .catch((e: unknown) => {
             console.error(e);
             process.exit(1);
         });

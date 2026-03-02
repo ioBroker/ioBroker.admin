@@ -11,7 +11,6 @@ admin/i18n/flat.txt
 admin/words.js
 .vscode
 **/build
-src-admin/package-lock.json
 **/src/public_aes
 **/src/public/js/adapter-settings-aes.js
 testSentry.bat
@@ -27,3 +26,4 @@ README.md
 #ignore .commitinfo created by ioBroker release script
 .commitinfo
 /src-admin/.__mf__temp/
+/.claude/settings.local.json
