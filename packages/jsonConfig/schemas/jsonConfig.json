@@ -202,6 +202,7 @@
         "pattern",
         "port",
         "qrCode",
+        "qrCodeSendTo",
         "room",
         "select",
         "selectSendTo",
@@ -766,6 +767,93 @@
         "confirm": true
       }
     },
+    "qrCodeSendToProps": {
+      "required": [
+        "type",
+        "command"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "description": "Command to be sent to the adapter instance. The response must be a string to be encoded in the QR code.",
+          "type": "string"
+        },
+        "alsoDependsOn": {
+          "$ref": "#/definitions/alsoDependsOnSendProp"
+        },
+        "jsonData": {
+          "description": "Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+          "type": "string"
+        },
+        "data": {
+          "description": "Data to be sent as JSON.",
+          "type": "object"
+        },
+        "sendFirstByClick": {
+          "description": "If true or a string/multilingual object, the QR code will not be loaded on mount but only after a click. If a string or multilingual object is provided, it will be used as the button text.",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
+        },
+        "size": {
+          "description": "The size of the QR code",
+          "type": "number"
+        },
+        "fgColor": {
+          "description": "Foreground color",
+          "type": "string"
+        },
+        "bgColor": {
+          "description": "Background color",
+          "type": "string"
+        },
+        "level": {
+          "description": "QR code error correction level",
+          "enum": [
+            "L",
+            "M",
+            "Q",
+            "H"
+          ]
+        },
+        "label": true,
+        "type": true,
+        "defaultSendTo": true,
+        "allowSaveWithError": true,
+        "xs": true,
+        "sm": true,
+        "md": true,
+        "lg": true,
+        "xl": true,
+        "newLine": true,
+        "hidden": true,
+        "hideOnlyControl": true,
+        "disabled": true,
+        "helpLink": true,
+        "help": true,
+        "style": true,
+        "darkStyle": true,
+        "validator": true,
+        "validatorNoSaveOnError": true,
+        "validatorErrorText": true,
+        "noMultiEdit": true,
+        "tooltip": true,
+        "expertMode": true,
+        "default": true,
+        "defaultFunc": true,
+        "onChange": true,
+        "noTranslation": true,
+        "confirm": true
+      }
+    },
     "deviceManagerProps": {
       "properties": {
         "label": true,
@@ -1134,6 +1222,11 @@
         "setOnEnterKey": {
           "description": "The value in this case will be sent only when the \"Enter\" button is pressed. It can be combined with `showEnterButton`",
           "type": "boolean"
+        },
+        "digits": {
+          "description": "Number of decimal places to display for numeric values in text/html mode",
+          "type": "number",
+          "minimum": 0
         },
         "options": {
           "description": "Options for `select` in form `[\"value1\", \"value2\", ...]` or `[{\"value\": \"value\", \"label\": \"Value1\"}, \"value2\", ...]`. If not defiled, the `common.states` in the object must exist.",
@@ -2157,6 +2250,20 @@
                 "data": {
                   "description": "Data to be sent as JSON.",
                   "type": "object"
+                },
+                "sendFirstByClick": {
+                  "description": "If true or a string/multilingual object, the image will not be loaded on mount but only after a click. If a string or multilingual object is provided, it will be used as the button text.",
+                  "oneOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
                 },
                 "noTranslation": true,
                 "label": true,
@@ -4009,6 +4116,111 @@
             "if": {
               "properties": {
                 "type": {
+                  "const": "qrCodeSendTo"
+                }
+              }
+            },
+            "then": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                },
+                {
+                  "properties": {
+                    "command": {
+                      "description": "Command to be sent to the adapter instance. The response must be a string to be encoded in the QR code.",
+                      "type": "string"
+                    },
+                    "alsoDependsOn": {
+                      "$ref": "#/definitions/alsoDependsOnSendProp"
+                    },
+                    "jsonData": {
+                      "description": "Data to be sent as parsable string, can contain special placeholder. E. g. '{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}'",
+                      "type": "string"
+                    },
+                    "data": {
+                      "description": "Data to be sent as JSON.",
+                      "type": "object"
+                    },
+                    "sendFirstByClick": {
+                      "description": "If true or a string/multilingual object, the QR code will not be loaded on mount but only after a click.",
+                      "oneOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/definitions/multilingual"
+                        }
+                      ]
+                    },
+                    "size": {
+                      "description": "The size of the QR code",
+                      "type": "number"
+                    },
+                    "fgColor": {
+                      "description": "Foreground color",
+                      "type": "string"
+                    },
+                    "bgColor": {
+                      "description": "Background color",
+                      "type": "string"
+                    },
+                    "level": {
+                      "description": "QR code error correction level",
+                      "enum": [
+                        "L",
+                        "M",
+                        "Q",
+                        "H"
+                      ]
+                    },
+                    "attr": true,
+                    "label": true,
+                    "type": true,
+                    "defaultSendTo": true,
+                    "allowSaveWithError": true,
+                    "xs": true,
+                    "sm": true,
+                    "md": true,
+                    "lg": true,
+                    "xl": true,
+                    "newLine": true,
+                    "hidden": true,
+                    "hideOnlyControl": true,
+                    "disabled": true,
+                    "helpLink": true,
+                    "help": true,
+                    "style": true,
+                    "darkStyle": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "width": true
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
                   "const": "func"
                 }
               }
@@ -5837,6 +6049,20 @@
                         "description": "Data to be sent as JSON.",
                         "type": "object"
                       },
+                      "sendFirstByClick": {
+                        "description": "If true or a string/multilingual object, the image will not be loaded on mount but only after a click. If a string or multilingual object is provided, it will be used as the button text.",
+                        "oneOf": [
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "$ref": "#/definitions/multilingual"
+                          }
+                        ]
+                      },
                       "label": true,
                       "type": true,
                       "xs": true,
@@ -6726,6 +6952,18 @@
                   },
                   "then": {
                     "$ref": "#/definitions/qrCodeProps"
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "qrCodeSendTo"
+                      }
+                    }
+                  },
+                  "then": {
+                    "$ref": "#/definitions/qrCodeSendToProps"
                   }
                 },
                 {

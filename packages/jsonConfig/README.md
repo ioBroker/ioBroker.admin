@@ -171,6 +171,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`pattern`:**](#pattern) Read-only field showing a pattern (e.g., URL)
 - [**`port`:**](#port) Special input for ports
 - [**`qrCode`:**](#qrcode) Displays data as a QR code (Admin 7.0.18 or newer)
+- [**`qrCodeSendTo`:**](#qrcodesendto) Displays a QR code with data received from the backend
 - [**`room`:**](#room) Selects a room from the `enum.room` list (Admin 6 only)
 - [**`select`:**](#select) Dropdown menu with predefined options
 - [**`selectSendTo`:**](#selectsendto) Dropdown menu with instance values for sending data
@@ -914,13 +915,14 @@ only Admin6.
 
 shows the image received from the backend as base64 string
 
-| Property   | Description                                                                                                                                                 |
-|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `width`    | width of QR code in px                                                                                                                                      |
-| `height`   | height of QR code in px                                                                                                                                     |
-| `command`  | sendTo command                                                                                                                                              |
-| `jsonData` | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend                                         |
-| `data`     | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined. |
+| Property           | Description                                                                                                                                                 |
+|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `width`            | width of QR code in px                                                                                                                                      |
+| `height`           | height of QR code in px                                                                                                                                     |
+| `command`          | sendTo command                                                                                                                                              |
+| `jsonData`         | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend                                         |
+| `data`             | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined. |
+| `sendFirstByClick` | show image first when clicked. `true` - standard text (Click to show) or specific text                                                                      |
 
 #### Example of code in back-end for `imageSendTo`
 
@@ -934,6 +936,34 @@ adapter.on("message", (obj) => {
         obj.callback && adapter.sendTo(obj.from, obj.command, url, obj.callback)
     );
   }
+});
+```
+
+### `qrCodeSendTo`
+
+Sends a command to the adapter instance and displays the response string as a QR code.
+The backend must return a plain string (the data to encode).
+
+| Property           | Description                                                                                                                                                 |
+|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `command`          | sendTo command (default: `"send"`)                                                                                                                          |
+| `alsoDependsOn`    | array of attribute names — the QR code is refreshed whenever any of these attributes change                                                                 |
+| `jsonData`         | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend                                         |
+| `data`             | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined. |
+| `sendFirstByClick` | load QR code only after a click. `true` — standard text ("Click to show") or a custom string/translation object used as the button label                    |
+| `size`             | size of the QR code in px                                                                                                                                   |
+| `fgColor`          | foreground color (default: `"#000000"`)                                                                                                                     |
+| `bgColor`          | background color (default: `"#ffffff"`)                                                                                                                     |
+| `level`            | error correction level: `L`, `M`, `Q`, or `H` (default: `L`)                                                                                               |
+
+#### Example of code in back-end for `qrCodeSendTo`
+
+```js
+adapter.on("message", (obj) => {
+    if (obj.command === "send") {
+        // return the string to be encoded in the QR code
+        obj.callback && adapter.sendTo(obj.from, obj.command, "https://example.com/pair?token=abc123", obj.callback);
+    }
 });
 ```
 
@@ -1249,6 +1279,7 @@ Special input for ports. It checks automatically if the port is used by other in
 | `showEnterButton` | Show SET button. The value in this case will be sent only when the button is pressed. You can define the text of the button. Default text is "Set" (Only for "input", "number" or "slider")          |
 | `setOnEnterKey`   | The value in this case will be sent only when the "Enter" button is pressed. It can be combined with `showEnterButton`                                                                               |
 | `options`         | Options for `select` in form `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1", "color": "red"}, "value2", ...]`. If not defiled, the `common.states` in the object must exist.  |
+| `digits`          | Number of decimal places to display for numeric values in `text`/`html` mode (e.g. `2` turns `230.2764537654374` into `230.28`)                                                                      |
 
 ### `staticInfo`
 
@@ -1677,6 +1708,12 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.2.1 (2026-03-02)
+- (@GermanBluefox) Added option `sendFirstByClick` to `imageSendTo`
+- (@GermanBluefox) Added new component: `qrCodeSendTo`
+- (@GermanBluefox) Added option `digits` to `state` component
+- (@GermanBluefox) Trying to fix indication of the problems in the table
+
 ### 8.1.11 (2026-02-12)
 - (@GermanBluefox) Added the copy-to-clipboard dialog for `sendTo`
 
