@@ -954,7 +954,7 @@ The backend must return a plain string (the data to encode).
 | `size`             | size of the QR code in px                                                                                                                                   |
 | `fgColor`          | foreground color (default: `"#000000"`)                                                                                                                     |
 | `bgColor`          | background color (default: `"#ffffff"`)                                                                                                                     |
-| `level`            | error correction level: `L`, `M`, `Q`, or `H` (default: `L`)                                                                                               |
+| `level`            | error correction level: `L`, `M`, `Q`, or `H` (default: `L`)                                                                                                |
 
 #### Example of code in back-end for `qrCodeSendTo`
 
@@ -1708,7 +1708,10 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 8.2.1 (2026-03-02)
+### 8.2.3 (2026-03-04)
+- (@GermanBluefox) Increased the QR code padding
+
+### 8.2.2 (2026-03-03)
 - (@GermanBluefox) Added option `sendFirstByClick` to `imageSendTo`
 - (@GermanBluefox) Added new component: `qrCodeSendTo`
 - (@GermanBluefox) Added option `digits` to `state` component
