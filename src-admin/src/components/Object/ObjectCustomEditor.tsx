@@ -15,7 +15,7 @@ import {
 // Icons
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { withWidth, DialogError, DialogConfirm, type IobTheme } from '@iobroker/adapter-react-v5';
+import { DialogError, DialogConfirm, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import { ConfigGeneric, JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
 import AdminUtils from '@/helpers/AdminUtils';
@@ -128,21 +128,17 @@ interface JsonConfigStorage {
     disabled?: boolean;
 }
 
-class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustomEditorState> {
+export default class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustomEditorState> {
     private readonly changedIds: string[];
-
     private readonly scrollDivRef: React.RefObject<HTMLDivElement>;
-
     private readonly jsonConfigs: Record<string, null | JsonConfigStorage>;
-
     private readonly refTemplate: Record<string, RefObject<HTMLDivElement>>;
-
     private readonly customObj: ioBroker.AnyObject;
-
     private commonConfig: Record<string, any> = {};
 
+    /** Cached per-instance filter functions: returns true if objectId is allowed */
+    private statesFilterFunctions: Record<string, (objectId: string) => boolean> = {};
     private cb?: () => void;
-
     private cachedNewValues?: Record<string, any>;
 
     constructor(props: ObjectCustomEditorProps) {
@@ -224,7 +220,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         this.props.customsInstances.forEach(id => {
             const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.', '');
             if (this.jsonConfigs[adapter]) {
-                this.jsonConfigs[adapter].instanceObjs = this.jsonConfigs[adapter].instanceObjs || {};
+                this.jsonConfigs[adapter].instanceObjs ||= {};
                 this.jsonConfigs[adapter].instanceObjs[id] = {
                     _id: id as `system.adapter.${string}.${number}`,
                     common: JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${id}`]?.common)),
@@ -235,6 +231,42 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 };
             }
         });
+    }
+
+    /** Build and cache a filter function for the given instance based on statesFilter from jsonCustom config */
+    getStatesFilterFunction(instance: string): (objectId: string) => boolean {
+        if (this.statesFilterFunctions[instance]) {
+            return this.statesFilterFunctions[instance];
+        }
+
+        const adapter = instance.split('.')[0];
+        const statesFilter = (this.jsonConfigs[adapter]?.json as ConfigItemPanel & { statesFilter?: true | string })
+            ?.statesFilter;
+
+        let fn: (objectId: string) => boolean;
+        if (statesFilter === undefined) {
+            fn = () => true;
+        } else if (statesFilter === true) {
+            const prefix = `${instance}.`;
+            fn = (objectId: string): boolean => objectId.startsWith(prefix);
+        } else {
+            try {
+                const re = new RegExp(statesFilter);
+                fn = (objectId: string): boolean => re.test(objectId);
+            } catch {
+                console.error(`Invalid statesFilter regex: ${statesFilter}`);
+                fn = () => true;
+            }
+        }
+
+        this.statesFilterFunctions[instance] = fn;
+        return fn;
+    }
+
+    /** Get the subset of objectIDs that match the statesFilter for a given instance */
+    getFilteredObjectIDs(instance: string): string[] {
+        const fn = this.getStatesFilterFunction(instance);
+        return this.props.objectIDs.filter(fn);
     }
 
     async getCustomTemplate(adapter: string): Promise<void> {
@@ -424,7 +456,6 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
     }
 
     getCommonConfig(): Record<string, any> {
-        const ids = this.props.objectIDs || [];
         const objects = this.props.objects;
 
         const commons: Record<string, any> = {};
@@ -435,6 +466,8 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             if (this.jsonConfigs[adapter] && this.jsonConfigs[adapter].disabled) {
                 return;
             }
+            // only consider objects matching the statesFilter
+            const ids = this.getFilteredObjectIDs(inst);
             commons[inst] = {};
             ids.forEach(id => {
                 const customObj = objects[id];
@@ -529,6 +562,11 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         i: number,
     ): JSX.Element | null {
         const adapter = instance.split('.')[0];
+
+        // Check if any of the selected objects match the statesFilter
+        if (this.getFilteredObjectIDs(instance).length === 0) {
+            return null;
+        }
 
         const icon = `${URL_PREFIX}/adapter/${adapter}/${this.props.objects[`system.adapter.${adapter}`].common.icon}`;
         // could be: true, false, [true, false]
@@ -819,6 +857,12 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
                 for (let i = 0; i < instances.length; i++) {
                     const instance = instances[i];
+
+                    // skip if this object doesn't match the statesFilter
+                    if (!this.getStatesFilterFunction(instance)(id)) {
+                        continue;
+                    }
+
                     // const adapter = instance.split('.')[0];
                     const newValues = this.combineNewAndOld(instance, true);
 
@@ -968,5 +1012,3 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         );
     }
 }
-
-export default withWidth()(ObjectCustomEditor);
