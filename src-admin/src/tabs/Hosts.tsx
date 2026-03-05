@@ -10,7 +10,6 @@ import {
 } from '@mui/icons-material';
 
 import {
-    withWidth,
     Utils,
     TabHeader,
     TabContent,
@@ -152,7 +151,7 @@ interface HostsState {
 }
 
 // every tab should get their data itself from server
-class Hosts extends Component<HostsProps, HostsState> {
+export default class Hosts extends Component<HostsProps, HostsState> {
     constructor(props: HostsProps) {
         super(props);
 
@@ -537,5 +536,3 @@ class Hosts extends Component<HostsProps, HostsState> {
         );
     }
 }
-
-export default withWidth()(Hosts);

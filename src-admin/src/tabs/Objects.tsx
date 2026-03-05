@@ -20,7 +20,6 @@ import {
     type ThemeName,
     type ThemeType,
     type Translate,
-    withWidth,
     Router,
     ObjectBrowser,
     type ObjectBrowserClass,
@@ -68,8 +67,8 @@ interface ObjectsProps {
     isFloatComma: boolean;
     dateFormat: string;
     objectsWorker: ObjectsWorker;
-    statesOnly: boolean;
-    prefix: string;
+    statesOnly?: boolean;
+    prefix?: string;
 }
 
 interface ObjectsState {
@@ -80,7 +79,7 @@ interface ObjectsState {
     // suppressDeleteConfirm: boolean;
 }
 
-class Objects extends Component<ObjectsProps, ObjectsState> {
+export default class Objects extends Component<ObjectsProps, ObjectsState> {
     private readonly dialogName: string;
     private filters: Record<string, any>;
     private readonly t: Translate;
@@ -345,5 +344,3 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
         ];
     }
 }
-
-export default withWidth()(Objects);

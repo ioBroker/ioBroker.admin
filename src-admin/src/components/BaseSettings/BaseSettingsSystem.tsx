@@ -2,7 +2,7 @@ import React, { createRef, Component, type JSX } from 'react';
 
 import { Grid2, FormControlLabel, Checkbox, TextField, Paper } from '@mui/material';
 
-import { withWidth, type Translate } from '@iobroker/adapter-react-v5';
+import { type Translate } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
     paper: {
@@ -57,7 +57,7 @@ interface BaseSettingsSystemState {
     noChmod: boolean;
 }
 
-class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettingsSystemState> {
+export default class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettingsSystemState> {
     private focusRef: React.RefObject<HTMLInputElement>;
 
     constructor(props: BaseSettingsSystemProps) {
@@ -249,5 +249,3 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
         );
     }
 }
-
-export default withWidth()(BaseSettingsSystem);

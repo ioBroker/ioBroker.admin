@@ -24,7 +24,7 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/adapter-react-v5": "^8.1.1",
+        "@iobroker/adapter-react-v5": "^8.1.2",
         "@iobroker/dm-gui-components": "^9.0.2",
         "@iobroker/json-config": "^8.2.3",
         "ace-builds": "^1.43.6",

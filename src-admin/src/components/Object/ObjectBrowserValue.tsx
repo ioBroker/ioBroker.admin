@@ -347,8 +347,11 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 from={this.chartFrom}
                 end={Date.now()}
                 noToolbar
-                dateFormat={this.props.dateFormat}
                 defaultHistory={this.props.defaultHistory}
+
+                customsInstances={[]}
+                objects={undefined}
+                historyInstance={''}
             />
         );
     }

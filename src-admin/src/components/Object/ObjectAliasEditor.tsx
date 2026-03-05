@@ -24,14 +24,7 @@ import {
 // Icons
 import { Close, Link as IconLink, AddLink, Close as IconClose } from '@mui/icons-material';
 
-import {
-    withWidth,
-    I18n,
-    IconFx,
-    type IobTheme,
-    type AdminConnection,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { I18n, IconFx, type IobTheme, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 
 import { DEFAULT_ROLES } from './ObjectBrowserEditObject';
 
@@ -96,7 +89,7 @@ interface ObjectAliasEditorState {
     newAliasMax?: string;
 }
 
-class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEditorState> {
+export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEditorState> {
     aliasIDs: string[];
 
     constructor(props: ObjectAliasEditorProps) {
@@ -645,5 +638,3 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
         );
     }
 }
-
-export default withWidth()(ObjectAliasEditor);

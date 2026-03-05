@@ -85,7 +85,7 @@ interface SystemSettingsDialogProps {
     themeType: ThemeType;
     onClose: (repoChanged?: boolean) => void;
     currentTab: { id: string };
-    width: string;
+    width: 'xs' | 'md' | 'lg' | 'xl' | 'sm';
     adminGuiConfig: AdminGuiConfig;
     expertModeFunc: (value: boolean) => void;
     currentHost: string;

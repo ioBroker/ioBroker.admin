@@ -2,7 +2,7 @@ import React, { Component, type JSX } from 'react';
 
 import { Paper } from '@mui/material';
 
-import { withWidth, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import { type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
 
@@ -43,7 +43,7 @@ interface BaseSettingsPluginsState {
     error?: boolean;
 }
 
-class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettingsPluginsState> {
+export default class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettingsPluginsState> {
     constructor(props: BaseSettingsPluginsProps) {
         super(props);
 
@@ -85,5 +85,3 @@ class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettin
         );
     }
 }
-
-export default withWidth()(BaseSettingsPlugins);

@@ -100,9 +100,9 @@ interface ObjectCustomEditorProps extends BasicComponentProps {
     objectIDs: string[];
     registerSaveFunc: (cb?: () => void) => void;
     onProgress: (progress: boolean) => void;
-    onError: (err?: boolean) => void;
-    data: Record<string, any>;
-    originalData: Record<string, any>;
+    onError?: (err?: boolean) => void;
+    data?: Record<string, any>;
+    originalData?: Record<string, any>;
     systemConfig?: ioBroker.SystemConfigObject;
     onChange: (hasChanges?: boolean, update?: boolean) => void;
     reportChangedIds: (changedIds: string[]) => void;
@@ -730,7 +730,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                 isFloatComma={this.props.systemConfig.common.isFloatComma}
                                 dateFormat={this.props.systemConfig.common.dateFormat}
                                 onError={(error: boolean) =>
-                                    this.setState({ error }, () => this.props.onError && this.props.onError(error))
+                                    this.setState({ error }, () => this.props.onError?.(error))
                                 }
                                 onValueChange={(attr: string, value: any) => {
                                     this.cachedNewValues = this.cachedNewValues || this.state.newValues;

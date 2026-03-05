@@ -18,7 +18,7 @@ import {
     Box,
 } from '@mui/material';
 
-import { DialogConfirm, withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { DialogConfirm, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 import { type AdminConnection } from '@iobroker/socket-client';
 
@@ -143,7 +143,7 @@ interface BaseSettingsObjectsState {
     noFileCache: boolean;
 }
 
-class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettingsObjectsState> {
+export default class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettingsObjectsState> {
     private focusRef: React.RefObject<HTMLInputElement>;
 
     constructor(props: BaseSettingsObjectsProps) {
@@ -841,5 +841,3 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
         );
     }
 }
-
-export default withWidth()(BaseSettingsObjects);

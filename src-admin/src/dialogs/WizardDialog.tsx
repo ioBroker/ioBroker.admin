@@ -175,7 +175,6 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
             <WizardLicenseTab
                 t={I18n.t}
                 socket={this.props.socket}
-                themeName={this.props.themeName}
                 themeType={this.props.themeType}
                 onDone={async (settings: { lang: ioBroker.Languages }) => {
                     const obj = await this.props.socket.getSystemConfig(true);

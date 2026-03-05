@@ -18,7 +18,6 @@ import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 import {
     type AdminConnection,
     DialogConfirm,
-    withWidth,
     type ThemeType,
     type IobTheme,
     type Translate,
@@ -76,7 +75,7 @@ interface BaseSettingsDialogState {
     saving: boolean;
 }
 
-class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettingsDialogState> {
+export default class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettingsDialogState> {
     originalSettings: any;
 
     constructor(props: BaseSettingsDialogProps) {
@@ -240,7 +239,6 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
                 settings={this.state[name]}
                 t={this.props.t}
                 socket={this.props.socket}
-                currentHost={this.props.currentHost}
                 onChange={(settings: any) => this.updateSettings(name, settings)}
             />
         );
@@ -278,8 +276,6 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
             <BaseSettingsLog
                 settings={this.state[name]}
                 t={this.props.t}
-                socket={this.props.socket}
-                currentHost={this.props.currentHost}
                 onChange={(settings: any) => this.updateSettings(name, settings)}
             />
         );
@@ -434,5 +430,3 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
         );
     }
 }
-
-export default withWidth()(BaseSettingsDialog);

@@ -2076,7 +2076,6 @@ class App extends Router<AppProps, AppState> {
                             theme={this.state.theme}
                             expertMode={this.state.expertMode}
                             t={I18n.t}
-                            navigate={Router.doNavigate}
                             currentHost={this.state.currentHost}
                             executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
                                 this.executeCommand(cmd, host, callback)
@@ -2085,7 +2084,6 @@ class App extends Router<AppProps, AppState> {
                             showAdaptersWarning={this.showAdaptersWarning}
                             adminInstance={this.adminInstance}
                             onUpdating={(updating: boolean) => this.setState({ updating })}
-                            instancesWorker={this.instancesWorker}
                         />
                     </Suspense>
                 );

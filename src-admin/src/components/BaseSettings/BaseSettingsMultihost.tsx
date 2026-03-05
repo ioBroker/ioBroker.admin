@@ -2,7 +2,7 @@ import React, { createRef, Component, type JSX } from 'react';
 
 import { Grid2, FormControlLabel, Checkbox, TextField, Paper } from '@mui/material';
 
-import { type AdminConnection, withWidth, type Translate } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, React.CSSProperties> = {
     paper: {
@@ -43,7 +43,7 @@ interface BaseSettingsMultihostState {
     password?: string;
 }
 
-class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSettingsMultihostState> {
+export default class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSettingsMultihostState> {
     private focusRef: React.RefObject<HTMLInputElement>;
 
     constructor(props: BaseSettingsMultihostProps) {
@@ -161,5 +161,3 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
         );
     }
 }
-
-export default withWidth()(BaseSettingsMultihost);

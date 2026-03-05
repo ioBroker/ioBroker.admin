@@ -6,14 +6,14 @@ import React, { type JSX } from 'react';
 import * as ace from 'ace-builds';
 import 'ace-builds/src-noconflict/ext-modelist';
 
-import { withWidth, FileViewerClass, type FileViewerProps } from '@iobroker/adapter-react-v5';
+import { FileViewerClass, type FileViewerProps } from '@iobroker/adapter-react-v5';
 
 import Editor from './Editor';
 
 // @ts-expect-error try this too
 const modelist = ace.require ? ace.require('ace/ext/modelist') : ace.acequire('ace/ext/modelist');
 
-class FileEditorClass extends FileViewerClass {
+export default class FileEditor extends FileViewerClass {
     constructor(props: FileViewerProps) {
         super(props);
 
@@ -58,7 +58,7 @@ class FileEditorClass extends FileViewerClass {
         // File viewer in adapter-react does not support write
         return (
             <Editor
-                mode={FileEditorClass.getEditFile(this.props.formatEditFile)}
+                mode={FileEditor.getEditFile(this.props.formatEditFile)}
                 themeType={this.props.themeType}
                 value={this.state.editingValue || this.state.code || this.state.text}
                 onChange={
@@ -74,5 +74,3 @@ class FileEditorClass extends FileViewerClass {
         this.writeFile64();
     }
 }
-
-export const FileEditor = withWidth()(FileEditorClass);
