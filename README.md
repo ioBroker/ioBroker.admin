@@ -170,6 +170,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	- (@copilot) Handle Vite dynamic import failures (ERR_CACHE_READ_FAILURE) by triggering page reload instead of showing white screen
 -->
 ### **WORK IN PROGRESS**
+- (iobroker-bot) Adapter requires node.js >= 20 now.
 - (@GermanBluefox) Custom editor could be limited to specific instances or specific states by regex expression
 
 ### 7.8.3 (2026-03-04)
