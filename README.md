@@ -169,7 +169,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	- (@copilot) Added `Cache-Control: no-cache` header to `index.html` to prevent browser from using stale cached HTML after admin updates
 	- (@copilot) Handle Vite dynamic import failures (ERR_CACHE_READ_FAILURE) by triggering page reload instead of showing white screen
 -->
-### **WORK IN PROGRESS**
+### 7.8.4 (2026-03-16)
 - (@GermanBluefox) Custom editor could be limited to specific instances or specific states by regex expression
 - (@GermanBluefox) Added some options to JSON Config
 
@@ -185,9 +185,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.7.23 (2026-01-27)
 - (@GermanBluefox) Added support of device manager in the admin tabs
 - (@GermanBluefox) Corrected JSON Config issues
-
-### 7.7.22 (2025-12-15)
-- (@GermanBluefox) Layout fix in the edit object dialog
 
 ## License
 
