@@ -171,6 +171,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Custom editor could be limited to specific instances or specific states by regex expression
+- (@GermanBluefox) Added some options to JSON Config
 
 ### 7.8.3 (2026-03-04)
 - (@GermanBluefox) Added the device manager tab in the admin
