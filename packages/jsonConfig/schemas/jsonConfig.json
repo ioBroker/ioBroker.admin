@@ -1890,6 +1890,19 @@
         "top"
       ]
     },
+    "statesFilterProp": {
+      "description": "Filter states for panel or tabs. If true, only states of this adapter will be used. If string, it is a regex to filter states.",
+      "oneOf": [
+        {
+          "type": "boolean",
+          "const": true
+        },
+        {
+          "type": "string",
+          "description": "Regex to filter states (only for custom config), like \"^history\\\\.\\\\d\\\\..*$\" to filter history.X.*"
+        }
+      ]
+    },
     "allowAddByFilterProp": {
       "type": "boolean",
       "description": "If add allowed even if filter is set",
@@ -1959,7 +1972,11 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "attr": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2359,7 +2376,10 @@
                     "expertMode": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2415,7 +2435,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2481,7 +2504,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2654,7 +2680,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2689,6 +2718,9 @@
                     "iconPosition": {
                       "$ref": "#/definitions/iconPositionProp"
                     },
+                    "statesFilter": {
+                      "$ref": "#/definitions/statesFilterProp"
+                    },
                     "#include": {
                       "description": "Include other JSON or JSON5 file. Here is the name of the file with extension. E.g. 'options.jsonConfig.json' for 'anyName.jsonConfig.json5'",
                       "type": "string",
@@ -2713,6 +2745,7 @@
                     "style": true,
                     "darkStyle": true,
                     "innerStyle": true,
+                    "collapsable": true,
                     "validator": true,
                     "validatorNoSaveOnError": true,
                     "validatorErrorText": true,
@@ -2724,7 +2757,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2829,7 +2865,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2915,7 +2954,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3102,7 +3144,9 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3228,7 +3272,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3298,7 +3345,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3826,6 +3876,9 @@
                       },
                       "color": {
                         "type": "string"
+                      },
+                      "description": {
+                        "description": "Description for the value, shown below the label"
                       }
                     }
                   }
@@ -3837,6 +3890,14 @@
                 "showAllValues": {
                   "description": "Show item even if no label was found for it (by multiple), default=`true`",
                   "type": "boolean"
+                },
+                "format": {
+                  "description": "How to render the select: 'dropdown' (default) or 'radio' (radio buttons)",
+                  "type": "string",
+                  "enum": [
+                    "dropdown",
+                    "radio"
+                  ]
                 },
                 "label": true,
                 "type": true,
@@ -3925,7 +3986,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4020,7 +4084,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4101,7 +4168,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4206,7 +4276,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4265,7 +4338,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4323,7 +4399,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4381,7 +4460,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4450,7 +4532,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4513,7 +4598,10 @@
                     "onChange": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4636,6 +4724,16 @@
                       "$ref": "#/definitions/multilingual"
                     }
                   ]
+                },
+                "format": {
+                  "description": "How the static text should be interpreted. Use `text` for plain text, `html` to render HTML, or `json` for displaying JSON (optionally with syntax highlighting).",
+                  "type": "string",
+                  "enum": [
+                    "text",
+                    "html",
+                    "json"
+                  ],
+                  "default": "text"
                 },
                 "label": true,
                 "type": true,
@@ -4957,7 +5055,10 @@
                     "defaultFunc": true,
                     "noTranslation": true,
                     "confirm": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -5111,6 +5212,10 @@
                     }
                   ]
                 },
+                "filterFunc": {
+                  "description": "Cannot be used together with `types` settings. It is a function that will be called for every object and must return true or false. Example: `obj.common.type === 'number'`",
+                  "type": "string"
+                },
                 "placeholder": {
                   "description": "Placeholder (for text control)",
                   "type": "string"
@@ -5191,7 +5296,10 @@
                     "darkStyle": true,
                     "noMultiEdit": true,
                     "noTranslation": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false
                 }
@@ -5232,7 +5340,10 @@
                     "disabled": true,
                     "style": true,
                     "darkStyle": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false
                 }
@@ -5272,7 +5383,10 @@
                     "darkStyle": true,
                     "noMultiEdit": true,
                     "noTranslation": true,
-                    "width": true
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
                   },
                   "additionalProperties": false
                 }
@@ -5320,7 +5434,10 @@
                 "expertMode": true,
                 "noTranslation": true,
                 "confirm": true,
-                "width": true
+                "width": true,
+                "title": true,
+                "filter": true,
+                "sort": true
               },
               "additionalProperties": false,
               "required": [
@@ -5420,7 +5537,10 @@
                 "expertMode": true,
                 "noTranslation": true,
                 "confirm": true,
-                "width": true
+                "width": true,
+                "title": true,
+                "filter": true,
+                "sort": true
               },
               "additionalProperties": false,
               "required": [
@@ -5490,7 +5610,10 @@
                 "expertMode": true,
                 "noTranslation": true,
                 "confirm": true,
-                "width": true
+                "width": true,
+                "title": true,
+                "filter": true,
+                "sort": true
               },
               "additionalProperties": false,
               "required": [
@@ -6503,6 +6626,7 @@
                       "style": true,
                       "darkStyle": true,
                       "innerStyle": true,
+                      "collapsable": true,
                       "validator": true,
                       "validatorNoSaveOnError": true,
                       "validatorErrorText": true,
@@ -7039,6 +7163,9 @@
                             },
                             "color": {
                               "type": "string"
+                            },
+                            "description": {
+                              "description": "Description for the value, shown below the label"
                             }
                           }
                         }
@@ -7050,6 +7177,14 @@
                       "showAllValues": {
                         "description": "Show item even if no label was found for it (by multiple), default=`true`",
                         "type": "boolean"
+                      },
+                      "format": {
+                        "description": "How to render the select: 'dropdown' (default) or 'radio' (radio buttons)",
+                        "type": "string",
+                        "enum": [
+                          "dropdown",
+                          "radio"
+                        ]
                       },
                       "label": true,
                       "type": true,
@@ -7638,6 +7773,16 @@
                             "$ref": "#/definitions/multilingual"
                           }
                         ]
+                      },
+                      "format": {
+                        "description": "How the static text should be interpreted. Use `text` for plain text, `html` to render HTML, or `json` for displaying JSON (optionally with syntax highlighting).",
+                        "type": "string",
+                        "enum": [
+                          "text",
+                          "html",
+                          "json"
+                        ],
+                        "default": "text"
                       },
                       "label": true,
                       "type": true,
