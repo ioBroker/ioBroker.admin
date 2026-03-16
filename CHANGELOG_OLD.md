@@ -1,4 +1,7 @@
 # Older changes
+## 7.7.22 (2025-12-15)
+- (@GermanBluefox) Layout fix in the edit object dialog
+
 ## 7.7.20 (2025-11-15)
 - (@GermanBluefox) Small optimizations
 - (@GermanBluefox) Allowed to upload objects via text
