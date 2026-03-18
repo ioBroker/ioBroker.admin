@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.8.4 (2026-03-18)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Custom editor could be limited to specific instances or specific states by regex expression
 - (@GermanBluefox) Added some options to JSON Config
 - (@copilot) Added `Cache-Control: no-cache` header to `index.html` to prevent browser from using stale cached HTML after admin updates
