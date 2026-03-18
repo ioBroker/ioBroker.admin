@@ -192,6 +192,7 @@ export default abstract class AdapterInstallDialog<
         instance?: 'auto' | string;
         debug?: boolean;
         customUrl?: boolean;
+        createInstance?: boolean;
         context: AdaptersContext;
     }): Promise<void> {
         if (!options.customUrl) {
@@ -204,7 +205,9 @@ export default abstract class AdapterInstallDialog<
                 options.context.compactInstances,
             );
 
-            if (!options.instance && (options.context.expertMode || messages)) {
+            // If createInstance is explicitly set to true, proceed with instance creation
+            // Otherwise, show the dialog if expert mode is enabled or there are messages
+            if (!options.instance && !options.createInstance && (options.context.expertMode || messages)) {
                 this.setState({
                     addInstanceDialog: options.adapterName,
                     showDialog: true,
