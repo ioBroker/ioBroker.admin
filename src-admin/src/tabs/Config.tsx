@@ -376,7 +376,7 @@ class Config extends Component<ConfigProps, ConfigState> {
             }
         } else if (id === `${instanceId}.connected`) {
             if (!!state?.val !== this.state.connectedToHost) {
-                this.setState({ connectedToHost: !!state?.val});
+                this.setState({ connectedToHost: !!state?.val });
             }
         } else if (id === `${this.props.adapter}.${this.props.instance}.info.connection`) {
             if ((state ? !!state.val : null) !== this.state.connected) {

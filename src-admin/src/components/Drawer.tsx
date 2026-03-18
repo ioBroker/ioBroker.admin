@@ -310,7 +310,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
         this.getTabs().catch(e => window.alert(`Cannot get tabs: ${e}`));
 
-        void this.onNotificationsHandler().then(async (): Promise<void> => {
+        void this.onNotificationsHandler().then((): void => {
             this.props.hostsWorker.registerNotificationHandler(this.onNotificationsHandler);
 
             if (!this.logsHandlerRegistered) {

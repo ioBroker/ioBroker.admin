@@ -120,7 +120,6 @@ if (
         if (event instanceof Error) {
             throw event;
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-base-to-string
             throw new Error(errText);
         }
     };

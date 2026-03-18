@@ -1,6 +1,6 @@
 import React, { Component, type JSX } from 'react';
 
-import { type AdminConnection, type IobTheme, type ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
+import type { AdminConnection, IobTheme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
 import DeviceList from '@iobroker/dm-gui-components';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -38,7 +38,7 @@ export default class DeviceManagerTab extends Component<DeviceManagerTabProps> {
                     socket={this.props.socket}
                     themeType={this.props.themeType}
                     themeName={this.props.themeName}
-                    theme={this.props.theme as IobTheme}
+                    theme={this.props.theme}
                     isFloatComma={this.props.isFloatComma}
                     dateFormat={this.props.dateFormat}
                 />

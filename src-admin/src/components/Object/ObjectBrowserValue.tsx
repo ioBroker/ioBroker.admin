@@ -348,7 +348,6 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 end={Date.now()}
                 noToolbar
                 defaultHistory={this.props.defaultHistory}
-
                 customsInstances={[]}
                 objects={undefined}
                 historyInstance={''}
@@ -612,7 +611,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                                 <MenuItem value="string">String</MenuItem>
                                                                 <MenuItem value="number">Number</MenuItem>
                                                                 <MenuItem value="boolean">Boolean</MenuItem>
-                                                                <MenuItem value="json">JSON</MenuItem>
+                                                                <MenuItem value="object">JSON/Object</MenuItem>
                                                                 {this.props.states ? (
                                                                     <MenuItem value="states">States</MenuItem>
                                                                 ) : null}
