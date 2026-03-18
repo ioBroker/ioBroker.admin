@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.4",
+    "version": "7.8.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,19 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.8.4": {
-        "en": "Custom editor could be limited to specific instances or specific states by regex expression\nAdded some options to JSON Config",
-        "de": "Der benutzerdefinierte Editor kann durch regex-Expression auf bestimmte Instanzen oder bestimmte Zustände beschränkt werden\nEinige Optionen zu JSON Config hinzugefügt",
-        "ru": "Пользовательский редактор может быть ограничен конкретными экземплярами или конкретными состояниями с помощью выражения regex\nДобавлены опции для JSON Config",
-        "pt": "Editor personalizado pode ser limitado a instâncias específicas ou estados específicos pela expressão regex\nAdicionado algumas opções à Configuração do JSON",
-        "nl": "Aangepaste editor kan worden beperkt tot specifieke instanties of specifieke staten door regex expressie\nEnkele opties toegevoegd aan JSON Config",
-        "fr": "L'éditeur personnalisé pourrait être limité à des instances spécifiques ou des états spécifiques par expression regex\nAjout de certaines options à JSON Config",
-        "it": "L'editor personalizzato potrebbe essere limitato a istanze specifiche o stati specifici per espressione regex\nAggiunto alcune opzioni a JSON Config",
-        "es": "El editor personalizado podría limitarse a casos específicos o estados específicos por expresión regex\nAñadido algunas opciones para JSON Config",
-        "pl": "Własny edytor może być ograniczony do konkretnych instancji lub konkretnych stanów poprzez wyrażenie regex\nDodano kilka opcji do konfiguracji JSON",
-        "uk": "Користувальницькі редактори можуть бути обмежені певними екземплярами або конкретними станами від експресії regex\nДодано деякі параметри в JSON Config",
-        "zh-cn": "自定义编辑器可以通过 regex 表达式局限于特定实例或特定状态\n添加到 JSON 配置中的一些选项"
-      },
       "7.8.3": {
         "en": "Added the device manager tab in the admin",
         "de": "Hinzufügen der Geräte-Manager-Tab im Admin",
