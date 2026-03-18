@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.4",
+    "version": "7.8.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.8.5": {
+        "en": "Custom editor could be limited to specific instances or specific states by regex expression\nAdded some options to JSON Config\nAdded `Cache-Control: no-cache` header to `index.html` to prevent browser from using stale cached HTML after admin updates\nHandle Vite dynamic import failures (ERR_CACHE_READ_FAILURE) by triggering page reload instead of showing white screen",
+        "de": "Der benutzerdefinierte Editor kann durch regex-Expression auf bestimmte Instanzen oder bestimmte Zustände beschränkt werden\nEinige Optionen zu JSON Config hinzugefügt\nHinzugefügt `Cache-Control: no-cache` Header to `index.html`, um zu verhindern, dass Browser stale cached HTML nach Admin-Updates verwenden\nHandle Vite dynamische Import-Ausfälle (ERR_CACHE_READ_FAILURE) durch Auslösen von Seiten-Reload statt mit weißem Bildschirm",
+        "ru": "Пользовательский редактор может быть ограничен конкретными экземплярами или конкретными состояниями с помощью выражения regex\nДобавлены опции для JSON Config\nДобавлен заголовок «Cache-Control: no-cache» в «index.html», чтобы браузер не использовал устаревший кэшированный HTML после обновлений администратора\nОбработка динамических сбоев импорта Vite (ERR_CACHE_READ_FAILURE) путем запуска перезагрузки страницы вместо отображения белого экрана",
+        "pt": "Editor personalizado pode ser limitado a instâncias específicas ou estados específicos pela expressão regex\nAdicionado algumas opções à Configuração do JSON\nAdicionado `Cache-Control: no-cache` header para `index.html` para evitar que o navegador use HTML em cache após atualizações administrativas\nLidar com falhas dinâmicas de importação de Vite (ERR_CACHE_READ_FAILURE) ativando o reload da página em vez de mostrar tela branca",
+        "nl": "Aangepaste editor kan worden beperkt tot specifieke instanties of specifieke staten door regex expressie\nEnkele opties toegevoegd aan JSON Config\nToegevoegd \nDe dynamische importstoringen van Vite (ERR_CACHE_READ_FAILURE) verwerken door de pagina opnieuw te laden in plaats van het witte scherm te tonen",
+        "fr": "L'éditeur personnalisé pourrait être limité à des instances spécifiques ou des états spécifiques par expression regex\nAjout de certaines options à JSON Config\nAjout de l'en-tête `Cache-Control: no-cache` à `index.html` pour empêcher le navigateur d'utiliser staled cached HTML après les mises à jour admin\nGérez les erreurs d'importation dynamique de Vite (ERR_CACHE_READ_FAILURE) en déclenchant le rechargement de la page au lieu d'afficher l'écran blanc",
+        "it": "L'editor personalizzato potrebbe essere limitato a istanze specifiche o stati specifici per espressione regex\nAggiunto alcune opzioni a JSON Config\nAggiunto `Cache-Control: no-cache` header a `index.html` per impedire al browser di usare stale cache HTML dopo gli aggiornamenti di amministratore\nMantenere i guasti di importazione dinamica Vite (ERR_CACHE_READ_FAILURE) attivando la ricarica della pagina invece di mostrare lo schermo bianco",
+        "es": "El editor personalizado podría limitarse a casos específicos o estados específicos por expresión regex\nAñadido algunas opciones para JSON Config\nAñadido `Cache-Control: no-cache` header to `index.html` to prevent browser from using stale cached HTML after admin updates\nErrores de importación dinámicos Handle Vite (ERR_CACHE_READ_FAILURE) activando recarga de página en lugar de mostrar pantalla blanca",
+        "pl": "Własny edytor może być ograniczony do konkretnych instancji lub konkretnych stanów poprzez wyrażenie regex\nDodano kilka opcji do konfiguracji JSON\nDodano 'Cache- Control: no- cache' nagłówek do 'index.html', aby zapobiec korzystaniu przez przeglądarkę ze stale cached HTML po aktualizacji admin\nObsługa dynamicznych błędów importowych Vite (ERR _ CACHE _ READ _ FAILURE) poprzez ponowne załadowanie strony zamiast wyświetlania białego ekranu",
+        "uk": "Користувальницькі редактори можуть бути обмежені певними екземплярами або конкретними станами від експресії regex\nДодано деякі параметри в JSON Config\nДодано `Cache-Control: no-cache` головоломка `index.html` для запобігання браузеру за допомогою stle cached HTML після оновлення адміністратора\nHandle Vite динамічні імпортні збої (ERR_CACHE_READ_FAILURE) за допомогою запуску завантаження сторінок замість показу білого екрана",
+        "zh-cn": "自定义编辑器可以通过 regex 表达式局限于特定实例或特定状态\n添加到 JSON 配置中的一些选项\n添加了“ 缓存控制: 无缓存” 页眉到“ index.html ” , 以防止浏览器在管理员更新后使用 Stale 缓存的 HTML\n通过触发重新装入页面而不是显示白色屏幕,处理 Vite 动态导入失败( ERR_ CACHE_READ_ FAILURE)"
+      },
       "7.8.3": {
         "en": "Added the device manager tab in the admin",
         "de": "Hinzufügen der Geräte-Manager-Tab im Admin",
