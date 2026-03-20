@@ -167,6 +167,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added the possibility to use the Object properties in JsonConfig
+
 ### 7.8.5 (2026-03-18)
 - (@GermanBluefox) Custom editor could be limited to specific instances or specific states by regex expression
 - (@GermanBluefox) Added some options to JSON Config

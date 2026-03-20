@@ -1440,6 +1440,10 @@
           "description": "Cannot be used together with `types` settings. It is a function that will be called for every object and must return true or false. Example: `obj.common.type === 'number'`",
           "type": "string"
         },
+        "fillOnSelect": {
+          "description": "Fill other config fields when an object ID is selected. Format: 'pathInObject=>attr,pathInObject=>attr(X)'. Example: 'common.name=>name,common.color=>color(X)'. Append '(X)' to overwrite non-empty fields.",
+          "type": "string"
+        },
         "placeholder": {
           "description": "Placeholder (for text control)",
           "type": "string"
@@ -3315,6 +3319,17 @@
                       "description": "Step size",
                       "type": "number",
                       "default": 1
+                    },
+                    "unit": {
+                      "description": "Unit (could be multi-language)",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/definitions/multilingual"
+                        }
+                      ]
                     },
                     "attr": true,
                     "label": true,
