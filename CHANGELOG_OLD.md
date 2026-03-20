@@ -1,4 +1,8 @@
 # Older changes
+## 7.7.23 (2026-01-27)
+- (@GermanBluefox) Added support of device manager in the admin tabs
+- (@GermanBluefox) Corrected JSON Config issues
+
 ## 7.7.22 (2025-12-15)
 - (@GermanBluefox) Layout fix in the edit object dialog
 

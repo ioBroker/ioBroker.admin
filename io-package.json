@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.5",
+    "version": "7.8.6",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.8.6": {
+        "en": "Added the possibility to use the Object properties in JsonConfig",
+        "de": "Hinzufügen der Möglichkeit, die Objekteigenschaften in JsonConfig zu verwenden",
+        "ru": "Добавлена возможность использования свойств Объекта в JsonConfig",
+        "pt": "Adicionada a possibilidade de usar as propriedades do objeto no JsonConfig",
+        "nl": "De mogelijkheid toegevoegd om de Object eigenschappen in JsonConfig te gebruiken",
+        "fr": "Ajout de la possibilité d'utiliser les propriétés des objets dans JsonConfig",
+        "it": "Aggiunta la possibilità di utilizzare le proprietà Object in JsonConfig",
+        "es": "Añadido la posibilidad de utilizar las propiedades de objetos en JsonConfig",
+        "pl": "Dodano możliwość korzystania z właściwości obiektu w JsonConfig",
+        "uk": "Додано можливість використання властивостей об'єкта в JsonConfig",
+        "zh-cn": "添加使用 JsonConfig 对象属性的可能性"
+      },
       "7.8.5": {
         "en": "Custom editor could be limited to specific instances or specific states by regex expression\nAdded some options to JSON Config\nAdded `Cache-Control: no-cache` header to `index.html` to prevent browser from using stale cached HTML after admin updates\nHandle Vite dynamic import failures (ERR_CACHE_READ_FAILURE) by triggering page reload instead of showing white screen",
         "de": "Der benutzerdefinierte Editor kann durch regex-Expression auf bestimmte Instanzen oder bestimmte Zustände beschränkt werden\nEinige Optionen zu JSON Config hinzugefügt\nHinzugefügt `Cache-Control: no-cache` Header to `index.html`, um zu verhindern, dass Browser stale cached HTML nach Admin-Updates verwenden\nHandle Vite dynamische Import-Ausfälle (ERR_CACHE_READ_FAILURE) durch Auslösen von Seiten-Reload statt mit weißem Bildschirm",
@@ -95,19 +108,6 @@
         "pl": "Naprawianie układu w oknie edycji obiektu",
         "uk": "Налаштування макета у діалоговому вікні редагування об'єкта",
         "zh-cn": "编辑对象对话框中的布局修正"
-      },
-      "7.7.20": {
-        "en": "Small optimizations\nAllowed to upload objects via text",
-        "de": "Kleine Optimierungen\nErlaubt, Objekte per Text hochzuladen",
-        "ru": "Небольшие оптимизации\nРазрешено загружать объекты через текст",
-        "pt": "Pequenas otimizações\nPermite enviar objetos através de texto",
-        "nl": "Kleine optimaliseringen\nObjecten via tekst uploaden is toegestaan",
-        "fr": "Petites optimisations\nPermet de télécharger des objets par texte",
-        "it": "Piccole ottimizzazioni\nConsente di caricare oggetti tramite testo",
-        "es": "Pequeñas optimizaciones\nPermitido subir objetos a través de texto",
-        "pl": "Małe optymalizacje\nDozwolone wysyłanie obiektów przez tekst",
-        "uk": "Малі оптимізації\nДопускається завантаження об'єктів через текст",
-        "zh-cn": "小优化\n允许通过文本上传对象"
       }
     },
     "desc": {
