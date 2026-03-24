@@ -1,4 +1,7 @@
 # Older changes
+## 7.7.28 (2026-02-08)
+- (@GermanBluefox) Added iframe support for JSON Config
+
 ## 7.7.23 (2026-01-27)
 - (@GermanBluefox) Added support of device manager in the admin tabs
 - (@GermanBluefox) Corrected JSON Config issues
