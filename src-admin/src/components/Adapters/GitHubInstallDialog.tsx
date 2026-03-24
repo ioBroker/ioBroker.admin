@@ -793,8 +793,8 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 // File upload flow
                                 const filePath = await this.uploadFileToServer();
                                 if (filePath) {
-                                    // Extract adapter name from filename like "ioBroker.admin-7.8.6.tgz"
-                                    const match = this.state.selectedFile.name.match(/iobroker\.([^-]+)/i);
+                                    // Extract adapter name from filename like "ioBroker.admin-7.8.6.tgz" or "ioBroker.spotify-premium-1.6.0.tgz"
+                                    const match = this.state.selectedFile.name.match(/iobroker\.(.+?)-\d+\.\d+\.\d+/i);
                                     const adapterName = match ? match[1] : '';
                                     try {
                                         await this.props.installFromUrl(filePath, this.state.debug, true);
