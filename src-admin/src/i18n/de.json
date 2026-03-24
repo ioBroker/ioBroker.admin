@@ -265,6 +265,7 @@
     "Create a copy": "Einer Kopie erstellen ",
     "Create a copy of this object": "Eine Kopie dieses Objekts erstellen",
     "Create alias from this ID": "Alias aus diesem Objekt erstellen",
+    "Create instance if not already exist": "Instanz erstellen wenn noch nicht vorhanden",
     "Create instances": "Instanzen erstellen",
     "Create instances automatically": "Instanzen automatisch erstellen",
     "Create instances automatically - Last scan on %s": "Instanzen automatisch erstellen - Letzter Scan am %s",
