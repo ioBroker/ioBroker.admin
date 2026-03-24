@@ -10,7 +10,6 @@ import {
     Box,
     Checkbox,
     CircularProgress,
-    Divider,
     FormControlLabel,
     IconButton,
     InputAdornment,
@@ -29,6 +28,7 @@ import {
     Check as CheckIcon,
     Delete,
     Publish as PublishIcon,
+    UploadFile as UploadFileIcon,
 } from '@mui/icons-material';
 
 import { I18n, Icon, type IobTheme, type AdminConnection } from '@iobroker/adapter-react-v5';
@@ -429,14 +429,14 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 'App.userUrl',
                                 newValue || '',
                             );
-                            this.setState({ url: newValue, selectedFile: newValue ? null : this.state.selectedFile });
+                            this.setState({ url: newValue });
                         }}
                         onChange={(_, newValue) => {
                             ((window as any)._localstorage || window.localStorage).setItem(
                                 'App.userUrl',
                                 newValue || '',
                             );
-                            this.setState({ url: newValue, selectedFile: newValue ? null : this.state.selectedFile });
+                            this.setState({ url: newValue });
                         }}
                         renderOption={(props, option) => (
                             <Box
@@ -501,13 +501,27 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         )}
                     />
                 </div>
-                <Divider style={{ margin: '20px 0' }} />
-                <Typography
-                    variant="body2"
-                    style={{ marginBottom: 8 }}
+                <div
+                    style={{
+                        fontSize: 24,
+                        fontWeight: 'bold',
+                        marginTop: 40,
+                    }}
                 >
-                    {this.props.t('Or install from a file')}
-                </Typography>
+                    {this.props.t('Warning!')}
+                </div>
+                <div style={styles.warningText}>{this.props.t('github_warning', 'URL', 'URL')}</div>
+                <div style={styles.noteText}>{this.props.t('github_note')}</div>
+            </Paper>
+        ) : null;
+    }
+
+    renderFile(): JSX.Element | null {
+        return this.state.currentTab === 'File' ? (
+            <Paper
+                style={styles.tabPaper}
+                id="github-install-dialog-panel-file"
+            >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <Button
                         variant="outlined"
@@ -585,7 +599,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                 >
                     {this.props.t('Warning!')}
                 </div>
-                <div style={styles.warningText}>{this.props.t('github_warning', 'URL', 'URL')}</div>
+                <div style={styles.warningText}>{this.props.t('github_warning', 'File', 'File')}</div>
                 <div style={styles.noteText}>{this.props.t('github_note')}</div>
             </Paper>
         ) : null;
@@ -710,6 +724,18 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     {...a11yProps('custom')}
                                     value="URL"
                                 />
+                                <Tab
+                                    label={this.props.t('From file')}
+                                    wrapped
+                                    sx={{ '&.Mui-selected': styles.tabSelected }}
+                                    icon={
+                                        <UploadFileIcon
+                                            style={{ width: 24, height: 24 }}
+                                        />
+                                    }
+                                    {...a11yProps('file')}
+                                    value="File"
+                                />
                             </Tabs>
                         </AppBar>
                         <Box
@@ -721,6 +747,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         {this.renderNpm()}
                         {this.renderGitHub()}
                         {this.renderCustom()}
+                        {this.renderFile()}
                     </Box>
                 </DialogContent>
                 <DialogActions>
@@ -731,7 +758,8 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             this.state.uploading ||
                             ((this.state.currentTab === 'GitHub' || this.state.currentTab === 'npm') &&
                                 !this.state.autoCompleteValue?.value) ||
-                            (this.state.currentTab === 'URL' && !this.state.url && !this.state.selectedFile)
+                            (this.state.currentTab === 'URL' && !this.state.url) ||
+                            (this.state.currentTab === 'File' && !this.state.selectedFile)
                         }
                         autoFocus
                         onClick={async () => {
@@ -740,54 +768,51 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 const _url = `${parts[1]}/ioBroker.${parts[0]}`;
                                 void this.props.installFromUrl(_url, this.state.debug, true);
                             } else if (this.state.currentTab === 'URL') {
-                                if (this.state.selectedFile) {
-                                    // File upload flow
-                                    const filePath = await this.uploadFileToServer();
-                                    if (filePath) {
-                                        // Extract adapter name from filename like "ioBroker.admin-7.8.6.tgz"
-                                        const match = this.state.selectedFile.name.match(/iobroker\.([^-]+)/i);
-                                        const adapterName = match ? match[1] : '';
-                                        try {
-                                            await this.props.installFromUrl(filePath, this.state.debug, true);
-                                            if (this.state.uploadAfterInstall && adapterName) {
-                                                this.props.upload(adapterName);
-                                            }
-                                            if (this.state.restartAfterInstall && adapterName) {
-                                                // Restart all instances of this adapter
-                                                const instances =
-                                                    await this.props.socket.getAdapterInstances(adapterName);
-                                                for (const instance of instances) {
-                                                    if (instance?.common?.enabled) {
-                                                        await this.props.socket.extendObject(instance._id, {});
-                                                    }
+                                const customHistory = this.state.customHistory.filter(
+                                    url => url !== this.state.url,
+                                );
+                                customHistory.unshift(this.state.url);
+                                if (customHistory.length > MAX_HISTORY_LENGTH) {
+                                    customHistory.pop();
+                                }
+                                ((window as any)._localstorage || window.localStorage).setItem(
+                                    'App.npmHistory',
+                                    JSON.stringify(customHistory),
+                                );
+
+                                if (!this.state.url.includes('.')) {
+                                    void this.props.installFromUrl(
+                                        `iobroker.${this.state.url}`,
+                                        this.state.debug,
+                                        true,
+                                    );
+                                } else {
+                                    void this.props.installFromUrl(this.state.url, this.state.debug, true);
+                                }
+                            } else if (this.state.currentTab === 'File') {
+                                // File upload flow
+                                const filePath = await this.uploadFileToServer();
+                                if (filePath) {
+                                    // Extract adapter name from filename like "ioBroker.admin-7.8.6.tgz"
+                                    const match = this.state.selectedFile.name.match(/iobroker\.([^-]+)/i);
+                                    const adapterName = match ? match[1] : '';
+                                    try {
+                                        await this.props.installFromUrl(filePath, this.state.debug, true);
+                                        if (this.state.uploadAfterInstall && adapterName) {
+                                            this.props.upload(adapterName);
+                                        }
+                                        if (this.state.restartAfterInstall && adapterName) {
+                                            // Restart all instances of this adapter
+                                            const instances =
+                                                await this.props.socket.getAdapterInstances(adapterName);
+                                            for (const instance of instances) {
+                                                if (instance?.common?.enabled) {
+                                                    await this.props.socket.extendObject(instance._id, {});
                                                 }
                                             }
-                                        } catch (e: any) {
-                                            console.error(`Installation from file failed: ${e.message}`);
                                         }
-                                    }
-                                } else {
-                                    // Existing URL flow
-                                    const customHistory = this.state.customHistory.filter(
-                                        url => url !== this.state.url,
-                                    );
-                                    customHistory.unshift(this.state.url);
-                                    if (customHistory.length > MAX_HISTORY_LENGTH) {
-                                        customHistory.pop();
-                                    }
-                                    ((window as any)._localstorage || window.localStorage).setItem(
-                                        'App.npmHistory',
-                                        JSON.stringify(customHistory),
-                                    );
-
-                                    if (!this.state.url.includes('.')) {
-                                        void this.props.installFromUrl(
-                                            `iobroker.${this.state.url}`,
-                                            this.state.debug,
-                                            true,
-                                        );
-                                    } else {
-                                        void this.props.installFromUrl(this.state.url, this.state.debug, true);
+                                    } catch (e: any) {
+                                        console.error(`Installation from file failed: ${e.message}`);
                                     }
                                 }
                             } else if (this.state.currentTab === 'npm') {

@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.8.7 (2026-03-24)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Implemented the possibility to upload adapter from the file (useful for development and testing)
 
 ### 7.8.6 (2026-03-20)

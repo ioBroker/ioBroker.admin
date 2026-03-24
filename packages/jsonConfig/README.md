@@ -732,10 +732,13 @@ exactly one of `label` or `text` must be specified - not both
 
 ### `staticImage`
 
-| Property | Description                            |
-|----------|----------------------------------------|
-| `href`   | optional HTTP link                     |
-| `src`    | name of picture (from admin directory) |
+| Property                   | Description                                                                                  |
+|----------------------------|----------------------------------------------------------------------------------------------|
+| `href`                     | optional HTTP link                                                                           |
+| `src`                      | name of picture (from admin directory)                                                       |
+| `showInDialog`             | if true, a small thumbnail is shown and clicking it opens a dialog with the full-size image  |
+| `showInDialogButtonLabel`  | if `showInDialog`, an optional label for a button that also opens the dialog                 |
+| `showInDialogSmallSize`    | if `showInDialog`, the height of the small thumbnail in pixels (default 100)                 |
 
 ### `table`
 
@@ -1749,8 +1752,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 8.2.15 (2026-03-24)
+### 8.2.16 (2026-03-24)
 - (@GermanBluefox) Added the possibility to use own Client ID for oauth authentication
+- (@GermanBluefox) Added the possibility show small image and open it in full size by click on it
 
 ### 8.2.11 (2026-03-20)
 - (@GermanBluefox) Correcting unit in schema

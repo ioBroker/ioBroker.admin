@@ -5050,6 +5050,25 @@
                       "description": "Link",
                       "type": "string"
                     },
+                    "showInDialog": {
+                      "description": "It will be shown small image, and by click on it the dialog will be opened with bigger image",
+                      "type": "boolean"
+                    },
+                    "showInDialogButtonLabel": {
+                      "description": "If showInDialog, the label for the button",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/definitions/multilingual"
+                        }
+                      ]
+                    },
+                    "showInDialogSmallSize": {
+                      "description": "If showInDialog, the size of small image (default 100px)",
+                      "type": "number"
+                    },
                     "attr": true,
                     "label": true,
                     "type": true,
@@ -8087,6 +8106,25 @@
                       "href": {
                         "description": "Link",
                         "type": "string"
+                      },
+                      "showInDialog": {
+                        "description": "It will be shown small image, and by click on it the dialog will be opened with bigger image",
+                        "type": "boolean"
+                      },
+                      "showInDialogButtonLabel": {
+                        "description": "If showInDialog, the label for the button",
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "$ref": "#/definitions/multilingual"
+                          }
+                        ]
+                      },
+                      "showInDialogSmallSize": {
+                        "description": "If showInDialog, the size of small image (default 100px)",
+                        "type": "number"
                       },
                       "label": true,
                       "type": true,
