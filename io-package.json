@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.7",
+    "version": "7.8.8",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.8.8": {
+        "en": "Implemented the possibility to upload adapter from the file (useful for development and testing)",
+        "de": "Ergänzt die Möglichkeit, Adapter aus der Datei hochzuladen (verwendbar für Entwicklung und Test)",
+        "ru": "Реализована возможность загрузки адаптера из файла (полезно для разработки и тестирования)",
+        "pt": "Implementou a possibilidade de carregar o adaptador do arquivo (útil para desenvolvimento e testes)",
+        "nl": "Implementeerde de mogelijkheid om adapter uit het bestand te uploaden (handig voor ontwikkeling en testen)",
+        "fr": "Implémenté la possibilité de télécharger l'adaptateur à partir du fichier (utile pour le développement et le test)",
+        "it": "Ho implementato la possibilità di caricare l'adattatore dal file (utile per lo sviluppo e il test)",
+        "es": "Implementó la posibilidad de subir el adaptador del archivo (útil para el desarrollo y pruebas)",
+        "pl": "Wdrożył możliwość przesłania adaptera z pliku (przydatnego do rozwoju i testowania)",
+        "uk": "Реалізовано можливість завантаження адаптера з файлу (для розробки та тестування)",
+        "zh-cn": "实现了从文件上传适配器的可能性(可用于开发和测试)"
+      },
       "7.8.6": {
         "en": "Added the possibility to use the Object properties in JsonConfig",
         "de": "Hinzufügen der Möglichkeit, die Objekteigenschaften in JsonConfig zu verwenden",
