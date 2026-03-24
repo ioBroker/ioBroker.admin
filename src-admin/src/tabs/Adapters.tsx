@@ -1599,6 +1599,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 t={this.t}
                 categories={this.state.categories}
                 installed={this.state.installedGlobal}
+                socket={context.socket}
                 upload={adapterName =>
                     this.props.executeCommand(`upload ${adapterName}${this.props.expertMode ? ' --debug' : ''}`)
                 }

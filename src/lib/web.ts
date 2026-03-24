@@ -6,6 +6,7 @@ import type { Server } from 'node:http';
 import { readFileSync, existsSync, createReadStream, readdirSync, lstatSync } from 'node:fs';
 import { inherits } from 'util';
 import { join, normalize, parse, dirname } from 'node:path';
+import { tmpdir } from 'node:os';
 import { Transform } from 'node:stream';
 import * as compression from 'compression';
 import { getType } from 'mime';
@@ -859,6 +860,57 @@ class Web {
                     }
                 });
             }
+
+            // Endpoint to upload adapter .tgz files for installation
+            const adapterUploadTmpDir = this.settings.tmpPath || tmpdir();
+            this.server.app.post(
+                '/upload-adapter',
+                fileUpload({ useTempFiles: true, tempFileDir: adapterUploadTmpDir }) as any,
+                (req: Request, res: Response): void => {
+                    if (!req.files) {
+                        res.status(400).json({ error: 'No files were uploaded.' });
+                        return;
+                    }
+
+                    let myFile: fileUpload.UploadedFile;
+                    for (const file of Object.values(req.files)) {
+                        if (file) {
+                            myFile = file as fileUpload.UploadedFile;
+                            break;
+                        }
+                    }
+
+                    if (!myFile) {
+                        res.status(400).json({ error: 'File not uploaded' });
+                        return;
+                    }
+
+                    if (myFile.data && myFile.data.length > 600 * 1024 * 1024) {
+                        res.status(413).json({ error: 'File is too big. (Max 600MB)' });
+                        return;
+                    }
+
+                    const originalName = myFile.name || 'adapter.tgz';
+                    if (!originalName.toLowerCase().endsWith('.tgz')) {
+                        res.status(400).json({ error: 'Only .tgz files are allowed' });
+                        return;
+                    }
+
+                    // Sanitize filename to prevent path traversal
+                    const sanitizedName = originalName.replace(/[^a-zA-Z0-9._-]/g, '_');
+                    const targetPath = `${adapterUploadTmpDir}/${sanitizedName}`;
+
+                    myFile.mv(targetPath, err => {
+                        if (err) {
+                            res.status(500).json({
+                                error: escapeHtml(typeof err === 'string' ? err : JSON.stringify(err)),
+                            });
+                        } else {
+                            res.json({ filePath: targetPath, fileName: sanitizedName });
+                        }
+                    });
+                },
+            );
 
             if (!existsSync(this.wwwDir)) {
                 this.server.app.use('/', (_req: Request, res: Response): void => {
