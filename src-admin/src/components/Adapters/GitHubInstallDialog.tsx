@@ -9,12 +9,15 @@ import {
     AppBar,
     Box,
     Checkbox,
+    CircularProgress,
+    Divider,
     FormControlLabel,
     IconButton,
     InputAdornment,
     Tab,
     Tabs,
     TextField,
+    Typography,
     Autocomplete,
 } from '@mui/material';
 
@@ -25,9 +28,10 @@ import {
     Close as CloseIcon,
     Check as CheckIcon,
     Delete,
+    Publish as PublishIcon,
 } from '@mui/icons-material';
 
-import { I18n, Icon, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n, Icon, type IobTheme, type AdminConnection } from '@iobroker/adapter-react-v5';
 
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
@@ -109,6 +113,7 @@ interface GitHubInstallDialogProps {
     installed: InstalledInfo;
     onClose: () => void;
     t: typeof I18n.t;
+    socket: AdminConnection;
     /** Method to install adapter */
     installFromUrl: (adapter: string, debug: boolean, customUrl: boolean) => Promise<void>;
     /** Upload the adapter */
@@ -133,6 +138,14 @@ interface GitHubInstallDialogState {
     currentTab: string;
     /** History of custom commands */
     customHistory: string[];
+    /** The selected .tgz file for upload */
+    selectedFile: File | null;
+    /** Whether to run 'upload' command after file installation */
+    uploadAfterInstall: boolean;
+    /** Whether to restart adapter instances after file installation */
+    restartAfterInstall: boolean;
+    /** Whether a file upload is in progress */
+    uploading: boolean;
 }
 
 const MAX_HISTORY_LENGTH = 10;
@@ -157,7 +170,49 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             url: ((window as any)._localstorage || window.localStorage).getItem('App.userUrl') || '',
             currentTab: ((window as any)._localstorage || window.localStorage).getItem('App.gitTab') || 'npm',
             customHistory,
+            selectedFile: null,
+            uploadAfterInstall: true,
+            restartAfterInstall:
+                ((window as any)._localstorage || window.localStorage).getItem('App.restartAfterInstall') !== 'false',
+            uploading: false,
         };
+    }
+
+    async uploadFileToServer(): Promise<string | null> {
+        if (!this.state.selectedFile) {
+            return null;
+        }
+
+        this.setState({ uploading: true });
+
+        try {
+            const formData = new FormData();
+            formData.append('file', this.state.selectedFile);
+
+            const response = await fetch('./upload-adapter', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                let errorMsg: string;
+                try {
+                    const error = await response.json();
+                    errorMsg = error.error || `Upload failed with status ${response.status}`;
+                } catch {
+                    errorMsg = `Upload failed with status ${response.status}`;
+                }
+                throw new Error(errorMsg);
+            }
+
+            const result = await response.json();
+            return result.filePath;
+        } catch (e: any) {
+            window.alert(`${I18n.t('Upload failed')}: ${e.message}`);
+            return null;
+        } finally {
+            this.setState({ uploading: false });
+        }
     }
 
     renderNpm(): JSX.Element | null {
@@ -374,14 +429,14 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 'App.userUrl',
                                 newValue || '',
                             );
-                            this.setState({ url: newValue });
+                            this.setState({ url: newValue, selectedFile: newValue ? null : this.state.selectedFile });
                         }}
                         onChange={(_, newValue) => {
                             ((window as any)._localstorage || window.localStorage).setItem(
                                 'App.userUrl',
                                 newValue || '',
                             );
-                            this.setState({ url: newValue });
+                            this.setState({ url: newValue, selectedFile: newValue ? null : this.state.selectedFile });
                         }}
                         renderOption={(props, option) => (
                             <Box
@@ -446,6 +501,81 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         )}
                     />
                 </div>
+                <Divider style={{ margin: '20px 0' }} />
+                <Typography
+                    variant="body2"
+                    style={{ marginBottom: 8 }}
+                >
+                    {this.props.t('Or install from a file')}
+                </Typography>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Button
+                        variant="outlined"
+                        component="label"
+                        startIcon={<PublishIcon />}
+                        disabled={this.state.uploading}
+                    >
+                        {this.props.t('Select file')}
+                        <input
+                            type="file"
+                            accept=".tgz"
+                            hidden
+                            onChange={e => {
+                                const file = e.target.files?.[0] || null;
+                                this.setState({ selectedFile: file, url: '' });
+                                ((window as any)._localstorage || window.localStorage).setItem('App.userUrl', '');
+                                e.target.value = '';
+                            }}
+                        />
+                    </Button>
+                    {this.state.selectedFile && (
+                        <>
+                            <Typography
+                                variant="body2"
+                                style={{ flex: 1 }}
+                            >
+                                {this.state.selectedFile.name}
+                            </Typography>
+                            <IconButton
+                                size="small"
+                                onClick={() => this.setState({ selectedFile: null })}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </>
+                    )}
+                    {this.state.uploading && <CircularProgress size={24} />}
+                </div>
+                {this.state.selectedFile && (
+                    <>
+                        <FormControlLabel
+                            style={{ marginTop: 8 }}
+                            control={
+                                <Checkbox
+                                    checked={this.state.uploadAfterInstall}
+                                    onChange={e => this.setState({ uploadAfterInstall: e.target.checked })}
+                                />
+                            }
+                            label={this.props.t('Upload adapter after install')}
+                        />
+                        <br />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={this.state.restartAfterInstall}
+                                    onChange={e => {
+                                        ((window as any)._localstorage || window.localStorage).setItem(
+                                            'App.restartAfterInstall',
+                                            e.target.checked ? 'true' : 'false',
+                                        );
+                                        this.setState({ restartAfterInstall: e.target.checked });
+                                    }}
+                                />
+                            }
+                            label={this.props.t('Restart adapter after install')}
+                        />
+                    </>
+                )}
                 <div
                     style={{
                         fontSize: 24,
@@ -508,7 +638,8 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
     }
 
     render(): JSX.Element {
-        const closeInit = (): void => this.setState({ autoCompleteValue: null, url: '' });
+        const closeInit = (): void =>
+            this.setState({ autoCompleteValue: null, url: '', selectedFile: null, uploading: false });
 
         return (
             <Dialog
@@ -597,9 +728,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         id="github-install-dialog-ok"
                         variant="contained"
                         disabled={
+                            this.state.uploading ||
                             ((this.state.currentTab === 'GitHub' || this.state.currentTab === 'npm') &&
                                 !this.state.autoCompleteValue?.value) ||
-                            (this.state.currentTab === 'URL' && !this.state.url)
+                            (this.state.currentTab === 'URL' && !this.state.url && !this.state.selectedFile)
                         }
                         autoFocus
                         onClick={async () => {
@@ -608,24 +740,55 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 const _url = `${parts[1]}/ioBroker.${parts[0]}`;
                                 void this.props.installFromUrl(_url, this.state.debug, true);
                             } else if (this.state.currentTab === 'URL') {
-                                const customHistory = this.state.customHistory.filter(url => url !== this.state.url);
-                                customHistory.unshift(this.state.url);
-                                if (customHistory.length > MAX_HISTORY_LENGTH) {
-                                    customHistory.pop();
-                                }
-                                ((window as any)._localstorage || window.localStorage).setItem(
-                                    'App.npmHistory',
-                                    JSON.stringify(customHistory),
-                                );
-
-                                if (!this.state.url.includes('.')) {
-                                    void this.props.installFromUrl(
-                                        `iobroker.${this.state.url}`,
-                                        this.state.debug,
-                                        true,
-                                    );
+                                if (this.state.selectedFile) {
+                                    // File upload flow
+                                    const filePath = await this.uploadFileToServer();
+                                    if (filePath) {
+                                        // Extract adapter name from filename like "ioBroker.admin-7.8.6.tgz"
+                                        const match = this.state.selectedFile.name.match(/iobroker\.([^-]+)/i);
+                                        const adapterName = match ? match[1] : '';
+                                        try {
+                                            await this.props.installFromUrl(filePath, this.state.debug, true);
+                                            if (this.state.uploadAfterInstall && adapterName) {
+                                                this.props.upload(adapterName);
+                                            }
+                                            if (this.state.restartAfterInstall && adapterName) {
+                                                // Restart all instances of this adapter
+                                                const instances =
+                                                    await this.props.socket.getAdapterInstances(adapterName);
+                                                for (const instance of instances) {
+                                                    if (instance?.common?.enabled) {
+                                                        await this.props.socket.extendObject(instance._id, {});
+                                                    }
+                                                }
+                                            }
+                                        } catch (e: any) {
+                                            console.error(`Installation from file failed: ${e.message}`);
+                                        }
+                                    }
                                 } else {
-                                    void this.props.installFromUrl(this.state.url, this.state.debug, true);
+                                    // Existing URL flow
+                                    const customHistory = this.state.customHistory.filter(
+                                        url => url !== this.state.url,
+                                    );
+                                    customHistory.unshift(this.state.url);
+                                    if (customHistory.length > MAX_HISTORY_LENGTH) {
+                                        customHistory.pop();
+                                    }
+                                    ((window as any)._localstorage || window.localStorage).setItem(
+                                        'App.npmHistory',
+                                        JSON.stringify(customHistory),
+                                    );
+
+                                    if (!this.state.url.includes('.')) {
+                                        void this.props.installFromUrl(
+                                            `iobroker.${this.state.url}`,
+                                            this.state.debug,
+                                            true,
+                                        );
+                                    } else {
+                                        void this.props.installFromUrl(this.state.url, this.state.debug, true);
+                                    }
                                 }
                             } else if (this.state.currentTab === 'npm') {
                                 const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];

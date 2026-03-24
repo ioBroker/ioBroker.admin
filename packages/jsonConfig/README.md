@@ -541,10 +541,12 @@ To use this, you must first provide the OAuth2 data (client ID, secret, etc.) to
 
 | Property       | Description                                                                                                                                                   |
 |----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `identifier`   | Oauth2 identifier, like `spotify`, `google`, `dropbox`, `microsoft`                                                                                           |                                                                      
-| `saveTokenIn`  | Optional state name where the token will be saved. Default is `oauth2Tokens`. The path is relative to the adapter instance, like `adapterName.X.oauth2Tokens` |
-| `scope`        | Optional scopes divided by space, e.g. `user-read-private user-read-email`                                                                                    |
-| `refreshLabel` | Optional button label for refreshing the token                                                                                                                |
+| `identifier`      | Oauth2 identifier, like `spotify`, `google`, `dropbox`, `microsoft`                                                                                           |
+| `saveTokenIn`     | Optional state name where the token will be saved. Default is `oauth2Tokens`. The path is relative to the adapter instance, like `adapterName.X.oauth2Tokens` |
+| `scope`           | Optional scopes divided by space, e.g. `user-read-private user-read-email`                                                                                    |
+| `refreshLabel`    | Optional button label for refreshing the token                                                                                                                |
+| `ownClientId`     | Optional attribute name where the user's own OAuth Client ID will be stored. If set, an input field for Client ID is shown                                    |
+| `ownClientSecret` | Optional attribute name where the user's own OAuth Client Secret will be stored. If set, an input field for Client Secret is shown                             |
 
 #### Example for `oauth2`
 
@@ -1747,6 +1749,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.2.15 (2026-03-24)
+- (@GermanBluefox) Added the possibility to use own Client ID for oauth authentication
+
 ### 8.2.11 (2026-03-20)
 - (@GermanBluefox) Correcting unit in schema
 - (@GermanBluefox) Fill other config fields when an object ID is selected

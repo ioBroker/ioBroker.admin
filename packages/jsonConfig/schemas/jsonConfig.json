@@ -1496,6 +1496,14 @@
           "description": "Optional scopes divided by space, e.g. `user-read-private user-read-email`",
           "type": "string"
         },
+        "ownClientId": {
+          "description": "Optional attribute name where the user's own OAuth Client ID will be stored. If set, an input field for Client ID is shown",
+          "type": "string"
+        },
+        "ownClientSecret": {
+          "description": "Optional attribute name where the user's own OAuth Client Secret will be stored. If set, an input field for Client Secret is shown",
+          "type": "string"
+        },
         "refreshLabel": {
           "description": "Button label for refreshing the token",
           "type": "string"
