@@ -1752,7 +1752,7 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 8.2.16 (2026-03-24)
+### 8.2.18 (2026-03-25)
 - (@GermanBluefox) Added the possibility to use own Client ID for oauth authentication
 - (@GermanBluefox) Added the possibility show small image and open it in full size by click on it
 

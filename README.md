@@ -167,6 +167,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added in JsonConfig OAuth2 process for spotify
+
 ### 7.8.8 (2026-03-24)
 - (@GermanBluefox) Implemented the possibility to upload adapter from the file (useful for development and testing)
 
