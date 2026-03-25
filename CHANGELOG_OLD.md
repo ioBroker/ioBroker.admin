@@ -1,4 +1,7 @@
 # Older changes
+## 7.7.31 (2026-02-16)
+- (@GermanBluefox) Added better table layout for JSON Config
+
 ## 7.7.28 (2026-02-08)
 - (@GermanBluefox) Added iframe support for JSON Config
 

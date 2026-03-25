@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.8.9 (2026-03-25)
 - (@GermanBluefox) Added in JsonConfig OAuth2 process for spotify
 
 ### 7.8.8 (2026-03-24)
@@ -184,9 +184,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.8.3 (2026-03-04)
 - (@GermanBluefox) Added the device manager tab in the admin
-
-### 7.7.31 (2026-02-16)
-- (@GermanBluefox) Added better table layout for JSON Config
 
 ## License
 
