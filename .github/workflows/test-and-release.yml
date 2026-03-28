@@ -129,11 +129,59 @@ jobs:
         runs-on: macos-latest # ubuntu-latest has too few RAM
 
         steps:
-            - uses: ioBroker/testing-action-deploy@v1
+            - name: Checkout code
+              uses: actions/checkout@v6
+
+            - name: Use Node.js 22.x
+              uses: actions/setup-node@v6
               with:
-                  node-version: '22.x'
-                  build: true
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
-                  sentry-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-                  sentry-project: 'iobroker-admin'
-                  sentry-version-prefix: 'iobroker.admin'
+                  node-version: 22.x
+                  registry-url: 'https://registry.npmjs.org'
+
+            - name: Extract the version and commit body from the tag
+              id: extract_release
+              # The body may be multiline, therefore we need to escape some characters
+              run: |
+                  VERSION="${{ github.ref }}"
+                  VERSION=${VERSION##*/v}
+                  echo "::set-output name=VERSION::$VERSION"
+                  BODY=$(git show -s --format=%b)
+                  BODY="${BODY//'%'/'%25'}"
+                  BODY="${BODY//$'\n'/'%0A'}"
+                  BODY="${BODY//$'\r'/'%0D'}"
+                  echo "::set-output name=BODY::$BODY"
+
+            - name: Update npm to latest version
+              run: npm i npm@10 -g
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Publish package to npm
+              run: npm publish
+            - name: Create Github Release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_CONFIG_PROVENANCE: true
+              with:
+                  tag_name: ${{ github.ref }}
+                  release_name: Release v${{ steps.extract_release.outputs.VERSION }}
+                  draft: false
+                  # Prerelease versions create pre-releases on GitHub
+                  prerelease: ${{ contains(steps.extract_release.outputs.VERSION, '-') }}
+                  body: ${{ steps.extract_release.outputs.BODY }}
+
+            - name: Notify Sentry.io about the release
+              run: |
+                  npm i npm@10 -g
+                  export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+                  export SENTRY_URL=https://sentry.iobroker.net
+                  export SENTRY_ORG=iobroker
+                  export SENTRY_PROJECT=iobroker-admin
+                  export SENTRY_VERSION=iobroker.admin@${{ steps.version.outputs.result }}
+                  export SENTRY_RELEASE=${{ steps.version.outputs.result }}
+                  sentry-cli releases new $SENTRY_VERSION
+                  sentry-cli releases finalize $SENTRY_VERSION
+                  sentry-cli sourcemaps inject ./adminWww
+                  sentry-cli sourcemaps upload ./adminWww
