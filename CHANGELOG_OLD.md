@@ -1,4 +1,7 @@
 # Older changes
+## 7.8.3 (2026-03-04)
+- (@GermanBluefox) Added the device manager tab in the admin
+
 ## 7.7.31 (2026-02-16)
 - (@GermanBluefox) Added better table layout for JSON Config
 
