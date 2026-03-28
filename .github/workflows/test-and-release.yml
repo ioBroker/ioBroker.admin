@@ -158,12 +158,11 @@ jobs:
               run: npm ci
 
             - name: Publish package to npm
-              run: npm publish
+              run: npm publish --provenance
             - name: Create Github Release
               uses: actions/create-release@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NPM_CONFIG_PROVENANCE: true
               with:
                   tag_name: ${{ github.ref }}
                   release_name: Release v${{ steps.extract_release.outputs.VERSION }}
