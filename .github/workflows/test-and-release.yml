@@ -151,7 +151,7 @@ jobs:
               echo "::set-output name=BODY::$BODY"
 
           - name: Update npm to latest version
-            run: npm install -g npm@latest
+            run: npm i npm@10 -g
 
           - name: Install dependencies
             run: npm ci
