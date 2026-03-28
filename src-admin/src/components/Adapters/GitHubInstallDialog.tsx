@@ -728,11 +728,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     label={this.props.t('From file')}
                                     wrapped
                                     sx={{ '&.Mui-selected': styles.tabSelected }}
-                                    icon={
-                                        <UploadFileIcon
-                                            style={{ width: 24, height: 24 }}
-                                        />
-                                    }
+                                    icon={<UploadFileIcon style={{ width: 24, height: 24 }} />}
                                     {...a11yProps('file')}
                                     value="File"
                                 />
@@ -768,9 +764,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 const _url = `${parts[1]}/ioBroker.${parts[0]}`;
                                 void this.props.installFromUrl(_url, this.state.debug, true);
                             } else if (this.state.currentTab === 'URL') {
-                                const customHistory = this.state.customHistory.filter(
-                                    url => url !== this.state.url,
-                                );
+                                const customHistory = this.state.customHistory.filter(url => url !== this.state.url);
                                 customHistory.unshift(this.state.url);
                                 if (customHistory.length > MAX_HISTORY_LENGTH) {
                                     customHistory.pop();
@@ -803,8 +797,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                         }
                                         if (this.state.restartAfterInstall && adapterName) {
                                             // Restart all instances of this adapter
-                                            const instances =
-                                                await this.props.socket.getAdapterInstances(adapterName);
+                                            const instances = await this.props.socket.getAdapterInstances(adapterName);
                                             for (const instance of instances) {
                                                 if (instance?.common?.enabled) {
                                                     await this.props.socket.extendObject(instance._id, {});
