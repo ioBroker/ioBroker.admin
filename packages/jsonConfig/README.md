@@ -1341,6 +1341,10 @@ Shows closable static text with optional title and icon. (From admin >= 7.6.19)
 
 show device manager. For that, the adapter must support device manager protocol. See iobroker/dm-utils.
 
+| Property     | Description                                                    |
+|--------------|----------------------------------------------------------------|
+| `smallCards` | (optional) Show small device cards in the device manager       |
+
 Here is an example of how to show the device manager in a tab:
 
 ```json5
@@ -1752,6 +1756,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.2.19 (2026-03-27)
+- (@GermanBluefox) Added option "small cards" for device manager
+
 ### 8.2.18 (2026-03-25)
 - (@GermanBluefox) Added the possibility to use own Client ID for oauth authentication
 - (@GermanBluefox) Added the possibility show small image and open it in full size by click on it

@@ -856,6 +856,10 @@
     },
     "deviceManagerProps": {
       "properties": {
+        "smallCards": {
+          "description": "Show small device cards in the device manager",
+          "type": "boolean"
+        },
         "label": true,
         "type": true,
         "defaultSendTo": true,
