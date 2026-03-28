@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.13",
+    "version": "7.8.14",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.8.14": {
+        "en": "Improved the device manager",
+        "de": "Verbessert den Gerätemanager",
+        "ru": "Улучшен диспетчер устройств",
+        "pt": "Melhorou o gerenciador de dispositivos",
+        "nl": "De apparaatbeheerder verbeterd",
+        "fr": "Amélioration du gestionnaire de périphériques",
+        "it": "Migliorato il gestore del dispositivo",
+        "es": "Mejorado el administrador del dispositivo",
+        "pl": "Ulepszenie menedżera urządzeń",
+        "uk": "Покращення диспетчера пристроїв",
+        "zh-cn": "改进设备管理器"
+      },
       "7.8.9": {
         "en": "Added in JsonConfig OAuth2 process for spotify",
         "de": "Hinzugefügt in JsonConfig OAuth2 Prozess zur Spotify",
