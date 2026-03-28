@@ -135,6 +135,7 @@ jobs:
             uses: actions/setup-node@v6
             with:
               node-version: 22.x
+              registry-url: 'https://registry.npmjs.org'
 
           - name: Extract the version and commit body from the tag
             id: extract_release
@@ -161,6 +162,7 @@ jobs:
             uses: actions/create-release@v1
             env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              NPM_CONFIG_PROVENANCE: true
             with:
               tag_name: ${{ github.ref }}
               release_name: Release v${{ steps.extract_release.outputs.VERSION }}
@@ -171,7 +173,7 @@ jobs:
 
           - name: Notify Sentry.io about the release
             run: |
-                npm i -g @sentry/cli
+                npm i npm@10 -g
                 export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
                 export SENTRY_URL=https://sentry.iobroker.net
                 export SENTRY_ORG=iobroker
