@@ -30,6 +30,7 @@ jobs:
         with:
           node-version: '22.x'
           lint: true
+          install-command: 'npm ci && cd src-admin && npm ci'
 
   adapter-tests:
     needs: [check-and-lint]
