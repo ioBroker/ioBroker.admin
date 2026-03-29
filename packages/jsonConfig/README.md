@@ -1756,6 +1756,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.2.22 (2026-03-29)
+- (@GermanBluefox) Corrected error for "state" component
+
 ### 8.2.19 (2026-03-27)
 - (@GermanBluefox) Added option "small cards" for device manager
 
