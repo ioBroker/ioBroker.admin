@@ -140,8 +140,6 @@ interface GitHubInstallDialogState {
     customHistory: string[];
     /** The selected .tgz file for upload */
     selectedFile: File | null;
-    /** Whether to run 'upload' command after file installation */
-    uploadAfterInstall: boolean;
     /** Whether to restart adapter instances after file installation */
     restartAfterInstall: boolean;
     /** Whether a file upload is in progress */
@@ -171,7 +169,6 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             currentTab: ((window as any)._localstorage || window.localStorage).getItem('App.gitTab') || 'npm',
             customHistory,
             selectedFile: null,
-            uploadAfterInstall: true,
             restartAfterInstall:
                 ((window as any)._localstorage || window.localStorage).getItem('App.restartAfterInstall') !== 'false',
             uploading: false,
@@ -561,34 +558,21 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                     {this.state.uploading && <CircularProgress size={24} />}
                 </div>
                 {this.state.selectedFile && (
-                    <>
-                        <FormControlLabel
-                            style={{ marginTop: 8 }}
-                            control={
-                                <Checkbox
-                                    checked={this.state.uploadAfterInstall}
-                                    onChange={e => this.setState({ uploadAfterInstall: e.target.checked })}
-                                />
-                            }
-                            label={this.props.t('Upload adapter after install')}
-                        />
-                        <br />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={this.state.restartAfterInstall}
-                                    onChange={e => {
-                                        ((window as any)._localstorage || window.localStorage).setItem(
-                                            'App.restartAfterInstall',
-                                            e.target.checked ? 'true' : 'false',
-                                        );
-                                        this.setState({ restartAfterInstall: e.target.checked });
-                                    }}
-                                />
-                            }
-                            label={this.props.t('Restart adapter after install')}
-                        />
-                    </>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={this.state.restartAfterInstall}
+                                onChange={e => {
+                                    ((window as any)._localstorage || window.localStorage).setItem(
+                                        'App.restartAfterInstall',
+                                        e.target.checked ? 'true' : 'false',
+                                    );
+                                    this.setState({ restartAfterInstall: e.target.checked });
+                                }}
+                            />
+                        }
+                        label={this.props.t('Restart adapter after install')}
+                    />
                 )}
                 <div
                     style={{
@@ -792,9 +776,6 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     const adapterName = match ? match[1] : '';
                                     try {
                                         await this.props.installFromUrl(filePath, this.state.debug, true);
-                                        if (this.state.uploadAfterInstall && adapterName) {
-                                            this.props.upload(adapterName);
-                                        }
                                         if (this.state.restartAfterInstall && adapterName) {
                                             // Restart all instances of this adapter
                                             const instances = await this.props.socket.getAdapterInstances(adapterName);
