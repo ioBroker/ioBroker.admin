@@ -18,19 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.8.19": {
-        "en": "Improved the device manager",
-        "de": "Verbessert den Gerätemanager",
-        "ru": "Улучшен диспетчер устройств",
-        "pt": "Melhorou o gerenciador de dispositivos",
-        "nl": "De apparaatbeheerder verbeterd",
-        "fr": "Amélioration du gestionnaire de périphériques",
-        "it": "Migliorato il gestore del dispositivo",
-        "es": "Mejorado el administrador del dispositivo",
-        "pl": "Ulepszenie menedżera urządzeń",
-        "uk": "Покращення диспетчера пристроїв",
-        "zh-cn": "改进设备管理器"
-      },
       "7.8.16": {
         "en": "Improved the device manager",
         "de": "Verbessert den Gerätemanager",
