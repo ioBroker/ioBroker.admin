@@ -25,8 +25,8 @@
     ],
     "dependencies": {
         "@iobroker/adapter-react-v5": "^8.1.6",
-        "@iobroker/dm-gui-components": "^9.0.24",
-        "@iobroker/json-config": "^8.2.22",
+        "@iobroker/dm-gui-components": "^9.0.26",
+        "@iobroker/json-config": "^8.3.1",
         "ace-builds": "^1.43.6",
         "http-proxy-middleware": "^3.0.5"
     },
