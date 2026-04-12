@@ -325,6 +325,24 @@
           "description": "Style of the button or control itself",
           "type": "object"
         },
+        "target": {
+          "description": "Target of the link: _self, _blank or window name. For relative links the default is _self and for absolute - _blank",
+          "type": "string"
+        },
+        "close": {
+          "description": "If the GUI should be closed after a link was opened (only if the target is equal to '_self')",
+          "type": "boolean"
+        },
+        "format": {
+          "description": "How the static text should be interpreted. Use `text` for plain text, `html` to render HTML, or `json` for displaying JSON (optionally with syntax highlighting).",
+          "type": "string",
+          "enum": [
+            "text",
+            "html",
+            "json"
+          ],
+          "default": "text"
+        },
         "label": true,
         "type": true,
         "defaultSendTo": true,
@@ -1271,6 +1289,10 @@
                   "color": {
                     "type": "string",
                     "description": "Color of the option"
+                  },
+                  "icon": {
+                    "description": "Icon URL to display next to the option",
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -3628,6 +3650,10 @@
                               "color": {
                                 "description": "Color of the option",
                                 "type": "string"
+                              },
+                              "icon": {
+                                "description": "Icon URL to display next to the option",
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -3906,6 +3932,10 @@
                       },
                       "description": {
                         "description": "Description for the value, shown below the label"
+                      },
+                      "icon": {
+                        "description": "Icon URL to display next to the option",
+                        "type": "string"
                       }
                     }
                   }
@@ -3925,6 +3955,10 @@
                     "dropdown",
                     "radio"
                   ]
+                },
+                "horizontal": {
+                  "description": "If true, radio buttons are shown horizontally (only applies when format is 'radio')",
+                  "type": "boolean"
                 },
                 "label": true,
                 "type": true,
@@ -4685,6 +4719,11 @@
                 "color": true,
                 "icon": true,
                 "variant": true,
+                "target": true,
+                "close": true,
+                "format": true,
+                "controlStyle": true,
+                "button": true,
                 "attr": true,
                 "width": true,
                 "title": true,
@@ -4761,6 +4800,43 @@
                     "json"
                   ],
                   "default": "text"
+                },
+                "href": {
+                  "description": "Link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`",
+                  "type": "string"
+                },
+                "target": {
+                  "description": "Target of the link: _self, _blank or window name",
+                  "type": "string"
+                },
+                "close": {
+                  "description": "If the GUI should be closed after a link was opened (only if the target is equal to '_self')",
+                  "type": "boolean"
+                },
+                "button": {
+                  "description": "Show a link as a button",
+                  "type": "boolean"
+                },
+                "variant": {
+                  "description": "Type of button (`outlined`, `contained`, `text`)",
+                  "type": "string",
+                  "enum": [
+                    "contained",
+                    "outlined",
+                    "text"
+                  ]
+                },
+                "color": {
+                  "description": "Color of button (e.g. `primary`)",
+                  "type": "string"
+                },
+                "icon": {
+                  "description": "Icon for button",
+                  "type": "string"
+                },
+                "controlStyle": {
+                  "description": "Style of the button or control itself",
+                  "type": "object"
                 },
                 "label": true,
                 "type": true,
@@ -7066,6 +7142,10 @@
                                 },
                                 "color": {
                                   "type": "string"
+                                },
+                                "icon": {
+                                  "description": "Icon URL to display next to the option",
+                                  "type": "string"
                                 }
                               },
                               "required": [
@@ -7212,6 +7292,10 @@
                             },
                             "description": {
                               "description": "Description for the value, shown below the label"
+                            },
+                            "icon": {
+                              "description": "Icon URL to display next to the option",
+                              "type": "string"
                             }
                           }
                         }
@@ -7231,6 +7315,10 @@
                           "dropdown",
                           "radio"
                         ]
+                      },
+                      "horizontal": {
+                        "description": "If true, radio buttons are shown horizontally (only applies when format is 'radio')",
+                        "type": "boolean"
                       },
                       "label": true,
                       "type": true,
@@ -7829,6 +7917,43 @@
                           "json"
                         ],
                         "default": "text"
+                      },
+                      "href": {
+                        "description": "Link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`",
+                        "type": "string"
+                      },
+                      "target": {
+                        "description": "Target of the link: _self, _blank or window name. For relative links the default is _self and for absolute - _blank",
+                        "type": "string"
+                      },
+                      "close": {
+                        "description": "If the GUI should be closed after a link was opened (only if the target is equal to '_self')",
+                        "type": "boolean"
+                      },
+                      "button": {
+                        "description": "Show a link as a button",
+                        "type": "boolean"
+                      },
+                      "variant": {
+                        "description": "Type of button (`outlined`, `contained`, `text`)",
+                        "type": "string",
+                        "enum": [
+                          "contained",
+                          "outlined",
+                          "text"
+                        ]
+                      },
+                      "color": {
+                        "description": "Color of button (e.g. `primary`)",
+                        "type": "string"
+                      },
+                      "icon": {
+                        "description": "Icon for button",
+                        "type": "string"
+                      },
+                      "controlStyle": {
+                        "description": "Style of the button or control itself",
+                        "type": "object"
                       },
                       "label": true,
                       "type": true,

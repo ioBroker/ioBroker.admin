@@ -24,7 +24,7 @@ function IobListHeader(header, options) {
             if (_list[0] !== '#') {
                 _list = '#' + _list;
             }
-            $tds = $(_list)
+            $tds = $(_list);
         } else {
             $tds = _list;
         }
@@ -83,9 +83,9 @@ function IobListHeader(header, options) {
 
     function allOption(name, selectedVal) {
         if (addAll2FilterCombobox) {
-            name = name ? _(name) + ' ('+_('all') + ')' : _('all');
+            name = name ? _(name) + ' (' + _('all') + ')' : _('all');
         }
-        return '<option value="" ' + ((selectedVal === '') ? 'selected' : '') + '>' + name + '</option>';
+        return '<option value="" ' + (selectedVal === '' ? 'selected' : '') + '>' + name + '</option>';
     }
 
     that.ids = [];
@@ -98,29 +98,44 @@ function IobListHeader(header, options) {
         switch (what) {
             case 'combobox':
                 txt =
-                    '    <select class="list-header-input" id="' + id + '" title="' + title + '"></select>' +
-                    '    <button class="list-header-clear" id="' + id + '-clear" role="button" title=""></button>';
+                    '    <select class="list-header-input" id="' +
+                    id +
+                    '" title="' +
+                    title +
+                    '"></select>' +
+                    '    <button class="list-header-clear" id="' +
+                    id +
+                    '-clear" role="button" title=""></button>';
                 break;
             case 'edit':
                 txt =
-                    '    <input  class="list-header-input" autocomplete="new-password" placeholder="' + title + '" id="' + id + '" title="' + title + '">' +
-                    '    <button class="list-header-clear" id="' + id + '-clear" role="button" title="' + title + '"></button>';
+                    '    <input  class="list-header-input" autocomplete="new-password" placeholder="' +
+                    title +
+                    '" id="' +
+                    id +
+                    '" title="' +
+                    title +
+                    '">' +
+                    '    <button class="list-header-clear" id="' +
+                    id +
+                    '-clear" role="button" title="' +
+                    title +
+                    '"></button>';
                 break;
             case 'text':
-                txt =
-                    '<span class="list-header-text">' + title + '</span>';
+                txt = '<span class="list-header-text">' + title + '</span>';
                 break;
         }
 
         $header.append('<th>' + txt + '</th>');
 
-        var fisId   = '#' + id;
-        var $id     = $(fisId);
-        var elem    = that[_id] = {
-            $filter:     $id,
-            val:         $id.val.bind($id),
-            selectedVal: $id.val() || ''
-        };
+        var fisId = '#' + id;
+        var $id = $(fisId);
+        var elem = (that[_id] = {
+            $filter: $id,
+            val: $id.val.bind($id),
+            selectedVal: $id.val() || '',
+        });
         that.ids.push(_id);
 
         if (what === 'combobox') {
@@ -133,7 +148,14 @@ function IobListHeader(header, options) {
                 var txt = noAll ? '' : allOption(title, selectedVal);
 
                 function addOption(val, name) {
-                    txt += '<option value="' + val + '" ' + ((name === selectedVal) ? 'selected' : '') + '>' + name + '</option>'
+                    txt +=
+                        '<option value="' +
+                        val +
+                        '" ' +
+                        (name === selectedVal ? 'selected' : '') +
+                        '>' +
+                        name +
+                        '</option>';
                 }
                 for (var i = 0, len = this.options.length; i < len; i++) {
                     var option = this.options[i];
@@ -153,14 +175,18 @@ function IobListHeader(header, options) {
 
             if (selectOptions) {
                 for (var i = 0; i < selectOptions.length; i++) {
-                    elem.checkAddOption(selectOptions[i].name, function (o, i) {
-                        return selectOptions [i];
-                    }, true);
+                    elem.checkAddOption(
+                        selectOptions[i].name,
+                        function (o, i) {
+                            return selectOptions[i];
+                        },
+                        true,
+                    );
                 }
             }
         }
 
-        var $btnClear =  $(fisId + '-clear');
+        var $btnClear = $(fisId + '-clear');
         $btnClear.on('click', function () {
             if ($id.val() !== '') {
                 $id.val('').trigger('change');
@@ -168,7 +194,7 @@ function IobListHeader(header, options) {
         });
 
         if (typeof M === 'undefined') {
-            $btnClear.button({icons: {primary: 'ui-icon-close'}, text: false})
+            $btnClear.button({ icons: { primary: 'ui-icon-close' }, text: false });
         } else {
             $btnClear.prepend('<i class="material-icons">close</i>');
         }

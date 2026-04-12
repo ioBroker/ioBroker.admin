@@ -1852,7 +1852,9 @@ class App extends Router<AppProps, AppState> {
                 themeType: App.getThemeType(theme),
             },
             () => {
+                // DH (2026.04.12) Remove this line after all adapters update adapter-react-v5 to V8.2.x
                 this.refConfigIframe?.contentWindow?.postMessage('updateTheme', '*');
+                this.refConfigIframe?.contentWindow?.postMessage({ type: 'updateTheme', themeName: newThemeName }, '*');
             },
         );
     };

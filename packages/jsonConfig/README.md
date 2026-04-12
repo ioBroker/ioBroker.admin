@@ -139,7 +139,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`certificateCollection`:**](#certificatecollection) Selects a collection for Let's Encrypt certificates
 - [**`certificates`:**](#certificates) Universal type for managing different certificate types (from Admin 6.4.0)
 - [**`checkbox`:**](#checkbox) Checkbox for boolean values
-- [**`checkDocker`:**](#checkdocker) Special component to check if the docker available and if yes, you can activate a checkbox (from Admin 7.8.0)
+- [**`checkDocker`:**](#checkdocker) Special component to check if the docker is available and if yes, you can activate a checkbox (from Admin 7.8.0)
 - [**`checkLicense`:**](#checklicense) Very special component to check the license online
 - [**`chips`:**](#chips) User can enter words that are added to an array
 - [**`color`:**](#color) Color picker
@@ -448,16 +448,18 @@ Select function from `enum.func` (With color and icon) - (only Admin6)
 | `multiple`      | Multiple choice select (From 7.6.5)                                                                            |
 | `showAllValues` | show item even if no label was found for it (by multiple), default=`true`                                      |
 | `format`        | Render format: `"dropdown"` (default) or `"radio"` to display options as radio buttons instead of a dropdown   |
+| `horizontal`    | If `true`, radio buttons are shown horizontally (only applies when `format` is `"radio"`) (from v8.3.3)        |
 
 Each option in `options` can have:
 
-| Property      | Description                                                        |
-|---------------|--------------------------------------------------------------------|
-| `label`       | Label of the option (can be a string or translatable object)       |
-| `value`       | Value of the option                                                |
-| `color`       | Color of the option text                                           |
-| `hidden`      | Formula or boolean value to show or hide the option                |
-| `description` | Description shown below the option label (can be translatable)     |
+| Property      | Description                                                           |
+|---------------|-----------------------------------------------------------------------|
+| `label`       | Label of the option (can be a string or translatable object)          |
+| `value`       | Value of the option                                                   |
+| `color`       | Color of the option text                                              |
+| `hidden`      | Formula or boolean value to show or hide the option                   |
+| `description` | Description shown below the option label (can be translatable)        |
+| `icon`        | Icon URL or base64 string to display next to the option (from v8.3.3) |
 
 #### Example for `select options`
 
@@ -709,26 +711,36 @@ button that sets instance's state
 
 Static text like description
 
-| Property | Description                                         |
-|----------|-----------------------------------------------------|
-| `label`  | multi-language text                                 |
-| `text`   | same as label                                       |
-| `format` | `text` (default), `html` (from admin version 7.8.4) |
+| Property       | Description                                                                                                                                                                                                                                                                     |
+|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `label`        | multi-language text                                                                                                                                                                                                                                                             |
+| `text`         | same as label                                                                                                                                                                                                                                                                   |
+| `format`       | `text` (default), `html`, `json` (from admin version 7.8.4)                                                                                                                                                                                                                    |
+| `href`         | link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`                                                                                                                                                                                                        |
+| `target`       | `_blank` or `_self` or window name. For relative links the default is `_self` and for absolute - `_blank`                                                                                                                                                                       |
+| `close`        | if true, the GUI will be closed (used not for JsonConfig in admin, but for dynamic GUI, only if the target is `_self`)                                                                                                                                                          |
+| `button`       | show a link as a button                                                                                                                                                                                                                                                         |
+| `variant`      | type of button (`outlined`, `contained`, `text`)                                                                                                                                                                                                                                |
+| `color`        | color of button (e.g. `primary`)                                                                                                                                                                                                                                                |
+| `icon`         | if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (it starts with `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`) . (Request via issue if you need more icons) |
+| `controlStyle` | CSS Styles in React format for the button or control itself                                                                                                                                                                                                                     |
 
 exactly one of `label` or `text` must be specified - not both
 
 ### `staticLink`
 
-| Property  | Description                                                                                                                                                                                                                                                                     |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `label`   | multi-language text                                                                                                                                                                                                                                                             |
-| `href`    | link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`                                                                                                                                                                                                        |
-| `target`  | `_blank` or `_self` or window name                                                                                                                                                                                                                                              |
-| `close`   | if true, the GUI will be closed (used not for JsonConfig in admin, but for dynamic GUI)                                                                                                                                                                                         |
-| `button`  | show a link as button                                                                                                                                                                                                                                                           |
-| `variant` | type of button (`outlined`, `contained`, `text`)                                                                                                                                                                                                                                |
-| `color`   | color of button (e.g. `primary`)                                                                                                                                                                                                                                                |
-| `icon`    | if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (it starts with `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`) . (Request via issue if you need more icons) |
+| Property       | Description                                                                                                                                                                                                                                                                     |
+|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `label`        | multi-language text                                                                                                                                                                                                                                                             |
+| `href`         | link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`                                                                                                                                                                                                        |
+| `target`       | `_blank` or `_self` or window name. For relative links the default is `_self` and for absolute - `_blank`                                                                                                                                                                       |
+| `close`        | if true, the GUI will be closed (used not for JsonConfig in admin, but for dynamic GUI, only if the target is `_self`)                                                                                                                                                          |
+| `button`       | show a link as button                                                                                                                                                                                                                                                           |
+| `variant`      | type of button (`outlined`, `contained`, `text`)                                                                                                                                                                                                                                |
+| `color`        | color of button (e.g. `primary`)                                                                                                                                                                                                                                                |
+| `icon`         | if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (it starts with `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`) . (Request via issue if you need more icons) |
+| `controlStyle` | CSS Styles in React format for the button or control itself                                                                                                                                                                                                                     |
+| `format`       | `text` (default), `html`, `json`                                                                                                                                                                                                                                                |
 
 ### `staticImage`
 
@@ -1756,6 +1768,16 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.3.6 (2026-04-12)
+- (@GermanBluefox) Adjust a path to images
+
+### 8.3.5 (2026-04-11)
+- (@GermanBluefox) Extend schema for staticLink and staticImage components
+
+### 8.3.4 (2026-04-09)
+- (@GermanBluefox) Added `horizontal` option for `select` component with `format: "radio"` to display radio buttons in a row
+- (@GermanBluefox) Added `icon` option for `select` component options to display icons next to labels
+
 ### 8.3.2 (2026-03-31)
 - (@GermanBluefox) Added possibility to provide custom components
 
@@ -1767,7 +1789,7 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 
 ### 8.2.18 (2026-03-25)
 - (@GermanBluefox) Added the possibility to use own Client ID for oauth authentication
-- (@GermanBluefox) Added the possibility show small image and open it in full size by click on it
+- (@GermanBluefox) Added the possibility to show a small image and open it in full size by clicking on it
 
 ### 8.2.11 (2026-03-20)
 - (@GermanBluefox) Correcting unit in schema

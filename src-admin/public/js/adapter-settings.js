@@ -3,8 +3,8 @@
 /* eslint prefer-arrow-callback: 0 */
 /* eslint strict: 0 */
 /* eslint object-shorthand: 0 */
-var path = location.pathname;
-var parts = path.split('/');
+const path = location.pathname;
+let parts = path.split('/');
 parts.splice(-3);
 
 if (location.pathname.match(/^\/admin\//)) {
@@ -12,45 +12,49 @@ if (location.pathname.match(/^\/admin\//)) {
 }
 
 var systemConfig;
-var socket = io.connect('/', { path: parts.join('/') + '/socket.io' });
-var query  = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
-var args   = {};
-var theme  = null;
+var socket = io.connect('/', { path: `${parts.join('/')}/socket.io` });
+const query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
+const args = {};
+var theme = null;
 
 // parse parameters
-query.trim().split('&').filter(function (t) { return t.trim(); }).forEach(function (b, i) {
-    const parts = b.split('=');
-    if (!i && parts.length === 1 && !isNaN(parseInt(b, 10))) {
-        args.instance = parseInt(b,  10);
-    }
-    var name = parts[0];
-    args[name] = parts.length === 2 ? parts[1] : true;
+query
+    .trim()
+    .split('&')
+    .filter(t => t.trim())
+    .forEach((b, i) => {
+        const parts = b.split('=');
+        if (!i && parts.length === 1 && !isNaN(parseInt(b, 10))) {
+            args.instance = parseInt(b, 10);
+        }
+        const name = parts[0];
+        args[name] = parts.length === 2 ? parts[1] : true;
 
-    if (name === 'instance') {
-        args.instance = parseInt(args.instance,  10) || 0;
-    }
+        if (name === 'instance') {
+            args.instance = parseInt(args.instance, 10) || 0;
+        }
 
-    if (args[name] === 'true') {
-        args[name] = true;
-    } else if (args[name] === 'false') {
-        args[name] = false;
-    }
-});
+        if (args[name] === 'true') {
+            args[name] = true;
+        } else if (args[name] === 'false') {
+            args[name] = false;
+        }
+    });
 
-var isTab    = !!window.location.pathname.match(/tab(_m)?\.html/);
+var isTab = !!window.location.pathname.match(/tab(_m)?\.html/);
 var instance = args.instance;
 var noFooter = args.noFooter;
-var common   = null; // common information of adapter
-var host     = null; // host object on which the adapter runs
-var changed  = false;
-var certs    = [];
-var adapter  = '';
+var common = null; // common information of adapter
+var host = null; // host object on which the adapter runs
+var changed = false;
+var certs = [];
+var adapter = '';
 var onChangeSupported = false;
 var isMaterialize = false;
-var ___onChange   = null;
-var systemSecret  = 'Zgfr56gFe87jJOM';
+var ___onChange = null;
+var systemSecret = 'Zgfr56gFe87jJOM';
 var supportedFeatures = [
-    'ADAPTER_AUTO_DECRYPT_NATIVE', // all native attributes, that are listed in an array `encryptedNative` in io-pack will be automatically decrypted and encrypted. Since js-controller 3.0
+    'ADAPTER_AUTO_DECRYPT_NATIVE', // all native attributes that are listed in an array `encryptedNative` in io-pack will be automatically decrypted and encrypted. Since js-controller 3.0
 ];
 
 function preInit() {
@@ -63,58 +67,211 @@ function preInit() {
         systemDictionary = {};
     }
 
-    systemDictionary.save =           {
-        en: 'Save',           fr: 'Sauvegarder',                     nl: 'Opslaan',             es: 'Salvar',                      pt: 'Salve',                   it: 'Salvare',                     de: 'Speichern',                pl: 'Zapisać',                      ru: 'Сохранить',           'zh-cn': '保存',
+    systemDictionary.save = {
+        en: 'Save',
+        fr: 'Sauvegarder',
+        nl: 'Opslaan',
+        es: 'Salvar',
+        pt: 'Salve',
+        it: 'Salvare',
+        de: 'Speichern',
+        pl: 'Zapisać',
+        ru: 'Сохранить',
+        'zh-cn': '保存',
     };
-    systemDictionary.saveclose =      {
-        en: 'Save and close', fr: 'Sauver et fermer',                nl: 'Opslaan en afsluiten', es: 'Guardar y cerrar',            pt: 'Salvar e fechar',         it: 'Salva e chiudi',              de: 'Speichern und schließen',  pl: 'Zapisz i zamknij',             ru: 'Сохранить и выйти',   'zh-cn': '保存并关闭',
+    systemDictionary.saveclose = {
+        en: 'Save and close',
+        fr: 'Sauver et fermer',
+        nl: 'Opslaan en afsluiten',
+        es: 'Guardar y cerrar',
+        pt: 'Salvar e fechar',
+        it: 'Salva e chiudi',
+        de: 'Speichern und schließen',
+        pl: 'Zapisz i zamknij',
+        ru: 'Сохранить и выйти',
+        'zh-cn': '保存并关闭',
     };
-    systemDictionary.none =           {
-        en: 'none',           fr: 'aucun',                           nl: 'geen',                es: 'ninguna',                     pt: 'Nenhum',                  it: 'nessuna',                     de: 'keins',                    pl: 'Żaden',                        ru: 'ничего',              'zh-cn': '无',
+    systemDictionary.none = {
+        en: 'none',
+        fr: 'aucun',
+        nl: 'geen',
+        es: 'ninguna',
+        pt: 'Nenhum',
+        it: 'nessuna',
+        de: 'keins',
+        pl: 'Żaden',
+        ru: 'ничего',
+        'zh-cn': '无',
     };
-    systemDictionary.nonerooms =      {
-        en: '',               fr: '',                                nl: '',                    es: '',                            pt: '',                        it: '',                            de: '',                         pl: '',                             ru: '',                    'zh-cn': '',
+    systemDictionary.nonerooms = {
+        en: '',
+        fr: '',
+        nl: '',
+        es: '',
+        pt: '',
+        it: '',
+        de: '',
+        pl: '',
+        ru: '',
+        'zh-cn': '',
     };
-    systemDictionary.nonefunctions =  {
-        en: '',               fr: '',                                nl: '',                    es: '',                            pt: '',                        it: '',                            de: '',                         pl: '',                             ru: '',                    'zh-cn': '',
+    systemDictionary.nonefunctions = {
+        en: '',
+        fr: '',
+        nl: '',
+        es: '',
+        pt: '',
+        it: '',
+        de: '',
+        pl: '',
+        ru: '',
+        'zh-cn': '',
     };
-    systemDictionary.all =            {
-        en: 'all',            fr: 'tout',                            nl: 'alle',                es: 'todas',                       pt: 'todos',                   it: 'tutti',                       de: 'alle',                     pl: 'wszystko',                     ru: 'все',                 'zh-cn': '所有',
+    systemDictionary.all = {
+        en: 'all',
+        fr: 'tout',
+        nl: 'alle',
+        es: 'todas',
+        pt: 'todos',
+        it: 'tutti',
+        de: 'alle',
+        pl: 'wszystko',
+        ru: 'все',
+        'zh-cn': '所有',
     };
     systemDictionary['Device list'] = {
-        en: 'Device list',    fr: 'Liste des périphériques',         nl: 'Lijst met apparaten', es: 'Lista de dispositivos',       pt: 'Lista de dispositivos',   it: 'Elenco dispositivi',          de: 'Geräteliste',              pl: 'Lista urządzeń',               ru: 'Список устройств',    'zh-cn': '设备清单',
+        en: 'Device list',
+        fr: 'Liste des périphériques',
+        nl: 'Lijst met apparaten',
+        es: 'Lista de dispositivos',
+        pt: 'Lista de dispositivos',
+        it: 'Elenco dispositivi',
+        de: 'Geräteliste',
+        pl: 'Lista urządzeń',
+        ru: 'Список устройств',
+        'zh-cn': '设备清单',
     };
-    systemDictionary['new device'] =  {
-        en: 'new device',     fr: 'nouvel appareil',                 nl: 'nieuw apparaat',      es: 'Nuevo dispositivo',           pt: 'Novo dispositivo',        it: 'nuovo dispositivo',           de: 'Neues Gerät',              pl: 'nowe urządzenie',              ru: 'Новое устройство',    'zh-cn': '新设备',
+    systemDictionary['new device'] = {
+        en: 'new device',
+        fr: 'nouvel appareil',
+        nl: 'nieuw apparaat',
+        es: 'Nuevo dispositivo',
+        pt: 'Novo dispositivo',
+        it: 'nuovo dispositivo',
+        de: 'Neues Gerät',
+        pl: 'nowe urządzenie',
+        ru: 'Новое устройство',
+        'zh-cn': '新设备',
     };
-    systemDictionary.edit =           {
-        en: 'edit',           fr: 'modifier',                        nl: 'Bewerk',              es: 'editar',                      pt: 'editar',                  it: 'modificare',                  de: 'Ändern',                   pl: 'edytować',                     ru: 'Изменить',            'zh-cn': '编辑',
+    systemDictionary.edit = {
+        en: 'edit',
+        fr: 'modifier',
+        nl: 'Bewerk',
+        es: 'editar',
+        pt: 'editar',
+        it: 'modificare',
+        de: 'Ändern',
+        pl: 'edytować',
+        ru: 'Изменить',
+        'zh-cn': '编辑',
     };
-    systemDictionary.delete =         {
-        en: 'delete',         fr: 'effacer',                         nl: 'Delete',              es: 'borrar',                      pt: 'excluir',                 it: 'Elimina',                     de: 'Löschen',                  pl: 'kasować',                      ru: 'Удалить',             'zh-cn': '删除',
+    systemDictionary.delete = {
+        en: 'delete',
+        fr: 'effacer',
+        nl: 'Delete',
+        es: 'borrar',
+        pt: 'excluir',
+        it: 'Elimina',
+        de: 'Löschen',
+        pl: 'kasować',
+        ru: 'Удалить',
+        'zh-cn': '删除',
     };
-    systemDictionary.pair =           {
-        en: 'pair',           fr: 'paire',                           nl: 'paar',                es: 'par',                         pt: 'par',                     it: 'paio',                        de: 'Verbinden',                pl: 'para',                         ru: 'Связать',             'zh-cn': '配对',
+    systemDictionary.pair = {
+        en: 'pair',
+        fr: 'paire',
+        nl: 'paar',
+        es: 'par',
+        pt: 'par',
+        it: 'paio',
+        de: 'Verbinden',
+        pl: 'para',
+        ru: 'Связать',
+        'zh-cn': '配对',
     };
-    systemDictionary.unpair =         {
-        en: 'unpair',         fr: 'unpair',                          nl: 'Unpair',              es: 'desvincular',                 pt: 'unpair',                  it: 'Disaccoppia',                 de: 'Trennen',                  pl: 'unpair',                       ru: 'Разорвать связь',     'zh-cn': '取消配对',
+    systemDictionary.unpair = {
+        en: 'unpair',
+        fr: 'unpair',
+        nl: 'Unpair',
+        es: 'desvincular',
+        pt: 'unpair',
+        it: 'Disaccoppia',
+        de: 'Trennen',
+        pl: 'unpair',
+        ru: 'Разорвать связь',
+        'zh-cn': '取消配对',
     };
-    systemDictionary.ok =             {
-        en: 'Ok',             fr: "D'accord",                        nl: 'OK',                  es: 'De acuerdo',                  pt: 'Está bem',                it: 'Ok',                          de: 'Ok',                       pl: 'Ok',                           ru: 'Ok',                  'zh-cn': '确认',
+    systemDictionary.ok = {
+        en: 'Ok',
+        fr: "D'accord",
+        nl: 'OK',
+        es: 'De acuerdo',
+        pt: 'Está bem',
+        it: 'Ok',
+        de: 'Ok',
+        pl: 'Ok',
+        ru: 'Ok',
+        'zh-cn': '确认',
     };
-    systemDictionary.cancel =         {
-        en: 'Cancel',         fr: 'Annuler',                         nl: 'Annuleer',            es: 'Cancelar',                    pt: 'Cancelar',                it: 'Annulla',                     de: 'Abbrechen',                pl: 'Anuluj',                       ru: 'Отмена',              'zh-cn': '取消',
+    systemDictionary.cancel = {
+        en: 'Cancel',
+        fr: 'Annuler',
+        nl: 'Annuleer',
+        es: 'Cancelar',
+        pt: 'Cancelar',
+        it: 'Annulla',
+        de: 'Abbrechen',
+        pl: 'Anuluj',
+        ru: 'Отмена',
+        'zh-cn': '取消',
     };
-    systemDictionary.Message =        {
-        en: 'Message',        fr: 'Message',                         nl: 'Bericht',             es: 'Mensaje',                     pt: 'Mensagem',                it: 'Messaggio',                   de: 'Mitteilung',               pl: 'Wiadomość',                    ru: 'Сообщение',           'zh-cn': '信息',
+    systemDictionary.Message = {
+        en: 'Message',
+        fr: 'Message',
+        nl: 'Bericht',
+        es: 'Mensaje',
+        pt: 'Mensagem',
+        it: 'Messaggio',
+        de: 'Mitteilung',
+        pl: 'Wiadomość',
+        ru: 'Сообщение',
+        'zh-cn': '信息',
     };
-    systemDictionary.close =          {
-        en: 'Close',          fr: 'Fermer',                          nl: 'Dichtbij',            es: 'Cerca',                       pt: 'Fechar',                  it: 'Vicino',                      de: 'Schließen',                pl: 'Blisko',                       ru: 'Закрыть',             'zh-cn': '关闭',
+    systemDictionary.close = {
+        en: 'Close',
+        fr: 'Fermer',
+        nl: 'Dichtbij',
+        es: 'Cerca',
+        pt: 'Fechar',
+        it: 'Vicino',
+        de: 'Schließen',
+        pl: 'Blisko',
+        ru: 'Закрыть',
+        'zh-cn': '关闭',
     };
-    systemDictionary.htooltip =       {
-        en: 'Click for help', fr: "Cliquez pour obtenir de l'aide",  nl: 'Klik voor hulp',      es: 'Haz clic para obtener ayuda', pt: 'Clique para ajuda',       it: 'Fai clic per chiedere aiuto', de: 'Anklicken',                pl: 'Kliknij, aby uzyskać pomoc',   ru: 'Перейти по ссылке',   'zh-cn': '单击获取帮助',
+    systemDictionary.htooltip = {
+        en: 'Click for help',
+        fr: "Cliquez pour obtenir de l'aide",
+        nl: 'Klik voor hulp',
+        es: 'Haz clic para obtener ayuda',
+        pt: 'Clique para ajuda',
+        it: 'Fai clic per chiedere aiuto',
+        de: 'Anklicken',
+        pl: 'Kliknij, aby uzyskać pomoc',
+        ru: 'Перейти по ссылке',
+        'zh-cn': '单击获取帮助',
     };
-    systemDictionary.saveConfig =     {
+    systemDictionary.saveConfig = {
         en: 'Save configuration to file',
         de: 'Speichern Sie die Konfiguration in der Datei',
         ru: 'Сохранить конфигурацию в файл',
@@ -126,7 +283,7 @@ function preInit() {
         pl: 'Zapisz konfigurację do pliku',
         'zh-cn': '将配置保存到文件',
     };
-    systemDictionary.loadConfig =     {
+    systemDictionary.loadConfig = {
         en: 'Load configuration from file',
         de: 'Laden Sie die Konfiguration aus der Datei',
         ru: 'Загрузить конфигурацию из файла',
@@ -174,7 +331,7 @@ function preInit() {
         pl: 'Konfiguracja została pomyślnie załadowana',
         'zh-cn': '配置已成功加载',
     };
-    systemDictionary.maxTableRaw =    {
+    systemDictionary.maxTableRaw = {
         en: 'Maximum number of allowed raws',
         de: 'Maximale Anzahl von erlaubten Tabellenzeilen',
         ru: 'Достигнуто максимальное число строк',
@@ -187,7 +344,16 @@ function preInit() {
         'zh-cn': '允许的最大原始数量',
     };
     systemDictionary.maxTableRawInfo = {
-        en: 'Warning',       de: 'Warnung',                  ru: 'Внимание', pt: 'Atenção',  nl: 'Waarschuwing', fr: 'Attention', it: 'avvertimento', es: 'Advertencia', pl: 'Ostrzeżenie', 'zh-cn': '警告',
+        en: 'Warning',
+        de: 'Warnung',
+        ru: 'Внимание',
+        pt: 'Atenção',
+        nl: 'Waarschuwing',
+        fr: 'Attention',
+        it: 'avvertimento',
+        es: 'Advertencia',
+        pl: 'Ostrzeżenie',
+        'zh-cn': '警告',
     };
     systemDictionary['Main settings'] = {
         en: 'Main settings',
@@ -251,10 +417,14 @@ function preInit() {
         '</div>');
     */
     if (!noFooter && typeof noConfigDialog === 'undefined') {
-        var footer = '<div class="' + (theme ? 'm ' + theme : 'm') + '"><nav class="dialog-config-buttons nav-wrapper footer">';
-        footer += '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ';
-        footer += '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ';
-        footer += '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">close</span></a>';
+        var footer =
+            '<div class="' + (theme ? 'm ' + theme : 'm') + '"><nav class="dialog-config-buttons nav-wrapper footer">';
+        footer +=
+            '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ';
+        footer +=
+            '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ';
+        footer +=
+            '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">close</span></a>';
         footer += '</nav></div>';
 
         $body.append(footer);
@@ -332,7 +502,8 @@ function preInit() {
                 if (native.hasOwnProperty(a)) {
                     oldObj.native[a] = native[a];
                     // encode all native attributes listed in oldObj.encryptedNative
-                    if (oldObj.encryptedNative &&
+                    if (
+                        oldObj.encryptedNative &&
                         typeof oldObj.encryptedNative === 'object' &&
                         oldObj.encryptedNative instanceof Array &&
                         oldObj.encryptedNative.indexOf(a) !== -1
@@ -407,7 +578,11 @@ function preInit() {
                             }
 
                             // If it is filename, it could be everything
-                            if (res.native.certificates[c].length < 700 && (res.native.certificates[c].indexOf('/') !== -1 || res.native.certificates[c].indexOf('\\') !== -1)) {
+                            if (
+                                res.native.certificates[c].length < 700 &&
+                                (res.native.certificates[c].indexOf('/') !== -1 ||
+                                    res.native.certificates[c].indexOf('\\') !== -1)
+                            ) {
                                 var __cert = {
                                     name: c,
                                     type: '',
@@ -427,7 +602,13 @@ function preInit() {
 
                             var _cert = {
                                 name: c,
-                                type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public',
+                                type:
+                                    res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) ===
+                                        '-----BEGIN RSA PRIVATE KEY' ||
+                                    res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) ===
+                                        '-----BEGIN PRIVATE KEY'
+                                        ? 'private'
+                                        : 'public',
                             };
                             if (_cert.type === 'public') {
                                 var m = res.native.certificates[c].split('-----END CERTIFICATE-----');
@@ -474,15 +655,17 @@ function preInit() {
             M.updateTextFields();
 
             // workaround for materialize checkbox problem
-            $('input[type="checkbox"]+span').off('click').on('click', function (event) {
-                var $input = $(this).prev();
-                if (!$input.prop('disabled')) {
-                    $input.prop('checked', !$input.prop('checked')).trigger('change');
-                    // prevent propagation to prevent original handling from reverting our value change
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                }
-            });
+            $('input[type="checkbox"]+span')
+                .off('click')
+                .on('click', function (event) {
+                    var $input = $(this).prev();
+                    if (!$input.prop('disabled')) {
+                        $input.prop('checked', !$input.prop('checked')).trigger('change');
+                        // prevent propagation to prevent original handling from reverting our value change
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                    }
+                });
 
             // Design Fix simatec
             checkMediaQuery();
@@ -492,13 +675,13 @@ function preInit() {
     window.addEventListener('resize', checkMediaQuery);
 
     function checkMediaQuery() {
-        const mediaQuery = window.matchMedia("(max-width: 600px)");
-      
+        const mediaQuery = window.matchMedia('(max-width: 600px)');
+
         if (mediaQuery.matches) {
             designFix();
-            console.log("Screen < 600px.");
+            console.log('Screen < 600px.');
         } else {
-            console.log("Screen > 600px.");
+            console.log('Screen > 600px.');
         }
     }
 
@@ -525,7 +708,30 @@ function preInit() {
             if (logo) {
                 const col = logo.closest('.col');
                 if (col) {
-                    const sClasses = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 'm2', 'm4', 'm8', 'm10', 'm12', 'l2', 'l4', 'l8', 'l10', 'l12',];
+                    const sClasses = [
+                        's1',
+                        's2',
+                        's3',
+                        's4',
+                        's5',
+                        's6',
+                        's7',
+                        's8',
+                        's9',
+                        's10',
+                        's11',
+                        's12',
+                        'm2',
+                        'm4',
+                        'm8',
+                        'm10',
+                        'm12',
+                        'l2',
+                        'l4',
+                        'l8',
+                        'l10',
+                        'l12',
+                    ];
                     sClasses.forEach(sClass => {
                         if (col.classList.contains(sClass)) {
                             col.classList.remove(sClass);
@@ -594,11 +800,17 @@ function preInit() {
                 common = res.common;
                 res.common && res.common.name && $('.adapter-name').html(res.common.name);
                 if (typeof load === 'undefined') {
-                    typeof noConfigDialog === 'undefined' && alert('Please implement save function in your admin/index.html');
+                    typeof noConfigDialog === 'undefined' &&
+                        alert('Please implement save function in your admin/index.html');
                     typeof callback === 'function' && callback();
                 } else {
                     // decode all native attributes listed in res.encryptedNative
-                    if (res.encryptedNative && typeof res.encryptedNative === 'object' && res.encryptedNative instanceof Array && res.encryptedNative.length) {
+                    if (
+                        res.encryptedNative &&
+                        typeof res.encryptedNative === 'object' &&
+                        res.encryptedNative instanceof Array &&
+                        res.encryptedNative.length
+                    ) {
                         // load crypto library
                         loadScript('../../lib/js/crypto-js/crypto-js.js', function () {
                             for (var i = 0; i < res.encryptedNative.length; i++) {
@@ -634,17 +846,17 @@ $(document).ready(function () {
 
     if (window.location.pathname.indexOf('/index_m.html') === -1) {
         // load materialize
-        var cssLink    = document.createElement('link');
-        cssLink.href   = '../../lib/css/materialize.css';
-        cssLink.type   = 'text/css';
-        cssLink.rel    = 'stylesheet';
-        cssLink.media  = 'screen,print';
+        var cssLink = document.createElement('link');
+        cssLink.href = '../../lib/css/materialize.css';
+        cssLink.type = 'text/css';
+        cssLink.rel = 'stylesheet';
+        cssLink.media = 'screen,print';
         document.getElementsByTagName('head')[0].appendChild(cssLink);
 
         // load materialize.js
-        var jsLink     = document.createElement('script');
-        jsLink.onload  = preInit;
-        jsLink.src     = '../../lib/js/materialize.js';
+        var jsLink = document.createElement('script');
+        jsLink.onload = preInit;
+        jsLink.src = '../../lib/js/materialize.js';
         document.head.appendChild(jsLink);
     } else {
         isMaterialize = true;
@@ -653,9 +865,9 @@ $(document).ready(function () {
 });
 
 function handleFileSelect(evt) {
-    var f = evt.target.files[0];
+    const f = evt.target.files[0];
     if (f) {
-        var r = new FileReader();
+        const r = new FileReader();
         r.onload = function (e) {
             var contents = e.target.result;
             try {
@@ -671,15 +883,17 @@ function handleFileSelect(evt) {
                             M.updateTextFields();
 
                             // workaround for materialize checkbox problem
-                            $('input[type="checkbox"]+span').off('click').on('click', function (event) {
-                                var $input = $(this).prev();
-                                if (!$input.prop('disabled')) {
-                                    $input.prop('checked', !$input.prop('checked')).trigger('change');
-                                    // prevent propagation to prevent original handling from reverting our value change
-                                    event.preventDefault();
-                                    event.stopImmediatePropagation();
-                                }
-                            });
+                            $('input[type="checkbox"]+span')
+                                .off('click')
+                                .on('click', function (event) {
+                                    var $input = $(this).prev();
+                                    if (!$input.prop('disabled')) {
+                                        $input.prop('checked', !$input.prop('checked')).trigger('change');
+                                        // prevent propagation to prevent original handling from reverting our value change
+                                        event.preventDefault();
+                                        event.stopImmediatePropagation();
+                                    }
+                                });
                         }
                         ___onChange();
                         showToast(null, _('configLoaded'));
@@ -698,7 +912,7 @@ function handleFileSelect(evt) {
 }
 
 function generateFile(filename, obj) {
-    var el = document.createElement('a');
+    const el = document.createElement('a');
     el.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj, null, 2)));
     el.setAttribute('download', filename);
 
@@ -716,31 +930,35 @@ function prepareTooltips() {
         $('.tabs').mtabs();
 
         /** Supported languages for docs */
-        var supportedDocLangs = ['en', 'de', 'ru', 'zh-cn'];
+        const supportedDocLangs = ['en', 'de', 'ru', 'zh-cn'];
 
-        var langToUse = systemLang;
+        let langToUse = systemLang;
 
-        if (!supportedDocLangs.includes(langToUse) || !common || !common.docs || !common.docs[langToUse]) {
+        if (!supportedDocLangs.includes(langToUse) || !common?.docs?.[langToUse]) {
             langToUse = 'en';
         }
 
-        var buttonsText = '';
+        let buttonsText = '';
 
         if (common) {
-            var docsLink = 'https://www.iobroker.net/#' + langToUse + '/adapters/adapterref/iobroker.' + common.name + '/README.md';
+            var docsLink =
+                'https://www.iobroker.net/#' +
+                langToUse +
+                '/adapters/adapterref/iobroker.' +
+                common.name +
+                '/README.md';
 
-            buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light" href="' + docsLink + '" target="_blank" rel="noreferrer">' +
+            buttonsText +=
+                '   <a class="btn-floating btn-small waves-effect waves-light" href="' +
+                docsLink +
+                '" target="_blank" rel="noreferrer">' +
                 '       <i class="material-icons">live_help</i>' +
                 '   </a>';
         }
 
-        buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light adapter-config-load" title="' + _('loadConfig') + '">' +
-            '       <i class="material-icons">file_upload</i>' +
-            '   </a>';
+        buttonsText += `   <a class="btn-floating btn-small waves-effect waves-light adapter-config-load" title="${_('loadConfig')}">       <i class="material-icons">file_upload</i>   </a>`;
 
-        buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light adapter-config-save" title="' + _('saveConfig') + '">' +
-            '       <i class="material-icons">file_download</i>' +
-            '   </a>';
+        buttonsText += `   <a class="btn-floating btn-small waves-effect waves-light adapter-config-save" title="${_('saveConfig')}">       <i class="material-icons">file_download</i>   </a>`;
 
         if (buttonsText) {
             // add help link after logo
@@ -753,10 +971,14 @@ function prepareTooltips() {
                 input.setAttribute('type', 'file');
                 input.setAttribute('id', 'files');
                 input.setAttribute('opacity', 0);
-                input.addEventListener('change', function (e) {
-                    handleFileSelect(e, function () {});
-                }, false);
-                (input.click)();
+                input.addEventListener(
+                    'change',
+                    function (e) {
+                        handleFileSelect(e, function () {});
+                    },
+                    false,
+                );
+                input.click();
             });
             $('.adapter-config-save').click(function () {
                 save(function (native, cmn) {
@@ -798,7 +1020,15 @@ function prepareTooltips() {
 
                 var $label = $this.next();
                 if ($label.prop('tagName') === 'LABEL') {
-                    $label.replaceWith('<span style="' + ($label.attr('style') || '') + '" class="' +  ($label.attr('class') || '') + '">' + $label.html() + '</span>');
+                    $label.replaceWith(
+                        '<span style="' +
+                            ($label.attr('style') || '') +
+                            '" class="' +
+                            ($label.attr('class') || '') +
+                            '">' +
+                            $label.html() +
+                            '</span>',
+                    );
                     $label = $this.next();
                 }
 
@@ -835,7 +1065,13 @@ function prepareTooltips() {
             }
 
             if (link) {
-                $('<a class="tooltip" href="' + link + '" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '" target="_blank" rel="noreferrer"><i class="material-icons tooltip">live_help</i></a>').insertBefore($this);
+                $(
+                    '<a class="tooltip" href="' +
+                        link +
+                        '" title="' +
+                        (tooltip || systemDictionary.htooltip[systemLang]) +
+                        '" target="_blank" rel="noreferrer"><i class="material-icons tooltip">live_help</i></a>',
+                ).insertBefore($this);
             } else if (tooltip) {
                 $('<i class="material-icons tooltip" title="' + tooltip + '">help_outline</i>').insertBefore($this);
             }
@@ -884,7 +1120,12 @@ function prepareTooltips() {
                         link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + link;
                     }
                 }
-                icon += '<a class="admin-tooltip-link" target="config_help" href="' + link + '" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>';
+                icon +=
+                    '<a class="admin-tooltip-link" target="config_help" href="' +
+                    link +
+                    '" title="' +
+                    (tooltip || systemDictionary.htooltip[systemLang]) +
+                    '"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>';
             } else if (tooltip) {
                 icon += '<img class="admin-tooltip-icon" title="' + tooltip + '" src="../../img/info.png"/>';
             }
@@ -925,29 +1166,35 @@ function prepareTooltips() {
 
             // check if translation for this exist
             if (systemDictionary['info_' + id]) {
-                $(this).html('<span class="admin-tooltip-text">' + (systemDictionary['info_' + id][systemLang] || systemDictionary['info_' + id].en) + '</span>');
+                $(this).html(
+                    '<span class="admin-tooltip-text">' +
+                        (systemDictionary['info_' + id][systemLang] || systemDictionary['info_' + id].en) +
+                        '</span>',
+                );
             }
         });
     }
 }
 
 function supportsFeature(feature) {
-    return supportedFeatures.indexOf(feature) !== -1;
+    return supportedFeatures.includes(feature);
 }
 
 function showMessageJQ(message, title, icon, width) {
     var $dialogMessage = $('#dialog-message-settings');
     if (!$dialogMessage.length) {
-        $('body').append('<div id="dialog-message-settings" title="Message" style="display: none">\n' +
-            '<p>' +
-            '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
-            '<span id="dialog-message-text-settings"></span>\n' +
-            '</p>\n' +
-            '</div>');
+        $('body').append(
+            '<div id="dialog-message-settings" title="Message" style="display: none">\n' +
+                '<p>' +
+                '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
+                '<span id="dialog-message-text-settings"></span>\n' +
+                '</p>\n' +
+                '</div>',
+        );
         $dialogMessage = $('#dialog-message-settings');
         $dialogMessage.dialog({
             autoOpen: false,
-            modal:    true,
+            modal: true,
             buttons: [
                 {
                     text: _('Ok'),
@@ -986,22 +1233,22 @@ function showMessage(message, title, icon) {
     $dialogMessage = $('#dialog-message');
     if (!$dialogMessage.length) {
         $('body').append(
-            '<div class="' + (theme ? 'm ' + theme : 'm') + '"><div id="dialog-message" class="modal modal-fixed-footer">' +
-            '    <div class="modal-content">' +
-            '        <h6 class="dialog-title title"></h6>' +
-            '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
-            '    </div>' +
-            '    <div class="modal-footer">' +
-            '        <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>' +
-            '    </div>' +
-            '</div></div>',
+            '<div class="' +
+                (theme ? 'm ' + theme : 'm') +
+                '"><div id="dialog-message" class="modal modal-fixed-footer">' +
+                '    <div class="modal-content">' +
+                '        <h6 class="dialog-title title"></h6>' +
+                '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
+                '    </div>' +
+                '    <div class="modal-footer">' +
+                '        <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>' +
+                '    </div>' +
+                '</div></div>',
         );
         $dialogMessage = $('#dialog-message');
     }
     if (icon) {
-        $dialogMessage.find('.dialog-icon')
-            .show()
-            .html(icon);
+        $dialogMessage.find('.dialog-icon').show().html(icon);
     } else {
         $dialogMessage.find('.dialog-icon').hide();
     }
@@ -1015,18 +1262,20 @@ function showMessage(message, title, icon) {
 }
 
 function confirmMessageJQ(message, title, icon, buttons, callback) {
-    var $dialogConfirm =        $('#dialog-confirm-settings');
+    var $dialogConfirm = $('#dialog-confirm-settings');
     if (!$dialogConfirm.length) {
-        $('body').append('<div id="dialog-confirm-settings" title="Message" style="display: none">\n' +
-            '<p>' +
-            '<span id="dialog-confirm-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
-            '<span id="dialog-confirm-text-settings"></span>\n' +
-            '</p>\n' +
-            '</div>');
+        $('body').append(
+            '<div id="dialog-confirm-settings" title="Message" style="display: none">\n' +
+                '<p>' +
+                '<span id="dialog-confirm-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
+                '<span id="dialog-confirm-text-settings"></span>\n' +
+                '</p>\n' +
+                '</div>',
+        );
         $dialogConfirm = $('#dialog-confirm-settings');
         $dialogConfirm.dialog({
             autoOpen: false,
-            modal:    true,
+            modal: true,
         });
     }
     if (typeof buttons === 'function') {
@@ -1092,23 +1341,31 @@ function confirmMessage(message, title, icon, buttons, callback) {
     $dialogConfirm = $('#dialog-confirm');
     if (!$dialogConfirm.length) {
         $('body').append(
-            '<div class="' + (theme ? 'm ' + theme : 'm') + '"><div id="dialog-confirm" class="modal modal-fixed-footer">' +
-            '    <div class="modal-content">' +
-            '        <h6 class="dialog-title title"></h6>' +
-            '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
-            '    </div>' +
-            '    <div class="modal-footer">' +
-            '    </div>' +
-            '</div></div>',
+            '<div class="' +
+                (theme ? 'm ' + theme : 'm') +
+                '"><div id="dialog-confirm" class="modal modal-fixed-footer">' +
+                '    <div class="modal-content">' +
+                '        <h6 class="dialog-title title"></h6>' +
+                '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
+                '    </div>' +
+                '    <div class="modal-footer">' +
+                '    </div>' +
+                '</div></div>',
         );
         $dialogConfirm = $('#dialog-confirm');
     }
     if (typeof buttons === 'function') {
         callback = buttons;
-        $dialogConfirm.find('.modal-footer').html(
-            '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>' +
-            '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>',
-        );
+        $dialogConfirm
+            .find('.modal-footer')
+            .html(
+                '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' +
+                    _('Ok') +
+                    '</a>' +
+                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' +
+                    _('Cancel') +
+                    '</a>',
+            );
         $dialogConfirm.find('.modal-footer .modal-action').on('click', function () {
             var cb = $dialogConfirm.data('callback');
             cb && cb($(this).data('result'));
@@ -1116,7 +1373,12 @@ function confirmMessage(message, title, icon, buttons, callback) {
     } else if (typeof buttons === 'object') {
         var tButtons = '';
         for (var b = buttons.length - 1; b >= 0; b--) {
-            tButtons += '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-id="' + b + '">' + buttons[b] + '</a>';
+            tButtons +=
+                '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-id="' +
+                b +
+                '">' +
+                buttons[b] +
+                '</a>';
         }
         $dialogConfirm.find('.modal-footer').html(tButtons);
         $dialogConfirm.find('.modal-footer .modal-action').on('click', function () {
@@ -1127,9 +1389,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
 
     $dialogConfirm.find('.dialog-title').text(title || _('Please confirm'));
     if (icon) {
-        $dialogConfirm.find('.dialog-icon')
-            .show()
-            .html(icon);
+        $dialogConfirm.find('.dialog-icon').show().html(icon);
     } else {
         $dialogConfirm.find('.dialog-icon').hide();
     }
@@ -1140,22 +1400,24 @@ function confirmMessage(message, title, icon, buttons, callback) {
     }
     $dialogConfirm.find('.dialog-text').html(message);
     $dialogConfirm.data('callback', callback);
-    $dialogConfirm.modal({
-        dismissible: false,
-    }).modal('open');
+    $dialogConfirm
+        .modal({
+            dismissible: false,
+        })
+        .modal('open');
 }
 
 function showError(error) {
-    showMessage(_(error),  _('Error'), 'error_outline');
+    showMessage(_(error), _('Error'), 'error_outline');
 }
 
 function showToast(parent, message, icon, duration, isError, classes) {
     if (typeof parent === 'string') {
         classes = isError;
         isError = duration;
-        icon    = message;
+        icon = message;
         message = parent;
-        parent  = null;
+        parent = null;
     }
     if (parent && parent instanceof jQuery) {
         parent = parent[0];
@@ -1169,8 +1431,8 @@ function showToast(parent, message, icon, duration, isError, classes) {
 
     M.toast({
         parentSelector: parent || $('body')[0],
-        html:           message + (icon ? '<i class="material-icons">' + icon + '</i>' : ''),
-        displayLength:  duration || 3000,
+        html: message + (icon ? '<i class="material-icons">' + icon + '</i>' : ''),
+        displayLength: duration || 3000,
         classes,
     });
 }
@@ -1196,47 +1458,65 @@ function getState(id, callback) {
 }
 
 function getEnums(_enum, callback) {
-    socket.emit('getObjectView', 'system', 'enum', { startkey: 'enum.' + _enum, endkey: 'enum.' + _enum + '.\u9999' }, function (err, res) {
-        if (!err && res) {
-            var _res = {};
-            for (var i = 0; i < res.rows.length; i++) {
-                if (res.rows[i].id !== 'enum.' + _enum) {
-                    _res[res.rows[i].id] = res.rows[i].value;
+    socket.emit(
+        'getObjectView',
+        'system',
+        'enum',
+        { startkey: 'enum.' + _enum, endkey: 'enum.' + _enum + '.\u9999' },
+        function (err, res) {
+            if (!err && res) {
+                var _res = {};
+                for (var i = 0; i < res.rows.length; i++) {
+                    if (res.rows[i].id !== 'enum.' + _enum) {
+                        _res[res.rows[i].id] = res.rows[i].value;
+                    }
                 }
+                callback && callback(null, _res);
+            } else {
+                callback && callback(err, []);
             }
-            callback && callback(null, _res);
-        } else {
-            callback && callback(err, []);
-        }
-    });
+        },
+    );
 }
 
 function getGroups(callback) {
-    socket.emit('getObjectView', 'system', 'group', { startkey: 'system.group.', endkey: 'system.group.\u9999' }, function (err, res) {
-        if (!err && res) {
-            var _res   = {};
-            for (var i = 0; i < res.rows.length; i++) {
-                _res[res.rows[i].id] = res.rows[i].value;
+    socket.emit(
+        'getObjectView',
+        'system',
+        'group',
+        { startkey: 'system.group.', endkey: 'system.group.\u9999' },
+        function (err, res) {
+            if (!err && res) {
+                var _res = {};
+                for (var i = 0; i < res.rows.length; i++) {
+                    _res[res.rows[i].id] = res.rows[i].value;
+                }
+                callback && callback(null, _res);
+            } else {
+                callback && callback(err, []);
             }
-            callback && callback(null, _res);
-        } else {
-            callback && callback(err, []);
-        }
-    });
+        },
+    );
 }
 
 function getUsers(callback) {
-    socket.emit('getObjectView', 'system', 'user', { startkey: 'system.user.', endkey: 'system.user.\u9999' }, function (err, res) {
-        if (!err && res) {
-            var _res   = {};
-            for (var i = 0; i < res.rows.length; i++) {
-                _res[res.rows[i].id] = res.rows[i].value;
+    socket.emit(
+        'getObjectView',
+        'system',
+        'user',
+        { startkey: 'system.user.', endkey: 'system.user.\u9999' },
+        function (err, res) {
+            if (!err && res) {
+                var _res = {};
+                for (var i = 0; i < res.rows.length; i++) {
+                    _res[res.rows[i].id] = res.rows[i].value;
+                }
+                callback && callback(null, _res);
+            } else {
+                callback && callback(err, []);
             }
-            callback && callback(null, _res);
-        } else {
-            callback && callback(err, []);
-        }
-    });
+        },
+    );
 }
 
 function fillUsers(elemId, current, callback) {
@@ -1265,7 +1545,14 @@ function fillUsers(elemId, current, callback) {
         for (var u in users) {
             if (users.hasOwnProperty(u)) {
                 var id = users[u]._id.substring(len);
-                text += '<option value="' + id + '" ' + (current === id ? 'selected' : '') + ' >' + (u ? u[0].toUpperCase() + u.substring(1) : '__noname__')  + '</option>\n';
+                text +=
+                    '<option value="' +
+                    id +
+                    '" ' +
+                    (current === id ? 'selected' : '') +
+                    ' >' +
+                    (u ? u[0].toUpperCase() + u.substring(1) : '__noname__') +
+                    '</option>\n';
             }
         }
         $(elemId).html(text);
@@ -1285,7 +1572,7 @@ function getIPs(host, callback) {
         if (_host) {
             host = _host;
             var IPs4 = [{ name: '[IPv4] 0.0.0.0 - ' + _('Listen on all IPs'), address: '0.0.0.0', family: 'ipv4' }];
-            var IPs6 = [{ name: '[IPv6] ::',      address: '::',      family: 'ipv6' }];
+            var IPs6 = [{ name: '[IPv6] ::', address: '::', family: 'ipv6' }];
             if (host.native.hardware && host.native.hardware.networkInterfaces) {
                 for (var eth in host.native.hardware.networkInterfaces) {
                     if (!host.native.hardware.networkInterfaces.hasOwnProperty(eth)) {
@@ -1293,9 +1580,29 @@ function getIPs(host, callback) {
                     }
                     for (var num = 0; num < host.native.hardware.networkInterfaces[eth].length; num++) {
                         if (host.native.hardware.networkInterfaces[eth][num].family !== 'IPv6') {
-                            IPs4.push({ name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv4' });
+                            IPs4.push({
+                                name:
+                                    '[' +
+                                    host.native.hardware.networkInterfaces[eth][num].family +
+                                    '] ' +
+                                    host.native.hardware.networkInterfaces[eth][num].address +
+                                    ' - ' +
+                                    eth,
+                                address: host.native.hardware.networkInterfaces[eth][num].address,
+                                family: 'ipv4',
+                            });
                         } else {
-                            IPs6.push({ name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv6' });
+                            IPs6.push({
+                                name:
+                                    '[' +
+                                    host.native.hardware.networkInterfaces[eth][num].family +
+                                    '] ' +
+                                    host.native.hardware.networkInterfaces[eth][num].address +
+                                    ' - ' +
+                                    eth,
+                                address: host.native.hardware.networkInterfaces[eth][num].address,
+                                family: 'ipv6',
+                            });
                         }
                     }
                 }
@@ -1318,7 +1625,14 @@ function fillSelectIPs(id, actualAddr, noIPv4, noIPv6, callback) {
             if (noIPv6 && ips[i].family === 'ipv6') {
                 continue;
             }
-            str += '<option value="' + ips[i].address + '" ' + ((ips[i].address === actualAddr) ? 'selected' : '') + '>' + ips[i].name + '</option>';
+            str +=
+                '<option value="' +
+                ips[i].address +
+                '" ' +
+                (ips[i].address === actualAddr ? 'selected' : '') +
+                '>' +
+                ips[i].name +
+                '</option>';
         }
 
         $(id).html(str);
@@ -1332,7 +1646,7 @@ function fillSelectIPs(id, actualAddr, noIPv4, noIPv6, callback) {
 }
 
 function sendTo(_adapter_instance, command, message, callback) {
-    socket.emit('sendTo', _adapter_instance || (adapter + '.' + instance), command, message, callback);
+    socket.emit('sendTo', _adapter_instance || adapter + '.' + instance, command, message, callback);
 }
 
 function sendToHost(host, command, message, callback) {
@@ -1365,7 +1679,14 @@ function fillSelectCertificates(id, type, actualValued) {
         if (certs[i].type && certs[i].type !== type) {
             continue;
         }
-        str += '<option value="' + certs[i].name + '" ' + ((certs[i].name === actualValued) ? 'selected' : '') + '>' + certs[i].name + '</option>';
+        str +=
+            '<option value="' +
+            certs[i].name +
+            '" ' +
+            (certs[i].name === actualValued ? 'selected' : '') +
+            '>' +
+            certs[i].name +
+            '</option>';
     }
 
     $(id).html(str);
@@ -1380,19 +1701,28 @@ function getAdapterInstances(_adapter, callback) {
         _adapter = null;
     }
 
-    socket.emit('getObjectView', 'system', 'instance', { startkey: 'system.adapter.' + (_adapter || adapter), endkey: 'system.adapter.' + (_adapter || adapter) + '.\u9999' }, function (err, doc) {
-        if (err) {
-            callback && callback([]);
-        } else if (doc.rows.length === 0) {
-            callback && callback([]);
-        } else {
-            var res = [];
-            for (var i = 0; i < doc.rows.length; i++) {
-                res.push(doc.rows[i].value);
+    socket.emit(
+        'getObjectView',
+        'system',
+        'instance',
+        {
+            startkey: 'system.adapter.' + (_adapter || adapter),
+            endkey: 'system.adapter.' + (_adapter || adapter) + '.\u9999',
+        },
+        function (err, doc) {
+            if (err) {
+                callback && callback([]);
+            } else if (doc.rows.length === 0) {
+                callback && callback([]);
+            } else {
+                var res = [];
+                for (var i = 0; i < doc.rows.length; i++) {
+                    res.push(doc.rows[i].value);
+                }
+                callback && callback(res);
             }
-            callback && callback(res);
-        }
-    });
+        },
+    );
 }
 
 function getExtendableInstances(_adapter, callback) {
@@ -1410,10 +1740,7 @@ function getExtendableInstances(_adapter, callback) {
             var res = [];
             for (var i = 0; i < doc.rows.length; i++) {
                 var obj = doc.rows[i].value;
-                if (obj &&
-                        obj.common &&
-                        obj.common.webExtendable &&
-                        (!_adapter || obj.common.name === _adapter)) {
+                if (obj && obj.common && obj.common.webExtendable && (!_adapter || obj.common.name === _adapter)) {
                     res.push(obj);
                 }
             }
@@ -1443,21 +1770,55 @@ function getIsAdapterAlive(_adapter, callback) {
 // _isInitial - [optional] - if it is initial fill of the table. To not trigger the onChange
 function addToTable(tabId, value, $grid, _isInitial) {
     $grid = $grid || $('#' + tabId);
-    var obj  = { _id: $grid[0]._maxIdx++ };
+    var obj = { _id: $grid[0]._maxIdx++ };
     var cols = $grid[0]._cols;
 
     for (var i = 0; i < cols.length; i++) {
         if (cols[i] === 'room') {
-            obj[cols[i]] = ($grid[0]._rooms[value[cols[i]]]) ? $grid[0]._rooms[value[cols[i]]].common.name : value[cols[i]];
+            obj[cols[i]] = $grid[0]._rooms[value[cols[i]]]
+                ? $grid[0]._rooms[value[cols[i]]].common.name
+                : value[cols[i]];
         } else {
             obj[cols[i]] = value[cols[i]];
         }
     }
     obj._commands =
-        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-edit-submit">'                        + _('edit')   + '</button>' +
-        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-delete-submit">'                      + _('delete') + '</button>' +
-        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-ok-submit" style="display:none">'     + _('ok')     + '</button>' +
-        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-cancel-submit" style="display:none">' + _('cancel') + '</button>';
+        '<button data-' +
+        tabId +
+        '-id="' +
+        obj._id +
+        '" class="' +
+        tabId +
+        '-edit-submit">' +
+        _('edit') +
+        '</button>' +
+        '<button data-' +
+        tabId +
+        '-id="' +
+        obj._id +
+        '" class="' +
+        tabId +
+        '-delete-submit">' +
+        _('delete') +
+        '</button>' +
+        '<button data-' +
+        tabId +
+        '-id="' +
+        obj._id +
+        '" class="' +
+        tabId +
+        '-ok-submit" style="display:none">' +
+        _('ok') +
+        '</button>' +
+        '<button data-' +
+        tabId +
+        '-id="' +
+        obj._id +
+        '" class="' +
+        tabId +
+        '-cancel-submit" style="display:none">' +
+        _('cancel') +
+        '</button>';
 
     $grid.jqGrid('addRowData', tabId + '_' + obj._id, obj);
 
@@ -1469,200 +1830,21 @@ function addToTable(tabId, value, $grid, _isInitial) {
 function _editInitButtons($grid, tabId, objId) {
     var search = objId ? '[data-' + tabId + '-id="' + objId + '"]' : '';
 
-    $('.' + tabId + '-edit-submit' + search).off('click').button({
-        icons: { primary: 'ui-icon-pencil' },
-        text:  false,
-    }).on('click', function () {
-        var id = $(this).attr('data-' + tabId + '-id');
+    $('.' + tabId + '-edit-submit' + search)
+        .off('click')
+        .button({
+            icons: { primary: 'ui-icon-pencil' },
+            text: false,
+        })
+        .on('click', function () {
+            var id = $(this).attr('data-' + tabId + '-id');
 
-        $('.' + tabId + '-edit-submit').hide();
-        $('.' + tabId + '-delete-submit').hide();
-        $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
-        $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
-
-        $grid.jqGrid('editRow', tabId + '_' + id, { url: 'clientArray' });
-        if ($grid[0]._edited.indexOf(id) === -1) {
-            $grid[0]._edited.push(id);
-        }
-        parent.postMessage('change', '*');
-        changed = true;
-        var $navButtons = $('.dialog-config-buttons');
-        $navButtons.find('.btn-save').removeClass('disabled');
-        $navButtons.find('.btn-save-close').removeClass('disabled');
-        if (onChangeSupported) {
-            $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
-        }
-    })
-        .css({ height: '18px', width: '22px' });
-
-    $('.' + tabId + '-delete-submit' + search).off('click').button({
-        icons: { primary: 'ui-icon-trash' },
-        text:  false,
-    }).on('click', function () {
-        var id = $(this).attr('data-' + tabId + '-id');
-        $grid.jqGrid('delRowData', tabId + '_' + id);
-        parent.postMessage('change', '*');
-        changed = true;
-        var $navButtons = $('.dialog-config-buttons');
-        $navButtons.find('.btn-save').removeClass('disabled');
-        $navButtons.find('.btn-save-close').removeClass('disabled');
-        if (onChangeSupported) {
-            $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
-        }
-
-        var pos = $grid[0]._edited.indexOf(id);
-        if (pos !== -1) {
-            $grid[0]._edited.splice(pos, 1);
-        }
-        if ($grid[0]._onChange) $grid[0]._onChange('del', id);
-    })
-        .css({ height: '18px', width: '22px' });
-
-    $('.' + tabId + '-ok-submit' + search).off('click').button({
-        icons: { primary: 'ui-icon-check' },
-        text:  false,
-    }).on('click', function () {
-        var id = $(this).attr('data-' + tabId + '-id');
-
-        $('.' + tabId + '-edit-submit').show();
-        $('.' + tabId + '-delete-submit').show();
-        $('.' + tabId + '-ok-submit').hide();
-        $('.' + tabId + '-cancel-submit').hide();
-
-        $grid.jqGrid('saveRow', tabId + '_' + id, { url: 'clientArray' });
-        parent.postMessage('change', '*');
-        changed = true;
-        var $navButtons = $('.dialog-config-buttons');
-        $navButtons.find('.btn-save').removeClass('disabled');
-        $navButtons.find('.btn-save-close').removeClass('disabled');
-        if (onChangeSupported) {
-            $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
-        }
-
-        var pos = $grid[0]._edited.indexOf(id);
-        if (pos !== -1) {
-            $grid[0]._edited.splice(pos, 1);
-        }
-        if ($grid[0]._onChange) $grid[0]._onChange('changed', $grid.jqGrid('getRowData', tabId + '_' + id));
-    })
-        .css({ height: '18px', width: '22px' });
-
-    $('.' + tabId + '-cancel-submit' + search).off('click').button({
-        icons: { primary: 'ui-icon-close' },
-        text:  false,
-    }).on('click', function () {
-        var id = $(this).attr('data-' + tabId + '-id');
-
-        $('.' + tabId + '-edit-submit').show();
-        $('.' + tabId + '-delete-submit').show();
-        $('.' + tabId + '-ok-submit').hide();
-        $('.' + tabId + '-cancel-submit').hide();
-
-        $grid.jqGrid('restoreRow', tabId + '_' + id, false);
-        var pos = $grid[0]._edited.indexOf(id);
-        if (pos !== -1) {
-            $grid[0]._edited.splice(pos, 1);
-        }
-    })
-        .css({ height: '18px', width: '22px' });
-}
-
-function _editTable(tabId, cols, values, rooms, top, onChange) {
-    var title = 'Device list';
-    if (typeof tabId === 'object') {
-        cols     = tabId.cols;
-        values   = tabId.values;
-        rooms    = tabId.rooms;
-        top      = tabId.top;
-        onChange = tabId.onChange;
-        if (tabId.title) title = tabId.title;
-        tabId    = tabId.tabId;
-    }
-
-    initGridLanguage(systemLang);
-    var colNames = [];
-    var colModel = [];
-    var $grid = $('#' + tabId);
-    var room;
-
-    colNames.push('id');
-    colModel.push({
-        name:    '_id',
-        index:   '_id',
-        hidden:  true,
-    });
-    for (var i = 0; i < cols.length; i++) {
-        var width = null;
-        var checkbox = null;
-
-        if (typeof cols[i] === 'object') {
-            width  = cols[i].width;
-            if (cols[i].checkbox) {
-                checkbox = true;
-            }
-            cols[i] = cols[i].name;
-        }
-        colNames.push(_(cols[i]));
-        var _obj = {
-            name:     cols[i],
-            index:    cols[i],
-            //                width:    160,
-            editable: true,
-        };
-        if (width) {
-            _obj.width = width;
-        }
-        if (checkbox) {
-            _obj.edittype    = 'checkbox';
-            _obj.editoptions = { value: 'true:false' };
-        }
-
-        if (cols[i] === 'room') {
-            var list = { '': _('none') };
-            for (room in rooms) {
-                list[room] = _(translateName(rooms[room].common.name));
-            }
-            _obj.stype =         'select';
-            _obj.edittype =      'select';
-            _obj.editoptions =   { value: list };
-            _obj.searchoptions = {
-                sopt:  ['eq'],
-                value: ':' + _('all'),
-            };
-            for (room in rooms) {
-                _obj.searchoptions.value += ';' + _(translateName(rooms[room].common.name)) + ':' + _(translateName(rooms[room].common.name));
-            }
-        }
-        colModel.push(_obj);
-    }
-    colNames.push('');
-    colModel.push({
-        name: '_commands', index: '_commands', width: 50, editable: false, align: 'center', search: false,
-    });
-
-    $grid[0]._cols     = cols;
-    $grid[0]._rooms    = rooms;
-    $grid[0]._maxIdx   = 0;
-    $grid[0]._top      = top;
-    $grid[0]._edited   = [];
-    $grid[0]._onChange = onChange;
-
-    $grid.jqGrid({
-        datatype:  'local',
-        colNames,
-        colModel,
-        width:     800,
-        height:    330,
-        pager:     $('#pager-' + tabId),
-        rowNum:    1000,
-        rowList:   [1000],
-        ondblClickRow(rowid) {
-            var id = rowid.substring((tabId + '_').length);
             $('.' + tabId + '-edit-submit').hide();
             $('.' + tabId + '-delete-submit').hide();
             $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
             $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
-            $grid.jqGrid('editRow', rowid, { url: 'clientArray' });
+
+            $grid.jqGrid('editRow', tabId + '_' + id, { url: 'clientArray' });
             if ($grid[0]._edited.indexOf(id) === -1) {
                 $grid[0]._edited.push(id);
             }
@@ -1674,19 +1856,18 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             if (onChangeSupported) {
                 $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
             }
-        },
-        sortname:  'id',
-        sortorder: 'desc',
-        viewrecords: false,
-        pgbuttons: false,
-        pginput: false,
-        pgtext: false,
-        caption: _(title),
-        ignoreCase: true,
-        loadComplete() {
-            _editInitButtons($grid, tabId);
-        },
-        onSortCol() {
+        })
+        .css({ height: '18px', width: '22px' });
+
+    $('.' + tabId + '-delete-submit' + search)
+        .off('click')
+        .button({
+            icons: { primary: 'ui-icon-trash' },
+            text: false,
+        })
+        .on('click', function () {
+            var id = $(this).attr('data-' + tabId + '-id');
+            $grid.jqGrid('delRowData', tabId + '_' + id);
             parent.postMessage('change', '*');
             changed = true;
             var $navButtons = $('.dialog-config-buttons');
@@ -1695,53 +1876,176 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             if (onChangeSupported) {
                 $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
             }
-        },
-    }).jqGrid('filterToolbar', {
-        defaultSearch: 'cn',
-        autosearch:    true,
-        searchOnEnter: false,
-        enableClear:   false,
-        afterSearch() {
-            _editInitButtons($grid, tabId);
-        },
+
+            var pos = $grid[0]._edited.indexOf(id);
+            if (pos !== -1) {
+                $grid[0]._edited.splice(pos, 1);
+            }
+            if ($grid[0]._onChange) $grid[0]._onChange('del', id);
+        })
+        .css({ height: '18px', width: '22px' });
+
+    $('.' + tabId + '-ok-submit' + search)
+        .off('click')
+        .button({
+            icons: { primary: 'ui-icon-check' },
+            text: false,
+        })
+        .on('click', function () {
+            var id = $(this).attr('data-' + tabId + '-id');
+
+            $('.' + tabId + '-edit-submit').show();
+            $('.' + tabId + '-delete-submit').show();
+            $('.' + tabId + '-ok-submit').hide();
+            $('.' + tabId + '-cancel-submit').hide();
+
+            $grid.jqGrid('saveRow', tabId + '_' + id, { url: 'clientArray' });
+            parent.postMessage('change', '*');
+            changed = true;
+            var $navButtons = $('.dialog-config-buttons');
+            $navButtons.find('.btn-save').removeClass('disabled');
+            $navButtons.find('.btn-save-close').removeClass('disabled');
+            if (onChangeSupported) {
+                $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
+            }
+
+            var pos = $grid[0]._edited.indexOf(id);
+            if (pos !== -1) {
+                $grid[0]._edited.splice(pos, 1);
+            }
+            if ($grid[0]._onChange) $grid[0]._onChange('changed', $grid.jqGrid('getRowData', tabId + '_' + id));
+        })
+        .css({ height: '18px', width: '22px' });
+
+    $('.' + tabId + '-cancel-submit' + search)
+        .off('click')
+        .button({
+            icons: { primary: 'ui-icon-close' },
+            text: false,
+        })
+        .on('click', function () {
+            var id = $(this).attr('data-' + tabId + '-id');
+
+            $('.' + tabId + '-edit-submit').show();
+            $('.' + tabId + '-delete-submit').show();
+            $('.' + tabId + '-ok-submit').hide();
+            $('.' + tabId + '-cancel-submit').hide();
+
+            $grid.jqGrid('restoreRow', tabId + '_' + id, false);
+            var pos = $grid[0]._edited.indexOf(id);
+            if (pos !== -1) {
+                $grid[0]._edited.splice(pos, 1);
+            }
+        })
+        .css({ height: '18px', width: '22px' });
+}
+
+function _editTable(tabId, cols, values, rooms, top, onChange) {
+    var title = 'Device list';
+    if (typeof tabId === 'object') {
+        cols = tabId.cols;
+        values = tabId.values;
+        rooms = tabId.rooms;
+        top = tabId.top;
+        onChange = tabId.onChange;
+        if (tabId.title) title = tabId.title;
+        tabId = tabId.tabId;
+    }
+
+    initGridLanguage(systemLang);
+    var colNames = [];
+    var colModel = [];
+    var $grid = $('#' + tabId);
+    var room;
+
+    colNames.push('id');
+    colModel.push({
+        name: '_id',
+        index: '_id',
+        hidden: true,
+    });
+    for (var i = 0; i < cols.length; i++) {
+        var width = null;
+        var checkbox = null;
+
+        if (typeof cols[i] === 'object') {
+            width = cols[i].width;
+            if (cols[i].checkbox) {
+                checkbox = true;
+            }
+            cols[i] = cols[i].name;
+        }
+        colNames.push(_(cols[i]));
+        var _obj = {
+            name: cols[i],
+            index: cols[i],
+            //                width:    160,
+            editable: true,
+        };
+        if (width) {
+            _obj.width = width;
+        }
+        if (checkbox) {
+            _obj.edittype = 'checkbox';
+            _obj.editoptions = { value: 'true:false' };
+        }
+
+        if (cols[i] === 'room') {
+            var list = { '': _('none') };
+            for (room in rooms) {
+                list[room] = _(translateName(rooms[room].common.name));
+            }
+            _obj.stype = 'select';
+            _obj.edittype = 'select';
+            _obj.editoptions = { value: list };
+            _obj.searchoptions = {
+                sopt: ['eq'],
+                value: ':' + _('all'),
+            };
+            for (room in rooms) {
+                _obj.searchoptions.value +=
+                    ';' + _(translateName(rooms[room].common.name)) + ':' + _(translateName(rooms[room].common.name));
+            }
+        }
+        colModel.push(_obj);
+    }
+    colNames.push('');
+    colModel.push({
+        name: '_commands',
+        index: '_commands',
+        width: 50,
+        editable: false,
+        align: 'center',
+        search: false,
     });
 
-    $('#pager-' + tabId + '_center').hide();
+    $grid[0]._cols = cols;
+    $grid[0]._rooms = rooms;
+    $grid[0]._maxIdx = 0;
+    $grid[0]._top = top;
+    $grid[0]._edited = [];
+    $grid[0]._onChange = onChange;
 
-    if ($('#pager-' + tabId).length) {
-        $grid.navGrid('#pager-' + tabId, {
-            search:  false,
-            edit:    false,
-            add:     false,
-            del:     false,
-            refresh: false,
-        }).jqGrid('navButtonAdd', '#pager-' + tabId, {
-            caption: '',
-            buttonicon: 'ui-icon-plus',
-            onClickButton() {
-                // Find new unique name
-                var found;
-                var newText = _('New');
-                var ids = $grid.jqGrid('getDataIDs');
-                var idx = 1;
-                var obj;
-                do {
-                    found = true;
-                    for (var _id = 0; _id < ids.length; _id++) {
-                        obj = $grid.jqGrid('getRowData', ids[_id]);
-                        if (obj && obj[$grid[0]._cols[0]] === newText + idx)  {
-                            idx++;
-                            found = false;
-                            break;
-                        }
-                    }
-                } while (!found);
-
-                obj = {};
-                for (var t = 0; t < $grid[0]._cols.length; t++) {
-                    obj[$grid[0]._cols[t]] = '';
+    $grid
+        .jqGrid({
+            datatype: 'local',
+            colNames,
+            colModel,
+            width: 800,
+            height: 330,
+            pager: $('#pager-' + tabId),
+            rowNum: 1000,
+            rowList: [1000],
+            ondblClickRow(rowid) {
+                var id = rowid.substring((tabId + '_').length);
+                $('.' + tabId + '-edit-submit').hide();
+                $('.' + tabId + '-delete-submit').hide();
+                $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
+                $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
+                $grid.jqGrid('editRow', rowid, { url: 'clientArray' });
+                if ($grid[0]._edited.indexOf(id) === -1) {
+                    $grid[0]._edited.push(id);
                 }
-                obj[$grid[0]._cols[0]] = newText + idx;
                 parent.postMessage('change', '*');
                 changed = true;
                 var $navButtons = $('.dialog-config-buttons');
@@ -1750,14 +2054,93 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                 if (onChangeSupported) {
                     $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
                 }
-
-                addToTable(tabId, obj, $grid);
             },
-            position: 'first',
-            id:       'add-cert',
-            title:    _('new device'),
-            cursor:   'pointer',
+            sortname: 'id',
+            sortorder: 'desc',
+            viewrecords: false,
+            pgbuttons: false,
+            pginput: false,
+            pgtext: false,
+            caption: _(title),
+            ignoreCase: true,
+            loadComplete() {
+                _editInitButtons($grid, tabId);
+            },
+            onSortCol() {
+                parent.postMessage('change', '*');
+                changed = true;
+                var $navButtons = $('.dialog-config-buttons');
+                $navButtons.find('.btn-save').removeClass('disabled');
+                $navButtons.find('.btn-save-close').removeClass('disabled');
+                if (onChangeSupported) {
+                    $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
+                }
+            },
+        })
+        .jqGrid('filterToolbar', {
+            defaultSearch: 'cn',
+            autosearch: true,
+            searchOnEnter: false,
+            enableClear: false,
+            afterSearch() {
+                _editInitButtons($grid, tabId);
+            },
         });
+
+    $('#pager-' + tabId + '_center').hide();
+
+    if ($('#pager-' + tabId).length) {
+        $grid
+            .navGrid('#pager-' + tabId, {
+                search: false,
+                edit: false,
+                add: false,
+                del: false,
+                refresh: false,
+            })
+            .jqGrid('navButtonAdd', '#pager-' + tabId, {
+                caption: '',
+                buttonicon: 'ui-icon-plus',
+                onClickButton() {
+                    // Find new unique name
+                    var found;
+                    var newText = _('New');
+                    var ids = $grid.jqGrid('getDataIDs');
+                    var idx = 1;
+                    var obj;
+                    do {
+                        found = true;
+                        for (var _id = 0; _id < ids.length; _id++) {
+                            obj = $grid.jqGrid('getRowData', ids[_id]);
+                            if (obj && obj[$grid[0]._cols[0]] === newText + idx) {
+                                idx++;
+                                found = false;
+                                break;
+                            }
+                        }
+                    } while (!found);
+
+                    obj = {};
+                    for (var t = 0; t < $grid[0]._cols.length; t++) {
+                        obj[$grid[0]._cols[t]] = '';
+                    }
+                    obj[$grid[0]._cols[0]] = newText + idx;
+                    parent.postMessage('change', '*');
+                    changed = true;
+                    var $navButtons = $('.dialog-config-buttons');
+                    $navButtons.find('.btn-save').removeClass('disabled');
+                    $navButtons.find('.btn-save-close').removeClass('disabled');
+                    if (onChangeSupported) {
+                        $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
+                    }
+
+                    addToTable(tabId, obj, $grid);
+                },
+                position: 'first',
+                id: 'add-cert',
+                title: _('new device'),
+                cursor: 'pointer',
+            });
     }
 
     if (values) {
@@ -1788,7 +2171,10 @@ function enumName2Id(enums, name) {
         if (enums[enumId] && enums[enumId].common && enums[enumId].common.name) {
             if (typeof enums[enumId].common.name === 'object') {
                 for (var lang in enums[enumId].common.name) {
-                    if (enums[enumId].common.name.hasOwnProperty(lang) && enums[enumId].common.name[lang].toLowerCase() === name) {
+                    if (
+                        enums[enumId].common.name.hasOwnProperty(lang) &&
+                        enums[enumId].common.name[lang].toLowerCase() === name
+                    ) {
                         return enumId;
                     }
                 }
@@ -1823,7 +2209,7 @@ function enumName2Id(enums, name) {
 // To extract data from table
 function editTable(tabId, cols, values, top, onChange) {
     if (typeof tabId === 'object') {
-        cols     = tabId.cols;
+        cols = tabId.cols;
     }
 
     if (cols.indexOf('room') !== -1) {
@@ -1880,36 +2266,38 @@ function showSelectIdDialog(val, callback) {
     // see cloud, tileboard adapters for details
     var $dialog = $('#dialog-select-member');
     if (!$dialog.length) {
-        $('body').append('<div id="dialog-select-member" style="display: none; position: absolute; background: white"></div>');
+        $('body').append(
+            '<div id="dialog-select-member" style="display: none; position: absolute; background: white"></div>',
+        );
         $dialog = $('#dialog-select-member');
     }
     if (!window.tableSelectId) {
         socket.emit('getObjects', function (err, res) {
             if (!err && res) {
-                window.tableSelectId = $dialog.selectId('init',  {
+                window.tableSelectId = $dialog.selectId('init', {
                     noMultiselect: true,
                     objects: res,
                     dialogHeight: '420px!important', // 'calc(100% - 100px) !important',
-                    imgPath:       '../../lib/css/fancytree/',
-                    filter:        { type: 'state' },
-                    name:          'table-select-state',
+                    imgPath: '../../lib/css/fancytree/',
+                    filter: { type: 'state' },
+                    name: 'table-select-state',
                     texts: {
-                        select:          _('Select'),
-                        cancel:          _('Cancel'),
-                        all:             _('All'),
-                        id:              _('ID'),
-                        name:            _('Name'),
-                        role:            _('Role'),
-                        room:            _('Room'),
-                        value:           _('Value'),
-                        selectid:        _('Select ID'),
-                        from:            _('From'),
-                        lc:              _('Last changed'),
-                        ts:              _('Time stamp'),
-                        wait:            _('Processing...'),
-                        ack:             _('Acknowledged'),
-                        selectAll:       _('Select all'),
-                        unselectAll:     _('Deselect all'),
+                        select: _('Select'),
+                        cancel: _('Cancel'),
+                        all: _('All'),
+                        id: _('ID'),
+                        name: _('Name'),
+                        role: _('Role'),
+                        room: _('Room'),
+                        value: _('Value'),
+                        selectid: _('Select ID'),
+                        from: _('From'),
+                        lc: _('Last changed'),
+                        ts: _('Time stamp'),
+                        wait: _('Processing...'),
+                        ack: _('Acknowledged'),
+                        selectAll: _('Select all'),
+                        unselectAll: _('Deselect all'),
                         invertSelection: _('Invert selection'),
                     },
                     columns: ['image', 'name', 'role', 'room'],
@@ -1978,10 +2366,10 @@ function showSelectIdDialog(val, callback) {
  */
 function values2table(divId, values, onChange, onReady, maxRaw) {
     if (typeof values === 'function') {
-        typeof onChange === 'number' ? maxRaw = onChange : maxRaw = null;
+        typeof onChange === 'number' ? (maxRaw = onChange) : (maxRaw = null);
         onChange = values;
-        values   = divId;
-        divId    = '';
+        values = divId;
+        divId = '';
     }
 
     if (typeof onReady === 'number') {
@@ -2020,10 +2408,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
         }
 
         $add.on('click', function () {
-            if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
+            if (!$add.data('maxraw') || $add.data('raw') < $add.data('maxraw')) {
                 var $table = $div.find('.table-values');
                 var values = $table.data('values');
-                var names  = $table.data('names');
+                var names = $table.data('names');
                 var obj = {};
                 for (var i = 0; i < names.length; i++) {
                     if (names[i]) {
@@ -2068,7 +2456,8 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     b = b.toLowerCase();
                     if (a > b) {
                         return 1;
-                    } if (a < b) {
+                    }
+                    if (a < b) {
                         return -1;
                     }
                     return 0;
@@ -2108,7 +2497,8 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     b = b.toLowerCase();
                     if (a > b) {
                         return 1;
-                    } if (a < b) {
+                    }
+                    if (a < b) {
                         return -1;
                     }
                     return 0;
@@ -2131,9 +2521,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             if (name) {
                 var obj = {
                     name,
-                    type:    $(this).data('type') || 'text',
-                    def:     $(this).data('default'),
-                    style:   $(this).data('style'),
+                    type: $(this).data('type') || 'text',
+                    def: $(this).data('default'),
+                    style: $(this).data('style'),
                     title: $(this).data('title'),
                     label: $(this).data('label'),
                     tdstyle: $(this).data('tdstyle'),
@@ -2156,7 +2546,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         var parts = vals[v].split('/');
                         obj.options[parts[0]] = _(parts[1] || parts[0]);
                         if (v === 0) {
-                            obj.def = (obj.def === undefined) ? parts[0] : obj.def;
+                            obj.def = obj.def === undefined ? parts[0] : obj.def;
                         }
                     }
                 } else {
@@ -2193,8 +2583,8 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
             for (var i = 0; i < names.length; i++) {
                 text += '<td';
-                var line    = '';
-                var style   = '';
+                var line = '';
+                var style = '';
                 var dataName = '';
                 var tdstyle = '';
                 if (names[i]) {
@@ -2206,23 +2596,60 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         dataName = names[i]?.title ? names[i].title : names[i]?.label ? names[i].label : names[i].name;
                     }
                     if (names[i].name === '_index') {
-                        style = (names[i].style ? names[i].style : 'text-align: right;');
-                        line += (v + 1);
+                        style = names[i].style ? names[i].style : 'text-align: right;';
+                        line += v + 1;
                     } else if (names[i].type === 'checkbox') {
-                        line += '<input style="' + (names[i].style || '') + '" class="values-input filled-in" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + ' data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';
+                        line +=
+                            '<input style="' +
+                            (names[i].style || '') +
+                            '" class="values-input filled-in" type="checkbox" data-index="' +
+                            v +
+                            '" data-name="' +
+                            names[i].name +
+                            '" ' +
+                            (values[v][names[i].name] ? 'checked' : '') +
+                            ' data-old-value="' +
+                            (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) +
+                            '"/>';
                         if (isMaterialize) {
                             line += '<span></span>';
                         }
                     } else if (names[i].type === 'OID') {
-                        line += '<div style="' + (names[i].style ? names[i].style : 'width: calc(100% - 30px') + '"><input class="values-input" style="width: calc(100% - 30px)" type="text" data-index="' + v + '" data-name="' + names[i].name + '"/>';
+                        line +=
+                            '<div style="' +
+                            (names[i].style ? names[i].style : 'width: calc(100% - 30px') +
+                            '"><input class="values-input" style="width: calc(100% - 30px)" type="text" data-index="' +
+                            v +
+                            '" data-name="' +
+                            names[i].name +
+                            '"/>';
                         if (isMaterialize) {
-                            line += '<a style="max-width: 30px" class="btn-floating btn-small waves-effect waves-light blue oid-select" data-index="' + v + '" data-name="' + names[i].name + '">...</a>';
+                            line +=
+                                '<a style="max-width: 30px" class="btn-floating btn-small waves-effect waves-light blue oid-select" data-index="' +
+                                v +
+                                '" data-name="' +
+                                names[i].name +
+                                '">...</a>';
                         } else {
-                            line += '<button  style="max-width: 30px" class="oid-select" data-index="' + v + '" data-name="' + names[i].name + '">...</button>';
+                            line +=
+                                '<button  style="max-width: 30px" class="oid-select" data-index="' +
+                                v +
+                                '" data-name="' +
+                                names[i].name +
+                                '">...</button>';
                         }
                         line += '</div>';
                     } else if (names[i].type.substring(0, 6) === 'select') {
-                        line += (names[i].type.substring(7, 16) === 'multiple' ? '<select multiple style="' : '<select style="') + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '">';
+                        line +=
+                            (names[i].type.substring(7, 16) === 'multiple'
+                                ? '<select multiple style="'
+                                : '<select style="') +
+                            (names[i].style ? names[i].style : 'width: 100%') +
+                            '" class="values-input" data-index="' +
+                            v +
+                            '" data-name="' +
+                            names[i].name +
+                            '">';
                         var options;
                         if (names[i].name === 'room') {
                             options = $table.data('rooms');
@@ -2235,18 +2662,49 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                             options = names[i].options;
                         }
 
-                        var val = (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]);
+                        var val = values[v][names[i].name] === undefined ? '' : values[v][names[i].name];
                         if (typeof val !== 'object') {
                             val = [val];
                         }
                         for (var p in options) {
-                            line += '<option value="' + p + '" ' + (val.indexOf(p) !== -1 ? ' selected' : '') + '>' + options[p] + '</option>';
+                            line +=
+                                '<option value="' +
+                                p +
+                                '" ' +
+                                (val.indexOf(p) !== -1 ? ' selected' : '') +
+                                '>' +
+                                options[p] +
+                                '</option>';
                         }
                         line += '</select>';
-                    } else if (names[i].type === 'radio') { // add radio Button in Table
-                        line += '<label><input class="values-input" data-name="' + names[i].name + '" name="' + names[i].radioButtomId + v + '" data-index="' + v + '" type="radio" ' + (values[v][names[i].name] ? 'checked' : '') + ' data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/><span>' + (names[i].radioSpan ? names[i].radioSpan : '') + '</span></label>';
+                    } else if (names[i].type === 'radio') {
+                        // add radio Button in Table
+                        line +=
+                            '<label><input class="values-input" data-name="' +
+                            names[i].name +
+                            '" name="' +
+                            names[i].radioButtomId +
+                            v +
+                            '" data-index="' +
+                            v +
+                            '" type="radio" ' +
+                            (values[v][names[i].name] ? 'checked' : '') +
+                            ' data-old-value="' +
+                            (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) +
+                            '"/><span>' +
+                            (names[i].radioSpan ? names[i].radioSpan : '') +
+                            '</span></label>';
                     } else {
-                        line += '<input class="values-input" style="' + (names[i].style ? names[i].style : 'width: 100%') + '" type="' + names[i].type + '" data-index="' + v + '" data-name="' + names[i].name + '"/>';
+                        line +=
+                            '<input class="values-input" style="' +
+                            (names[i].style ? names[i].style : 'width: 100%') +
+                            '" type="' +
+                            names[i].type +
+                            '" data-index="' +
+                            v +
+                            '" data-name="' +
+                            names[i].name +
+                            '"/>';
                     }
                 }
 
@@ -2255,19 +2713,36 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     for (var b = 0; b < buttons[i].length; b++) {
                         if ((!v && buttons[i][b] === 'up') || (v === values.length - 1 && buttons[i][b] === 'down')) {
                             if (isMaterialize) {
-                                line += '<a data-command="' + buttons[i][b] + '" class="values-buttons btn-floating btn-small waves-effect waves-light disabled"><i class="material-icons">add</i></a>';
+                                line +=
+                                    '<a data-command="' +
+                                    buttons[i][b] +
+                                    '" class="values-buttons btn-floating btn-small waves-effect waves-light disabled"><i class="material-icons">add</i></a>';
                             } else {
-                                line += '<button data-command="' + buttons[i][b] + '" class="values-buttons" disabled>&nbsp;</button>';
+                                line +=
+                                    '<button data-command="' +
+                                    buttons[i][b] +
+                                    '" class="values-buttons" disabled>&nbsp;</button>';
                             }
                         } else if (isMaterialize) {
-                            line += '<a data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons btn-floating btn-small waves-effect waves-light"><i class="material-icons">add</i></a>';
+                            line +=
+                                '<a data-index="' +
+                                v +
+                                '" data-command="' +
+                                buttons[i][b] +
+                                '" class="values-buttons btn-floating btn-small waves-effect waves-light"><i class="material-icons">add</i></a>';
                         } else {
-                            line += '<button data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons"></button>';
+                            line +=
+                                '<button data-index="' +
+                                v +
+                                '" data-command="' +
+                                buttons[i][b] +
+                                '" class="values-buttons"></button>';
                         }
                     }
                 }
                 if (style.length || tdstyle.length) {
-                    text += ' style="' + style + tdstyle + '" ' + 'data-title="' + _(dataName) + '"' + '>' + line + '</td>';
+                    text +=
+                        ' style="' + style + tdstyle + '" ' + 'data-title="' + _(dataName) + '"' + '>' + line + '</td>';
                 } else {
                     text += ' data-title="' + _(dataName) + '"' + '>' + line + '</td>';
                 }
@@ -2300,17 +2775,18 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             var command = $(this).data('command');
             if (command === 'copy') {
                 if (!isMaterialize) {
-                    $(this).button({
-                        icons: { primary: 'ui-icon-copy' },
-                        text: false,
-                    })
+                    $(this)
+                        .button({
+                            icons: { primary: 'ui-icon-copy' },
+                            text: false,
+                        })
                         .css({ width: '1em', height: '1em' });
                 } else {
                     $(this).find('i').html('content_copy');
                 }
 
                 $(this).on('click', function () {
-                    if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
+                    if (!$add.data('maxraw') || $add.data('raw') < $add.data('maxraw')) {
                         var id = $(this).data('index');
                         var elem = JSON.parse(JSON.stringify(values[id]));
                         values.push(elem);
@@ -2329,137 +2805,146 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         }
                     }
                 });
-            } else
-                if (command === 'delete') {
-                    if (!isMaterialize) {
-                        $(this).button({
+            } else if (command === 'delete') {
+                if (!isMaterialize) {
+                    $(this)
+                        .button({
                             icons: { primary: 'ui-icon-trash' },
                             text: false,
                         })
-                            .css({ width: '1em', height: '1em' });
-                    } else {
-                        $(this).addClass('red').find('i').html('delete');
-                    }
+                        .css({ width: '1em', height: '1em' });
+                } else {
+                    $(this).addClass('red').find('i').html('delete');
+                }
 
-                    $(this).on('click', function () {
-                        var id = $(this).data('index');
-                        var elem = values[id];
-                        values.splice(id, 1);
-                        onChange && onChange();
+                $(this).on('click', function () {
+                    var id = $(this).data('index');
+                    var elem = values[id];
+                    values.splice(id, 1);
+                    onChange && onChange();
 
-                        setTimeout(function () {
-                            if (typeof tableEvents === 'function') {
-                                tableEvents(id, elem, 'delete');
-                            }
-
-                            values2table(divId, values, onChange, onReady);
-                        }, 100);
-
-                        if ($add.data('maxraw')) {
-                            $add.data('raw', $add.data('raw') - 1);
+                    setTimeout(function () {
+                        if (typeof tableEvents === 'function') {
+                            tableEvents(id, elem, 'delete');
                         }
-                    });
-                } else if (command === 'up') {
-                    if (!isMaterialize) {
-                        $(this).button({
+
+                        values2table(divId, values, onChange, onReady);
+                    }, 100);
+
+                    if ($add.data('maxraw')) {
+                        $add.data('raw', $add.data('raw') - 1);
+                    }
+                });
+            } else if (command === 'up') {
+                if (!isMaterialize) {
+                    $(this)
+                        .button({
                             icons: { primary: 'ui-icon-triangle-1-n' },
                             text: false,
                         })
-                            .css({ width: '1em', height: '1em' });
-                    } else {
-                        $(this).find('i').html('arrow_upward');
-                    }
-                    $(this).on('click', function () {
-                        var id = $(this).data('index');
-                        var elem = values[id];
-                        values.splice(id, 1);
-                        values.splice(id - 1, 0, elem);
-                        onChange && onChange();
-                        setTimeout(function () {
-                            values2table(divId, values, onChange, onReady);
-                        }, 100);
-                    });
-                } else if (command === 'down') {
-                    if (!isMaterialize) {
-                        $(this).button({
+                        .css({ width: '1em', height: '1em' });
+                } else {
+                    $(this).find('i').html('arrow_upward');
+                }
+                $(this).on('click', function () {
+                    var id = $(this).data('index');
+                    var elem = values[id];
+                    values.splice(id, 1);
+                    values.splice(id - 1, 0, elem);
+                    onChange && onChange();
+                    setTimeout(function () {
+                        values2table(divId, values, onChange, onReady);
+                    }, 100);
+                });
+            } else if (command === 'down') {
+                if (!isMaterialize) {
+                    $(this)
+                        .button({
                             icons: { primary: 'ui-icon-triangle-1-s' },
                             text: false,
                         })
-                            .css({ width: '1em', height: '1em' });
-                    } else {
-                        $(this).find('i').html('arrow_downward');
-                    }
-                    $(this).on('click', function () {
-                        var id = $(this).data('index');
-                        var elem = values[id];
-                        values.splice(id, 1);
-                        values.splice(id + 1, 0, elem);
-                        onChange && onChange();
-                        setTimeout(function () {
-                            values2table(divId, values, onChange, onReady);
-                        }, 100);
-                    });
-                } else if (command === 'pair') {
-                    if (!isMaterialize) {
-                        $(this).button({
+                        .css({ width: '1em', height: '1em' });
+                } else {
+                    $(this).find('i').html('arrow_downward');
+                }
+                $(this).on('click', function () {
+                    var id = $(this).data('index');
+                    var elem = values[id];
+                    values.splice(id, 1);
+                    values.splice(id + 1, 0, elem);
+                    onChange && onChange();
+                    setTimeout(function () {
+                        values2table(divId, values, onChange, onReady);
+                    }, 100);
+                });
+            } else if (command === 'pair') {
+                if (!isMaterialize) {
+                    $(this)
+                        .button({
                             icons: { primary: 'ui-icon-transferthick-e-w' },
                             text: false,
                         })
-                            .css({ width: '1em', height: '1em' });
-                    } else {
-                        $(this).find('i').html('leak_add');
-                    }
-                    $(this).on('click', function () {
+                        .css({ width: '1em', height: '1em' });
+                } else {
+                    $(this).find('i').html('leak_add');
+                }
+                $(this)
+                    .on('click', function () {
                         if (typeof tableEvents === 'function') {
                             var id = $(this).data('index');
                             var elem = values[id];
                             tableEvents(id, elem, 'pair');
                         }
-                    }).attr('title', _('pair'));
-                } else if (command === 'unpair') {
-                    if (!isMaterialize) {
-                        $(this).button({
+                    })
+                    .attr('title', _('pair'));
+            } else if (command === 'unpair') {
+                if (!isMaterialize) {
+                    $(this)
+                        .button({
                             icons: { primary: 'ui-icon-scissors' },
                             text: false,
                         })
-                            .css({ width: '1em', height: '1em' });
-                    } else {
-                        $(this).find('i').html('leak_remove');
-                    }
-                    $(this).on('click', function () {
+                        .css({ width: '1em', height: '1em' });
+                } else {
+                    $(this).find('i').html('leak_remove');
+                }
+                $(this)
+                    .on('click', function () {
                         if (typeof tableEvents === 'function') {
                             var id = $(this).data('index');
                             var elem = values[id];
                             tableEvents(id, elem, 'unpair');
                         }
-                    }).attr('title', _('unpair'));
-                } else if (command === 'edit') {
-                    if (!isMaterialize) {
-                        $(this).button({
+                    })
+                    .attr('title', _('unpair'));
+            } else if (command === 'edit') {
+                if (!isMaterialize) {
+                    $(this)
+                        .button({
                             icons: { primary: 'ui-icon-pencil' },
                             text: false,
                         })
-                            .css({ width: '1em', height: '1em' });
-                    } else {
-                        $(this).find('i').html('edit');
-                    }
-                    $(this).on('click', function () {
-                        var id = $(this).data('index');
-                        if (typeof editLine === 'function') {
-                            setTimeout(function () {
-                                editLine(id, JSON.parse(JSON.stringify(values[id])), function (err, id, newValues) {
-                                    if (!err) {
-                                        if (JSON.stringify(values[id]) !== JSON.stringify(newValues)) {
-                                            onChange && onChange();
-                                            values[id] = newValues;
-                                            values2table(divId, values, onChange, onReady);
-                                        }
-                                    }
-                                });
-                            }, 100);
-                        }
-                    });
+                        .css({ width: '1em', height: '1em' });
+                } else {
+                    $(this).find('i').html('edit');
                 }
+                $(this).on('click', function () {
+                    var id = $(this).data('index');
+                    if (typeof editLine === 'function') {
+                        setTimeout(function () {
+                            editLine(id, JSON.parse(JSON.stringify(values[id])), function (err, id, newValues) {
+                                if (!err) {
+                                    if (JSON.stringify(values[id]) !== JSON.stringify(newValues)) {
+                                        onChange && onChange();
+                                        values[id] = newValues;
+                                        values2table(divId, values, onChange, onReady);
+                                    }
+                                }
+                            });
+                        }, 100);
+                    }
+                });
+            }
         });
         $lines.find('.oid-select').on('click', function () {
             var name = $(this).data('name');
@@ -2473,23 +2958,26 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             });
         });
 
-        $lines.find('.values-input').on('change.adaptersettings', function () {
-            if ($(this).attr('type') === 'checkbox') {
-                if ($(this).prop('checked').toString() !== $(this).data('old-value')) {
-                    onChange();
-                }
+        $lines
+            .find('.values-input')
+            .on('change.adaptersettings', function () {
+                if ($(this).attr('type') === 'checkbox') {
+                    if ($(this).prop('checked').toString() !== $(this).data('old-value')) {
+                        onChange();
+                    }
 
-                values[$(this).data('index')][$(this).data('name')] = $(this).prop('checked');
-            } else {
-                if ($(this).val() !== $(this).data('old-value')) {
-                    onChange();
-                }
+                    values[$(this).data('index')][$(this).data('name')] = $(this).prop('checked');
+                } else {
+                    if ($(this).val() !== $(this).data('old-value')) {
+                        onChange();
+                    }
 
-                values[$(this).data('index')][$(this).data('name')] = $(this).val();
-            }
-        }).on('keyup', function () {
-            $(this).trigger('change.adaptersettings');
-        });
+                    values[$(this).data('index')][$(this).data('name')] = $(this).val();
+                }
+            })
+            .on('keyup', function () {
+                $(this).trigger('change.adaptersettings');
+            });
     }
     if (isMaterialize) {
         if (!divId) {
@@ -2497,16 +2985,20 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             $('select').select();
         } else {
             M.updateTextFields('#' + divId);
-            $('#' + divId).find('select').select();
+            $('#' + divId)
+                .find('select')
+                .select();
         }
 
         // workaround for materialize checkbox problem
-        $div.find('input[type="checkbox"]+span').off('click').on('click', function () {
-            var $input = $(this).prev();
-            if (!$input.prop('disabled')) {
-                $input.prop('checked', !$input.prop('checked')).trigger('change');
-            }
-        });
+        $div.find('input[type="checkbox"]+span')
+            .off('click')
+            .on('click', function () {
+                var $input = $(this).prev();
+                if (!$input.prop('disabled')) {
+                    $input.prop('checked', !$input.prop('checked')).trigger('change');
+                }
+            });
     }
     typeof onReady === 'function' && onReady();
 }
@@ -2541,26 +3033,29 @@ function table2values(divId) {
     $div.find('.table-lines tr').each(function () {
         values[j] = {};
 
-        $(this).find('td').each(function () {
-            var $input = $(this).find('input');
-            if ($input.length) {
-                var name = $input.data('name');
-                if (name) {
-                    if ($input.attr('type') === 'checkbox') {
-                        values[j][name] = $input.prop('checked');
-                    } else if ($input.attr('type') === 'radio') { // add radio Button value save
-                        values[j][name] = $input.prop('checked');
-                    } else {
-                        values[j][name] = $input.val();
+        $(this)
+            .find('td')
+            .each(function () {
+                var $input = $(this).find('input');
+                if ($input.length) {
+                    var name = $input.data('name');
+                    if (name) {
+                        if ($input.attr('type') === 'checkbox') {
+                            values[j][name] = $input.prop('checked');
+                        } else if ($input.attr('type') === 'radio') {
+                            // add radio Button value save
+                            values[j][name] = $input.prop('checked');
+                        } else {
+                            values[j][name] = $input.val();
+                        }
                     }
                 }
-            }
-            var $select = $(this).find('select');
-            if ($select.length) {
-                var name = $select.data('name');
-                values[j][name] = $select.val() || '';
-            }
-        });
+                var $select = $(this).find('select');
+                if ($select.length) {
+                    var name = $select.data('name');
+                    values[j][name] = $select.val() || '';
+                }
+            });
         j++;
     });
 
