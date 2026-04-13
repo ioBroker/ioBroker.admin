@@ -356,6 +356,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                                     display: 'flex',
                                     color: (color && Utils.invertColor(color, true)) || 'inherit',
                                     alignItems: 'center',
+                                    gap: 8,
                                 }}
                             >
                                 <div style={styles.selector}>{_id === this.props.currentHost ? 'ᐅ' : ''}</div>
