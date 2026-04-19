@@ -169,6 +169,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Copy `common.states` by alias creation
+- (@GermanBluefox) Update `devices` instances
 
 ### 7.8.20 (2026-03-30)
 - (@GermanBluefox) Improved the device manager

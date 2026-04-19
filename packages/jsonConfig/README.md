@@ -567,13 +567,13 @@ See also [OAUTH2.md](OAUTH2.md) for more information.
 
 object ID: show it with name, color and icon
 
-| Property       | Description                                                                                                                                                                                                                                                                                                          |
-|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `types`        | Desired type: `channel`, `device`, ... (has only `state` by default). It is plural, because `type` is already occupied.                                                                                                                                                                                              |
-| `root`         | [optional] Show only this root object and its children                                                                                                                                                                                                                                                               |
-| `customFilter` | [optional] Cannot be used together with `type` settings. It is an object and not a JSON string.                                                                                                                                                                                                                      |
-| `filterFunc`   | [optional] Cannot be used together with `type` settings. It is a function that will be called for every object and must return true or false. Example: `obj.common.type === 'number'`                                                                                                                                |
-| `fillOnSelect` | [optional] Fill other config fields when an object ID is selected. Format: `pathInObject=>attr,pathInObject=>attr(X)`. Append `(X)` to overwrite non-empty fields. Example: `common.name=>name,common.color=>color(X)` fills the `name` field with the object's name and overwrites `color` with the object's color. |
+| Property       | Description                                                                                                                                                                                                                                                                                                              |
+|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `types`        | Desired type: `channel`, `device`, ... (has only `state` by default). It is plural, because `type` is already occupied.                                                                                                                                                                                                  |
+| `root`         | [optional] Show only this root object and its children                                                                                                                                                                                                                                                                   |
+| `customFilter` | [optional] Cannot be used together with `types` settings. It is an object and not a JSON string.                                                                                                                                                                                                                         |
+| `filterFunc`   | [optional] Cannot be used together with `types` settings. It is a function that will be called for every object and must return true or false. Example: `obj.common.type === 'number'`                                                                                                                                   |
+| `fillOnSelect` | [optional] Fill other config fields when an object ID is selected. Format: `pathInObject1=>attr1,pathInObject2=>attr2(X)`. Append `(X)` to overwrite non-empty fields. Example: `common.name=>name,common.color=>color(X)` fills the `name` field with the object's name and overwrites `color` with the object's color. |
 
 #### Examples for `customFilter`
 
@@ -1768,7 +1768,10 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 8.3.6 (2026-04-12)
+### 8.3.9 (2026-04-17)
+- (@GermanBluefox) Updated packages
+
+### 8.3.8 (2026-04-13)
 - (@GermanBluefox) Adjust a path to images
 
 ### 8.3.5 (2026-04-11)
