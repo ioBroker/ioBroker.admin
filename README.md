@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.8.21 (2026-04-27)
 - (@GermanBluefox) Copy `common.states` by alias creation
 - (@GermanBluefox) Update `devices` instances
 
@@ -182,12 +182,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.8.6 (2026-03-20)
 - (@GermanBluefox) Added the possibility to use the Object properties in JsonConfig
-
-### 7.8.5 (2026-03-18)
-- (@GermanBluefox) Custom editor could be limited to specific instances or specific states by regex expression
-- (@GermanBluefox) Added some options to JSON Config
-- (@copilot) Added `Cache-Control: no-cache` header to `index.html` to prevent browser from using stale cached HTML after admin updates
-- (@copilot) Handle Vite dynamic import failures (ERR_CACHE_READ_FAILURE) by triggering page reload instead of showing white screen
 
 ## License
 

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.20",
+    "version": "7.8.21",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.8.21": {
+        "en": "Copy `common.states` by alias creation\nUpdate `devices` instances",
+        "de": "Kopieren `common.states` durch Alias-Erstellung\nAktualisieren von `devices` Instanzen",
+        "ru": "Copy 'common.states' by alias creation (недоступная ссылка)\nОбновление экземпляров «устройств»",
+        "pt": "Copiar `common.states` por criação de pseudônimos\nAtualizar instâncias de dispositivos",
+        "nl": "Kopiëren van \"common.states\" door het aanmaken van aliassen\nApparaten bijwerken",
+        "fr": "Copier `common.states` par alias creation\nMettre à jour les instances `devices`",
+        "it": "Copia `common.states` da alias creazione\nAggiornare le istanze `dispositivi'",
+        "es": "Copiar `common.states` por alias creación\nActualizar los casos de \" dispositivos \"",
+        "pl": "Kopiuj \"common.states\" przez tworzenie aliasów\nAktualizacja instancji urządzeń",
+        "uk": "Статус на сервери\nОновлення екземплярів `devices`",
+        "zh-cn": "用别名复制“ common. states ”\n更新“ 设备” 实例"
+      },
       "7.8.20": {
         "en": "Improved the device manager",
         "de": "Verbessert den Gerätemanager",
@@ -95,19 +108,6 @@
         "pl": "Własny edytor może być ograniczony do konkretnych instancji lub konkretnych stanów poprzez wyrażenie regex\nDodano kilka opcji do konfiguracji JSON\nDodano 'Cache- Control: no- cache' nagłówek do 'index.html', aby zapobiec korzystaniu przez przeglądarkę ze stale cached HTML po aktualizacji admin\nObsługa dynamicznych błędów importowych Vite (ERR _ CACHE _ READ _ FAILURE) poprzez ponowne załadowanie strony zamiast wyświetlania białego ekranu",
         "uk": "Користувальницькі редактори можуть бути обмежені певними екземплярами або конкретними станами від експресії regex\nДодано деякі параметри в JSON Config\nДодано `Cache-Control: no-cache` головоломка `index.html` для запобігання браузеру за допомогою stle cached HTML після оновлення адміністратора\nHandle Vite динамічні імпортні збої (ERR_CACHE_READ_FAILURE) за допомогою запуску завантаження сторінок замість показу білого екрана",
         "zh-cn": "自定义编辑器可以通过 regex 表达式局限于特定实例或特定状态\n添加到 JSON 配置中的一些选项\n添加了“ 缓存控制: 无缓存” 页眉到“ index.html ” , 以防止浏览器在管理员更新后使用 Stale 缓存的 HTML\n通过触发重新装入页面而不是显示白色屏幕,处理 Vite 动态导入失败( ERR_ CACHE_READ_ FAILURE)"
-      },
-      "7.8.3": {
-        "en": "Added the device manager tab in the admin",
-        "de": "Hinzufügen der Geräte-Manager-Tab im Admin",
-        "ru": "Добавлена вкладка диспетчер устройств в admin",
-        "pt": "Adicionada a aba gerenciador de dispositivos no administrador",
-        "nl": "Het tabblad apparaatbeheer toegevoegd in de beheerder",
-        "fr": "Ajout de l'onglet gestionnaire de périphériques dans l'administrateur",
-        "it": "Aggiunto il dispositivo manager scheda in l'amministratore",
-        "es": "Se agregó la pestaña del administrador del dispositivo en el administrador",
-        "pl": "Dodano kartę menedżera urządzeń w admin",
-        "uk": "Додано вкладку диспетчера пристрою в адмін",
-        "zh-cn": "在管理员中添加了设备管理器标签"
       }
     },
     "desc": {
