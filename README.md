@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.8.21 (2026-04-27)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Copy `common.states` by alias creation
 - (@GermanBluefox) Update `devices` instances
 

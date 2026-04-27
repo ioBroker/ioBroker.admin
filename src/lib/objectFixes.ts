@@ -129,9 +129,12 @@ export function updateIcons(adapter: ioBroker.Adapter): void {
 
 // We have a problem that `devices` adapter changed the mode from 'none' to 'daemon' from version 2.x. This option will not be updated automatically
 export async function updateDevicesObject(adapter: ioBroker.Adapter): Promise<void> {
-    const res = await adapter.getObjectViewAsync('system', 'instance', { startkey: 'system.adapter.devices.', endkey: 'system.adapter.devices.\u9999' });
+    const res = await adapter.getObjectViewAsync('system', 'instance', {
+        startkey: 'system.adapter.devices.',
+        endkey: 'system.adapter.devices.\u9999',
+    });
     if (res?.rows?.length) {
-        for (const row of res?.rows) {
+        for (const row of res.rows) {
             const obj = row.value;
             const majorVersion = parseInt(obj.common.version.split('.')[0], 10);
             if (obj.common.mode !== 'daemon' && majorVersion >= 2) {

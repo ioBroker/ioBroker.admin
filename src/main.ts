@@ -15,7 +15,7 @@ import { platform } from 'node:os';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
 
-import { Adapter, type AdapterOptions, commonTools, controllerDir, I18n } from '@iobroker/adapter-core';
+import { Adapter, type AdapterOptions, commonTools, I18n } from '@iobroker/adapter-core';
 import { SocketAdmin, type Server, type Store, type SocketSettings } from '@iobroker/socket-classes';
 import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
