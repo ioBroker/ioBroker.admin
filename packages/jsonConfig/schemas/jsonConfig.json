@@ -842,6 +842,9 @@
             "H"
           ]
         },
+        "instance": {
+          "$ref": "#/definitions/instanceSendProp"
+        },
         "label": true,
         "type": true,
         "defaultSendTo": true,
@@ -1045,6 +1048,9 @@
         "timeout": {
           "description": "timeout for request in ms. Default: none.",
           "type": "number"
+        },
+        "instance": {
+          "$ref": "#/definitions/instanceSendProp"
         },
         "label": true,
         "type": true,
@@ -1953,6 +1959,10 @@
         "type": "string"
       }
     },
+    "instanceSendProp": {
+      "description": "Instance where to send the request to (e.g. 'admin.0'). Overrides the value of `oContext.instance`. If not defined, the request will be sent to the current adapter instance.",
+      "type": "string"
+    },
     "noInternalProp": {
       "description": "Do not show internal IP addresses",
       "type": "boolean"
@@ -2068,6 +2078,9 @@
                 "alsoDependsOn": {
                   "$ref": "#/definitions/alsoDependsOnSendProp"
                 },
+                "instance": {
+                  "$ref": "#/definitions/instanceSendProp"
+                },
                 "label": true,
                 "type": true,
                 "defaultSendTo": true,
@@ -2147,6 +2160,9 @@
                 "alsoDependsOn": {
                   "$ref": "#/definitions/alsoDependsOnSendProp"
                 },
+                "instance": {
+                  "$ref": "#/definitions/instanceSendProp"
+                },
                 "noTranslation": true,
                 "multiple": true,
                 "label": true,
@@ -2214,6 +2230,9 @@
                 },
                 "alsoDependsOn": {
                   "$ref": "#/definitions/alsoDependsOnSendProp"
+                },
+                "instance": {
+                  "$ref": "#/definitions/instanceSendProp"
                 },
                 "command": {
                   "description": "Command to be sent.",
@@ -2319,6 +2338,9 @@
                       "$ref": "#/definitions/multilingual"
                     }
                   ]
+                },
+                "instance": {
+                  "$ref": "#/definitions/instanceSendProp"
                 },
                 "noTranslation": true,
                 "label": true,
@@ -3044,6 +3066,9 @@
                 "alsoDependsOn": {
                   "$ref": "#/definitions/alsoDependsOnSendProp"
                 },
+                "instance": {
+                  "$ref": "#/definitions/instanceSendProp"
+                },
                 "noTranslation": true,
                 "type": true,
                 "sm": true,
@@ -3151,6 +3176,9 @@
                     "showProcess": {
                       "description": "Show spinner while request is in progress",
                       "type": "boolean"
+                    },
+                    "instance": {
+                      "$ref": "#/definitions/instanceSendProp"
                     },
                     "attr": true,
                     "label": true,
@@ -4307,6 +4335,9 @@
                         "Q",
                         "H"
                       ]
+                    },
+                    "instance": {
+                      "$ref": "#/definitions/instanceSendProp"
                     },
                     "attr": true,
                     "label": true,
@@ -6094,6 +6125,9 @@
                       "alsoDependsOn": {
                         "$ref": "#/definitions/alsoDependsOnSendProp"
                       },
+                      "instance": {
+                        "$ref": "#/definitions/instanceSendProp"
+                      },
                       "label": true,
                       "type": true,
                       "defaultSendTo": true,
@@ -6163,6 +6197,9 @@
                       "alsoDependsOn": {
                         "$ref": "#/definitions/alsoDependsOnSendProp"
                       },
+                      "instance": {
+                        "$ref": "#/definitions/instanceSendProp"
+                      },
                       "noTranslation": true,
                       "multiple": true,
                       "label": true,
@@ -6220,6 +6257,9 @@
                       },
                       "alsoDependsOn": {
                         "$ref": "#/definitions/alsoDependsOnSendProp"
+                      },
+                      "instance": {
+                        "$ref": "#/definitions/instanceSendProp"
                       },
                       "command": {
                         "description": "Command to be sent.",
@@ -6307,6 +6347,9 @@
                             "$ref": "#/definitions/multilingual"
                           }
                         ]
+                      },
+                      "instance": {
+                        "$ref": "#/definitions/instanceSendProp"
                       },
                       "label": true,
                       "type": true,
@@ -6427,6 +6470,9 @@
                     "properties": {
                       "alsoDependsOn": {
                         "$ref": "#/definitions/alsoDependsOnSendProp"
+                      },
+                      "instance": {
+                        "$ref": "#/definitions/instanceSendProp"
                       },
                       "command": {
                         "description": "Command to be sent.",

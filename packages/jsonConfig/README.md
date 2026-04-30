@@ -694,6 +694,7 @@ Button that sends a request to the current instance (<https://github.com/iobroke
 | `timeout`       | timeout for request in ms. Default: none.                                                                                                                                                                                                    |
 | `onLoaded`      | execute the button logic once initially                                                                                                                                                                                                      |
 | `controlStyle`  | Styles for the button.                                                                                                                                                                                                                       |
+| `instance`      | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text.                              |
 
 ### `setState`
 
@@ -945,14 +946,15 @@ only Admin6.
 
 shows the image received from the backend as base64 string
 
-| Property           | Description                                                                                                                                                 |
-|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `width`            | width of QR code in px                                                                                                                                      |
-| `height`           | height of QR code in px                                                                                                                                     |
-| `command`          | sendTo command                                                                                                                                              |
-| `jsonData`         | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend                                         |
-| `data`             | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined. |
-| `sendFirstByClick` | show image first when clicked. `true` - standard text (Click to show) or specific text                                                                      |
+| Property           | Description                                                                                                                                                                                                     |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `width`            | width of QR code in px                                                                                                                                                                                          |
+| `height`           | height of QR code in px                                                                                                                                                                                         |
+| `command`          | sendTo command                                                                                                                                                                                                  |
+| `jsonData`         | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend                                                                                             |
+| `data`             | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.                                                     |
+| `sendFirstByClick` | show image first when clicked. `true` - standard text (Click to show) or specific text                                                                                                                          |
+| `instance`         | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text. |
 
 #### Example of code in back-end for `imageSendTo`
 
@@ -974,17 +976,18 @@ adapter.on("message", (obj) => {
 Sends a command to the adapter instance and displays the response string as a QR code.
 The backend must return a plain string (the data to encode).
 
-| Property           | Description                                                                                                                                                 |
-|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `command`          | sendTo command (default: `"send"`)                                                                                                                          |
-| `alsoDependsOn`    | array of attribute names — the QR code is refreshed whenever any of these attributes change                                                                 |
-| `jsonData`         | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend                                         |
-| `data`             | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined. |
-| `sendFirstByClick` | load QR code only after a click. `true` — standard text ("Click to show") or a custom string/translation object used as the button label                    |
-| `size`             | size of the QR code in px                                                                                                                                   |
-| `fgColor`          | foreground color (default: `"#000000"`)                                                                                                                     |
-| `bgColor`          | background color (default: `"#ffffff"`)                                                                                                                     |
-| `level`            | error correction level: `L`, `M`, `Q`, or `H` (default: `L`)                                                                                                |
+| Property           | Description                                                                                                                                                                                                      |
+|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `command`          | sendTo command (default: `"send"`)                                                                                                                                                                               |
+| `alsoDependsOn`    | array of attribute names — the QR code is refreshed whenever any of these attributes change                                                                                                                      |
+| `jsonData`         | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend                                                                                              |
+| `data`             | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.                                                      |
+| `sendFirstByClick` | load QR code only after a click. `true` — standard text ("Click to show") or a custom string/translation object used as the button label                                                                         |
+| `size`             | size of the QR code in px                                                                                                                                                                                        |
+| `fgColor`          | foreground color (default: `"#000000"`)                                                                                                                                                                          |
+| `bgColor`          | background color (default: `"#ffffff"`)                                                                                                                                                                          |
+| `level`            | error correction level: `L`, `M`, `Q`, or `H` (default: `L`)                                                                                                                                                     |
+| `instance`         | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text.  |
 
 #### Example of code in back-end for `qrCodeSendTo`
 
@@ -1027,11 +1030,12 @@ Shows an iframe with the specified URL. (from Admin 7.7.28)
 
 Shows an iframe with a URL received from the backend. (from Admin 7.7.28)
 
-| Property   | Description                                                                                                                                                 |
-|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `command`  | sendTo command                                                                                                                                              |
-| `jsonData` | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend                                         |
-| `data`     | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined. |
+| Property   | Description                                                                                                                                                                                                      |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `command`  | sendTo command                                                                                                                                                                                                   |
+| `jsonData` | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend                                                                                              |
+| `data`     | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.                                                      |
+| `instance` | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text.  |
 
 The backend must return a URL as a string.
 
@@ -1061,16 +1065,17 @@ adapter.on("message", (obj) => {
 
 Shows the drop-down menu with the given from the instance values.
 
-| Property        | Description                                                                                                                                                                             |
-|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `command`       | sendTo command                                                                                                                                                                          |
-| `jsonData`      | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend                                                                 |
-| `data`          | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.                         |
-| `manual`        | allow manual editing. Without drop-down menu (if instance is offline). Default `true`.                                                                                                  |
-| `multiple`      | Multiple choice select                                                                                                                                                                  |
-| `showAllValues` | show item even if no label was found for it (by multiple), default=`true`                                                                                                               |
-| `noTranslation` | do not translate label of selects. To use this option, your adapter must implement message handler.The result of command must be an array in form `[{"value": 1, "label": "one"}, ...]` |
-| `alsoDependsOn` | by change of which attributes, the command must be resent                                                                                                                               |
+| Property        | Description                                                                                                                                                                                                      |
+|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `command`       | sendTo command                                                                                                                                                                                                   |
+| `jsonData`      | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend                                                                                          |
+| `data`          | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.                                                  |
+| `manual`        | allow manual editing. Without drop-down menu (if instance is offline). Default `true`.                                                                                                                           |
+| `multiple`      | Multiple choice select                                                                                                                                                                                           |
+| `showAllValues` | show item even if no label was found for it (by multiple), default=`true`                                                                                                                                        |
+| `noTranslation` | do not translate label of selects. To use this option, your adapter must implement message handler.The result of command must be an array in form `[{"value": 1, "label": "one"}, ...]`                          |
+| `alsoDependsOn` | by change of which attributes, the command must be resent                                                                                                                                                        |
+| `instance`      | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text.  |
 
 The backend handler can return items with an optional `description` field: `[{"value": 1, "label": "one", "description": "Some hint"}, ...]`. The description is shown below the label in the dropdown.
 
@@ -1132,14 +1137,15 @@ adapter.on("message", (obj) => {
 
 Shows autocomplete control with the given from the instance values.
 
-| Property        | Description                                                                                                                                                     |
-|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `command`       | sendTo command                                                                                                                                                  |
-| `jsonData`      | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend                                         |
-| `data`          | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined. |
-| `freeSolo`      | Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.                                                                                       |
-| `alsoDependsOn` | by change of which attributes, the command must be resent                                                                                                       |
-| `maxLength`     | max length of the text in field                                                                                                                                 |
+| Property        | Description                                                                                                                                                                                                     |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `command`       | sendTo command                                                                                                                                                                                                  |
+| `jsonData`      | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend                                                                                         |
+| `data`          | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.                                                 |
+| `freeSolo`      | Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.                                                                                                                                       |
+| `alsoDependsOn` | by change of which attributes, the command must be resent                                                                                                                                                       |
+| `maxLength`     | max length of the text in field                                                                                                                                                                                 |
+| `instance`      | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text. |
 
 To use this option, your adapter must implement a message handler:
 
@@ -1150,14 +1156,15 @@ See `selectSendTo` for handler example
 
 Shows readonly control with the given from the instance values.
 
-| Property          | Description                                                                                                                                                     |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `container`       | `div`, `text`, `html`                                                                                                                                           |
-| `copyToClipboard` | if true - show button                                                                                                                                           |
-| `alsoDependsOn`   | by change of which attributes, the command must be resent                                                                                                       |
-| `command`         | sendTo command                                                                                                                                                  |
-| `jsonData`        | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend                                         |
-| `data`            | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined. |
+| Property          | Description                                                                                                                                                                                                      |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `container`       | `div`, `text`, `html`                                                                                                                                                                                            |
+| `copyToClipboard` | if true - show button                                                                                                                                                                                            |
+| `alsoDependsOn`   | by change of which attributes, the command must be resent                                                                                                                                                        |
+| `command`         | sendTo command                                                                                                                                                                                                   |
+| `jsonData`        | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend                                                                                          |
+| `data`            | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.                                                  |
+| `instance`        | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text.  |
 
 To use this option, your adapter must implement a message handler:
 The result of command must be a string or object with the following parameters:
@@ -1768,6 +1775,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.3.11 (2026-04-29)
+- (@GermanBluefox) Added `instance` option for all `sendTo` components to override the target adapter instance
+
 ### 8.3.9 (2026-04-17)
 - (@GermanBluefox) Updated packages
 
