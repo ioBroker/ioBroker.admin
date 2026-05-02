@@ -168,6 +168,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
 - (@GermanBluefox) Correcting the IP address calculation
 
 ### 7.8.23 (2026-04-27)
