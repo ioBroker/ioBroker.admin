@@ -186,6 +186,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.8.6 (2026-03-20)
 - (@GermanBluefox) Added the possibility to use the Object properties in JsonConfig
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 
 The MIT License (MIT)
