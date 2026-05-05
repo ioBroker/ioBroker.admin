@@ -1,4 +1,7 @@
 # Older changes
+## 7.8.6 (2026-03-20)
+- (@GermanBluefox) Added the possibility to use the Object properties in JsonConfig
+
 ## 7.8.5 (2026-03-18)
 - (@GermanBluefox) Custom editor could be limited to specific instances or specific states by regex expression
 - (@GermanBluefox) Added some options to JSON Config
