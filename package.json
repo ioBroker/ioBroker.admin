@@ -57,7 +57,7 @@
     "@types/connect-flash": "^0.0.40",
     "@types/cookie-parser": "^1.4.10",
     "@types/express-fileupload": "^1.5.1",
-    "@types/express-session": "^1.18.2",
+    "@types/express-session": "^1.19.0",
     "@types/less": "3.0.8",
     "@types/mime": "3.0.4",
     "@types/passport": "^1.0.17",
