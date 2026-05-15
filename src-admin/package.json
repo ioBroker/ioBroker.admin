@@ -24,10 +24,10 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/adapter-react-v5": "^8.1.8",
+        "@iobroker/adapter-react-v5": "^8.2.4",
         "@iobroker/dm-gui-components": "^9.0.27",
-        "@iobroker/json-config": "^8.3.8",
-        "ace-builds": "^1.43.6",
+        "@iobroker/json-config": "^8.3.12",
+        "ace-builds": "^1.44.0",
         "http-proxy-middleware": "^3.0.5"
     },
     "devDependencies": {
@@ -35,10 +35,9 @@
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@fnando/sparkline": "^0.3.10",
-        "@foxriver76/iob-component-lib": "^0.2.0",
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
         "@iobroker/dm-utils": "^3.0.19",
-        "@iobroker/socket-client": "^5.1.1",
+        "@iobroker/socket-client": "^5.1.2",
         "@module-federation/runtime": "^2.0.1",
         "@module-federation/vite": "^1.11.0",
         "@originjs/vite-plugin-commonjs": "^1.0.3",

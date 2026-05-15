@@ -16,14 +16,13 @@ import {
 
 import { Update as UpdateIcon } from '@mui/icons-material';
 
-import { TabContent } from '@iobroker/adapter-react-v5';
+import { TabContent, InfoBox } from '@iobroker/adapter-react-v5';
 
 import type { AdaptersContext } from '@/components/Adapters/AdapterInstallDialog';
 import AdapterCategoryRow from '@/components/Adapters/AdapterCategoryRow';
 import AdapterTile from '@/components/Adapters/AdapterTile';
 import AdapterRow from '@/components/Adapters/AdapterRow';
 import type { AdapterCacheEntry } from '@/components/Adapters/AdapterGeneric';
-import { InfoBox } from '@foxriver76/iob-component-lib';
 
 const BUTTONS_WIDTH = 34 * 7 + 8;
 export const WIDTHS: Record<string, number> = {
