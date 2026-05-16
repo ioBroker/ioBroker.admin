@@ -1,4 +1,7 @@
 # Older changes
+## 7.8.8 (2026-03-24)
+- (@GermanBluefox) Implemented the possibility to upload adapter from the file (useful for development and testing)
+
 ## 7.8.6 (2026-03-20)
 - (@GermanBluefox) Added the possibility to use the Object properties in JsonConfig
 

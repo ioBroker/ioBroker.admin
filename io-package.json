@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.24",
+    "version": "7.8.25",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.8.25": {
+        "en": "Extended JSON config for frigate adapter",
+        "de": "Erweiterte JSON config für frigate Adapter",
+        "ru": "Расширенный конфигуратор JSON для фрегата",
+        "pt": "Configuração estendida do JSON para adaptador fragata",
+        "nl": "Uitgebreide JSON-configuratie voor fregatadapter",
+        "fr": "Config JSON étendue pour adaptateur de frégate",
+        "it": "Configurazione estesa di JSON per l'adattatore di fregata",
+        "es": "Configuración JSON ampliada para adaptador de fragata",
+        "pl": "Rozszerzony plik konfiguracyjny JSON do adaptera fregata",
+        "uk": "Розширений налаштування JSON для адаптера фригату",
+        "zh-cn": "JSON 护卫舰适配器扩展配置"
+      },
       "7.8.24": {
         "en": "Correcting the IP address calculation",
         "de": "Korrektur der IP-Adressenberechnung",
@@ -95,19 +108,6 @@
         "pl": "Wdrożył możliwość przesłania adaptera z pliku (przydatnego do rozwoju i testowania)",
         "uk": "Реалізовано можливість завантаження адаптера з файлу (для розробки та тестування)",
         "zh-cn": "实现了从文件上传适配器的可能性(可用于开发和测试)"
-      },
-      "7.8.6": {
-        "en": "Added the possibility to use the Object properties in JsonConfig",
-        "de": "Hinzufügen der Möglichkeit, die Objekteigenschaften in JsonConfig zu verwenden",
-        "ru": "Добавлена возможность использования свойств Объекта в JsonConfig",
-        "pt": "Adicionada a possibilidade de usar as propriedades do objeto no JsonConfig",
-        "nl": "De mogelijkheid toegevoegd om de Object eigenschappen in JsonConfig te gebruiken",
-        "fr": "Ajout de la possibilité d'utiliser les propriétés des objets dans JsonConfig",
-        "it": "Aggiunta la possibilità di utilizzare le proprietà Object in JsonConfig",
-        "es": "Añadido la posibilidad de utilizar las propiedades de objetos en JsonConfig",
-        "pl": "Dodano możliwość korzystania z właściwości obiektu w JsonConfig",
-        "uk": "Додано можливість використання властивостей об'єкта в JsonConfig",
-        "zh-cn": "添加使用 JsonConfig 对象属性的可能性"
       }
     },
     "desc": {
