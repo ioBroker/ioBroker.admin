@@ -167,6 +167,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Extended JSON config for frigate adapter
+
 ### 7.8.24 (2026-05-05)
 - (@GermanBluefox) Correcting the IP address calculation
 
