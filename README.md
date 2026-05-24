@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.8.26 (2026-05-24)
 - (@GermanBluefox) Updated packages
 
 ### 7.8.25 (2026-05-16)
@@ -182,9 +182,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.8.20 (2026-03-30)
 - (@GermanBluefox) Improved the device manager
-
-### 7.8.9 (2026-03-25)
-- (@GermanBluefox) Added in JsonConfig OAuth2 process for Spotify
 
 ## License
 
