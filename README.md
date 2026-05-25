@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.8.27 (2026-05-25)
 - (@GermanBluefox) Updated packages
 
 ### 7.8.25 (2026-05-16)
