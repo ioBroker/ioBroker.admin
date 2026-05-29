@@ -1,4 +1,7 @@
 # Older changes
+## 7.8.20 (2026-03-30)
+- (@GermanBluefox) Improved the device manager
+
 ## 7.8.9 (2026-03-25)
 - (@GermanBluefox) Added in JsonConfig OAuth2 process for Spotify
 
