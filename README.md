@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.8.28 (2026-05-29)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Corrected JSON config for the select component with grouped options
 
 ### 7.8.27 (2026-05-25)
