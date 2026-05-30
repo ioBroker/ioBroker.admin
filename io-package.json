@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.28",
+    "version": "7.8.29",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.8.29": {
+        "en": "Corrected JSON config for the select component with grouped options",
+        "de": "JSON config für die ausgewählte Komponente mit gruppierten Optionen korrigiert",
+        "ru": "Исправленная конфигурация JSON для выбранного компонента с сгруппированными опциями",
+        "pt": "Configuração do JSON corrigida para o componente seleccionado com opções agrupadas",
+        "nl": "Gecorrigeerde JSON configuratie voor het geselecteerde component met gegroepeerde opties",
+        "fr": "Configuration JSON corrigée pour le composant sélectionné avec options groupées",
+        "it": "Configurazione JSON corretta per il componente selezionato con opzioni raggruppate",
+        "es": "Ajuste JSON corregido para el componente selecto con opciones agrupadas",
+        "pl": "Skorygowana konfiguracja JSON dla wybranego komponentu z pogrupowanymi opcjami",
+        "uk": "Виправлено налаштування JSON для вибраного компонента з позначеними опціями",
+        "zh-cn": "更正了带有分组选项的选定组件的 JSON 配置"
+      },
       "7.8.28": {
         "en": "Corrected JSON config for the select component with grouped options",
         "de": "JSON config für die ausgewählte Komponente mit gruppierten Optionen korrigiert",
@@ -84,19 +97,6 @@
         "zh-cn": "用别名复制“ common. states ”\n更新“ 设备” 实例"
       },
       "7.8.20": {
-        "en": "Improved the device manager",
-        "de": "Verbessert den Gerätemanager",
-        "ru": "Улучшен диспетчер устройств",
-        "pt": "Melhorou o gerenciador de dispositivos",
-        "nl": "De apparaatbeheerder verbeterd",
-        "fr": "Amélioration du gestionnaire de périphériques",
-        "it": "Migliorato il gestore del dispositivo",
-        "es": "Mejorado el administrador del dispositivo",
-        "pl": "Ulepszenie menedżera urządzeń",
-        "uk": "Покращення диспетчера пристроїв",
-        "zh-cn": "改进设备管理器"
-      },
-      "7.8.16": {
         "en": "Improved the device manager",
         "de": "Verbessert den Gerätemanager",
         "ru": "Улучшен диспетчер устройств",
