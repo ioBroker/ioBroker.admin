@@ -1078,7 +1078,7 @@
     "of": "de",
     "Offline": "Desconectado",
     "ok": "Ok",
-    "Ok": "Ok",
+    "Ok": "Okay",
     "Oman": "Omán",
     "On Windows first please call in the start menu under \"ioBroker\" the command line of the relevant ioBroker instance. The correct directory is then set automatically. On Linux or macOS please go to the ioBroker directory.": "En Windows, primero llame en el menú de inicio en \"ioBroker\" la línea de comando de la instancia de ioBroker correspondiente. A continuación, se configura automáticamente el directorio correcto. En Linux o macOS, vaya al directorio ioBroker.",
     "once": "Corre una vez",
