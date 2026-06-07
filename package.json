@@ -38,7 +38,7 @@
     "express-session": "^1.19.0",
     "json5": "^2.2.3",
     "mime": "^3.0.0",
-    "semver": "^7.8.0"
+    "semver": "^7.8.2"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^5.2.0",
