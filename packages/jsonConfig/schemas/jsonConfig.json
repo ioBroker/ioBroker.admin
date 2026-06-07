@@ -174,6 +174,7 @@
         "chips",
         "color",
         "coordinates",
+        "credential",
         "cron",
         "custom",
         "datePicker",
@@ -4708,6 +4709,73 @@
             "if": {
               "properties": {
                 "type": {
+                  "const": "credential"
+                }
+              }
+            },
+            "then": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                },
+                {
+                  "properties": {
+                    "credentialType": {
+                      "description": "Show only credentials of this type, e.g. 'email', 'cloud', 'ai' or 'custom'. If not defined, all credentials are listed",
+                      "type": "string",
+                      "enum": [
+                        "email",
+                        "cloud",
+                        "ai",
+                        "custom"
+                      ]
+                    },
+                    "attr": true,
+                    "label": true,
+                    "type": true,
+                    "defaultSendTo": true,
+                    "allowSaveWithError": true,
+                    "xs": true,
+                    "sm": true,
+                    "md": true,
+                    "lg": true,
+                    "xl": true,
+                    "newLine": true,
+                    "hidden": true,
+                    "hideOnlyControl": true,
+                    "disabled": true,
+                    "helpLink": true,
+                    "help": true,
+                    "style": true,
+                    "darkStyle": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
                   "const": "certificates"
                 }
               }
@@ -8183,6 +8251,61 @@
                     "required": [
                       "type",
                       "certType"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "credential"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "credentialType": {
+                        "description": "Show only credentials of this type, e.g. 'email', 'cloud', 'ai' or 'custom'. If not defined, all credentials are listed",
+                        "type": "string",
+                        "enum": [
+                          "email",
+                          "cloud",
+                          "ai",
+                          "custom"
+                        ]
+                      },
+                      "label": true,
+                      "type": true,
+                      "defaultSendTo": true,
+                      "allowSaveWithError": true,
+                      "xs": true,
+                      "sm": true,
+                      "md": true,
+                      "lg": true,
+                      "xl": true,
+                      "newLine": true,
+                      "hidden": true,
+                      "hideOnlyControl": true,
+                      "disabled": true,
+                      "helpLink": true,
+                      "help": true,
+                      "style": true,
+                      "darkStyle": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "noTranslation": true,
+                      "confirm": true
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
                     ]
                   }
                 },
