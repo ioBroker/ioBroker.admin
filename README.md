@@ -167,6 +167,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added the central credentials manager 
+- (@GermanBluefox) Added the possibility of installation of packages on specific hosts
+
 ### 7.8.29 (2026-05-30)
 - (@GermanBluefox) Corrected JSON config for the select component with grouped options
 

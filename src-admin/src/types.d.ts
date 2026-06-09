@@ -137,3 +137,17 @@ export interface NotificationsCount {
     /** Number of present notify and info notifications */
     other: number;
 }
+
+/**
+ * A file sent along with a `cmdExec` command (base64 encoded). The controller writes it to a temporary
+ * folder on the target host and the command can refer to it just by its name.
+ * Requires controller feature `CONTROLLER_CMD_EXEC_FILES`.
+ */
+export interface CommandFile {
+    /** File name (without path; the command refers to the file by this name) */
+    name: string;
+    /** File content, base64 encoded */
+    file: string;
+    /** If true, the temporary file is not deleted after the command finished */
+    doNotDelete?: boolean;
+}

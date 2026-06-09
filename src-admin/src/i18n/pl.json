@@ -755,6 +755,7 @@
     "Install adapter from %s": "Zainstaluj lub zaktualizuj adapter z adresu %s",
     "Install adapters": "Zainstaluj adaptery",
     "Install from custom URL": "Zainstaluj z niestandardowego adresu URL",
+    "Install on host": "Zainstaluj na hoście",
     "Install or update the adapter from %s": "Zainstaluj lub zaktualizuj adapter z %s",
     "Install selected adapters": "Zainstaluj wybrane adaptery",
     "install specific version": "Zainstaluj konkretną wersję",

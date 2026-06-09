@@ -755,6 +755,7 @@
     "Install adapter from %s": "从%s安装或更新插件",
     "Install adapters": "安装适配器",
     "Install from custom URL": "从自定义URL安装",
+    "Install on host": "安装到主机",
     "Install or update the adapter from %s": "从%s安装或更新适配器",
     "Install selected adapters": "安装选定的适配器",
     "install specific version": "安装特定版本",

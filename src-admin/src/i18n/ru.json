@@ -755,6 +755,7 @@
     "Install adapter from %s": "Установить или обновить адаптер с %s",
     "Install adapters": "Установите адаптеры",
     "Install from custom URL": "Установить из собственного источника",
+    "Install on host": "Установить на хосте",
     "Install or update the adapter from %s": "Установите или обновите адаптер с %s",
     "Install selected adapters": "Установить выбранные адаптеры",
     "install specific version": "Установить определённую версию",
