@@ -1,4 +1,16 @@
 import 'ace-builds/src-noconflict/ace';
+import '@emotion/react';
+import '@emotion/styled';
+import '@iobroker/adapter-react-v5';
+import '@iobroker/json-config';
+import '@iobroker/dm-gui-components';
+import 'date-fns';
+import 'date-fns/locale';
+import 'leaflet';
+import 'leaflet-geosearch';
+import 'react-ace';
+import 'react-dropzone';
+import 'semver';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/browser';
@@ -25,7 +37,8 @@ window.USE_OAUTH2 = true;
 console.log(`iobroker.${window.adapterName}@${version.version}`);
 
 const versionChanged = [
-    'ChunkLoadError', // version was changed
+    'ChunkLoadError', // version was changed (webpack)
+    'Failed to fetch dynamically imported module', // version was changed (vite)
     'removeChild', // version was changed
     'DOMException', // version was changed
 ];
@@ -98,9 +111,8 @@ if (
         throw error;
     };
     window.onunhandledrejection = (event: PromiseRejectionEvent) => {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        const errText = event.toString();
-        if (typeof event === 'object' && errText && versionChanged.find(e => errText.includes(e))) {
+        const errText = event.reason?.toString() ?? String(event.reason);
+        if (errText && versionChanged.find(e => errText.includes(e))) {
             console.error(`Try to detect admin version change: ${event.reason}`);
             window.location.reload();
             return;
@@ -108,8 +120,7 @@ if (
         if (event instanceof Error) {
             throw event;
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-base-to-string
-            throw new Error(event.toString());
+            throw new Error(errText);
         }
     };
 }

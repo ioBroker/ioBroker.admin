@@ -975,7 +975,6 @@ export default abstract class HostGeneric<
                 themeType={this.props.themeType}
                 currentHostName={this.props.host.common.name}
                 onClose={() => this.setState({ baseSettingsDialog: false })}
-                lang={this.props.lang}
                 socket={this.props.socket}
                 t={this.props.t}
             />

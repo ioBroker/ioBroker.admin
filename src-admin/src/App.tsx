@@ -73,7 +73,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
-import type { AdminGuiConfig, CompactAdapterInfo, CompactHost, NotificationsCount } from '@/types';
+import type { AdminGuiConfig, CommandFile, CompactAdapterInfo, CompactHost, NotificationsCount } from '@/types';
 import type { InstanceConfig } from '@/tabs/EasyMode';
 
 import CommandDialog from './dialogs/CommandDialog';
@@ -126,6 +126,7 @@ const Objects = React.lazy(() => import('./tabs/Objects'));
 const Users = React.lazy(() => import('./tabs/Users'));
 const Enums = React.lazy(() => import('./tabs/Enums'));
 const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
+const DeviceManagerTab = React.lazy(() => import('./tabs/DeviceManager'));
 const Hosts = React.lazy(() => import('./tabs/Hosts'));
 const EasyMode = React.lazy(() => import('./tabs/EasyMode'));
 
@@ -453,6 +454,8 @@ interface AppState {
     cmd: string | null;
     cmdDialog: boolean;
     commandHost: string | null;
+    /** Optional files (base64) to send along with the current command */
+    cmdFiles?: CommandFile[] | null;
     callback?: ((exitCode?: number) => void) | null;
     commandError: boolean;
     commandRunning: boolean;
@@ -707,7 +710,7 @@ class App extends Router<AppProps, AppState> {
     static getDerivedStateFromError(error: null | { message: string; stack: any }): {
         hasGlobalError: null | { message: string; stack: any };
     } {
-        // Update state so the next render will show the fallback UI.
+        // Update the state so the next render will show the fallback UI.
         return { hasGlobalError: error };
     }
 
@@ -842,18 +845,18 @@ class App extends Router<AppProps, AppState> {
         }
         if (state?.val) {
             this.guiSettings = obj;
-            this.guiSettings.native = this.guiSettings.native || { localStorage: {}, sessionStorage: {} };
+            this.guiSettings.native ||= { localStorage: {}, sessionStorage: {} };
             if (!this.guiSettings.native.localStorage) {
                 this.guiSettings.native = { localStorage: this.guiSettings.native, sessionStorage: {} };
             }
 
-            // @ts-expect-error it is not full implementation of storage
+            // @ts-expect-error it is not a full implementation of storage
             window._localStorage = {
                 getItem: this.localStorageGetItem,
                 setItem: this.localStorageSetItem,
                 removeItem: this.localStorageRemoveItem,
             };
-            // @ts-expect-error it is not full implementation of storage
+            // @ts-expect-error it is not a full implementation of storage
             window._sessionStorage = {
                 getItem: this.sessionStorageGetItem,
                 setItem: this.sessionStorageSetItem,
@@ -993,7 +996,7 @@ class App extends Router<AppProps, AppState> {
                 name: 'admin',
                 admin5only: true,
                 port: App.getPort(),
-                autoSubscribes: ['system.adapter.*'], // Do not subscribe on '*' and really we don't need a 'system.adapter.*' too. Every tab must subscribe itself to everything that it needs
+                autoSubscribes: ['system.adapter.*'], // Do not subscribe on '*' and really we don't need a 'system.adapter.*' either. Every tab must subscribe itself to everything that it needs
                 autoSubscribeLog: true,
                 tokenTimeoutHandler: this.onSessionExpiration,
                 onProgress: progress => {
@@ -1002,7 +1005,7 @@ class App extends Router<AppProps, AppState> {
                             connected: false,
                         });
                     } else if (progress === PROGRESS.READY) {
-                        // BF: (2022.05.09) here must be this.socket.getVersion(true), but I have no Idea, why it does not work :(
+                        // BF: (2022.05.09) here must be this.socket.getVersion(true), but I have no idea why it does not work :(
                         this.socket
                             .getVersion()
                             .then(async versionInfo => {
@@ -1027,7 +1030,7 @@ class App extends Router<AppProps, AppState> {
                                 };
 
                                 if (this.state.cmd && this.state.cmd.match(/ admin(@[-.\w]+)?$/)) {
-                                    // close the command dialog after reconnecting (maybe admin was restarted, and update is now finished)
+                                    // close the command dialog after reconnecting (maybe admin was restarted, and the update is now finished)
                                     newState.commandRunning = false;
                                     newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;
 
@@ -1139,11 +1142,11 @@ class App extends Router<AppProps, AppState> {
                         }
 
                         // create Workers
-                        this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1_000);
-                        this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                        this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
-                        this.adaptersWorker = this.adaptersWorker || new AdaptersWorker(this.socket);
-                        this.objectsWorker = this.objectsWorker || new ObjectsWorker(this.socket);
+                        this.logsWorker ||= new LogsWorker(this.socket, 1_000);
+                        this.instancesWorker ||= new InstancesWorker(this.socket);
+                        this.hostsWorker ||= new HostsWorker(this.socket);
+                        this.adaptersWorker ||= new AdaptersWorker(this.socket);
+                        this.objectsWorker ||= new ObjectsWorker(this.socket);
 
                         const newState: Partial<AppState> = {
                             lang: this.socket.systemLang,
@@ -1171,7 +1174,7 @@ class App extends Router<AppProps, AppState> {
                             ? storedExpertMode === 'true'
                             : !!newState.systemConfig.common.expertMode;
 
-                        // Read user and show him
+                        // Read the user and show him
                         if (this.socket.isSecure || this.socket.systemConfig.native?.vendor) {
                             try {
                                 const user = await this.socket.getCurrentUser();
@@ -1358,7 +1361,7 @@ class App extends Router<AppProps, AppState> {
 
         newState.ownHost = newState.currentHost;
 
-        // Check that host is alive
+        // Check that the host is alive
         let alive;
         try {
             alive = await this.socket.getState(`${newState.currentHost}.alive`);
@@ -1367,11 +1370,11 @@ class App extends Router<AppProps, AppState> {
             console.warn(`Cannot get state ${newState.currentHost}.alive: ${e}`);
         }
 
-        if (!alive || !alive.val) {
+        if (!alive?.val) {
             // find first the live host
             for (let h = 0; h < newState.hosts.length; h++) {
                 alive = await this.socket.getState(`${newState.hosts[h]._id}.alive`);
-                if (alive && alive.val) {
+                if (alive?.val) {
                     newState.currentHost = newState.hosts[h]._id;
                     newState.currentHostName = newState.hosts[h].common.name;
                 }
@@ -1419,7 +1422,7 @@ class App extends Router<AppProps, AppState> {
                             const resolve = this.state.askForTokenRefresh.resolve;
 
                             if (this.state.askForTokenRefresh.doNotAsk) {
-                                // Add 2 hours for session
+                                // Add 2 hours for the session
                                 this.doNotAskSessionExpiration = Date.now() + 3_600_000 * 2;
                             }
 
@@ -1620,7 +1623,7 @@ class App extends Router<AppProps, AppState> {
     };
 
     /**
-     * Get news for specific adapter instance
+     * Get news for a specific adapter instance
      */
     onNews = async (_id: string, newsFeed: ioBroker.State): Promise<void> => {
         try {
@@ -1726,7 +1729,7 @@ class App extends Router<AppProps, AppState> {
     }
 
     async readRepoAndInstalledInfo(currentHost: string, hosts?: CompactHost[] | null, update?: boolean): Promise<void> {
-        hosts = hosts || this.state.hosts;
+        hosts ||= this.state.hosts;
 
         const repository: CompactRepository = await this.socket
             .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
@@ -1851,7 +1854,9 @@ class App extends Router<AppProps, AppState> {
                 themeType: App.getThemeType(theme),
             },
             () => {
+                // DH (2026.04.12) Remove this line after all adapters update adapter-react-v5 to V8.2.x
                 this.refConfigIframe?.contentWindow?.postMessage('updateTheme', '*');
+                this.refConfigIframe?.contentWindow?.postMessage({ type: 'updateTheme', themeName: newThemeName }, '*');
             },
         );
     };
@@ -1890,9 +1895,12 @@ class App extends Router<AppProps, AppState> {
                             t={I18n.t}
                             lang={I18n.getLanguage()}
                             expertMode={this.state.expertMode}
-                            executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
-                                this.executeCommand(cmd, host, callback)
-                            }
+                            executeCommand={(
+                                cmd: string,
+                                host?: string,
+                                callback?: (exitCode: number) => void,
+                                files?: CommandFile[],
+                            ) => this.executeCommand(cmd, host, callback, files)}
                             commandRunning={this.state.commandRunning}
                             onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
                             menuOpened={opened}
@@ -1939,9 +1947,12 @@ class App extends Router<AppProps, AppState> {
                             isFloatComma={this.state.systemConfig.common.isFloatComma}
                             width={this.props.width}
                             configStored={(value: boolean) => this.allStored(value)}
-                            executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
-                                this.executeCommand(cmd, host, callback)
-                            }
+                            executeCommand={(
+                                cmd: string,
+                                host?: string,
+                                callback?: (exitCode: number) => void,
+                                files?: CommandFile[],
+                            ) => this.executeCommand(cmd, host, callback, files)}
                             inBackgroundCommand={this.state.commandError || this.state.performed}
                             onRegisterIframeRef={(ref: HTMLIFrameElement) => (this.refConfigIframe = ref)}
                             onUnregisterIframeRef={(ref: HTMLIFrameElement) => {
@@ -2075,16 +2086,32 @@ class App extends Router<AppProps, AppState> {
                             theme={this.state.theme}
                             expertMode={this.state.expertMode}
                             t={I18n.t}
-                            navigate={Router.doNavigate}
                             currentHost={this.state.currentHost}
-                            executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
-                                this.executeCommand(cmd, host, callback)
-                            }
+                            executeCommand={(
+                                cmd: string,
+                                host?: string,
+                                callback?: (exitCode: number) => void,
+                                files?: CommandFile[],
+                            ) => this.executeCommand(cmd, host, callback, files)}
                             systemConfig={this.state.systemConfig}
                             showAdaptersWarning={this.showAdaptersWarning}
                             adminInstance={this.adminInstance}
                             onUpdating={(updating: boolean) => this.setState({ updating })}
-                            instancesWorker={this.instancesWorker}
+                        />
+                    </Suspense>
+                );
+            }
+            if (this.state.currentTab.tab === 'tab-devicemanager') {
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <DeviceManagerTab
+                            key={this.state.currentTab.tab}
+                            themeName={this.state.themeName}
+                            themeType={this.state.themeType}
+                            theme={this.state.theme}
+                            socket={this.socket}
+                            dateFormat={this.state.systemConfig.common.dateFormat}
+                            isFloatComma={this.state.systemConfig.common.isFloatComma}
                         />
                     </Suspense>
                 );
@@ -2245,7 +2272,7 @@ class App extends Router<AppProps, AppState> {
             this.handleDrawerState(DrawerStates.closed as 1);
         }
 
-        tab = tab || (this.state.currentTab && this.state.currentTab.tab) || '';
+        tab ||= this.state.currentTab?.tab || '';
 
         this.setTitle(tab.replace('tab-', ''));
     };
@@ -2276,7 +2303,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    executeCommand(cmd: string, host?: string, callback?: (exitCode: number) => void): void {
+    executeCommand(cmd: string, host?: string, callback?: (exitCode: number) => void, files?: CommandFile[]): void {
         if (typeof host === 'boolean') {
             callback = host;
             host = null;
@@ -2291,12 +2318,14 @@ class App extends Router<AppProps, AppState> {
                     performed: false,
                     callback: null,
                     commandHost: null,
+                    cmdFiles: null,
                 },
                 () =>
                     this.setState({
                         cmd,
                         cmdDialog: true,
                         callback,
+                        cmdFiles: files || null,
                     }),
             );
             return;
@@ -2308,6 +2337,7 @@ class App extends Router<AppProps, AppState> {
             cmdDialog: true,
             callback,
             commandHost: host || this.state.currentHost,
+            cmdFiles: files || null,
         });
     }
 
@@ -2320,6 +2350,7 @@ class App extends Router<AppProps, AppState> {
                 performed: false,
                 callback: null,
                 commandHost: null,
+                cmdFiles: null,
             },
             () => cb && cb(),
         );
@@ -2329,9 +2360,12 @@ class App extends Router<AppProps, AppState> {
         if (this.state.wizard) {
             return (
                 <WizardDialog
-                    executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
-                        this.executeCommand(cmd, host, callback)
-                    }
+                    executeCommand={(
+                        cmd: string,
+                        host?: string,
+                        callback?: (exitCode: number) => void,
+                        files?: CommandFile[],
+                    ) => this.executeCommand(cmd, host, callback, files)}
                     host={this.state.currentHost}
                     socket={this.socket}
                     themeName={this.state.themeName}
@@ -2369,7 +2403,7 @@ class App extends Router<AppProps, AppState> {
                 <Dialog
                     open={!0}
                     onClose={() => {
-                        // Ignore. It can be closed only by button
+                        // Ignore. It can be closed only by a button
                     }}
                 >
                     <DialogTitle>{I18n.t('Waiting for admin restart...')}</DialogTitle>
@@ -2429,6 +2463,7 @@ class App extends Router<AppProps, AppState> {
                 callback={this.state.callback}
                 onInBackground={() => this.setState({ cmdDialog: false })}
                 cmd={this.state.cmd}
+                files={this.state.cmdFiles || undefined}
                 errorFunc={() => this.setState({ commandError: true })}
                 performed={() => this.setState({ performed: true })}
                 inBackground={this.state.commandError || this.state.performed}
@@ -2807,7 +2842,7 @@ class App extends Router<AppProps, AppState> {
                                         this.logsWorkerChanged(host);
                                         (window._localStorage || window.localStorage).setItem('App.currentHost', host);
                                         await this.readRepoAndInstalledInfo(host, this.state.hosts);
-                                        // read notifications from host
+                                        // read notifications from the host
                                         const notifications = await this.hostsWorker.getNotifications(host);
                                         await this.handleNewNotifications(notifications);
                                     },

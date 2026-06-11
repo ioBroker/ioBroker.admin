@@ -149,7 +149,7 @@ export class GenericWorker<T extends ioBroker.ObjectType> {
     };
 
     getObjects(update?: boolean): Promise<null | Record<string, GetObjectFromType<T>>> {
-        update = update || this.forceUpdate;
+        update ||= this.forceUpdate;
         this.forceUpdate = false;
 
         if (!update && this.promise instanceof Promise) {

@@ -14,7 +14,7 @@ import {
     type MetaObject,
 } from '@iobroker/adapter-react-v5';
 
-import { FileEditor } from '../components/FileEditor';
+import FileEditor from '../components/FileEditor';
 import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';
 
 interface FilesProps {

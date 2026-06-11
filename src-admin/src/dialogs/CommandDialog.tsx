@@ -14,6 +14,7 @@ import {
 import { Close as CloseIcon, OpenInBrowser as OpenInBrowserIcon } from '@mui/icons-material';
 
 import type { IobTheme, Translate, AdminConnection } from '@iobroker/adapter-react-v5';
+import type { CommandFile } from '@/types';
 import Command from '../components/Command';
 
 const styles: Record<string, any> = {
@@ -47,6 +48,8 @@ interface CommandDialogProps {
     commandError: boolean;
     socket: AdminConnection;
     host: string;
+    /** Optional files (base64) to send along with the command to the target host */
+    files?: CommandFile[];
 }
 
 interface CommandDialogState {
@@ -138,6 +141,7 @@ export default class CommandDialog extends Component<CommandDialogProps, Command
                         performed={this.props.performed}
                         callback={this.props.callback}
                         cmd={this.props.cmd}
+                        files={this.props.files}
                         onFinished={() => this.state.closeOnReady && this.props.onClose()}
                         onSetCommandRunning={(running: boolean) => this.props.onSetCommandRunning(running)}
                     />

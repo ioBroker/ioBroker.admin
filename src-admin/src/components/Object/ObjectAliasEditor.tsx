@@ -24,14 +24,7 @@ import {
 // Icons
 import { Close, Link as IconLink, AddLink, Close as IconClose } from '@mui/icons-material';
 
-import {
-    withWidth,
-    I18n,
-    IconFx,
-    type IobTheme,
-    type AdminConnection,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { I18n, IconFx, type IobTheme, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 
 import { DEFAULT_ROLES } from './ObjectBrowserEditObject';
 
@@ -94,9 +87,10 @@ interface ObjectAliasEditorState {
     newAliasIcon: string;
     newAliasMin?: string;
     newAliasMax?: string;
+    newAliasCopyStates: boolean;
 }
 
-class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEditorState> {
+export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEditorState> {
     aliasIDs: string[];
 
     constructor(props: ObjectAliasEditorProps) {
@@ -137,6 +131,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
             newAliasWriteFormula: 'val',
             newAliasColor: this.props.obj.common.color,
             newAliasIcon: this.props.obj.common.icon,
+            newAliasCopyStates: !!this.props.obj.common.states,
         };
     }
 
@@ -426,6 +421,18 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                         }
                         label={I18n.t('Alias write')}
                     />
+                    {this.props.obj.common.states ? (
+                        <FormControlLabel
+                            style={styles.formControlLabel}
+                            control={
+                                <Checkbox
+                                    checked={this.state.newAliasCopyStates}
+                                    onChange={e => this.setState({ newAliasCopyStates: e.target.checked })}
+                                />
+                            }
+                            label={I18n.t('Copy states')}
+                        />
+                    ) : null}
                     <FormControlLabel
                         style={styles.formControlLabel}
                         control={
@@ -551,6 +558,9 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                             if (this.state.newAliasIcon) {
                                 obj.common.icon = this.state.newAliasIcon;
                             }
+                            if (this.state.newAliasCopyStates && this.props.obj.common.states) {
+                                obj.common.states = this.props.obj.common.states;
+                            }
                             if (this.state.newAliasUseFormula) {
                                 if (
                                     obj.common.read !== false &&
@@ -645,5 +655,3 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
         );
     }
 }
-
-export default withWidth()(ObjectAliasEditor);

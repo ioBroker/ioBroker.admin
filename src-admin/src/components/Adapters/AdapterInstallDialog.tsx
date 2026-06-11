@@ -13,6 +13,7 @@ import type { HostsWorker } from '@/Workers/HostsWorker';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 import type { HostAdapterWorker } from '@/Workers/HostAdapterWorker';
 import { extractUrlLink, type RepoAdapterObject } from './Utils';
+import type { CommandFile } from '@/types';
 
 // TODO: Placed here from @iobroker/js-controller-common-db/build/esm/lib/common/tools
 interface Multilingual {
@@ -108,7 +109,7 @@ export type AdaptersContext = {
     /** Current selected host */
     instancesWorker: InstancesWorker;
     hostsWorker: HostsWorker;
-    executeCommand: (cmd: string, host?: string, callback?: (exitCode: number) => void) => void;
+    executeCommand: (cmd: string, host?: string, callback?: (exitCode: number) => void, files?: CommandFile[]) => void;
     /** node.js version of current host */
     categories: {
         name: string;
@@ -193,6 +194,10 @@ export default abstract class AdapterInstallDialog<
         debug?: boolean;
         customUrl?: boolean;
         context: AdaptersContext;
+        /** Explicit target host (without `system.host.` prefix). Overrides the host picker / current host. */
+        host?: string;
+        /** Optional files (base64) to send along with the command (e.g. a .tgz to install on a remote host) */
+        files?: CommandFile[];
     }): Promise<void> {
         if (!options.customUrl) {
             const adapterObject = options.context.repository[options.adapterName];
@@ -226,7 +231,10 @@ export default abstract class AdapterInstallDialog<
             }
         }
 
-        const host = (this.state.addInstanceHostName || options.context.currentHost).replace(/^system\.host\./, '');
+        const host = (options.host || this.state.addInstanceHostName || options.context.currentHost).replace(
+            /^system\.host\./,
+            '',
+        );
 
         try {
             await new Promise<void>((resolve, reject) => {
@@ -237,6 +245,7 @@ export default abstract class AdapterInstallDialog<
                     host,
                     exitCode =>
                         !exitCode ? resolve() : reject(new Error(`The process returned an exit code of ${exitCode}`)),
+                    options.files,
                 );
             });
         } catch (e) {

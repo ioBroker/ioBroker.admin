@@ -40,7 +40,7 @@ export type ioBrokerObject<Native extends object = object, Common extends object
 export interface AdminGuiConfig {
     admin?: {
         menu?: {
-            // Settings for left menu
+            // Settings for the left menu
             editable?: false; // Hide edit button in menu
             'tab-hosts'?: false; // Hide hosts item (See all https://github.com/ioBroker/ioBroker.admin/blob/master/src-rx/src/components/Drawer.js#L142)
             'tab-files'?: false; // Hide files item
@@ -58,6 +58,7 @@ export interface AdminGuiConfig {
             'tab-javascript'?: false; // Hide javascript item
             'tab-text2command-0'?: false; // Hide text2command-0 item
             'tab-echarts'?: false; // Hide echarts item
+            'tab-devicemanager'?: false; // Hide device manager
             [tabName: string]: false | undefined;
         };
         appBar?: {
@@ -71,6 +72,7 @@ export interface AdminGuiConfig {
             tabConfig?: false; // Main config tab
             tabRepositories?: false; // Repositories tab
             tabCertificates?: false; // Certificates tab
+            tabCredentials?: false; // Credentials tab
             tabLetsEncrypt?: false; // Let's Encrypt tab
             tabDefaultACL?: false; // Default ACL tab
             tabStatistics?: false; // Statistics tab
@@ -134,4 +136,18 @@ export interface NotificationsCount {
     warning: number;
     /** Number of present notify and info notifications */
     other: number;
+}
+
+/**
+ * A file sent along with a `cmdExec` command (base64 encoded). The controller writes it to a temporary
+ * folder on the target host and the command can refer to it just by its name.
+ * Requires controller feature `CONTROLLER_CMD_EXEC_FILES`.
+ */
+export interface CommandFile {
+    /** File name (without path; the command refers to the file by this name) */
+    name: string;
+    /** File content, base64 encoded */
+    file: string;
+    /** If true, the temporary file is not deleted after the command finished */
+    doNotDelete?: boolean;
 }

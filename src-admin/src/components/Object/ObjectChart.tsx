@@ -36,14 +36,7 @@ import {
 } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 
-import {
-    type AdminConnection,
-    Utils,
-    withWidth,
-    type IobTheme,
-    type ThemeType,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { type AdminConnection, Utils, type IobTheme, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
 
 // icons
 import { FaChartLine as SplitLineIcon } from 'react-icons/fa';
@@ -160,19 +153,19 @@ const GRID_PADDING_RIGHT = 25;
 
 interface ObjectChartProps {
     obj: ioBroker.StateObject;
-    customsInstances: string[];
+    customsInstances?: string[];
     objects: Record<string, ioBroker.Object>;
     socket: AdminConnection;
     lang: ioBroker.Languages;
     themeType: ThemeType;
     // dateFormat: string;
     isFloatComma: boolean;
-    noToolbar: boolean;
+    noToolbar?: boolean;
     showJumpToEchart: boolean;
-    defaultHistory: string;
-    historyInstance: string;
-    from: number;
-    end: number;
+    defaultHistory?: string;
+    historyInstance?: string;
+    from?: number;
+    end?: number;
     t: Translate;
     theme: IobTheme;
 }
@@ -201,7 +194,7 @@ interface HistoryItem {
     i?: boolean;
 }
 
-class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
+export default class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
     private echartsReact: ReactEchartsCore;
 
     private readonly rangeRef: React.RefObject<HTMLDivElement>;
@@ -439,7 +432,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         // collect all echarts instances
         const echartsJump = !!instances.find(item => item._id.startsWith('system.adapter.echarts.'));
 
-        const defaultHistory = config && config.common && config.common.defaultHistory;
+        const defaultHistory = config?.common?.defaultHistory;
         // filter out history instances, that does not have data for this object
         if (this.props.obj.common.custom) {
             list = list.filter(it => this.props.obj.common.custom[it.id]);
@@ -1655,5 +1648,3 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         );
     }
 }
-
-export default withWidth()(ObjectChart);

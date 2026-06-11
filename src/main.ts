@@ -15,13 +15,14 @@ import { platform } from 'node:os';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
 
-import { Adapter, type AdapterOptions, commonTools, controllerDir, I18n } from '@iobroker/adapter-core';
+import { Adapter, type AdapterOptions, commonTools, I18n } from '@iobroker/adapter-core';
 import { SocketAdmin, type Server, type Store, type SocketSettings } from '@iobroker/socket-classes';
 import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
 import Web, { type AdminAdapterConfig } from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
 import { DockerManager } from '@iobroker/plugin-docker';
+import { checkCommonObjects, updateDevicesObject, updateIcons, validateUserData0 } from './lib/objectFixes';
 
 const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
@@ -1679,28 +1680,6 @@ class Admin extends Adapter {
         }
     }
 
-    // update icons by all known default objects. Remove this function after 2 years (BF: 2021.04.20)
-    updateIcons(): void {
-        if (existsSync(`${controllerDir}/io-package.json`)) {
-            const ioPackage = JSON.parse(
-                readFileSync(join(controllerDir, 'io-package.json'), {
-                    encoding: 'utf-8',
-                }),
-            );
-
-            ioPackage.objects.forEach(async (obj: ioBroker.AnyObject) => {
-                if (obj.common?.icon && obj.common.icon.length > 50) {
-                    const cObj = await this.getForeignObjectAsync(obj._id);
-                    if (cObj?.common && (!cObj.common.icon || cObj.common.icon.length < 50)) {
-                        this.log.debug(`Update icon for ${cObj._id}`);
-                        cObj.common.icon = obj.common.icon;
-                        await this.setForeignObjectAsync(cObj._id, cObj);
-                    }
-                }
-            });
-        }
-    }
-
     restartRepoUpdate(): void {
         // start the next cycle
         if (this.config.autoUpdate) {
@@ -1868,79 +1847,6 @@ class Admin extends Adapter {
         }
     }
 
-    // this function re-check if the common objects like '0_userdata.0' exist
-    async checkCommonObjects(): Promise<void> {
-        // try to find js-controller directory
-        let objects: ioBroker.Object[];
-        try {
-            const dir = require.resolve('iobroker.js-controller/io-package.json').replace(/\\/g, '/');
-            // dir is something like ./node_modules/iobroker.js-controller/build/cjs/main.js
-            if (existsSync(dir)) {
-                const data = JSON.parse(readFileSync(dir).toString());
-                if (data.objects) {
-                    objects = data.objects;
-                }
-            }
-        } catch {
-            // ignore
-        }
-        if (objects) {
-            for (let i = 0; i < objects.length; i++) {
-                const obj = await this.getForeignObjectAsync(objects[i]._id);
-                if (!obj) {
-                    await this.setForeignObjectAsync(objects[i]._id, objects[i]);
-                }
-            }
-        } else {
-            // check the meta-object 0_userdata.0 and create it if required
-            let userData: ioBroker.MetaObject | null | undefined = await this.getForeignObjectAsync('0_userdata.0');
-            if (!userData) {
-                userData = {
-                    _id: '0_userdata.0',
-                    type: 'meta',
-                    common: {
-                        icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCI+DQogICAgPGcgZmlsbD0iY3VycmVudENvbG9yIj4NCiAgICAgICAgPHBhdGggZD0iTTE5LDV2MTRINVY1SDE5IE0xOSwzSDVDMy45LDMsMywzLjksMyw1djE0YzAsMS4xLDAuOSwyLDIsMmgxNGMxLjEsMCwyLTAuOSwyLTJWNUMyMSwzLjksMjAuMSwzLDE5LDNMMTksM3oiLz4NCiAgICAgICAgPHBhdGggZD0iTTE0LDE3SDd2LTJoN1YxN3ogTTE3LDEzSDd2LTJoMTBWMTN6IE0xNyw5SDdWN2gxMFY5eiIvPg0KICAgIDwvZz4NCjwvc3ZnPg==',
-                        name: {
-                            en: 'User objects and files root folder',
-                            de: 'Stammordner für Benutzerobjekte und Dateien',
-                            ru: 'Корневая папка пользовательских объектов и файлов',
-                            pt: 'Pasta raiz de objetos e arquivos do usuário',
-                            nl: 'Hoofdmap van objecten en bestanden van gebruikers',
-                            fr: 'Objets utilisateur et dossier racine des fichiers',
-                            it: "Cartella principale di oggetti e file dell'utente",
-                            es: 'Carpeta raíz de objetos y archivos de usuario',
-                            pl: 'Folder główny obiektów i plików użytkownika',
-                            uk: "Коренева папка об'єктів користувача та файлів",
-                            'zh-cn': '用户对象和文件根文件夹',
-                        },
-                        desc: {
-                            en: 'Here you can upload your files or create your private objects and states',
-                            de: 'Hier können eigene Dateien hochgeladen oder private Objekte und Zustände erstellt werden',
-                            ru: 'Здесь вы можете загрузить свои файлы или создать свои личные объекты и состояния',
-                            pt: 'Aqui você pode enviar seus arquivos ou criar seus objetos e estados particulares',
-                            nl: 'Hier kunt u uw bestanden uploaden of uw privé-objecten en statussen maken',
-                            fr: 'Ici, vous pouvez télécharger vos fichiers ou créer vos objets et états privés',
-                            it: 'Qui puoi caricare i tuoi file o creare oggetti e stati privati',
-                            es: 'Aquí puede cargar sus archivos o crear sus objetos y estados privados',
-                            pl: 'Tutaj możesz przesyłać pliki lub tworzyć prywatne obiekty i stany',
-                            uk: "Тут ви можете завантажити свої файли або створити свої приватні об'єкти та стани",
-                            'zh-cn': '在这里您可以上传文件或创建私有对象和状态',
-                        },
-                        type: 'meta.user',
-                        dontDelete: true,
-                    },
-                    acl: {
-                        owner: 'system.user.admin',
-                        ownerGroup: 'system.group.administrator',
-                        object: 1604,
-                    },
-                } as ioBroker.MetaObject;
-
-                await this.setForeignObject(userData._id, userData);
-            }
-        }
-    }
-
     /**
      * Initialize the adapter
      */
@@ -1950,7 +1856,7 @@ class Admin extends Adapter {
             this.config.defaultUser = `system.user.${this.config.defaultUser}`;
         }
 
-        this.checkCommonObjects().catch((e: Error) => this.log.warn(`Cannot check common objects: ${e?.message}`));
+        checkCommonObjects(this).catch((e: Error) => this.log.warn(`Cannot check common objects: ${e?.message}`));
 
         this.getData(
             adapter => (webServer = new Web(adapter.config, adapter, this.initSocket.bind(this), { systemLanguage })),
@@ -1997,39 +1903,11 @@ class Admin extends Adapter {
         void this.updateNews().catch(e =>
             this.log.error(`Cannot update news: ${e.response ? e.response.data : e.message || e.code}`),
         );
-        this.updateIcons();
-        void this.validateUserData0().catch(e => this.log.error(`Cannot validate 0_userdata: ${e}`));
+        updateIcons(this);
+        void validateUserData0(this).catch(e => this.log.error(`Cannot validate 0_userdata: ${e}`));
+        void updateDevicesObject(this).catch(e => this.log.error(`Cannot update devices objects: ${e}`));
         void this.checkWellKnownPasswords().catch(e => this.log.error(`Cannot check well known passwords: ${e}`));
         this.subscribeForeignObjects(`system.adapter.${this.namespace}.plugins.sentry.enabled`);
-    }
-
-    /**
-     * Create 0_userdata if it does not exist
-     */
-    async validateUserData0(): Promise<void> {
-        let obj: ioBroker.MetaObject | null | undefined;
-        try {
-            obj = await this.getForeignObjectAsync('0_userdata.0');
-        } catch {
-            // ignore
-        }
-        if (!obj) {
-            try {
-                const ioContent = readFileSync(`${controllerDir}/io-package.json`).toString('utf8');
-                const io = JSON.parse(ioContent);
-                if (io.objects) {
-                    const userData: ioBroker.MetaObject | null = io.objects.find(
-                        (obj: ioBroker.AnyObject) => obj._id === '0_userdata.0',
-                    );
-                    if (userData) {
-                        await this.setForeignObjectAsync(userData._id, userData);
-                        this.log.info('Object 0_userdata.0 was re-created');
-                    }
-                }
-            } catch (e) {
-                this.log.error(`Cannot read ${controllerDir}/io-package.json: ${e}`);
-            }
-        }
     }
 
     async checkWellKnownPasswords(): Promise<void> {

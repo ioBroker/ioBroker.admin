@@ -30,7 +30,7 @@ import {
     Computer as IconSyslog,
     Send as IconStream,
 } from '@mui/icons-material';
-import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 import IconSeq from '../../assets/seq.png';
 
 const styles: Record<string, any> = {
@@ -115,7 +115,7 @@ interface BaseSettingsLogState {
     expanded: string[];
 }
 
-class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogState> {
+export default class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogState> {
     private focusRef: React.RefObject<HTMLInputElement>;
 
     constructor(props: BaseSettingsLogProps) {
@@ -1126,5 +1126,3 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
         );
     }
 }
-
-export default withWidth()(BaseSettingsLog);

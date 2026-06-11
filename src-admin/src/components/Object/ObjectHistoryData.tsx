@@ -33,14 +33,7 @@ import {
 import { FaPlusSquare as InsertIcon, FaDownload as ExportIcon } from 'react-icons/fa';
 import { Edit as IconEdit, Delete as IconDelete, Close as IconClose } from '@mui/icons-material';
 
-import {
-    Utils,
-    withWidth,
-    TableResize,
-    type AdminConnection,
-    type IobTheme,
-    type Translate,
-} from '@iobroker/adapter-react-v5';
+import { Utils, TableResize, type AdminConnection, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 import { localeMap } from './utils';
 
@@ -263,7 +256,7 @@ interface ObjectHistoryDataState {
     suppressMessage?: number | boolean;
 }
 
-class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryDataState> {
+export default class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryDataState> {
     private readonly adminInstance: number;
 
     private readonly supportedFeaturesPromises: Record<string, Promise<SupportedFeatures>>;
@@ -1662,5 +1655,3 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         return `${new Date(ts).toLocaleDateString()} ${new Date(ts).toLocaleTimeString()}.${(ts % 1_000).toString().padStart(3, '0')}`;
     }
 }
-
-export default withWidth()(ObjectHistoryData);

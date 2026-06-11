@@ -127,14 +127,12 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
     renderCharts(): JSX.Element {
         return (
             <ObjectChart
-                id="custom-tabpanel-chart"
                 isFloatComma={this.props.isFloatComma}
                 showJumpToEchart
                 t={this.props.t}
                 lang={this.props.lang}
-                expertMode={this.props.expertMode}
                 socket={this.props.socket}
-                obj={this.props.objects[this.props.objectIDs[0]]}
+                obj={this.props.objects[this.props.objectIDs[0]] as ioBroker.StateObject}
                 customsInstances={this.props.customsInstances}
                 themeType={this.props.themeType}
                 theme={this.props.theme}
@@ -146,15 +144,13 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
     renderTable(): JSX.Element {
         return (
             <ObjectHistoryData
-                id="custom-tabpanel-history"
                 t={this.props.t}
                 isFloatComma={this.props.isFloatComma}
                 lang={this.props.lang}
                 expertMode={this.props.expertMode}
                 socket={this.props.socket}
-                obj={this.props.objects[this.props.objectIDs[0]]}
+                obj={this.props.objects[this.props.objectIDs[0]] as ioBroker.StateObject}
                 customsInstances={this.props.customsInstances}
-                themeName={this.props.themeName}
                 objects={this.props.objects}
             />
         );
@@ -163,12 +159,9 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
     renderCustomEditor(): JSX.Element {
         return (
             <ObjectCustomEditor
-                id="custom-tabpanel-settings"
                 registerSaveFunc={(func: (cb?: (error?: boolean) => void) => void) => (this.saveFunc = func)}
                 t={this.props.t}
-                allVisibleObjects={this.props.allVisibleObjects}
                 lang={this.props.lang}
-                expertMode={this.props.expertMode}
                 socket={this.props.socket}
                 objectIDs={this.props.objectIDs}
                 customsInstances={this.props.customsInstances}

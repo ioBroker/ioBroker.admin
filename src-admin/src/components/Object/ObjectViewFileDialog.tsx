@@ -5,7 +5,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Fab } f
 // Icons
 import { Close as CloseIcon, PlayArrow as PlayIcon, GetApp as DownloadIcon } from '@mui/icons-material';
 
-import { withWidth, type IobTheme, type Translate, type AdminConnection, Utils } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate, type AdminConnection, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ioBrokerObject } from '@/types';
 
@@ -58,7 +58,7 @@ interface ObjectViewFileDialogState {
     audio?: boolean;
 }
 
-class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectViewFileDialogState> {
+export default class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectViewFileDialogState> {
     audioRef: React.RefObject<HTMLAudioElement>;
 
     constructor(props: ObjectViewFileDialogProps) {
@@ -179,5 +179,3 @@ class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectVi
         );
     }
 }
-
-export default withWidth()(ObjectViewFileDialog);

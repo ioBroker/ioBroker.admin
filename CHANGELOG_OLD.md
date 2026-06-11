@@ -1,4 +1,60 @@
 # Older changes
+## 7.8.23 (2026-04-27)
+- (@GermanBluefox) Copy `common.states` by alias creation
+- (@GermanBluefox) Update `devices` instances
+
+## 7.8.20 (2026-03-30)
+- (@GermanBluefox) Improved the device manager
+
+## 7.8.9 (2026-03-25)
+- (@GermanBluefox) Added in JsonConfig OAuth2 process for Spotify
+
+## 7.8.8 (2026-03-24)
+- (@GermanBluefox) Implemented the possibility to upload adapter from the file (useful for development and testing)
+
+## 7.8.6 (2026-03-20)
+- (@GermanBluefox) Added the possibility to use the Object properties in JsonConfig
+
+## 7.8.5 (2026-03-18)
+- (@GermanBluefox) Custom editor could be limited to specific instances or specific states by regex expression
+- (@GermanBluefox) Added some options to JSON Config
+- (@copilot) Added `Cache-Control: no-cache` header to `index.html` to prevent browser from using stale cached HTML after admin updates
+- (@copilot) Handle Vite dynamic import failures (ERR_CACHE_READ_FAILURE) by triggering page reload instead of showing white screen
+
+## 7.8.3 (2026-03-04)
+- (@GermanBluefox) Added the device manager tab in the admin
+
+## 7.7.31 (2026-02-16)
+- (@GermanBluefox) Added better table layout for JSON Config
+
+## 7.7.28 (2026-02-08)
+- (@GermanBluefox) Added iframe support for JSON Config
+
+## 7.7.23 (2026-01-27)
+- (@GermanBluefox) Added support of device manager in the admin tabs
+- (@GermanBluefox) Corrected JSON Config issues
+
+## 7.7.22 (2025-12-15)
+- (@GermanBluefox) Layout fix in the edit object dialog
+
+## 7.7.20 (2025-11-15)
+- (@GermanBluefox) Small optimizations
+- (@GermanBluefox) Allowed to upload objects via text
+
+## 7.7.19 (2025-10-26)
+- (@GermanBluefox) Updated schema location for JsonConfig
+
+## 7.7.18 (2025-10-25)
+- (@GermanBluefox) Improvement of categories: drag&drop, visibility
+- (@copilot) Added missing filterFunc property to jsonConfig objectId schema to match documentation and implementation
+- (@copilot, @SimonFischer04) Added an extended reverse proxy example section with screenshots, limitations (admin root requirement), and adapter compatibility notes
+- (@copilot, @SimonFischer04) Fixed instances page reverse proxy link mapping so adapter localLinks are rewritten to the configured proxy paths (prefix matching + web port replacement, with duplicate link collapse)
+- (@copilot, @SimonFischer04) Fixed intro page reverse proxy link remapping so links are correctly rewritten immediately and after navigating away and back (load reverseProxy config before instance scan and use prefix startsWith matching)
+- (@GermanBluefox) Fixed multi-selection in the select ID dialog
+
+## 7.7.3 (2025-09-25)
+- Many GUI changes: See previous changelog below for details
+
 ## 7.7.2 (2025-09-24)
 - (@copilot) Fixed JSONCONFIG table validator bug where validation errors persisted after deleting table rows
 - (@GermanBluefox) Made small fix for JsonConfig component `state`
