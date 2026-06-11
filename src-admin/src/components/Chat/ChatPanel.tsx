@@ -98,6 +98,38 @@ function asStr(value: unknown): string {
     return typeof value === 'string' ? value : JSON.stringify(value);
 }
 
+/**
+ * Renders a markdown link. Internal admin routes (e.g. `#tab-instances`, `/#tab-objects/edit/<id>`)
+ * navigate the SPA via the hash (no page reload); external links open in a new tab.
+ */
+function ChatLink({ href, children }: { href?: string; children?: React.ReactNode }): React.JSX.Element {
+    const url = href || '';
+    const hashAt = url.indexOf('#');
+    const internal = hashAt >= 0 && (url[0] === '#' || url.startsWith('/#') || url.includes('#tab-'));
+    if (internal) {
+        return (
+            <a
+                href={url}
+                onClick={e => {
+                    e.preventDefault();
+                    window.location.hash = url.substring(hashAt);
+                }}
+            >
+                {children}
+            </a>
+        );
+    }
+    return (
+        <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            {children}
+        </a>
+    );
+}
+
 /** A short, human-readable description of a proposed action for the confirmation card. */
 function describeAction(action: PendingAction): string {
     const args = action.args || {};
@@ -108,12 +140,14 @@ function describeAction(action: PendingAction): string {
             return `${I18n.t('Set state')}: ${asStr(args.id)} = ${asStr(args.value)}`;
         case 'set_states':
             return I18n.t('Set multiple states');
+        case 'extend_object':
+            return `${I18n.t('Update object')}: ${asStr(args.id)}`;
         case 'install_adapter':
             return `${I18n.t('Install adapter')}: ${asStr(args.adapter)}`;
         case 'run_command':
             return `${I18n.t('Run command')}: iobroker ${asStr(args.command)}`;
         case 'navigate_admin_ui':
-            return `${I18n.t('Open in admin')}: ${asStr(args.tab)}`;
+            return `${I18n.t('Open in admin')}: ${asStr(args.hash)}`;
         default:
             return `${action.tool}: ${JSON.stringify(args)}`;
     }
@@ -282,7 +316,8 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
             props.executeCommand(`install ${action.adapter}`, props.host);
             addItem({ role: 'assistant', text: I18n.t('Started installation of %s.', action.adapter), steps: [] });
         } else if (action.type === 'navigate') {
-            props.onNavigate(action.tab, action.instance);
+            // The assistant navigates the admin UI itself by setting the URL hash.
+            window.location.hash = action.hash.startsWith('#') ? action.hash : `#${action.hash}`;
         } else if (action.type === 'command') {
             runCliCommand(action.command);
         }
@@ -822,7 +857,12 @@ function ChatItemView({
                     '& th, & td': { border: '1px solid', borderColor: 'divider', px: 0.75, py: 0.25 },
                 }}
             >
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{item.text || ''}</ReactMarkdown>
+                <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{ a: ChatLink }}
+                >
+                    {item.text || ''}
+                </ReactMarkdown>
             </Box>
             {item.steps.length ? (
                 <Accordion

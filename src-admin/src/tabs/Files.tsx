@@ -7,6 +7,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
+    Router,
     TabContainer,
     TabContent,
     FileBrowser,
@@ -140,10 +141,27 @@ class Files extends Component<FilesProps> {
             return <LinearProgress />;
         }
 
+        // Derive the browser's navigation from the URL hash `#tab-files/<mode>/<encoded-id>`.
+        // File IDs contain "/" (e.g. "email.admin/custom/assets/x.js"), so the id segment is
+        // URL-encoded (the Router decodes it again in getLocation). The FileBrowser stays URL-agnostic.
+        const location = Router.getLocation();
+        const navigateTo =
+            location.tab === 'tab-files' && location.id
+                ? { mode: location.dialog === 'view' ? 'view' : 'select', id: location.id }
+                : null;
+
         return (
             <TabContainer>
                 <TabContent overflow="auto">
                     <FileBrowser
+                        navigateTo={navigateTo}
+                        onNavigateTo={(nav: { mode: 'select' | 'view'; id: string } | null) => {
+                            if (!nav?.id) {
+                                Router.doNavigate('tab-files');
+                            } else {
+                                Router.doNavigate('tab-files', nav.mode, encodeURIComponent(nav.id));
+                            }
+                        }}
                         showViewTypeButton
                         ready={this.props.ready}
                         socket={this.props.socket}

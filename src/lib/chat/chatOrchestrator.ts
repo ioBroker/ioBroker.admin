@@ -16,6 +16,8 @@ import { chatCompletion, type AiProvider } from './llmProvider';
 import type { OpenAIMessage, OpenAIToolCall } from './anthropicAdapter';
 import {
     ADMIN_LOCAL_TOOL_DEFS,
+    AUTO_RUN_TOOLS,
+    NAVIGATION_TOOL_DEFS,
     executeAdminLocalTool,
     isAdminLocalTool,
     toolKind,
@@ -127,6 +129,13 @@ export class ChatOrchestrator {
             "user's actual system (their states, objects, devices grouped by room/function, installed",
             'adapters, running instances, logs and historical values).',
             '',
+            'KEY CAPABILITY: you can navigate the admin UI yourself. When the user asks you to OPEN or GO to',
+            'something, call the navigate_admin_ui tool with the hash route — it opens the tab OR the specific',
+            'dialog immediately (no confirmation, it only changes the view), e.g.',
+            '{"hash":"#tab-hosts/base-settings/system.host.MSI"}. Otherwise (just pointing the user somewhere)',
+            'offer a clickable Markdown hash link, e.g. [Base settings of MSI](#tab-hosts/base-settings/system.host.MSI).',
+            'NEVER say a dialog can only be opened manually or that deep-linking a dialog is not possible.',
+            '',
             'Guidelines:',
             '- Use the available tools to look up real data from THIS ioBroker system instead of guessing.',
             '  E.g. to list devices in a room call list_devices with the room name; to read a value call',
@@ -135,14 +144,25 @@ export class ChatOrchestrator {
             '  and suggest what the user could check.',
             '- Be concise and practical. Use short lists or tables when listing devices or states.',
             '- Object IDs are case-sensitive (e.g. "hue.0.lights.1.on"); show them in `monospace`.',
+            '- IMPORTANT — this admin version SUPPORTS deep links that open specific DIALOGS directly,',
+            '  not just tabs. It is FALSE to say a dialog "can only be opened with the gear/cog icon" or',
+            '  that deep-linking a dialog is "technically not possible" — never say that. Instead always',
+            '  offer a clickable Markdown hash link and let the USER click it; do NOT claim you opened or',
+            '  navigated anywhere yourself. Examples: [Instances](#tab-instances), [Objects](#tab-objects),',
+            '  [hue.0 config](#tab-instances/config/hue.0), [edit this object](#tab-objects/edit/<id>),',
+            "  and a host's base-settings dialog, e.g. MSI:",
+            '  [Base settings of MSI](#tab-hosts/base-settings/system.host.MSI). The exact dialog routes are',
+            '  listed in the knowledge below. Prefer these links over the navigate_admin_ui tool.',
             `- Answer in the user's language. The admin UI language is currently "${language}".`,
         ];
         if (mode === 'act') {
             lines.push(
                 '- You may change things using the write/action tools (set_state, create_user_state,',
-                '  install_adapter, navigate_admin_ui, run_command). Every such call is shown to the user for',
-                '  explicit confirmation before it runs, so propose the smallest sensible action and explain why.',
+                '  extend_object, install_adapter, run_command). Every such call is shown to the user for',
+                '  explicit confirmation before it runs, so propose the smallest sensible action.',
                 '- create_user_state only works in "0_userdata.0." or "javascript.<n>." — never elsewhere.',
+                '- extend_object merges common/native into an existing object — use it to start/stop an',
+                '  instance (common.enabled), change instance settings (native) or set enum members.',
                 '- run_command runs an ioBroker CLI command and streams its output to the user; use it for',
                 '  maintenance actions (restart, upload, fix, ...), not to fetch data.',
             );
@@ -168,10 +188,10 @@ export class ChatOrchestrator {
     private async buildTools(mode: ChatMode): Promise<OpenAiFunctionTool[]> {
         const mcpTools = await this.mcp.getTools();
         if (mode !== 'act') {
-            // Read-only: drop any write tool the MCP server may expose (e.g. set_state).
-            return mcpTools.filter(tool => toolKind(tool.function.name) === 'read');
+            // Read-only: read tools + navigation (navigation only changes the view, never data).
+            return [...mcpTools.filter(tool => toolKind(tool.function.name) === 'read'), ...NAVIGATION_TOOL_DEFS];
         }
-        return [...mcpTools, ...ADMIN_LOCAL_TOOL_DEFS];
+        return [...mcpTools, ...ADMIN_LOCAL_TOOL_DEFS, ...NAVIGATION_TOOL_DEFS];
     }
 
     /**
@@ -207,6 +227,7 @@ export class ChatOrchestrator {
                 // (approvals) or granted blanket approval for that tool (autoApprove).
                 const needsDecision = (tc: OpenAIToolCall): boolean =>
                     toolKind(tc.function.name) !== 'read' &&
+                    !AUTO_RUN_TOOLS.has(tc.function.name) &&
                     approvals[tc.id] === undefined &&
                     !autoApprove.has(tc.function.name);
 
@@ -292,6 +313,12 @@ export class ChatOrchestrator {
 
         if (kind === 'read') {
             ({ text, ok } = await this.callMcp(name, args));
+        } else if (AUTO_RUN_TOOLS.has(name)) {
+            // Safe, view-only tools (navigation) run in any mode without confirmation.
+            const result = await executeAdminLocalTool(this.adapter, name, args);
+            text = result.text;
+            ok = !result.isError;
+            clientAction = result.clientAction;
         } else if (mode !== 'act') {
             // Defensive: write/action tools are not offered in read mode.
             text = JSON.stringify({ ok: false, error: 'This action is not allowed in read-only mode.' });

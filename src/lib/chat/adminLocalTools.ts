@@ -14,7 +14,7 @@ export type ToolKind = 'read' | 'write' | 'action';
 /** MCP value-writing tools (need confirmation, executed via the MCP layer). */
 export const MCP_WRITE_TOOLS = new Set(['set_state', 'set_states']);
 /** Admin-local tools executed in the backend (need confirmation). */
-export const ADMIN_WRITE_TOOLS = new Set(['create_user_state']);
+export const ADMIN_WRITE_TOOLS = new Set(['create_user_state', 'extend_object']);
 /** Admin-local tools performed by the frontend (need confirmation). */
 export const CLIENT_ACTION_TOOLS = new Set(['install_adapter', 'navigate_admin_ui', 'run_command']);
 
@@ -70,6 +70,33 @@ export const ADMIN_LOCAL_TOOL_DEFS: OpenAiFunctionTool[] = [
     {
         type: 'function',
         function: {
+            name: 'extend_object',
+            description:
+                'Update an EXISTING ioBroker object by merging the given `common` and/or `native` into ' +
+                'it. Use it to start/stop an instance (`common.enabled` true/false on ' +
+                '`system.adapter.<adapter>.<n>`), change an instance setting (its `native`), or set the ' +
+                'members of a room/function (`common.members` array on `enum.rooms.*` / `enum.functions.*`). ' +
+                'Fails if the object does not exist — use create_user_state to create a new state.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    id: {
+                        type: 'string',
+                        description: 'Object ID, e.g. "system.adapter.hm-rpc.0" or "enum.rooms.living_room"',
+                    },
+                    common: {
+                        type: 'object',
+                        description: 'Partial `common` to merge, e.g. {"enabled": true} or {"members": ["hue.0.l1"]}',
+                    },
+                    native: { type: 'object', description: 'Partial `native` to merge' },
+                },
+                required: ['id'],
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
             name: 'install_adapter',
             description:
                 'Propose installing an ioBroker adapter from the repository. The installation is handed ' +
@@ -105,33 +132,44 @@ export const ADMIN_LOCAL_TOOL_DEFS: OpenAiFunctionTool[] = [
             },
         },
     },
+];
+
+/**
+ * Navigation tool — offered in BOTH read and act mode and AUTO-RUN (no confirmation), because it only
+ * changes the current view (no data change). Lets the assistant operate the URL hash itself.
+ */
+export const NAVIGATION_TOOL_DEFS: OpenAiFunctionTool[] = [
     {
         type: 'function',
         function: {
             name: 'navigate_admin_ui',
             description:
-                'Open a tab (and optionally a specific adapter instance configuration) in the admin UI to ' +
-                'guide the user to the right place.',
+                'Navigate the admin UI directly by setting the URL hash — opens a tab OR a specific dialog ' +
+                'immediately (no user click), without confirmation (it only changes the view). Use the hash ' +
+                'routes from the deep-link knowledge, e.g. "#tab-instances", "#tab-instances/config/hue.0", ' +
+                '"#tab-objects/edit/<id>", "#tab-hosts/base-settings/system.host.MSI". Only navigate when the ' +
+                'user asks to open/go somewhere; otherwise just answer or offer a link.',
             parameters: {
                 type: 'object',
                 properties: {
-                    tab: {
+                    hash: {
                         type: 'string',
-                        description:
-                            'Tab id, e.g. "tab-adapters", "tab-instances", "tab-objects", "tab-logs", "tab-hosts"',
+                        description: 'Target route/hash, e.g. "#tab-hosts/base-settings/system.host.MSI"',
                     },
-                    instance: { type: 'string', description: 'Optional instance to open, e.g. "hue.0"' },
                 },
-                required: ['tab'],
+                required: ['hash'],
             },
         },
     },
 ];
 
+/** Tools that run without confirmation (safe, view-only). */
+export const AUTO_RUN_TOOLS = new Set(['navigate_admin_ui']);
+
 /** An action the frontend must perform after the chat turn (the backend cannot do it itself). */
 export type ClientAction =
     | { type: 'install'; adapter: string }
-    | { type: 'navigate'; tab: string; instance?: string }
+    | { type: 'navigate'; hash: string }
     | { type: 'command'; command: string };
 
 /** Result of executing an admin-local tool. */
@@ -164,6 +202,9 @@ export async function executeAdminLocalTool(
     try {
         if (name === 'create_user_state') {
             return await createUserState(adapter, args);
+        }
+        if (name === 'extend_object') {
+            return await extendObject(adapter, args);
         }
         if (name === 'install_adapter') {
             return installAdapter(args);
@@ -211,6 +252,28 @@ async function createUserState(adapter: ioBroker.Adapter, args: Record<string, u
     return ok({ id, created: true });
 }
 
+/** Merge `common`/`native` into an existing object (e.g. toggle common.enabled, edit native/members). */
+async function extendObject(adapter: ioBroker.Adapter, args: Record<string, unknown>): Promise<AdminLocalResult> {
+    const id = String(args.id || '').trim();
+    if (!id) {
+        return fail('id is required');
+    }
+    const existing = await adapter.getForeignObjectAsync(id);
+    if (!existing) {
+        return fail(`Object "${id}" does not exist — use create_user_state to create a new state.`);
+    }
+    const common = args.common;
+    const native = args.native;
+    if (common && typeof common === 'object' && !Array.isArray(common)) {
+        existing.common = { ...existing.common, ...(common as Record<string, unknown>) } as ioBroker.ObjectCommon;
+    }
+    if (native && typeof native === 'object' && !Array.isArray(native)) {
+        existing.native = { ...existing.native, ...(native as Record<string, unknown>) };
+    }
+    await adapter.setForeignObjectAsync(id, existing);
+    return ok({ id, updated: true });
+}
+
 /** Validate the adapter name and hand the installation to the frontend. */
 function installAdapter(args: Record<string, unknown>): AdminLocalResult {
     let adapterName = String(args.adapter || '')
@@ -228,14 +291,20 @@ function installAdapter(args: Record<string, unknown>): AdminLocalResult {
     );
 }
 
-/** Validate the navigation target and hand it to the frontend. */
+/** Validate the navigation target (a hash route) and hand it to the frontend, which sets the URL. */
 function navigateAdminUi(args: Record<string, unknown>): AdminLocalResult {
-    const tab = String(args.tab || '').trim();
-    if (!tab) {
-        return fail('tab is required');
+    const raw = String(args.hash || args.tab || args.route || '').trim();
+    if (!raw) {
+        return fail('hash is required, e.g. "#tab-hosts/base-settings/system.host.MSI"');
     }
-    const instance = args.instance ? String(args.instance).trim() : undefined;
-    return ok({ tab, instance, handedToUi: true }, { type: 'navigate', tab, ...(instance ? { instance } : {}) });
+    // Be lenient about what the model sends: a full URL ("http://host:3000/#tab-..."), a leading-slash
+    // hash ("/#tab-...") or a bare route ("tab-..."). Extract everything from the first "#".
+    const hashAt = raw.indexOf('#');
+    let hash = hashAt >= 0 ? raw.substring(hashAt) : `#${raw.replace(/^\/+/, '')}`;
+    if (!hash.startsWith('#tab-')) {
+        return fail('hash must be an admin route starting with "#tab-", e.g. "#tab-objects/edit/<id>"');
+    }
+    return ok({ hash, navigated: true }, { type: 'navigate', hash });
 }
 
 /** Validate an ioBroker CLI command and hand it to the frontend, which streams its live output. */
