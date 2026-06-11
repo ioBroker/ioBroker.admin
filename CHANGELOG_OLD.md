@@ -1,4 +1,8 @@
 # Older changes
+## 7.8.23 (2026-04-27)
+- (@GermanBluefox) Copy `common.states` by alias creation
+- (@GermanBluefox) Update `devices` instances
+
 ## 7.8.20 (2026-03-30)
 - (@GermanBluefox) Improved the device manager
 
