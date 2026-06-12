@@ -132,6 +132,23 @@ export const KNOWLEDGE_SECTIONS: KnowledgeSection[] = [
             'adapter), `#tab-javascript` (javascript adapter), `#tab-devicemanager` / `#tab-devices`.',
         ].join('\n'),
     },
+    {
+        title: 'Recommend an adapter for a device or service',
+        body: [
+            'When the user asks which adapter they need for a device, brand or service, ALWAYS use the',
+            'search_adapter_repository tool — never answer from memory alone. Workflow:',
+            '1) Search the exact brand/product first (e.g. "wattcycle").',
+            '2) If that returns nothing, the brand has no dedicated adapter — say so briefly, then broaden',
+            '   the search to the CONNECTION PROTOCOL or category the device uses and search again, e.g.',
+            '   "modbus", "rs485", "battery", "bms", "mqtt", "zigbee", "ble"/"bluetooth", "solar", "inverter".',
+            '   Run several such searches if needed.',
+            '3) Present the CONCRETE matches from the repository (adapter name + what it does + whether it is',
+            '   already `installed`), then offer to install one (install_adapter) or open its config',
+            '   ([config](#tab-instances/config/<name>.0)).',
+            'Only fall back to generic protocol advice AFTER the repository searches returned nothing useful.',
+            'If a needed detail is missing (e.g. RS485/Modbus vs CAN vs Bluetooth), ask ONE focused question.',
+        ].join('\n'),
+    },
 ];
 
 /** Render the knowledge base as a Markdown block for the system prompt. */

@@ -107,6 +107,51 @@ function truncate(text: string, max: number): string {
     return text.length > max ? `${text.substring(0, max)}…` : text;
 }
 
+/**
+ * Recover tool calls that a model emitted as TEXT instead of as native `tool_calls`.
+ *
+ * Some models/endpoints (and Claude when it slips out of structured tool use) write the call in the
+ * Anthropic text form, e.g. `<invoke name="install_adapter"><parameter name="adapter">growatt</parameter></invoke>`,
+ * optionally wrapped in `<function_calls>…</function_calls>` and/or prefixed with the literal word
+ * "call". When that happens the call is never executed and the raw XML leaks into the chat. This
+ * parser turns those text blocks into real {@link OpenAIToolCall}s and strips them from the visible
+ * content so the normal tool pipeline runs.
+ */
+export function parseTextToolCalls(content: string): { content: string; toolCalls: OpenAIToolCall[] } {
+    if (!content || !content.includes('<invoke')) {
+        return { content, toolCalls: [] };
+    }
+    const toolCalls: OpenAIToolCall[] = [];
+    const invokeRe = /<invoke\s+name="([^"]+)"\s*>([\s\S]*?)<\/invoke>/g;
+    let match: RegExpExecArray | null;
+    let index = 0;
+    while ((match = invokeRe.exec(content)) !== null) {
+        const name = match[1];
+        const inner = match[2];
+        const args: Record<string, string> = {};
+        const paramRe = /<parameter\s+name="([^"]+)"\s*>([\s\S]*?)<\/parameter>/g;
+        let param: RegExpExecArray | null;
+        while ((param = paramRe.exec(inner)) !== null) {
+            args[param[1]] = param[2].trim();
+        }
+        toolCalls.push({
+            id: `text_call_${index++}`,
+            type: 'function',
+            function: { name, arguments: JSON.stringify(args) },
+        });
+    }
+    if (!toolCalls.length) {
+        return { content, toolCalls: [] };
+    }
+    const cleaned = content
+        .replace(/<invoke\s+name="[^"]+"\s*>[\s\S]*?<\/invoke>/g, '')
+        .replace(/<\/?function_calls>/g, '')
+        .replace(/^[ \t]*call[ \t]*$/gim, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+    return { content: cleaned, toolCalls };
+}
+
 export class ChatOrchestrator {
     private readonly mcp: McpClientManager;
     private readonly adapter: ioBroker.Adapter;
@@ -208,8 +253,16 @@ export class ChatOrchestrator {
         const autoApprove = new Set(params.autoApprove || []);
         const tools = await this.buildTools(mode);
 
-        // Work on a copy; prepend a system prompt if the conversation doesn't carry one.
-        const messages: OpenAIMessage[] = [...params.messages];
+        // Work on a copy. Strip any tool-call XML a model previously leaked into assistant TEXT so it
+        // is not replayed as an example the model imitates — a single leak otherwise poisons the whole
+        // conversation (the leaked `<invoke …>` keeps reappearing until "new chat").
+        const messages: OpenAIMessage[] = params.messages.map(message =>
+            message.role === 'assistant' &&
+            typeof message.content === 'string' &&
+            message.content.includes('<invoke')
+                ? { ...message, content: parseTextToolCalls(message.content).content }
+                : message,
+        );
         if (!messages.some(message => message.role === 'system')) {
             messages.unshift(this.buildSystemPrompt(language, mode, params.uiContext));
         }
@@ -268,16 +321,30 @@ export class ChatOrchestrator {
                 tools,
                 allowSelfSignedCerts: params.allowSelfSignedCerts,
             });
+
+            // Some models/endpoints emit tool calls as TEXT (the `<invoke …>` format) instead of as
+            // native tool_calls. Recover those so the agent still works (and the raw syntax does not
+            // leak into the chat).
+            let responseContent = response.content || '';
+            let responseToolCalls = response.tool_calls;
+            if (!responseToolCalls?.length) {
+                const recovered = parseTextToolCalls(responseContent);
+                if (recovered.toolCalls.length) {
+                    responseToolCalls = recovered.toolCalls;
+                    responseContent = recovered.content;
+                }
+            }
+
             const assistantMessage: OpenAIMessage = {
                 role: 'assistant',
-                content: response.content || '',
-                ...(response.tool_calls?.length ? { tool_calls: response.tool_calls } : {}),
+                content: responseContent,
+                ...(responseToolCalls?.length ? { tool_calls: responseToolCalls } : {}),
             };
             messages.push(assistantMessage);
             newMessages.push(assistantMessage);
 
-            if (!response.tool_calls?.length) {
-                return { status: 'done', content: response.content || '', newMessages, steps, clientActions };
+            if (!responseToolCalls?.length) {
+                return { status: 'done', content: responseContent, newMessages, steps, clientActions };
             }
             // Loop: the next iteration handles the proposed tool calls (and may pause for confirmation).
         }
