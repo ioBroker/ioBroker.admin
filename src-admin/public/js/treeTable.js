@@ -9,7 +9,7 @@
         var options = $table.data('options');
 
         if (options.name) {
-            options.expanded = options.expanded || [];
+            options.expanded ||= [];
             if (options.expanded.indexOf(id) === -1) {
                 options.expanded.push(id);
                 if (typeof Storage !== 'undefined') {
@@ -89,15 +89,18 @@
         }
         var task = tasks.shift();
 
-        options.moveId && options.moveId(task.oldId, task.newId, function (err) {
-            setTimeout(function () {
-                processMoveTasks(options, tasks, callback);
-            }, 50);
-        });
+        options.moveId &&
+            options.moveId(task.oldId, task.newId, function (err) {
+                setTimeout(function () {
+                    processMoveTasks(options, tasks, callback);
+                }, 50);
+            });
     }
 
     function buildList(options, noButtons) {
-        var table = noButtons ? '' : '<div class="treetablelist-buttons"><button class="treetable-list-btn-ok"></button><button class="treetable-list-btn-cancel"></button></div>';
+        var table = noButtons
+            ? ''
+            : '<div class="treetablelist-buttons"><button class="treetable-list-btn-ok"></button><button class="treetable-list-btn-cancel"></button></div>';
         table += '<ul class="treetable-list">';
         var rows = options.rows;
         for (var i = 0; i < rows.length; i++) {
@@ -120,9 +123,22 @@
                 title = title[systemLang] || title.en;
             }
             var isNotFolder = rows[i].instance === undefined ? 0 : 1;
-            table += '<li data-id="' + rows[i].id + '" class="' + (!isNotFolder ? 'treetable-list-folder' : 'treetable-list-item') + '" style="margin-left: ' + (parents * 19) + 'px; width: calc(100% - ' + (parents * 15 + 2 + isNotFolder * 7) + 'px);' +
-            (rows[i].id === 'script.js.global' ? 'color: rgb(0, 128, 0);' : '') + '">' +
-            (!isNotFolder ? '<span class="fancytree-expander"></span>' : '') + '<span class="fancytree-icon"></span>' + title + '</li>';
+            table +=
+                '<li data-id="' +
+                rows[i].id +
+                '" class="' +
+                (!isNotFolder ? 'treetable-list-folder' : 'treetable-list-item') +
+                '" style="margin-left: ' +
+                parents * 19 +
+                'px; width: calc(100% - ' +
+                (parents * 15 + 2 + isNotFolder * 7) +
+                'px);' +
+                (rows[i].id === 'script.js.global' ? 'color: rgb(0, 128, 0);' : '') +
+                '">' +
+                (!isNotFolder ? '<span class="fancytree-expander"></span>' : '') +
+                '<span class="fancytree-icon"></span>' +
+                title +
+                '</li>';
         }
         table += '</ul>';
         var $dlg = $(this);
@@ -135,53 +151,59 @@
         $dlg.prepend($table);
 
         var $buttons = $($table).find('.treetablelist-buttons');
-        var $list    = $($table).find('.treetable-list');
+        var $list = $($table).find('.treetable-list');
 
-        $list.sortable({
-            cancel: '.treetable-list-folder',
-            axis:   'y'
-        }).data('options', options);
+        $list
+            .sortable({
+                cancel: '.treetable-list-folder',
+                axis: 'y',
+            })
+            .data('options', options);
 
         var that = this;
 
-        $buttons.find('.treetable-list-btn-ok').button({
-            icons: {primary: 'ui-icon-check'},
-            text: false
-        })
-        .css({width: 24, height: 24})
-        .on('click', function () {
-            // analyse new structure
-            var currentFolder = '';
-            var tasks = [];
-            $list.find('li').each(function () {
-                var id = $(this).data('id');
-                if ($(this).hasClass('treetable-list-folder')) {
-                    currentFolder = id;
-                } else {
-                    var parts = id.split('.');
-                    var name = parts.pop();
-                    if (parts.join('.') !== currentFolder) {
-                        tasks.push({oldId: id, newId: currentFolder + '.' + name});
+        $buttons
+            .find('.treetable-list-btn-ok')
+            .button({
+                icons: { primary: 'ui-icon-check' },
+                text: false,
+            })
+            .css({ width: 24, height: 24 })
+            .on('click', function () {
+                // analyse new structure
+                var currentFolder = '';
+                var tasks = [];
+                $list.find('li').each(function () {
+                    var id = $(this).data('id');
+                    if ($(this).hasClass('treetable-list-folder')) {
+                        currentFolder = id;
+                    } else {
+                        var parts = id.split('.');
+                        var name = parts.pop();
+                        if (parts.join('.') !== currentFolder) {
+                            tasks.push({ oldId: id, newId: currentFolder + '.' + name });
+                        }
                     }
-                }
+                });
+                processMoveTasks(options, tasks, function () {
+                    buildTable.call(that, options);
+                });
             });
-            processMoveTasks(options, tasks, function () {
+        $buttons
+            .find('.treetable-list-btn-cancel')
+            .button({
+                icons: { primary: 'ui-icon-cancel' },
+                text: false,
+            })
+            .css({ width: 24, height: 24 })
+            .on('click', function () {
                 buildTable.call(that, options);
             });
-        });
-        $buttons.find('.treetable-list-btn-cancel').button({
-            icons: {primary: 'ui-icon-cancel'},
-            text: false
-        })
-        .css({width: 24, height: 24})
-        .on('click', function () {
-            buildTable.call(that, options);
-        });
     }
 
     function getIconFromObj(obj, imgPath, classes) {
-        var icon     = '';
-        var alt      = '';
+        var icon = '';
+        var alt = '';
         var isCommon = obj && obj.common;
 
         if (isCommon) {
@@ -209,9 +231,10 @@
                             icon = '/adapter/' + instance[0];
                         }
                     } else {
-                        return '<i class="material-icons ' + (classes || 'treetable-icon') + '">' + isCommon.icon + '</i>';
+                        return (
+                            '<i class="material-icons ' + (classes || 'treetable-icon') + '">' + isCommon.icon + '</i>'
+                        );
                     }
-
                 } else {
                     icon = isCommon.icon;
                 }
@@ -220,13 +243,13 @@
                 imgPath = imgPath || 'lib/css/fancytree/';
                 if (obj.type === 'device') {
                     icon = imgPath + 'device.png';
-                    alt  = 'device';
+                    alt = 'device';
                 } else if (obj.type === 'channel') {
                     icon = imgPath + 'channel.png';
-                    alt  = 'channel';
+                    alt = 'channel';
                 } else if (obj.type === 'state') {
                     icon = imgPath + 'state.png';
-                    alt  = 'state';
+                    alt = 'state';
                 }
             }
         }
@@ -264,7 +287,7 @@
                     if (name && typeof name === 'object') {
                         name = name[systemLang] || 'en';
                     }
-                    usersGroups[users[u]].push({id: groups[g], name: name || id.replace('system.group.', '')});
+                    usersGroups[users[u]].push({ id: groups[g], name: name || id.replace('system.group.', '') });
                 }
             }
         }
@@ -278,7 +301,16 @@
         if (options.panelButtons) {
             table += '<div class="row tree-table-buttons m">';
             for (var z = 0; z < options.panelButtons.length; z++) {
-                table += '<' + buttonTag + ' class="btn-floating waves-effect waves-light blue btn-custom-' + z + '" title="' + (options.panelButtons[z].title || '') + '" ' + (options.panelButtons[z].id ? 'id="' + options.panelButtons[z].id + '"' : '') + '>';
+                table +=
+                    '<' +
+                    buttonTag +
+                    ' class="btn-floating waves-effect waves-light blue btn-custom-' +
+                    z +
+                    '" title="' +
+                    (options.panelButtons[z].title || '') +
+                    '" ' +
+                    (options.panelButtons[z].id ? 'id="' + options.panelButtons[z].id + '"' : '') +
+                    '>';
                 // detect materialize
                 if (window.M && window.M.toast) {
                     table += '<i class="material-icons">' + (options.panelButtons[z].icon || '') + '</i>';
@@ -286,7 +318,12 @@
                 table += '</' + buttonTag + '>';
             }
             if (options.moveId) {
-                table += '<' + buttonTag + ' class="btn-floating waves-effect waves-light blue treetable-sort" title="' + _('reorder') + '">';
+                table +=
+                    '<' +
+                    buttonTag +
+                    ' class="btn-floating waves-effect waves-light blue treetable-sort" title="' +
+                    _('reorder') +
+                    '">';
                 // detect materialize
                 if (window.M && window.M.toast) {
                     table += '<i class="material-icons">import_export</i>';
@@ -302,16 +339,27 @@
         table += '      <tr class="tree-table-main-header">';
         for (var ch = 0; ch < options.columns.length; ch++) {
             if (options.columns[ch] === 'name') {
-                table += '      <th' + (options.widths && options.widths[ch] ? ' class="treetable-th-name" style="width: ' + options.widths[ch] + '"' : '') + '>';
+                table +=
+                    '      <th' +
+                    (options.widths && options.widths[ch]
+                        ? ' class="treetable-th-name" style="width: ' + options.widths[ch] + '"'
+                        : '') +
+                    '>';
                 table += '          <input placeholder="' + _('name') + '" class="filter_name treetable-filter" />';
                 table += '          <button data-id="filter_name" role="button" class="filter-clear"></button>';
                 table += '      </th>';
             } else {
-                table += '      <th' + (options.widths && options.widths[ch] ? ' style="width: ' + options.widths[ch] + '"' : '') + '>' + _(options.columns[ch]) + '</th>';
+                table +=
+                    '      <th' +
+                    (options.widths && options.widths[ch] ? ' style="width: ' + options.widths[ch] + '"' : '') +
+                    '>' +
+                    _(options.columns[ch]) +
+                    '</th>';
             }
         }
         if (options.buttons) {
-            table += '      <th' + (options.buttonsWidth ? ' style="width: ' + options.buttonsWidth + '"' : '') + '></th>';
+            table +=
+                '      <th' + (options.buttonsWidth ? ' style="width: ' + options.buttonsWidth + '"' : '') + '></th>';
         }
         table += '  </tr>';
         table += '</thead>';
@@ -319,15 +367,18 @@
         table += '<tbody>';
 
         // <tr data-tt-id="system.adapter.0" data-tt-branch='true'>
-        var rows        = [];
-        var rootEx      = options.root ? new RegExp('^' + options.root.replace(/\./g, '\\.') + '\\.') : null;
-        var instances   = options.columns.indexOf('instance') !== -1 ? [] : null;
+        var rows = [];
+        var rootEx = options.root ? new RegExp('^' + options.root.replace(/\./g, '\\.') + '\\.') : null;
+        var instances = options.columns.indexOf('instance') !== -1 ? [] : null;
 
         for (var id in options.objects) {
             if (!options.objects.hasOwnProperty(id)) continue;
             var m;
-            if (instances && options.objects[id].type === 'instance' &&
-                (m = id.match(/^system\.adapter\.javascript\.(\d+)$/))) {
+            if (
+                instances &&
+                options.objects[id].type === 'instance' &&
+                (m = id.match(/^system\.adapter\.javascript\.(\d+)$/))
+            ) {
                 instances.push(m[1]);
             }
 
@@ -335,9 +386,9 @@
             var common = options.objects[id].common;
 
             var obj = {
-                id:     id,
+                id: id,
                 parent: null,
-                _class: 'treetable-' + options.objects[id].type
+                _class: 'treetable-' + options.objects[id].type,
             };
 
             if (options.objects[id].type === 'channel') {
@@ -375,8 +426,8 @@
         // find parents and extend members
         for (var pp = 0; pp < rows.length; pp++) {
             // find parent:
-            var parts  = rows[pp].id.split('.');
-            var title  = parts.pop();
+            var parts = rows[pp].id.split('.');
+            var title = parts.pop();
             var parent = parts.join('.');
             rows[pp].title = title;
             for (var p = 0; p < rows.length; p++) {
@@ -389,9 +440,8 @@
             }
 
             if (parts.length === 1) {
-                rows[pp]._class += ' treetable-root'
+                rows[pp]._class += ' treetable-root';
             }
-
         }
         for (var ppp = 0; ppp < rows.length; ppp++) {
             rows[ppp].realChildren = rows[ppp].children ? !!rows[ppp].children.length : false;
@@ -414,10 +464,10 @@
                     members.sort();
                     for (var mm = 0; mm < members.length; mm++) {
                         obj = {
-                            id:     members[mm],
-                            title:  members[mm],
+                            id: members[mm],
+                            title: members[mm],
                             parent: rows[k].id,
-                            _class: 'treetable-member'
+                            _class: 'treetable-member',
                         };
                         rows[k].children.push(members[mm]);
 
@@ -426,7 +476,8 @@
                             if (ccommon) {
                                 for (var ccb = 0; ccb < options.columns.length; ccb++) {
                                     var attr = options.columns[ccb];
-                                    if (attr === 'members' || attr === 'id' || attr === 'title' || attr === 'icon') continue;
+                                    if (attr === 'members' || attr === 'id' || attr === 'title' || attr === 'icon')
+                                        continue;
                                     var vval = ccommon[options.columns[ccb]];
                                     if (vval !== undefined) {
                                         obj[attr] = vval;
@@ -448,7 +499,13 @@
 
         for (var i = 0; i < rows.length; i++) {
             // title
-            table += '<tr data-tt-id="' + rows[i].id + '"' + (!!rows[i].children ? ' data-tt-branch="true"' : '') + (rows[i].parent ? ' data-tt-parent-id="' + rows[i].parent + '"' : '') + ' class="';
+            table +=
+                '<tr data-tt-id="' +
+                rows[i].id +
+                '"' +
+                (!!rows[i].children ? ' data-tt-branch="true"' : '') +
+                (rows[i].parent ? ' data-tt-parent-id="' + rows[i].parent + '"' : '') +
+                ' class="';
             if (rows[i]._class) {
                 table += rows[i]._class + ' ';
             }
@@ -476,7 +533,7 @@
                     if (rows[i].id === 'script.js.global') {
                         style += ' color: rgb(0, 128, 0);'; // green
                     } else {
-                        style += ' color: rgb(0, 0, 128);'
+                        style += ' color: rgb(0, 0, 128);';
                     }
                     table += '<td style="' + style + '" class="' + _class + '">';
                     if (rows[i].children && rows[i].children.length) {
@@ -489,23 +546,43 @@
                     table += '<div style="background: ' + rows[i].color + '" class="treetable-color"></div>';
                 }
                 if (!c && options.icons) {
-                    table += getIconFromObj(options.objects[rows[i].id], options.imgPath) || '<div class="treetable-icon-empty">&nbsp;</div>';
+                    table +=
+                        getIconFromObj(options.objects[rows[i].id], options.imgPath) ||
+                        '<div class="treetable-icon-empty">&nbsp;</div>';
                 }
                 if (aattr === 'enabled') {
-                    table += '<input data-attr="' + aattr + '" data-id="' + rows[i].id + '" class="treetable-input" type="checkbox" ' + (rows[i][aattr] ? 'checked' : '') + ' ' + (options.readOnly && options.readOnly[c] !== false ? 'disabled' : '') + '>';
-                } else
-                if (aattr === 'groups') {
+                    table +=
+                        '<input data-attr="' +
+                        aattr +
+                        '" data-id="' +
+                        rows[i].id +
+                        '" class="treetable-input" type="checkbox" ' +
+                        (rows[i][aattr] ? 'checked' : '') +
+                        ' ' +
+                        (options.readOnly && options.readOnly[c] !== false ? 'disabled' : '') +
+                        '>';
+                } else if (aattr === 'groups') {
                     for (var gg = 0; gg < rows[i].groups.length; gg++) {
                         var gId = rows[i].groups[gg].id;
-                        table += '<div class="chip">' + getIconFromObj(options.objects[gId], null, '') + rows[i].groups[gg].name + '</div>'; //<i class="close material-icons" data-group="' + rows[i].groups[gg].id + '" data-user="' + rows[i].id + '">close</i></div>';
+                        table +=
+                            '<div class="chip">' +
+                            getIconFromObj(options.objects[gId], null, '') +
+                            rows[i].groups[gg].name +
+                            '</div>'; //<i class="close material-icons" data-group="' + rows[i].groups[gg].id + '" data-user="' + rows[i].id + '">close</i></div>';
                     }
-                } else
-                // edit instance
-                if (aattr === 'instance') {
+                } else if (aattr === 'instance') {
+                    // edit instance
                     if (rows[i].instance !== undefined && instances.length > 1) {
                         instSelect = '<select class="treetable-instance" data-id="' + rows[i].id + '">';
                         for (var ii = 0; ii < instances.length; ii++) {
-                            instSelect += '<option value="' + instances[ii] + '" ' + (instances[ii] === rows[i].instance ? 'selected' : '') + '>' + instances[ii] + '</option>';
+                            instSelect +=
+                                '<option value="' +
+                                instances[ii] +
+                                '" ' +
+                                (instances[ii] === rows[i].instance ? 'selected' : '') +
+                                '>' +
+                                instances[ii] +
+                                '</option>';
                         }
                         instSelect += '</select>';
 
@@ -533,7 +610,21 @@
                     if (options.buttons[jj].match && !options.buttons[jj].match(rows[i].id, rows[i].parent)) {
                         text += '<div class="treetable-button-empty">&nbsp;</div>';
                     } else {
-                        text += '<' + buttonTag + ' data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;'+ '" data-parent="' + rows[i].parent + '" data-children="' + !!rows[i].realChildren + '" title="' + (options.buttons[jj].title || '') + '">';
+                        text +=
+                            '<' +
+                            buttonTag +
+                            ' data-id="' +
+                            rows[i].id +
+                            '" class="select-button-' +
+                            jj +
+                            ' select-button-custom td-button"  style="margin-right: 3px;' +
+                            '" data-parent="' +
+                            rows[i].parent +
+                            '" data-children="' +
+                            !!rows[i].realChildren +
+                            '" title="' +
+                            (options.buttons[jj].title || '') +
+                            '">';
                         // detect materialize
                         if (window.M && window.M.toast) {
                             text += '<i class="material-icons">' + (options.buttons[jj].icon || '') + '</i>';
@@ -561,24 +652,24 @@
         $dlg.prepend($table);
         options.rows = rows;
         var $treeTable = $($table[1]).find('>table');
-        var $buttons   = $($table[0]);
+        var $buttons = $($table[0]);
 
         $treeTable.data('options', options);
 
         $treeTable.treetable({
-            expandable:         true,
+            expandable: true,
             clickableNodeNames: true,
-            expanderTemplate:   '',
-            indenterTemplate:   '<span class="fancytree-expander"></span><span class="fancytree-icon"></span>',
-            onNodeExpand:       nodeExpand,
-            onNodeCollapse:     nodeCollapse,
-            stringCollapse:     _('collapse'),
-            stringExpand:       _('expand')
+            expanderTemplate: '',
+            indenterTemplate: '<span class="fancytree-expander"></span><span class="fancytree-icon"></span>',
+            onNodeExpand: nodeExpand,
+            onNodeCollapse: nodeCollapse,
+            stringCollapse: _('collapse'),
+            stringExpand: _('expand'),
         });
 
         var $tbody = $treeTable.find('tbody');
 
-        $tbody.on('click', 'tr', function() {
+        $tbody.on('click', 'tr', function () {
             $('.selected').not(this).removeClass('selected');
             $(this).addClass('selected');
             var $table = $(this).parent().parent();
@@ -590,16 +681,21 @@
 
         if (options.buttons) {
             for (var b = 0; b < options.buttons.length; b++) {
-                var $btn = $tbody.find('.select-button-' + b).button(options.buttons[b]).on('click', function () {
-                    var cb = $(this).data('callback');
-                    if (cb) {
-                        cb.call($(this), $(this).data('id'), $(this).data('children'), $(this).data('parent'));
-                    }
-                }).data('callback', options.buttons[b].click).attr('title', options.buttons[b].title || '');
+                var $btn = $tbody
+                    .find('.select-button-' + b)
+                    .button(options.buttons[b])
+                    .on('click', function () {
+                        var cb = $(this).data('callback');
+                        if (cb) {
+                            cb.call($(this), $(this).data('id'), $(this).data('children'), $(this).data('parent'));
+                        }
+                    })
+                    .data('callback', options.buttons[b].click)
+                    .attr('title', options.buttons[b].title || '');
 
                 if ($btn.length === 0) continue;
-                if (options.buttons[b].width)  $btn.css({width:  options.buttons[b].width});
-                if (options.buttons[b].height) $btn.css({height: options.buttons[b].height});
+                if (options.buttons[b].width) $btn.css({ width: options.buttons[b].width });
+                if (options.buttons[b].height) $btn.css({ height: options.buttons[b].height });
                 /*if (options.buttons[b].match) {
                     $btn.each(function () {
                         options.buttons[b].match.call($(this), $(this).data('id'));
@@ -611,48 +707,55 @@
         if (options.panelButtons) {
             for (var zz = 0; zz < options.panelButtons.length; zz++) {
                 var $zz = $buttons.find('.btn-custom-' + zz);
-                $zz
-                    .on('click', options.panelButtons[zz].click)
-                    .attr('title', options.panelButtons[zz].title || '');
+                $zz.on('click', options.panelButtons[zz].click).attr('title', options.panelButtons[zz].title || '');
 
                 // detect materialize
                 if (!window.M || !window.M.toast) {
-                    $zz
-                        .button(options.panelButtons[zz])
-                        .css({width: 24, height: 24})
+                    $zz.button(options.panelButtons[zz]).css({ width: 24, height: 24 });
                 }
             }
         }
 
-        $treeTable.find('.filter_name').on('change', function () {
-            var timer = $(this).data('timer');
-            if (timer) {
-                clearTimeout(timer);
-            }
-            var $this = $(this);
-            $this.data('timer', setTimeout(function () {
-                $this.data('timer', null);
-                var val = $table.find('.filter_name').val();
-                if (val) {
-                    $this.addClass('input-not-empty');
-                } else {
-                    $this.removeClass('input-not-empty');
+        $treeTable
+            .find('.filter_name')
+            .on('change', function () {
+                var timer = $(this).data('timer');
+                if (timer) {
+                    clearTimeout(timer);
                 }
-                filter($($table[1]), $table.find('.filter_name').val());
-            }));
-        }).on('keyup', function () {
-            $(this).trigger('change');
-        });
-        $treeTable.find('.filter-clear')
-            .button({icons: {primary: 'ui-icon-close'}, text: false})
+                var $this = $(this);
+                $this.data(
+                    'timer',
+                    setTimeout(function () {
+                        $this.data('timer', null);
+                        var val = $table.find('.filter_name').val();
+                        if (val) {
+                            $this.addClass('input-not-empty');
+                        } else {
+                            $this.removeClass('input-not-empty');
+                        }
+                        filter($($table[1]), $table.find('.filter_name').val());
+                    }),
+                );
+            })
+            .on('keyup', function () {
+                $(this).trigger('change');
+            });
+        $treeTable
+            .find('.filter-clear')
+            .button({ icons: { primary: 'ui-icon-close' }, text: false })
             .on('click', function () {
                 var name = $(this).data('id');
-                $table.find('.' + name).val('').trigger('change');
+                $table
+                    .find('.' + name)
+                    .val('')
+                    .trigger('change');
             });
         var that = this;
-        $buttons.find('.treetable-sort')
-            .button({icons: {primary: 'ui-icon-arrowthick-2-n-s'}, text: false})
-            .css({width: 24, height: 24})
+        $buttons
+            .find('.treetable-sort')
+            .button({ icons: { primary: 'ui-icon-arrowthick-2-n-s' }, text: false })
+            .css({ width: 24, height: 24 })
             .on('click', function () {
                 buildList.call(that, options);
             });
@@ -662,26 +765,29 @@
                 options.onEdit($(this).data('id'), 'instance', $(this).val());
             });
 
-            $treeTable.find('.treetable-input').on('change', function (e) {
-                e.stopPropagation();
-                var val;
-                if ($(this).attr('type') === 'checkbox') {
-                    val = $(this).prop('checked');
-                } else {
-                    val = $(this).val();
-                }
-                var id = $(this).data('id');
-                if (options.onEdit) {
-                    if (options.onEdit(id, $(this).data('attr'), val) === false) {
-                        // todo support more types
-                        $(this).prop('checked', true);
+            $treeTable
+                .find('.treetable-input')
+                .on('change', function (e) {
+                    e.stopPropagation();
+                    var val;
+                    if ($(this).attr('type') === 'checkbox') {
+                        val = $(this).prop('checked');
+                    } else {
+                        val = $(this).val();
                     }
-                }
-            }).on('keyup', function () {
-                $(this).trigger('change');
-            });
+                    var id = $(this).data('id');
+                    if (options.onEdit) {
+                        if (options.onEdit(id, $(this).data('attr'), val) === false) {
+                            // todo support more types
+                            $(this).prop('checked', true);
+                        }
+                    }
+                })
+                .on('keyup', function () {
+                    $(this).trigger('change');
+                });
         } else {
-            $treeTable.find('.treetable-instance').prop('disabled', true)
+            $treeTable.find('.treetable-instance').prop('disabled', true);
         }
         if (typeof options.onReady === 'function') {
             options.onReady($treeTable);
@@ -702,10 +808,9 @@
         buildTable.call(this, options);
         $table = $(this).find('.tree-table-main');
         for (var e = 0; e < exIDs.length; e++) {
-			try {
+            try {
                 $table.treetable('expandNode', exIDs[e]);
-			} catch (e) {
-			}
+            } catch (e) {}
         }
         if (id) {
             var node = $table.treetable('node', id);
@@ -727,10 +832,9 @@
                         exIDs = JSON.parse(exIDs);
                         var $table = $(this[i]).find('.tree-table-main');
                         for (var e = 0; e < exIDs.length; e++) {
-							try {
-								$table.treetable('expandNode', exIDs[e]);
-							} catch (e) {
-							}
+                            try {
+                                $table.treetable('expandNode', exIDs[e]);
+                            } catch (e) {}
                         }
                     }
                 }
@@ -755,8 +859,7 @@
                     } else {
                         $table.treetable('expandAll', id);
                     }
-                } catch (e) {
-                }
+                } catch (e) {}
             }
         },
         collapse: function (id) {
@@ -768,9 +871,7 @@
                     } else {
                         $table.treetable('collapseAll');
                     }
-
-                } catch (e) {
-                }
+                } catch (e) {}
             }
         },
         show: function (currentId, filter, onSuccess) {
@@ -785,10 +886,9 @@
             for (var i = 0; i < this.length; i++) {
                 var $table = $(this[i]).find('.tree-table-main');
                 $table.find('.selected').removeClass('selected');
-				try {
-					$table.treetable('reveal', currentId);
-				} catch (e) {
-				}
+                try {
+                    $table.treetable('reveal', currentId);
+                } catch (e) {}
                 var node = $table.treetable('node', currentId);
                 node && node.row.addClass('selected');
             }
@@ -801,7 +901,7 @@
             }
             return this;
         },
-        'object': function (id, obj) {
+        object: function (id, obj) {
             for (var i = 0; i < this.length; i++) {
                 var $table = $(this[i]).find('.tree-table-main');
                 if ($table.updateTimer) {
@@ -811,7 +911,7 @@
                 if (options && options.root && !id.match('^' + options.root.replace(/\./g, '\\.') + '\\.')) continue;
 
                 var elem = this[i];
-				// do not update too often. de-bounce it
+                // do not update too often. de-bounce it
                 (function (_elem, _$table) {
                     _$table.updateTimer = setTimeout(function () {
                         reInit.call(_elem);
@@ -819,7 +919,7 @@
                 })(elem, $table);
             }
             return this;
-        }
+        },
     };
 
     $.fn.treeTable = function (method) {
@@ -828,7 +928,7 @@
         } else if (typeof method === 'object' || !method) {
             return methods.init.apply(this, arguments);
         } else {
-            $.error('Method "' +  method + '" not found in jQuery.treeTable');
+            $.error('Method "' + method + '" not found in jQuery.treeTable');
         }
     };
 })(jQuery);

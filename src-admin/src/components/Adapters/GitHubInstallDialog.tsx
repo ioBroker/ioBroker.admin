@@ -31,12 +31,30 @@ import {
     UploadFile as UploadFileIcon,
 } from '@mui/icons-material';
 
-import { I18n, Icon, type IobTheme, type AdminConnection } from '@iobroker/adapter-react-v5';
+import { I18n, Icon, type IobTheme, type AdminConnection, type ThemeType } from '@iobroker/adapter-react-v5';
 
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
+import type { CommandFile } from '@/types';
+import type { HostsWorker } from '@/Workers/HostsWorker';
+import HostSelectors from '@/components/HostSelectors';
 
 import npmIcon from '../../assets/npm.svg';
+
+/** Reads a File as a base64 string (without the data-URL prefix) */
+function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const result = reader.result as string;
+            // strip "data:...;base64," prefix
+            const comma = result.indexOf(',');
+            resolve(comma === -1 ? result : result.substring(comma + 1));
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+    });
+}
 
 function a11yProps(name: string): { id: string; 'aria-controls': string } {
     return {
@@ -114,8 +132,21 @@ interface GitHubInstallDialogProps {
     onClose: () => void;
     t: typeof I18n.t;
     socket: AdminConnection;
+    /** Current host, e.g. `system.host.raspberrypi` */
+    currentHost: string;
+    /** Worker to observe hosts (used by the host selector) */
+    hostsWorker: InstanceType<typeof HostsWorker>;
+    expertMode: boolean;
+    themeType: ThemeType;
+    /** True while an install command is running (disables the install button) */
+    commandRunning: boolean;
     /** Method to install adapter */
-    installFromUrl: (adapter: string, debug: boolean, customUrl: boolean) => Promise<void>;
+    installFromUrl: (
+        adapter: string,
+        debug: boolean,
+        customUrl: boolean,
+        options?: { host?: string; files?: CommandFile[] },
+    ) => Promise<void>;
     /** Upload the adapter */
     upload: (adapter: string) => void;
 }
@@ -140,12 +171,14 @@ interface GitHubInstallDialogState {
     customHistory: string[];
     /** The selected .tgz file for upload */
     selectedFile: File | null;
-    /** Whether to run 'upload' command after file installation */
-    uploadAfterInstall: boolean;
     /** Whether to restart adapter instances after file installation */
     restartAfterInstall: boolean;
     /** Whether a file upload is in progress */
     uploading: boolean;
+    /** Selected target host for the file installation (e.g. `system.host.raspberrypi`) */
+    selectedHost: string;
+    /** Whether the controller supports sending files with cmdExec (feature CONTROLLER_CMD_EXEC_FILES) */
+    cmdExecFilesSupported: boolean;
 }
 
 const MAX_HISTORY_LENGTH = 10;
@@ -171,11 +204,24 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             currentTab: ((window as any)._localstorage || window.localStorage).getItem('App.gitTab') || 'npm',
             customHistory,
             selectedFile: null,
-            uploadAfterInstall: true,
             restartAfterInstall:
                 ((window as any)._localstorage || window.localStorage).getItem('App.restartAfterInstall') !== 'false',
             uploading: false,
+            // Default target host is the currently selected host
+            selectedHost: props.currentHost,
+            cmdExecFilesSupported: false,
         };
+    }
+
+    async componentDidMount(): Promise<void> {
+        // The controller feature decides if a .tgz can be sent directly to the target host (cross-host install).
+        // If not supported, the file is uploaded to the admin host and installed there (old behavior).
+        try {
+            const cmdExecFilesSupported = await this.props.socket.checkFeatureSupported('CONTROLLER_CMD_EXEC_FILES');
+            this.setState({ cmdExecFilesSupported: !!cmdExecFilesSupported });
+        } catch (e) {
+            console.error(`Cannot read feature: ${e}`);
+        }
     }
 
     async uploadFileToServer(): Promise<string | null> {
@@ -212,6 +258,100 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             return null;
         } finally {
             this.setState({ uploading: false });
+        }
+    }
+
+    /** Restarts all enabled instances of the given adapter (after a file installation) */
+    async restartInstances(adapterName: string): Promise<void> {
+        if (!this.state.restartAfterInstall || !adapterName) {
+            return;
+        }
+        const instances = await this.props.socket.getAdapterInstances(adapterName);
+        for (const instance of instances) {
+            if (instance?.common?.enabled) {
+                await this.props.socket.extendObject(instance._id, {});
+            }
+        }
+    }
+
+    /**
+     * Installs the selected .tgz file.
+     * - If the controller supports `CONTROLLER_CMD_EXEC_FILES`, the file is sent (base64) directly to the
+     *   selected target host via cmdExec, so it can be installed on a host other than where admin runs.
+     * - Otherwise the old behavior is used: the file is uploaded to the admin host and installed there.
+     */
+    async installFile(): Promise<void> {
+        if (!this.state.selectedFile) {
+            return;
+        }
+        // Extract adapter name from filename like "ioBroker.admin-7.8.6.tgz" or "ioBroker.spotify-premium-1.6.0.tgz"
+        const match = this.state.selectedFile.name.match(/iobroker\.(.+?)-\d+\.\d+\.\d+/i);
+        const adapterName = match ? match[1] : '';
+
+        if (this.state.cmdExecFilesSupported) {
+            // New way: send the file along with the command to the (possibly remote) target host
+            try {
+                const base64 = await fileToBase64(this.state.selectedFile);
+                // The command refers to the file by name, so it must not contain spaces, "/" or "\"
+                const fileName = this.state.selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+                await this.props.installFromUrl(fileName, this.state.debug, true, {
+                    host: this.state.selectedHost,
+                    files: [{ name: fileName, file: base64 }],
+                });
+                await this.restartInstances(adapterName);
+            } catch (e: any) {
+                console.error(`Installation from file failed: ${e.message}`);
+            }
+            return;
+        }
+
+        // Old way: upload the file to the admin host, then install from that path (same host only)
+        const filePath = await this.uploadFileToServer();
+        if (filePath) {
+            try {
+                await this.props.installFromUrl(filePath, this.state.debug, true);
+                await this.restartInstances(adapterName);
+            } catch (e: any) {
+                console.error(`Installation from file failed: ${e.message}`);
+            }
+        }
+    }
+
+    /** Starts the installation for the currently selected tab */
+    async handleInstall(): Promise<void> {
+        if (this.state.currentTab === 'GitHub') {
+            const parts = (this.state.autoCompleteValue?.value || '').split('/');
+            const _url = `${parts[1]}/ioBroker.${parts[0]}`;
+            await this.props.installFromUrl(_url, this.state.debug, true);
+        } else if (this.state.currentTab === 'URL') {
+            const customHistory = this.state.customHistory.filter(url => url !== this.state.url);
+            customHistory.unshift(this.state.url);
+            if (customHistory.length > MAX_HISTORY_LENGTH) {
+                customHistory.pop();
+            }
+            ((window as any)._localstorage || window.localStorage).setItem(
+                'App.npmHistory',
+                JSON.stringify(customHistory),
+            );
+
+            if (!this.state.url.includes('.')) {
+                await this.props.installFromUrl(`iobroker.${this.state.url}`, this.state.debug, true);
+            } else {
+                await this.props.installFromUrl(this.state.url, this.state.debug, true);
+            }
+        } else if (this.state.currentTab === 'File') {
+            await this.installFile();
+        } else if (this.state.currentTab === 'npm') {
+            const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];
+            const adapterName = fullAdapterName.includes('.') ? fullAdapterName.split('.')[1] : fullAdapterName;
+
+            try {
+                await this.props.installFromUrl(`iobroker.${adapterName}@latest`, this.state.debug, true);
+                // on npm installations we want to perform an additional upload
+                this.props.upload(adapterName);
+            } catch (e: any) {
+                console.error(`Installation from url failed: ${e.message}`);
+            }
         }
     }
 
@@ -561,34 +701,39 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                     {this.state.uploading && <CircularProgress size={24} />}
                 </div>
                 {this.state.selectedFile && (
-                    <>
-                        <FormControlLabel
-                            style={{ marginTop: 8 }}
-                            control={
-                                <Checkbox
-                                    checked={this.state.uploadAfterInstall}
-                                    onChange={e => this.setState({ uploadAfterInstall: e.target.checked })}
-                                />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={this.state.restartAfterInstall}
+                                onChange={e => {
+                                    ((window as any)._localstorage || window.localStorage).setItem(
+                                        'App.restartAfterInstall',
+                                        e.target.checked ? 'true' : 'false',
+                                    );
+                                    this.setState({ restartAfterInstall: e.target.checked });
+                                }}
+                            />
+                        }
+                        label={this.props.t('Restart adapter after install')}
+                    />
+                )}
+                {/* Host selection is only possible when the controller can receive the file directly (cross-host install) */}
+                {this.state.cmdExecFilesSupported && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                        <Typography variant="body2">{this.props.t('Install on host')}:</Typography>
+                        <HostSelectors
+                            socket={this.props.socket}
+                            currentHost={this.state.selectedHost}
+                            hostsWorker={this.props.hostsWorker}
+                            expertMode={this.props.expertMode}
+                            themeType={this.props.themeType}
+                            tooltip={this.props.t('Install on host')}
+                            // Only alive hosts are selectable; the selected host becomes the installation target
+                            setCurrentHost={(_name: string, aliveHost: string) =>
+                                this.setState({ selectedHost: aliveHost })
                             }
-                            label={this.props.t('Upload adapter after install')}
                         />
-                        <br />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={this.state.restartAfterInstall}
-                                    onChange={e => {
-                                        ((window as any)._localstorage || window.localStorage).setItem(
-                                            'App.restartAfterInstall',
-                                            e.target.checked ? 'true' : 'false',
-                                        );
-                                        this.setState({ restartAfterInstall: e.target.checked });
-                                    }}
-                                />
-                            }
-                            label={this.props.t('Restart adapter after install')}
-                        />
-                    </>
+                    </div>
                 )}
                 <div
                     style={{
@@ -728,11 +873,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     label={this.props.t('From file')}
                                     wrapped
                                     sx={{ '&.Mui-selected': styles.tabSelected }}
-                                    icon={
-                                        <UploadFileIcon
-                                            style={{ width: 24, height: 24 }}
-                                        />
-                                    }
+                                    icon={<UploadFileIcon style={{ width: 24, height: 24 }} />}
                                     {...a11yProps('file')}
                                     value="File"
                                 />
@@ -756,6 +897,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         variant="contained"
                         disabled={
                             this.state.uploading ||
+                            this.props.commandRunning ||
                             ((this.state.currentTab === 'GitHub' || this.state.currentTab === 'npm') &&
                                 !this.state.autoCompleteValue?.value) ||
                             (this.state.currentTab === 'URL' && !this.state.url) ||
@@ -763,81 +905,12 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         }
                         autoFocus
                         onClick={async () => {
-                            if (this.state.currentTab === 'GitHub') {
-                                const parts = (this.state.autoCompleteValue?.value || '').split('/');
-                                const _url = `${parts[1]}/ioBroker.${parts[0]}`;
-                                void this.props.installFromUrl(_url, this.state.debug, true);
-                            } else if (this.state.currentTab === 'URL') {
-                                const customHistory = this.state.customHistory.filter(
-                                    url => url !== this.state.url,
-                                );
-                                customHistory.unshift(this.state.url);
-                                if (customHistory.length > MAX_HISTORY_LENGTH) {
-                                    customHistory.pop();
-                                }
-                                ((window as any)._localstorage || window.localStorage).setItem(
-                                    'App.npmHistory',
-                                    JSON.stringify(customHistory),
-                                );
-
-                                if (!this.state.url.includes('.')) {
-                                    void this.props.installFromUrl(
-                                        `iobroker.${this.state.url}`,
-                                        this.state.debug,
-                                        true,
-                                    );
-                                } else {
-                                    void this.props.installFromUrl(this.state.url, this.state.debug, true);
-                                }
-                            } else if (this.state.currentTab === 'File') {
-                                // File upload flow
-                                const filePath = await this.uploadFileToServer();
-                                if (filePath) {
-                                    // Extract adapter name from filename like "ioBroker.admin-7.8.6.tgz" or "ioBroker.spotify-premium-1.6.0.tgz"
-                                    const match = this.state.selectedFile.name.match(/iobroker\.(.+?)-\d+\.\d+\.\d+/i);
-                                    const adapterName = match ? match[1] : '';
-                                    try {
-                                        await this.props.installFromUrl(filePath, this.state.debug, true);
-                                        if (this.state.uploadAfterInstall && adapterName) {
-                                            this.props.upload(adapterName);
-                                        }
-                                        if (this.state.restartAfterInstall && adapterName) {
-                                            // Restart all instances of this adapter
-                                            const instances =
-                                                await this.props.socket.getAdapterInstances(adapterName);
-                                            for (const instance of instances) {
-                                                if (instance?.common?.enabled) {
-                                                    await this.props.socket.extendObject(instance._id, {});
-                                                }
-                                            }
-                                        }
-                                    } catch (e: any) {
-                                        console.error(`Installation from file failed: ${e.message}`);
-                                    }
-                                }
-                            } else if (this.state.currentTab === 'npm') {
-                                const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];
-                                const adapterName = fullAdapterName.includes('.')
-                                    ? fullAdapterName.split('.')[1]
-                                    : fullAdapterName;
-
-                                try {
-                                    await this.props.installFromUrl(
-                                        `iobroker.${adapterName}@latest`,
-                                        this.state.debug,
-                                        true,
-                                    );
-                                    // on npm installations we want to perform an additional upload
-                                    this.props.upload(adapterName);
-                                } catch (e) {
-                                    console.error(`Installation from url failed: ${e.message}`);
-                                }
-                            }
+                            await this.handleInstall();
                             this.props.onClose();
                             closeInit();
                         }}
                         color="primary"
-                        startIcon={<CheckIcon />}
+                        startIcon={this.props.commandRunning ? <CircularProgress size={20} /> : <CheckIcon />}
                     >
                         {this.props.t('Install')}
                     </Button>

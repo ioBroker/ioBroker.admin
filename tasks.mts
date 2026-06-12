@@ -14,13 +14,13 @@ const rootFolder = dirName;
 const dest = 'adminWww/';
 
 async function build(): Promise<void> {
-    const socketNew = readFileSync(`${dirName}/node_modules/@iobroker/ws/dist/esm/socket.io.min.js`).toString();
+    const socketNew = readFileSync(`${dirName}/node_modules/@iobroker/ws/build/esm/socket.io.min.js`).toString();
     const socketOld = readFileSync(`${dirName}/src-admin/public/lib/js/socket.io.js`).toString();
     if (socketNew !== socketOld) {
         writeFileSync(`${dirName}/src-admin/public/lib/js/socket.io.js`, socketNew);
         writeFileSync(
             `${dirName}/src-admin/public/lib/js/socket.io.js.map`,
-            readFileSync(`${dirName}/node_modules/@iobroker/ws/dist/esm/socket.io.min.js.map`),
+            readFileSync(`${dirName}/node_modules/@iobroker/ws/build/esm/socket.io.min.js.map`),
         );
     }
 

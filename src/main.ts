@@ -15,13 +15,20 @@ import { platform } from 'node:os';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
 
-import { Adapter, type AdapterOptions, commonTools, controllerDir, I18n } from '@iobroker/adapter-core';
+import { Adapter, type AdapterOptions, commonTools, I18n } from '@iobroker/adapter-core';
 import { SocketAdmin, type Server, type Store, type SocketSettings } from '@iobroker/socket-classes';
 import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
-import Web, { type AdminAdapterConfig } from './lib/web';
+import Web from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
 import { DockerManager } from '@iobroker/plugin-docker';
+import { checkCommonObjects, updateDevicesObject, updateIcons, validateUserData0 } from './lib/objectFixes';
+import { McpClientManager } from './lib/chat/mcpClientManager';
+import { ChatOrchestrator, type ChatMode } from './lib/chat/chatOrchestrator';
+import { resolveAiKey } from './lib/chat/credentials';
+import { listModels, type AiProvider } from './lib/chat/llmProvider';
+import type { OpenAIMessage } from './lib/chat/anthropicAdapter';
+import type { AdminAdapterConfig } from './types';
 
 const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
@@ -88,7 +95,7 @@ class Admin extends Adapter {
     /** secret used for the socket connection */
     public secret: string;
 
-    /** Timer to update repository */
+    /** Timer to update the repository */
     private timerRepo: NodeJS.Timeout;
 
     private updaterTimeout: NodeJS.Timeout;
@@ -100,6 +107,9 @@ class Admin extends Adapter {
     private _tasks: ioBroker.AnyObject[];
 
     private changedPasswords: WellKnownUserPassword[] = [];
+
+    /** In-process ioBroker.mcp connection backing the chat helper. Created on first chat message. */
+    private mcpChat: McpClientManager | null = null;
 
     constructor(options: Partial<AdapterOptions> = {}) {
         options = {
@@ -211,8 +221,26 @@ class Admin extends Adapter {
     };
 
     /**
+     * Lazily create the in-process MCP connection backing the chat helper.
+     *
+     * `allowSetState` is enabled so the `set_state`/`set_states` tools exist; the orchestrator only
+     * offers them in "act" mode and only runs them after explicit per-action confirmation. Raw
+     * object/file changes stay disabled — state creation goes through the namespace-guarded
+     * admin-local `create_user_state` tool instead.
+     */
+    private getMcpChat(): McpClientManager {
+        this.mcpChat ||= new McpClientManager(this, {
+            defaultUser: 'system.user.admin',
+            language: systemLanguage,
+            allowSetState: true,
+            allowObjectChange: false,
+        });
+        return this.mcpChat;
+    }
+
+    /**
      * Some message was sent to this instance over the message box. Used by email, pushover, text2speech, ...
-     * Using this method requires "common.messagebox" property to be set to true in io-package.json
+     * Using this method requires the "common.messagebox" property to be set to true in io-package.json
      *
      * @param obj the message object
      */
@@ -306,12 +334,181 @@ class Admin extends Adapter {
                 void dockerManager.destroy();
             });
             return;
+        } else if (obj.command.startsWith('chat:')) {
+            this.processChatMessage(obj).catch(error => this.log.error(`Error by chat processing: ${error}`));
+            return;
         } else if (webServer?.processMessage(obj)) {
             return;
         }
 
         socket?.sendCommand(obj);
     };
+
+    private getName(name?: ioBroker.StringOrTranslated): string | undefined {
+        if (!name) {
+            return undefined;
+        }
+        if (typeof name === 'string') {
+            return name;
+        }
+        if (typeof name === 'object') {
+            return name[this.language] || name.en;
+        }
+        return null;
+    }
+
+    /**
+     * Handle `chat:*` messages from the admin GUI chat helper.
+     *
+     * - `chat:getProviders` — list the AI credentials the user can pick (id + name, no secrets).
+     * - `chat:testConnection` — validate a provider/key by listing its models.
+     * - `chat:send` — run one chat turn: the backend drives the LLM ↔ MCP tool loop and returns the
+     *   final answer, the new messages and the executed tool steps.
+     * - `chat:getTools` / `chat:callTool` — low-level access to the in-process MCP tool layer (A1).
+     *
+     * @param obj the message object
+     */
+    private async processChatMessage(obj: ioBroker.Message): Promise<void> {
+        const respond = (response: Record<string, unknown>): void => {
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, response, obj.callback);
+            }
+        };
+        const fail = (error: unknown): void =>
+            respond({ error: error instanceof Error ? error.message : String(error as string) });
+
+        if (obj.command === 'chat:getTools') {
+            try {
+                const tools = await this.getMcpChat().getTools();
+                respond({ tools });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        if (obj.command === 'chat:callTool') {
+            const message = (obj.message || {}) as { name?: string; args?: Record<string, unknown> };
+            if (!message.name) {
+                fail('Tool name is required');
+                return;
+            }
+            try {
+                const result = await this.getMcpChat().callTool(message.name, message.args);
+                respond({ ...result });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        if (obj.command === 'chat:getProviders') {
+            // List the configured AI credentials (id + name, no secrets) the user can pick from.
+            try {
+                const credentials = await this.getObjectViewAsync('system', 'config', {
+                    startkey: 'system.credentials.',
+                    endkey: 'system.credentials.\u9999',
+                });
+                const providers: { name?: string; id: string; icon?: string }[] = [];
+                credentials.rows.forEach(row => {
+                    if ((row.value.native as any).type === 'ai') {
+                        providers.push({
+                            name: this.getName(row.value.common.name),
+                            id: row.value._id,
+                            icon: row.value.common.icon,
+                        });
+                    }
+                });
+                respond({ providers });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        if (obj.command === 'chat:testConnection') {
+            const message = (obj.message || {}) as {
+                provider?: AiProvider;
+                credentialId?: string;
+                apiKey?: string;
+                baseUrl?: string;
+                allowSelfSignedCerts?: boolean;
+            };
+            try {
+                const provider = message.provider || 'openai';
+                // Prefer an explicit key from the settings form; otherwise resolve from the store.
+                let apiKey = (message.apiKey || '').trim();
+                if (!apiKey && message.credentialId) {
+                    apiKey = await resolveAiKey(this, message.credentialId);
+                }
+                const models = await listModels({
+                    provider,
+                    apiKey,
+                    baseUrl: message.baseUrl,
+                    allowSelfSignedCerts: message.allowSelfSignedCerts,
+                });
+                respond({ success: true, models, count: models.length });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        if (obj.command === 'chat:send') {
+            const message = (obj.message || {}) as {
+                messages?: OpenAIMessage[];
+                provider?: AiProvider;
+                model?: string;
+                credentialId?: string;
+                baseUrl?: string;
+                allowSelfSignedCerts?: boolean;
+                maxToolRounds?: number;
+                mode?: ChatMode;
+                approvals?: Record<string, boolean>;
+                autoApprove?: string[];
+                uiContext?: { hash?: string };
+            };
+            try {
+                if (!Array.isArray(message.messages) || !message.messages.length) {
+                    fail('messages are required');
+                    return;
+                }
+                const provider = message.provider || 'openai';
+                const model = (message.model || '').trim();
+                if (!model) {
+                    fail('model is required');
+                    return;
+                }
+                const apiKey = message.credentialId ? await resolveAiKey(this, message.credentialId) : '';
+                // OpenAI-compatible/custom endpoints (e.g. local Ollama) may run without a key.
+                if (!apiKey && provider !== 'custom' && !message.baseUrl) {
+                    fail('No API key configured for the selected provider');
+                    return;
+                }
+                const orchestrator = new ChatOrchestrator(this.getMcpChat(), this);
+                const result = await orchestrator.run({
+                    provider,
+                    model,
+                    apiKey,
+                    baseUrl: message.baseUrl,
+                    messages: message.messages,
+                    language: systemLanguage,
+                    allowSelfSignedCerts: message.allowSelfSignedCerts,
+                    maxToolRounds: message.maxToolRounds,
+                    mode: message.mode,
+                    approvals: message.approvals,
+                    autoApprove: message.autoApprove,
+                    uiContext: message.uiContext,
+                });
+                respond({ success: true, ...result });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        fail(`Unknown chat command: ${obj.command}`);
+    }
 
     processNotificationsGui(obj: ioBroker.Message): void {
         if (obj.command === 'admin:getNotificationSchema') {
@@ -518,7 +715,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Is called when adapter shuts down - callback has to be called under any circumstances!
+     * Is called when the adapter shuts down - callback has to be called under any circumstances!
      *
      * @param callback Callback after unloading
      */
@@ -541,6 +738,11 @@ class Admin extends Adapter {
         if (this.updaterTimeout) {
             clearTimeout(this.updaterTimeout);
             this.updaterTimeout = null;
+        }
+
+        if (this.mcpChat) {
+            void this.mcpChat.close();
+            this.mcpChat = null;
         }
 
         try {
@@ -753,7 +955,7 @@ class Admin extends Adapter {
         if (!sources) {
             sources = {};
 
-            // If multi-repo case. Actual case
+            // If a multi-repo case. Actual case
             if (Array.isArray(activeRepo)) {
                 if (systemRepos?.native?.repositories) {
                     for (const repo of activeRepo) {
@@ -904,7 +1106,7 @@ class Admin extends Adapter {
         socket = new SocketAdmin(settings, this, objects);
         socket.start(server, SocketIO, { store, oauth2Only: true, noBasicAuth: this.config.noBasicAuth });
 
-        // subscribe on all object changes
+        // subscribe to all object changes
         socket.subscribe('objectChange', '*');
 
         this.getForeignObjectAsync('system.meta.uuid')
@@ -985,7 +1187,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Read news from server and register them as notifications
+     * Read news from the server and register them as notifications
      */
     async updateNews(): Promise<void> {
         if (this.timerNews) {
@@ -1203,7 +1405,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Check if adapter is active
+     * Check if the adapter is active
      *
      * @param adapterName name of the adapter
      * @param instances list of instances
@@ -1269,7 +1471,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Get current npm version from controller
+     * Get the current npm version from the controller
      */
     async getNpmVersion(): Promise<string> {
         const hostAlive = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
@@ -1566,7 +1768,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Add repository read timestamp to the repository data structure
+     * Add the repository read timestamp to the repository data structure
      */
     async addRepositoryReadTimestamp(repository: Record<string, any>, activeRepo: string | string[]): Promise<void> {
         try {
@@ -1613,7 +1815,7 @@ class Admin extends Adapter {
 
             for (const _adapter of adapters) {
                 if (repository[_adapter].blockedVersions) {
-                    // read a current version
+                    // read the current version
                     if (Array.isArray(repository[_adapter].blockedVersions)) {
                         const instance = instances.rows.find(
                             item => item.value?.common.name === _adapter && item.value.common.enabled,
@@ -1676,28 +1878,6 @@ class Admin extends Adapter {
             }
         } catch (e) {
             this.log.error(`Cannot check revoked versions: ${e}`);
-        }
-    }
-
-    // update icons by all known default objects. Remove this function after 2 years (BF: 2021.04.20)
-    updateIcons(): void {
-        if (existsSync(`${controllerDir}/io-package.json`)) {
-            const ioPackage = JSON.parse(
-                readFileSync(join(controllerDir, 'io-package.json'), {
-                    encoding: 'utf-8',
-                }),
-            );
-
-            ioPackage.objects.forEach(async (obj: ioBroker.AnyObject) => {
-                if (obj.common?.icon && obj.common.icon.length > 50) {
-                    const cObj = await this.getForeignObjectAsync(obj._id);
-                    if (cObj?.common && (!cObj.common.icon || cObj.common.icon.length < 50)) {
-                        this.log.debug(`Update icon for ${cObj._id}`);
-                        cObj.common.icon = obj.common.icon;
-                        await this.setForeignObjectAsync(cObj._id, cObj);
-                    }
-                }
-            });
         }
     }
 
@@ -1764,7 +1944,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Read repository information from active repository
+     * Read repository information from the active repository
      */
     async updateRegister(): Promise<void> {
         if (lastRepoUpdate && Date.now() - lastRepoUpdate < 3600000) {
@@ -1868,79 +2048,6 @@ class Admin extends Adapter {
         }
     }
 
-    // this function re-check if the common objects like '0_userdata.0' exist
-    async checkCommonObjects(): Promise<void> {
-        // try to find js-controller directory
-        let objects: ioBroker.Object[];
-        try {
-            const dir = require.resolve('iobroker.js-controller/io-package.json').replace(/\\/g, '/');
-            // dir is something like ./node_modules/iobroker.js-controller/build/cjs/main.js
-            if (existsSync(dir)) {
-                const data = JSON.parse(readFileSync(dir).toString());
-                if (data.objects) {
-                    objects = data.objects;
-                }
-            }
-        } catch {
-            // ignore
-        }
-        if (objects) {
-            for (let i = 0; i < objects.length; i++) {
-                const obj = await this.getForeignObjectAsync(objects[i]._id);
-                if (!obj) {
-                    await this.setForeignObjectAsync(objects[i]._id, objects[i]);
-                }
-            }
-        } else {
-            // check the meta-object 0_userdata.0 and create it if required
-            let userData: ioBroker.MetaObject | null | undefined = await this.getForeignObjectAsync('0_userdata.0');
-            if (!userData) {
-                userData = {
-                    _id: '0_userdata.0',
-                    type: 'meta',
-                    common: {
-                        icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCI+DQogICAgPGcgZmlsbD0iY3VycmVudENvbG9yIj4NCiAgICAgICAgPHBhdGggZD0iTTE5LDV2MTRINVY1SDE5IE0xOSwzSDVDMy45LDMsMywzLjksMyw1djE0YzAsMS4xLDAuOSwyLDIsMmgxNGMxLjEsMCwyLTAuOSwyLTJWNUMyMSwzLjksMjAuMSwzLDE5LDNMMTksM3oiLz4NCiAgICAgICAgPHBhdGggZD0iTTE0LDE3SDd2LTJoN1YxN3ogTTE3LDEzSDd2LTJoMTBWMTN6IE0xNyw5SDdWN2gxMFY5eiIvPg0KICAgIDwvZz4NCjwvc3ZnPg==',
-                        name: {
-                            en: 'User objects and files root folder',
-                            de: 'Stammordner für Benutzerobjekte und Dateien',
-                            ru: 'Корневая папка пользовательских объектов и файлов',
-                            pt: 'Pasta raiz de objetos e arquivos do usuário',
-                            nl: 'Hoofdmap van objecten en bestanden van gebruikers',
-                            fr: 'Objets utilisateur et dossier racine des fichiers',
-                            it: "Cartella principale di oggetti e file dell'utente",
-                            es: 'Carpeta raíz de objetos y archivos de usuario',
-                            pl: 'Folder główny obiektów i plików użytkownika',
-                            uk: "Коренева папка об'єктів користувача та файлів",
-                            'zh-cn': '用户对象和文件根文件夹',
-                        },
-                        desc: {
-                            en: 'Here you can upload your files or create your private objects and states',
-                            de: 'Hier können eigene Dateien hochgeladen oder private Objekte und Zustände erstellt werden',
-                            ru: 'Здесь вы можете загрузить свои файлы или создать свои личные объекты и состояния',
-                            pt: 'Aqui você pode enviar seus arquivos ou criar seus objetos e estados particulares',
-                            nl: 'Hier kunt u uw bestanden uploaden of uw privé-objecten en statussen maken',
-                            fr: 'Ici, vous pouvez télécharger vos fichiers ou créer vos objets et états privés',
-                            it: 'Qui puoi caricare i tuoi file o creare oggetti e stati privati',
-                            es: 'Aquí puede cargar sus archivos o crear sus objetos y estados privados',
-                            pl: 'Tutaj możesz przesyłać pliki lub tworzyć prywatne obiekty i stany',
-                            uk: "Тут ви можете завантажити свої файли або створити свої приватні об'єкти та стани",
-                            'zh-cn': '在这里您可以上传文件或创建私有对象和状态',
-                        },
-                        type: 'meta.user',
-                        dontDelete: true,
-                    },
-                    acl: {
-                        owner: 'system.user.admin',
-                        ownerGroup: 'system.group.administrator',
-                        object: 1604,
-                    },
-                } as ioBroker.MetaObject;
-
-                await this.setForeignObject(userData._id, userData);
-            }
-        }
-    }
-
     /**
      * Initialize the adapter
      */
@@ -1950,7 +2057,7 @@ class Admin extends Adapter {
             this.config.defaultUser = `system.user.${this.config.defaultUser}`;
         }
 
-        this.checkCommonObjects().catch((e: Error) => this.log.warn(`Cannot check common objects: ${e?.message}`));
+        checkCommonObjects(this).catch((e: Error) => this.log.warn(`Cannot check common objects: ${e?.message}`));
 
         this.getData(
             adapter => (webServer = new Web(adapter.config, adapter, this.initSocket.bind(this), { systemLanguage })),
@@ -1997,39 +2104,11 @@ class Admin extends Adapter {
         void this.updateNews().catch(e =>
             this.log.error(`Cannot update news: ${e.response ? e.response.data : e.message || e.code}`),
         );
-        this.updateIcons();
-        void this.validateUserData0().catch(e => this.log.error(`Cannot validate 0_userdata: ${e}`));
+        updateIcons(this);
+        void validateUserData0(this).catch(e => this.log.error(`Cannot validate 0_userdata: ${e}`));
+        void updateDevicesObject(this).catch(e => this.log.error(`Cannot update devices objects: ${e}`));
         void this.checkWellKnownPasswords().catch(e => this.log.error(`Cannot check well known passwords: ${e}`));
         this.subscribeForeignObjects(`system.adapter.${this.namespace}.plugins.sentry.enabled`);
-    }
-
-    /**
-     * Create 0_userdata if it does not exist
-     */
-    async validateUserData0(): Promise<void> {
-        let obj: ioBroker.MetaObject | null | undefined;
-        try {
-            obj = await this.getForeignObjectAsync('0_userdata.0');
-        } catch {
-            // ignore
-        }
-        if (!obj) {
-            try {
-                const ioContent = readFileSync(`${controllerDir}/io-package.json`).toString('utf8');
-                const io = JSON.parse(ioContent);
-                if (io.objects) {
-                    const userData: ioBroker.MetaObject | null = io.objects.find(
-                        (obj: ioBroker.AnyObject) => obj._id === '0_userdata.0',
-                    );
-                    if (userData) {
-                        await this.setForeignObjectAsync(userData._id, userData);
-                        this.log.info('Object 0_userdata.0 was re-created');
-                    }
-                }
-            } catch (e) {
-                this.log.error(`Cannot read ${controllerDir}/io-package.json: ${e}`);
-            }
-        }
     }
 
     async checkWellKnownPasswords(): Promise<void> {

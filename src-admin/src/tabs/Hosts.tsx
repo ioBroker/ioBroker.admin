@@ -14,12 +14,12 @@ import {
     TabHeader,
     TabContent,
     TabContainer,
+    InfoBox,
     type AdminConnection,
     type IobTheme,
     type ThemeType,
     type Translate,
 } from '@iobroker/adapter-react-v5';
-import { InfoBox } from '@foxriver76/iob-component-lib';
 
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import type { HostsWorker, NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';

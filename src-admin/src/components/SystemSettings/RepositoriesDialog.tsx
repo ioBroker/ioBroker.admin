@@ -27,8 +27,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, DialogConfirm, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
-import { InfoBox } from '@foxriver76/iob-component-lib';
+import { I18n, DialogConfirm, type Translate, type ThemeType, InfoBox } from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';

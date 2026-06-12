@@ -47,8 +47,6 @@ function findNetworkAddressOfHost(obj: ioBroker.HostObject, localIp: string): nu
                 (ip2int(localIp) & ip2int(ip.netmask)) === (ip2int(ip.address) & ip2int(ip.netmask))
             ) {
                 hostIp = ip.address;
-            } else {
-                hostIp = ip.address;
             }
         }
     }
@@ -71,8 +69,6 @@ function findNetworkAddressOfHost(obj: ioBroker.HostObject, localIp: string): nu
                 }
                 if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) {
                     // if DNS name
-                    hostIp = ip.address;
-                } else {
                     hostIp = ip.address;
                 }
             }

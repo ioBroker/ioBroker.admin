@@ -10,8 +10,7 @@ import {
     Save,
 } from '@mui/icons-material';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
-import { InfoBox } from '@foxriver76/iob-component-lib';
+import { type AdminConnection, I18n, InfoBox } from '@iobroker/adapter-react-v5';
 import IsVisible from '@/components/IsVisible';
 import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
 
