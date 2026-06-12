@@ -73,7 +73,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
-import type { AdminGuiConfig, CompactAdapterInfo, CompactHost, NotificationsCount } from '@/types';
+import type { AdminGuiConfig, CommandFile, CompactAdapterInfo, CompactHost, NotificationsCount } from '@/types';
 import type { InstanceConfig } from '@/tabs/EasyMode';
 
 import CommandDialog from './dialogs/CommandDialog';
@@ -102,6 +102,7 @@ import { ObjectsWorker } from './Workers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from './dialogs/SlowConnectionWarningDialog';
 import IsVisible from './components/IsVisible';
+import ChatPanel from './components/Chat/ChatPanel';
 import type { CompactInstanceInfo } from './components/Adapters/AdapterUpdateDialog';
 
 import enLocal from './i18n/en.json';
@@ -403,6 +404,10 @@ interface AppState {
     expertMode: boolean;
     expertModeDialog?: boolean;
     showGuiSettings?: HTMLButtonElement | null;
+    /** Px reserved on the right for the docked chat assistant (0 = overlay/closed). */
+    chatDockWidth: number;
+    /** MCP/AI assistant disabled in admin settings (`native.disableMcp`); `undefined` until read, so the launcher stays hidden until the value is known. */
+    disableMcp?: boolean;
     hosts: CompactHost[];
     currentHost: string;
     currentHostName: string;
@@ -454,6 +459,8 @@ interface AppState {
     cmd: string | null;
     cmdDialog: boolean;
     commandHost: string | null;
+    /** Optional files (base64) to send along with the current command */
+    cmdFiles?: CommandFile[] | null;
     callback?: ((exitCode?: number) => void) | null;
     commandError: boolean;
     commandRunning: boolean;
@@ -609,6 +616,7 @@ class App extends Router<AppProps, AppState> {
                 hostname: window.location.hostname,
 
                 expertMode: false,
+                chatDockWidth: 0,
 
                 hosts: [],
                 currentHost: '',
@@ -1025,6 +1033,9 @@ class App extends Router<AppProps, AppState> {
                                     connected: true,
                                     progress: 100,
                                     versionAdmin: versionInfo.version,
+                                    // Default to enabled; overridden from the admin settings below. Setting it
+                                    // together with `connected` avoids briefly showing the assistant launcher.
+                                    disableMcp: false,
                                 };
 
                                 if (this.state.cmd && this.state.cmd.match(/ admin(@[-.\w]+)?$/)) {
@@ -1041,6 +1052,8 @@ class App extends Router<AppProps, AppState> {
                                         const adminObj = await this.socket.getObject(
                                             `system.adapter.${this.adminInstance}`,
                                         );
+                                        // Hide the AI assistant launcher when MCP is disabled in the settings.
+                                        newState.disableMcp = !!adminObj?.native?.disableMcp;
                                         // use instance language
                                         if (adminObj?.native?.language) {
                                             if (adminObj.native.language !== I18n.getLanguage()) {
@@ -1893,9 +1906,12 @@ class App extends Router<AppProps, AppState> {
                             t={I18n.t}
                             lang={I18n.getLanguage()}
                             expertMode={this.state.expertMode}
-                            executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
-                                this.executeCommand(cmd, host, callback)
-                            }
+                            executeCommand={(
+                                cmd: string,
+                                host?: string,
+                                callback?: (exitCode: number) => void,
+                                files?: CommandFile[],
+                            ) => this.executeCommand(cmd, host, callback, files)}
                             commandRunning={this.state.commandRunning}
                             onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
                             menuOpened={opened}
@@ -1942,9 +1958,12 @@ class App extends Router<AppProps, AppState> {
                             isFloatComma={this.state.systemConfig.common.isFloatComma}
                             width={this.props.width}
                             configStored={(value: boolean) => this.allStored(value)}
-                            executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
-                                this.executeCommand(cmd, host, callback)
-                            }
+                            executeCommand={(
+                                cmd: string,
+                                host?: string,
+                                callback?: (exitCode: number) => void,
+                                files?: CommandFile[],
+                            ) => this.executeCommand(cmd, host, callback, files)}
                             inBackgroundCommand={this.state.commandError || this.state.performed}
                             onRegisterIframeRef={(ref: HTMLIFrameElement) => (this.refConfigIframe = ref)}
                             onUnregisterIframeRef={(ref: HTMLIFrameElement) => {
@@ -2079,9 +2098,12 @@ class App extends Router<AppProps, AppState> {
                             expertMode={this.state.expertMode}
                             t={I18n.t}
                             currentHost={this.state.currentHost}
-                            executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
-                                this.executeCommand(cmd, host, callback)
-                            }
+                            executeCommand={(
+                                cmd: string,
+                                host?: string,
+                                callback?: (exitCode: number) => void,
+                                files?: CommandFile[],
+                            ) => this.executeCommand(cmd, host, callback, files)}
                             systemConfig={this.state.systemConfig}
                             showAdaptersWarning={this.showAdaptersWarning}
                             adminInstance={this.adminInstance}
@@ -2292,7 +2314,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    executeCommand(cmd: string, host?: string, callback?: (exitCode: number) => void): void {
+    executeCommand(cmd: string, host?: string, callback?: (exitCode: number) => void, files?: CommandFile[]): void {
         if (typeof host === 'boolean') {
             callback = host;
             host = null;
@@ -2307,12 +2329,14 @@ class App extends Router<AppProps, AppState> {
                     performed: false,
                     callback: null,
                     commandHost: null,
+                    cmdFiles: null,
                 },
                 () =>
                     this.setState({
                         cmd,
                         cmdDialog: true,
                         callback,
+                        cmdFiles: files || null,
                     }),
             );
             return;
@@ -2324,6 +2348,7 @@ class App extends Router<AppProps, AppState> {
             cmdDialog: true,
             callback,
             commandHost: host || this.state.currentHost,
+            cmdFiles: files || null,
         });
     }
 
@@ -2336,6 +2361,7 @@ class App extends Router<AppProps, AppState> {
                 performed: false,
                 callback: null,
                 commandHost: null,
+                cmdFiles: null,
             },
             () => cb && cb(),
         );
@@ -2345,9 +2371,12 @@ class App extends Router<AppProps, AppState> {
         if (this.state.wizard) {
             return (
                 <WizardDialog
-                    executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) =>
-                        this.executeCommand(cmd, host, callback)
-                    }
+                    executeCommand={(
+                        cmd: string,
+                        host?: string,
+                        callback?: (exitCode: number) => void,
+                        files?: CommandFile[],
+                    ) => this.executeCommand(cmd, host, callback, files)}
                     host={this.state.currentHost}
                     socket={this.socket}
                     themeName={this.state.themeName}
@@ -2445,6 +2474,7 @@ class App extends Router<AppProps, AppState> {
                 callback={this.state.callback}
                 onInBackground={() => this.setState({ cmdDialog: false })}
                 cmd={this.state.cmd}
+                files={this.state.cmdFiles || undefined}
                 errorFunc={() => this.setState({ commandError: true })}
                 performed={() => this.setState({ performed: true })}
                 inBackground={this.state.commandError || this.state.performed}
@@ -3129,7 +3159,8 @@ class App extends Router<AppProps, AppState> {
                     </style>
                     <Paper
                         elevation={0}
-                        style={styles.root}
+                        // Reserve room on the right when the chat assistant is docked side-by-side.
+                        style={{ ...styles.root, paddingRight: this.state.chatDockWidth || undefined }}
                     >
                         <AppBar
                             color="default"
@@ -3146,6 +3177,10 @@ class App extends Router<AppProps, AppState> {
                                     this.state.editMenuList &&
                                     styles.appBarShiftEdit,
                                 !small && this.state.drawerState === DrawerStates.compact && styles.appBarShiftCompact,
+                                // Keep the toolbar controls left of the docked chat panel.
+                                this.state.chatDockWidth
+                                    ? { paddingRight: `${this.state.chatDockWidth}px` }
+                                    : undefined,
                             )}
                         >
                             {this.renderToolbar(small)}
@@ -3223,6 +3258,18 @@ class App extends Router<AppProps, AppState> {
                         <Connecting />
                     ) : null}
                     {this.renderShowGuiSettings()}
+                    {this.state.connected && this.socket && this.state.disableMcp === false ? (
+                        <ChatPanel
+                            socket={this.socket}
+                            instance={this.adminInstance}
+                            theme={this.state.theme}
+                            themeType={this.state.themeType}
+                            host={this.state.currentHost}
+                            executeCommand={(cmd, host, callback) => this.executeCommand(cmd, host, callback)}
+                            onNavigate={tab => this.handleNavigation(tab)}
+                            onDockWidthChange={chatDockWidth => this.setState({ chatDockWidth })}
+                        />
+                    ) : null}
                 </ThemeProvider>
             </StyledEngineProvider>
         );

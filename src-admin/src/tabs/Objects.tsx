@@ -241,10 +241,33 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
     }
 
     render(): JSX.Element[] {
+        // Derive the browser's navigation target from the URL hash `#tab-objects/<mode>/<id>`.
+        // The ObjectBrowser stays URL-agnostic; we translate the route here and back (onNavigateTo).
+        const location = Router.getLocation();
+        const navigateTo =
+            location.tab === 'tab-objects' && location.id
+                ? {
+                      mode: (location.dialog === 'view' ? 'viewFile' : location.dialog || 'select') as
+                          | 'select'
+                          | 'edit'
+                          | 'settings'
+                          | 'viewFile',
+                      id: location.id,
+                  }
+                : null;
+
         return [
             this.renderToast(),
             <ObjectBrowser
                 key="browser"
+                navigateTo={navigateTo}
+                onNavigateTo={(nav: { mode: 'select' | 'edit' | 'settings' | 'viewFile'; id: string } | null) => {
+                    if (!nav?.id) {
+                        Router.doNavigate('tab-objects');
+                    } else {
+                        Router.doNavigate('tab-objects', nav.mode === 'viewFile' ? 'view' : nav.mode, nav.id);
+                    }
+                }}
                 dialogName="admin"
                 objectsWorker={this.props.objectsWorker}
                 prefix={this.props.prefix}
@@ -252,7 +275,7 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
                 statesOnly={this.props.statesOnly}
                 style={{ width: '100%', height: '100%' }}
                 socket={this.props.socket}
-                selected={this.state.selected}
+                selected={navigateTo?.id || this.state.selected}
                 name={this.state.name}
                 expertMode={this.props.expertMode}
                 isFloatComma={this.props.isFloatComma}

@@ -33,6 +33,7 @@ import { amber, blue, green, grey, red } from '@mui/material/colors';
 import {
     Utils,
     IconCopy,
+    Router,
     type AdminConnection,
     type IobTheme,
     type ThemeType,
@@ -364,6 +365,25 @@ export default abstract class HostGeneric<
     }
 
     /**
+     * Derive the settings/base-settings dialog purely from the URL hash
+     * `#tab-hosts/settings|base-settings/<hostId>`. The buttons and onClose handlers only navigate
+     * (Router.doNavigate); this keeps the dialogs in sync with the URL (deep links, back/forward).
+     */
+    static getDerivedStateFromProps(
+        props: HostGenericProps,
+        state: HostGenericState,
+    ): Partial<HostGenericState> | null {
+        const location = Router.getLocation();
+        const onThisHost = location.tab === 'tab-hosts' && location.id === props.hostId;
+        const editDialog = onThisHost && location.dialog === 'settings';
+        const baseSettingsDialog = onThisHost && location.dialog === 'base-settings';
+        if (editDialog !== state.editDialog || baseSettingsDialog !== state.baseSettingsDialog) {
+            return { editDialog, baseSettingsDialog };
+        }
+        return null;
+    }
+
+    /**
      * Get the initial disk states to show problems with disk usage
      */
     async getInitialDiskStates(): Promise<void> {
@@ -662,7 +682,7 @@ export default abstract class HostGeneric<
                         disabled={!this.props.alive}
                         onClick={e => {
                             e.stopPropagation();
-                            this.setState({ baseSettingsDialog: true });
+                            Router.doNavigate('tab-hosts', 'base-settings', this.props.hostId);
                         }}
                     >
                         <BuildIcon style={genericStyles.baseSettingsButton} />
@@ -725,7 +745,7 @@ export default abstract class HostGeneric<
                 size="large"
                 onClick={event => {
                     event.stopPropagation();
-                    this.setState({ editDialog: true });
+                    Router.doNavigate('tab-hosts', 'settings', this.props.hostId);
                 }}
             >
                 <EditIcon />
@@ -974,7 +994,7 @@ export default abstract class HostGeneric<
                 currentHost={this.props.hostId}
                 themeType={this.props.themeType}
                 currentHostName={this.props.host.common.name}
-                onClose={() => this.setState({ baseSettingsDialog: false })}
+                onClose={() => Router.doNavigate('tab-hosts')}
                 socket={this.props.socket}
                 t={this.props.t}
             />
@@ -990,16 +1010,15 @@ export default abstract class HostGeneric<
             <HostEdit
                 obj={this.props.host}
                 t={this.props.t}
-                onClose={obj =>
-                    this.setState({ editDialog: false }, () => {
-                        if (obj) {
-                            this.props.socket
-                                .setObject(obj._id, obj)
-                                .then(() => this.forceUpdate())
-                                .catch(e => alert(`Cannot write object: ${e}`));
-                        }
-                    })
-                }
+                onClose={obj => {
+                    Router.doNavigate('tab-hosts');
+                    if (obj) {
+                        this.props.socket
+                            .setObject(obj._id, obj)
+                            .then(() => this.forceUpdate())
+                            .catch(e => alert(`Cannot write object: ${e}`));
+                    }
+                }}
             />
         );
     }

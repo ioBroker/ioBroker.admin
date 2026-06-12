@@ -167,7 +167,14 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.8.28 (2026-05-29)
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added AI assistant to the admin interface
+
+### 7.9.0 (2026-06-11)
+- (@GermanBluefox) Added the central credentials manager 
+- (@GermanBluefox) Added the possibility of installation of packages on specific hosts
+
+### 7.8.29 (2026-05-30)
 - (@GermanBluefox) Corrected JSON config for the select component with grouped options
 
 ### 7.8.27 (2026-05-25)
@@ -178,10 +185,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.8.24 (2026-05-05)
 - (@GermanBluefox) Correcting the IP address calculation
-
-### 7.8.23 (2026-04-27)
-- (@GermanBluefox) Copy `common.states` by alias creation
-- (@GermanBluefox) Update `devices` instances
 
 ## License
 
