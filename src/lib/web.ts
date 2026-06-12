@@ -4,7 +4,7 @@ import * as express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
 import type { Server } from 'node:http';
 import { readFileSync, existsSync, createReadStream, readdirSync, lstatSync } from 'node:fs';
-import { inherits } from 'util';
+import { inherits } from 'node:util';
 import { join, normalize, parse, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { Transform } from 'node:stream';
