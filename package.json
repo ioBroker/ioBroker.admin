@@ -68,7 +68,7 @@
     "@types/validator": "^13.15.10",
     "colorette": "^2.0.20",
     "less": "^4.6.4",
-    "puppeteer": "^24.43.1",
+    "puppeteer": "^25.1.0",
     "tsx": "^4.22.0",
     "typescript": "~5.9.3"
   },
