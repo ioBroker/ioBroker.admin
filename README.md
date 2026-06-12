@@ -167,6 +167,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added AI assistant to the admin interface
+
 ### 7.9.0 (2026-06-11)
 - (@GermanBluefox) Added the central credentials manager 
 - (@GermanBluefox) Added the possibility of installation of packages on specific hosts

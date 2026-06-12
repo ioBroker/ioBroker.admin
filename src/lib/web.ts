@@ -22,43 +22,8 @@ import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import type { InternalStorageToken } from '@iobroker/socket-classes';
-
-export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
-    accessAllowedConfigs: string[];
-    accessAllowedTabs: string[];
-    accessApplyRights: boolean;
-    accessLimit: boolean;
-    allowInternalAccess?: { [adapterName: string]: string }; // adapterName: UserName (without system.user)
-    auth: boolean;
-    autoUpdate: number;
-    bind: string;
-    cache: boolean;
-    certChained: string;
-    certPrivate: string;
-    certPublic: string;
-    defaultUser: string;
-    doNotCheckPublicIP: boolean;
-    language: ioBroker.Languages;
-    leCollection: boolean;
-    loadingBackgroundColor: string;
-    loadingBackgroundImage: boolean;
-    loadingHideLogo: boolean;
-    loginBackgroundColor: string;
-    loginBackgroundImage: boolean;
-    loginHideLogo: boolean;
-    loginMotto: string;
-    noBasicAuth: boolean;
-    port: number;
-    secure: boolean;
-    thresholdValue: number;
-    tmpPath: string;
-    tmpPathAllow: boolean;
-    ttl: number;
-    reverseProxy: {
-        globalPath: string;
-        paths: { path: string; instance: string }[];
-    }[];
-}
+import { McpServer, type McpAdapterConfig } from 'iobroker.mcp';
+import type { AdminAdapterConfig } from '../types';
 
 let AdapterStore;
 /** Content of a socket-io file */
@@ -183,7 +148,7 @@ interface AdminAdapter extends ioBroker.Adapter {
 }
 
 /** Webserver class */
-class Web {
+export default class Web {
     server: {
         app: null | Express;
         server: null | (Server & { __server: { app: null | Express; server: null | Server } });
@@ -220,6 +185,7 @@ class Web {
     private systemLanguage: ioBroker.Languages;
     private checkTimeout: ioBroker.Timeout;
     private oauth2Model: OAuth2Model;
+    private mcpServer: McpServer | null = null;
 
     /**
      * Create a new instance of Web
@@ -263,6 +229,8 @@ class Web {
             this.adapter.clearTimeout(this.checkTimeout);
             this.checkTimeout = null;
         }
+
+        this.mcpServer?.unload();
 
         void this.adapter.setState('info.connection', false, true);
         this.server.server?.close();
@@ -1231,119 +1199,128 @@ class Web {
             }
         }
 
-        void this.adapter
-            .getForeignObjectAsync('system.config')
-            .then(obj => {
-                this.systemConfig = obj || {};
-                this.systemConfig.native ||= {};
-                this.systemConfig.native.vendor ||= {};
-                this.systemConfig.native.vendor.admin ||= {};
-                this.systemConfig.native.vendor.admin.login ||= {};
+        const systemConfig = await this.adapter.getForeignObjectAsync('system.config');
+        this.systemConfig = systemConfig || {};
+        this.systemConfig.native ||= {};
+        this.systemConfig.native.vendor ||= {};
+        this.systemConfig.native.vendor.admin ||= {};
+        this.systemConfig.native.vendor.admin.login ||= {};
 
-                return this.adapter.getForeignObjectAsync('system.meta.uuid');
-            })
-            .then(obj => {
-                if (obj?.native) {
-                    uuid = obj.native.uuid;
+        const uuidObj = await this.adapter.getForeignObjectAsync('system.meta.uuid');
+        if (uuidObj?.native) {
+            uuid = uuidObj.native.uuid;
+        }
+
+        if (this.server.server) {
+            let serverListening = false;
+            let serverPort: number;
+            this.server.server.on('error', e => {
+                if (e.toString().includes('EACCES') && serverPort <= 1024) {
+                    this.adapter.log.error(
+                        `node.js process has no rights to start server on the port ${serverPort}.\n` +
+                            `Do you know that on linux you need special permissions for ports under 1024?\n` +
+                            `You can call in shell following scrip to allow it for node.js: "iobroker fix"`,
+                    );
+                } else {
+                    this.adapter.log.error(
+                        `Cannot start server on ${this.settings.bind || '0.0.0.0'}:${serverPort}: ${e.toString()}`,
+                    );
                 }
 
-                if (this.server.server) {
-                    let serverListening = false;
-                    let serverPort: number;
-                    this.server.server.on('error', e => {
-                        if (e.toString().includes('EACCES') && serverPort <= 1024) {
-                            this.adapter.log.error(
-                                `node.js process has no rights to start server on the port ${serverPort}.\n` +
-                                    `Do you know that on linux you need special permissions for ports under 1024?\n` +
-                                    `You can call in shell following scrip to allow it for node.js: "iobroker fix"`,
-                            );
-                        } else {
-                            this.adapter.log.error(
-                                `Cannot start server on ${this.settings.bind || '0.0.0.0'}:${serverPort}: ${e.toString()}`,
-                            );
-                        }
+                if (!serverListening) {
+                    if (this.adapter.terminate) {
+                        this.adapter.terminate(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                    } else {
+                        process.exit(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                    }
+                }
+            });
 
-                        if (!serverListening) {
-                            if (this.adapter.terminate) {
-                                this.adapter.terminate(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
-                            } else {
-                                process.exit(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
-                            }
-                        }
-                    });
+            this.settings.port = parseInt(this.settings.port as unknown as string, 10) || 8081;
+            serverPort = this.settings.port;
 
-                    this.settings.port = parseInt(this.settings.port as unknown as string, 10) || 8081;
-                    serverPort = this.settings.port;
+            if (!this.settings.disableMcp) {
+                // Start MCP server
+                this.mcpServer = new McpServer(
+                    this.server.server,
+                    {
+                        defaultUser: this.settings.defaultUser,
+                        auth: false,
+                        language: systemConfig.common.language,
+                    },
+                    this.adapter,
+                    // Run as a web extension on admin's own web server: a minimal instance object puts
+                    // the MCP routes under `/mcp/` and feeds the config via `native` (see McpServer).
+                    {
+                        _id: 'system.adapter.mcp',
+                        native: {
+                            defaultUser: this.settings.defaultUser,
+                            auth: false,
+                            language: systemConfig.common.language,
+                        } as McpAdapterConfig,
+                    } as unknown as ioBroker.InstanceObject,
+                    this.server.app,
+                );
+            }
 
-                    this.adapter.getPort(
-                        this.settings.port,
+            this.adapter.getPort(
+                this.settings.port,
+                !this.settings.bind || this.settings.bind === '0.0.0.0' ? undefined : this.settings.bind || undefined,
+                port => {
+                    serverPort = port;
+
+                    // Start the web server
+                    this.server.server.listen(
+                        port,
                         !this.settings.bind || this.settings.bind === '0.0.0.0'
                             ? undefined
                             : this.settings.bind || undefined,
-                        port => {
-                            serverPort = port;
+                        (): void => {
+                            void this.adapter.setState('info.connection', true, true);
 
-                            // Start the web server
-                            this.server.server.listen(
-                                port,
-                                !this.settings.bind || this.settings.bind === '0.0.0.0'
-                                    ? undefined
-                                    : this.settings.bind || undefined,
-                                (): void => {
-                                    void this.adapter.setState('info.connection', true, true);
-
-                                    serverListening = true;
-                                    this.adapter.log.info(
-                                        `http${this.settings.secure ? 's' : ''} server listening on port ${port}`,
-                                    );
-                                    this.adapter.log.info(
-                                        `Use link "http${
-                                            this.settings.secure ? 's' : ''
-                                        }://127.0.0.1:${port}" to configure.`,
-                                    );
-
-                                    if (!this.adapter.config.doNotCheckPublicIP && !this.adapter.config.auth) {
-                                        this.checkTimeout = this.adapter.setTimeout(async (): Promise<void> => {
-                                            this.checkTimeout = null;
-                                            try {
-                                                await checkPublicIP(
-                                                    this.settings.port,
-                                                    'ioBroker',
-                                                    '/iobroker_check.html',
-                                                );
-                                            } catch (e) {
-                                                // this supported first from js-controller 5.0.
-                                                this.adapter.sendToHost(
-                                                    `system.host.${this.adapter.host}`,
-                                                    'addNotification',
-                                                    {
-                                                        scope: 'system',
-                                                        category: 'securityIssues',
-                                                        message:
-                                                            'Your admin instance is accessible from the internet without any protection. ' +
-                                                            'Please enable authentication or disable the access from the internet.',
-                                                        instance: `system.adapter.${this.adapter.namespace}`,
-                                                    },
-                                                    (/* result */): void => {
-                                                        /* ignore */
-                                                    },
-                                                );
-
-                                                this.adapter.log.error(e.toString());
-                                            }
-                                        }, 1000);
-                                    }
-                                },
+                            serverListening = true;
+                            this.adapter.log.info(
+                                `http${this.settings.secure ? 's' : ''} server listening on port ${port}`,
+                            );
+                            this.adapter.log.info(
+                                `Use link "http${this.settings.secure ? 's' : ''}://127.0.0.1:${port}" to configure.`,
                             );
 
-                            if (typeof this.onReady === 'function') {
-                                this.onReady(this.server.server, this.store, this.adapter);
+                            if (!this.adapter.config.doNotCheckPublicIP && !this.adapter.config.auth) {
+                                this.checkTimeout = this.adapter.setTimeout(async (): Promise<void> => {
+                                    this.checkTimeout = null;
+                                    try {
+                                        await checkPublicIP(this.settings.port, 'ioBroker', '/iobroker_check.html');
+                                    } catch (e) {
+                                        // this supported first from js-controller 5.0.
+                                        this.adapter.sendToHost(
+                                            `system.host.${this.adapter.host}`,
+                                            'addNotification',
+                                            {
+                                                scope: 'system',
+                                                category: 'securityIssues',
+                                                message:
+                                                    'Your admin instance is accessible from the internet without any protection. ' +
+                                                    'Please enable authentication or disable the access from the internet.',
+                                                instance: `system.adapter.${this.adapter.namespace}`,
+                                            },
+                                            (/* result */): void => {
+                                                /* ignore */
+                                            },
+                                        );
+
+                                        this.adapter.log.error(e.toString());
+                                    }
+                                }, 1000);
                             }
                         },
                     );
-                }
-            });
+
+                    if (typeof this.onReady === 'function') {
+                        this.onReady(this.server.server, this.store, this.adapter);
+                    }
+                },
+            );
+        }
     }
 }
-
-export default Web;
