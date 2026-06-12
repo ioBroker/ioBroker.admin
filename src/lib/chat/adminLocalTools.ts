@@ -6,6 +6,7 @@
  * inherently performed by the frontend (installing an adapter, navigating the UI). All of these are
  * "write"/"action" tools and therefore go through the per-action confirmation flow.
  */
+import { execFile, type ExecFileException } from 'node:child_process';
 import type { OpenAiFunctionTool } from './mcpClientManager';
 
 /** How a tool is treated by the confirmation gate. */
@@ -14,9 +15,20 @@ export type ToolKind = 'read' | 'write' | 'action';
 /** MCP value-writing tools (need confirmation, executed via the MCP layer). */
 export const MCP_WRITE_TOOLS = new Set(['set_state', 'set_states']);
 /** Admin-local tools executed in the backend (need confirmation). */
-export const ADMIN_WRITE_TOOLS = new Set(['create_user_state', 'extend_object']);
+export const ADMIN_WRITE_TOOLS = new Set([
+    'create_user_state',
+    'extend_object',
+    'assign_to_enums',
+    'run_node_script',
+    'run_javascript',
+]);
 /** Admin-local tools performed by the frontend (need confirmation). */
 export const CLIENT_ACTION_TOOLS = new Set(['install_adapter', 'navigate_admin_ui', 'run_command']);
+/**
+ * Tools that must ALWAYS be confirmed for EACH call — a blanket "don't ask again" approval is ignored
+ * for them. They run arbitrary code, so the user must review every individual script.
+ */
+export const ALWAYS_CONFIRM_TOOLS = new Set(['run_node_script', 'run_javascript']);
 
 /** True if the tool is implemented here (admin-local) rather than by the MCP server. */
 export function isAdminLocalTool(name: string): boolean {
@@ -91,6 +103,106 @@ export const ADMIN_LOCAL_TOOL_DEFS: OpenAiFunctionTool[] = [
                     native: { type: 'object', description: 'Partial `native` to merge' },
                 },
                 required: ['id'],
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'assign_to_enums',
+            description:
+                'Categorize objects by ADDING them to room and/or function enums (`enum.rooms.*` / ' +
+                '`enum.functions.*`). Add-only: existing members are kept. A room/function may be given as a ' +
+                'full enum id ("enum.rooms.bath") or a plain name ("Badezimmer", "Light") — an existing enum ' +
+                'is matched by name/id, otherwise a new enum is created. Use this to sort devices into rooms/' +
+                'functions inferred from their names (one entry per object, batch many at once).',
+            parameters: {
+                type: 'object',
+                properties: {
+                    assignments: {
+                        type: 'array',
+                        description: 'One entry per object to categorize.',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                id: {
+                                    type: 'string',
+                                    description:
+                                        'Full object ID of the device/channel/state, e.g. "zigbee.0.00158d0002e2e668"',
+                                },
+                                rooms: {
+                                    type: 'array',
+                                    items: { type: 'string' },
+                                    description: 'Room enum ids or names to add this object to, e.g. ["Badezimmer"]',
+                                },
+                                functions: {
+                                    type: 'array',
+                                    items: { type: 'string' },
+                                    description:
+                                        'Function enum ids or names, e.g. ["Light"] or ["enum.functions.motion"]',
+                                },
+                            },
+                            required: ['id'],
+                        },
+                    },
+                },
+                required: ['assignments'],
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'run_node_script',
+            description:
+                'Execute a short Node.js script on the ioBroker HOST (the OS) to CHECK/diagnose something — ' +
+                'e.g. test a TCP/HTTP connection, read a file, inspect the environment, do a quick ' +
+                'computation. The script runs in a SEPARATE Node process with a timeout; its stdout, stderr ' +
+                'and exit code are returned — print results with console.log. The ioBroker adapter API is ' +
+                'NOT available here (use the other tools for states/objects). Every run is shown to the user ' +
+                'for explicit confirmation. Keep scripts short and prefer READ-ONLY checks; never run ' +
+                'destructive or irreversible operations.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    code: {
+                        type: 'string',
+                        description: 'Node.js/JavaScript source to execute. Use console.log to output the result.',
+                    },
+                    timeout: { type: 'number', description: 'Max runtime in ms (default 10000, max 60000)' },
+                },
+                required: ['code'],
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'run_javascript',
+            description:
+                'Run a one-off JavaScript or TypeScript script INSIDE the javascript adapter, with the full ' +
+                'ioBroker scripting API available (on, getState, setState, schedule, sendTo, …) — unlike ' +
+                'run_node_script (plain Node, no ioBroker API). Returns { ok, error, output, logs }. The ' +
+                'script runs ONCE and is NOT saved (to create a persistent script, guide the user to the ' +
+                'Scripts tab #tab-javascript). Requires the "javascript" adapter installed and running. ' +
+                'Every run is confirmed by the user (the code is shown). Prefer read-only checks; for a ' +
+                'change propose the smallest action.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    source: { type: 'string', description: 'The script source code.' },
+                    language: {
+                        type: 'string',
+                        enum: ['js', 'ts'],
+                        description: 'js = JavaScript (default), ts = TypeScript',
+                    },
+                    timeout: { type: 'number', description: 'Max runtime in ms (default 10000, max 60000)' },
+                    instance: {
+                        type: 'string',
+                        description: 'javascript instance, e.g. "javascript.0" (default: first running instance)',
+                    },
+                },
+                required: ['source'],
             },
         },
     },
@@ -193,6 +305,14 @@ const ok = (data: unknown, clientAction?: ClientAction): AdminLocalResult => ({
 });
 const fail = (error: string): AdminLocalResult => ({ text: JSON.stringify({ ok: false, error }), isError: true });
 
+/** Coerce an unknown tool argument to a string (never the "[object Object]" default of an object). */
+function argStr(value: unknown): string {
+    if (typeof value === 'string') {
+        return value;
+    }
+    return typeof value === 'number' || typeof value === 'boolean' ? String(value) : '';
+}
+
 /** Dispatch and execute an admin-local tool. Never throws — errors are returned as tool results. */
 export async function executeAdminLocalTool(
     adapter: ioBroker.Adapter,
@@ -205,6 +325,15 @@ export async function executeAdminLocalTool(
         }
         if (name === 'extend_object') {
             return await extendObject(adapter, args);
+        }
+        if (name === 'assign_to_enums') {
+            return await assignToEnums(adapter, args);
+        }
+        if (name === 'run_node_script') {
+            return await runNodeScript(args);
+        }
+        if (name === 'run_javascript') {
+            return await runJavaScript(adapter, args);
         }
         if (name === 'install_adapter') {
             return installAdapter(args);
@@ -223,7 +352,7 @@ export async function executeAdminLocalTool(
 
 /** Create a state, but only inside the user-owned namespaces. */
 async function createUserState(adapter: ioBroker.Adapter, args: Record<string, unknown>): Promise<AdminLocalResult> {
-    const id = String(args.id || '').trim();
+    const id = argStr(args.id).trim();
     if (!id) {
         return fail('id is required');
     }
@@ -243,7 +372,7 @@ async function createUserState(adapter: ioBroker.Adapter, args: Record<string, u
         write: args.write !== false,
     };
     if (args.unit !== undefined) {
-        common.unit = String(args.unit);
+        common.unit = argStr(args.unit);
     }
     await adapter.setForeignObjectAsync(id, { type: 'state', common, native: {} });
     if (args.def !== undefined) {
@@ -254,7 +383,7 @@ async function createUserState(adapter: ioBroker.Adapter, args: Record<string, u
 
 /** Merge `common`/`native` into an existing object (e.g. toggle common.enabled, edit native/members). */
 async function extendObject(adapter: ioBroker.Adapter, args: Record<string, unknown>): Promise<AdminLocalResult> {
-    const id = String(args.id || '').trim();
+    const id = argStr(args.id).trim();
     if (!id) {
         return fail('id is required');
     }
@@ -274,11 +403,234 @@ async function extendObject(adapter: ioBroker.Adapter, args: Record<string, unkn
     return ok({ id, updated: true });
 }
 
+/** Lowercase + transliterate a display name to a safe ioBroker enum id segment. */
+function enumIdSegment(name: string): string {
+    const seg = name
+        .trim()
+        .toLowerCase()
+        .replace(/ä/g, 'ae')
+        .replace(/ö/g, 'oe')
+        .replace(/ü/g, 'ue')
+        .replace(/ß/g, 'ss')
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '');
+    return seg || 'enum';
+}
+
+/** Comparable names of an enum (a plain string or a translated {en,de,…} object). */
+function enumNames(common: ioBroker.EnumCommon | undefined): string[] {
+    const name = common?.name;
+    if (!name) {
+        return [];
+    }
+    return typeof name === 'string' ? [name] : Object.values(name).filter((n): n is string => typeof n === 'string');
+}
+
+/**
+ * Add objects to room/function enums (ADD-ONLY — existing members are kept). Rooms/functions may be
+ * given as enum ids or display names; an existing enum is matched by id-suffix or name, otherwise a new
+ * one is created. Lets the assistant sort many devices into rooms/functions in a single call.
+ */
+async function assignToEnums(adapter: ioBroker.Adapter, args: Record<string, unknown>): Promise<AdminLocalResult> {
+    const assignments = Array.isArray(args.assignments) ? args.assignments : [];
+    if (!assignments.length) {
+        return fail('assignments is required: [{ id, rooms?: string[], functions?: string[] }]');
+    }
+
+    // Load existing enums once to resolve names → ids and to read current members.
+    const enumObjs = await adapter.getForeignObjectsAsync('enum.*', 'enum');
+    const working: Record<string, ioBroker.EnumObject> = {};
+
+    /** Resolve a room/function reference to an enum id (creating a working object if it is new). */
+    const resolveEnum = (category: 'rooms' | 'functions', ref: string): string => {
+        const prefix = `enum.${category}.`;
+        let id: string;
+        if (ref.startsWith('enum.')) {
+            id = ref;
+        } else {
+            const norm = ref.trim().toLowerCase();
+            const seg = enumIdSegment(ref);
+            const match = Object.keys(enumObjs).find(eid => {
+                if (!eid.startsWith(prefix)) {
+                    return false;
+                }
+                const suffix = eid.substring(prefix.length).toLowerCase();
+                return (
+                    suffix === norm ||
+                    suffix === seg ||
+                    enumNames(enumObjs[eid]?.common).some(n => n.toLowerCase() === norm)
+                );
+            });
+            id = match || `${prefix}${seg}`;
+        }
+        if (!working[id]) {
+            working[id] =
+                enumObjs[id] ||
+                ({ _id: id, type: 'enum', common: { name: ref, members: [] }, native: {} } as ioBroker.EnumObject);
+            if (!Array.isArray(working[id].common.members)) {
+                working[id].common.members = [];
+            }
+        }
+        return id;
+    };
+
+    const summary: Record<string, number> = {};
+    for (const raw of assignments) {
+        if (!raw || typeof raw !== 'object') {
+            continue;
+        }
+        const item = raw as Record<string, unknown>;
+        const objId = argStr(item.id).trim();
+        if (!objId) {
+            continue;
+        }
+        const groups: Array<['rooms' | 'functions', unknown]> = [
+            ['rooms', item.rooms],
+            ['functions', item.functions],
+        ];
+        for (const [category, refs] of groups) {
+            if (!Array.isArray(refs)) {
+                continue;
+            }
+            for (const ref of refs) {
+                const r = String(ref || '').trim();
+                if (!r) {
+                    continue;
+                }
+                const enumId = resolveEnum(category, r);
+                const members = working[enumId].common.members;
+                if (!members.includes(objId)) {
+                    members.push(objId);
+                    summary[enumId] = (summary[enumId] || 0) + 1;
+                }
+            }
+        }
+    }
+
+    const changed = Object.keys(summary);
+    if (!changed.length) {
+        return ok({ changed: 0, note: 'Nothing to do — all assignments were already present.' });
+    }
+    for (const enumId of changed) {
+        await adapter.setForeignObjectAsync(enumId, working[enumId]);
+    }
+    return ok({ changed: changed.length, enums: summary });
+}
+
+/** Max stdout/stderr length fed back to the model (keeps the tool result bounded). */
+const MAX_SCRIPT_OUTPUT = 6000;
+
+/** Clip long script output so the tool result stays bounded. */
+function clipOutput(s: string): string {
+    return s.length > MAX_SCRIPT_OUTPUT ? `${s.slice(0, MAX_SCRIPT_OUTPUT)}\n…(truncated)` : s;
+}
+
+/**
+ * Run a short Node.js script on the host in a SEPARATE process with a timeout, capturing stdout/stderr.
+ * High-risk (arbitrary code) — only reached after the per-call confirmation gate has approved it.
+ */
+function runNodeScript(args: Record<string, unknown>): Promise<AdminLocalResult> {
+    const code = argStr(args.code);
+    if (!code.trim()) {
+        return Promise.resolve(fail('code is required'));
+    }
+    const timeout = Math.min(Math.max(Number(args.timeout) || 10000, 500), 60000);
+    return new Promise<AdminLocalResult>(resolve => {
+        execFile(
+            process.execPath,
+            ['-e', code],
+            { timeout, maxBuffer: 4 * 1024 * 1024, windowsHide: true },
+            (error: ExecFileException | null, stdout: string, stderr: string) => {
+                resolve(
+                    ok({
+                        exitCode: error && typeof error.code === 'number' ? error.code : error ? 1 : 0,
+                        timedOut: error?.killed === true,
+                        stdout: clipOutput(stdout || ''),
+                        stderr: clipOutput(stderr || ''),
+                    }),
+                );
+            },
+        );
+    });
+}
+
+/** Normalize the `logs` array the javascript adapter returns into readable strings. */
+function formatScriptLogs(logs: unknown): string[] {
+    if (!Array.isArray(logs)) {
+        return [];
+    }
+    return logs.slice(0, 100).map(entry => {
+        if (typeof entry === 'string') {
+            return entry;
+        }
+        if (entry && typeof entry === 'object') {
+            const o = entry as Record<string, unknown>;
+            const sev = typeof o.severity === 'string' ? o.severity : typeof o.level === 'string' ? o.level : '';
+            const msg =
+                typeof o.message === 'string' ? o.message : typeof o.text === 'string' ? o.text : JSON.stringify(o);
+            return sev ? `[${sev}] ${msg}` : msg;
+        }
+        return JSON.stringify(entry);
+    });
+}
+
+/**
+ * Run a one-off JS/TS script INSIDE the javascript adapter (full ioBroker scripting API) by sending it
+ * an `execute` message. High-risk (arbitrary code) — only reached after per-call confirmation.
+ */
+async function runJavaScript(adapter: ioBroker.Adapter, args: Record<string, unknown>): Promise<AdminLocalResult> {
+    const source = argStr(args.source);
+    if (!source.trim()) {
+        return fail('source is required');
+    }
+    const lang = argStr(args.language).toLowerCase();
+    const engineType: 'Javascript/js' | 'TypeScript/ts' =
+        lang === 'ts' || lang === 'typescript' ? 'TypeScript/ts' : 'Javascript/js';
+    const timeout = Math.min(Math.max(Number(args.timeout) || 10000, 500), 60000);
+
+    // Pick the javascript instance: an explicit one, otherwise the first (preferably enabled) instance.
+    let instance = argStr(args.instance).replace(/^system\.adapter\./, '');
+    if (!instance) {
+        const instances = await adapter.getForeignObjectsAsync('system.adapter.javascript.*', 'instance');
+        const ids = Object.keys(instances || {});
+        if (!ids.length) {
+            return fail(
+                'The "javascript" adapter is not installed. Offer to install it (install_adapter "javascript") and add an instance.',
+            );
+        }
+        const enabled = ids.find(id => instances[id]?.common?.enabled);
+        instance = (enabled || ids[0]).replace('system.adapter.', '');
+    }
+
+    const message = { source, engineType, timeout, verbose: true, maxLogs: 100 };
+    // Guard so the chat turn never hangs if the instance is not running and never calls back.
+    const guardMs = timeout + 5000;
+    const result = await Promise.race([
+        adapter.sendToAsync(instance, 'execute', message) as Promise<unknown>,
+        new Promise<Record<string, unknown>>(resolve =>
+            setTimeout(
+                () =>
+                    resolve({ ok: false, error: `No response from ${instance} within ${guardMs} ms (is it running?)` }),
+                guardMs,
+            ),
+        ),
+    ]);
+
+    const r = (result || {}) as Record<string, unknown>;
+    const errText = typeof r.error === 'string' ? r.error : r.error ? JSON.stringify(r.error) : '';
+    return ok({
+        instance,
+        engineType,
+        ok: r.ok !== false && !errText,
+        ...(errText ? { error: errText } : {}),
+        output: typeof r.output === 'string' ? clipOutput(r.output) : '',
+        logs: formatScriptLogs(r.logs),
+    });
+}
+
 /** Validate the adapter name and hand the installation to the frontend. */
 function installAdapter(args: Record<string, unknown>): AdminLocalResult {
-    let adapterName = String(args.adapter || '')
-        .trim()
-        .toLowerCase();
+    let adapterName = argStr(args.adapter).trim().toLowerCase();
     if (adapterName.startsWith('iobroker.')) {
         adapterName = adapterName.substring('iobroker.'.length);
     }
@@ -293,14 +645,14 @@ function installAdapter(args: Record<string, unknown>): AdminLocalResult {
 
 /** Validate the navigation target (a hash route) and hand it to the frontend, which sets the URL. */
 function navigateAdminUi(args: Record<string, unknown>): AdminLocalResult {
-    const raw = String(args.hash || args.tab || args.route || '').trim();
+    const raw = argStr(args.hash || args.tab || args.route).trim();
     if (!raw) {
         return fail('hash is required, e.g. "#tab-hosts/base-settings/system.host.MSI"');
     }
     // Be lenient about what the model sends: a full URL ("http://host:3000/#tab-..."), a leading-slash
     // hash ("/#tab-...") or a bare route ("tab-..."). Extract everything from the first "#".
     const hashAt = raw.indexOf('#');
-    let hash = hashAt >= 0 ? raw.substring(hashAt) : `#${raw.replace(/^\/+/, '')}`;
+    const hash = hashAt >= 0 ? raw.substring(hashAt) : `#${raw.replace(/^\/+/, '')}`;
     if (!hash.startsWith('#tab-')) {
         return fail('hash must be an admin route starting with "#tab-", e.g. "#tab-objects/edit/<id>"');
     }
@@ -309,7 +661,7 @@ function navigateAdminUi(args: Record<string, unknown>): AdminLocalResult {
 
 /** Validate an ioBroker CLI command and hand it to the frontend, which streams its live output. */
 function runCommand(args: Record<string, unknown>): AdminLocalResult {
-    const command = String(args.command || '').trim();
+    const command = argStr(args.command).trim();
     if (!command) {
         return fail('command is required');
     }

@@ -253,6 +253,26 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
                 {error ? <Alert severity="error">{error}</Alert> : null}
                 {info ? <Alert severity="success">{info}</Alert> : null}
 
+                <div>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={value.hideFab}
+                                onChange={e => update({ hideFab: e.target.checked })}
+                            />
+                        }
+                        label={I18n.t('Hide assistant button')}
+                    />
+                    <Typography
+                        variant="caption"
+                        color="textSecondary"
+                        component="div"
+                        style={{ marginLeft: 14 }}
+                    >
+                        {I18n.t('When hidden, move the mouse to the bottom-right corner to reveal it.')}
+                    </Typography>
+                </div>
+
                 {props.autoApprove.length ? (
                     <div>
                         <Typography

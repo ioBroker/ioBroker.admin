@@ -29,6 +29,7 @@ import {
     Block as BlockIcon,
     Build as BuildIcon,
     CheckCircle as CheckIcon,
+    ChevronLeft as ChevronLeftIcon,
     Close as CloseIcon,
     ErrorOutline as ErrorIcon,
     ExpandMore as ExpandMoreIcon,
@@ -43,15 +44,18 @@ import { I18n, type AdminConnection, type IobTheme, type ThemeType } from '@iobr
 
 import ChatSettings from './ChatSettings';
 import {
+    CHAT_SETTINGS_OBJECT_ID,
     chatSettingsReady,
     clampChatWidth,
     clearChatHistory,
+    DEFAULT_CHAT_SETTINGS,
     loadAutoApprove,
     loadChatDisplayMode,
     loadChatHistory,
     loadChatMode,
     loadChatOpen,
     loadChatSettings,
+    loadChatSettingsFromObject,
     loadChatWidth,
     saveAutoApprove,
     saveChatDisplayMode,
@@ -59,6 +63,7 @@ import {
     saveChatMode,
     saveChatOpen,
     saveChatSettings,
+    saveChatSettingsToObject,
     saveChatWidth,
     type ApiMessage,
     type ChatDisplayMode,
@@ -142,10 +147,18 @@ function describeAction(action: PendingAction): string {
             return I18n.t('Set multiple states');
         case 'extend_object':
             return `${I18n.t('Update object')}: ${asStr(args.id)}`;
+        case 'assign_to_enums': {
+            const list = Array.isArray(args.assignments) ? args.assignments : [];
+            return `${I18n.t('Categorize objects into rooms/functions')}: ${list.length}`;
+        }
         case 'install_adapter':
             return `${I18n.t('Install adapter')}: ${asStr(args.adapter)}`;
         case 'run_command':
             return `${I18n.t('Run command')}: iobroker ${asStr(args.command)}`;
+        case 'run_node_script':
+            return I18n.t('Run Node.js code on the host');
+        case 'run_javascript':
+            return `${I18n.t('Run script in the javascript adapter')} (${asStr(args.language) === 'ts' ? 'TS' : 'JS'})`;
         case 'navigate_admin_ui':
             return `${I18n.t('Open in admin')}: ${asStr(args.hash)}`;
         default:
@@ -173,6 +186,9 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
     const [width, setWidth] = useState<number>(() => loadChatWidth());
     const [displayMode, setDisplayMode] = useState<ChatDisplayMode>(() => loadChatDisplayMode());
     const [autoApprove, setAutoApprove] = useState<string[]>(() => loadAutoApprove());
+    // When the launcher is hidden, a peek arrow appears as the mouse nears the bottom-right corner.
+    const [peek, setPeek] = useState(false);
+    const hideFab = settings.hideFab;
 
     const apiMessagesRef = useRef<ApiMessage[]>(restored.apiMessages);
     const nextIdRef = useRef(restored.items.reduce((max, item) => Math.max(max, item.id), -1) + 1);
@@ -219,6 +235,63 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [],
     );
+
+    // While the launcher is hidden (and the panel closed), watch the cursor: reveal the peek arrow
+    // when it nears the bottom-right corner. A global mousemove listener avoids an overlay that would
+    // otherwise block clicks on the admin UI in that corner.
+    useEffect(() => {
+        if (!hideFab || open) {
+            setPeek(false);
+            return undefined;
+        }
+        const onMove = (e: MouseEvent): void => {
+            // Cover the bottom-right region up to the raised launcher so the arrow stays revealed
+            // while the cursor travels to it.
+            const near = window.innerWidth - e.clientX < 100 && window.innerHeight - e.clientY < 150;
+            setPeek(prev => (prev === near ? prev : near));
+        };
+        window.addEventListener('mousemove', onMove);
+        return () => window.removeEventListener('mousemove', onMove);
+    }, [hideFab, open]);
+
+    // The assistant configuration lives in the shared `system.ai` object so it is identical on every
+    // browser. Load it on mount, keep it in sync via a subscription, and migrate an existing local
+    // (localStorage) configuration into the object on first run. localStorage stays a fast-start cache.
+    useEffect(() => {
+        let cancelled = false;
+        const apply = (value: ChatSettingsValue): void => {
+            if (cancelled) {
+                return;
+            }
+            setSettings(value);
+            saveChatSettings(value); // refresh the local cache for an instant next start
+        };
+        void loadChatSettingsFromObject(props.socket).then(loaded => {
+            if (cancelled) {
+                return;
+            }
+            if (loaded) {
+                apply(loaded);
+            } else if (chatSettingsReady(settings)) {
+                // First start after the update: migrate the local configuration into the object.
+                void saveChatSettingsToObject(props.socket, settings).catch(() => {
+                    /* ignore — keep using the local cache */
+                });
+            }
+        });
+        const onObjChange = (id: string, obj: ioBroker.Object | null | undefined): void => {
+            const native = obj?.native as Partial<ChatSettingsValue> | undefined;
+            if (id === CHAT_SETTINGS_OBJECT_ID && native && typeof native === 'object') {
+                apply({ ...DEFAULT_CHAT_SETTINGS, ...native });
+            }
+        };
+        void props.socket.subscribeObject(CHAT_SETTINGS_OBJECT_ID, onObjChange);
+        return () => {
+            cancelled = true;
+            void props.socket.unsubscribeObject(CHAT_SETTINGS_OBJECT_ID, onObjChange);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const ready = chatSettingsReady(settings);
     const dark = props.themeType === 'dark';
@@ -431,7 +504,11 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
         setSettingsOpen(false);
         if (value) {
             setSettings(value);
-            saveChatSettings(value);
+            saveChatSettings(value); // local cache
+            // Persist system-wide so the configuration is the same on every browser.
+            void saveChatSettingsToObject(props.socket, value).catch(() => {
+                /* ignore — the local cache still holds the value */
+            });
         }
     };
 
@@ -587,15 +664,45 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
 
     return (
         <>
-            {!open ? (
+            {!open && !hideFab ? (
                 <Tooltip title={I18n.t('ioBroker assistant')}>
                     <Fab
                         color="primary"
                         size="medium"
                         onClick={() => setOpen(true)}
-                        style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1200 }}
+                        // Raised above the bottom-right corner so it never overlaps page FABs (e.g. the
+                        // intro edit button at bottom:16).
+                        style={{ position: 'fixed', bottom: 88, right: 24, zIndex: 1200 }}
                     >
                         <AssistantIcon />
+                    </Fab>
+                </Tooltip>
+            ) : null}
+
+            {/* Hidden launcher: a peek arrow that fades in when the cursor reaches the bottom-right corner. */}
+            {!open && hideFab ? (
+                <Tooltip
+                    title={I18n.t('Show ioBroker assistant')}
+                    placement="left"
+                >
+                    <Fab
+                        color="primary"
+                        size="small"
+                        onClick={() => setOpen(true)}
+                        sx={{
+                            // Same raised position as the normal launcher so toggling "hide" never
+                            // makes the button jump, and it clears page FABs in the corner.
+                            position: 'fixed',
+                            bottom: 88,
+                            right: 24,
+                            zIndex: 1200,
+                            opacity: peek ? 0.95 : 0,
+                            transform: peek ? 'translateX(0)' : 'translateX(48px)',
+                            pointerEvents: peek ? 'auto' : 'none',
+                            transition: 'opacity .2s ease, transform .2s ease',
+                        }}
+                    >
+                        <ChevronLeftIcon />
                     </Fab>
                 </Tooltip>
             ) : null}
@@ -775,10 +882,33 @@ function ChatItemView({
                     {item.actions.map(action => (
                         <Box
                             key={action.id}
-                            style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '4px 0' }}
+                            style={{ margin: '4px 0' }}
                         >
-                            <BuildIcon fontSize="small" />
-                            <Typography variant="body2">{describeAction(action)}</Typography>
+                            <Box style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <BuildIcon fontSize="small" />
+                                <Typography variant="body2">{describeAction(action)}</Typography>
+                            </Box>
+                            {/* Show the exact code so the user reviews what will run on the host. */}
+                            {typeof (action.args?.code ?? action.args?.source) === 'string' ? (
+                                <Box
+                                    component="pre"
+                                    sx={{
+                                        m: 0,
+                                        mt: 0.5,
+                                        p: 1,
+                                        borderRadius: 1,
+                                        fontFamily: 'monospace',
+                                        fontSize: '0.75rem',
+                                        whiteSpace: 'pre-wrap',
+                                        wordBreak: 'break-word',
+                                        maxHeight: 240,
+                                        overflow: 'auto',
+                                        bgcolor: dark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.08)',
+                                    }}
+                                >
+                                    {asStr(action.args.code ?? action.args.source)}
+                                </Box>
+                            ) : null}
                         </Box>
                     ))}
                     {item.decided ? (
@@ -790,20 +920,25 @@ function ChatItemView({
                         </Typography>
                     ) : (
                         <>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        size="small"
-                                        checked={remember}
-                                        onChange={e => setRemember(e.target.checked)}
-                                    />
-                                }
-                                label={
-                                    <Typography variant="caption">
-                                        {I18n.t("Don't ask again for such operations")}
-                                    </Typography>
-                                }
-                            />
+                            {/* No blanket approval for arbitrary code — every script must be confirmed. */}
+                            {item.actions.some(
+                                action => action.tool === 'run_node_script' || action.tool === 'run_javascript',
+                            ) ? null : (
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            size="small"
+                                            checked={remember}
+                                            onChange={e => setRemember(e.target.checked)}
+                                        />
+                                    }
+                                    label={
+                                        <Typography variant="caption">
+                                            {I18n.t("Don't ask again for such operations")}
+                                        </Typography>
+                                    }
+                                />
+                            )}
                             <Box style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                                 <Button
                                     variant="contained"

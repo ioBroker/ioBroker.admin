@@ -158,6 +158,12 @@
                     lg: 4,
                     hidden: '!!data.auth',
                 },
+                disableMcp: {
+                    type: 'checkbox',
+                    newLine: true,
+                    label: 'Disable Assistent',
+                    sx: 12,
+                }
             },
         },
         loadingTab: {

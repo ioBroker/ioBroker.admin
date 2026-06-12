@@ -16,6 +16,7 @@ import { chatCompletion, type AiProvider } from './llmProvider';
 import type { OpenAIMessage, OpenAIToolCall } from './anthropicAdapter';
 import {
     ADMIN_LOCAL_TOOL_DEFS,
+    ALWAYS_CONFIRM_TOOLS,
     AUTO_RUN_TOOLS,
     NAVIGATION_TOOL_DEFS,
     executeAdminLocalTool,
@@ -203,13 +204,21 @@ export class ChatOrchestrator {
         if (mode === 'act') {
             lines.push(
                 '- You may change things using the write/action tools (set_state, create_user_state,',
-                '  extend_object, install_adapter, run_command). Every such call is shown to the user for',
-                '  explicit confirmation before it runs, so propose the smallest sensible action.',
+                '  extend_object, assign_to_enums, install_adapter, run_command, run_node_script). Every such',
+                '  call is shown to the user for explicit confirmation before it runs, so propose the smallest',
+                '  sensible action.',
                 '- create_user_state only works in "0_userdata.0." or "javascript.<n>." — never elsewhere.',
                 '- extend_object merges common/native into an existing object — use it to start/stop an',
                 '  instance (common.enabled), change instance settings (native) or set enum members.',
+                '- assign_to_enums adds objects to room/function enums (add-only) — use it to sort devices.',
                 '- run_command runs an ioBroker CLI command and streams its output to the user; use it for',
                 '  maintenance actions (restart, upload, fix, ...), not to fetch data.',
+                '- run_node_script executes a short Node.js script on the host to CHECK things (network, files,',
+                '  environment). Prefer read-only checks, keep it short, and put results in console.log. Never',
+                '  use it for destructive operations.',
+                '- run_javascript runs a one-off JS/TS script INSIDE the javascript adapter (full ioBroker API:',
+                '  on/getState/setState/schedule/sendTo). Use it to test automation logic or do an API-based',
+                '  check/action; it is not saved. Use run_node_script instead for plain OS checks (no ioBroker API).',
             );
         } else {
             lines.push(
@@ -257,9 +266,7 @@ export class ChatOrchestrator {
         // is not replayed as an example the model imitates — a single leak otherwise poisons the whole
         // conversation (the leaked `<invoke …>` keeps reappearing until "new chat").
         const messages: OpenAIMessage[] = params.messages.map(message =>
-            message.role === 'assistant' &&
-            typeof message.content === 'string' &&
-            message.content.includes('<invoke')
+            message.role === 'assistant' && typeof message.content === 'string' && message.content.includes('<invoke')
                 ? { ...message, content: parseTextToolCalls(message.content).content }
                 : message,
         );
@@ -282,7 +289,8 @@ export class ChatOrchestrator {
                     toolKind(tc.function.name) !== 'read' &&
                     !AUTO_RUN_TOOLS.has(tc.function.name) &&
                     approvals[tc.id] === undefined &&
-                    !autoApprove.has(tc.function.name);
+                    // High-risk tools (arbitrary code) always ask, even with a blanket "don't ask again".
+                    (!autoApprove.has(tc.function.name) || ALWAYS_CONFIRM_TOOLS.has(tc.function.name));
 
                 const undecided = pending.filter(needsDecision);
                 if (undecided.length) {
@@ -418,7 +426,10 @@ export class ChatOrchestrator {
             const result = await this.mcp.callTool(name, args);
             return { text: result.text, ok: !result.isError };
         } catch (e) {
-            return { text: JSON.stringify({ ok: false, error: e instanceof Error ? e.message : String(e) }), ok: false };
+            return {
+                text: JSON.stringify({ ok: false, error: e instanceof Error ? e.message : String(e) }),
+                ok: false,
+            };
         }
     }
 }
@@ -435,9 +446,7 @@ function unansweredToolCalls(messages: OpenAIMessage[]): OpenAIToolCall[] {
     if (!lastAssistant?.tool_calls?.length) {
         return [];
     }
-    const answered = new Set(
-        messages.filter(m => m.role === 'tool' && m.tool_call_id).map(m => m.tool_call_id as string),
-    );
+    const answered = new Set(messages.filter(m => m.role === 'tool' && m.tool_call_id).map(m => m.tool_call_id));
     return lastAssistant.tool_calls.filter(tc => !answered.has(tc.id));
 }
 
@@ -445,7 +454,7 @@ function unansweredToolCalls(messages: OpenAIMessage[]): OpenAIToolCall[] {
 function lastAssistantText(messages: OpenAIMessage[]): string {
     for (let i = messages.length - 1; i >= 0; i--) {
         if (messages[i].role === 'assistant') {
-            return typeof messages[i].content === 'string' ? (messages[i].content as string) : '';
+            return typeof messages[i].content === 'string' ? messages[i].content : '';
         }
     }
     return '';

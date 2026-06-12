@@ -1,5 +1,7 @@
 /** Shared types for the admin chat helper frontend, mirroring the backend `chat:*` message API. */
 
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
+
 export type AiProvider = 'openai' | 'anthropic' | 'gemini' | 'deepseek' | 'custom';
 
 /** Permission mode: `read` = answer/inspect only, `act` = may propose write/action tools. */
@@ -77,6 +79,8 @@ export interface ChatSettingsValue {
     /** Base URL for the OpenAI-compatible/custom endpoint. */
     baseUrl: string;
     allowSelfSignedCerts: boolean;
+    /** Hide the floating launcher button; reveal it by moving the mouse to the bottom-right corner. */
+    hideFab: boolean;
 }
 
 /** What the chat panel renders as a single conversation entry. */
@@ -95,6 +99,7 @@ export const DEFAULT_CHAT_SETTINGS: ChatSettingsValue = {
     credentialId: '',
     baseUrl: '',
     allowSelfSignedCerts: false,
+    hideFab: false,
 };
 
 /** Read the persisted chat settings from localStorage (falling back to defaults). */
@@ -126,6 +131,55 @@ export function chatSettingsReady(value: ChatSettingsValue): boolean {
     }
     // Custom/OpenAI-compatible endpoints may run without a key (local Ollama etc.).
     return value.provider === 'custom' ? !!value.baseUrl || !!value.credentialId : !!value.credentialId;
+}
+
+/**
+ * The chat configuration (provider/model/credential/baseUrl/…) is stored system-wide in the `native`
+ * section of this ioBroker object, so it is shared across all browsers/devices instead of living only
+ * in the local browser. The API key itself stays in the central, encrypted credential store — only the
+ * `credentialId` reference is kept here. localStorage is used only as a fast-start cache.
+ */
+export const CHAT_SETTINGS_OBJECT_ID = 'system.ai';
+
+/**
+ * Load the chat settings from the shared `system.ai` object.
+ *
+ * @returns the stored settings, or `null` if the object doesn't exist yet / carries no settings (so
+ * the caller can migrate the local cache into it).
+ */
+export async function loadChatSettingsFromObject(socket: AdminConnection): Promise<ChatSettingsValue | null> {
+    try {
+        const obj = await socket.getObject(CHAT_SETTINGS_OBJECT_ID);
+        const native = obj?.native as Partial<ChatSettingsValue> | undefined;
+        if (native && typeof native === 'object' && Object.keys(native).length) {
+            return { ...DEFAULT_CHAT_SETTINGS, ...native };
+        }
+    } catch {
+        // ignore — the object may not exist yet or the user may lack read permission
+    }
+    return null;
+}
+
+/** Persist the chat settings into the shared `system.ai` object (created on demand). */
+export async function saveChatSettingsToObject(socket: AdminConnection, value: ChatSettingsValue): Promise<void> {
+    let obj: ioBroker.Object | null | undefined;
+    try {
+        obj = await socket.getObject(CHAT_SETTINGS_OBJECT_ID);
+    } catch {
+        obj = null;
+    }
+    const next = {
+        ...(obj || {}),
+        _id: CHAT_SETTINGS_OBJECT_ID,
+        type: 'config',
+        common: {
+            ...(obj?.common || {}),
+            name: obj?.common?.name || 'AI assistant settings',
+            expert: true,
+        },
+        native: { ...(obj?.native || {}), ...value },
+    } as unknown as ioBroker.Object;
+    await socket.setObject(CHAT_SETTINGS_OBJECT_ID, next);
 }
 
 export const CHAT_HISTORY_KEY = 'App.chatHelperHistory';

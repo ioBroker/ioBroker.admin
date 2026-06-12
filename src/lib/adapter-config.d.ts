@@ -38,6 +38,7 @@ declare global {
             ttl: number;
             /** If the experimental SSO feature is enabled */
             ssoActive: boolean;
+            disableMcp?: boolean
         }
     }
 }

@@ -36,7 +36,7 @@
         "express": "^5.2.1",
         "express-fileupload": "^1.5.2",
         "express-session": "^1.19.0",
-        "iobroker.mcp": "^0.2.6",
+        "iobroker.mcp": "^0.3.1",
         "json5": "^2.2.3",
         "mime": "^3.0.0",
         "semver": "^7.8.3"
@@ -57,6 +57,7 @@
         "@types/compression": "^1.8.1",
         "@types/connect-flash": "^0.0.40",
         "@types/cookie-parser": "^1.4.10",
+        "@types/express": "^5.0.6",
         "@types/express-fileupload": "^1.5.1",
         "@types/express-session": "^1.19.0",
         "@types/less": "3.0.8",
