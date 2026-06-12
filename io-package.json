@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.29",
+    "version": "7.9.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.9.0": {
+        "en": "Added the central credentials manager \nAdded the possibility of installation of packages on specific hosts",
+        "de": "Hinzufügen des zentralen Anmeldedatenmanagers\nHinzufügen der Möglichkeit der Installation von Paketen auf bestimmten Hosts",
+        "ru": "Добавлен менеджер центральных учетных данных\nДобавлена возможность установки пакетов на конкретных хостах",
+        "pt": "Adicionado o gerenciador central de credenciais\nAdicionada a possibilidade de instalação de pacotes em hosts específicos",
+        "nl": "De hoofdgegevensbeheerder toegevoegd\nToegevoegd de mogelijkheid van installatie van pakketten op specifieke hosts",
+        "fr": "Ajouté le gestionnaire central des références\nAjout de la possibilité d'installation de paquets sur des hôtes spécifiques",
+        "it": "Aggiunto il direttore delle credenziali centrali\nAggiunta la possibilità di installazione di pacchetti su host specifici",
+        "es": "Añadido el administrador central de credenciales\nSe agregó la posibilidad de instalar paquetes en hosts específicos",
+        "pl": "Dodano centralnego menedżera mandatów\nDodano możliwość instalacji pakietów na poszczególnych hostach",
+        "uk": "Додано центральний менеджер облікових записів\nДодано можливість установки пакетів на конкретні господарі",
+        "zh-cn": "增加了中央证书管理员\n添加在特定主机上安装包的可能性"
+      },
       "7.8.29": {
         "en": "Corrected JSON config for the select component with grouped options",
         "de": "JSON config für die ausgewählte Komponente mit gruppierten Optionen korrigiert",
@@ -95,19 +108,6 @@
         "pl": "Kopiuj \"common.states\" przez tworzenie aliasów\nAktualizacja instancji urządzeń",
         "uk": "Статус на сервери\nОновлення екземплярів `devices`",
         "zh-cn": "用别名复制“ common. states ”\n更新“ 设备” 实例"
-      },
-      "7.8.20": {
-        "en": "Improved the device manager",
-        "de": "Verbessert den Gerätemanager",
-        "ru": "Улучшен диспетчер устройств",
-        "pt": "Melhorou o gerenciador de dispositivos",
-        "nl": "De apparaatbeheerder verbeterd",
-        "fr": "Amélioration du gestionnaire de périphériques",
-        "it": "Migliorato il gestore del dispositivo",
-        "es": "Mejorado el administrador del dispositivo",
-        "pl": "Ulepszenie menedżera urządzeń",
-        "uk": "Покращення диспетчера пристроїв",
-        "zh-cn": "改进设备管理器"
       }
     },
     "desc": {
