@@ -50,7 +50,7 @@ export class McpClientManager {
         if (this.mcp) {
             return Promise.resolve(this.mcp);
         }
-        if (!this.initPromise) {
+        if (!(this.initPromise instanceof Promise)) {
             this.initPromise = createInProcessMcp({
                 adapter: this.adapter,
                 defaultUser: this.options.defaultUser || 'system.user.admin',

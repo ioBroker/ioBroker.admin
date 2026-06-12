@@ -335,7 +335,7 @@ class Admin extends Adapter {
             });
             return;
         } else if (obj.command.startsWith('chat:')) {
-            this.processChatMessage(obj);
+            this.processChatMessage(obj).catch(error => this.log.error(`Error by chat processing: ${error}`));
             return;
         } else if (webServer?.processMessage(obj)) {
             return;
