@@ -36,7 +36,7 @@
         "express": "^5.2.1",
         "express-fileupload": "^1.5.2",
         "express-session": "^1.19.0",
-        "iobroker.mcp": "^0.3.1",
+        "iobroker.mcp": "^1.0.0",
         "json5": "^2.2.3",
         "mime": "^3.0.0",
         "semver": "^7.8.3"
