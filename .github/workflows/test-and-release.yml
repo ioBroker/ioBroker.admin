@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: ioBroker/testing-action-check@v2.0.0
         with:
-          node-version: '22.x'
+          node-version: '24.x'
           lint: true
           install-command: 'npm ci && cd src-admin && npm ci -f'
 
@@ -40,7 +40,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [20.x, 22.x, 24.x]
+        node-version: [20.x, 22.x, 24.15.0]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -69,7 +69,7 @@ jobs:
     steps:
       - uses: ioBroker/testing-action-deploy@v1
         with:
-          node-version: '22.x'
+          node-version: '24.x'
           # npm-token: ${{ secrets.NPM_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 

@@ -167,23 +167,24 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.8.20 (2026-03-30)
-- (@GermanBluefox) Improved the device manager
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added AI assistant to the admin interface
 
-### 7.8.9 (2026-03-25)
-- (@GermanBluefox) Added in JsonConfig OAuth2 process for spotify
+### 7.9.0 (2026-06-11)
+- (@GermanBluefox) Added the central credentials manager 
+- (@GermanBluefox) Added the possibility of installation of packages on specific hosts
 
-### 7.8.8 (2026-03-24)
-- (@GermanBluefox) Implemented the possibility to upload adapter from the file (useful for development and testing)
+### 7.8.29 (2026-05-30)
+- (@GermanBluefox) Corrected JSON config for the select component with grouped options
 
-### 7.8.6 (2026-03-20)
-- (@GermanBluefox) Added the possibility to use the Object properties in JsonConfig
+### 7.8.27 (2026-05-25)
+- (@GermanBluefox) Updated packages
 
-### 7.8.5 (2026-03-18)
-- (@GermanBluefox) Custom editor could be limited to specific instances or specific states by regex expression
-- (@GermanBluefox) Added some options to JSON Config
-- (@copilot) Added `Cache-Control: no-cache` header to `index.html` to prevent browser from using stale cached HTML after admin updates
-- (@copilot) Handle Vite dynamic import failures (ERR_CACHE_READ_FAILURE) by triggering page reload instead of showing white screen
+### 7.8.25 (2026-05-16)
+- (@GermanBluefox) Extended JSON config for frigate adapter
+
+### 7.8.24 (2026-05-05)
+- (@GermanBluefox) Correcting the IP address calculation
 
 ## License
 

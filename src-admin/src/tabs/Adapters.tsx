@@ -62,7 +62,7 @@ import AdapterInstallDialog, {
     type AdapterInstallDialogProps,
 } from '@/components/Adapters/AdapterInstallDialog';
 import AdaptersList, { SUM } from '@/components/Adapters/AdaptersList';
-import type { AdminGuiConfig } from '@/types';
+import type { AdminGuiConfig, CommandFile } from '@/types';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdminUpdater from '@/dialogs/AdminUpdater';
 
@@ -142,7 +142,7 @@ interface AdaptersProps extends AdapterInstallDialogProps {
     instancesWorker: InstancesWorker;
     hostsWorker: HostsWorker;
     expertMode: boolean;
-    executeCommand: (cmd: string, host?: string, callback?: (exitCode: number) => void) => void;
+    executeCommand: (cmd: string, host?: string, callback?: (exitCode: number) => void, files?: CommandFile[]) => void;
     commandRunning: boolean;
     onSetCommandRunning: (commandRunning: boolean) => void;
     toggleTranslation: () => void;
@@ -953,7 +953,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
 
                 if (this.props.adminGuiConfig.admin.adapters?.allowAdapterRating !== false) {
                     try {
-                        ratings = (await this.props.socket.getRatings(update)) as unknown as Ratings;
+                        ratings = await this.props.socket.getRatings(update);
                     } catch (e) {
                         window.alert(`Cannot read ratings: ${e}`);
                     }
@@ -1031,9 +1031,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     });
                 } else if (typeof dependencies === 'object') {
                     // back compatibility
-                    const _deps: { [_adapterName: string]: string } = dependencies as any as {
-                        [_adapterName: string]: string;
-                    };
+                    const _deps: { [_adapterName: string]: string } = dependencies;
                     Object.keys(_deps).forEach(_adapterName => {
                         if (_adapterName && _deps[_adapterName] !== undefined && result) {
                             const installed = this.state.installed[_adapterName];
@@ -1058,7 +1056,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 }
             }
 
-            const ifDependencies: Record<string, string> = adapter.ifInstalledDependencies as Record<string, string>;
+            const ifDependencies: Record<string, string> = adapter.ifInstalledDependencies;
 
             if (ifDependencies && typeof ifDependencies === 'object' && !Array.isArray(ifDependencies)) {
                 const adapters = Object.keys(ifDependencies);
@@ -1375,7 +1373,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             },
             setAdminUpgradeTo: this.setAdminUpgradeTo,
             hostAdapterWorker: this.hostAdapterWorker,
-        } as AdaptersContext;
+        };
     }
 
     setAdminUpgradeTo = (version: string): void => this.setState({ adminUpgradeTo: version });
@@ -1600,15 +1598,22 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 categories={this.state.categories}
                 installed={this.state.installedGlobal}
                 socket={context.socket}
+                currentHost={context.currentHost}
+                hostsWorker={context.hostsWorker}
+                expertMode={context.expertMode}
+                themeType={context.themeType}
+                commandRunning={this.props.commandRunning}
                 upload={adapterName =>
                     this.props.executeCommand(`upload ${adapterName}${this.props.expertMode ? ' --debug' : ''}`)
                 }
-                installFromUrl={(adapterName, debug, customUrl) =>
+                installFromUrl={(adapterName, debug, customUrl, options) =>
                     this.addInstance({
                         adapterName,
                         debug,
                         customUrl,
                         context,
+                        host: options?.host,
+                        files: options?.files,
                     })
                 }
                 repository={this.state.repository}

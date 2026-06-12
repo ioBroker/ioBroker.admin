@@ -43,6 +43,7 @@ import { FaClipboard as IconCopyClipboard } from 'react-icons/fa';
 import {
     Utils,
     I18n,
+    Router,
     DialogSelectID,
     IconFx,
     UploadImage,
@@ -606,6 +607,19 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 `${this.props.dialogName || 'App'}.editTab`,
             ) || 'object';
 
+        // If this edit dialog is the active route (#tab-objects/edit/<id>/<tab>), the 4th hash
+        // segment selects the tab. (Gated on the route id so the dialog stays inert when embedded
+        // elsewhere, e.g. in an adapter's JsonConfig object picker.)
+        const editLocation = Router.getLocation();
+        if (
+            editLocation.tab === 'tab-objects' &&
+            editLocation.dialog === 'edit' &&
+            editLocation.id === this.props.obj._id &&
+            editLocation.arg
+        ) {
+            tab = editLocation.arg;
+        }
+
         // select another tab if alias not present
         if (tab === 'alias' && !withAlias) {
             tab = 'common';
@@ -731,6 +745,16 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
 
         void this.props.socket.subscribeObject(this.props.obj._id, this.onObjectUpdated);
+
+        // Reflect the resolved initial tab in the URL (#tab-objects/edit/<id>/<tab>) so a deep link
+        // and the current tab stay in sync. Deferred so the tab adjustments above have applied.
+        if (this.isRouted()) {
+            setTimeout(() => {
+                if (this.isRouted() && Router.getLocation().arg !== this.state.tab) {
+                    Router.doNavigate(null, null, null, this.state.tab);
+                }
+            }, 0);
+        }
     }
 
     componentWillUnmount(): void {
@@ -1300,6 +1324,12 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
     }
 
+    /** True when this edit dialog corresponds to the active object route `#tab-objects/edit/<id>`. */
+    private isRouted(): boolean {
+        const location = Router.getLocation();
+        return location.tab === 'tab-objects' && location.dialog === 'edit' && location.id === this.props.obj._id;
+    }
+
     renderTabs(parsedObj: ioBroker.Object | null | undefined): JSX.Element {
         return (
             <Tabs
@@ -1310,6 +1340,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         `${this.props.dialogName || 'App'}.editTab`,
                         tab,
                     );
+                    // Reflect the active tab in the URL (#tab-objects/edit/<id>/<tab>) when routed.
+                    if (this.isRouted()) {
+                        Router.doNavigate(null, null, null, tab);
+                    }
 
                     if (tab === 'object') {
                         try {

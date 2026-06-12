@@ -1,4 +1,26 @@
 # Older changes
+## 7.8.23 (2026-04-27)
+- (@GermanBluefox) Copy `common.states` by alias creation
+- (@GermanBluefox) Update `devices` instances
+
+## 7.8.20 (2026-03-30)
+- (@GermanBluefox) Improved the device manager
+
+## 7.8.9 (2026-03-25)
+- (@GermanBluefox) Added in JsonConfig OAuth2 process for Spotify
+
+## 7.8.8 (2026-03-24)
+- (@GermanBluefox) Implemented the possibility to upload adapter from the file (useful for development and testing)
+
+## 7.8.6 (2026-03-20)
+- (@GermanBluefox) Added the possibility to use the Object properties in JsonConfig
+
+## 7.8.5 (2026-03-18)
+- (@GermanBluefox) Custom editor could be limited to specific instances or specific states by regex expression
+- (@GermanBluefox) Added some options to JSON Config
+- (@copilot) Added `Cache-Control: no-cache` header to `index.html` to prevent browser from using stale cached HTML after admin updates
+- (@copilot) Handle Vite dynamic import failures (ERR_CACHE_READ_FAILURE) by triggering page reload instead of showing white screen
+
 ## 7.8.3 (2026-03-04)
 - (@GermanBluefox) Added the device manager tab in the admin
 

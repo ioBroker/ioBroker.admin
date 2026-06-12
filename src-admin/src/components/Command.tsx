@@ -4,6 +4,7 @@ import { Box, Grid2, LinearProgress, Paper, Switch, Typography } from '@mui/mate
 
 import { Router, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 
+import type { CommandFile } from '@/types';
 import AdminUtils, { type Style } from '../helpers/AdminUtils';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -47,6 +48,8 @@ interface CommandProps {
     onSetCommandRunning?: (running: boolean) => void;
     showElement?: boolean;
     logsRead?: string[];
+    /** Optional files (base64) to send along with the command to the target host. Requires controller feature CONTROLLER_CMD_EXEC_FILES. */
+    files?: CommandFile[];
 }
 
 interface CommandState {
@@ -120,13 +123,25 @@ export default class Command extends Component<CommandProps, CommandState> {
 
         this.setState({ activeCmdId });
 
-        this.props.socket
-            .cmdExec(
-                this.props.host.startsWith('system.host.') ? this.props.host : `system.host.${this.props.host}`,
-                this.props.cmd,
-                activeCmdId,
-            )
-            .catch(error => console.log(error));
+        const host = this.props.host.startsWith('system.host.') ? this.props.host : `system.host.${this.props.host}`;
+
+        // The 5th parameter `files` exists only in newer socket-client versions; cast the method so the
+        // admin compiles against the currently installed typings. The controller feature is checked by the caller.
+        const cmdExec = this.props.socket.cmdExec.bind(this.props.socket) as (
+            host: string,
+            cmd: string,
+            cmdId: number,
+            cmdTimeout?: number,
+            files?: CommandFile[],
+        ) => Promise<void>;
+
+        cmdExec(
+            host,
+            this.props.cmd,
+            activeCmdId,
+            undefined,
+            this.props.files?.length ? this.props.files : undefined,
+        ).catch(error => console.log(error));
     }
 
     cmdStdoutHandler(id: number, text: string): void {

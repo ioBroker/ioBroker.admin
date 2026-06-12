@@ -87,6 +87,7 @@ interface ObjectAliasEditorState {
     newAliasIcon: string;
     newAliasMin?: string;
     newAliasMax?: string;
+    newAliasCopyStates: boolean;
 }
 
 export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEditorState> {
@@ -130,6 +131,7 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
             newAliasWriteFormula: 'val',
             newAliasColor: this.props.obj.common.color,
             newAliasIcon: this.props.obj.common.icon,
+            newAliasCopyStates: !!this.props.obj.common.states,
         };
     }
 
@@ -419,6 +421,18 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
                         }
                         label={I18n.t('Alias write')}
                     />
+                    {this.props.obj.common.states ? (
+                        <FormControlLabel
+                            style={styles.formControlLabel}
+                            control={
+                                <Checkbox
+                                    checked={this.state.newAliasCopyStates}
+                                    onChange={e => this.setState({ newAliasCopyStates: e.target.checked })}
+                                />
+                            }
+                            label={I18n.t('Copy states')}
+                        />
+                    ) : null}
                     <FormControlLabel
                         style={styles.formControlLabel}
                         control={
@@ -543,6 +557,9 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
                             }
                             if (this.state.newAliasIcon) {
                                 obj.common.icon = this.state.newAliasIcon;
+                            }
+                            if (this.state.newAliasCopyStates && this.props.obj.common.states) {
+                                obj.common.states = this.props.obj.common.states;
                             }
                             if (this.state.newAliasUseFormula) {
                                 if (

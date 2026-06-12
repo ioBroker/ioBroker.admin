@@ -5,7 +5,7 @@ var systemDictionary = {};
 
 function translateWord(text, lang, dictionary) {
     if (!text) return '';
-    lang       = lang       || systemLang;
+    lang = lang || systemLang;
     dictionary = dictionary || systemDictionary;
 
     text = text.toString();
@@ -21,7 +21,31 @@ function translateWord(text, lang, dictionary) {
             }
         }
     } else if (typeof text === 'string' && !text.match(/_tooltip$/)) {
-        console.log('"' + text + '": {"en": "' + text + '", "de": "' + text + '", "ru": "' + text + '", "pt": "' + text + '", "nl": "' + text + '", "fr": "' + text + '", "es": "' + text + '", "pl": "' + text + '", "it": "' + text + '", "zh-cn": "' + text + '"},');
+        console.log(
+            '"' +
+                text +
+                '": {"en": "' +
+                text +
+                '", "de": "' +
+                text +
+                '", "ru": "' +
+                text +
+                '", "pt": "' +
+                text +
+                '", "nl": "' +
+                text +
+                '", "fr": "' +
+                text +
+                '", "es": "' +
+                text +
+                '", "pl": "' +
+                text +
+                '", "it": "' +
+                text +
+                '", "zh-cn": "' +
+                text +
+                '"},',
+        );
     } else if (typeof text !== 'string') {
         console.warn('Trying to translate non-text:' + text);
     }
@@ -29,7 +53,7 @@ function translateWord(text, lang, dictionary) {
 }
 
 function translateAll(selector, lang, dictionary) {
-    lang       = lang       || systemLang;
+    lang = lang || systemLang;
     dictionary = dictionary || systemDictionary;
     if (!selector) {
         selector = 'body';
@@ -108,17 +132,16 @@ var _ = function (text, arg1, arg2, arg3) {
     }
 
     pos = text.indexOf('%s');
-    if (pos !== -1)  {
+    if (pos !== -1) {
         text = text.replace('%s', arg2);
     } else {
         return text;
     }
 
     pos = text.indexOf('%s');
-    if (pos !== -1)  {
+    if (pos !== -1) {
         text = text.replace('%s', arg3);
     }
 
     return text;
 };
-
