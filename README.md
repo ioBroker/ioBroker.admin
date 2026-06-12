@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.1 (2026-06-12)
 - (@GermanBluefox) Added AI assistant to the admin interface
 
 ### 7.9.0 (2026-06-11)
@@ -182,9 +182,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.8.25 (2026-05-16)
 - (@GermanBluefox) Extended JSON config for frigate adapter
-
-### 7.8.24 (2026-05-05)
-- (@GermanBluefox) Correcting the IP address calculation
 
 ## License
 

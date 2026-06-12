@@ -1,4 +1,7 @@
 # Older changes
+## 7.8.24 (2026-05-05)
+- (@GermanBluefox) Correcting the IP address calculation
+
 ## 7.8.23 (2026-04-27)
 - (@GermanBluefox) Copy `common.states` by alias creation
 - (@GermanBluefox) Update `devices` instances
