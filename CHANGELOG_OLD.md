@@ -1,4 +1,7 @@
 # Older changes
+## 7.8.25 (2026-05-16)
+- (@GermanBluefox) Extended JSON config for frigate adapter
+
 ## 7.8.24 (2026-05-05)
 - (@GermanBluefox) Correcting the IP address calculation
 

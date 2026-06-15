@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.9.1",
+    "version": "7.9.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.9.2": {
+        "en": "AI must be enabled first in the settings to be used in the admin interface",
+        "de": "AI muss zuerst in den Einstellungen aktiviert werden, die in der Admin-Schnittstelle verwendet werden sollen",
+        "ru": "ИИ должен быть включен первым в настройках, которые будут использоваться в интерфейсе администратора",
+        "pt": "AI deve ser ativado primeiro nas configurações a serem usadas na interface de administração",
+        "nl": "AI moet eerst ingeschakeld zijn in de instellingen die gebruikt moeten worden in de admin interface",
+        "fr": "L'IA doit être activée d'abord dans les paramètres à utiliser dans l'interface admin",
+        "it": "L'intelligenza artificiale deve essere abilitata prima nelle impostazioni da utilizzare nell'interfaccia di amministrazione",
+        "es": "AI debe ser habilitado primero en los ajustes a utilizar en la interfaz de administración",
+        "pl": "AI musi być włączona najpierw w ustawieniach używanych w interfejsie admin",
+        "uk": "AI повинен бути включений спочатку в налаштуваннях для використання в інтерфейсі адміністратора",
+        "zh-cn": "在管理界面中使用的设置中必须首先启用AI"
+      },
       "7.9.1": {
         "en": "Added AI assistant to the admin interface",
         "de": "AI-Assistent zur Admin-Schnittstelle hinzugefügt",
@@ -95,19 +108,6 @@
         "pl": "Rozszerzony plik konfiguracyjny JSON do adaptera fregata",
         "uk": "Розширений налаштування JSON для адаптера фригату",
         "zh-cn": "JSON 护卫舰适配器扩展配置"
-      },
-      "7.8.24": {
-        "en": "Correcting the IP address calculation",
-        "de": "Korrektur der IP-Adressenberechnung",
-        "ru": "Исправление расчета IP-адреса",
-        "pt": "Corrigindo o cálculo do endereço IP",
-        "nl": "Correctie van de berekening van IP-adressen",
-        "fr": "Correction du calcul de l'adresse IP",
-        "it": "Correggere il calcolo dell'indirizzo IP",
-        "es": "Corregir el cálculo de la dirección IP",
-        "pl": "Korekta obliczenia adresu IP",
-        "uk": "Виправлення розрахунку IP-адреси",
-        "zh-cn": "校正 IP 地址计算"
       }
     },
     "desc": {

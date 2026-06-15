@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.2 (2026-06-15)
 - (@GermanBluefox) AI must be enabled first in the settings to be used in the admin interface
 
 ### 7.9.1 (2026-06-12)
@@ -182,9 +182,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.8.27 (2026-05-25)
 - (@GermanBluefox) Updated packages
-
-### 7.8.25 (2026-05-16)
-- (@GermanBluefox) Extended JSON config for frigate adapter
 
 ## License
 
