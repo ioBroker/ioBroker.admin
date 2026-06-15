@@ -1172,31 +1172,20 @@ export default class Web {
                 this.server.server = await webserver.init();
             } catch (err) {
                 this.adapter.log.error(`Cannot create web-server: ${err}`);
-                if (this.adapter.terminate) {
-                    this.adapter.terminate(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
-                } else {
-                    process.exit(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
-                }
+                this.adapter.terminate(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
                 return;
             }
             if (!this.server.server) {
                 this.adapter.log.error(`Cannot create web-server`);
-                if (this.adapter.terminate) {
-                    this.adapter.terminate(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
-                } else {
-                    process.exit(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
-                }
+                this.adapter.terminate(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
                 return;
             }
 
             this.server.server.__server = this.server;
         } else {
             this.adapter.log.error('port missing');
-            if (this.adapter.terminate) {
-                this.adapter.terminate('port missing', EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
-            } else {
-                process.exit(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
-            }
+            this.adapter.terminate('port missing', EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+            return;
         }
 
         const systemConfig = await this.adapter.getForeignObjectAsync('system.config');
