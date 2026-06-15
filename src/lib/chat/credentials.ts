@@ -16,6 +16,9 @@ export interface AiCredentialEntry {
 
 /** List all stored AI credentials (without secrets) so the frontend can offer a choice. */
 export async function listAiCredentials(adapter: ioBroker.Adapter): Promise<AiCredentialEntry[]> {
+    if (!Credentials?.listCredentials) {
+        return [];
+    }
     const list = await Credentials.listCredentials(adapter, 'ai');
     return list.map(entry => ({ id: entry.id, name: entry.name }));
 }
@@ -31,6 +34,10 @@ export async function listAiCredentials(adapter: ioBroker.Adapter): Promise<AiCr
  * @returns the decrypted key, or an empty string if none is stored
  */
 export async function resolveAiKey(adapter: ioBroker.Adapter, credentialId: string): Promise<string> {
+    if (!Credentials?.getCredentials) {
+        adapter.log.warn('You need js-controller v7.2 or later to use this feature');
+        return '';
+    }
     const info = await Credentials.getCredentials(adapter, credentialId);
     const values = info.values as Record<string, unknown>;
     const key = (values.key ?? values.password ?? '') as string;

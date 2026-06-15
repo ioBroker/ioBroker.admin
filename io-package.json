@@ -254,7 +254,8 @@
     "loadingHideLogo": false,
     "loadingBackgroundImage": false,
     "doNotCheckPublicIP": false,
-    "ssoActive": false
+    "ssoActive": false,
+    "disableMcp": true
   },
   "notifications": [
     {
