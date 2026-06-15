@@ -162,7 +162,7 @@
                     type: 'checkbox',
                     newLine: true,
                     label: 'Disable Assistent',
-                    sx: 12,
+                    xs: 12,
                 }
             },
         },
