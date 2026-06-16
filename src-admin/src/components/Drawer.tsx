@@ -72,6 +72,8 @@ const styles: Record<string, any> = {
     paper: {
         width: 'inherit',
         overflowX: 'hidden',
+        overflowY: 'auto',
+        scrollbarWidth: 'thin',
     },
     header: (theme: IobTheme) => ({
         display: 'flex',
@@ -590,7 +592,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             <div style={{ height: 50, width: 102, lineHeight: '50px' }}>
                                 <img
                                     src={this.props.adminGuiConfig.icon}
-                                    alt="logo"
+                                    alt="NexoWatt EOS"
                                     style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }}
                                 />
                             </div>
@@ -599,7 +601,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                 onClick={() => handleNavigation('easy')}
                                 style={styles.logoSize}
                                 alt="NexoWatt EOS"
-                                src="img/no-image.svg"
+                                src="img/eos/eos-logo.svg"
                             />
                         )}
                     </a>

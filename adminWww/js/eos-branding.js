@@ -2,18 +2,19 @@
     'use strict';
 
     const BRAND = 'NexoWatt EOS';
-    const BRAND_LONG = 'NexoWatt EOS - Energy Operation System';
+    const EOS_MEANING = 'Energy Operation System';
+    const BRAND_LONG = `${BRAND} - ${EOS_MEANING}`;
     const LOGO = 'img/eos/eos-logo.svg';
     const PNG_LOGO = 'img/eos/nexowatt-192.png';
-    const LOGIN_MOTTO = 'NexoWatt · Independent. Transparent. Fair.';
+    const LOGIN_MOTTO = EOS_MEANING;
 
     const TEXT_REPLACEMENTS = [
         [/NexoWatt\s+Energy\s+Management\s+System/gi, BRAND],
         [/NexoWatt\s+Energy\s+Managementsystem/gi, BRAND],
-        [/Energy\s+Management\s+System/gi, 'Energy Operation System'],
-        [/Energy\s+Managementsystem/gi, 'Energy Operation System'],
-        [/\bioBroker\.admin\b/g, BRAND],
-        [/\bioBroker admin\b/gi, BRAND],
+        [/Energy\s+Management\s+System/gi, EOS_MEANING],
+        [/Energy\s+Managementsystem/gi, EOS_MEANING],
+        [/ioBroker\.admin/gi, BRAND],
+        [/ioBroker\s+admin/gi, BRAND],
         [/\bioBroker\b/gi, BRAND],
     ];
 
@@ -51,45 +52,75 @@
         'Logout': 'Abmelden',
     }));
 
+    const state = {
+        fullPatchScheduled: false,
+        scopePatchScheduled: false,
+        pendingScopes: new Set(),
+        lastFullPatch: 0,
+    };
+
+    const safe = fn => {
+        try { return fn(); } catch (e) { return undefined; }
+    };
+
     const replaceBrand = value => {
         if (!value || typeof value !== 'string') return value;
         let next = value;
         for (const [pattern, replacement] of TEXT_REPLACEMENTS) next = next.replace(pattern, replacement);
         const compact = next.trim();
-        if (EXACT_LABELS.has(compact)) {
-            next = next.replace(compact, EXACT_LABELS.get(compact));
-        }
+        if (EXACT_LABELS.has(compact)) next = next.replace(compact, EXACT_LABELS.get(compact));
         return next;
     };
 
-    const skipNode = node => {
-        const parent = node && node.parentElement;
-        if (!parent) return true;
-        const tag = parent.tagName;
+    const skipElement = el => {
+        if (!el || el.nodeType !== 1) return false;
+        const tag = el.tagName;
         return tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TEXTAREA' || tag === 'INPUT' || tag === 'CODE' || tag === 'PRE';
     };
 
-    const replaceTextNodes = root => {
-        try {
-            if (!root) return;
-            const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-            const nodes = [];
-            while (walker.nextNode()) nodes.push(walker.currentNode);
-            for (const node of nodes) {
-                if (skipNode(node)) continue;
-                const before = node.nodeValue;
-                const after = replaceBrand(before);
-                if (after !== before) node.nodeValue = after;
+    const patchTextNode = node => {
+        if (!node || node.nodeType !== Node.TEXT_NODE || !node.nodeValue) return;
+        if (skipElement(node.parentElement)) return;
+        const before = node.nodeValue;
+        const after = replaceBrand(before);
+        if (after !== before) node.nodeValue = after;
+    };
+
+    const patchTextNodes = root => safe(() => {
+        if (!root) return;
+        if (root.nodeType === Node.TEXT_NODE) {
+            patchTextNode(root);
+            return;
+        }
+        if (root.nodeType !== Node.ELEMENT_NODE && root.nodeType !== Node.DOCUMENT_NODE) return;
+        if (skipElement(root)) return;
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+                return skipElement(node.parentElement) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
             }
-        } catch (e) {
-            // The skin must never break the Admin runtime.
+        });
+        let node;
+        while ((node = walker.nextNode())) patchTextNode(node);
+    });
+
+    const patchImage = img => {
+        const src = img.getAttribute('src') || '';
+        const alt = img.getAttribute('alt') || '';
+        const inBrandArea = !!img.closest('.eos-login-card, .eos-native-drawer-header, .eos-system-brand, .eos-brand-badge');
+        if (inBrandArea || /admin\.svg|admin\.png|no-image\.svg|logo192\.png/i.test(src) || /iobroker|admin|logo/i.test(alt)) {
+            if (!/adapter\/|custom\/|upload\/|assets\//i.test(src)) {
+                img.setAttribute('src', LOGO);
+                img.setAttribute('alt', BRAND);
+            }
         }
     };
 
-    const patchAttributes = root => {
-        const scope = root && root.querySelectorAll ? root : document;
-        const elements = scope.querySelectorAll('[title],[aria-label],[alt],[placeholder],img');
-        elements.forEach(el => {
+    const patchAttributes = root => safe(() => {
+        if (!root || (root.nodeType !== Node.ELEMENT_NODE && root.nodeType !== Node.DOCUMENT_NODE)) return;
+        const elements = root.matches && root.matches('[title],[aria-label],[alt],[placeholder],img')
+            ? [root]
+            : Array.from(root.querySelectorAll ? root.querySelectorAll('[title],[aria-label],[alt],[placeholder],img') : []);
+        for (const el of elements) {
             ['title', 'aria-label', 'alt', 'placeholder'].forEach(attr => {
                 if (el.hasAttribute && el.hasAttribute(attr)) {
                     const oldValue = el.getAttribute(attr);
@@ -97,19 +128,9 @@
                     if (newValue !== oldValue) el.setAttribute(attr, newValue);
                 }
             });
-
-            if (el.tagName === 'IMG') {
-                const src = el.getAttribute('src') || '';
-                const alt = el.getAttribute('alt') || '';
-                if (/admin\.svg|admin\.png|no-image\.svg|logo192\.png|iobroker/i.test(src) || /iobroker|admin/i.test(alt)) {
-                    if (!/adapter|custom|upload/i.test(src)) {
-                        el.setAttribute('src', LOGO);
-                        el.setAttribute('alt', BRAND);
-                    }
-                }
-            }
-        });
-    };
+            if (el.tagName === 'IMG') patchImage(el);
+        }
+    });
 
     const forceLoginGlobals = () => {
         window.loginTitle = BRAND;
@@ -117,17 +138,63 @@
         window.loginLogo = PNG_LOGO;
         window.loginLink = '#';
         window.loginHideLogo = 'false';
+        window.loginBackgroundColor = '#020914';
+        window.loadingBackgroundColor = '#020914';
     };
 
+    const routeInfo = () => {
+        const hash = window.location.hash || '';
+        return {
+            users: hash.includes('tab-users'),
+            adapters: hash.includes('tab-adapters'),
+            intro: hash.includes('tab-intro') || hash === '' || hash === '#/' || hash === '#/tab-intro',
+        };
+    };
+
+    const setRouteClasses = () => {
+        const routes = routeInfo();
+        document.documentElement.classList.toggle('eos-route-users', routes.users);
+        document.documentElement.classList.toggle('eos-route-adapters', routes.adapters);
+        document.documentElement.classList.toggle('eos-route-intro', routes.intro);
+    };
+
+    const getLoginCard = () => {
+        const input = document.querySelector('#username, input[name="username"], #password, input[type="password"]');
+        return input ? input.closest('.MuiPaper-root, form, main > div') : null;
+    };
+
+    const patchLogin = () => safe(() => {
+        forceLoginGlobals();
+        const hasApp = !!document.getElementById('app-paper');
+        const card = hasApp ? null : getLoginCard();
+        const isLogin = !hasApp && (!!card || window.location.href.toLowerCase().includes('login'));
+        document.documentElement.classList.toggle('eos-login', isLogin);
+        document.documentElement.classList.toggle('eos-loading', !document.body || !document.querySelector('#root > *'));
+        if (!card) return;
+        card.classList.add('eos-login-card');
+        const titles = Array.from(card.querySelectorAll('h1,h2,h3,h4,h5,.MuiTypography-h5'));
+        const title = titles.find(el => /management|nexowatt|admin|eos/i.test(el.textContent || '')) || titles[0];
+        if (title && title.textContent.trim() !== BRAND) {
+            title.textContent = BRAND;
+            title.setAttribute('aria-label', BRAND_LONG);
+        }
+        const logo = card.querySelector('img');
+        if (logo) patchImage(logo);
+        Array.from(card.querySelectorAll('a, .MuiTypography-caption, .MuiTypography-body2')).forEach(el => {
+            const text = (el.textContent || '').trim();
+            if (/independent|transparent|fair|management|iobroker/i.test(text)) {
+                el.textContent = `${BRAND} · ${EOS_MEANING}`;
+            }
+        });
+    });
+
     const logout = () => {
-        try {
+        safe(() => {
             ['App.refreshToken', 'App.accessToken', 'App.token', 'tokens', 'iobroker.admin.token'].forEach(key => {
                 window.localStorage && window.localStorage.removeItem(key);
                 window.sessionStorage && window.sessionStorage.removeItem(key);
             });
-        } catch (e) {
-            // ignore storage restrictions
-        }
+        });
         const origin = `${window.location.pathname}${window.location.search}${window.location.hash || ''}`;
         window.location.href = `./logout?origin=${encodeURIComponent(origin)}`;
     };
@@ -135,43 +202,73 @@
     const ensureBrandBadge = toolbar => {
         if (!toolbar || toolbar.querySelector('.eos-brand-badge')) return;
         const badge = document.createElement('span');
-        badge.className = 'eos-brand-badge';
-        badge.textContent = BRAND;
-        const menuButton = toolbar.querySelector('button');
-        if (menuButton && menuButton.nextSibling) toolbar.insertBefore(badge, menuButton.nextSibling);
+        badge.className = 'eos-brand-badge eos-system-brand';
+        badge.innerHTML = `<span class="eos-brand-led"></span><span>${BRAND}</span>`;
+        const firstButton = toolbar.querySelector('button');
+        if (firstButton && firstButton.nextSibling) toolbar.insertBefore(badge, firstButton.nextSibling);
         else toolbar.insertBefore(badge, toolbar.firstChild || null);
     };
 
-    const ensureLogoutButton = toolbar => {
-        if (!toolbar || toolbar.querySelector('.eos-direct-logout')) return;
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'eos-direct-logout';
-        button.setAttribute('aria-label', 'Abmelden');
-        button.innerHTML = '<span class="eos-direct-logout-dot"></span><span>Abmelden</span>';
-        button.addEventListener('click', event => {
-            event.preventDefault();
-            logout();
-        });
-        toolbar.appendChild(button);
+    const ensureLogoutButton = () => {
+        let button = document.querySelector('.eos-direct-logout');
+        if (!button) {
+            button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'eos-direct-logout';
+            button.setAttribute('aria-label', 'Abmelden');
+            button.innerHTML = '<span class="eos-direct-logout-dot"></span><span>Abmelden</span>';
+            button.addEventListener('click', event => {
+                event.preventDefault();
+                logout();
+            });
+            document.body.appendChild(button);
+        }
+        button.hidden = !!document.documentElement.classList.contains('eos-login');
     };
 
-    const ensureDrawerIdentity = () => {
-        const drawer = document.querySelector('.MuiDrawer-paper');
-        if (!drawer || drawer.querySelector('.eos-drawer-identity')) return;
-        const identity = document.createElement('div');
-        identity.className = 'eos-drawer-identity';
-        identity.innerHTML = `
-            <img src="${LOGO}" alt="${BRAND}" />
-            <div><strong>${BRAND}</strong><small>Energy Operation System</small></div>
-        `;
-        drawer.insertBefore(identity, drawer.firstElementChild || null);
-    };
+    const patchDrawerHeader = drawer => safe(() => {
+        if (!drawer) return;
+        drawer.classList.add('eos-drawer');
+        drawer.querySelectorAll('.eos-drawer-identity').forEach(el => el.remove());
+        const directChildren = Array.from(drawer.children).filter(el => el.nodeType === 1);
+        const header = directChildren.find(el => el.querySelector && el.querySelector('button') && (el.querySelector('img') || el.querySelector('.MuiAvatar-root') || el.querySelector('a')))
+            || directChildren.find(el => el.querySelector && (el.querySelector('button') || el.querySelector('img')));
+        if (!header) return;
+        header.classList.add('eos-native-drawer-header');
+        const img = header.querySelector('img');
+        if (img) patchImage(img);
+        const avatarImg = header.querySelector('.MuiAvatar-img');
+        if (avatarImg) patchImage(avatarImg);
+        const logoArea = header.querySelector('a')?.parentElement || header.firstElementChild || header;
+        if (logoArea && !logoArea.querySelector('.eos-native-title')) {
+            const title = document.createElement('span');
+            title.className = 'eos-native-title';
+            title.innerHTML = `<strong>${BRAND}</strong><small>${EOS_MEANING}</small>`;
+            const link = logoArea.querySelector('a');
+            if (link && link.nextSibling) logoArea.insertBefore(title, link.nextSibling);
+            else logoArea.appendChild(title);
+        }
+        const list = drawer.querySelector('.MuiList-root');
+        if (list) list.classList.add('eos-scroll-nav');
+    });
 
-    const ensureRightsHelper = () => {
+    const patchShell = () => safe(() => {
+        const hasApp = !!document.getElementById('app-paper');
+        document.documentElement.classList.toggle('eos-app', !document.documentElement.classList.contains('eos-login') && hasApp);
+        setRouteClasses();
+        const toolbar = document.querySelector('#root > .MuiPaper-root > .MuiAppBar-root .MuiToolbar-root, header .MuiToolbar-root, .MuiAppBar-root .MuiToolbar-root');
+        if (toolbar) {
+            toolbar.classList.add('eos-top-toolbar');
+            ensureBrandBadge(toolbar);
+        }
+        patchDrawerHeader(document.querySelector('.MuiDrawer-paper'));
+        ensureLogoutButton();
+    });
+
+    const ensureRightsHelper = () => safe(() => {
         const appPaper = document.getElementById('app-paper');
         if (!appPaper) return;
-        const isUsers = window.location.hash.includes('tab-users');
+        const isUsers = routeInfo().users;
         const existing = appPaper.querySelector('.eos-rights-helper');
         if (!isUsers) {
             existing && existing.remove();
@@ -184,14 +281,14 @@
             <div class="eos-rights-helper-icon">🔐</div>
             <div class="eos-rights-helper-copy">
                 <strong>Zugänge & Rechte</strong>
-                <span>Benutzer werden Rollen zugeordnet. Ziehe ein Benutzerkonto auf eine Rolle oder öffne eine Rolle, um Rechte verständlich zu setzen.</span>
+                <span>Benutzer werden Rollen zugeordnet. Wähle ein verständliches Rechteprofil und passe einzelne Rechte bei Bedarf an.</span>
             </div>
             <div class="eos-rights-helper-steps">
-                <span>1 Benutzer</span><span>2 Rolle</span><span>3 Rechte</span><span>4 Speichern</span>
+                <span>1 Benutzer</span><span>2 Rolle</span><span>3 Profil</span><span>4 Speichern</span>
             </div>
         `;
         appPaper.insertBefore(helper, appPaper.firstElementChild || null);
-    };
+    });
 
     const normalize = text => String(text || '')
         .toLowerCase()
@@ -216,7 +313,7 @@
     const sectionKey = label => {
         let el = label.parentElement;
         for (let i = 0; i < 7 && el; i += 1, el = el.parentElement) {
-            const heading = el.querySelector && el.querySelector('h2');
+            const heading = el.querySelector && el.querySelector('h2,h3,h4,.MuiTypography-h6');
             if (heading && el.contains(label)) {
                 const text = normalize(heading.textContent);
                 if (/objekt|object/.test(text)) return 'object';
@@ -259,7 +356,7 @@
         });
     };
 
-    const ensurePermissionPresets = () => {
+    const ensurePermissionPresets = () => safe(() => {
         const dialogs = Array.from(document.querySelectorAll('.MuiDialog-paper'));
         const dialog = dialogs.find(item => item.querySelectorAll('input[type="checkbox"]').length >= 8 && /rechte|permissions|berecht/i.test(item.textContent || ''));
         if (!dialog || dialog.querySelector('.eos-permission-presets')) return;
@@ -268,7 +365,7 @@
         panel.className = 'eos-permission-presets';
         panel.innerHTML = `
             <div class="eos-permission-presets-title">Rechte-Schnellprofile</div>
-            <div class="eos-permission-presets-text">Wähle ein Profil und passe danach einzelne Rechte an. Administrator-Rollen bleiben geschützt.</div>
+            <div class="eos-permission-presets-text">Wähle ein Profil und passe danach einzelne Rechte an. Administrator-Rollen bleiben bewusst transparent sichtbar.</div>
             <div class="eos-permission-presets-actions">
                 <button type="button" data-profile="viewer">Nur lesen</button>
                 <button type="button" data-profile="operator">Bedienung</button>
@@ -282,75 +379,100 @@
             applyPermissionProfile(dialog, button.getAttribute('data-profile'));
         });
         content.insertBefore(panel, content.firstElementChild || null);
-    };
+    });
 
-    const setRouteClasses = () => {
-        const hash = window.location.hash || '';
-        document.documentElement.classList.toggle('eos-route-users', hash.includes('tab-users'));
-        document.documentElement.classList.toggle('eos-route-adapters', hash.includes('tab-adapters'));
-        document.documentElement.classList.toggle('eos-route-intro', hash.includes('tab-intro') || hash === '' || hash === '#/');
-    };
-
-    const patchDocument = () => {
-        forceLoginGlobals();
+    const patchDocumentMeta = () => safe(() => {
         document.title = BRAND_LONG;
         const theme = document.querySelector('meta[name="theme-color"]');
         if (theme) theme.setAttribute('content', '#020914');
         const desc = document.querySelector('meta[name="description"]');
         if (desc) desc.setAttribute('content', BRAND_LONG);
+    });
 
-        const path = window.location.href.toLowerCase();
-        const isLogin = path.includes('login') || !!document.querySelector('#username, #password');
-        const hasApp = !!document.getElementById('app-paper');
-        document.documentElement.classList.toggle('eos-login', isLogin);
-        document.documentElement.classList.toggle('eos-app', !isLogin && hasApp);
-        document.documentElement.classList.toggle('eos-loading', !document.body || !document.querySelector('#root > *'));
-        setRouteClasses();
-
-        const toolbar = document.querySelector('#root > .MuiPaper-root > .MuiAppBar-root .MuiToolbar-root, header .MuiToolbar-root, .MuiAppBar-root .MuiToolbar-root');
-        ensureBrandBadge(toolbar);
-        ensureLogoutButton(toolbar);
-        ensureDrawerIdentity();
+    const fullPatch = () => {
+        state.fullPatchScheduled = false;
+        state.lastFullPatch = Date.now();
+        forceLoginGlobals();
+        patchDocumentMeta();
+        patchLogin();
+        patchShell();
         ensureRightsHelper();
         ensurePermissionPresets();
-
-        replaceTextNodes(document.body || document.documentElement);
+        patchTextNodes(document.body || document.documentElement);
         patchAttributes(document.body || document.documentElement);
     };
 
-    const installObserver = () => {
+    const scopePatch = () => {
+        state.scopePatchScheduled = false;
+        const scopes = Array.from(state.pendingScopes);
+        state.pendingScopes.clear();
+        patchLogin();
+        patchShell();
+        ensureRightsHelper();
+        ensurePermissionPresets();
+        for (const scope of scopes.slice(0, 80)) {
+            if (!scope || !scope.isConnected) continue;
+            patchTextNodes(scope);
+            patchAttributes(scope);
+        }
+    };
+
+    const scheduleFullPatch = delay => {
+        if (state.fullPatchScheduled && !delay) return;
+        state.fullPatchScheduled = true;
+        const run = () => {
+            if ('requestIdleCallback' in window) window.requestIdleCallback(fullPatch, { timeout: 800 });
+            else window.requestAnimationFrame(fullPatch);
+        };
+        if (delay) window.setTimeout(run, delay);
+        else run();
+    };
+
+    const scheduleScopePatch = () => {
+        if (state.scopePatchScheduled) return;
+        state.scopePatchScheduled = true;
+        const run = () => {
+            if ('requestIdleCallback' in window) window.requestIdleCallback(scopePatch, { timeout: 600 });
+            else window.requestAnimationFrame(scopePatch);
+        };
+        run();
+    };
+
+    const installObserver = () => safe(() => {
         const observer = new MutationObserver(mutations => {
-            let needsPatch = false;
             for (const mutation of mutations) {
-                if (mutation.type === 'childList' && mutation.addedNodes.length) {
-                    needsPatch = true;
-                    break;
+                if (mutation.type === 'characterData') {
+                    patchTextNode(mutation.target);
+                    continue;
                 }
-                if (mutation.type === 'attributes') {
-                    needsPatch = true;
-                    break;
-                }
+                if (mutation.type !== 'childList') continue;
+                mutation.addedNodes.forEach(node => {
+                    if (!node) return;
+                    if (node.nodeType === Node.TEXT_NODE) patchTextNode(node);
+                    else if (node.nodeType === Node.ELEMENT_NODE) state.pendingScopes.add(node);
+                });
             }
-            if (needsPatch) window.requestAnimationFrame(patchDocument);
+            if (state.pendingScopes.size) scheduleScopePatch();
         });
         observer.observe(document.documentElement, {
             subtree: true,
             childList: true,
-            attributes: true,
-            attributeFilter: ['title', 'aria-label', 'alt', 'placeholder', 'src', 'class'],
+            characterData: true,
         });
-    };
+    });
 
+    forceLoginGlobals();
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            patchDocument();
+            fullPatch();
             installObserver();
-        });
+            [250, 1000, 2500, 5000].forEach(scheduleFullPatch);
+        }, { once: true });
     } else {
-        patchDocument();
+        fullPatch();
         installObserver();
+        [250, 1000, 2500, 5000].forEach(scheduleFullPatch);
     }
-    window.addEventListener('load', patchDocument);
-    window.addEventListener('hashchange', patchDocument);
-    setInterval(patchDocument, 1500);
+    window.addEventListener('load', () => scheduleFullPatch(0), { once: true });
+    window.addEventListener('hashchange', () => scheduleFullPatch(0));
 })();

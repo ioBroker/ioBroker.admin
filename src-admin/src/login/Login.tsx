@@ -225,7 +225,7 @@ export default class Login extends Component<object, LoginState> {
         const link =
             window.loginLink && window.loginLink !== '@@loginLink@@' ? window.loginLink : '#';
         const motto =
-            window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : 'NexoWatt · Independent. Transparent. Fair.';
+            window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : 'Energy Operation System';
 
         if (window.login !== 'true' && window.login !== '@@auth@@') {
             // eslint-disable-next-line no-debugger
