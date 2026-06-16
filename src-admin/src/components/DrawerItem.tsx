@@ -4,30 +4,34 @@ import { Badge, Grid2, ListItemButton, ListItemIcon, ListItemText, Tooltip, Chec
 import { DragHandle } from '@mui/icons-material';
 
 import { Utils, ColorPicker, type IobTheme } from '@iobroker/adapter-react-v5';
-import AdminUtils from '../helpers/AdminUtils';
 
 const styles: Record<string, any> = {
-    selected: (theme: IobTheme) => ({
-        background: theme.palette.primary.main,
-        color: theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
+    item: {
+        margin: '4px 6px',
+        borderRadius: '14px',
+        minHeight: 44,
+        border: '1px solid transparent',
+        transition: 'border-color .15s ease, background .15s ease, transform .15s ease',
+    },
+    selected: {
+        background: 'linear-gradient(135deg, rgba(0, 230, 118, 0.22), rgba(49, 183, 255, 0.1))',
+        border: '1px solid rgba(0, 230, 118, 0.45)',
+        color: '#f1f6fb',
+        boxShadow: '0 0 18px rgba(0, 230, 118, 0.18), inset 0 0 0 1px rgba(0, 230, 118, 0.1)',
         '&:hover': {
-            background: theme.palette.primary.main,
-            color: theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
-            '& $selectedIcon': {
-                color:
-                    theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
-            },
+            background: 'linear-gradient(135deg, rgba(0, 230, 118, 0.28), rgba(49, 183, 255, 0.12))',
+            color: '#f1f6fb',
         },
-    }),
-    selectedIcon: (theme: IobTheme) => ({
-        color: theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
-    }),
+    },
+    selectedIcon: {
+        color: '#00e676',
+    },
     compactBadge: {
         pl: '12px',
     },
     noWrap: {
         flexWrap: 'nowrap',
-        height: 40,
+        height: 42,
     },
     warn: {
         backgroundColor: '#ffc107',
@@ -95,7 +99,7 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
                 />
             )}
             <ListItemButton
-                sx={Utils.getStyle(props.theme, selected && styles.selected, compact && styles.compactBadge)}
+                sx={Utils.getStyle(props.theme, styles.item, selected && styles.selected, compact && styles.compactBadge)}
                 onClick={onClick}
             >
                 <Tooltip

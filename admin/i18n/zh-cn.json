@@ -57,7 +57,7 @@
     "Upload image": "上传图片",
     "Use Lets Encrypt certificates": "使用Let's Encrypt的证书",
     "Use background image": "使用背景图片",
-    "Use iobroker.acme adapter for letsencrypt certificates": "使用 iobroker.acme 适配器获取 letsencrypt 证书",
+    "Use iobroker.acme adapter for letsencrypt certificates": "使用 ACME 适配器获取 letsencrypt 证书",
     "Use old UI": "使用旧的用户界面",
     "Use react UI(experts)": "使用React UI（专家）",
     "Use this instance for automatic update": "使用此实例进行自动更新",
@@ -89,5 +89,6 @@
     "tooltip_secure": "启用SSL协议。admin界面将通过https://而不是http://访问",
     "tooltip_thresholdValue": "如果浏览器在3秒内收到太多事件，将停止刷新",
     "tooltip_ttl": "登录超时时间。超时后用户将自动注销。",
-    "users permissions": "用户权限"
+    "users permissions": "用户权限",
+    "Use ACME adapter for letsencrypt certificates": "使用 ACME 适配器获取 letsencrypt 证书"
 }

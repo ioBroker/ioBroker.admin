@@ -3,17 +3,17 @@
         "name": "admin",
         "version": "7.9.2",
         "titleLang": {
-            "en": "Admin",
-            "de": "Admin",
-            "ru": "Админ",
-            "pt": "Admin",
-            "pl": "Admin",
-            "fr": "Admin",
-            "nl": "Admin",
-            "it": "Admin",
-            "es": "Admin",
-            "uk": "Admin",
-            "zh-cn": "Admin"
+            "en": "NexoWatt EOS Admin",
+            "de": "NexoWatt EOS Admin",
+            "ru": "NexoWatt EOS Admin",
+            "pt": "NexoWatt EOS Admin",
+            "pl": "NexoWatt EOS Admin",
+            "fr": "NexoWatt EOS Admin",
+            "nl": "NexoWatt EOS Admin",
+            "it": "NexoWatt EOS Admin",
+            "es": "NexoWatt EOS Admin",
+            "uk": "NexoWatt EOS Admin",
+            "zh-cn": "NexoWatt EOS Admin"
         },
         "connectionType": "local",
         "dataSource": "push",
@@ -111,17 +111,17 @@
             }
         },
         "desc": {
-            "en": "The configuration of ioBroker via Web-Interface",
-            "de": "Die Konfiguration von ioBroker über das Web-Interface",
-            "ru": "Конфигурация ioBroker через веб-интерфейс",
-            "pt": "A configuração do ioBroker via Web-Interface",
-            "fr": "La configuration de ioBroker via Web-Interface",
-            "nl": "De configuratie van ioBroker via de webinterface",
-            "it": "La configurazione di ioBroker tramite interfaccia Web",
-            "es": "La configuración de ioBroker a través de la interfaz web",
-            "pl": "Konfiguracja ioBroker za pomocą interfejsu WWW",
-            "uk": "Конфігурація ioBroker через веб-інтерфейс",
-            "zh-cn": "配置ioBroker的Web界面"
+            "en": "NexoWatt EOS Web-Administration",
+            "de": "NexoWatt EOS Web-Administration",
+            "ru": "NexoWatt EOS Web-Administration",
+            "pt": "NexoWatt EOS Web-Administration",
+            "fr": "NexoWatt EOS Web-Administration",
+            "nl": "NexoWatt EOS Web-Administration",
+            "it": "NexoWatt EOS Web-Administration",
+            "es": "NexoWatt EOS Web-Administration",
+            "pl": "NexoWatt EOS Web-Administration",
+            "uk": "NexoWatt EOS Web-Administration",
+            "zh-cn": "NexoWatt EOS Web-Administration"
         },
         "docs": {
             "en": "docs/en/admin.md",
@@ -154,7 +154,7 @@
         "icon": "admin.svg",
         "messagebox": true,
         "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.svg",
+        "extIcon": "admin/admin.svg",
         "keywords": [
             "setup",
             "config",
@@ -167,8 +167,11 @@
             "wartung"
         ],
         "compact": true,
-        "readme": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
-        "authors": ["bluefox <bluefox@ccu.io>", "hobbyquaker <hq@ccu.io>"],
+        "readme": "README.md",
+        "authors": [
+            "bluefox <bluefox@ccu.io>",
+            "hobbyquaker <hq@ccu.io>"
+        ],
         "dependencies": [
             {
                 "js-controller": ">=6.0.11"
@@ -186,9 +189,9 @@
         "welcomeScreenPro": [
             {
                 "link": "admin/index.html",
-                "name": "Admin",
+                "name": "EOS Admin",
                 "img": "admin/img/admin.svg",
-                "color": "pink",
+                "color": "green",
                 "order": 5,
                 "localLinks": "_default",
                 "localLink": true
@@ -198,12 +201,13 @@
             "_default": {
                 "link": "%protocol%://%bind%:%port%",
                 "name": {
-                    "en": "Admin",
-                    "ru": "Админ"
+                    "en": "EOS Admin",
+                    "de": "EOS Admin",
+                    "ru": "EOS Admin"
                 },
                 "pro": "admin/index.html",
                 "icon": "admin/img/admin.svg",
-                "color": "pink",
+                "color": "green",
                 "order": 5,
                 "intro": true
             }

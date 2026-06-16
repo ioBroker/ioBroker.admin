@@ -1,3 +1,3 @@
-This directory is only to provide icon for https://www.npmjs.com/package/iobroker.admin
+# NexoWatt EOS Admin
 
-Real content is located in the [admin package](./packages/admin/admin)!
+Gebrandete EOS Administrationsoberfläche im NexoWatt Cockpit-Stil.

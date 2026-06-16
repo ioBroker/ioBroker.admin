@@ -1,6 +1,6 @@
 {
     "name": "iobroker.admin",
-    "description": "The adapter opens a webserver for the ioBroker admin UI.",
+    "description": "NexoWatt EOS branded admin interface based on the upstream admin adapter.",
     "version": "7.9.2",
     "contributors": [
         "bluefox <dogafox@gmail.com>",
@@ -19,7 +19,9 @@
     },
     "license": "MIT",
     "keywords": [
-        "ioBroker",
+        "NexoWatt",
+        "EOS",
+        "admin",
         "setup"
     ],
     "dependencies": {

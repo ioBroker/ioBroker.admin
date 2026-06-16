@@ -57,7 +57,7 @@
     "Upload image": "Załaduj obrazek",
     "Use Lets Encrypt certificates": "Użyj Let's Encrypt certificates",
     "Use background image": "Użyj obrazu tła",
-    "Use iobroker.acme adapter for letsencrypt certificates": "Użyj adaptera iobroker.acme dla certyfikatów letsencrypt",
+    "Use iobroker.acme adapter for letsencrypt certificates": "Użyj adaptera ACME dla certyfikatów letsencrypt",
     "Use old UI": "Użyj starego interfejsu użytkownika",
     "Use react UI(experts)": "Użyj interfejsu reagowania (eksperci)",
     "Use this instance for automatic update": "Użyj tej instancji do automatycznej aktualizacji",
@@ -89,5 +89,6 @@
     "tooltip_secure": "Włącz protokół SSL. Administrator będzie dostępny przez https: //, a nie http: //",
     "tooltip_thresholdValue": "jeśli przeglądarka otrzyma zbyt wiele zdarzeń w ciągu 3 sekund, aktualizacja zostanie zatrzymana",
     "tooltip_ttl": "Limit czasu logowania. Po tym czasie użytkownik zostanie automatycznie wylogowany.",
-    "users permissions": "uprawnienia użytkowników"
+    "users permissions": "uprawnienia użytkowników",
+    "Use ACME adapter for letsencrypt certificates": "Użyj adaptera ACME dla certyfikatów letsencrypt"
 }

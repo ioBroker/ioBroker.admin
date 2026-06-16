@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 260" role="img" aria-label="NexoWatt EOS">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="250" y2="240" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00e676"/><stop offset="1" stop-color="#31b7ff"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="980" height="260" rx="54" fill="#020914"/>
+  <g transform="translate(32 30) scale(.39)">
+    <rect width="512" height="512" rx="112" fill="#020914"/>
+    <path d="M384 151c-32-34-78-55-128-55-88 0-162 64-176 148" fill="none" stroke="url(#g)" stroke-width="34" stroke-linecap="round"/>
+    <path d="M128 360c32 34 78 56 128 56 88 0 162-64 176-149" fill="none" stroke="url(#g)" stroke-width="34" stroke-linecap="round"/>
+    <path d="M372 112l32 38-48 11M140 400l-32-38 48-11" fill="none" stroke="url(#g)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+    <g filter="url(#glow)" fill="none" stroke="url(#g)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M170 310h172M201 210h110M228 152v216M314 166v202M170 310l34-100M342 310l-31-100"/>
+    </g>
+    <path d="M278 187l-62 96h48l-29 82 72-112h-50z" fill="#f4fff9" opacity="0.96"/>
+  </g>
+  <text x="258" y="118" fill="#f1f6fb" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="68" font-weight="850" letter-spacing="-1">NexoWatt</text>
+  <text x="260" y="176" fill="#00e676" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="800" letter-spacing="8">EOS ADMIN</text>
+  <circle cx="902" cy="69" r="7" fill="#00e676"><animate attributeName="opacity" values=".35;1;.35" dur="1.8s" repeatCount="indefinite"/></circle>
+</svg>

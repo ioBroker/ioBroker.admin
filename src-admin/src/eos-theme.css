@@ -1,0 +1,397 @@
+
+:root {
+    color-scheme: dark;
+    --eos-topbar-h: 72px;
+    --eos-bg-0: #020914;
+    --eos-bg-1: #041322;
+    --eos-card: rgba(5, 18, 32, 0.78);
+    --eos-card-strong: rgba(7, 22, 38, 0.92);
+    --eos-line: rgba(95, 144, 190, 0.24);
+    --eos-line-soft: rgba(95, 144, 190, 0.14);
+    --eos-green: #00e676;
+    --eos-green-soft: rgba(0, 230, 118, 0.12);
+    --eos-blue: #31b7ff;
+    --eos-yellow: #ffd31a;
+    --eos-red: #ff4438;
+    --eos-text: #f1f6fb;
+    --eos-muted: #9db0c3;
+    --eos-shadow: 0 18px 44px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    --eos-radius: 16px;
+}
+
+html,
+body,
+#root {
+    background: transparent !important;
+    color: var(--eos-text) !important;
+}
+
+body {
+    background:
+        radial-gradient(circle at 18% -4%, rgba(0, 230, 118, 0.14), transparent 30%),
+        radial-gradient(circle at 82% 18%, rgba(49, 183, 255, 0.12), transparent 34%),
+        linear-gradient(180deg, #010914 0%, #03101e 45%, #010711 100%) !important;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: var(--eos-topbar-h) 0 0 0;
+    pointer-events: none;
+    opacity: 0.24;
+    background:
+        radial-gradient(ellipse at 70% 12%, rgba(0, 230, 118, 0.16), transparent 36%),
+        repeating-linear-gradient(166deg, rgba(0, 230, 118, 0.09) 0 1px, transparent 1px 14px);
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), transparent 78%);
+    z-index: 0;
+}
+
+#root {
+    position: relative;
+    z-index: 1;
+}
+
+.eos-app-root {
+    background: transparent !important;
+    color: var(--eos-text) !important;
+}
+
+.eos-appbar.MuiAppBar-root {
+    min-height: var(--eos-topbar-h) !important;
+    border: 1px solid rgba(75, 122, 170, 0.22) !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    background: rgba(2, 10, 19, 0.86) !important;
+    color: var(--eos-text) !important;
+    backdrop-filter: blur(18px);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34), inset 0 -1px 0 rgba(255, 255, 255, 0.03) !important;
+}
+
+.eos-toolbar.MuiToolbar-root {
+    min-height: var(--eos-topbar-h) !important;
+    gap: 12px;
+    padding: 0 24px !important;
+}
+
+.eos-toolbar .MuiIconButton-root,
+.eos-drawer .MuiIconButton-root,
+.topbar-gear {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px !important;
+    color: #e9f4ff !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    background: rgba(255, 255, 255, 0.035) !important;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.eos-toolbar .MuiIconButton-root:hover,
+.eos-drawer .MuiIconButton-root:hover {
+    transform: translateY(-1px);
+    border-color: rgba(0, 230, 118, 0.42) !important;
+    background: rgba(0, 230, 118, 0.09) !important;
+}
+
+.eos-topbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    margin-right: 10px;
+    color: var(--eos-text);
+    white-space: nowrap;
+}
+
+.eos-topbar-brand__logo {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 14px rgba(0, 230, 118, 0.36));
+}
+
+.eos-topbar-brand__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+    font-weight: 850;
+    letter-spacing: 0.1px;
+}
+
+.eos-topbar-brand__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 34px;
+    padding: 0 13px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 230, 118, 0.7);
+    background: rgba(2, 23, 20, 0.82);
+    color: var(--eos-text);
+    box-shadow: 0 0 18px rgba(0, 230, 118, 0.26), inset 0 0 0 1px rgba(0, 230, 118, 0.12);
+    font-size: 12px;
+    font-weight: 850;
+    letter-spacing: 0.28px;
+    text-transform: uppercase;
+}
+
+.eos-topbar-brand__live::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--eos-green);
+    box-shadow: 0 0 12px var(--eos-green);
+}
+
+.eos-toolbar-user .MuiAvatar-root,
+.eos-toolbar .MuiAvatar-root {
+    border: 1px solid rgba(0, 230, 118, 0.34);
+    background: rgba(0, 230, 118, 0.08) !important;
+    box-shadow: 0 0 16px rgba(0, 230, 118, 0.16);
+}
+
+#app-paper.eos-app-content {
+    margin-top: var(--eos-topbar-h) !important;
+    padding: 14px 16px 20px !important;
+    background: transparent !important;
+    color: var(--eos-text) !important;
+}
+
+.eos-app-content .MuiPaper-root:not(.MuiMenu-paper):not(.MuiDialog-paper):not(.MuiPopover-paper):not(.MuiDrawer-paper),
+.eos-app-content .MuiCard-root {
+    background: linear-gradient(180deg, rgba(7, 22, 38, 0.86), rgba(2, 12, 22, 0.82)) !important;
+    border: 1px solid var(--eos-line) !important;
+    border-radius: var(--eos-radius) !important;
+    color: var(--eos-text) !important;
+    box-shadow: var(--eos-shadow) !important;
+}
+
+.eos-app-content .MuiTypography-root,
+.eos-app-content .MuiListItemText-primary,
+.eos-app-content .MuiTableCell-root,
+.eos-login-paper .MuiTypography-root {
+    color: var(--eos-text);
+}
+
+.eos-app-content .MuiTypography-colorTextSecondary,
+.eos-app-content .MuiListItemText-secondary,
+.eos-app-content .MuiFormHelperText-root,
+.eos-login-paper .MuiTypography-colorTextSecondary {
+    color: var(--eos-muted) !important;
+}
+
+.eos-drawer .MuiDrawer-paper,
+.eos-drawer.MuiDrawer-root .MuiDrawer-paper,
+.eos-drawer.MuiSwipeableDrawer-root .MuiDrawer-paper {
+    background: linear-gradient(180deg, rgba(2, 10, 19, 0.94), rgba(2, 9, 18, 0.92)) !important;
+    color: var(--eos-text) !important;
+    border-right: 1px solid rgba(75, 122, 170, 0.22) !important;
+    box-shadow: 18px 0 44px rgba(0, 0, 0, 0.24), inset -1px 0 0 rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(18px);
+}
+
+.eos-drawer-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    color: var(--eos-text);
+}
+
+.eos-drawer-brand__logo {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(0, 230, 118, 0.34));
+}
+
+.eos-drawer-brand__texts {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.eos-drawer-brand__name {
+    font-size: 14px;
+    font-weight: 850;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.eos-drawer-brand__meta {
+    color: var(--eos-muted);
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.eos-drawer .MuiList-root {
+    padding: 8px 6px !important;
+}
+
+.eos-drawer .MuiListItemButton-root {
+    color: rgba(241, 246, 251, 0.88) !important;
+}
+
+.eos-drawer .MuiListItemIcon-root {
+    color: var(--eos-blue) !important;
+}
+
+.eos-drawer .MuiListItemButton-root:hover {
+    background: rgba(255, 255, 255, 0.055) !important;
+}
+
+.eos-drawer .MuiBadge-badge,
+.eos-appbar .MuiBadge-badge {
+    font-weight: 850;
+    box-shadow: 0 0 12px rgba(0, 230, 118, 0.32);
+}
+
+.MuiDialog-paper,
+.MuiMenu-paper,
+.MuiPopover-paper {
+    background: linear-gradient(180deg, rgba(7, 22, 38, 0.97), rgba(2, 12, 22, 0.96)) !important;
+    color: var(--eos-text) !important;
+    border: 1px solid rgba(95, 144, 190, 0.28) !important;
+    border-radius: var(--eos-radius) !important;
+    box-shadow: 0 24px 54px rgba(0, 0, 0, 0.48) !important;
+    backdrop-filter: blur(16px);
+}
+
+.MuiButton-root {
+    border-radius: 12px !important;
+    font-weight: 800 !important;
+    text-transform: none !important;
+}
+
+.MuiButton-containedPrimary,
+.MuiButton-contained.MuiButton-colorPrimary {
+    background: linear-gradient(180deg, #00e676, #00b86b) !important;
+    color: #00140c !important;
+    box-shadow: 0 0 18px rgba(0, 230, 118, 0.22), 0 10px 22px rgba(0, 0, 0, 0.26) !important;
+}
+
+.MuiButton-containedSecondary,
+.MuiButton-contained.MuiButton-colorSecondary {
+    background: linear-gradient(180deg, #31b7ff, #1b7dde) !important;
+    color: #00111c !important;
+}
+
+.MuiButton-outlined,
+.MuiButton-text {
+    color: var(--eos-text) !important;
+    border-color: rgba(95, 144, 190, 0.28) !important;
+}
+
+.MuiButton-outlined:hover,
+.MuiButton-text:hover {
+    border-color: rgba(0, 230, 118, 0.48) !important;
+    background: rgba(0, 230, 118, 0.08) !important;
+}
+
+.MuiInputBase-root,
+.MuiOutlinedInput-root,
+.MuiSelect-select,
+.MuiAutocomplete-root .MuiInputBase-root {
+    color: var(--eos-text) !important;
+    background: rgba(2, 12, 22, 0.58) !important;
+    border-radius: 12px !important;
+}
+
+.MuiInputLabel-root,
+.MuiFormLabel-root {
+    color: rgba(241, 246, 251, 0.68) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+    border-color: rgba(95, 144, 190, 0.28) !important;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline,
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(0, 230, 118, 0.62) !important;
+}
+
+.MuiCheckbox-root,
+.MuiSwitch-switchBase.Mui-checked,
+.MuiRadio-root.Mui-checked {
+    color: var(--eos-green) !important;
+}
+
+.MuiTableCell-root {
+    border-bottom-color: rgba(255, 255, 255, 0.065) !important;
+}
+
+.MuiTableHead-root .MuiTableCell-root,
+.MuiDataGrid-columnHeaders {
+    background: rgba(0, 230, 118, 0.055) !important;
+    color: rgba(241, 246, 251, 0.94) !important;
+    font-weight: 850 !important;
+}
+
+.MuiDataGrid-root {
+    border-color: rgba(95, 144, 190, 0.24) !important;
+    color: var(--eos-text) !important;
+    background: rgba(2, 12, 22, 0.62) !important;
+}
+
+.MuiChip-root {
+    background: rgba(0, 230, 118, 0.08) !important;
+    color: var(--eos-text) !important;
+    border: 1px solid rgba(0, 230, 118, 0.18) !important;
+}
+
+.MuiTooltip-tooltip {
+    background: rgba(2, 10, 19, 0.96) !important;
+    border: 1px solid rgba(95, 144, 190, 0.28);
+    color: var(--eos-text) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.36);
+}
+
+.eos-login-root {
+    background:
+        radial-gradient(circle at 18% -4%, rgba(0, 230, 118, 0.18), transparent 30%),
+        radial-gradient(circle at 82% 18%, rgba(49, 183, 255, 0.16), transparent 34%),
+        linear-gradient(180deg, #010914 0%, #03101e 45%, #010711 100%) !important;
+}
+
+.eos-login-paper {
+    background: linear-gradient(180deg, rgba(7, 22, 38, 0.92), rgba(2, 12, 22, 0.88)) !important;
+    border: 1px solid rgba(95, 144, 190, 0.28) !important;
+    border-radius: 22px !important;
+    color: var(--eos-text) !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+    backdrop-filter: blur(16px);
+}
+
+.eos-login-paper .MuiAvatar-root {
+    background: rgba(0, 230, 118, 0.08) !important;
+    border: 1px solid rgba(0, 230, 118, 0.24);
+    box-shadow: 0 0 22px rgba(0, 230, 118, 0.18);
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+    background: #06111f;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 230, 118, 0.38);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(2, 10, 19, 0.72);
+}
+
+@media (max-width: 820px) {
+    :root { --eos-topbar-h: 64px; }
+    .eos-toolbar.MuiToolbar-root { padding: 0 10px !important; gap: 8px; }
+    .eos-topbar-brand__logo { width: 38px; height: 38px; }
+    .eos-topbar-brand__title { font-size: 16px; }
+    .eos-topbar-brand__live { display: none; }
+    #app-paper.eos-app-content { padding: 10px !important; }
+}

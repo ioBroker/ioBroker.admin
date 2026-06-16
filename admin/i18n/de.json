@@ -57,7 +57,7 @@
     "Upload image": "Bild hochladen",
     "Use Lets Encrypt certificates": "Let's Encrypt Zertifikate verwenden",
     "Use background image": "Hintergrundbild verwenden",
-    "Use iobroker.acme adapter for letsencrypt certificates": "Verwenden Sie den iobroker.acme-Adapter für letsencrypt-Zertifikate",
+    "Use iobroker.acme adapter for letsencrypt certificates": "Verwenden Sie den ACME-Adapter für letsencrypt-Zertifikate",
     "Use old UI": "Benutze alte Benutzeroberfläche",
     "Use react UI(experts)": "Neue React UI ausprobieren (Alpha)",
     "Use this instance for automatic update": "Benutze diese Instanz zur automatischen Zertifikatsaktualisierung",
@@ -78,9 +78,9 @@
     "tooltip_autoUpdate": "Prüfe regelmäßig auf Adapter-Updates",
     "tooltip_bind": "IP-Addresse, die von der Admininstanz benutzt wird",
     "tooltip_cache": "Browser-Cache nutzen",
-    "tooltip_certChained": "Verkettetes Zertifikat. Verfügbare Zertifikate können über die ioBroker Systemkonfiguration verwaltet werden.",
-    "tooltip_certPrivate": "Privates Zertifikat. Verfügbare Zertifikate können über die ioBroker Systemkonfiguration verwaltet werden.",
-    "tooltip_certPublic": "Öffentliches Zertifikat. Verfügbare Zertifikate können über die ioBroker Systemkonfiguration verwaltet werden.",
+    "tooltip_certChained": "Verkettetes Zertifikat. Verfügbare Zertifikate können über die NexoWatt EOS Systemkonfiguration verwaltet werden.",
+    "tooltip_certPrivate": "Privates Zertifikat. Verfügbare Zertifikate können über die NexoWatt EOS Systemkonfiguration verwaltet werden.",
+    "tooltip_certPublic": "Öffentliches Zertifikat. Verfügbare Zertifikate können über die NexoWatt EOS Systemkonfiguration verwaltet werden.",
     "tooltip_defaultUser": "Diesen Benutzer automatisch einloggen",
     "tooltip_leEnabled": "Let's Encrypt Zertifikate benutzen",
     "tooltip_lePort": "Port für Challenge-Server. Let's Encrypt erfordert, dass Port 80 von außen erreichbar ist. Die dafür notwendige Port-Weiterleitungsregel auf den hier angegeben Port muss im Router eingerichtet sein.",
@@ -89,5 +89,6 @@
     "tooltip_secure": "SSL Verschlüsselung aktivieren. Die Admin-Oberfläche ist unter https:// und nicht mehr unter http:// erreichbar",
     "tooltip_thresholdValue": "Wenn der Browser in 3 Sekunden zu viele Ereignisse empfängt, wird das Aktualisieren der Daten vorübergehend beendet",
     "tooltip_ttl": "Nach dieser Zeit wird ein inaktiver Benutzer ausgeloggt.",
-    "users permissions": "Benutzerberechtigungen"
+    "users permissions": "Benutzerberechtigungen",
+    "Use ACME adapter for letsencrypt certificates": "Verwenden Sie den ACME-Adapter für letsencrypt-Zertifikate"
 }

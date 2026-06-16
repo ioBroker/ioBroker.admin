@@ -57,7 +57,7 @@
     "Upload image": "Загрузить изображение",
     "Use Lets Encrypt certificates": "Использовать сертификаты Let's Encrypt",
     "Use background image": "Использовать фоновое изображение",
-    "Use iobroker.acme adapter for letsencrypt certificates": "Используйте адаптер iobroker.acme для сертификатов letsencrypt",
+    "Use iobroker.acme adapter for letsencrypt certificates": "Используйте адаптер ACME для сертификатов letsencrypt",
     "Use old UI": "Использовать старый интерфейс",
     "Use react UI(experts)": "Использовать React UI (эксперт)",
     "Use this instance for automatic update": "Использовать этот экземпляр для автоматического обновления сертификатов",
@@ -89,5 +89,6 @@
     "tooltip_secure": "Активировать протокол SSL. Сайт будет доступен по https:// , а не по http://",
     "tooltip_thresholdValue": "если браузер получает слишком много событий за 3 секунды, обновление будет остановлено",
     "tooltip_ttl": "По прошествии этого времени при бездействии пользователь будет разлогинен.",
-    "users permissions": "Права доступа"
+    "users permissions": "Права доступа",
+    "Use ACME adapter for letsencrypt certificates": "Используйте адаптер ACME для сертификатов letsencrypt"
 }

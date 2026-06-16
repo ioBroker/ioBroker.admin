@@ -73,7 +73,7 @@ const styles: Record<string, any> = {
         borderRadius: 4,
         fontSize: 16,
     },
-    ioBrokerLink: {
+    brandLink: {
         textTransform: 'inherit',
     },
     marginTop: {
@@ -223,9 +223,9 @@ export default class Login extends Component<object, LoginState> {
 
     render(): JSX.Element {
         const link =
-            window.loginLink && window.loginLink !== '@@loginLink@@' ? window.loginLink : 'https://www.iobroker.net/';
+            window.loginLink && window.loginLink !== '@@loginLink@@' ? window.loginLink : './';
         const motto =
-            window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : 'Discover awesome. ';
+            window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : 'NexoWatt EOS ';
 
         if (window.login !== 'true' && window.login !== '@@auth@@') {
             // eslint-disable-next-line no-debugger
@@ -254,7 +254,7 @@ export default class Login extends Component<object, LoginState> {
             );
         } else {
             content = (
-                <Paper sx={styles.paper}>
+                <Paper className="eos-login-paper" sx={styles.paper}>
                     <Grid2
                         container
                         direction="column"
@@ -282,7 +282,7 @@ export default class Login extends Component<object, LoginState> {
                             (window.loginHideLogo === 'false' || window.loginHideLogo === '@@loginHideLogo@@') && (
                                 <Avatar
                                     sx={styles.avatar}
-                                    src="img/admin.svg"
+                                    src="img/eos-logo-mark.svg"
                                 />
                             )
                         )}
@@ -292,7 +292,7 @@ export default class Login extends Component<object, LoginState> {
                         >
                             {window.loginTitle && window.loginTitle !== '@@loginTitle@@'
                                 ? window.loginTitle
-                                : I18n.t('loginTitle')}
+                                : 'NexoWatt EOS Admin'}
                         </Typography>
                         {window.location.search.includes('error') || this.state.error ? (
                             <div style={styles.alert}>{this.state.error || I18n.t('wrongPassword')}</div>
@@ -402,7 +402,7 @@ export default class Login extends Component<object, LoginState> {
                         >
                             {window.loginLink && window.loginLink !== '@@loginLink@@' ? (
                                 <Link
-                                    style={styles.ioBrokerLink}
+                                    style={styles.brandLink}
                                     color="inherit"
                                     href={link}
                                     rel="noopener noreferrer"
@@ -414,13 +414,13 @@ export default class Login extends Component<object, LoginState> {
                             {!window.loginLink || window.loginLink === '@@loginLink@@' ? motto : null}
                             {!window.loginLink || window.loginLink === '@@loginLink@@' ? (
                                 <Link
-                                    style={styles.ioBrokerLink}
+                                    style={styles.brandLink}
                                     color="inherit"
                                     href={link}
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >
-                                    ioBroker
+                                    NexoWatt EOS
                                 </Link>
                             ) : null}
                         </Typography>
@@ -431,6 +431,7 @@ export default class Login extends Component<object, LoginState> {
 
         return (
             <Paper
+                className="eos-login-root"
                 component="main"
                 style={{ ...styles.root, ...style }}
             >

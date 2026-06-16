@@ -1,22 +1,22 @@
 import React, { Component, type RefObject, type JSX } from 'react';
 
-import { Avatar, Drawer as MaterialDrawer, IconButton, List, Typography, SwipeableDrawer, Box } from '@mui/material';
+import { Drawer as MaterialDrawer, IconButton, List, Typography, SwipeableDrawer, Box } from '@mui/material';
 
 import {
     ChevronLeft as ChevronLeftIcon,
-    Apps as AppsIcon,
+    DashboardCustomize as DashboardIcon,
     Info as InfoIcon,
-    Store as StoreIcon,
-    Subtitles as SubtitlesIcon,
-    ViewList as ViewListIcon,
-    ArtTrack as ArtTrackIcon,
-    ViewHeadline as ViewHeadlineIcon,
+    Extension as AdapterIcon,
+    Widgets as InstancesIcon,
+    AccountTree as ObjectsIcon,
+    Category as EnumsIcon,
+    Terminal as LogsIcon,
     Subscriptions as SubscriptionsIcon,
     FlashOn as FlashOnIcon,
-    PersonOutline as PersonOutlineIcon,
-    Storage as StorageIcon,
-    FileCopy as FilesIcon,
-    DeveloperBoard as DeviceManagerIcon,
+    PeopleAlt as UsersIcon,
+    Dns as HostsIcon,
+    FolderSpecial as FilesIcon,
+    SettingsApplications as DeviceManagerIcon,
 } from '@mui/icons-material';
 
 import {
@@ -142,17 +142,17 @@ export const STATES = {
 };
 
 const tabsInfo: Record<string, { order: number; icon?: JSX.Element; host?: boolean; instance?: number }> = {
-    'tab-intro': { order: 1, icon: <AppsIcon /> },
+    'tab-intro': { order: 1, icon: <DashboardIcon /> },
     'tab-info': { order: 5, icon: <InfoIcon />, host: true },
-    'tab-adapters': { order: 10, icon: <StoreIcon />, host: true },
-    'tab-instances': { order: 15, icon: <SubtitlesIcon />, host: true },
-    'tab-objects': { order: 20, icon: <ViewListIcon /> },
-    'tab-enums': { order: 25, icon: <ArtTrackIcon /> },
+    'tab-adapters': { order: 10, icon: <AdapterIcon />, host: true },
+    'tab-instances': { order: 15, icon: <InstancesIcon />, host: true },
+    'tab-objects': { order: 20, icon: <ObjectsIcon /> },
+    'tab-enums': { order: 25, icon: <EnumsIcon /> },
     'tab-devices': { order: 27, host: true },
-    'tab-logs': { order: 30, icon: <ViewHeadlineIcon />, host: true },
+    'tab-logs': { order: 30, icon: <LogsIcon />, host: true },
     'tab-scenes': { order: 35, icon: <SubscriptionsIcon /> },
     'tab-events': { order: 40, icon: <FlashOnIcon /> },
-    'tab-users': { order: 45, icon: <PersonOutlineIcon /> },
+    'tab-users': { order: 45, icon: <UsersIcon /> },
     'tab-javascript': { order: 50 },
     'tab-text2command-0': { order: 55, instance: 0 },
     'tab-text2command-1': { order: 56, instance: 1 },
@@ -167,7 +167,7 @@ const tabsInfo: Record<string, { order: number; icon?: JSX.Element; host?: boole
     'tab-eventlist-0': { order: 80, instance: 0 },
     'tab-eventlist-1': { order: 81, instance: 1 },
     'tab-eventlist-2': { order: 82, instance: 2 },
-    'tab-hosts': { order: 100, icon: <StorageIcon /> },
+    'tab-hosts': { order: 100, icon: <HostsIcon /> },
     'tab-files': { order: 110, icon: <FilesIcon /> },
     'tab-devicemanager': { order: 120, icon: <DeviceManagerIcon /> },
 };
@@ -590,20 +590,23 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             <div style={{ height: 50, width: 102, lineHeight: '50px' }}>
                                 <img
                                     src={this.props.adminGuiConfig.icon}
-                                    alt="logo"
+                                    alt="NexoWatt EOS logo"
                                     style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }}
                                 />
                             </div>
                         ) : (
-                            <Avatar
-                                onClick={() => handleNavigation('easy')}
-                                style={styles.logoSize}
-                                alt="ioBroker"
-                                src="img/no-image.svg"
-                            />
+                            <div className="eos-drawer-brand" onClick={() => handleNavigation('easy')} role="button" tabIndex={0}>
+                                <img className="eos-drawer-brand__logo" src="img/eos-logo-mark.svg" alt="NexoWatt EOS" />
+                                {state === STATES.opened ? (
+                                    <span className="eos-drawer-brand__texts">
+                                        <span className="eos-drawer-brand__name">NexoWatt EOS</span>
+                                        {this.props.versionAdmin ? <span className="eos-drawer-brand__meta">Admin v{this.props.versionAdmin}</span> : null}
+                                    </span>
+                                ) : null}
+                            </div>
                         )}
                     </a>
-                    {!this.props.adminGuiConfig.icon && this.props.versionAdmin && (
+                    {false && !this.props.adminGuiConfig.icon && this.props.versionAdmin && (
                         <Typography sx={styles.styleVersion}>v{this.props.versionAdmin}</Typography>
                     )}
                 </div>
@@ -794,6 +797,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         if (this.isSwipeable()) {
             return (
                 <SwipeableDrawer
+                    className="eos-drawer"
                     sx={Utils.getStyle(this.props.theme, styles.root, { '&.MuiSwipeableDrawer-paper': styles.paper })}
                     anchor="left"
                     open={this.props.state !== STATES.closed}
@@ -828,6 +832,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
         return (
             <MaterialDrawer
+                className="eos-drawer"
                 sx={Utils.getStyle(
                     this.props.theme,
                     styles.root,

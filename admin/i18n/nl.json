@@ -57,7 +57,7 @@
     "Upload image": "Afbeelding uploaden",
     "Use Lets Encrypt certificates": "Gebruik Let's Encrypt-certificaten",
     "Use background image": "Achtergrondafbeelding gebruiken",
-    "Use iobroker.acme adapter for letsencrypt certificates": "Gebruik de iobroker.acme-adapter voor letsencrypt-certificaten",
+    "Use iobroker.acme adapter for letsencrypt certificates": "Gebruik de ACME-adapter voor letsencrypt-certificaten",
     "Use old UI": "Gebruik een oude gebruikersinterface",
     "Use react UI(experts)": "Gebruik React UI (experts)",
     "Use this instance for automatic update": "Gebruik deze instantie voor automatische update",
@@ -89,5 +89,6 @@
     "tooltip_secure": "Schakel SSL-protocol in. Beheerpagina is beschikbaar via https: // en niet http: //",
     "tooltip_thresholdValue": "Als de browser te veel gebeurtenissen binnen 3 seconden ontvangt, wordt de update gestopt",
     "tooltip_ttl": "Time-out aanmelding. Na deze tijd zal de gebruiker automatisch uitloggen.",
-    "users permissions": "gebruikersrechten"
+    "users permissions": "gebruikersrechten",
+    "Use ACME adapter for letsencrypt certificates": "Gebruik de ACME-adapter voor letsencrypt-certificaten"
 }
