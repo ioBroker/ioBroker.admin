@@ -598,7 +598,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             <Avatar
                                 onClick={() => handleNavigation('easy')}
                                 style={styles.logoSize}
-                                alt="ioBroker"
+                                alt="NexoWatt EOS"
                                 src="img/no-image.svg"
                             />
                         )}

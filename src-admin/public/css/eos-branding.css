@@ -172,7 +172,6 @@ html.eos-loading main.MuiPaper-root {
 }
 
 html.eos-login main > .MuiPaper-root,
-html.eos-login .MuiPaper-root:has(#username),
 html.eos-login .MuiPaper-root:has(#password) {
     position: relative;
     overflow: hidden;
@@ -186,8 +185,7 @@ html.eos-login .MuiPaper-root:has(#password) {
         0 0 42px rgba(0, 255, 136, 0.14) !important;
 }
 
-html.eos-login main > .MuiPaper-root::before,
-html.eos-login .MuiPaper-root:has(#username)::before {
+html.eos-login main > .MuiPaper-root::before {
     content: 'Energy Operation System';
     display: block;
     margin: -2px 0 14px;
@@ -257,3 +255,435 @@ img[src*="no-image.svg"] {
 [style*="background: rgb(255, 255, 255)"] {
     background-color: var(--eos-panel-soft) !important;
 }
+
+
+/* === NexoWatt EOS refined shell v4 ======================================= */
+html.eos-login main.MuiPaper-root:has(#username)::before {
+    content: none !important;
+    display: none !important;
+}
+
+html.eos-login main > .MuiPaper-root:has(#username)::before {
+    content: 'Energy Operation System' !important;
+    display: block !important;
+    margin: 0 0 18px !important;
+    color: var(--eos-accent) !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    font-size: 11px !important;
+    text-align: center !important;
+}
+
+html.eos-login main.MuiPaper-root {
+    min-height: 100vh !important;
+    padding: 24px !important;
+    background:
+        radial-gradient(circle at 50% 12%, rgba(0, 255, 136, 0.16), transparent 30%),
+        radial-gradient(circle at 75% 52%, rgba(0, 212, 255, 0.10), transparent 35%),
+        linear-gradient(135deg, #020914 0%, #081d30 56%, #01050d 100%) !important;
+}
+
+html.eos-login main > .MuiPaper-root:has(#username) {
+    width: min(430px, calc(100vw - 44px)) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    max-width: 430px !important;
+    padding: 28px 30px !important;
+    border-radius: 28px !important;
+    background:
+        linear-gradient(180deg, rgba(14, 36, 56, 0.96), rgba(5, 16, 29, 0.94)) !important;
+    border: 1px solid rgba(0, 255, 136, 0.42) !important;
+    box-shadow:
+        0 28px 82px rgba(0, 0, 0, 0.56),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 0 48px rgba(0, 255, 136, 0.16) !important;
+}
+
+html.eos-login main > .MuiPaper-root:has(#username) h1,
+html.eos-login main > .MuiPaper-root:has(#username) .MuiTypography-h5 {
+    text-align: center !important;
+    font-size: 26px !important;
+    line-height: 1.12 !important;
+    margin: 8px 0 6px !important;
+}
+
+html.eos-login main > .MuiPaper-root:has(#username) h1::after,
+html.eos-login main > .MuiPaper-root:has(#username) .MuiTypography-h5::after {
+    content: 'Energy Operation System';
+    display: block;
+    margin-top: 9px;
+    color: var(--eos-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+html.eos-login main > .MuiPaper-root:has(#username) .MuiBox-root img {
+    border-radius: 18px !important;
+    filter: drop-shadow(0 0 22px rgba(0, 255, 136, 0.22));
+}
+
+html.eos-login main > .MuiPaper-root:has(#username) .MuiTextField-root {
+    margin-top: 13px !important;
+    margin-bottom: 4px !important;
+}
+
+html.eos-login main > .MuiPaper-root:has(#username) .MuiButton-contained {
+    border-radius: 14px !important;
+    min-height: 42px !important;
+    margin: 12px 0 0 !important;
+    letter-spacing: 0.03em !important;
+}
+
+html.eos-login main > .MuiPaper-root:has(#username) a[href="#"] {
+    color: var(--eos-text) !important;
+    text-decoration-color: rgba(0, 255, 136, 0.45) !important;
+}
+
+html.eos-app body,
+html.eos-app #root {
+    background:
+        radial-gradient(circle at 12% 18%, rgba(0, 255, 136, 0.12), transparent 33%),
+        radial-gradient(circle at 88% 10%, rgba(0, 212, 255, 0.12), transparent 36%),
+        linear-gradient(135deg, #010712 0%, #071827 54%, #020914 100%) !important;
+}
+
+html.eos-app #root > .MuiPaper-root {
+    background: transparent !important;
+}
+
+html.eos-app #root > .MuiPaper-root > .MuiAppBar-root {
+    top: 14px !important;
+    left: 196px !important;
+    right: 18px !important;
+    width: calc(100% - 214px) !important;
+    min-height: 58px !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(0, 255, 136, 0.28) !important;
+    background:
+        linear-gradient(135deg, rgba(6, 22, 38, 0.94), rgba(2, 9, 20, 0.86)) !important;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.36), 0 0 24px rgba(0, 255, 136, 0.08) !important;
+    backdrop-filter: blur(18px) !important;
+    overflow: hidden !important;
+}
+
+html.eos-app #root > .MuiPaper-root > .MuiAppBar-root::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, rgba(0, 255, 136, 0.13), transparent 28%, rgba(0, 212, 255, 0.09)),
+        linear-gradient(115deg, rgba(255,255,255,.06) 0 1px, transparent 1px 18px);
+    opacity: 0.55;
+}
+
+html.eos-app #root > .MuiPaper-root > .MuiAppBar-root .MuiToolbar-root {
+    position: relative !important;
+    min-height: 58px !important;
+    padding: 0 12px !important;
+    gap: 8px !important;
+    z-index: 1;
+}
+
+html.eos-app #root > .MuiPaper-root > .MuiAppBar-root .MuiIconButton-root {
+    width: 38px !important;
+    height: 38px !important;
+    margin: 0 2px !important;
+    border: 1px solid rgba(123, 204, 255, 0.20) !important;
+    border-radius: 13px !important;
+    background: rgba(8, 26, 42, 0.56) !important;
+    color: var(--eos-text) !important;
+}
+
+html.eos-app #root > .MuiPaper-root > .MuiAppBar-root .MuiIconButton-root:hover {
+    background: rgba(0, 255, 136, 0.13) !important;
+    border-color: rgba(0, 255, 136, 0.42) !important;
+}
+
+html.eos-app .eos-brand-badge {
+    min-height: 34px;
+    padding: 0 13px;
+    border-radius: 999px;
+    text-transform: none;
+    white-space: nowrap;
+}
+
+.eos-direct-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-left: 10px;
+    padding: 9px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 255, 136, 0.34);
+    background: linear-gradient(135deg, rgba(0,255,136,.18), rgba(0,212,255,.12));
+    color: var(--eos-text);
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(0,255,136,.12);
+}
+
+.eos-direct-logout:hover {
+    transform: translateY(-1px);
+    border-color: rgba(0, 255, 136, 0.72);
+    background: linear-gradient(135deg, rgba(0,255,136,.28), rgba(0,212,255,.18));
+}
+
+.eos-direct-logout-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--eos-accent);
+    box-shadow: 0 0 12px var(--eos-accent);
+}
+
+html.eos-app .MuiDrawer-paper {
+    top: 14px !important;
+    left: 14px !important;
+    height: calc(100% - 28px) !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(0, 255, 136, 0.22) !important;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(0,255,136,.18), transparent 30%),
+        linear-gradient(180deg, rgba(5, 18, 32, 0.98), rgba(2, 9, 20, 0.98)) !important;
+    box-shadow: 16px 0 48px rgba(0, 0, 0, 0.34), 0 0 30px rgba(0,255,136,.08) !important;
+    overflow: hidden !important;
+}
+
+.eos-drawer-identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 10px 4px;
+    padding: 11px 10px;
+    border: 1px solid rgba(0,255,136,.22);
+    border-radius: 18px;
+    background: rgba(0, 255, 136, 0.07);
+}
+
+.eos-drawer-identity img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(0,255,136,.25));
+}
+
+.eos-drawer-identity strong,
+.eos-drawer-identity small {
+    display: block;
+    line-height: 1.15;
+}
+
+.eos-drawer-identity strong {
+    color: var(--eos-text);
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.eos-drawer-identity small {
+    margin-top: 2px;
+    color: var(--eos-muted);
+    font-size: 9px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+html.eos-app .MuiDrawer-paper .MuiList-root {
+    padding: 6px 8px 14px !important;
+}
+
+html.eos-app .MuiDrawer-paper .MuiListItemButton-root,
+html.eos-app .MuiDrawer-paper .MuiButtonBase-root.MuiListItemButton-root {
+    min-height: 43px !important;
+    margin: 5px 0 !important;
+    padding: 9px 12px !important;
+    border-radius: 15px !important;
+    border: 1px solid transparent !important;
+    color: var(--eos-text) !important;
+}
+
+html.eos-app .MuiDrawer-paper .MuiListItemButton-root:hover {
+    border-color: rgba(0, 255, 136, 0.24) !important;
+    background: rgba(0, 255, 136, 0.09) !important;
+}
+
+html.eos-app .MuiDrawer-paper .Mui-selected,
+html.eos-app .MuiDrawer-paper .MuiListItemButton-root.Mui-selected {
+    background: linear-gradient(135deg, rgba(0,255,136,.74), rgba(0,212,255,.56)) !important;
+    color: #02101d !important;
+    font-weight: 900 !important;
+    box-shadow: 0 12px 26px rgba(0,255,136,.20) !important;
+}
+
+html.eos-app .MuiDrawer-paper .Mui-selected svg,
+html.eos-app .MuiDrawer-paper .Mui-selected img {
+    color: #02101d !important;
+    filter: none !important;
+}
+
+html.eos-app #app-paper {
+    position: relative !important;
+    margin-top: 84px !important;
+    margin-right: 18px !important;
+    border-radius: 22px !important;
+    border: 1px solid rgba(72, 176, 255, 0.19) !important;
+    background:
+        linear-gradient(180deg, rgba(8, 25, 41, .82), rgba(4, 14, 25, .74)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 18px 48px rgba(0,0,0,.22) !important;
+    overflow: auto !important;
+}
+
+html.eos-app #app-paper::before {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    inset: 0;
+    border-radius: 22px;
+    background:
+        linear-gradient(115deg, rgba(0,255,136,.05) 0 1px, transparent 1px 18px),
+        radial-gradient(circle at 88% 12%, rgba(0,212,255,.08), transparent 26%);
+}
+
+html.eos-app #app-paper > * {
+    position: relative;
+}
+
+html.eos-route-adapters #app-paper .MuiCard-root,
+html.eos-route-intro #app-paper .MuiCard-root,
+html.eos-route-adapters #app-paper .MuiPaper-root:not(.MuiAppBar-root):not(.MuiDrawer-paper),
+html.eos-route-intro #app-paper .MuiPaper-root:not(.MuiAppBar-root):not(.MuiDrawer-paper) {
+    border-radius: 20px !important;
+    border: 1px solid rgba(123, 204, 255, 0.22) !important;
+    background:
+        linear-gradient(180deg, rgba(18, 43, 65, 0.82), rgba(11, 30, 49, 0.76)) !important;
+    overflow: hidden !important;
+    box-shadow: 0 18px 38px rgba(0,0,0,.22) !important;
+}
+
+html.eos-route-adapters #app-paper .MuiCard-root:hover,
+html.eos-route-intro #app-paper .MuiCard-root:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 255, 136, 0.42) !important;
+    box-shadow: 0 24px 52px rgba(0,0,0,.30), 0 0 20px rgba(0,255,136,.08) !important;
+}
+
+html.eos-route-adapters #app-paper [style*="background: rgb(25, 118, 210)"],
+html.eos-route-adapters #app-paper [style*="background-color: rgb(25, 118, 210)"],
+html.eos-route-adapters #app-paper [style*="background:#1976d2"],
+html.eos-route-adapters #app-paper [style*="background-color:#1976d2"] {
+    background: linear-gradient(135deg, rgba(0,255,136,.26), rgba(0,212,255,.18)) !important;
+}
+
+.eos-rights-helper,
+.eos-permission-presets {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 14px;
+    padding: 14px 16px;
+    border: 1px solid rgba(0, 255, 136, 0.24);
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(0,255,136,.10), rgba(0,212,255,.07));
+    box-shadow: 0 14px 34px rgba(0,0,0,.22);
+    color: var(--eos-text);
+}
+
+.eos-rights-helper-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: rgba(0, 255, 136, 0.13);
+    border: 1px solid rgba(0, 255, 136, 0.26);
+    font-size: 22px;
+}
+
+.eos-rights-helper-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 240px;
+}
+
+.eos-rights-helper-copy strong,
+.eos-permission-presets-title {
+    font-weight: 900;
+    letter-spacing: .01em;
+}
+
+.eos-rights-helper-copy span,
+.eos-permission-presets-text {
+    color: var(--eos-muted);
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.eos-rights-helper-steps,
+.eos-permission-presets-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.eos-rights-helper-steps span,
+.eos-permission-presets-actions button {
+    border-radius: 999px;
+    border: 1px solid rgba(123, 204, 255, 0.24);
+    background: rgba(8, 26, 42, 0.54);
+    color: var(--eos-text);
+    padding: 7px 10px;
+    font-weight: 800;
+    font-size: 12px;
+}
+
+.eos-permission-presets {
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.eos-permission-presets-actions {
+    margin-left: 0;
+}
+
+.eos-permission-presets-actions button {
+    cursor: pointer;
+}
+
+.eos-permission-presets-actions button:hover {
+    background: rgba(0, 255, 136, 0.15);
+    border-color: rgba(0, 255, 136, 0.42);
+}
+
+html.eos-route-users #app-paper .MuiPaper-root,
+html.eos-route-users #app-paper .MuiCard-root {
+    border-radius: 18px !important;
+}
+
+@media (max-width: 820px) {
+    html.eos-app #root > .MuiPaper-root > .MuiAppBar-root {
+        left: 14px !important;
+        width: calc(100% - 28px) !important;
+    }
+    html.eos-app #app-paper {
+        margin-left: 14px !important;
+        margin-right: 14px !important;
+    }
+    .eos-drawer-identity small,
+    .eos-direct-logout span:not(.eos-direct-logout-dot) {
+        display: none;
+    }
+    .eos-rights-helper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .eos-rights-helper-steps {
+        margin-left: 0;
+    }
+}
+

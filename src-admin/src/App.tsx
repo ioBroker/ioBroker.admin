@@ -1877,7 +1877,7 @@ class App extends Router<AppProps, AppState> {
     }
 
     setTitle(title: string): void {
-        document.title = `${title} - ${this.state.currentHostName || 'ioBroker'}`;
+        document.title = `${title} - ${this.state.currentHostName || 'NexoWatt EOS'}`;
     }
 
     getCurrentTab(): JSX.Element | null {
@@ -2948,7 +2948,7 @@ class App extends Router<AppProps, AppState> {
                                                     ? styles.logoWhite
                                                     : undefined
                                             }
-                                            alt="ioBroker"
+                                            alt="NexoWatt EOS"
                                             src="img/no-image.svg"
                                         />
                                     )}

@@ -175,7 +175,7 @@ export default class Login extends Component<object, LoginState> {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `grant_type=refresh_token&refresh_token=${tokens.refresh_token}&stayloggedin=${tokens.stayLoggedIn}&client_id=ioBroker`,
+                body: `grant_type=refresh_token&refresh_token=${tokens.refresh_token}&stayloggedin=${tokens.stayLoggedIn}&client_id=NexoWattEOS`,
             })
                 .then(async response => {
                     if (!(await Login.processTokenAnswer(tokens.stayLoggedIn, response))) {
@@ -207,7 +207,7 @@ export default class Login extends Component<object, LoginState> {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
+                body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=NexoWattEOS`,
             });
             if (await Login.processTokenAnswer(this.state.stayLoggedIn, response)) {
                 // Do not allow entering again as redirection is running
@@ -223,9 +223,9 @@ export default class Login extends Component<object, LoginState> {
 
     render(): JSX.Element {
         const link =
-            window.loginLink && window.loginLink !== '@@loginLink@@' ? window.loginLink : 'https://www.iobroker.net/';
+            window.loginLink && window.loginLink !== '@@loginLink@@' ? window.loginLink : '#';
         const motto =
-            window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : 'Discover awesome. ';
+            window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : 'NexoWatt · Independent. Transparent. Fair.';
 
         if (window.login !== 'true' && window.login !== '@@auth@@') {
             // eslint-disable-next-line no-debugger
