@@ -218,7 +218,7 @@
                 _image: {
                     type: 'staticImage',
                     tooltip: "Read about Let's Encrypt certificates",
-                    href: '#',
+                    href: 'https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates',
                     src: '../../img/le.png',
                     style: {
                         width: 200,
@@ -227,7 +227,7 @@
                 },
                 _staticText: {
                     type: 'staticText',
-                    text: 'ra_Use ACME adapter for letsencrypt certificates',
+                    text: 'ra_Use iobroker.acme adapter for letsencrypt certificates',
                 },
             },
         },
@@ -335,7 +335,7 @@
                             attr: 'globalPath',
                             filter: false,
                             sort: false,
-                            default: '/eos/',
+                            default: '/iobroker/',
                         },
                         // {"type": "text", "width": "20%", "title": "Domain", "attr": "domain", "filter": false, "sort": false, "default": "*"},
                         { type: 'staticText', text: '=>', noTranslation: true, width: 20 },

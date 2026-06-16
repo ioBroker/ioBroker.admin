@@ -1,32 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="NexoWatt EOS">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="NexoWatt EOS">
   <defs>
-    <linearGradient id="g" x1="72" y1="32" x2="438" y2="466" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#00e676"/>
-      <stop offset="0.56" stop-color="#1fbf9b"/>
-      <stop offset="1" stop-color="#31b7ff"/>
-    </linearGradient>
-    <radialGradient id="halo" cx="50%" cy="44%" r="60%">
-      <stop offset="0" stop-color="#00e676" stop-opacity="0.34"/>
-      <stop offset="1" stop-color="#00e676" stop-opacity="0"/>
+    <radialGradient id="g" cx="35%" cy="30%" r="78%">
+      <stop offset="0" stop-color="#00ff88" stop-opacity="1"/>
+      <stop offset="0.52" stop-color="#00d4ff" stop-opacity="0.58"/>
+      <stop offset="1" stop-color="#020914" stop-opacity="1"/>
     </radialGradient>
-    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="7" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
-  <rect width="512" height="512" rx="112" fill="#020914"/>
-  <circle cx="256" cy="256" r="208" fill="url(#halo)"/>
-  <path d="M384 151c-32-34-78-55-128-55-88 0-162 64-176 148" fill="none" stroke="url(#g)" stroke-width="34" stroke-linecap="round"/>
-  <path d="M128 360c32 34 78 56 128 56 88 0 162-64 176-149" fill="none" stroke="url(#g)" stroke-width="34" stroke-linecap="round"/>
-  <path d="M372 112l32 38-48 11" fill="none" stroke="url(#g)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M140 400l-32-38 48-11" fill="none" stroke="url(#g)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
-  <g filter="url(#softGlow)" fill="none" stroke="url(#g)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M170 310h172"/>
-    <path d="M201 210h110"/>
-    <path d="M228 152v216"/>
-    <path d="M314 166v202"/>
-    <path d="M170 310l34-100"/>
-    <path d="M342 310l-31-100"/>
-  </g>
-  <path d="M278 187l-62 96h48l-29 82 72-112h-50z" fill="#f4fff9" opacity="0.96"/>
+  <rect width="128" height="128" rx="30" fill="#020914"/>
+  <circle cx="64" cy="64" r="48" fill="url(#g)" opacity="0.9" filter="url(#glow)"/>
+  <path d="M38 72c13-26 39-26 52 0" fill="none" stroke="#e8f7ff" stroke-width="7" stroke-linecap="round" opacity="0.95"/>
+  <path d="M33 61h62M43 43v47M64 35v58M85 43v47" stroke="#020914" stroke-width="5" stroke-linecap="round" opacity="0.82"/>
+  <path d="M64 19v17M64 92v17M19 64h17M92 64h17M32 32l12 12M84 84l12 12M96 32L84 44M44 84L32 96" stroke="#00ff88" stroke-width="5" stroke-linecap="round" opacity="0.95"/>
+  <circle cx="64" cy="64" r="10" fill="#ffd21f" stroke="#020914" stroke-width="4"/>
 </svg>

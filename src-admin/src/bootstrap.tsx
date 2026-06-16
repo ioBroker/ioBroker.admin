@@ -14,11 +14,8 @@ import 'semver';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/browser';
-import { I18n } from '@iobroker/adapter-react-v5';
 
 import './index.css';
-import './eos-theme.css';
-import { eosBrandText, installEosBrandingGuard } from './eos-branding';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 
@@ -36,16 +33,8 @@ declare global {
 
 window.adapterName = 'admin';
 window.USE_OAUTH2 = true;
-installEosBrandingGuard();
 
-
-const eosSanitizeText = eosBrandText;
-
-const originalI18nT = I18n.t.bind(I18n);
-(I18n as unknown as { t: (...args: any[]) => unknown }).t = (...args: any[]) => eosSanitizeText(originalI18nT(...args));
-
-
-console.log(`NexoWatt EOS ${window.adapterName}@${version.version}`);
+console.log(`iobroker.${window.adapterName}@${version.version}`);
 
 const versionChanged = [
     'ChunkLoadError', // version was changed (webpack)
@@ -80,7 +69,7 @@ if (
 ) {
     Sentry.init({
         dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
-        release: `nexowatt-eos.${window.adapterName}@${version.version}`,
+        release: `iobroker.${window.adapterName}@${version.version}`,
         integrations: [Sentry.dedupeIntegration()],
         beforeSend(event: Sentry.ErrorEvent) {
             const text = event?.exception?.values?.map(e => e.value).join(' ');

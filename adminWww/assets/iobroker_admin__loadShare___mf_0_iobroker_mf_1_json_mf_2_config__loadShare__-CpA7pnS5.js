@@ -1,0 +1,1 @@
+import{a as _}from"./iobroker_admin__mf_v__runtimeInit__mf_v__-g2X2zhAf.js";const{initPromise:r}=_,e=r.then(o=>o.loadShare("@iobroker/json-config",{customShareInfo:{shareConfig:{singleton:!0,strictVersion:!1,requiredVersion:"*"}}})),i=await e.then(o=>o());var a=i;export{a as i};

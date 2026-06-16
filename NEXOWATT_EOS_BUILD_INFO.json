@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-06-16T20:20:21.510626Z",
+  "base_zip": "ioBroker.eos.admin-master.zip",
+  "purpose": "Full original repo plus safe NexoWatt EOS frontend/login branding and compiled admin runtime assets.",
+  "original_file_count_preserved": 760,
+  "new_file_count": 1495,
+  "missing_original_files": 0,
+  "adminWww_index_refs_missing": 0,
+  "technical_package_name_kept": "iobroker.admin",
+  "technical_adapter_name_kept": "admin"
+}

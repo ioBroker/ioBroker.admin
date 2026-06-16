@@ -1,0 +1,1 @@
+import{a as o}from"./iobroker_admin__mf_v__runtimeInit__mf_v__-g2X2zhAf.js";const{initPromise:_}=o,r=_.then(e=>e.loadShare("@emotion/react",{customShareInfo:{shareConfig:{singleton:!0,strictVersion:!1,requiredVersion:"*"}}})),t=await r.then(e=>e());var a=t;export{a as i};

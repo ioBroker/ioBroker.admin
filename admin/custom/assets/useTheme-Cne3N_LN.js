@@ -1,0 +1,1 @@
+import"./AdminComponentEasyAccessSet__loadShare__react__loadShare__-q7umYvNn.js";import{T as m,U as t}from"./defaultTheme-DCv9Tyqi.js";import{u as o}from"./useTheme-PVkhNxHz.js";function a(){const e=o(t);return e[m]||e}export{a as u};

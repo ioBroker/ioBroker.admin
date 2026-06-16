@@ -1,0 +1,1 @@
+import{g as r}from"./_commonjsHelpers-CE1G-McA.js";import{a as e}from"./iobroker_admin__mf_v__runtimeInit__mf_v__-g2X2zhAf.js";const{initPromise:t}=e,_=t.then(o=>o.loadShare("react-dropzone",{customShareInfo:{shareConfig:{singleton:!0,strictVersion:!1,requiredVersion:"*"}}})),a=await _.then(o=>o());var n=a;const m=r(n);export{m as D,n as i};

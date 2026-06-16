@@ -1,0 +1,1 @@
+import"./iobroker_admin__loadShare__react__loadShare__-LM7uyL45.js";import{d as m}from"./defaultTheme-Cx_JJUAa.js";import{T as o}from"./createTheme-DFX8CY6F.js";import{u as r}from"./useTheme-Bl-M1DYp.js";function f(){const e=r(m);return e[o]||e}export{f as u};

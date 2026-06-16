@@ -27,3 +27,15 @@ README.md
 .commitinfo
 /src-admin/.__mf__temp/
 /.claude/settings.local.json
+
+# NexoWatt EOS direct GitHub install needs these compiled runtime assets committed.
+!/build/
+!/build/**
+!/adminWww/
+!/adminWww/**
+!/admin/custom/
+!/admin/custom/**
+!/src-admin/public/css/eos-branding.css
+!/src-admin/public/js/eos-branding.js
+!/src-admin/public/img/eos/
+!/src-admin/public/img/eos/**

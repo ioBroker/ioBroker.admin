@@ -1,0 +1,259 @@
+/* NexoWatt EOS branding overlay. Kept as a small runtime skin so the upstream admin bundle stays untouched. */
+:root {
+    --eos-bg-0: #020914;
+    --eos-bg-1: #061626;
+    --eos-bg-2: #0a2337;
+    --eos-panel: rgba(11, 28, 45, 0.88);
+    --eos-panel-soft: rgba(17, 39, 60, 0.76);
+    --eos-border: rgba(72, 176, 255, 0.22);
+    --eos-border-green: rgba(0, 255, 136, 0.36);
+    --eos-text: #eef7ff;
+    --eos-muted: rgba(222, 238, 255, 0.72);
+    --eos-accent: #00ff88;
+    --eos-accent-2: #00d4ff;
+    --eos-warn: #ffd21f;
+    --eos-danger: #ff4d4d;
+    --eos-radius: 18px;
+}
+
+html,
+body,
+#root {
+    min-height: 100%;
+    background:
+        radial-gradient(circle at 12% 16%, rgba(0, 255, 136, 0.14), transparent 34%),
+        radial-gradient(circle at 82% 14%, rgba(0, 148, 255, 0.14), transparent 36%),
+        linear-gradient(135deg, #020914 0%, #06111f 52%, #01050d 100%) !important;
+    color: var(--eos-text);
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+        linear-gradient(115deg, rgba(0, 255, 136, 0.055) 0 1px, transparent 1px 18px),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 34%);
+    opacity: 0.55;
+}
+
+#root {
+    position: relative;
+    z-index: 1;
+}
+
+/* General admin shell */
+.MuiAppBar-root,
+header.MuiPaper-root {
+    background: rgba(2, 9, 20, 0.92) !important;
+    border-bottom: 1px solid var(--eos-border-green) !important;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.32) !important;
+    backdrop-filter: blur(14px);
+}
+
+.MuiDrawer-paper {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.12), transparent 38%),
+        linear-gradient(180deg, rgba(5, 16, 29, 0.98), rgba(2, 9, 20, 0.98)) !important;
+    border-right: 1px solid var(--eos-border) !important;
+    box-shadow: 12px 0 44px rgba(0, 0, 0, 0.35) !important;
+}
+
+.MuiToolbar-root {
+    color: var(--eos-text) !important;
+}
+
+.MuiPaper-root,
+.MuiCard-root,
+.MuiDialog-paper,
+.MuiPopover-paper,
+.MuiMenu-paper {
+    background-color: var(--eos-panel) !important;
+    color: var(--eos-text) !important;
+    border: 1px solid var(--eos-border) !important;
+    box-shadow: 0 18px 52px rgba(0, 0, 0, 0.36) !important;
+    backdrop-filter: blur(16px);
+}
+
+.MuiTableContainer-root,
+.MuiTable-root,
+.MuiDataGrid-root {
+    background-color: rgba(7, 20, 33, 0.72) !important;
+    color: var(--eos-text) !important;
+    border-color: var(--eos-border) !important;
+}
+
+.MuiTableCell-root,
+.MuiDataGrid-cell,
+.MuiDataGrid-columnHeaders,
+.MuiDivider-root {
+    color: var(--eos-text) !important;
+    border-color: rgba(120, 190, 255, 0.16) !important;
+}
+
+.MuiListItemButton-root,
+.MuiMenuItem-root,
+.MuiTab-root,
+.MuiButtonBase-root {
+    border-radius: 12px !important;
+}
+
+.MuiListItemButton-root:hover,
+.MuiMenuItem-root:hover,
+.MuiButtonBase-root:hover {
+    background-color: rgba(0, 255, 136, 0.09) !important;
+}
+
+.Mui-selected,
+.MuiTab-root.Mui-selected {
+    color: var(--eos-accent) !important;
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.16), rgba(0, 212, 255, 0.08)) !important;
+}
+
+.MuiButton-containedPrimary,
+.MuiButton-contained {
+    background: linear-gradient(135deg, var(--eos-accent), var(--eos-accent-2)) !important;
+    color: #02101d !important;
+    font-weight: 800 !important;
+    box-shadow: 0 0 22px rgba(0, 255, 136, 0.28) !important;
+}
+
+.MuiButton-outlined,
+.MuiButton-text {
+    color: var(--eos-text) !important;
+    border-color: var(--eos-border-green) !important;
+}
+
+.MuiSvgIcon-root {
+    filter: drop-shadow(0 0 7px rgba(0, 255, 136, 0.18));
+}
+
+.MuiInputBase-root,
+.MuiOutlinedInput-root,
+.MuiInputBase-input,
+.MuiSelect-select {
+    color: var(--eos-text) !important;
+    background-color: rgba(5, 18, 31, 0.62) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+    border-color: rgba(93, 190, 255, 0.34) !important;
+}
+
+.MuiInputLabel-root,
+.MuiFormLabel-root,
+.MuiTypography-colorTextSecondary,
+.MuiFormControlLabel-label {
+    color: var(--eos-muted) !important;
+}
+
+.MuiChip-root {
+    background-color: rgba(0, 255, 136, 0.12) !important;
+    color: var(--eos-text) !important;
+    border: 1px solid rgba(0, 255, 136, 0.22) !important;
+}
+
+/* Login / loading screen */
+html.eos-login body,
+html.eos-loading body {
+    background:
+        radial-gradient(circle at 14% 18%, rgba(0, 255, 136, 0.22), transparent 34%),
+        radial-gradient(circle at 88% 18%, rgba(0, 166, 255, 0.16), transparent 38%),
+        linear-gradient(135deg, #020914 0%, #071c2d 55%, #01050d 100%) !important;
+}
+
+html.eos-login main.MuiPaper-root,
+html.eos-loading main.MuiPaper-root {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+html.eos-login main > .MuiPaper-root,
+html.eos-login .MuiPaper-root:has(#username),
+html.eos-login .MuiPaper-root:has(#password) {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px !important;
+    background:
+        linear-gradient(180deg, rgba(12, 31, 49, 0.94), rgba(5, 16, 29, 0.92)) !important;
+    border: 1px solid rgba(0, 255, 136, 0.34) !important;
+    box-shadow:
+        0 24px 72px rgba(0, 0, 0, 0.48),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07),
+        0 0 42px rgba(0, 255, 136, 0.14) !important;
+}
+
+html.eos-login main > .MuiPaper-root::before,
+html.eos-login .MuiPaper-root:has(#username)::before {
+    content: 'Energy Operation System';
+    display: block;
+    margin: -2px 0 14px;
+    color: var(--eos-accent);
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    font-size: 11px;
+    text-align: center;
+}
+
+html.eos-login img[src*="admin.svg"],
+html.eos-login img[src*="no-image.svg"],
+html.eos-login .MuiAvatar-img {
+    content: url('../img/eos/eos-logo.svg') !important;
+    object-fit: contain !important;
+}
+
+html.eos-login .MuiAvatar-root {
+    background: radial-gradient(circle, rgba(0, 255, 136, 0.18), rgba(0, 212, 255, 0.10)) !important;
+    border: 1px solid rgba(0, 255, 136, 0.36);
+    box-shadow: 0 0 28px rgba(0, 255, 136, 0.18);
+}
+
+html.eos-login h1,
+html.eos-login h5,
+html.eos-login .MuiTypography-h5 {
+    color: var(--eos-text) !important;
+    font-weight: 850 !important;
+    letter-spacing: -0.02em;
+}
+
+/* Drawer logo and brand chip */
+.MuiDrawer-paper img[alt="ioBroker"],
+.MuiDrawer-paper img[src*="no-image.svg"],
+img[alt="ioBroker"],
+img[src*="no-image.svg"] {
+    content: url('../img/eos/eos-logo.svg') !important;
+    object-fit: contain !important;
+}
+
+.eos-brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid rgba(0, 255, 136, 0.34);
+    border-radius: 999px;
+    background: rgba(0, 255, 136, 0.08);
+    color: var(--eos-text);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    box-shadow: 0 0 18px rgba(0, 255, 136, 0.12);
+}
+
+.eos-brand-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--eos-accent);
+    box-shadow: 0 0 14px var(--eos-accent);
+}
+
+/* Small utility: soften very white legacy blocks without breaking forms. */
+[style*="background-color: rgb(255, 255, 255)"],
+[style*="background: rgb(255, 255, 255)"] {
+    background-color: var(--eos-panel-soft) !important;
+}

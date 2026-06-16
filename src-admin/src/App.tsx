@@ -1833,7 +1833,7 @@ class App extends Router<AppProps, AppState> {
      * Get a theme
      */
     private static createTheme(name?: ThemeName): IobTheme {
-        return Theme(Utils.getThemeName(name || 'dark'));
+        return Theme(Utils.getThemeName(name));
     }
 
     /**
@@ -1877,7 +1877,7 @@ class App extends Router<AppProps, AppState> {
     }
 
     setTitle(title: string): void {
-        document.title = `${title} – ${this.state.currentHostName || 'NexoWatt EOS'}`;
+        document.title = `${title} - ${this.state.currentHostName || 'ioBroker'}`;
     }
 
     getCurrentTab(): JSX.Element | null {
@@ -2432,18 +2432,18 @@ class App extends Router<AppProps, AppState> {
                                 onClick={() => {
                                     if (window.sidebar) {
                                         // Firefox
-                                        window.sidebar.addPanel('NexoWatt EOS Admin', this.state.showRedirect, '');
+                                        window.sidebar.addPanel('ioBroker.admin', this.state.showRedirect, '');
                                     } else if (window.opera && window.print) {
                                         // Opera
                                         const elem = document.createElement('a');
                                         elem.setAttribute('href', this.state.showRedirect);
-                                        elem.setAttribute('title', 'NexoWatt EOS Admin');
+                                        elem.setAttribute('title', 'ioBroker.admin');
                                         elem.setAttribute('rel', 'sidebar');
                                         elem.click(); // this.title=document.title;
                                     } else if (document.all) {
                                         // ie
                                         // @ts-expect-error ignore
-                                        window.external.AddFavorite(this.state.showRedirect, 'NexoWatt EOS Admin');
+                                        window.external.AddFavorite(this.state.showRedirect, 'ioBroker.admin');
                                     }
                                 }}
                             >
@@ -2669,7 +2669,7 @@ class App extends Router<AppProps, AppState> {
         const sumNotification = this.state.noNotifications.warning + this.state.noNotifications.other;
 
         return (
-            <Toolbar className="eos-toolbar">
+            <Toolbar>
                 <IconButton
                     size="large"
                     edge="start"
@@ -2681,11 +2681,6 @@ class App extends Router<AppProps, AppState> {
                 >
                     <MenuIcon />
                 </IconButton>
-                <div className="eos-topbar-brand" aria-label="NexoWatt EOS">
-                    <img className="eos-topbar-brand__logo" src="img/eos-logo-mark.svg" alt="NexoWatt EOS" />
-                    <span className="eos-topbar-brand__title">NexoWatt EOS</span>
-                    <span className="eos-topbar-brand__live">Live</span>
-                </div>
                 <div style={styles.wrapperButtons}>
                     <Tooltip
                         title={I18n.t('Notifications')}
@@ -2909,7 +2904,7 @@ class App extends Router<AppProps, AppState> {
                                     component="div"
                                     style={styles.wrapperName}
                                 >
-                                    <Typography>EOS Admin</Typography>
+                                    <Typography>admin</Typography>
                                     {!this.adminGuiConfig.icon && this.state.versionAdmin && (
                                         <Typography
                                             style={{
@@ -2941,7 +2936,7 @@ class App extends Router<AppProps, AppState> {
                                         >
                                             <img
                                                 src={this.adminGuiConfig.icon}
-                                                alt="NexoWatt EOS logo"
+                                                alt="logo"
                                                 style={{ maxWidth: '100%', maxHeight: '100%' }}
                                             />
                                         </div>
@@ -2953,8 +2948,8 @@ class App extends Router<AppProps, AppState> {
                                                     ? styles.logoWhite
                                                     : undefined
                                             }
-                                            alt="NexoWatt EOS"
-                                            src="img/eos-logo-mark.svg"
+                                            alt="ioBroker"
+                                            src="img/no-image.svg"
                                         />
                                     )}
                                 </a>
@@ -2979,8 +2974,16 @@ class App extends Router<AppProps, AppState> {
                     overflow: 'auto',
                 }}
             >
-                <h1 style={{ color: '#F00' }}>Error in EOS GUI!</h1>
-                Please open the browser console (F12), copy the error details and forward them to the EOS support team. 
+                <h1 style={{ color: '#F00' }}>Error in GUI!</h1>
+                Please open the browser console (F12), copy error text from there and create the issue on{' '}
+                <a
+                    href="https://github.com/ioBroker/ioBroker.admin/issues"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    github
+                </a>
+                <br />
                 Without this information it is not possible to analyse the error.
                 <br />
                 It should looks like <br />
@@ -3002,7 +3005,7 @@ class App extends Router<AppProps, AppState> {
                 and not the normal file name,
                 <br />
                 please try to reproduce an error with opened browser console. In this case the special &quot;map&quot;
-                files will be loaded and the support team can see the real name of functions and files.
+                files will be loaded and the developers can see the real name of functions and files.
                 <div style={{ color: '#F88', fontSize: 14, marginTop: 20 }}>{message}</div>
                 <pre
                     style={{
@@ -3089,7 +3092,7 @@ class App extends Router<AppProps, AppState> {
                             <div style={{ width: 300, height: 100 }}>
                                 <CircularProgress />
                                 <div style={{ fontSize: 16 }}>
-                                    {I18n.t('Waiting for connection of EOS...')}{' '}
+                                    {I18n.t('Waiting for connection of ioBroker...')}{' '}
                                     <span style={{ fontSize: 18 }}>{this.state.cloudReconnect}</span>
                                 </div>
                             </div>
@@ -3155,13 +3158,11 @@ class App extends Router<AppProps, AppState> {
                     `}
                     </style>
                     <Paper
-                        className="eos-app-root"
                         elevation={0}
                         // Reserve room on the right when the chat assistant is docked side-by-side.
                         style={{ ...styles.root, paddingRight: this.state.chatDockWidth || undefined }}
                     >
                         <AppBar
-                            className="eos-appbar"
                             color="default"
                             position="fixed"
                             sx={Utils.getStyle(
@@ -3220,7 +3221,6 @@ class App extends Router<AppProps, AppState> {
                             />
                         </DndProvider>
                         <Paper
-                            className="eos-app-content"
                             elevation={0}
                             square
                             id="app-paper"

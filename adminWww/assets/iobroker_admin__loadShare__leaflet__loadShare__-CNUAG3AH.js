@@ -1,0 +1,1 @@
+import{a as o}from"./iobroker_admin__mf_v__runtimeInit__mf_v__-g2X2zhAf.js";const{initPromise:r}=o,t=r.then(e=>e.loadShare("leaflet",{customShareInfo:{shareConfig:{singleton:!0,strictVersion:!1,requiredVersion:"*"}}})),_=await t.then(e=>e());var i=_;const n=Object.freeze(Object.defineProperty({__proto__:null},Symbol.toStringTag,{value:"Module"}));export{i,n as t};

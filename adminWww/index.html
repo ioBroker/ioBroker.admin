@@ -1,0 +1,154 @@
+<!doctype html>
+<html
+    lang="en"
+    translate="no"
+>
+    <head>
+          <script type="module" src="./assets/hostInit-OBG53iVO.js"></script>
+        
+        <meta charset="utf-8" />
+        <link
+            rel="icon"
+            href="favicon.ico"
+        />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, user-scalable=no"
+        />
+        <meta
+            name="theme-color"
+            content="#020914"
+        />
+        <meta
+            name="description"
+            content="NexoWatt EOS - Energy Operation System"
+        />
+        <link
+            rel="apple-touch-icon"
+            href="logo192.png"
+        />
+        <link
+            rel="stylesheet"
+            href="css/leaflet.css"
+        />
+        <link rel="stylesheet" href="./css/eos-branding.css" />
+        <link
+            rel="manifest"
+            href="manifest.json"
+            crossorigin="use-credentials"
+        />
+        <script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./lib/js/socket.io.js"></script>
+        <script
+            type="text/javascript"
+            src="./lib/js/sparkline.js"
+        ></script>
+        <title>NexoWatt EOS</title>
+
+        <script>
+            window.loginHideLogo = '@@loginHideLogo@@';
+            window.loginMotto = '@@loginMotto@@';
+            window.login = '@@auth@@';
+            window.loginLogo = '@@loginLogo@@';
+            window.loginLink = '@@loginLink@@';
+            window.loginTitle = '@@loginTitle@@';
+            window.loginBackgroundColor = '@@loginBackgroundColor@@';
+            window.loginBackgroundImage = '@@loginBackgroundImage@@';
+
+            window.vendorPrefix = '@@vendorPrefix@@';
+            window.disableDataReporting = '@@disableDataReporting@@';
+
+            window.loadingBackgroundColor = '@@loadingBackgroundColor@@';
+            window.loadingBackgroundImage = '@@loadingBackgroundImage@@';
+            window.loadingHideLogo = '@@loadingHideLogo@@';
+            window.ssoActive = '@@ssoActive@@';
+        </script>
+        <style>
+            .root {
+                background-color: rgba(255, 255, 255, 0.87);
+                border-radius: 10px;
+            }
+            .unsupported {
+                width: 200px;
+                background-color: #aaaaaa;
+                margin: auto;
+                margin-top: 3rem;
+                padding: 10px;
+                line-height: 25px;
+                border-radius: 4px;
+                text-align: center;
+            }
+            .leaflet-container {
+                height: 400px;
+                width: 100%;
+            }
+        </style>
+        <script>
+            setTimeout(() => {
+                const body = document.body;
+                if (window.location.search.includes('?login')) {
+                    if (window.vendorPrefix === 'HA') {
+                        body.style.backgroundColor = '#000000';
+                    } else if (
+                        window.loginBackgroundColor &&
+                        !window.loginBackgroundColor.includes('loginBackgroundColor')
+                    ) {
+                        // apply image and background color to the whole page as fast as possible
+                        body.style.backgroundColor = window.loginBackgroundColor;
+                    }
+                    if (window.loginBackgroundImage && !window.loginBackgroundImage.includes('loginBackgroundImage')) {
+                        body.style.backgroundImage = `url(${window.loginBackgroundImage})`;
+                        body.style.backgroundSize = 'cover';
+                    }
+                } else {
+                    if (window.vendorPrefix === 'HA') {
+                        body.style.backgroundColor = '#000000';
+                    } else if (
+                        window.loadingBackgroundColor &&
+                        !window.loadingBackgroundColor.includes('loadingBackgroundColor')
+                    ) {
+                        // apply image and background color to the whole page as fast as possible
+                        body.style.backgroundColor = window.loadingBackgroundColor;
+                    }
+                    if (
+                        window.loadingBackgroundImage &&
+                        !window.loadingBackgroundImage.includes('loadingBackgroundImage')
+                    ) {
+                        body.style.backgroundImage = `url(${window.loadingBackgroundImage})`;
+                        body.style.backgroundSize = 'cover';
+                    }
+                }
+            }, 0);
+
+            window.addEventListener(
+                'load',
+                function load(event) {
+                    window.removeEventListener('load', load, false);
+
+                    const isMsie = function () {
+                        const ua = window.navigator.userAgent;
+                        const msie = ua.indexOf('MSIE ');
+
+                        return msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./);
+                    };
+
+                    if (isMsie()) {
+                        const root = document.getElementById('root');
+
+                        root.classList.add('unsupported');
+
+                        root.innerHTML = 'Browser is not supported. Please use Firefox or Chrome for NexoWatt EOS.';
+                    }
+                },
+                false,
+            );
+        </script>
+      <script type="module" crossorigin src="./assets/index-CQZugZ1z.js"></script>
+      <link rel="modulepreload" crossorigin href="./assets/preload-helper-BDBacUwf.js">
+      <link rel="modulepreload" crossorigin href="./assets/iobroker_admin__mf_v__runtimeInit__mf_v__-g2X2zhAf.js">
+            <script defer src="./js/eos-branding.js"></script>
+    </head>
+    <body>
+        <noscript>You need to enable JavaScript to run this app.</noscript>
+        <div id="root"></div>
+    </body>
+</html>
