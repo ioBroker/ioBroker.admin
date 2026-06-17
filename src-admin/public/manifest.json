@@ -4,20 +4,13 @@
   "icons": [
     {
       "src": "favicon.ico",
-      "type": "image/x-icon",
-      "sizes": "128x128 64x64 48x48 32x32 24x24 16x16"
+      "sizes": "128x128 64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
     },
     {
-      "src": "img/eos/nexowatt-192.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "img/eos/nexowatt-512.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any maskable"
+      "src": "admin.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512 1024x1024 2048x2048 4096x4096"
     },
     {
       "src": "logo192.png",
@@ -33,6 +26,5 @@
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#020914",
-  "background_color": "#020914",
-  "description": "NexoWatt EOS - Energy Operation System"
+  "background_color": "#020914"
 }

@@ -1,40 +1,14 @@
 {
-  "created_at": "2026-06-16T20:20:21.510626Z",
-  "base_zip": "ioBroker.eos.admin-master.zip",
-  "purpose": "Full original repo plus safe NexoWatt EOS frontend/login branding and compiled admin runtime assets.",
-  "original_file_count_preserved": 760,
-  "new_file_count": 1495,
-  "missing_original_files": 0,
-  "adminWww_index_refs_missing": 0,
-  "technical_package_name_kept": "iobroker.admin",
-  "technical_adapter_name_kept": "admin",
-  "name": "NexoWatt EOS full repository package - UI refined v4",
-  "brand": "NexoWatt EOS",
-  "eosMeaning": "Energy Operation System",
-  "createdAtUtc": "2026-06-16T21:09:37.920986+00:00",
-  "baseZip": "ioBroker.eos.admin-master-nexowatt-eos-full-repo-fixed-v3.zip",
-  "v4Changes": [
-    "Login title changed from Energy Management System wording to NexoWatt EOS / Energy Operation System.",
-    "Top bar, drawer and module cards restyled with floating EOS shell.",
-    "Direct logout button injected into the top right toolbar.",
-    "User/rights helper and permission preset overlay added.",
-    "Runtime assets validated to avoid missing asset black screen."
-  ],
-  "variant": "nexowatt-eos-ui-v6-login-logo-404-fix",
-  "title": "NexoWatt EOS UI Performance v5",
+  "variant": "nexowatt-eos-ui-v7-restore-v5-logo-scope-fix",
+  "base": "v5 performance UI base",
+  "generated": "2026-06-17",
   "changes": [
-    "Hide logout button on login view",
-    "Use original NexoWatt logo in login, drawer, topbar, manifest and adapter icons",
-    "Use safer backend logout route to prevent 404 redirects",
-    "Sanitize login href values pointing to logout/login"
-  ],
-  "version": "v6-login-logo-404-fix",
-  "branding": "NexoWatt EOS - Energy Operation System",
-  "changes_v6": [
-    "Login page never shows injected Abmelden button",
-    "Requested old green NexoWatt logo used for login, drawer, topbar, manifest, admin/no-image icons",
-    "Login redirect made safer to avoid 404 after successful authentication when no href parameter is present",
-    "Login link disabled; Energy Operation System is plain text, not an external link"
-  ],
-  "version_label": "v6"
+    "Restored v5 EOS UI shell/card styling; no v6 Drawer/AdapterTile regression.",
+    "Replaced only EOS branding logo SVGs with the old NexoWatt logo requested by the user.",
+    "Stopped runtime logo replacement outside explicit branding areas so instance/service rows keep their own icons or neutral placeholders.",
+    "Removed logout button from login view robustly and added CSS guard.",
+    "Added login href sanitizing to avoid login/logout redirect 404 loops.",
+    "Restored technical OAuth client_id in Login.tsx to upstream ioBroker for future builds.",
+    "Replaced admin.svg copies with the old NexoWatt logo for consistent Admin branding."
+  ]
 }
