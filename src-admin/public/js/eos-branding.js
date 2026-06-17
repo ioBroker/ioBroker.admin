@@ -237,11 +237,7 @@
         if (toolbar.querySelector('.eos-brand-badge')) return;
         const badge = document.createElement('span');
         badge.className = 'eos-brand-badge eos-system-brand';
-        badge.innerHTML = `
-            <img class="eos-brand-badge-logo" src="${LOGO}" alt="${BRAND}" />
-            <span class="eos-brand-badge-copy"><strong>${BRAND}</strong><small>${EOS_MEANING}</small></span>
-            <span class="eos-brand-led"></span>
-        `;
+        badge.innerHTML = `<span class="eos-brand-led"></span><span>${BRAND}</span>`;
         const firstButton = toolbar.querySelector('button');
         toolbar.insertBefore(badge, firstButton || toolbar.firstChild || null);
     };
@@ -280,9 +276,15 @@
         if (img) patchImage(img);
         const avatarImg = header.querySelector('.MuiAvatar-img');
         if (avatarImg) patchImage(avatarImg);
-        // v10: the brand identity lives in the full-width header. Keep the native
-        // drawer header only as a compact navigation/collapse strip.
-        header.querySelectorAll('.eos-native-title').forEach(el => el.remove());
+        const logoArea = header.querySelector('a')?.parentElement || header.firstElementChild || header;
+        if (logoArea && !logoArea.querySelector('.eos-native-title')) {
+            const title = document.createElement('span');
+            title.className = 'eos-native-title';
+            title.innerHTML = `<strong>${BRAND}</strong><small>${EOS_MEANING}</small>`;
+            const link = logoArea.querySelector('a');
+            if (link && link.nextSibling) logoArea.insertBefore(title, link.nextSibling);
+            else logoArea.appendChild(title);
+        }
         const list = drawer.querySelector('.MuiList-root');
         if (list) list.classList.add('eos-scroll-nav');
     });

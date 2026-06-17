@@ -4,8 +4,13 @@
     const BRAND = 'NexoWatt EOS';
     const EOS_MEANING = 'Energy Operation System';
     const BRAND_LONG = `${BRAND} - ${EOS_MEANING}`;
-    const LOGO = 'img/eos/eos-logo.svg';
-    const PNG_LOGO = 'img/eos/nexowatt-192.png';
+    const ASSET_BASE = (() => {
+        const script = document.currentScript?.src || document.querySelector('script[src*="eos-branding.js"]')?.src || window.location.href;
+        return new URL('../', script).href;
+    })();
+    const asset = path => new URL(path.replace(/^\.\//, ''), ASSET_BASE).href;
+    const LOGO = asset('img/eos/nexowatt-192.png');
+    const PNG_LOGO = asset('img/eos/nexowatt-192.png');
     const LOGIN_MOTTO = EOS_MEANING;
 
     const TEXT_REPLACEMENTS = [
@@ -172,9 +177,19 @@
     const sanitizeLoginHref = () => safe(() => {
         const url = new URL(window.location.href);
         const href = url.searchParams.get('href') || '';
-        if (href && /(?:^|\/)(?:logout|login)(?:[/?#]|$)|%2f(?:logout|login)/i.test(href)) {
+        if (href && /(?:^|\/)(?:logout|login|404|404\.html)(?:[/?#]|$)|%2f(?:logout|login|404|404\.html)|undefined|null/i.test(href)) {
             url.searchParams.delete('href');
             window.history.replaceState(null, document.title, `${url.pathname}${url.search}${url.hash}`);
+        }
+    });
+
+    const normalizeBadAddressAfterLogin = () => safe(() => {
+        if (!document.getElementById('app-paper')) return;
+        const pathname = window.location.pathname || '';
+        if (/(?:\/login|\/logout|\/404\.html)$/i.test(pathname)) {
+            const clean = new URL(ASSET_BASE);
+            clean.hash = window.location.hash || '#/tab-intro';
+            window.history.replaceState(null, document.title, `${clean.pathname}${clean.search}${clean.hash}`);
         }
     });
 
@@ -219,14 +234,16 @@
     });
 
     const logout = () => {
+        const nativeLogout = Array.from(document.querySelectorAll('a,button')).find(el => /^(abmelden|logout)$/i.test((el.textContent || '').trim()) && !el.classList.contains('eos-direct-logout'));
+        if (nativeLogout) { nativeLogout.click(); return; }
         safe(() => {
             ['App.refreshToken', 'App.accessToken', 'App.token', 'tokens', 'iobroker.admin.token'].forEach(key => {
                 window.localStorage && window.localStorage.removeItem(key);
                 window.sessionStorage && window.sessionStorage.removeItem(key);
             });
         });
-        const origin = `${window.location.pathname}${window.location.search}${window.location.hash || ''}`;
-        window.location.href = `./logout?origin=${encodeURIComponent(origin)}`;
+        const cleanRoot = ASSET_BASE.replace(/\/?$/, '/');
+        window.location.assign(cleanRoot);
     };
 
     const ensureBrandBadge = toolbar => {
@@ -280,9 +297,15 @@
         if (img) patchImage(img);
         const avatarImg = header.querySelector('.MuiAvatar-img');
         if (avatarImg) patchImage(avatarImg);
-        // v10: the brand identity lives in the full-width header. Keep the native
-        // drawer header only as a compact navigation/collapse strip.
-        header.querySelectorAll('.eos-native-title').forEach(el => el.remove());
+        const logoArea = header.querySelector('a')?.parentElement || header.firstElementChild || header;
+        if (logoArea && !logoArea.querySelector('.eos-native-title')) {
+            const title = document.createElement('span');
+            title.className = 'eos-native-title';
+            title.innerHTML = `<strong>${BRAND}</strong><small>${EOS_MEANING}</small>`;
+            const link = logoArea.querySelector('a');
+            if (link && link.nextSibling) logoArea.insertBefore(title, link.nextSibling);
+            else logoArea.appendChild(title);
+        }
         const list = drawer.querySelector('.MuiList-root');
         if (list) list.classList.add('eos-scroll-nav');
     });
@@ -435,6 +458,7 @@
         state.lastFullPatch = Date.now();
         forceLoginGlobals();
         sanitizeLoginHref();
+        normalizeBadAddressAfterLogin();
         patchDocumentMeta();
         patchLogin();
         patchShell();
@@ -448,6 +472,7 @@
         state.scopePatchScheduled = false;
         const scopes = Array.from(state.pendingScopes);
         state.pendingScopes.clear();
+        normalizeBadAddressAfterLogin();
         patchLogin();
         patchShell();
         ensureRightsHelper();

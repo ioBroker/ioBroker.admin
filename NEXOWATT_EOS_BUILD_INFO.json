@@ -8,5 +8,8 @@
     "EOS styling class and CSS refinements for Dienste / Instanzen list",
     "keeps v5 shell layout and scoped NexoWatt logo usage"
   ],
-  "generated": "2026-06-17T00:00:00Z"
+  "generated": "2026-06-17T00:00:00Z",
+  "eosUiVersion": "v11-horizontal-nav-login-404-fix",
+  "layout": "full-width header + horizontal navigation rail + full-width content",
+  "cacheBust": "v=11"
 }
