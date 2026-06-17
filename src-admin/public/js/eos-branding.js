@@ -1,11 +1,18 @@
 (() => {
     'use strict';
 
+    window.NEXOWATT_EOS_UI_VERSION = 'v13-settings-no-logout';
+
     const BRAND = 'NexoWatt EOS';
     const EOS_MEANING = 'Energy Operation System';
     const BRAND_LONG = `${BRAND} - ${EOS_MEANING}`;
-    const LOGO = 'img/eos/eos-logo.svg';
-    const PNG_LOGO = 'img/eos/nexowatt-192.png';
+    const ASSET_BASE = (() => {
+        const script = document.currentScript?.src || document.querySelector('script[src*="eos-branding.js"]')?.src || window.location.href;
+        return new URL('../', script).href;
+    })();
+    const asset = path => new URL(path.replace(/^\.\//, ''), ASSET_BASE).href;
+    const LOGO = asset('img/eos/nexowatt-192.png');
+    const PNG_LOGO = asset('img/eos/nexowatt-192.png');
     const LOGIN_MOTTO = EOS_MEANING;
 
     const TEXT_REPLACEMENTS = [
@@ -172,9 +179,19 @@
     const sanitizeLoginHref = () => safe(() => {
         const url = new URL(window.location.href);
         const href = url.searchParams.get('href') || '';
-        if (href && /(?:^|\/)(?:logout|login)(?:[/?#]|$)|%2f(?:logout|login)/i.test(href)) {
+        if (href && /(?:^|\/)(?:logout|login|404|404\.html)(?:[/?#]|$)|%2f(?:logout|login|404|404\.html)|undefined|null/i.test(href)) {
             url.searchParams.delete('href');
             window.history.replaceState(null, document.title, `${url.pathname}${url.search}${url.hash}`);
+        }
+    });
+
+    const normalizeBadAddressAfterLogin = () => safe(() => {
+        if (!document.getElementById('app-paper')) return;
+        const pathname = window.location.pathname || '';
+        if (/(?:\/login|\/logout|\/404\.html)$/i.test(pathname)) {
+            const clean = new URL(ASSET_BASE);
+            clean.hash = window.location.hash || '#/tab-intro';
+            window.history.replaceState(null, document.title, `${clean.pathname}${clean.search}${clean.hash}`);
         }
     });
 
@@ -219,14 +236,16 @@
     });
 
     const logout = () => {
+        const nativeLogout = Array.from(document.querySelectorAll('a,button')).find(el => /^(abmelden|logout)$/i.test((el.textContent || '').trim()) && !el.classList.contains('eos-direct-logout'));
+        if (nativeLogout) { nativeLogout.click(); return; }
         safe(() => {
             ['App.refreshToken', 'App.accessToken', 'App.token', 'tokens', 'iobroker.admin.token'].forEach(key => {
                 window.localStorage && window.localStorage.removeItem(key);
                 window.sessionStorage && window.sessionStorage.removeItem(key);
             });
         });
-        const origin = `${window.location.pathname}${window.location.search}${window.location.hash || ''}`;
-        window.location.href = `./logout?origin=${encodeURIComponent(origin)}`;
+        const cleanRoot = ASSET_BASE.replace(/\/?$/, '/');
+        window.location.assign(cleanRoot);
     };
 
     const ensureBrandBadge = toolbar => {
@@ -237,30 +256,19 @@
         if (toolbar.querySelector('.eos-brand-badge')) return;
         const badge = document.createElement('span');
         badge.className = 'eos-brand-badge eos-system-brand';
-        badge.innerHTML = `<span class="eos-brand-led"></span><span>${BRAND}</span>`;
+        badge.innerHTML = `
+            <img class="eos-brand-badge-logo" src="${LOGO}" alt="${BRAND}" />
+            <span class="eos-brand-badge-copy"><strong>${BRAND}</strong><small>${EOS_MEANING}</small></span>
+            <span class="eos-brand-led"></span>
+        `;
         const firstButton = toolbar.querySelector('button');
         toolbar.insertBefore(badge, firstButton || toolbar.firstChild || null);
     };
 
     const ensureLogoutButton = () => {
-        if (isLoginView() || document.documentElement.classList.contains('eos-login') || !document.getElementById('app-paper')) {
-            removeLogoutButton();
-            return;
-        }
-        let button = document.querySelector('.eos-direct-logout');
-        if (!button) {
-            button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'eos-direct-logout';
-            button.setAttribute('aria-label', 'Abmelden');
-            button.innerHTML = '<span class="eos-direct-logout-dot"></span><span>Abmelden</span>';
-            button.addEventListener('click', event => {
-                event.preventDefault();
-                logout();
-            });
-            document.body.appendChild(button);
-        }
-        button.hidden = false;
+        // v13: the custom EOS logout button is intentionally disabled/removed.
+        // The native session handling stays untouched to avoid broken redirects/404s.
+        removeLogoutButton();
     };
 
     const patchDrawerHeader = drawer => safe(() => {
@@ -271,15 +279,20 @@
         const header = directChildren.find(el => el.querySelector && el.querySelector('button') && (el.querySelector('img') || el.querySelector('.MuiAvatar-root') || el.querySelector('a')))
             || directChildren.find(el => el.querySelector && (el.querySelector('button') || el.querySelector('img')));
         if (!header) return;
-        header.classList.add('eos-native-drawer-header', 'eos-nav-collapse-only');
+        header.classList.add('eos-native-drawer-header');
         const img = header.querySelector('img');
         if (img) patchImage(img);
         const avatarImg = header.querySelector('.MuiAvatar-img');
         if (avatarImg) patchImage(avatarImg);
         const logoArea = header.querySelector('a')?.parentElement || header.firstElementChild || header;
-        // v12: the horizontal navigation rail should keep only the native collapse arrow.
-        // Remove duplicate brand text inside the nav rail; the visible brand remains in the full header badge.
-        if (logoArea) logoArea.querySelectorAll('.eos-native-title').forEach(title => title.remove());
+        if (logoArea && !logoArea.querySelector('.eos-native-title')) {
+            const title = document.createElement('span');
+            title.className = 'eos-native-title';
+            title.innerHTML = `<strong>${BRAND}</strong><small>${EOS_MEANING}</small>`;
+            const link = logoArea.querySelector('a');
+            if (link && link.nextSibling) logoArea.insertBefore(title, link.nextSibling);
+            else logoArea.appendChild(title);
+        }
         const list = drawer.querySelector('.MuiList-root');
         if (list) list.classList.add('eos-scroll-nav');
     });
@@ -300,7 +313,7 @@
             ensureBrandBadge(toolbar);
         }
         patchDrawerHeader(document.querySelector('.MuiDrawer-paper'));
-        ensureLogoutButton();
+        removeLogoutButton();
     });
 
     const ensureRightsHelper = () => safe(() => {
@@ -419,6 +432,27 @@
         content.insertBefore(panel, content.firstElementChild || null);
     });
 
+
+    const ensureSettingsDialogClasses = () => safe(() => {
+        const dialogs = Array.from(document.querySelectorAll('.MuiDialog-paper, [role="dialog"]'));
+        dialogs.forEach(dialog => {
+            const title = dialog.querySelector('#base-settings-dialog-title, .dialogName');
+            const aria = (dialog.getAttribute('aria-labelledby') || '').toLowerCase();
+            const text = normalize(title?.textContent || dialog.textContent || '');
+            const isSettingsDialog =
+                aria.includes('system-settings-dialog-title') ||
+                aria.includes('base-settings-dialog-title') ||
+                /basiseinstellungen|base settings|host basis|host base settings|system repositories|standard acl|let'?s encrypt|zugangsdaten|zertifikate/.test(text);
+            if (!isSettingsDialog) return;
+            dialog.classList.add('eos-settings-dialog');
+            const content = dialog.querySelector('.MuiDialogContent-root');
+            if (content) content.classList.add('eos-settings-content');
+            const actions = dialog.querySelector('.MuiDialogActions-root');
+            if (actions) actions.classList.add('eos-settings-actions');
+            dialog.querySelectorAll('.leaflet-container').forEach(map => map.classList.add('eos-settings-map'));
+        });
+    });
+
     const patchDocumentMeta = () => safe(() => {
         document.title = BRAND_LONG;
         const theme = document.querySelector('meta[name="theme-color"]');
@@ -432,11 +466,13 @@
         state.lastFullPatch = Date.now();
         forceLoginGlobals();
         sanitizeLoginHref();
+        normalizeBadAddressAfterLogin();
         patchDocumentMeta();
         patchLogin();
         patchShell();
         ensureRightsHelper();
         ensurePermissionPresets();
+        ensureSettingsDialogClasses();
         patchTextNodes(document.body || document.documentElement);
         patchAttributes(document.body || document.documentElement);
     };
@@ -445,10 +481,12 @@
         state.scopePatchScheduled = false;
         const scopes = Array.from(state.pendingScopes);
         state.pendingScopes.clear();
+        normalizeBadAddressAfterLogin();
         patchLogin();
         patchShell();
         ensureRightsHelper();
         ensurePermissionPresets();
+        ensureSettingsDialogClasses();
         for (const scope of scopes.slice(0, 80)) {
             if (!scope || !scope.isConnected) continue;
             patchTextNodes(scope);

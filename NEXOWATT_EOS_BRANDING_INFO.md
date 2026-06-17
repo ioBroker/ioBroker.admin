@@ -16,3 +16,10 @@ Wichtig für Git: Die Ordner `build/`, `adminWww/` und `admin/custom/` müssen m
 ## v5 UI/performance refined
 
 Siehe `docs/NEXOWATT_EOS_UI_REFINED_V5_DE.md`.
+
+
+## v13 Settings/no logout
+
+- Entfernt den zusätzlichen EOS-Abmelden-Button.
+- Gestaltet die System-/Basiseinstellungen mit EOS-Feldkarten und besser lesbaren Eingabeflächen.
+- Cache-Busting: `v=13`.

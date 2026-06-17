@@ -1,6 +1,8 @@
 (() => {
     'use strict';
 
+    window.NEXOWATT_EOS_UI_VERSION = 'v13-settings-no-logout';
+
     const BRAND = 'NexoWatt EOS';
     const EOS_MEANING = 'Energy Operation System';
     const BRAND_LONG = `${BRAND} - ${EOS_MEANING}`;
@@ -264,24 +266,9 @@
     };
 
     const ensureLogoutButton = () => {
-        if (isLoginView() || document.documentElement.classList.contains('eos-login') || !document.getElementById('app-paper')) {
-            removeLogoutButton();
-            return;
-        }
-        let button = document.querySelector('.eos-direct-logout');
-        if (!button) {
-            button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'eos-direct-logout';
-            button.setAttribute('aria-label', 'Abmelden');
-            button.innerHTML = '<span class="eos-direct-logout-dot"></span><span>Abmelden</span>';
-            button.addEventListener('click', event => {
-                event.preventDefault();
-                logout();
-            });
-            document.body.appendChild(button);
-        }
-        button.hidden = false;
+        // v13: the custom EOS logout button is intentionally disabled/removed.
+        // The native session handling stays untouched to avoid broken redirects/404s.
+        removeLogoutButton();
     };
 
     const patchDrawerHeader = drawer => safe(() => {
@@ -292,15 +279,20 @@
         const header = directChildren.find(el => el.querySelector && el.querySelector('button') && (el.querySelector('img') || el.querySelector('.MuiAvatar-root') || el.querySelector('a')))
             || directChildren.find(el => el.querySelector && (el.querySelector('button') || el.querySelector('img')));
         if (!header) return;
-        header.classList.add('eos-native-drawer-header', 'eos-nav-collapse-only');
+        header.classList.add('eos-native-drawer-header');
         const img = header.querySelector('img');
         if (img) patchImage(img);
         const avatarImg = header.querySelector('.MuiAvatar-img');
         if (avatarImg) patchImage(avatarImg);
         const logoArea = header.querySelector('a')?.parentElement || header.firstElementChild || header;
-        // v12: the horizontal navigation rail should keep only the native collapse arrow.
-        // Remove duplicate brand text inside the nav rail; the visible brand remains in the full header badge.
-        if (logoArea) logoArea.querySelectorAll('.eos-native-title').forEach(title => title.remove());
+        if (logoArea && !logoArea.querySelector('.eos-native-title')) {
+            const title = document.createElement('span');
+            title.className = 'eos-native-title';
+            title.innerHTML = `<strong>${BRAND}</strong><small>${EOS_MEANING}</small>`;
+            const link = logoArea.querySelector('a');
+            if (link && link.nextSibling) logoArea.insertBefore(title, link.nextSibling);
+            else logoArea.appendChild(title);
+        }
         const list = drawer.querySelector('.MuiList-root');
         if (list) list.classList.add('eos-scroll-nav');
     });
@@ -321,7 +313,7 @@
             ensureBrandBadge(toolbar);
         }
         patchDrawerHeader(document.querySelector('.MuiDrawer-paper'));
-        ensureLogoutButton();
+        removeLogoutButton();
     });
 
     const ensureRightsHelper = () => safe(() => {
@@ -440,6 +432,27 @@
         content.insertBefore(panel, content.firstElementChild || null);
     });
 
+
+    const ensureSettingsDialogClasses = () => safe(() => {
+        const dialogs = Array.from(document.querySelectorAll('.MuiDialog-paper, [role="dialog"]'));
+        dialogs.forEach(dialog => {
+            const title = dialog.querySelector('#base-settings-dialog-title, .dialogName');
+            const aria = (dialog.getAttribute('aria-labelledby') || '').toLowerCase();
+            const text = normalize(title?.textContent || dialog.textContent || '');
+            const isSettingsDialog =
+                aria.includes('system-settings-dialog-title') ||
+                aria.includes('base-settings-dialog-title') ||
+                /basiseinstellungen|base settings|host basis|host base settings|system repositories|standard acl|let'?s encrypt|zugangsdaten|zertifikate/.test(text);
+            if (!isSettingsDialog) return;
+            dialog.classList.add('eos-settings-dialog');
+            const content = dialog.querySelector('.MuiDialogContent-root');
+            if (content) content.classList.add('eos-settings-content');
+            const actions = dialog.querySelector('.MuiDialogActions-root');
+            if (actions) actions.classList.add('eos-settings-actions');
+            dialog.querySelectorAll('.leaflet-container').forEach(map => map.classList.add('eos-settings-map'));
+        });
+    });
+
     const patchDocumentMeta = () => safe(() => {
         document.title = BRAND_LONG;
         const theme = document.querySelector('meta[name="theme-color"]');
@@ -459,6 +472,7 @@
         patchShell();
         ensureRightsHelper();
         ensurePermissionPresets();
+        ensureSettingsDialogClasses();
         patchTextNodes(document.body || document.documentElement);
         patchAttributes(document.body || document.documentElement);
     };
@@ -472,6 +486,7 @@
         patchShell();
         ensureRightsHelper();
         ensurePermissionPresets();
+        ensureSettingsDialogClasses();
         for (const scope of scopes.slice(0, 80)) {
             if (!scope || !scope.isConnected) continue;
             patchTextNodes(scope);

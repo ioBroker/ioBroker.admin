@@ -1,4 +1,4 @@
-/* NexoWatt EOS branding overlay v9.
+/* NexoWatt EOS branding overlay v13.
    Runtime-skin only: upstream React/Vite bundles stay untouched for update compatibility. */
 :root {
     --eos-bg-0: #020914;
@@ -216,7 +216,7 @@ html.eos-login img[src*="admin.svg"],
 html.eos-login img[src*="no-image.svg"],
 html.eos-login .MuiAvatar-img,
 html.eos-login .eos-login-card img {
-    content: url('../img/eos/eos-logo.svg') !important;
+    content: url('../img/eos/nexowatt-192.png') !important;
     object-fit: contain !important;
 }
 
@@ -1085,61 +1085,459 @@ html.eos-route-instances #app-paper .MuiAvatar-root {
     }
 }
 
-/* v12: requested fine-tuning.
-   - The horizontal nav identity tile keeps only the collapse arrow.
-   - The primary NexoWatt EOS logo in the full header is larger and more visible. */
+
+/* v11: Full-width EOS header + horizontal navigation rail.
+   The old left drawer is no longer a vertical column. Its branding/menu tile is
+   laid out horizontally under the header, so the main content can use the full width. */
+:root {
+    --eos-page-x: 16px;
+    --eos-shell-top: 12px;
+    --eos-header-height: 70px;
+    --eos-nav-height: 74px;
+    --eos-nav-gap: 12px;
+    --eos-content-top: calc(var(--eos-shell-top) + var(--eos-header-height) + var(--eos-nav-gap) + var(--eos-nav-height) + 12px);
+    --eos-logout-width: 126px;
+}
+
+html.eos-login,
+html.eos-login body,
+html.eos-login #root {
+    min-height: 100vh !important;
+}
+
+html.eos-login #root {
+    display: grid !important;
+    place-items: center !important;
+}
+
+html.eos-login main.MuiPaper-root,
+html.eos-loading main.MuiPaper-root {
+    min-height: 100vh !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: clamp(18px, 4vw, 42px) !important;
+    margin: 0 !important;
+}
+
+html.eos-login .eos-login-card,
+html.eos-login main > .MuiPaper-root:has(#username),
+html.eos-login .MuiPaper-root:has(#password) {
+    margin: 0 auto !important;
+    transform: none !important;
+}
+
+html.eos-login .eos-direct-logout,
+html.eos-login body .eos-direct-logout,
+body:not(:has(#app-paper)):has(input[type="password"]) .eos-direct-logout,
+body:not(:has(#app-paper)):has(#password) .eos-direct-logout {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+html.eos-login img[src*="admin.svg"],
+html.eos-login img[src*="logo"],
+html.eos-login .MuiAvatar-img,
+html.eos-login .eos-login-card img {
+    content: url('../img/eos/nexowatt-192.png') !important;
+    opacity: 1 !important;
+    filter: drop-shadow(0 0 18px rgba(0,255,136,.35)) !important;
+}
+
+/* Full header */
+html.eos-app #root > .MuiPaper-root > .MuiAppBar-root,
+html.eos-app .MuiAppBar-root {
+    top: var(--eos-shell-top) !important;
+    left: var(--eos-page-x) !important;
+    right: var(--eos-page-x) !important;
+    width: auto !important;
+    height: var(--eos-header-height) !important;
+    min-height: var(--eos-header-height) !important;
+    margin-left: 0 !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(0,255,136,.32) !important;
+    background:
+        radial-gradient(circle at 8% 50%, rgba(0,255,136,.18), transparent 25%),
+        radial-gradient(circle at 88% 50%, rgba(0,212,255,.10), transparent 30%),
+        linear-gradient(135deg, rgba(4,24,36,.97), rgba(2,9,20,.95)) !important;
+    box-shadow: 0 16px 44px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.07), 0 0 24px rgba(0,255,136,.08) !important;
+    overflow: visible !important;
+    z-index: 1400 !important;
+}
+
+html.eos-app #root > .MuiPaper-root > .MuiAppBar-root .MuiToolbar-root,
+html.eos-app .eos-top-toolbar {
+    height: var(--eos-header-height) !important;
+    min-height: var(--eos-header-height) !important;
+    padding: 0 calc(var(--eos-logout-width) + 44px) 0 16px !important;
+    gap: 8px !important;
+    overflow: hidden !important;
+}
+
+html.eos-app .eos-brand-badge {
+    min-height: 50px !important;
+    min-width: 236px !important;
+    padding: 6px 14px 6px 9px !important;
+    gap: 10px !important;
+    border-radius: 18px !important;
+    background:
+        radial-gradient(circle at 20% 50%, rgba(0,255,136,.24), transparent 45%),
+        linear-gradient(135deg, rgba(0,255,136,.13), rgba(0,212,255,.07)) !important;
+    border: 1px solid rgba(0,255,136,.40) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 10px 22px rgba(0,0,0,.22) !important;
+}
+html.eos-app .eos-brand-badge::before { display: none !important; content: none !important; }
+.eos-brand-badge-logo {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    object-fit: contain !important;
+    opacity: 1 !important;
+    border-radius: 13px !important;
+    filter: drop-shadow(0 0 12px rgba(0,255,136,.34)) !important;
+}
+.eos-brand-badge-copy { display: flex; flex-direction: column; justify-content: center; min-width: 0; line-height: 1.05; }
+.eos-brand-badge-copy strong { color: #f2fbff; font-size: 13px; font-weight: 950; letter-spacing: -.01em; white-space: nowrap; }
+.eos-brand-badge-copy small { margin-top: 4px; color: rgba(222,238,255,.75); font-size: 7.8px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.eos-brand-led { width: 8px !important; height: 8px !important; margin-left: auto; flex: 0 0 auto; }
+
+.eos-direct-logout {
+    top: calc(var(--eos-shell-top) + 16px) !important;
+    right: calc(var(--eos-page-x) + 12px) !important;
+    z-index: 1550 !important;
+}
+
+/* Turn native drawer into a horizontal navigation rail below the header. */
+html.eos-app .MuiDrawer-root {
+    width: 0 !important;
+    flex: 0 0 0 !important;
+}
+
+html.eos-app .MuiDrawer-paper,
+html.eos-app .eos-drawer {
+    position: fixed !important;
+    top: calc(var(--eos-shell-top) + var(--eos-header-height) + var(--eos-nav-gap)) !important;
+    left: var(--eos-page-x) !important;
+    right: var(--eos-page-x) !important;
+    width: auto !important;
+    height: var(--eos-nav-height) !important;
+    max-height: var(--eos-nav-height) !important;
+    min-height: var(--eos-nav-height) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 8px 10px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(0,255,136,.28) !important;
+    background:
+        radial-gradient(circle at 4% 50%, rgba(0,255,136,.13), transparent 32%),
+        linear-gradient(135deg, rgba(7,28,43,.96), rgba(2,9,20,.94)) !important;
+    box-shadow: 0 14px 38px rgba(0,0,0,.31), inset 0 1px 0 rgba(255,255,255,.06) !important;
+    z-index: 1300 !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,255,136,.72) rgba(3,15,26,.65);
+}
+html.eos-app .MuiDrawer-paper::-webkit-scrollbar { height: 7px; }
+html.eos-app .MuiDrawer-paper::-webkit-scrollbar-track { background: rgba(3,15,26,.65); border-radius: 999px; }
+html.eos-app .MuiDrawer-paper::-webkit-scrollbar-thumb { background: linear-gradient(90deg, var(--eos-accent), var(--eos-accent-2)); border-radius: 999px; }
+
+html.eos-app .eos-native-drawer-header {
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    padding: 0 !important;
+    margin: 0 2px 0 0 !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(0,255,136,.24) !important;
+    background: linear-gradient(135deg, rgba(0,255,136,.12), rgba(0,212,255,.055)) !important;
+    overflow: hidden !important;
+}
+html.eos-app .eos-native-drawer-header > div:first-child {
+    display: grid !important;
+    grid-template-columns: 56px minmax(0,1fr) 28px !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 5px 8px 5px 6px !important;
+    overflow: hidden !important;
+}
+html.eos-app .eos-native-drawer-header a {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    flex-basis: 48px !important;
+    border-radius: 16px !important;
+    background: rgba(0,255,136,.09) !important;
+    border: 1px solid rgba(0,255,136,.18) !important;
+    display: grid !important;
+    place-items: center !important;
+}
+html.eos-app .eos-native-drawer-header img,
+html.eos-app .eos-native-drawer-header .MuiAvatar-root,
+html.eos-app .eos-native-drawer-header .MuiAvatar-img {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    object-fit: contain !important;
+    opacity: 1 !important;
+    filter: drop-shadow(0 0 12px rgba(0,255,136,.30)) !important;
+}
+html.eos-app .eos-native-title {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    line-height: 1.05 !important;
+}
+html.eos-app .eos-native-title strong { font-size: 12px !important; font-weight: 950 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+html.eos-app .eos-native-title small { font-size: 7.2px !important; font-weight: 850 !important; letter-spacing: .045em !important; text-transform: uppercase !important; color: rgba(222,238,255,.70) !important; }
+
+html.eos-app .MuiDrawer-paper .MuiList-root,
+html.eos-app .eos-scroll-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-width: max-content !important;
+    height: 56px !important;
+    overflow: visible !important;
+}
+html.eos-app .MuiDrawer-paper .MuiListItem-root { width: auto !important; min-width: auto !important; padding: 0 !important; }
+html.eos-app .MuiDrawer-paper .MuiListItemButton-root,
+html.eos-app .MuiDrawer-paper .MuiButtonBase-root.MuiListItemButton-root {
+    height: 52px !important;
+    min-height: 52px !important;
+    width: auto !important;
+    min-width: max-content !important;
+    margin: 0 !important;
+    padding: 0 16px !important;
+    border-radius: 17px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    white-space: nowrap !important;
+    border: 1px solid rgba(123,204,255,.12) !important;
+    background: rgba(2,12,22,.38) !important;
+}
+html.eos-app .MuiDrawer-paper .MuiListItemButton-root.Mui-selected,
+html.eos-app .MuiDrawer-paper .MuiListItemButton-root[aria-selected="true"],
+html.eos-app .MuiDrawer-paper .Mui-selected {
+    background: linear-gradient(135deg, rgba(0,255,136,.74), rgba(0,212,255,.42)) !important;
+    color: #f2fbff !important;
+    border-color: rgba(0,255,136,.56) !important;
+    box-shadow: 0 0 22px rgba(0,255,136,.18) !important;
+}
+html.eos-app .MuiDrawer-paper .MuiListItemIcon-root {
+    min-width: 22px !important;
+    width: 22px !important;
+    margin-right: 0 !important;
+    color: inherit !important;
+}
+html.eos-app .MuiDrawer-paper .MuiTypography-root,
+html.eos-app .MuiDrawer-paper .MuiListItemText-root span {
+    font-size: 14px !important;
+    font-weight: 750 !important;
+    white-space: nowrap !important;
+}
+
+/* Content takes the complete page width below the horizontal rail. */
+html.eos-app #app-paper {
+    margin-top: var(--eos-content-top) !important;
+    margin-left: var(--eos-page-x) !important;
+    margin-right: var(--eos-page-x) !important;
+    width: auto !important;
+    max-width: none !important;
+    min-height: calc(100vh - var(--eos-content-top) - 12px) !important;
+    border-radius: 24px !important;
+}
+html.eos-app main,
+html.eos-app [role="main"] {
+    margin-left: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+}
+
+/* Content toolbar: use the full width and keep adapter stats readable. */
+html.eos-route-adapters #app-paper > div:first-child,
+html.eos-route-intro #app-paper > div:first-child,
+html.eos-route-instances #app-paper > div:first-child {
+    border-radius: 18px !important;
+    background: rgba(8,25,41,.70) !important;
+}
+
+/* Adapter info overlay after three-dot click: readable EOS card, no pale layer. */
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"],
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] {
+    inset: 10px !important;
+    border-radius: 18px !important;
+    background: linear-gradient(180deg, rgba(2,12,22,.96), rgba(6,23,38,.96)) !important;
+    border: 1px solid rgba(0,255,136,.32) !important;
+    box-shadow: 0 18px 44px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.06) !important;
+    color: #eef7ff !important;
+    overflow: hidden !important;
+}
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"]::before,
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"]::before {
+    content: 'Modulbeschreibung' !important;
+    display: block !important;
+    padding: 10px 44px 8px 14px !important;
+    color: var(--eos-accent) !important;
+    font-size: 11px !important;
+    font-weight: 950 !important;
+    letter-spacing: .09em !important;
+    text-transform: uppercase !important;
+    background: rgba(0,255,136,.08) !important;
+    border-bottom: 1px solid rgba(0,255,136,.20) !important;
+}
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiTypography-root,
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiTypography-root {
+    color: rgba(238,247,255,.96) !important;
+    font-size: 13px !important;
+    line-height: 1.44 !important;
+    font-weight: 550 !important;
+    text-align: left !important;
+    text-shadow: none !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+}
+
+/* Services list refined to fit EOS surface. */
+html.eos-route-instances #app-paper {
+    background:
+        radial-gradient(circle at 88% 10%, rgba(0,212,255,.08), transparent 30%),
+        linear-gradient(180deg, rgba(8,25,41,.82), rgba(3,12,23,.86)) !important;
+    border-color: rgba(0,255,136,.22) !important;
+}
+html.eos-route-instances #app-paper .MuiTableRow-root,
+html.eos-route-instances #app-paper [role="row"],
+html.eos-route-instances #app-paper .MuiAccordionSummary-root {
+    border-radius: 15px !important;
+    background: linear-gradient(90deg, rgba(0,255,136,.09), rgba(0,212,255,.04)) !important;
+    border: 1px solid rgba(123,204,255,.14) !important;
+    overflow: hidden !important;
+}
+html.eos-route-instances #app-paper .MuiTableRow-root:hover,
+html.eos-route-instances #app-paper [role="row"]:hover,
+html.eos-route-instances #app-paper .MuiAccordionSummary-root:hover {
+    background: linear-gradient(90deg, rgba(0,255,136,.16), rgba(0,212,255,.07)) !important;
+    border-color: rgba(0,255,136,.28) !important;
+}
+
+@media (max-width: 1220px) {
+    :root { --eos-page-x: 10px; --eos-logout-width: 52px; --eos-header-height: 64px; --eos-nav-height: 68px; }
+    html.eos-app #root > .MuiPaper-root > .MuiAppBar-root .MuiToolbar-root,
+    html.eos-app .eos-top-toolbar { padding-right: calc(var(--eos-logout-width) + 24px) !important; }
+    html.eos-app .eos-brand-badge { min-width: 58px !important; padding: 6px 9px !important; }
+    .eos-brand-badge-copy, html.eos-app .eos-brand-led { display: none !important; }
+    .eos-direct-logout span:not(.eos-direct-logout-dot) { display: none !important; }
+    html.eos-app .eos-native-drawer-header { flex-basis: 70px !important; width: 70px !important; }
+    html.eos-app .eos-native-drawer-header > div:first-child { grid-template-columns: 52px 0 0 !important; padding: 5px 7px !important; }
+    html.eos-app .eos-native-title { display: none !important; }
+}
+
+@media (max-width: 780px) {
+    :root { --eos-page-x: 8px; --eos-shell-top: 8px; --eos-header-height: 58px; --eos-nav-height: 64px; --eos-nav-gap: 8px; }
+    html.eos-app #root > .MuiPaper-root > .MuiAppBar-root { border-radius: 18px !important; }
+    html.eos-app .MuiDrawer-paper, html.eos-app .eos-drawer { border-radius: 18px !important; padding: 6px 8px !important; }
+    html.eos-app .MuiDrawer-paper .MuiListItemButton-root,
+    html.eos-app .MuiDrawer-paper .MuiButtonBase-root.MuiListItemButton-root { height: 48px !important; min-height: 48px !important; padding: 0 12px !important; }
+    html.eos-app .MuiDrawer-paper .MuiTypography-root,
+    html.eos-app .MuiDrawer-paper .MuiListItemText-root span { font-size: 13px !important; }
+    html.eos-app #app-paper { border-radius: 18px !important; }
+}
+
+@media (max-width: 560px) {
+    :root { --eos-header-height: 56px; --eos-nav-height: 60px; }
+    html.eos-app #root > .MuiPaper-root > .MuiAppBar-root .MuiToolbar-root,
+    html.eos-app .eos-top-toolbar { padding-left: 8px !important; padding-right: 54px !important; gap: 5px !important; }
+    html.eos-app .eos-native-drawer-header { flex-basis: 56px !important; width: 56px !important; }
+    html.eos-app .eos-native-drawer-header a { width: 44px !important; height: 44px !important; min-width: 44px !important; }
+    html.eos-app .eos-native-drawer-header img,
+    html.eos-app .eos-native-drawer-header .MuiAvatar-root,
+    html.eos-app .eos-native-drawer-header .MuiAvatar-img { width: 38px !important; height: 38px !important; min-width: 38px !important; min-height: 38px !important; }
+    .eos-direct-logout { right: 14px !important; }
+}
+
+/* === NexoWatt EOS v12: clean nav collapse + stronger header logo ===========
+   Keep the accepted v11 horizontal navigation layout. Requested change:
+   remove the duplicate logo/text tile from the horizontal rail and leave only
+   the collapse arrow; make the real NexoWatt EOS logo in the header visible. */
 html.eos-app .eos-brand-badge {
     min-height: 58px !important;
-    min-width: 268px !important;
+    min-width: 272px !important;
     padding: 6px 16px 6px 8px !important;
     gap: 12px !important;
+    border-radius: 20px !important;
     background:
-        radial-gradient(circle at 22% 50%, rgba(0,255,136,.25), transparent 48%),
-        linear-gradient(135deg, rgba(0,255,136,.16), rgba(0,212,255,.075)) !important;
-    border-color: rgba(0,255,136,.54) !important;
+        radial-gradient(circle at 28px 50%, rgba(0, 255, 136, 0.17), transparent 42%),
+        linear-gradient(135deg, rgba(2, 9, 20, 0.88), rgba(0, 255, 136, 0.10)) !important;
+    border-color: rgba(0, 255, 136, 0.52) !important;
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.09),
-        0 12px 28px rgba(0,0,0,.26),
-        0 0 22px rgba(0,255,136,.13) !important;
+        inset 0 1px 0 rgba(255, 255, 255, 0.09),
+        0 12px 28px rgba(0, 0, 0, 0.26),
+        0 0 24px rgba(0, 255, 136, 0.12) !important;
 }
 
 html.eos-app .eos-brand-badge-logo {
-    width: 52px !important;
-    height: 52px !important;
-    min-width: 52px !important;
-    min-height: 52px !important;
-    padding: 4px !important;
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+    min-height: 54px !important;
+    padding: 5px !important;
     box-sizing: border-box !important;
-    border-radius: 17px !important;
+    object-fit: contain !important;
+    opacity: 1 !important;
+    border-radius: 18px !important;
     background:
-        radial-gradient(circle at 50% 48%, rgba(6, 40, 47, .96), rgba(1, 13, 22, .92) 72%) !important;
-    border: 1px solid rgba(0,255,136,.46) !important;
+        radial-gradient(circle at 50% 48%, rgba(0, 255, 136, 0.22), rgba(2, 9, 20, 0.98) 70%) !important;
+    border: 1px solid rgba(0, 255, 136, 0.52) !important;
     box-shadow:
-        inset 0 0 18px rgba(0,255,136,.16),
-        0 0 18px rgba(0,255,136,.34),
-        0 0 34px rgba(0,212,255,.12) !important;
+        inset 0 0 18px rgba(0, 255, 136, 0.15),
+        0 0 18px rgba(0, 255, 136, 0.34),
+        0 0 34px rgba(0, 212, 255, 0.12) !important;
     filter:
-        drop-shadow(0 0 2px rgba(240,255,252,.65))
-        drop-shadow(0 0 12px rgba(0,255,136,.52))
-        brightness(1.35) saturate(1.35) !important;
+        brightness(1.35)
+        saturate(1.35)
+        drop-shadow(0 0 2px rgba(240, 255, 252, 0.60))
+        drop-shadow(0 0 12px rgba(0, 255, 136, 0.54)) !important;
 }
 
 html.eos-app .eos-brand-badge-copy strong {
     font-size: 14px !important;
+    line-height: 1.04 !important;
 }
 
 html.eos-app .eos-brand-badge-copy small {
     font-size: 8.2px !important;
-    letter-spacing: .065em !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0.065em !important;
 }
 
-/* Horizontal nav: remove the duplicate brand tile content and keep only the drawer-collapse arrow. */
+/* The first element in the horizontal rail is the native drawer header. In the
+   EOS layout it must not show a second logo/card. Only the collapse arrow stays. */
 html.eos-app .eos-native-drawer-header {
     flex: 0 0 54px !important;
     width: 54px !important;
     min-width: 54px !important;
+    max-width: 54px !important;
     height: 56px !important;
     min-height: 56px !important;
+    max-height: 56px !important;
     padding: 0 !important;
     margin: 0 4px 0 0 !important;
     border: 0 !important;
@@ -1153,11 +1551,19 @@ html.eos-app .eos-native-drawer-header > div:first-child {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    grid-template-columns: none !important;
+    gap: 0 !important;
     width: 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
     height: 56px !important;
     min-height: 56px !important;
+    max-height: 56px !important;
     padding: 0 !important;
-    gap: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
     overflow: visible !important;
 }
 
@@ -1168,71 +1574,111 @@ html.eos-app .eos-native-drawer-header .MuiAvatar-img,
 html.eos-app .eos-native-drawer-header .eos-native-title {
     display: none !important;
     visibility: hidden !important;
+    opacity: 0 !important;
     width: 0 !important;
     min-width: 0 !important;
+    max-width: 0 !important;
     height: 0 !important;
     min-height: 0 !important;
-    opacity: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
     pointer-events: none !important;
 }
 
 html.eos-app .eos-native-drawer-header button,
-html.eos-app .eos-native-drawer-header .MuiIconButton-root {
+html.eos-app .eos-native-drawer-header .MuiIconButton-root,
+html.eos-app .eos-native-drawer-header [role="button"] {
+    position: static !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     width: 44px !important;
     height: 44px !important;
     min-width: 44px !important;
     min-height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
     margin: 0 !important;
     padding: 0 !important;
     border-radius: 16px !important;
     color: var(--eos-text) !important;
-    border: 1px solid rgba(0,255,136,.36) !important;
-    background: linear-gradient(135deg, rgba(0,255,136,.15), rgba(0,212,255,.08)) !important;
-    box-shadow: 0 9px 18px rgba(0,0,0,.22), 0 0 14px rgba(0,255,136,.10) !important;
-    opacity: 1 !important;
+    border: 1px solid rgba(0, 255, 136, 0.36) !important;
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 212, 255, 0.08)) !important;
+    box-shadow: 0 9px 18px rgba(0, 0, 0, 0.22), 0 0 14px rgba(0, 255, 136, 0.10) !important;
+    transform: none !important;
     pointer-events: auto !important;
 }
 
 html.eos-app .eos-native-drawer-header button:hover,
-html.eos-app .eos-native-drawer-header .MuiIconButton-root:hover {
-    border-color: rgba(0,255,136,.62) !important;
-    background: linear-gradient(135deg, rgba(0,255,136,.24), rgba(0,212,255,.13)) !important;
+html.eos-app .eos-native-drawer-header .MuiIconButton-root:hover,
+html.eos-app .eos-native-drawer-header [role="button"]:hover {
+    border-color: rgba(0, 255, 136, 0.62) !important;
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.24), rgba(0, 212, 255, 0.13)) !important;
+}
+
+html.eos-app .eos-native-drawer-header button svg,
+html.eos-app .eos-native-drawer-header .MuiIconButton-root svg,
+html.eos-app .eos-native-drawer-header [role="button"] svg {
+    width: 24px !important;
+    height: 24px !important;
+    color: var(--eos-text) !important;
 }
 
 @media (max-width: 1220px) {
     html.eos-app .eos-brand-badge {
         min-width: 64px !important;
+        width: 64px !important;
+        padding: 5px !important;
+        justify-content: center !important;
+    }
+    html.eos-app .eos-brand-badge-copy,
+    html.eos-app .eos-brand-led {
+        display: none !important;
     }
     html.eos-app .eos-brand-badge-logo {
-        width: 48px !important;
-        height: 48px !important;
-        min-width: 48px !important;
-        min-height: 48px !important;
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+        padding: 5px !important;
     }
-    html.eos-app .eos-native-drawer-header {
+    html.eos-app .eos-native-drawer-header,
+    html.eos-app .eos-native-drawer-header > div:first-child {
         flex-basis: 52px !important;
         width: 52px !important;
         min-width: 52px !important;
+        max-width: 52px !important;
     }
 }
 
 @media (max-width: 560px) {
+    html.eos-app .eos-brand-badge {
+        min-width: 56px !important;
+        width: 56px !important;
+        padding: 4px !important;
+    }
     html.eos-app .eos-brand-badge-logo {
-        width: 44px !important;
-        height: 44px !important;
-        min-width: 44px !important;
-        min-height: 44px !important;
+        width: 46px !important;
+        height: 46px !important;
+        min-width: 46px !important;
+        min-height: 46px !important;
+        padding: 4px !important;
     }
     html.eos-app .eos-native-drawer-header,
     html.eos-app .eos-native-drawer-header > div:first-child {
         width: 48px !important;
         min-width: 48px !important;
+        max-width: 48px !important;
+        height: 52px !important;
+        min-height: 52px !important;
+        max-height: 52px !important;
     }
     html.eos-app .eos-native-drawer-header button,
-    html.eos-app .eos-native-drawer-header .MuiIconButton-root {
+    html.eos-app .eos-native-drawer-header .MuiIconButton-root,
+    html.eos-app .eos-native-drawer-header [role="button"] {
         width: 40px !important;
         height: 40px !important;
         min-width: 40px !important;
@@ -1240,3 +1686,344 @@ html.eos-app .eos-native-drawer-header .MuiIconButton-root:hover {
     }
 }
 
+
+
+/* === NexoWatt EOS v13: settings surfaces + remove broken logout ==========
+   Keep the accepted v11/v12 shell. The custom logout button is removed and the
+   system/base settings dialog receives clear EOS form surfaces. */
+:root {
+    --eos-logout-width: 0px;
+}
+
+.eos-direct-logout,
+html.eos-app .eos-direct-logout,
+html.eos-login .eos-direct-logout,
+body .eos-direct-logout {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none !important;
+}
+
+html.eos-app #root > .MuiPaper-root > .MuiAppBar-root .MuiToolbar-root,
+html.eos-app .eos-top-toolbar {
+    padding-right: 18px !important;
+}
+
+/* System/base settings dialog shell */
+html.eos-app .eos-settings-dialog,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"],
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"],
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) {
+    border-radius: 26px !important;
+    border: 1px solid rgba(0, 255, 136, 0.34) !important;
+    background:
+        radial-gradient(circle at 82% 12%, rgba(0, 212, 255, 0.11), transparent 32%),
+        radial-gradient(circle at 14% 10%, rgba(0, 255, 136, 0.13), transparent 34%),
+        linear-gradient(180deg, rgba(8, 25, 40, 0.97), rgba(4, 13, 24, 0.98)) !important;
+    box-shadow:
+        0 26px 74px rgba(0, 0, 0, 0.52),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 0 34px rgba(0, 255, 136, 0.10) !important;
+    overflow: hidden !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiDialogContent-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiDialogContent-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiDialogContent-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiDialogContent-root {
+    padding: 18px 22px 20px !important;
+    background:
+        linear-gradient(115deg, rgba(0, 255, 136, 0.028) 0 1px, transparent 1px 24px),
+        linear-gradient(180deg, rgba(10, 34, 52, 0.74), rgba(5, 17, 31, 0.82)) !important;
+    color: var(--eos-text) !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 255, 136, .72) rgba(3, 15, 26, .55);
+}
+
+html.eos-app .eos-settings-dialog .MuiDialogContent-root::-webkit-scrollbar,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiDialogContent-root::-webkit-scrollbar,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiDialogContent-root::-webkit-scrollbar,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiDialogContent-root::-webkit-scrollbar {
+    width: 8px;
+}
+
+html.eos-app .eos-settings-dialog .MuiDialogContent-root::-webkit-scrollbar-track,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiDialogContent-root::-webkit-scrollbar-track,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiDialogContent-root::-webkit-scrollbar-track,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiDialogContent-root::-webkit-scrollbar-track {
+    background: rgba(3, 15, 26, .55);
+    border-radius: 999px;
+}
+
+html.eos-app .eos-settings-dialog .MuiDialogContent-root::-webkit-scrollbar-thumb,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiDialogContent-root::-webkit-scrollbar-thumb,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiDialogContent-root::-webkit-scrollbar-thumb,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiDialogContent-root::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--eos-accent), var(--eos-accent-2));
+    border-radius: 999px;
+}
+
+/* Dialog header/tabs */
+html.eos-app .eos-settings-dialog .MuiDialogContent-root > .MuiAppBar-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiDialogContent-root > .MuiAppBar-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiDialogContent-root > .MuiAppBar-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiDialogContent-root > .MuiAppBar-root {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 4 !important;
+    margin: -18px -22px 18px !important;
+    padding: 8px 12px !important;
+    border-radius: 0 0 22px 22px !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(0, 255, 136, 0.30) !important;
+    background:
+        radial-gradient(circle at 10% 50%, rgba(0, 255, 136, 0.16), transparent 34%),
+        linear-gradient(135deg, rgba(4, 24, 36, 0.98), rgba(2, 9, 20, 0.96)) !important;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.26) !important;
+}
+
+html.eos-app .eos-settings-dialog .dialogName,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .dialogName,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .dialogName,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .dialogName,
+html.eos-app .eos-settings-dialog #base-settings-dialog-title {
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    color: #f2fbff !important;
+    letter-spacing: -0.02em !important;
+    padding: 0 10px !important;
+    white-space: nowrap !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiTabs-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiTabs-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiTabs-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiTabs-root {
+    min-height: 48px !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiTabs-flexContainer,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiTabs-flexContainer,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiTabs-flexContainer,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiTabs-flexContainer {
+    gap: 8px !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiTab-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiTab-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiTab-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiTab-root {
+    min-height: 42px !important;
+    padding: 0 16px !important;
+    border-radius: 15px !important;
+    color: rgba(238, 247, 255, 0.78) !important;
+    font-weight: 800 !important;
+    border: 1px solid rgba(123, 204, 255, 0.14) !important;
+    background: rgba(2, 12, 22, 0.34) !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiTab-root.Mui-selected,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiTab-root.Mui-selected,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiTab-root.Mui-selected,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiTab-root.Mui-selected {
+    color: #06111f !important;
+    background: linear-gradient(135deg, var(--eos-accent), var(--eos-accent-2)) !important;
+    border-color: rgba(0, 255, 136, 0.54) !important;
+    box-shadow: 0 0 22px rgba(0, 255, 136, 0.16) !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiTabs-indicator,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiTabs-indicator,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiTabs-indicator,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiTabs-indicator {
+    display: none !important;
+}
+
+/* Form field cards: make standard MUI inputs look like EOS controls. */
+html.eos-app .eos-settings-dialog .MuiFormControl-root:has(> .MuiInputBase-root),
+html.eos-app .eos-settings-dialog .MuiTextField-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiFormControl-root:has(> .MuiInputBase-root),
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiTextField-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiFormControl-root:has(> .MuiInputBase-root),
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiTextField-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiFormControl-root:has(> .MuiInputBase-root),
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiTextField-root {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 9px 12px 11px !important;
+    border-radius: 17px !important;
+    border: 1px solid rgba(123, 204, 255, 0.20) !important;
+    background:
+        radial-gradient(circle at 96% 18%, rgba(0, 212, 255, 0.10), transparent 34%),
+        linear-gradient(180deg, rgba(7, 24, 39, 0.86), rgba(3, 14, 26, 0.88)) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 22px rgba(0, 0, 0, 0.14) !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiFormControl-root .MuiTextField-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiFormControl-root .MuiTextField-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiFormControl-root .MuiTextField-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiFormControl-root .MuiTextField-root {
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiInputLabel-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiInputLabel-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiInputLabel-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiInputLabel-root {
+    position: relative !important;
+    transform: none !important;
+    display: block !important;
+    margin: 0 0 6px !important;
+    max-width: none !important;
+    color: rgba(222, 238, 255, 0.72) !important;
+    font-size: 12px !important;
+    line-height: 1.15 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.015em !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiInputBase-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiInputBase-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiInputBase-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiInputBase-root {
+    min-height: 42px !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    padding: 0 12px !important;
+    border-radius: 13px !important;
+    border: 1px solid rgba(0, 255, 136, 0.22) !important;
+    background: rgba(2, 10, 19, 0.78) !important;
+    color: #f3fbff !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025) !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiInputBase-root:hover,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiInputBase-root:hover,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiInputBase-root:hover,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiInputBase-root:hover {
+    border-color: rgba(0, 255, 136, 0.36) !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiInput-root::before,
+html.eos-app .eos-settings-dialog .MuiInput-root::after,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiInput-root::before,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiInput-root::after,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiInput-root::before,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiInput-root::after,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiInput-root::before,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiInput-root::after {
+    display: none !important;
+    border-bottom: 0 !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiInputBase-input,
+html.eos-app .eos-settings-dialog .MuiSelect-select,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiInputBase-input,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiSelect-select,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiInputBase-input,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiSelect-select,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiInputBase-input,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiSelect-select {
+    padding: 10px 0 !important;
+    color: #f4fbff !important;
+    background: transparent !important;
+    font-size: 14px !important;
+    font-weight: 650 !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiFormHelperText-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiFormHelperText-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiFormHelperText-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiFormHelperText-root {
+    margin: 7px 2px 0 !important;
+    color: rgba(222, 238, 255, 0.62) !important;
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiIconButton-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiIconButton-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiIconButton-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiIconButton-root {
+    color: rgba(238, 247, 255, 0.86) !important;
+}
+
+/* Map and lower location controls */
+html.eos-app .eos-settings-dialog .leaflet-container,
+html.eos-app .eos-settings-dialog .eos-settings-map,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .leaflet-container,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .leaflet-container,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .leaflet-container {
+    min-height: 350px !important;
+    border-radius: 22px !important;
+    border: 1px solid rgba(0, 255, 136, 0.30) !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28), 0 0 22px rgba(0, 255, 136, 0.08) !important;
+    overflow: hidden !important;
+}
+
+html.eos-app .eos-settings-dialog .leaflet-control-zoom a,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .leaflet-control-zoom a,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .leaflet-control-zoom a,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .leaflet-control-zoom a {
+    background: rgba(5, 18, 31, 0.92) !important;
+    color: #f3fbff !important;
+    border-color: rgba(0, 255, 136, 0.24) !important;
+}
+
+/* Dialog action bar */
+html.eos-app .eos-settings-dialog .MuiDialogActions-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiDialogActions-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiDialogActions-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiDialogActions-root {
+    padding: 14px 20px !important;
+    gap: 10px !important;
+    border-top: 1px solid rgba(0, 255, 136, 0.22) !important;
+    background: linear-gradient(180deg, rgba(5, 18, 31, 0.90), rgba(2, 9, 20, 0.96)) !important;
+}
+
+html.eos-app .eos-settings-dialog .MuiDialogActions-root .MuiButton-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiDialogActions-root .MuiButton-root,
+html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiDialogActions-root .MuiButton-root,
+html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiDialogActions-root .MuiButton-root {
+    min-height: 42px !important;
+    border-radius: 14px !important;
+    padding: 0 18px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.02em !important;
+}
+
+@media (max-width: 920px) {
+    html.eos-app .eos-settings-dialog .MuiDialogContent-root,
+    html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiDialogContent-root,
+    html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiDialogContent-root,
+    html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiDialogContent-root {
+        padding: 14px !important;
+    }
+
+    html.eos-app .eos-settings-dialog .MuiDialogContent-root > .MuiAppBar-root,
+    html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .MuiDialogContent-root > .MuiAppBar-root,
+    html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .MuiDialogContent-root > .MuiAppBar-root,
+    html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiDialogContent-root > .MuiAppBar-root {
+        margin: -14px -14px 14px !important;
+    }
+
+    html.eos-app .eos-settings-dialog .leaflet-container,
+    html.eos-app .MuiDialog-paper[aria-labelledby="system-settings-dialog-title"] .leaflet-container,
+    html.eos-app .MuiDialog-paper[aria-labelledby="base-settings-dialog-title"] .leaflet-container,
+    html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .leaflet-container {
+        min-height: 260px !important;
+    }
+}
