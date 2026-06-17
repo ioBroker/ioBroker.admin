@@ -292,20 +292,15 @@
         const header = directChildren.find(el => el.querySelector && el.querySelector('button') && (el.querySelector('img') || el.querySelector('.MuiAvatar-root') || el.querySelector('a')))
             || directChildren.find(el => el.querySelector && (el.querySelector('button') || el.querySelector('img')));
         if (!header) return;
-        header.classList.add('eos-native-drawer-header');
+        header.classList.add('eos-native-drawer-header', 'eos-nav-collapse-only');
         const img = header.querySelector('img');
         if (img) patchImage(img);
         const avatarImg = header.querySelector('.MuiAvatar-img');
         if (avatarImg) patchImage(avatarImg);
         const logoArea = header.querySelector('a')?.parentElement || header.firstElementChild || header;
-        if (logoArea && !logoArea.querySelector('.eos-native-title')) {
-            const title = document.createElement('span');
-            title.className = 'eos-native-title';
-            title.innerHTML = `<strong>${BRAND}</strong><small>${EOS_MEANING}</small>`;
-            const link = logoArea.querySelector('a');
-            if (link && link.nextSibling) logoArea.insertBefore(title, link.nextSibling);
-            else logoArea.appendChild(title);
-        }
+        // v12: the horizontal navigation rail should keep only the native collapse arrow.
+        // Remove duplicate brand text inside the nav rail; the visible brand remains in the full header badge.
+        if (logoArea) logoArea.querySelectorAll('.eos-native-title').forEach(title => title.remove());
         const list = drawer.querySelector('.MuiList-root');
         if (list) list.classList.add('eos-scroll-nav');
     });

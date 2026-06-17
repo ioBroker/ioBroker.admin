@@ -1,15 +1,15 @@
 {
-  "name": "NexoWatt EOS admin UI v9",
+  "name": "NexoWatt EOS admin UI v12",
   "base": "v8 / v5 shell design",
   "created": "2026-06-17T15:44:43.756982Z",
   "changes": [
-    "larger sidebar brand logo centered in the EOS brand tile",
-    "readable dark adapter/module description overlay after three-dot action",
-    "EOS styling class and CSS refinements for Dienste / Instanzen list",
-    "keeps v5 shell layout and scoped NexoWatt logo usage"
+    "keeps the v11 full-width header and horizontal navigation layout",
+    "removes duplicate NexoWatt identity content from the horizontal nav rail and leaves only the collapse arrow",
+    "makes the NexoWatt EOS logo in the main header larger and more visible",
+    "keeps the v11 login centering and 404-safe asset handling"
   ],
   "generated": "2026-06-17T00:00:00Z",
-  "eosUiVersion": "v11-horizontal-nav-login-404-fix",
+  "eosUiVersion": "v12-header-logo-collapse-only",
   "layout": "full-width header + horizontal navigation rail + full-width content",
-  "cacheBust": "v=11"
+  "cacheBust": "v=12"
 }

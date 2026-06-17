@@ -1,4 +1,4 @@
-/* NexoWatt EOS branding overlay v11.
+/* NexoWatt EOS branding overlay v12.
    Runtime-skin only: upstream React/Vite bundles stay untouched for update compatibility. */
 :root {
     --eos-bg-0: #020914;
@@ -1472,3 +1472,159 @@ html.eos-route-instances #app-paper .MuiAccordionSummary-root:hover {
     html.eos-app .eos-native-drawer-header .MuiAvatar-img { width: 38px !important; height: 38px !important; min-width: 38px !important; min-height: 38px !important; }
     .eos-direct-logout { right: 14px !important; }
 }
+
+/* v12: requested fine-tuning.
+   - The horizontal nav identity tile keeps only the collapse arrow.
+   - The primary NexoWatt EOS logo in the full header is larger and more visible. */
+html.eos-app .eos-brand-badge {
+    min-height: 58px !important;
+    min-width: 268px !important;
+    padding: 6px 16px 6px 8px !important;
+    gap: 12px !important;
+    background:
+        radial-gradient(circle at 22% 50%, rgba(0,255,136,.25), transparent 48%),
+        linear-gradient(135deg, rgba(0,255,136,.16), rgba(0,212,255,.075)) !important;
+    border-color: rgba(0,255,136,.54) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.09),
+        0 12px 28px rgba(0,0,0,.26),
+        0 0 22px rgba(0,255,136,.13) !important;
+}
+
+html.eos-app .eos-brand-badge-logo {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    padding: 4px !important;
+    box-sizing: border-box !important;
+    border-radius: 17px !important;
+    background:
+        radial-gradient(circle at 50% 48%, rgba(6, 40, 47, .96), rgba(1, 13, 22, .92) 72%) !important;
+    border: 1px solid rgba(0,255,136,.46) !important;
+    box-shadow:
+        inset 0 0 18px rgba(0,255,136,.16),
+        0 0 18px rgba(0,255,136,.34),
+        0 0 34px rgba(0,212,255,.12) !important;
+    filter:
+        drop-shadow(0 0 2px rgba(240,255,252,.65))
+        drop-shadow(0 0 12px rgba(0,255,136,.52))
+        brightness(1.35) saturate(1.35) !important;
+}
+
+html.eos-app .eos-brand-badge-copy strong {
+    font-size: 14px !important;
+}
+
+html.eos-app .eos-brand-badge-copy small {
+    font-size: 8.2px !important;
+    letter-spacing: .065em !important;
+}
+
+/* Horizontal nav: remove the duplicate brand tile content and keep only the drawer-collapse arrow. */
+html.eos-app .eos-native-drawer-header {
+    flex: 0 0 54px !important;
+    width: 54px !important;
+    min-width: 54px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    padding: 0 !important;
+    margin: 0 4px 0 0 !important;
+    border: 0 !important;
+    border-radius: 18px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+}
+
+html.eos-app .eos-native-drawer-header > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 54px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    overflow: visible !important;
+}
+
+html.eos-app .eos-native-drawer-header a,
+html.eos-app .eos-native-drawer-header img,
+html.eos-app .eos-native-drawer-header .MuiAvatar-root,
+html.eos-app .eos-native-drawer-header .MuiAvatar-img,
+html.eos-app .eos-native-drawer-header .eos-native-title {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+html.eos-app .eos-native-drawer-header button,
+html.eos-app .eos-native-drawer-header .MuiIconButton-root {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 16px !important;
+    color: var(--eos-text) !important;
+    border: 1px solid rgba(0,255,136,.36) !important;
+    background: linear-gradient(135deg, rgba(0,255,136,.15), rgba(0,212,255,.08)) !important;
+    box-shadow: 0 9px 18px rgba(0,0,0,.22), 0 0 14px rgba(0,255,136,.10) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+html.eos-app .eos-native-drawer-header button:hover,
+html.eos-app .eos-native-drawer-header .MuiIconButton-root:hover {
+    border-color: rgba(0,255,136,.62) !important;
+    background: linear-gradient(135deg, rgba(0,255,136,.24), rgba(0,212,255,.13)) !important;
+}
+
+@media (max-width: 1220px) {
+    html.eos-app .eos-brand-badge {
+        min-width: 64px !important;
+    }
+    html.eos-app .eos-brand-badge-logo {
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+    }
+    html.eos-app .eos-native-drawer-header {
+        flex-basis: 52px !important;
+        width: 52px !important;
+        min-width: 52px !important;
+    }
+}
+
+@media (max-width: 560px) {
+    html.eos-app .eos-brand-badge-logo {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+    }
+    html.eos-app .eos-native-drawer-header,
+    html.eos-app .eos-native-drawer-header > div:first-child {
+        width: 48px !important;
+        min-width: 48px !important;
+    }
+    html.eos-app .eos-native-drawer-header button,
+    html.eos-app .eos-native-drawer-header .MuiIconButton-root {
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+    }
+}
+
