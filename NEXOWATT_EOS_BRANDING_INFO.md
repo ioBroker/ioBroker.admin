@@ -11,8 +11,3 @@ Geändert wurde nur das sichtbare Frontend-/Login-Branding über EOS Overlay-Dat
 - EOS Icons unter `admin/img/eos/`, `adminWww/img/eos/` und `src-admin/public/img/eos/`
 
 Wichtig für Git: Die Ordner `build/`, `adminWww/` und `admin/custom/` müssen mit ins Repository, sonst entsteht wieder ein schwarzes Bild durch fehlende Assets.
-
-
-## v5 UI/performance refined
-
-Siehe `docs/NEXOWATT_EOS_UI_REFINED_V5_DE.md`.

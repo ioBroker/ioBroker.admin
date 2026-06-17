@@ -155,7 +155,13 @@ export default class Login extends Component<object, LoginState> {
                         origin = `./${origin}`;
                     }
                 } else {
-                    origin = './';
+                    origin = window.location.pathname || './';
+                    if (!origin.endsWith('/')) {
+                        origin = origin.substring(0, origin.lastIndexOf('/') + 1) || './';
+                    }
+                    if (origin === '/logout/') {
+                        origin = './';
+                    }
                 }
                 window.location.href = origin;
                 return true;
@@ -175,7 +181,7 @@ export default class Login extends Component<object, LoginState> {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `grant_type=refresh_token&refresh_token=${tokens.refresh_token}&stayloggedin=${tokens.stayLoggedIn}&client_id=NexoWattEOS`,
+                body: `grant_type=refresh_token&refresh_token=${tokens.refresh_token}&stayloggedin=${tokens.stayLoggedIn}&client_id=ioBroker.admin`,
             })
                 .then(async response => {
                     if (!(await Login.processTokenAnswer(tokens.stayLoggedIn, response))) {
@@ -207,7 +213,7 @@ export default class Login extends Component<object, LoginState> {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=NexoWattEOS`,
+                body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker.admin`,
             });
             if (await Login.processTokenAnswer(this.state.stayLoggedIn, response)) {
                 // Do not allow entering again as redirection is running
@@ -223,7 +229,7 @@ export default class Login extends Component<object, LoginState> {
 
     render(): JSX.Element {
         const link =
-            window.loginLink && window.loginLink !== '@@loginLink@@' ? window.loginLink : '#';
+            window.loginLink && window.loginLink !== '@@loginLink@@' ? window.loginLink : '';
         const motto =
             window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : 'Energy Operation System';
 
@@ -412,17 +418,7 @@ export default class Login extends Component<object, LoginState> {
                                 </Link>
                             ) : null}
                             {!window.loginLink || window.loginLink === '@@loginLink@@' ? motto : null}
-                            {!window.loginLink || window.loginLink === '@@loginLink@@' ? (
-                                <Link
-                                    style={styles.ioBrokerLink}
-                                    color="inherit"
-                                    href={link}
-                                    rel="noopener noreferrer"
-                                    target="_blank"
-                                >
-                                    ioBroker
-                                </Link>
-                            ) : null}
+                            {null}
                         </Typography>
                     </Box>
                 </Paper>

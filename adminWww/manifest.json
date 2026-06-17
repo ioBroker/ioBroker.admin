@@ -4,13 +4,8 @@
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "128x128 64x64 48x48 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "img/eos/eos-logo.svg",
-      "type": "image/svg+xml",
-      "sizes": "192x192 512x512 1024x1024"
+      "type": "image/x-icon",
+      "sizes": "128x128 64x64 48x48 32x32 24x24 16x16"
     },
     {
       "src": "img/eos/nexowatt-192.png",
@@ -23,10 +18,21 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#020914",
-  "background_color": "#020914"
+  "background_color": "#020914",
+  "description": "NexoWatt EOS - Energy Operation System"
 }
