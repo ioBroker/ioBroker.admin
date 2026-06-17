@@ -105,13 +105,17 @@
 
     const patchImage = img => {
         const src = img.getAttribute('src') || '';
+        const alt = img.getAttribute('alt') || '';
         const inBrandArea = !!img.closest('.eos-login-card, .eos-native-drawer-header, .eos-system-brand, .eos-brand-badge');
-        // Important: only replace images in explicit EOS branding areas.
-        // Adapter / instance rows must keep their own icons or neutral placeholders.
-        if (!inBrandArea) return;
-        if (/adapter\/|adapters\/|custom\/|upload\/|assets\//i.test(src)) return;
-        img.setAttribute('src', LOGO);
-        img.setAttribute('alt', BRAND);
+        const isBrandLogo = /admin\.svg|admin\.png|logo192\.png|logo\.svg/i.test(src) || /iobroker|admin|nexowatt|eos|logo/i.test(alt);
+        const isAdapterIcon = /adapter\/|adapters\/|custom\/|upload\/|assets\//i.test(src);
+        const isNeutralPlaceholder = /no-image\.svg/i.test(src);
+
+        // Only replace real brand surfaces. Do not stamp the NexoWatt logo onto instance/module placeholders.
+        if ((inBrandArea || (isBrandLogo && !isAdapterIcon)) && !(!inBrandArea && isNeutralPlaceholder)) {
+            img.setAttribute('src', LOGO);
+            img.setAttribute('alt', BRAND);
+        }
     };
 
     const patchAttributes = root => safe(() => {
@@ -150,16 +154,15 @@
         };
     };
 
+
     const isLoginView = () => safe(() => {
         const hasApp = !!document.getElementById('app-paper');
-        const runtimeLogin = String(window.login || '').toLowerCase() === 'true';
+        if (hasApp) return false;
         const urlText = `${window.location.pathname} ${window.location.search} ${window.location.hash}`.toLowerCase();
         const hasPassword = !!document.querySelector('#password, input[type="password"], input[name*="pass" i], input[autocomplete*="password" i]');
         const hasUserField = !!document.querySelector('#username, input[name="username" i], input[name*="login" i], input[name*="user" i], input[autocomplete="username"]');
         const hasLoginButton = Array.from(document.querySelectorAll('button')).some(button => /^(anmelden|login|sign in)$/.test(normalize(button.textContent || '')));
-        const text = normalize(document.body && document.body.innerText ? document.body.innerText.slice(0, 1600) : '');
-        const hasLoginWording = /loginname|passwort|password|angemeldet bleiben|stay logged/.test(text);
-        return runtimeLogin || /(?:^|[/?#])login(?:[/?#=&]|$)/.test(urlText) || (hasPassword && (hasUserField || hasLoginButton || hasLoginWording)) || (!hasApp && hasPassword);
+        return /(?:^|[/?#])login(?:[/?#=&]|$)/.test(urlText) || (hasPassword && (hasUserField || hasLoginButton));
     }) || false;
 
     const removeLogoutButton = () => document.querySelectorAll('.eos-direct-logout').forEach(button => button.remove());
@@ -167,7 +170,6 @@
     const sanitizeLoginHref = () => safe(() => {
         const url = new URL(window.location.href);
         const href = url.searchParams.get('href') || '';
-        // Avoid redirects back to logout/login after authentication; this was one source of 404 loops.
         if (href && /(?:^|\/)(?:logout|login)(?:[/?#]|$)|%2f(?:logout|login)/i.test(href)) {
             url.searchParams.delete('href');
             window.history.replaceState(null, document.title, `${url.pathname}${url.search}${url.hash}`);
@@ -189,7 +191,8 @@
     const patchLogin = () => safe(() => {
         forceLoginGlobals();
         sanitizeLoginHref();
-        const card = getLoginCard();
+        const hasApp = !!document.getElementById('app-paper');
+        const card = hasApp ? null : getLoginCard();
         const isLogin = isLoginView();
         document.documentElement.classList.toggle('eos-login', isLogin);
         document.documentElement.classList.toggle('eos-loading', !document.body || !document.querySelector('#root > *'));
@@ -224,13 +227,16 @@
     };
 
     const ensureBrandBadge = toolbar => {
-        if (!toolbar || toolbar.querySelector('.eos-brand-badge')) return;
+        if (!toolbar) return;
+        document.querySelectorAll('.eos-brand-badge').forEach(existing => {
+            if (!toolbar.contains(existing)) existing.remove();
+        });
+        if (toolbar.querySelector('.eos-brand-badge')) return;
         const badge = document.createElement('span');
         badge.className = 'eos-brand-badge eos-system-brand';
         badge.innerHTML = `<span class="eos-brand-led"></span><span>${BRAND}</span>`;
         const firstButton = toolbar.querySelector('button');
-        if (firstButton && firstButton.nextSibling) toolbar.insertBefore(badge, firstButton.nextSibling);
-        else toolbar.insertBefore(badge, toolbar.firstChild || null);
+        toolbar.insertBefore(badge, firstButton || toolbar.firstChild || null);
     };
 
     const ensureLogoutButton = () => {

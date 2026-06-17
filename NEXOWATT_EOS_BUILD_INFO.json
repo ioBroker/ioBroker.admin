@@ -1,14 +1,14 @@
 {
-  "variant": "nexowatt-eos-ui-v7-restore-v5-logo-scope-fix",
-  "base": "v5 performance UI base",
-  "generated": "2026-06-17",
+  "name": "NexoWatt EOS admin UI v8",
+  "base": "v5 design baseline",
+  "created": "2026-06-17T15:44:43.756982Z",
   "changes": [
-    "Restored v5 EOS UI shell/card styling; no v6 Drawer/AdapterTile regression.",
-    "Replaced only EOS branding logo SVGs with the old NexoWatt logo requested by the user.",
-    "Stopped runtime logo replacement outside explicit branding areas so instance/service rows keep their own icons or neutral placeholders.",
-    "Removed logout button from login view robustly and added CSS guard.",
-    "Added login href sanitizing to avoid login/logout redirect 404 loops.",
-    "Restored technical OAuth client_id in Login.tsx to upstream ioBroker for future builds.",
-    "Replaced admin.svg copies with the old NexoWatt logo for consistent Admin branding."
+    "restore v5 app shell/card design",
+    "replace EOS brand icon with old NexoWatt logo only on brand surfaces",
+    "hide/remove direct logout on login page",
+    "avoid NexoWatt logo on no-image/instance placeholders",
+    "neutral no-image placeholder",
+    "login redirect sanitization",
+    "cache-busted eos css/js references"
   ]
 }

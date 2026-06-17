@@ -1,4 +1,4 @@
-/* NexoWatt EOS branding overlay v7.
+/* NexoWatt EOS branding overlay v8.
    Runtime-skin only: upstream React/Vite bundles stay untouched for update compatibility. */
 :root {
     --eos-bg-0: #020914;
@@ -386,9 +386,11 @@ html.eos-app #root > .MuiPaper-root > .MuiAppBar-root .MuiIconButton-root:hover 
     box-shadow: 0 0 12px var(--eos-accent);
 }
 
+
+/* Login must stay clean: no app/logout control before authentication. */
 html.eos-login .eos-direct-logout,
-body:has(input[type="password"]) .eos-direct-logout,
-body:has(#password) .eos-direct-logout {
+body:not(:has(#app-paper)):has(input[type="password"]) .eos-direct-logout,
+body:not(:has(#app-paper)):has(#password) .eos-direct-logout {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
