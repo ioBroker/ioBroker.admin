@@ -85,13 +85,16 @@ const styles: Record<string, any> = {
     }),
     collapse: {
         height: '100%',
-        backgroundColor: 'silver',
+        background: 'linear-gradient(180deg, rgba(8, 29, 47, 0.985), rgba(4, 14, 25, 0.975))',
+        color: '#eef7ff',
+        border: '1px solid rgba(0, 255, 136, 0.34)',
+        borderRadius: 24,
         position: 'absolute',
         width: '100%',
-        zIndex: 3,
+        zIndex: 8,
         marginTop: 'auto',
         bottom: 0,
-        // transition: 'height 0.3s',
+        overflow: 'hidden',
         justifyContent: 'space-between',
         display: 'flex',
         flexDirection: 'column',
@@ -114,7 +117,7 @@ const styles: Record<string, any> = {
             content: '""',
             height: 20,
             width: 3,
-            backgroundColor: 'rgba(0, 0, 0, 0.54)',
+            backgroundColor: '#eaf9ff',
             transform: 'rotate(45deg)',
         },
         '&:after': {
@@ -123,12 +126,13 @@ const styles: Record<string, any> = {
             content: '""',
             height: 20,
             width: 3,
-            backgroundColor: 'rgba(0, 0, 0, 0.54)',
+            backgroundColor: '#eaf9ff',
             transform: 'rotate(-45deg)',
         },
     },
     footerBlock: (theme: IobTheme) => ({
-        background: theme.palette.background.default,
+        background: 'rgba(2, 9, 20, 0.90)',
+        borderTop: '1px solid rgba(0,255,136,.22)',
         p: '10px',
         display: 'flex',
         justifyContent: 'space-between',
@@ -149,7 +153,12 @@ const styles: Record<string, any> = {
         width: 'calc(100% - 145px)',
     },
     description: (theme: IobTheme) => ({
-        color: theme.palette.mode === 'dark' ? '#222' : 'inherit',
+        display: 'block',
+        color: 'rgba(238, 247, 255, 0.94)',
+        fontSize: 13.5,
+        lineHeight: 1.48,
+        whiteSpace: 'normal',
+        overflowWrap: 'anywhere',
     }),
 
     cardContent: {
@@ -159,7 +168,9 @@ const styles: Record<string, any> = {
         position: 'sticky',
         right: 0,
         top: 0,
-        background: 'silver',
+        background: 'linear-gradient(135deg, rgba(0,255,136,.16), rgba(0,212,255,.09))',
+        borderBottom: '1px solid rgba(0,255,136,.22)',
+        zIndex: 2,
     },
     cardContentFlex: {
         display: 'flex',
@@ -212,7 +223,10 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
 
     renderInfoCard(): JSX.Element {
         return (
-            <div style={this.styles.collapse}>
+            <div
+                className="eos-adapter-info-card"
+                style={this.styles.collapse}
+            >
                 <CardContent style={this.styles.cardContent}>
                     <div style={this.styles.cardContentDiv}>
                         <Box

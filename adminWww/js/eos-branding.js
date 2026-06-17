@@ -107,7 +107,8 @@
         const src = img.getAttribute('src') || '';
         const alt = img.getAttribute('alt') || '';
         const inBrandArea = !!img.closest('.eos-login-card, .eos-native-drawer-header, .eos-system-brand, .eos-brand-badge');
-        const isBrandLogo = /admin\.svg|admin\.png|logo192\.png|logo\.svg/i.test(src) || /iobroker|admin|nexowatt|eos|logo/i.test(alt);
+        const cleanSrc = src.split(/[?#]/)[0];
+        const isBrandLogo = /(?:^|\/)(?:admin\.svg|admin\.png|logo192\.png|logo\.svg)$/i.test(cleanSrc) || (inBrandArea && /iobroker|admin|nexowatt|eos|logo/i.test(alt));
         const isAdapterIcon = /adapter\/|adapters\/|custom\/|upload\/|assets\//i.test(src);
         const isNeutralPlaceholder = /no-image\.svg/i.test(src);
 
@@ -150,6 +151,7 @@
         return {
             users: hash.includes('tab-users'),
             adapters: hash.includes('tab-adapters'),
+            instances: hash.includes('tab-instances'),
             intro: hash.includes('tab-intro') || hash === '' || hash === '#/' || hash === '#/tab-intro',
         };
     };
@@ -180,6 +182,7 @@
         const routes = routeInfo();
         document.documentElement.classList.toggle('eos-route-users', routes.users);
         document.documentElement.classList.toggle('eos-route-adapters', routes.adapters);
+        document.documentElement.classList.toggle('eos-route-instances', routes.instances);
         document.documentElement.classList.toggle('eos-route-intro', routes.intro);
     };
 

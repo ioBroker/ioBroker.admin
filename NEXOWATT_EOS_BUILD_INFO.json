@@ -1,14 +1,12 @@
 {
-  "name": "NexoWatt EOS admin UI v8",
-  "base": "v5 design baseline",
+  "name": "NexoWatt EOS admin UI v9",
+  "base": "v8 / v5 shell design",
   "created": "2026-06-17T15:44:43.756982Z",
   "changes": [
-    "restore v5 app shell/card design",
-    "replace EOS brand icon with old NexoWatt logo only on brand surfaces",
-    "hide/remove direct logout on login page",
-    "avoid NexoWatt logo on no-image/instance placeholders",
-    "neutral no-image placeholder",
-    "login redirect sanitization",
-    "cache-busted eos css/js references"
-  ]
+    "larger sidebar brand logo centered in the EOS brand tile",
+    "readable dark adapter/module description overlay after three-dot action",
+    "EOS styling class and CSS refinements for Dienste / Instanzen list",
+    "keeps v5 shell layout and scoped NexoWatt logo usage"
+  ],
+  "generated": "2026-06-17T00:00:00Z"
 }

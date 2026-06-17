@@ -1,4 +1,4 @@
-/* NexoWatt EOS branding overlay v8.
+/* NexoWatt EOS branding overlay v9.
    Runtime-skin only: upstream React/Vite bundles stay untouched for update compatibility. */
 :root {
     --eos-bg-0: #020914;
@@ -789,5 +789,298 @@ html.eos-route-users #app-paper .MuiCard-root {
         width: calc(100vw - 42px) !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
+    }
+}
+
+/* === NexoWatt EOS v9 refinements =========================================
+   Scope: keep the v5 shell, improve brand logo placement, readable module
+   info overlays, and a cleaner services/instances list. */
+:root {
+    --eos-drawer-width: 196px;
+}
+
+/* Sidebar brand tile: larger, centered logo next to EOS copy. */
+html.eos-app .eos-native-drawer-header {
+    min-height: 92px !important;
+    padding: 10px 10px 10px 12px !important;
+    border-radius: 22px 22px 10px 10px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+html.eos-app .eos-native-drawer-header > div:first-child {
+    flex: 1 1 auto !important;
+    display: grid !important;
+    grid-template-columns: 62px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-width: 0 !important;
+    padding: 6px 7px !important;
+    border-radius: 19px !important;
+    border: 1px solid rgba(0, 255, 136, 0.24) !important;
+    background:
+        radial-gradient(circle at 18% 50%, rgba(0,255,136,.18), transparent 42%),
+        linear-gradient(135deg, rgba(0,255,136,.10), rgba(0,212,255,.055)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 10px 20px rgba(0,0,0,.18) !important;
+}
+
+html.eos-app .eos-native-drawer-header a {
+    width: 58px !important;
+    height: 58px !important;
+    flex: 0 0 58px !important;
+    border-radius: 18px !important;
+    padding: 4px !important;
+    background:
+        radial-gradient(circle, rgba(0, 255, 136, .16), rgba(0, 212, 255, .06) 62%, rgba(2,9,20,.72)) !important;
+    border: 1px solid rgba(0,255,136,.36) !important;
+    box-shadow: 0 0 18px rgba(0,255,136,.14) !important;
+}
+
+html.eos-app .eos-native-drawer-header img,
+html.eos-app .eos-native-drawer-header .MuiAvatar-root {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    object-fit: contain !important;
+    opacity: 1 !important;
+    filter: drop-shadow(0 0 10px rgba(0,255,136,.32)) !important;
+}
+
+html.eos-app .eos-native-title {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+    max-width: 96px !important;
+    overflow: hidden !important;
+}
+
+html.eos-app .eos-native-title strong {
+    display: block !important;
+    color: #f2fbff !important;
+    font-size: 12.5px !important;
+    line-height: 1.03 !important;
+    font-weight: 950 !important;
+    letter-spacing: -0.01em !important;
+    white-space: normal !important;
+}
+
+html.eos-app .eos-native-title small {
+    display: block !important;
+    margin-top: 4px !important;
+    color: rgba(222, 238, 255, .72) !important;
+    font-size: 7.6px !important;
+    line-height: 1.12 !important;
+    font-weight: 850 !important;
+    letter-spacing: .055em !important;
+    text-transform: uppercase !important;
+}
+
+/* Adapter/module info overlay after the three-dot button. The upstream overlay
+   uses inline silver backgrounds, so these rules deliberately override them. */
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"],
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] {
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    z-index: 8 !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+    background:
+        radial-gradient(circle at 12% 6%, rgba(0,255,136,.18), transparent 34%),
+        linear-gradient(180deg, rgba(8, 29, 47, .985), rgba(4, 14, 25, .975)) !important;
+    color: var(--eos-text) !important;
+    border: 1px solid rgba(0, 255, 136, .34) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 18px 42px rgba(0,0,0,.34) !important;
+}
+
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiCardContent-root,
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiCardContent-root {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    padding: 16px 18px 14px !important;
+    overflow: auto !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(0,255,136,.48) rgba(7,20,33,.55) !important;
+}
+
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiCardContent-root > div[style*="background"],
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiCardContent-root > div[style*="background"] {
+    position: sticky !important;
+    top: -16px !important;
+    z-index: 2 !important;
+    height: 36px !important;
+    margin: -16px -18px 12px !important;
+    padding: 7px 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    background:
+        linear-gradient(135deg, rgba(0,255,136,.16), rgba(0,212,255,.09)),
+        rgba(3, 14, 26, .96) !important;
+    border-bottom: 1px solid rgba(0,255,136,.22) !important;
+}
+
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiCardContent-root::before,
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiCardContent-root::before {
+    content: 'Modulbeschreibung' !important;
+    position: sticky !important;
+    top: -9px !important;
+    z-index: 3 !important;
+    float: left !important;
+    color: rgba(238,247,255,.88) !important;
+    font-size: 12px !important;
+    line-height: 20px !important;
+    font-weight: 900 !important;
+    letter-spacing: .035em !important;
+    text-transform: uppercase !important;
+    pointer-events: none !important;
+}
+
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiTypography-root,
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiTypography-root {
+    display: block !important;
+    clear: both !important;
+    color: rgba(238, 247, 255, .94) !important;
+    font-size: 13.5px !important;
+    line-height: 1.48 !important;
+    font-weight: 500 !important;
+    text-align: left !important;
+    text-shadow: none !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+}
+
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] div[style*="justify-content: space-between"],
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] div[style*="justify-content: space-between"] {
+    flex: 0 0 auto !important;
+    padding: 10px 12px !important;
+    background: rgba(2, 9, 20, .90) !important;
+    border-top: 1px solid rgba(0,255,136,.22) !important;
+    gap: 8px !important;
+}
+
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] div[style*="cursor: pointer"]::before,
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] div[style*="cursor: pointer"]::after,
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] div[style*="cursor: pointer"]::before,
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] div[style*="cursor: pointer"]::after {
+    background-color: #eaf9ff !important;
+    box-shadow: 0 0 8px rgba(0,255,136,.20) !important;
+}
+
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiIconButton-root,
+html.eos-route-adapters #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiButtonBase-root,
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiIconButton-root,
+html.eos-route-intro #app-paper .MuiCard-root > div[style*="position: absolute"][style*="z-index: 3"] .MuiButtonBase-root {
+    background: rgba(0,255,136,.10) !important;
+    border: 1px solid rgba(0,255,136,.20) !important;
+    color: var(--eos-text) !important;
+}
+
+/* Services / instances page: modern EOS list surface without stamping the
+   NexoWatt logo onto instance rows. */
+html.eos-route-instances #app-paper {
+    padding: 10px !important;
+    background:
+        radial-gradient(circle at 88% 10%, rgba(0,212,255,.08), transparent 30%),
+        linear-gradient(180deg, rgba(8,25,41,.78), rgba(3,12,23,.80)) !important;
+}
+
+html.eos-route-instances #app-paper .MuiToolbar-root,
+html.eos-route-instances #app-paper [class*="TabHeader"],
+html.eos-route-instances #app-paper form,
+html.eos-route-instances #app-paper .MuiTextField-root {
+    border-radius: 16px !important;
+}
+
+html.eos-route-instances #app-paper .MuiAccordion-root {
+    margin: 7px 0 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(123,204,255,.18) !important;
+    background: rgba(7, 24, 39, .72) !important;
+    box-shadow: 0 8px 22px rgba(0,0,0,.18) !important;
+}
+
+html.eos-route-instances #app-paper .MuiAccordion-root::before {
+    display: none !important;
+}
+
+html.eos-route-instances #app-paper .MuiAccordionSummary-root {
+    border-radius: 16px !important;
+    min-height: 48px !important;
+    border: 1px solid transparent !important;
+    background:
+        linear-gradient(90deg, rgba(0,255,136,.13), rgba(0,212,255,.055)),
+        rgba(8, 31, 50, .78) !important;
+    color: var(--eos-text) !important;
+}
+
+html.eos-route-instances #app-paper .MuiAccordionSummary-root:hover {
+    border-color: rgba(0,255,136,.28) !important;
+    background:
+        linear-gradient(90deg, rgba(0,255,136,.20), rgba(0,212,255,.08)),
+        rgba(8, 31, 50, .86) !important;
+}
+
+html.eos-route-instances #app-paper .MuiAccordionDetails-root {
+    margin: 0 !important;
+    padding: 14px 16px 16px !important;
+    border-top: 1px solid rgba(0,255,136,.18) !important;
+    background:
+        radial-gradient(circle at 92% 0%, rgba(0,212,255,.07), transparent 30%),
+        rgba(4, 17, 29, .88) !important;
+}
+
+html.eos-route-instances #app-paper .MuiAvatar-root,
+html.eos-route-instances #app-paper img {
+    border-radius: 10px !important;
+}
+
+html.eos-route-instances #app-paper .MuiIconButton-root,
+html.eos-route-instances #app-paper .MuiButtonBase-root:not(.MuiAccordionSummary-root) {
+    border-radius: 12px !important;
+}
+
+html.eos-route-instances #app-paper .MuiCard-root {
+    border-radius: 22px !important;
+    border: 1px solid rgba(123,204,255,.20) !important;
+    background: linear-gradient(180deg, rgba(13,36,58,.88), rgba(6,21,36,.86)) !important;
+    overflow: hidden !important;
+}
+
+html.eos-route-instances #app-paper .MuiCard-root > div:first-child {
+    background: linear-gradient(135deg, rgba(0,255,136,.18), rgba(0,212,255,.10)) !important;
+    border-bottom: 1px solid rgba(0,255,136,.20) !important;
+}
+
+html.eos-route-instances #app-paper .MuiChip-root,
+html.eos-route-instances #app-paper .MuiAvatar-root {
+    box-shadow: 0 0 0 1px rgba(0,255,136,.10) !important;
+}
+
+@media (max-width: 900px) {
+    :root {
+        --eos-drawer-width: 82px;
+    }
+    html.eos-app .eos-native-drawer-header > div:first-child {
+        grid-template-columns: 1fr !important;
+        justify-items: center !important;
+        padding: 7px 5px !important;
+    }
+    html.eos-app .eos-native-drawer-header a {
+        width: 52px !important;
+        height: 52px !important;
+        flex-basis: 52px !important;
+    }
+    html.eos-app .eos-native-drawer-header img,
+    html.eos-app .eos-native-drawer-header .MuiAvatar-root {
+        width: 43px !important;
+        height: 43px !important;
+        min-width: 43px !important;
+        min-height: 43px !important;
     }
 }
