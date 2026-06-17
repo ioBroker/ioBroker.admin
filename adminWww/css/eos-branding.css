@@ -2027,3 +2027,174 @@ html.eos-app .MuiDialog-paper:has(#base-settings-dialog-title) .MuiDialogActions
         min-height: 260px !important;
     }
 }
+
+
+/* === NexoWatt EOS v14: header logo visibility + nav overlap cleanup ======
+   Basis bleibt v13. Korrektur: Header-Logo deutlich sichtbar, Collapse-Pfeil
+   als eigener kleiner Slot vor der Navigation, kein Überlappen mit Cockpit,
+   und keine sichtbare Abmelden-Kachel mehr. */
+html.eos-app .eos-brand-badge {
+    display: grid !important;
+    grid-template-columns: 66px minmax(155px, 1fr) 10px !important;
+    align-items: center !important;
+    min-width: 292px !important;
+    width: 292px !important;
+    height: 58px !important;
+    min-height: 58px !important;
+    padding: 5px 14px 5px 6px !important;
+    column-gap: 12px !important;
+    overflow: visible !important;
+    isolation: isolate !important;
+}
+
+html.eos-app .eos-brand-badge-mark {
+    position: relative !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px !important;
+    border-radius: 20px !important;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.18), rgba(2, 9, 20, 0.98) 72%) !important;
+    border: 1px solid rgba(0, 255, 136, 0.62) !important;
+    box-shadow:
+        inset 0 0 18px rgba(0, 255, 136, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 0 18px rgba(0, 255, 136, 0.38),
+        0 0 34px rgba(0, 212, 255, 0.12) !important;
+    z-index: 2 !important;
+}
+
+html.eos-app .eos-brand-badge-logo {
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px !important;
+    min-height: 50px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    object-fit: contain !important;
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+    filter:
+        brightness(1.85)
+        contrast(1.08)
+        saturate(1.35)
+        drop-shadow(0 0 1px rgba(240, 255, 252, 0.70))
+        drop-shadow(0 0 10px rgba(0, 255, 136, 0.58)) !important;
+}
+
+html.eos-app .eos-brand-badge-copy {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    z-index: 2 !important;
+}
+
+html.eos-app .eos-brand-badge-copy strong,
+html.eos-app .eos-brand-badge-copy small {
+    display: block !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Collapse slot in the horizontal nav: separate from Cockpit, no logo/text. */
+html.eos-app .eos-native-drawer-header {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: 1 !important;
+    order: 0 !important;
+    flex: 0 0 58px !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 8px 0 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+}
+
+html.eos-app .eos-native-drawer-header > div:first-child {
+    position: relative !important;
+    inset: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    overflow: visible !important;
+}
+
+html.eos-app .eos-native-drawer-header button,
+html.eos-app .eos-native-drawer-header .MuiIconButton-root,
+html.eos-app .eos-native-drawer-header [role="button"] {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    z-index: 3 !important;
+    flex: 0 0 46px !important;
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    min-height: 46px !important;
+    transform: none !important;
+}
+
+html.eos-app .eos-scroll-nav,
+html.eos-app .MuiDrawer-paper .MuiList-root {
+    order: 1 !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+html.eos-app .eos-scroll-nav > .MuiListItem-root:first-child,
+html.eos-app .eos-scroll-nav > li:first-child {
+    margin-left: 0 !important;
+}
+
+/* Remove the broken visible logout entry from the horizontal rail. */
+html.eos-app .eos-hidden-logout,
+html.eos-app .eos-hidden-logout * {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+@media (max-width: 1220px) {
+    html.eos-app .eos-brand-badge {
+        min-width: 72px !important;
+        width: 72px !important;
+        grid-template-columns: 1fr !important;
+        justify-items: center !important;
+        padding: 5px !important;
+    }
+    html.eos-app .eos-brand-badge-mark {
+        width: 58px !important;
+        height: 58px !important;
+        min-width: 58px !important;
+    }
+    html.eos-app .eos-brand-badge-logo {
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+    }
+}
