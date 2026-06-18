@@ -1,4 +1,4 @@
-/* NexoWatt EOS branding overlay v16.
+/* NexoWatt EOS branding overlay v17.
    Runtime-skin only: upstream React/Vite bundles stay untouched for update compatibility. */
 :root {
     --eos-bg-0: #020914;
@@ -2504,6 +2504,261 @@ html.eos-app .eos-top-toolbar svg {
         width: 50px !important;
         min-width: 50px !important;
         max-width: 50px !important;
+        margin-right: 14px !important;
+    }
+}
+
+
+/* === NexoWatt EOS v17: clean header logo, collapse slot, auth-safe nav =====
+   Build on v16; no structural rewrite. Header brand gets a dedicated optimized
+   logo image. The native logout item is removed from the horizontal rail and
+   the collapse button has its own fixed slot with real spacing. */
+html.eos-app .eos-brand-badge {
+    display: grid !important;
+    grid-template-columns: 76px minmax(178px, 1fr) 10px !important;
+    align-items: center !important;
+    justify-items: start !important;
+    width: 334px !important;
+    min-width: 334px !important;
+    height: 62px !important;
+    min-height: 62px !important;
+    padding: 4px 15px 4px 8px !important;
+    column-gap: 12px !important;
+    overflow: visible !important;
+    background:
+        radial-gradient(circle at 24% 50%, rgba(0, 255, 136, .20), transparent 42%),
+        linear-gradient(135deg, rgba(0, 255, 136, .14), rgba(0, 212, 255, .07)) !important;
+}
+
+html.eos-app .eos-brand-badge-mark {
+    position: relative !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    min-height: 64px !important;
+    max-width: 64px !important;
+    max-height: 64px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 22px !important;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(0, 255, 170, .15), rgba(1, 20, 25, .96) 62%, rgba(1, 9, 18, .99) 100%) !important;
+    border: 1px solid rgba(0, 255, 136, .50) !important;
+    box-shadow:
+        inset 0 0 18px rgba(0, 255, 136, .12),
+        0 0 0 1px rgba(255,255,255,.04),
+        0 0 22px rgba(0, 255, 136, .24),
+        0 0 38px rgba(0, 212, 255, .10) !important;
+    overflow: visible !important;
+    isolation: isolate !important;
+}
+
+html.eos-app .eos-brand-badge-mark::before,
+html.eos-app .eos-brand-badge-mark::after {
+    content: none !important;
+    display: none !important;
+}
+
+html.eos-app .eos-brand-badge-logo {
+    display: block !important;
+    position: static !important;
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
+    max-width: 56px !important;
+    max-height: 56px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    opacity: .98 !important;
+    transform: none !important;
+    mix-blend-mode: normal !important;
+    filter: drop-shadow(0 0 6px rgba(0, 255, 170, .25)) !important;
+}
+
+html.eos-app .eos-brand-badge-copy {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+html.eos-app .eos-brand-badge-copy strong {
+    color: #f5fbff !important;
+    font-size: 14px !important;
+    line-height: 1.05 !important;
+    font-weight: 950 !important;
+    letter-spacing: -0.01em !important;
+    text-shadow: 0 1px 9px rgba(0,0,0,.38) !important;
+}
+
+html.eos-app .eos-brand-badge-copy small {
+    color: rgba(236, 249, 255, .80) !important;
+    font-size: 7.9px !important;
+    line-height: 1.05 !important;
+    font-weight: 850 !important;
+    letter-spacing: .06em !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 1px 7px rgba(0,0,0,.32) !important;
+}
+
+/* Collapse slot: only the arrow button may live here. Everything else from the
+   old drawer header is clipped/hidden so no text can overlap the nav. */
+html.eos-app .eos-native-drawer-header {
+    flex: 0 0 74px !important;
+    width: 74px !important;
+    min-width: 74px !important;
+    max-width: 74px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    margin: 0 18px 0 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+    background: rgba(0, 255, 136, .09) !important;
+    border: 1px solid rgba(0, 255, 136, .24) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 8px 20px rgba(0,0,0,.20) !important;
+}
+
+html.eos-app .eos-native-drawer-header > div:first-child,
+html.eos-app .eos-native-drawer-header .eos-collapse-slot {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+}
+
+html.eos-app .eos-native-drawer-header .eos-collapse-button,
+html.eos-app .eos-native-drawer-header button.eos-collapse-button,
+html.eos-app .eos-native-drawer-header button:not([data-eos-logout-hidden="true"]),
+html.eos-app .eos-native-drawer-header .MuiIconButton-root:not([data-eos-logout-hidden="true"]) {
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    min-height: 46px !important;
+    max-width: 46px !important;
+    max-height: 46px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border-radius: 16px !important;
+    color: #eaf7ff !important;
+    background: linear-gradient(135deg, rgba(0,255,136,.18), rgba(0,212,255,.08)) !important;
+    border: 1px solid rgba(0,255,136,.34) !important;
+    box-shadow: 0 0 16px rgba(0,255,136,.18) !important;
+    transform: none !important;
+}
+
+html.eos-app .eos-native-drawer-header .eos-collapse-button svg,
+html.eos-app .eos-native-drawer-header button.eos-collapse-button svg {
+    width: 24px !important;
+    height: 24px !important;
+    color: #eaf7ff !important;
+}
+
+html.eos-app .eos-native-drawer-header .eos-collapse-hidden,
+html.eos-app .eos-native-drawer-header .eos-collapse-hidden *,
+html.eos-app .eos-native-drawer-header a,
+html.eos-app .eos-native-drawer-header img,
+html.eos-app .eos-native-drawer-header .MuiAvatar-root,
+html.eos-app .eos-native-drawer-header .MuiAvatar-img,
+html.eos-app .eos-native-drawer-header .eos-native-title,
+html.eos-app .eos-native-drawer-header .MuiTypography-root {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}
+
+html.eos-app .eos-scroll-nav,
+html.eos-app .MuiDrawer-paper .MuiList-root {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    gap: 10px !important;
+}
+
+html.eos-app .eos-hidden-logout,
+html.eos-app .eos-hidden-logout *,
+html.eos-app [data-eos-logout-hidden="true"],
+html.eos-app [data-eos-logout-hidden="true"] * {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}
+
+html.eos-app .MuiAppBar-root .MuiToolbar-root,
+html.eos-app .MuiAppBar-root .MuiToolbar-root span,
+html.eos-app .MuiAppBar-root .MuiToolbar-root p,
+html.eos-app .MuiAppBar-root .MuiToolbar-root div,
+html.eos-app .eos-top-toolbar,
+html.eos-app .eos-top-toolbar span,
+html.eos-app .eos-top-toolbar p,
+html.eos-app .eos-top-toolbar div {
+    color: #eaf7ff !important;
+}
+
+@media (max-width: 1220px) {
+    html.eos-app .eos-brand-badge {
+        min-width: 76px !important;
+        width: 76px !important;
+        grid-template-columns: 1fr !important;
+        justify-items: center !important;
+        padding: 4px 6px !important;
+    }
+    html.eos-app .eos-brand-badge-copy,
+    html.eos-app .eos-brand-led {
+        display: none !important;
+    }
+    html.eos-app .eos-brand-badge-mark {
+        width: 62px !important;
+        height: 62px !important;
+        min-width: 62px !important;
+        min-height: 62px !important;
+    }
+    html.eos-app .eos-brand-badge-logo {
+        width: 54px !important;
+        height: 54px !important;
+        min-width: 54px !important;
+        min-height: 54px !important;
+    }
+    html.eos-app .eos-native-drawer-header {
+        flex-basis: 68px !important;
+        width: 68px !important;
+        min-width: 68px !important;
+        max-width: 68px !important;
         margin-right: 14px !important;
     }
 }
