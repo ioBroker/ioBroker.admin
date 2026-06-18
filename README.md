@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.4 (2026-06-18)
 - (@GermanBluefox) Moved the MCP server to a separate package because of the tin-foil hat crowd.
 - (@GermanBluefox) Corrected the background color of states with overloaded colors
 - (@GermanBluefox) Added gemini template for credentials
