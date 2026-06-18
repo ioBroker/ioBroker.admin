@@ -4791,6 +4791,10 @@
                         "custom"
                       ]
                     },
+                    "disableCreation": {
+                      "description": "If true, do not show the button to create a new credential",
+                      "type": "boolean"
+                    },
                     "attr": true,
                     "label": true,
                     "type": true,
@@ -8274,6 +8278,10 @@
                           "ai",
                           "custom"
                         ]
+                      },
+                      "disableCreation": {
+                        "description": "If true, do not show the button to create a new credential",
+                        "type": "boolean"
                       },
                       "label": true,
                       "type": true,
