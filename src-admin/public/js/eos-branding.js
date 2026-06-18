@@ -1,7 +1,7 @@
 (() => {
     'use strict';
 
-    window.NEXOWATT_EOS_UI_VERSION = 'v13-settings-no-logout';
+    window.NEXOWATT_EOS_UI_VERSION = 'v15-logo-dark-collapse-left-fix';
 
     const BRAND = 'NexoWatt EOS';
     const EOS_MEANING = 'Energy Operation System';
@@ -253,48 +253,101 @@
         document.querySelectorAll('.eos-brand-badge').forEach(existing => {
             if (!toolbar.contains(existing)) existing.remove();
         });
-        if (toolbar.querySelector('.eos-brand-badge')) return;
-        const badge = document.createElement('span');
-        badge.className = 'eos-brand-badge eos-system-brand';
+        let badge = toolbar.querySelector('.eos-brand-badge');
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'eos-brand-badge eos-system-brand';
+            const firstButton = toolbar.querySelector('button');
+            toolbar.insertBefore(badge, firstButton || toolbar.firstChild || null);
+        }
+        badge.classList.add('eos-system-brand');
         badge.innerHTML = `
-            <img class="eos-brand-badge-logo" src="${LOGO}" alt="${BRAND}" />
+            <span class="eos-brand-badge-mark"><img class="eos-brand-badge-logo" src="${LOGO}" alt="${BRAND}" /></span>
             <span class="eos-brand-badge-copy"><strong>${BRAND}</strong><small>${EOS_MEANING}</small></span>
             <span class="eos-brand-led"></span>
         `;
-        const firstButton = toolbar.querySelector('button');
-        toolbar.insertBefore(badge, firstButton || toolbar.firstChild || null);
     };
 
     const ensureLogoutButton = () => {
-        // v13: the custom EOS logout button is intentionally disabled/removed.
-        // The native session handling stays untouched to avoid broken redirects/404s.
+        // v15: the custom EOS logout button remains disabled/removed.
+        // Native logout entries are hidden because they caused broken redirects in this branded shell.
         removeLogoutButton();
     };
+
+    const hideNativeLogoutNav = () => safe(() => {
+        const drawer = document.querySelector('.MuiDrawer-paper');
+        if (!drawer) return;
+
+        const markHidden = el => {
+            if (!el || el === drawer) return;
+            const item = el.closest('.MuiListItem-root, li') || el.closest('.MuiListItemButton-root, a, button, [role="button"]') || el;
+            item.classList.add('eos-hidden-logout');
+            item.setAttribute('data-eos-logout-hidden', 'true');
+            item.setAttribute('aria-hidden', 'true');
+            item.setAttribute('tabindex', '-1');
+        };
+
+        const isLogoutText = value => {
+            const text = normalize(value || '');
+            if (!text) return false;
+            // Exact menu entry plus common translated/original keys. Allow short badge/icon text around it.
+            return text === 'abmelden' || text === 'logout' || text === 'ra_logout' || /(^|\s)(abmelden|logout|ra_logout)(\s|$)/.test(text);
+        };
+
+        const isLogoutHref = value => /(?:^|[/?#])logout(?:[/?#=&]|$)/i.test(String(value || ''));
+
+        const candidates = Array.from(drawer.querySelectorAll('a, button, .MuiListItem-root, .MuiListItemButton-root, [role="button"], [title], [aria-label]'));
+        candidates.forEach(el => {
+            const values = [
+                el.textContent,
+                el.getAttribute && el.getAttribute('aria-label'),
+                el.getAttribute && el.getAttribute('title'),
+                el.getAttribute && el.getAttribute('data-name'),
+            ];
+            const href = el.getAttribute && el.getAttribute('href');
+            if (values.some(isLogoutText) || isLogoutHref(href)) markHidden(el);
+        });
+
+        // Sometimes the translated text is nested below a generated wrapper that is not a list item candidate.
+        Array.from(drawer.querySelectorAll('*')).forEach(el => {
+            if (el.children.length > 2) return;
+            if (isLogoutText(el.textContent)) markHidden(el);
+        });
+    });
 
     const patchDrawerHeader = drawer => safe(() => {
         if (!drawer) return;
         drawer.classList.add('eos-drawer');
         drawer.querySelectorAll('.eos-drawer-identity').forEach(el => el.remove());
+
         const directChildren = Array.from(drawer.children).filter(el => el.nodeType === 1);
-        const header = directChildren.find(el => el.querySelector && el.querySelector('button') && (el.querySelector('img') || el.querySelector('.MuiAvatar-root') || el.querySelector('a')))
-            || directChildren.find(el => el.querySelector && (el.querySelector('button') || el.querySelector('img')));
-        if (!header) return;
-        header.classList.add('eos-native-drawer-header');
-        const img = header.querySelector('img');
-        if (img) patchImage(img);
-        const avatarImg = header.querySelector('.MuiAvatar-img');
-        if (avatarImg) patchImage(avatarImg);
-        const logoArea = header.querySelector('a')?.parentElement || header.firstElementChild || header;
-        if (logoArea && !logoArea.querySelector('.eos-native-title')) {
-            const title = document.createElement('span');
-            title.className = 'eos-native-title';
-            title.innerHTML = `<strong>${BRAND}</strong><small>${EOS_MEANING}</small>`;
-            const link = logoArea.querySelector('a');
-            if (link && link.nextSibling) logoArea.insertBefore(title, link.nextSibling);
-            else logoArea.appendChild(title);
+        const isListLike = el => el.classList?.contains('MuiList-root') || el.querySelector?.('.MuiListItemButton-root');
+        let header = drawer.querySelector(':scope > .eos-native-drawer-header');
+        if (!header) {
+            header = directChildren.find(el => !isListLike(el) && el.querySelector && el.querySelector('button') && (el.querySelector('img') || el.querySelector('.MuiAvatar-root') || el.querySelector('a')))
+                || directChildren.find(el => !isListLike(el) && el.querySelector && (el.querySelector('button') || el.querySelector('img') || el.querySelector('.MuiAvatar-root')));
+        }
+        if (header) {
+            header.classList.add('eos-native-drawer-header');
+            const img = header.querySelector('img');
+            if (img) patchImage(img);
+            const avatarImg = header.querySelector('.MuiAvatar-img');
+            if (avatarImg) patchImage(avatarImg);
+            const logoArea = header.querySelector('a')?.parentElement || header.firstElementChild || header;
+            if (logoArea && !logoArea.querySelector('.eos-native-title')) {
+                const title = document.createElement('span');
+                title.className = 'eos-native-title';
+                title.innerHTML = `<strong>${BRAND}</strong><small>${EOS_MEANING}</small>`;
+                const link = logoArea.querySelector('a');
+                if (link && link.nextSibling) logoArea.insertBefore(title, link.nextSibling);
+                else logoArea.appendChild(title);
+            }
         }
         const list = drawer.querySelector('.MuiList-root');
-        if (list) list.classList.add('eos-scroll-nav');
+        if (list) {
+            list.classList.add('eos-scroll-nav');
+            hideNativeLogoutNav();
+        }
     });
 
     const patchShell = () => safe(() => {
@@ -313,6 +366,7 @@
             ensureBrandBadge(toolbar);
         }
         patchDrawerHeader(document.querySelector('.MuiDrawer-paper'));
+        hideNativeLogoutNav();
         removeLogoutButton();
     });
 
@@ -473,6 +527,7 @@
         ensureRightsHelper();
         ensurePermissionPresets();
         ensureSettingsDialogClasses();
+        hideNativeLogoutNav();
         patchTextNodes(document.body || document.documentElement);
         patchAttributes(document.body || document.documentElement);
     };
@@ -487,6 +542,7 @@
         ensureRightsHelper();
         ensurePermissionPresets();
         ensureSettingsDialogClasses();
+        hideNativeLogoutNav();
         for (const scope of scopes.slice(0, 80)) {
             if (!scope || !scope.isConnected) continue;
             patchTextNodes(scope);

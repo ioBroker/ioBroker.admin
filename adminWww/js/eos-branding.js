@@ -1,7 +1,7 @@
 (() => {
     'use strict';
 
-    window.NEXOWATT_EOS_UI_VERSION = 'v14-logo-collapse-overlap-fix';
+    window.NEXOWATT_EOS_UI_VERSION = 'v15-logo-dark-collapse-left-fix';
 
     const BRAND = 'NexoWatt EOS';
     const EOS_MEANING = 'Energy Operation System';
@@ -269,22 +269,49 @@
     };
 
     const ensureLogoutButton = () => {
-        // v14: the custom EOS logout button remains disabled/removed.
-        // The visible native logout menu item is hidden too because it caused broken redirects.
+        // v15: the custom EOS logout button remains disabled/removed.
+        // Native logout entries are hidden because they caused broken redirects in this branded shell.
         removeLogoutButton();
     };
 
     const hideNativeLogoutNav = () => safe(() => {
-        const candidates = Array.from(document.querySelectorAll('.MuiDrawer-paper a, .MuiDrawer-paper button, .MuiDrawer-paper .MuiListItem-root, .MuiDrawer-paper .MuiListItemButton-root, .MuiDrawer-paper [role=\"button\"]'));
-        candidates.forEach(el => {
-            const text = normalize(el.textContent || el.getAttribute('aria-label') || el.getAttribute('title') || '');
-            const href = String(el.getAttribute('href') || '');
-            const isLogout = /^(abmelden|logout|ra_logout)$/.test(text) || /(?:^|[/?#])logout(?:[/?#]|$)/i.test(href);
-            if (!isLogout) return;
-            const item = el.closest('.MuiListItem-root, li') || el.closest('.MuiListItemButton-root, a, button') || el;
+        const drawer = document.querySelector('.MuiDrawer-paper');
+        if (!drawer) return;
+
+        const markHidden = el => {
+            if (!el || el === drawer) return;
+            const item = el.closest('.MuiListItem-root, li') || el.closest('.MuiListItemButton-root, a, button, [role="button"]') || el;
             item.classList.add('eos-hidden-logout');
+            item.setAttribute('data-eos-logout-hidden', 'true');
             item.setAttribute('aria-hidden', 'true');
             item.setAttribute('tabindex', '-1');
+        };
+
+        const isLogoutText = value => {
+            const text = normalize(value || '');
+            if (!text) return false;
+            // Exact menu entry plus common translated/original keys. Allow short badge/icon text around it.
+            return text === 'abmelden' || text === 'logout' || text === 'ra_logout' || /(^|\s)(abmelden|logout|ra_logout)(\s|$)/.test(text);
+        };
+
+        const isLogoutHref = value => /(?:^|[/?#])logout(?:[/?#=&]|$)/i.test(String(value || ''));
+
+        const candidates = Array.from(drawer.querySelectorAll('a, button, .MuiListItem-root, .MuiListItemButton-root, [role="button"], [title], [aria-label]'));
+        candidates.forEach(el => {
+            const values = [
+                el.textContent,
+                el.getAttribute && el.getAttribute('aria-label'),
+                el.getAttribute && el.getAttribute('title'),
+                el.getAttribute && el.getAttribute('data-name'),
+            ];
+            const href = el.getAttribute && el.getAttribute('href');
+            if (values.some(isLogoutText) || isLogoutHref(href)) markHidden(el);
+        });
+
+        // Sometimes the translated text is nested below a generated wrapper that is not a list item candidate.
+        Array.from(drawer.querySelectorAll('*')).forEach(el => {
+            if (el.children.length > 2) return;
+            if (isLogoutText(el.textContent)) markHidden(el);
         });
     });
 
