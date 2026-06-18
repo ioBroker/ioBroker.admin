@@ -3,7 +3,7 @@
  *
  *      Controls Adapter-Processes
  *
- *      Copyright 2014-2025 Denis Haev <dogafox@gmail.com>,
+ *      Copyright 2014-2026 Denis Haev <dogafox@gmail.com>,
  *      MIT License
  *
  */
@@ -108,7 +108,7 @@ class Admin extends Adapter {
 
     private changedPasswords: WellKnownUserPassword[] = [];
 
-    /** In-process ioBroker.mcp connection backing the chat helper. Created on first chat message. */
+    /** In-process ioBroker/mcp-server connection backing the chat helper. Created on first chat message. */
     private mcpChat: McpClientManager | null = null;
 
     constructor(options: Partial<AdapterOptions> = {}) {
@@ -144,9 +144,7 @@ class Admin extends Adapter {
             if (id === 'system.config' && !this.config.language) {
                 if (obj.common?.language) {
                     systemLanguage = obj.common.language;
-                    if (webServer) {
-                        webServer.setLanguage(systemLanguage);
-                    }
+                    webServer?.setLanguage(systemLanguage);
                 }
             }
 
@@ -251,94 +249,110 @@ class Admin extends Adapter {
         if (obj.command === 'im') {
             // if not instance message
             socket.publishInstanceMessageAll(obj.from, obj.message.m, obj.message.s, obj.message.d);
-        } else if (obj.command === 'checkFiles') {
-            if (typeof obj.message === 'string') {
-                if (obj.callback) {
-                    try {
-                        this.sendTo(obj.from, obj.command, { result: existsSync(obj.message) }, obj.callback);
-                    } catch (e) {
-                        this.sendTo(obj.from, obj.command, { error: e.message }, obj.callback);
+        } else {
+            if (obj.command === 'checkFiles') {
+                if (typeof obj.message === 'string') {
+                    if (obj.callback) {
+                        try {
+                            this.sendTo(obj.from, obj.command, { result: existsSync(obj.message) }, obj.callback);
+                        } catch (e) {
+                            this.sendTo(obj.from, obj.command, { error: e.message }, obj.callback);
+                        }
                     }
+                    return;
+                }
+                if (Array.isArray(obj.message)) {
+                    const result: Record<string, boolean> = {};
+                    for (let f = 0; f < obj.message.length; f++) {
+                        try {
+                            result[obj.message[f]] = existsSync(obj.message[f]);
+                        } catch (e) {
+                            result[obj.message[f]] = e.message;
+                        }
+                    }
+                    return obj.callback && this.sendTo(obj.from, obj.command, result, obj.callback);
+                }
+            }
+            if (obj.command === 'autocomplete') {
+                // just for test
+                return (
+                    obj.callback &&
+                    this.sendTo(
+                        obj.from,
+                        obj.command,
+                        [
+                            { value: 1, label: 'first' },
+                            { value: 2, label: 'second' },
+                        ],
+                        obj.callback,
+                    )
+                );
+            }
+            if (obj.command === 'selectSendTo') {
+                this.log.info(`SelectSendTo: ${JSON.stringify(obj.message)}`);
+                // just for test
+                return (
+                    obj.callback &&
+                    this.sendTo(
+                        obj.from,
+                        obj.command,
+                        [
+                            { label: 'Afghanistan', value: 'AF' },
+                            { label: 'Åland Islands', value: 'AX' },
+                            { label: 'Albania', value: 'AL' },
+                        ],
+                        obj.callback,
+                    )
+                );
+            }
+            if (obj.command === 'url') {
+                this.log.info(`url: ${JSON.stringify(obj.message)}`);
+                // just for test
+                if (obj.callback) {
+                    this.sendTo(
+                        obj.from,
+                        obj.command,
+                        { openUrl: obj.message._origin, saveConfig: true },
+                        obj.callback,
+                    );
                 }
                 return;
-            } else if (Array.isArray(obj.message)) {
-                const result: Record<string, boolean> = {};
-                for (let f = 0; f < obj.message.length; f++) {
-                    try {
-                        result[obj.message[f]] = existsSync(obj.message[f]);
-                    } catch (e) {
-                        result[obj.message[f]] = e.message;
+            }
+            if (obj.command.startsWith('admin:')) {
+                return this.processNotificationsGui(obj);
+            }
+            if (obj.command.startsWith('test:')) {
+                // just for test
+                this.log.info(`test: ${JSON.stringify(obj.message)}`);
+                return;
+            }
+            if (obj.command === 'checkDocker') {
+                const dockerManager = new DockerManager({
+                    logger: {
+                        level: this.common?.loglevel || 'info',
+                        silly: this.log.silly.bind(this.log),
+                        debug: this.log.debug.bind(this.log),
+                        info: this.log.info.bind(this.log),
+                        warn: this.log.warn.bind(this.log),
+                        error: this.log.error.bind(this.log),
+                    },
+                    namespace: this.namespace,
+                });
+                void dockerManager.getDockerDaemonInfo().then(result => {
+                    if (obj.callback) {
+                        this.sendTo(obj.from, obj.command, result, obj.callback);
                     }
-                }
-                return obj.callback && this.sendTo(obj.from, obj.command, result, obj.callback);
+                    void dockerManager.destroy();
+                });
+                return;
             }
-        } else if (obj.command === 'autocomplete') {
-            // just for test
-            return (
-                obj.callback &&
-                this.sendTo(
-                    obj.from,
-                    obj.command,
-                    [
-                        { value: 1, label: 'first' },
-                        { value: 2, label: 'second' },
-                    ],
-                    obj.callback,
-                )
-            );
-        } else if (obj.command === 'selectSendTo') {
-            this.log.info(`SelectSendTo: ${JSON.stringify(obj.message)}`);
-            // just for test
-            return (
-                obj.callback &&
-                this.sendTo(
-                    obj.from,
-                    obj.command,
-                    [
-                        { label: 'Afghanistan', value: 'AF' },
-                        { label: 'Åland Islands', value: 'AX' },
-                        { label: 'Albania', value: 'AL' },
-                    ],
-                    obj.callback,
-                )
-            );
-        } else if (obj.command === 'url') {
-            this.log.info(`url: ${JSON.stringify(obj.message)}`);
-            // just for test
-            if (obj.callback) {
-                this.sendTo(obj.from, obj.command, { openUrl: obj.message._origin, saveConfig: true }, obj.callback);
+            if (obj.command.startsWith('chat:')) {
+                this.processChatMessage(obj).catch(error => this.log.error(`Error by chat processing: ${error}`));
+                return;
             }
-            return;
-        } else if (obj.command.startsWith('admin:')) {
-            return this.processNotificationsGui(obj);
-        } else if (obj.command.startsWith('test:')) {
-            // just for test
-            this.log.info(`test: ${JSON.stringify(obj.message)}`);
-            return;
-        } else if (obj.command === 'checkDocker') {
-            const dockerManager = new DockerManager({
-                logger: {
-                    level: this.common?.loglevel || 'info',
-                    silly: this.log.silly.bind(this.log),
-                    debug: this.log.debug.bind(this.log),
-                    info: this.log.info.bind(this.log),
-                    warn: this.log.warn.bind(this.log),
-                    error: this.log.error.bind(this.log),
-                },
-                namespace: this.namespace,
-            });
-            void dockerManager.getDockerDaemonInfo().then(result => {
-                if (obj.callback) {
-                    this.sendTo(obj.from, obj.command, result, obj.callback);
-                }
-                void dockerManager.destroy();
-            });
-            return;
-        } else if (obj.command.startsWith('chat:')) {
-            this.processChatMessage(obj).catch(error => this.log.error(`Error by chat processing: ${error}`));
-            return;
-        } else if (webServer?.processMessage(obj)) {
-            return;
+            if (webServer?.processMessage(obj)) {
+                return;
+            }
         }
 
         socket?.sendCommand(obj);

@@ -22,7 +22,7 @@ import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import type { InternalStorageToken } from '@iobroker/socket-classes';
-import { McpServer, type McpAdapterConfig } from 'iobroker.mcp';
+import { McpServer, type McpConfig } from '@iobroker/mcp-server';
 import type { AdminAdapterConfig } from '../types';
 
 let AdapterStore;
@@ -1246,7 +1246,7 @@ export default class Web {
                             defaultUser: this.settings.defaultUser,
                             auth: false,
                             language: systemConfig.common.language,
-                        } as McpAdapterConfig,
+                        } as unknown as McpConfig,
                     } as unknown as ioBroker.InstanceObject,
                     this.server.app,
                 );

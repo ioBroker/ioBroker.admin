@@ -52,6 +52,7 @@ import {
     type CredentialForm,
     type CredentialType,
 } from './credentialTypes';
+import { CHAT_SETTINGS_OBJECT_ID } from '../Chat/chatTypes';
 
 const styles: Record<string, React.CSSProperties> = {
     tabPanel: {
@@ -314,29 +315,48 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
     }
 
     componentDidMount(): void {
-        // Find out which instances reference which credential
-        void this.props.socket
-            .getAdapterInstances(true)
-            .then(instances => {
-                const usage: Record<string, UsageEntry[]> = {};
-                instances.forEach(instance => {
-                    const text = JSON.stringify(instance.native || {});
-                    const matches = text.match(/system\.credentials\.[0-9A-Za-z_.-]+/g);
-                    if (matches) {
-                        const instanceId = instance._id.replace('system.adapter.', '');
-                        let icon = instance.common?.icon;
-                        if (icon && !icon.startsWith('data:image') && !icon.includes('/')) {
-                            icon = `adapter/${instance.common.name}/${icon}`;
-                        }
-                        [...new Set(matches)].forEach(id => {
-                            usage[id] = usage[id] || [];
-                            usage[id].push({ instance: instanceId, icon });
-                        });
+        void this.detectUsage();
+    }
+
+    /** Find out which adapter instances and the admin AI assistant reference which credential */
+    async detectUsage(): Promise<void> {
+        const usage: Record<string, UsageEntry[]> = {};
+        const add = (id: string, entry: UsageEntry): void => {
+            usage[id] = usage[id] || [];
+            usage[id].push(entry);
+        };
+
+        // 1. Instances that store a `system.credentials.*` reference somewhere in their `native`
+        try {
+            const instances = await this.props.socket.getAdapterInstances(true);
+            instances.forEach(instance => {
+                const text = JSON.stringify(instance.native || {});
+                const matches = text.match(/system\.credentials\.[0-9A-Za-z_.-]+/g);
+                if (matches) {
+                    const instanceId = instance._id.replace('system.adapter.', '');
+                    let icon = instance.common?.icon;
+                    if (icon && !icon.startsWith('data:image') && !icon.includes('/')) {
+                        icon = `adapter/${instance.common.name}/${icon}`;
                     }
-                });
-                this.setState({ usage });
-            })
-            .catch(e => console.error(`Cannot read instances: ${e}`));
+                    [...new Set(matches)].forEach(id => add(id, { instance: instanceId, icon }));
+                }
+            });
+        } catch (e) {
+            console.error(`Cannot read instances: ${e}`);
+        }
+
+        // 2. The admin AI assistant keeps its selected credential in `system.ai`
+        try {
+            const aiObj = await this.props.socket.getObject(CHAT_SETTINGS_OBJECT_ID);
+            const credentialId = aiObj?.native?.credentialId;
+            if (typeof credentialId === 'string' && credentialId.startsWith(CREDENTIALS_PREFIX)) {
+                add(credentialId, { instance: this.props.t('AI assistant'), icon: 'adapter/admin/admin.svg' });
+            }
+        } catch {
+            // ignore — the object may not exist yet
+        }
+
+        this.setState({ usage });
     }
 
     onChangeCredential(index: number, credential: ioBroker.Object): void {

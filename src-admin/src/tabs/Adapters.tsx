@@ -66,6 +66,9 @@ import type { AdminGuiConfig, CommandFile } from '@/types';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdminUpdater from '@/dialogs/AdminUpdater';
 
+const ONE_DAY_MS = 3_600_000 * 24; // 1 day in milliseconds
+const ONE_DAY_BY_10 = ONE_DAY_MS / 10; // 1 day in milliseconds * 10
+
 export type CompactSystemRepository = {
     _id: string;
     common: {
@@ -112,11 +115,18 @@ const styles: Record<string, any> = {
     },
 };
 
+const FILTER_DESCRIPTION = 'Description A-Z';
+const FILTER_NAME = 'Name A-Z';
+const FILTER_POPULAR = 'Popular first';
+const FILTER_UPDATED = 'Recently updated';
+const FILTER_CREATED = 'Recently created';
+
 const FILTERS: { name: string; notByList?: boolean }[] = [
-    { name: 'Description A-Z' },
-    { name: 'Name A-Z' },
-    { name: 'Popular first', notByList: true },
-    { name: 'Recently updated', notByList: true },
+    { name: FILTER_DESCRIPTION },
+    { name: FILTER_NAME },
+    { name: FILTER_POPULAR, notByList: true },
+    { name: FILTER_UPDATED, notByList: true },
+    { name: FILTER_CREATED, notByList: true },
 ];
 
 interface AdaptersProps extends AdapterInstallDialogProps {
@@ -219,6 +229,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
 
     private recentUpdatedAdapters: number = 0;
 
+    private recentCreatedAdapters: number = 0;
+
     private uuid: string = '';
 
     private buildCacheTimer: ReturnType<typeof setTimeout> | null = null;
@@ -265,7 +277,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             updateList: false,
             installedList: 0,
             categoriesTiles: 'All',
-            filterTiles: 'Description A-Z',
+            filterTiles: FILTER_DESCRIPTION,
             gitHubInstallDialog: false,
             updateAvailable: [],
             filteredList: null,
@@ -628,6 +640,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         sortByName: boolean,
         sortPopularFirst?: boolean,
         sortRecentlyUpdated?: boolean,
+        sortRecentlyCreated?: boolean,
         filteredList?: {
             [adapterName: string]: { exact: boolean; type: 'name' | 'desc' | 'title' | 'keywords'; start?: boolean };
         } | null,
@@ -650,13 +663,45 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 if (!adapters[b]) {
                     return 1;
                 }
-                if ((adapters[a] as AdapterCacheEntry).daysAgo === (adapters[b] as AdapterCacheEntry).daysAgo) {
+                // Same NaN guard as sortRecentlyCreated: a missing "versionDate" yields NaN — push those
+                // to the end instead of returning NaN from the comparator.
+                const updatedA = (adapters[a] as AdapterCacheEntry).daysAgo;
+                const updatedB = (adapters[b] as AdapterCacheEntry).daysAgo;
+                const ua = Number.isFinite(updatedA) ? updatedA : Infinity;
+                const ub = Number.isFinite(updatedB) ? updatedB : Infinity;
+
+                if (ua === ub) {
                     titles[a] ||= Adapters.getAdapterTitle(a, adapters, lang);
                     titles[b] ||= Adapters.getAdapterTitle(b, adapters, lang);
 
                     return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
                 }
-                return (adapters[a] as AdapterCacheEntry).daysAgo - (adapters[b] as AdapterCacheEntry).daysAgo;
+                return ua - ub;
+            }
+
+            if (sortRecentlyCreated) {
+                if (!adapters[a]) {
+                    return -1;
+                }
+                if (!adapters[b]) {
+                    return 1;
+                }
+
+                // Adapters without a (valid) "published" date have no creation info: `createdDaysAgo` is
+                // NaN. Treat that as "infinitely old" so they sort to the very end — and, just as
+                // importantly, never let the comparator return NaN (which corrupts the whole sort order).
+                const createdA = (adapters[a] as AdapterCacheEntry).createdDaysAgo;
+                const createdB = (adapters[b] as AdapterCacheEntry).createdDaysAgo;
+                const ca = Number.isFinite(createdA) ? createdA : Infinity;
+                const cb = Number.isFinite(createdB) ? createdB : Infinity;
+
+                if (ca === cb) {
+                    titles[a] ||= Adapters.getAdapterTitle(a, adapters, lang);
+                    titles[b] ||= Adapters.getAdapterTitle(b, adapters, lang);
+
+                    return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
+                }
+                return ca - cb;
             }
 
             if (filteredList) {
@@ -811,10 +856,14 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 const type: string = adapter.type;
                 const installedInGroup = installed[adapterName];
 
-                const daysAgo = Math.round((now - new Date(adapter.versionDate).getTime()) / 86400000);
+                const daysAgo = Math.round((now - new Date(adapter.versionDate).getTime()) / ONE_DAY_MS);
+                const createdDaysAgo = Math.round((now - new Date(adapter.published).getTime()) / ONE_DAY_MS);
 
                 if (daysAgo <= 31) {
                     this.recentUpdatedAdapters++;
+                }
+                if (createdDaysAgo <= 31) {
+                    this.recentCreatedAdapters++;
                 }
                 if (installed[adapterName]) {
                     this.installedAdapters++;
@@ -857,7 +906,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             .forEach(categoryType => categoriesSorted.push(categories[categoryType]));
 
         // const _titles = {};
-        const sortByName = this.state.filterTiles === 'Name A-Z';
+        const sortByName = this.state.filterTiles === FILTER_NAME;
 
         Object.keys(categories).forEach(type =>
             Adapters.sortAdapters(categories[type].adapters, this.props.lang, installed, repository, sortByName),
@@ -887,9 +936,9 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             'All';
         let filterTiles =
             (((window as any)._localStorage as Storage) || window.localStorage).getItem('Adapters.filterTiles') ||
-            'Description A-Z';
+            FILTER_DESCRIPTION;
         if (filterTiles === 'A-Z') {
-            filterTiles = 'Description A-Z';
+            filterTiles = FILTER_DESCRIPTION;
         }
         this.allAdapters = Object.keys(repository).length - 1;
 
@@ -1171,8 +1220,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
 
         // By the list view, the filterTiles can be only 'Description A-Z' or 'Name A-Z'
         let filterTiles = this.state.filterTiles;
-        if (tableViewMode && filterTiles !== 'Description A-Z' && filterTiles !== 'Name A-Z') {
-            filterTiles = 'Description A-Z';
+        if (tableViewMode && filterTiles !== FILTER_DESCRIPTION && filterTiles !== FILTER_NAME) {
+            filterTiles = FILTER_DESCRIPTION;
             (((window as any)._localStorage as Storage) || window.localStorage).setItem(
                 'Adapters.filterTiles',
                 filterTiles,
@@ -1361,8 +1410,9 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             /** node.js version of current host */
             categories: this.state.categories,
             descHidden,
-            sortPopularFirst: !this.state.tableViewMode && this.state.filterTiles === 'Popular first',
-            sortRecentlyUpdated: !this.state.tableViewMode && this.state.filterTiles === 'Recently updated',
+            sortPopularFirst: !this.state.tableViewMode && this.state.filterTiles === FILTER_POPULAR,
+            sortRecentlyUpdated: !this.state.tableViewMode && this.state.filterTiles === FILTER_UPDATED,
+            sortRecentlyCreated: !this.state.tableViewMode && this.state.filterTiles === FILTER_CREATED,
             isTileView: !this.state.tableViewMode,
             updateRating: (adapter: string, rating: RatingDialogRepository) => {
                 const repository: Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }> = JSON.parse(
@@ -1420,8 +1470,15 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                         }
                         if (show) {
                             this.cache.listOfVisibleAdapter.push(adapterName);
-                            const daysAgo10 = Math.round((now - new Date(adapter.versionDate).getTime()) / 8640000);
+                            const daysAgo10 = Math.round(
+                                (now - new Date(adapter.versionDate).getTime()) / ONE_DAY_BY_10,
+                            );
                             const daysAgo = Math.round(daysAgo10 / 10);
+
+                            const createdDaysAgo10 = Math.round(
+                                (now - new Date(adapter.published).getTime()) / ONE_DAY_BY_10,
+                            );
+                            const createdDaysAgo = Math.round(createdDaysAgo10 / 10);
 
                             const titleObj = adapter.titleLang || adapter.title;
                             let title: string;
@@ -1444,6 +1501,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                             }
 
                             const _daysAgo10 = daysAgo % 100 <= 10 || daysAgo % 100 >= 20 ? daysAgo % 10 : 5;
+                            const _createdDaysAgo10 =
+                                createdDaysAgo % 100 <= 10 || createdDaysAgo % 100 >= 20 ? createdDaysAgo % 10 : 5;
 
                             this.cache.adapters[adapterName] = {
                                 title,
@@ -1458,6 +1517,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                                 rightOs: this.rightOs(adapterName),
                                 sentry: !!adapter.plugins?.sentry,
                                 daysAgo: daysAgo10,
+                                createdDaysAgo: createdDaysAgo10,
                                 stat: adapter.stat || 0,
                                 daysAgoText:
                                     daysAgo || daysAgo === 0
@@ -1469,6 +1529,18 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                                                 ? textDaysAgo2.replace('%d', daysAgo.toString())
                                                 : textDaysAgo.replace('%d', daysAgo.toString())
                                         : '',
+                                createdDaysAgoText:
+                                    createdDaysAgo || createdDaysAgo === 0
+                                        ? createdDaysAgo === 0
+                                            ? textDaysAgo0
+                                            : _createdDaysAgo10 === 1
+                                              ? textDaysAgo1.replace('%d', createdDaysAgo.toString())
+                                              : _createdDaysAgo10 === 2 ||
+                                                  _createdDaysAgo10 === 3 ||
+                                                  _createdDaysAgo10 === 4
+                                                ? textDaysAgo2.replace('%d', createdDaysAgo.toString())
+                                                : textDaysAgo.replace('%d', createdDaysAgo.toString())
+                                        : '',
                             };
                         }
                     }
@@ -1477,7 +1549,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
 
         this.listOfVisibleAdapterLength = this.cache.listOfVisibleAdapter.length;
 
-        const sortByName = this.state.filterTiles === 'Name A-Z';
+        const sortByName = this.state.filterTiles === FILTER_NAME;
 
         if (this.state.tableViewMode) {
             this.state.categories.forEach(category =>
@@ -1499,10 +1571,10 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             sortByName,
             context.sortPopularFirst,
             context.sortRecentlyUpdated,
+            context.sortRecentlyCreated,
             this.state.filteredList,
         );
 
-        console.log(`[ADAPTERS] ${new Date().toISOString()} Update cache!`);
         this.forceUpdate();
     }
 
@@ -1568,6 +1640,13 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                         >
                             {this.t('Last month updated adapters')}:{' '}
                             <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.recentUpdatedAdapters}</span>
+                        </Box>
+                        <Box
+                            component="div"
+                            sx={styles.counters}
+                        >
+                            {this.t('Last month created adapters')}:{' '}
+                            <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.recentCreatedAdapters}</span>
                         </Box>
                     </DialogContent>
                     <DialogActions>
@@ -2181,9 +2260,10 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     toggleCategory={category => this.toggleCategory(category)}
                     clearAllFilters={(onlyUpdate?: boolean) => this.clearAllFilters(onlyUpdate)}
                     descWidth={this.state.descWidth}
-                    sortByName={this.state.filterTiles === 'Name A-Z'}
+                    sortByName={this.state.filterTiles === FILTER_NAME}
                     sortPopularFirst={context.sortPopularFirst}
                     sortRecentlyUpdated={context.sortRecentlyUpdated}
+                    sortRecentlyCreated={context.sortRecentlyCreated}
                     commandRunning={this.props.commandRunning}
                 />
 

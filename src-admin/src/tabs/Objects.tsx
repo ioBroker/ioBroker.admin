@@ -76,7 +76,6 @@ interface ObjectsState {
     name: string;
     toast: string;
     deleteObjectShow: any;
-    // suppressDeleteConfirm: boolean;
 }
 
 export default class Objects extends Component<ObjectsProps, ObjectsState> {

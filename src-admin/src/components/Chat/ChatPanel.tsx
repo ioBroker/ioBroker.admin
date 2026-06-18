@@ -1003,6 +1003,10 @@ function ChatItemView({
                 <Accordion
                     disableGutters
                     elevation={0}
+                    // Expand automatically when a script/command was executed, so its raw output is visible.
+                    defaultExpanded={item.steps.some(
+                        step => step.tool === 'run_javascript' || step.tool === 'run_node_script',
+                    )}
                     sx={{ bgcolor: 'transparent', '&:before': { display: 'none' } }}
                 >
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -1053,7 +1057,7 @@ function ChatItemView({
                                         whiteSpace: 'pre-wrap',
                                         wordBreak: 'break-word',
                                         color: 'text.secondary',
-                                        maxHeight: 160,
+                                        maxHeight: 300,
                                         overflow: 'auto',
                                     }}
                                 >

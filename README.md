@@ -167,6 +167,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Moved the MCP server to a separate package because of the tin-foil hat crowd.
+- (@GermanBluefox) Corrected the background color of states with overloaded colors
+- (@GermanBluefox) Added gemini template for credentials
+- (@GermanBluefox) Added sortinf of adapters by creation date in the adapters tab
+
 ### 7.9.2 (2026-06-15)
 - (@GermanBluefox) AI must be enabled first in the settings to be used in the admin interface
 

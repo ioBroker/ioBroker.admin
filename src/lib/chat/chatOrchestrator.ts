@@ -108,6 +108,54 @@ function truncate(text: string, max: number): string {
     return text.length > max ? `${text.substring(0, max)}…` : text;
 }
 
+/** Display budget for the raw output/logs of execution tools (run_javascript / run_node_script). */
+const STEP_OUTPUT_PREVIEW = 6000;
+
+/** Tools whose result is program output the user wants to see raw, not as JSON. */
+const OUTPUT_TOOLS = new Set(['run_javascript', 'run_node_script']);
+
+/**
+ * Build the result preview shown in the chat's tool-step list. For execution tools the JSON result is
+ * turned into a readable, raw output/logs/error block so the user can see what actually happened (the
+ * model still receives the full JSON `text`); every other tool keeps the compact truncated-JSON preview.
+ */
+function formatStepResult(tool: string, text: string): string {
+    if (OUTPUT_TOOLS.has(tool)) {
+        try {
+            const parsed = JSON.parse(text) as { ok?: boolean; error?: string; data?: Record<string, unknown> };
+            const d = parsed.data || {};
+            const error = (typeof d.error === 'string' ? d.error : '') || parsed.error || '';
+            const failed = parsed.ok === false || d.ok === false || !!error;
+            const parts: string[] = [failed ? `✗ ${error || 'execution failed'}` : '✓ executed'];
+            if (typeof d.instance === 'string') {
+                parts.push(`instance: ${d.instance}${typeof d.engineType === 'string' ? ` (${d.engineType})` : ''}`);
+            }
+            if (typeof d.exitCode === 'number') {
+                parts.push(`exit code: ${d.exitCode}${d.timedOut ? ' (timed out)' : ''}`);
+            }
+            const out = typeof d.output === 'string' ? d.output : typeof d.stdout === 'string' ? d.stdout : '';
+            if (out.trim()) {
+                parts.push(`--- output ---\n${out.trim()}`);
+            }
+            const logs = Array.isArray(d.logs) ? d.logs.join('\n') : '';
+            if (logs.trim()) {
+                parts.push(`--- logs ---\n${logs.trim()}`);
+            }
+            const stderr = typeof d.stderr === 'string' ? d.stderr : '';
+            if (stderr.trim()) {
+                parts.push(`--- stderr ---\n${stderr.trim()}`);
+            }
+            if (parts.length === 1) {
+                parts.push('(no output)');
+            }
+            return truncate(parts.join('\n'), STEP_OUTPUT_PREVIEW);
+        } catch {
+            // not parseable — fall back to the raw text below
+        }
+    }
+    return truncate(text, STEP_RESULT_PREVIEW);
+}
+
 /**
  * Recover tool calls that a model emitted as TEXT instead of as native `tool_calls`.
  *
@@ -415,7 +463,7 @@ export class ChatOrchestrator {
 
         return {
             message: { role: 'tool', tool_call_id: toolCall.id, content: text },
-            step: { tool: name, args, ok, result: truncate(text, STEP_RESULT_PREVIEW) },
+            step: { tool: name, args, ok, result: formatStepResult(name, text) },
             ...(clientAction ? { clientAction } : {}),
         };
     }

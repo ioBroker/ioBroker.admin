@@ -253,6 +253,14 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
                 {error ? <Alert severity="error">{error}</Alert> : null}
                 {info ? <Alert severity="success">{info}</Alert> : null}
 
+                {canTest(value) ? (
+                    <Alert severity="warning">
+                        {I18n.t(
+                            "The objects, states and logs will be processed by your AI provider. It is time to peel off the tin-foil hat. 🙂",
+                        )}
+                    </Alert>
+                ) : null}
+
                 <div>
                     <FormControlLabel
                         control={
