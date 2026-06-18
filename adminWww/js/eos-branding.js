@@ -1,7 +1,7 @@
 (() => {
     'use strict';
 
-    window.NEXOWATT_EOS_UI_VERSION = 'v15-logo-dark-collapse-left-fix';
+    window.NEXOWATT_EOS_UI_VERSION = 'v16-logo-rail-username-fix';
 
     const BRAND = 'NexoWatt EOS';
     const EOS_MEANING = 'Energy Operation System';
@@ -274,47 +274,62 @@
         removeLogoutButton();
     };
 
-    const hideNativeLogoutNav = () => safe(() => {
-        const drawer = document.querySelector('.MuiDrawer-paper');
-        if (!drawer) return;
 
-        const markHidden = el => {
-            if (!el || el === drawer) return;
-            const item = el.closest('.MuiListItem-root, li') || el.closest('.MuiListItemButton-root, a, button, [role="button"]') || el;
-            item.classList.add('eos-hidden-logout');
-            item.setAttribute('data-eos-logout-hidden', 'true');
-            item.setAttribute('aria-hidden', 'true');
-            item.setAttribute('tabindex', '-1');
-        };
+    const hideNativeLogoutNav = () => safe(() => {
+        const rails = Array.from(document.querySelectorAll('.MuiDrawer-paper, .eos-drawer, .eos-scroll-nav, nav, [role="navigation"]'));
+        const roots = rails.length ? rails : [document.body].filter(Boolean);
 
         const isLogoutText = value => {
-            const text = normalize(value || '');
+            const text = normalize(value || '').replace(/[_-]+/g, ' ');
             if (!text) return false;
-            // Exact menu entry plus common translated/original keys. Allow short badge/icon text around it.
-            return text === 'abmelden' || text === 'logout' || text === 'ra_logout' || /(^|\s)(abmelden|logout|ra_logout)(\s|$)/.test(text);
+            return text === 'abmelden' || text === 'logout' || text === 'ra logout' || /(^|\s)(abmelden|logout|ra logout)(\s|$)/.test(text);
         };
 
-        const isLogoutHref = value => /(?:^|[/?#])logout(?:[/?#=&]|$)/i.test(String(value || ''));
+        const isLogoutHref = value => /(?:^|[/?#])logout(?:[/?#=&]|$)|ra_logout/i.test(String(value || ''));
 
-        const candidates = Array.from(drawer.querySelectorAll('a, button, .MuiListItem-root, .MuiListItemButton-root, [role="button"], [title], [aria-label]'));
-        candidates.forEach(el => {
-            const values = [
-                el.textContent,
-                el.getAttribute && el.getAttribute('aria-label'),
-                el.getAttribute && el.getAttribute('title'),
-                el.getAttribute && el.getAttribute('data-name'),
-            ];
-            const href = el.getAttribute && el.getAttribute('href');
-            if (values.some(isLogoutText) || isLogoutHref(href)) markHidden(el);
-        });
+        const markHidden = el => {
+            if (!el) return;
+            const item = el.closest('.MuiListItem-root, li') || el.closest('.MuiListItemButton-root, a, button, [role="button"]') || el;
+            [item, el].forEach(target => {
+                if (!target || target === document.body || target === document.documentElement) return;
+                target.classList.add('eos-hidden-logout');
+                target.setAttribute('data-eos-logout-hidden', 'true');
+                target.setAttribute('aria-hidden', 'true');
+                target.setAttribute('tabindex', '-1');
+                target.style.setProperty('display', 'none', 'important');
+                target.style.setProperty('visibility', 'hidden', 'important');
+                target.style.setProperty('opacity', '0', 'important');
+                target.style.setProperty('width', '0', 'important');
+                target.style.setProperty('min-width', '0', 'important');
+                target.style.setProperty('height', '0', 'important');
+                target.style.setProperty('min-height', '0', 'important');
+                target.style.setProperty('margin', '0', 'important');
+                target.style.setProperty('padding', '0', 'important');
+                target.style.setProperty('overflow', 'hidden', 'important');
+                target.style.setProperty('pointer-events', 'none', 'important');
+            });
+        };
 
-        // Sometimes the translated text is nested below a generated wrapper that is not a list item candidate.
-        Array.from(drawer.querySelectorAll('*')).forEach(el => {
-            if (el.children.length > 2) return;
-            if (isLogoutText(el.textContent)) markHidden(el);
+        roots.forEach(root => {
+            const candidates = Array.from(root.querySelectorAll('a, button, .MuiListItem-root, .MuiListItemButton-root, [role="button"], [title], [aria-label]'));
+            candidates.forEach(el => {
+                const values = [
+                    el.textContent,
+                    el.getAttribute && el.getAttribute('aria-label'),
+                    el.getAttribute && el.getAttribute('title'),
+                    el.getAttribute && el.getAttribute('data-name'),
+                    el.getAttribute && el.getAttribute('data-value'),
+                ];
+                const href = el.getAttribute && el.getAttribute('href');
+                if (values.some(isLogoutText) || isLogoutHref(href)) markHidden(el);
+            });
+
+            Array.from(root.querySelectorAll('*')).forEach(el => {
+                if (el.children.length > 3) return;
+                if (isLogoutText(el.textContent)) markHidden(el);
+            });
         });
     });
-
     const patchDrawerHeader = drawer => safe(() => {
         if (!drawer) return;
         drawer.classList.add('eos-drawer');
@@ -530,6 +545,7 @@
         hideNativeLogoutNav();
         patchTextNodes(document.body || document.documentElement);
         patchAttributes(document.body || document.documentElement);
+        hideNativeLogoutNav();
     };
 
     const scopePatch = () => {
@@ -548,6 +564,7 @@
             patchTextNodes(scope);
             patchAttributes(scope);
         }
+        hideNativeLogoutNav();
     };
 
     const scheduleFullPatch = delay => {
