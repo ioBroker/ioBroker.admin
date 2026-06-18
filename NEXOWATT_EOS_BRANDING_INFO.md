@@ -23,3 +23,10 @@ Siehe `docs/NEXOWATT_EOS_UI_REFINED_V5_DE.md`.
 - Entfernt den zusätzlichen EOS-Abmelden-Button.
 - Gestaltet die System-/Basiseinstellungen mit EOS-Feldkarten und besser lesbaren Eingabeflächen.
 - Cache-Busting: `v=13`.
+
+
+## v18 Header-logo position fix
+
+- Hebt die innere NexoWatt-Logo-Kachel im Header minimal an.
+- Lässt das akzeptierte v17-Layout ansonsten unverändert.
+- Cache-Busting: `v=18`.

@@ -1,7 +1,7 @@
 (() => {
     'use strict';
 
-    window.NEXOWATT_EOS_UI_VERSION = 'v17-logo-collapse-auth-fix';
+    window.NEXOWATT_EOS_UI_VERSION = 'v18-header-logo-position-fix';
 
     const BRAND = 'NexoWatt EOS';
     const EOS_MEANING = 'Energy Operation System';

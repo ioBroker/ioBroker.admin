@@ -1,4 +1,4 @@
-/* NexoWatt EOS branding overlay v17.
+/* NexoWatt EOS branding overlay v18.
    Runtime-skin only: upstream React/Vite bundles stay untouched for update compatibility. */
 :root {
     --eos-bg-0: #020914;
@@ -2760,5 +2760,27 @@ html.eos-app .eos-top-toolbar div {
         min-width: 68px !important;
         max-width: 68px !important;
         margin-right: 14px !important;
+    }
+}
+
+
+/* === NexoWatt EOS v18: final header logo vertical alignment ===============
+   Keep the accepted v17 layout. Only lift the inner NexoWatt logo tile inside
+   the header brand pill so the icon sits cleaner in the surrounding oval card. */
+html.eos-app .eos-brand-badge {
+    align-items: center !important;
+}
+
+html.eos-app .eos-brand-badge-mark {
+    transform: translateY(-4px) !important;
+}
+
+html.eos-app .eos-brand-badge-logo {
+    transform: none !important;
+}
+
+@media (max-width: 1220px) {
+    html.eos-app .eos-brand-badge-mark {
+        transform: translateY(-3px) !important;
     }
 }

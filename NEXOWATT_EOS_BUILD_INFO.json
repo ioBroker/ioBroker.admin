@@ -1,16 +1,15 @@
 {
-  "name": "NexoWatt EOS admin UI v13",
-  "base": "v12 accepted full-width header + horizontal navigation",
+  "name": "NexoWatt EOS admin UI v18",
+  "base": "v17 accepted header + horizontal navigation layout",
   "created": "2026-06-17T19:25:00Z",
   "changes": [
-    "keeps the accepted v12 layout with full header and horizontal navigation",
-    "removes the custom EOS Abmelden/logout button because it caused broken redirects",
-    "restyles System/Basiseinstellungen dialogs with readable EOS form cards, tabs, map and action bar",
-    "keeps readable adapter description overlays and EOS Dienste/Instanzen styling",
+    "keeps the accepted v17 layout with full header and horizontal navigation",
+    "moves the inner NexoWatt logo tile slightly higher inside the header brand card",
+    "does not change adapter cards, navigation, login, logout or auth/session logic",
     "leaves upstream React/Vite runtime bundles untouched"
   ],
   "generated": "2026-06-17T00:00:00Z",
-  "eosUiVersion": "v13-settings-no-logout",
+  "eosUiVersion": "v18-header-logo-position-fix",
   "layout": "full-width header + horizontal navigation rail + full-width content",
-  "cacheBust": "v=13"
+  "cacheBust": "v=18"
 }
