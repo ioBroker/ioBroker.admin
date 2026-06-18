@@ -1,4 +1,7 @@
 # Older changes
+## 7.8.27 (2026-05-25)
+- (@GermanBluefox) Updated packages
+
 ## 7.8.25 (2026-05-16)
 - (@GermanBluefox) Extended JSON config for frigate adapter
 
