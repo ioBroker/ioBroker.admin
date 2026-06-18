@@ -1,15 +1,15 @@
 /**
- * Owns the in-process ioBroker.mcp server + MCP client used by the admin chat helper.
+ * Owns the in-process ioBroker/mcp-server + MCP client used by the admin chat helper.
  *
  * The MCP server is embedded directly in the admin process (no HTTP) and reached over an in-memory
  * transport, so the chat backend can discover and call ioBroker tools without a separate mcp
  * instance, port or authentication. The connection is established lazily on first use and shared
  * across all chat requests.
  *
- * This is the "A1" integration: the tools are served by iobroker.mcp, while the LLM orchestration
+ * This is the "A1" integration: the tools are served by iobroker/mcp-server, while the LLM orchestration
  * that drives these tools is added on top in the (still to come) chat orchestrator.
  */
-import { createInProcessMcp, type InProcessMcp, type InProcessToolInfo } from 'iobroker.mcp';
+import { createInProcessMcp, type InProcessMcp, type InProcessToolInfo } from '@iobroker/mcp-server';
 
 /** OpenAI-style function tool definition (what LLM chat-completion APIs expect in `tools`). */
 export interface OpenAiFunctionTool {

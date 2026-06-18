@@ -28,7 +28,7 @@ interface FilesProps {
     theme: IobTheme;
 }
 
-class Files extends Component<FilesProps> {
+export default class Files extends Component<FilesProps> {
     private readonly t: Translate;
 
     private readonly wordCache: Record<string, string>;
@@ -184,5 +184,3 @@ class Files extends Component<FilesProps> {
         );
     }
 }
-
-export default Files;

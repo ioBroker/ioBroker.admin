@@ -850,13 +850,21 @@ select a certificate collection or just use all collections or don't use let's e
 
 ### `credential`
 
-select a credential from the central credential storage. The user manages the credentials in the admin settings
+select a credential from the central credential storage. The credentials can be managed in the admin settings
 (Settings → Credentials), and the adapter configuration only stores the ID of the selected credential
 (like `system.credentials.anthropic`) in the given attribute.
 
-| Property         | Description                                                                                                        |
-|------------------|--------------------------------------------------------------------------------------------------------------------|
-| `credentialType  | show only credentials of this type: `email`, `cloud`, `ai` or `custom`. If not defined, all credentials are listed |
+Unless `disableCreation` is set, a **➕ button** is shown next to the selector that opens a small "Add credential"
+dialog right there — similar to the admin dialog. It offers templates (with icons) filtered by `credentialType`
+(e.g. Anthropic / ChatGPT / Google Gemini for `ai`, plus the generic "Login & password" and "Key" templates).
+The chosen template defines the form, a proposed name and the icon; the secret fields are encrypted with the
+system secret on save. The newly created credential is stored as `system.credentials.<name>` and is selected
+immediately.
+
+| Property          | Description                                                                                                          |
+|-------------------|----------------------------------------------------------------------------------------------------------------------|
+| `credentialType`  | show only credentials of this type: `email`, `cloud`, `ai` or `custom`. If not defined, all credentials are listed   |
+| `disableCreation` | if `true`, hide the ➕ button so the user can only pick an existing credential (no creation at this place)            |
 
 Example:
 
@@ -866,6 +874,7 @@ Example:
     "type": "credential",
     "credentialType": "email",
     "label": "E-Mail account",
+    "disableCreation": false,
     "sm": 6
   }
 }
@@ -1813,6 +1822,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.4.8 (2026-06-18)
+- (@GermanBluefox) Allowed creating credentials directly in the `credential` component (templates with icons, filtered by `credentialType`; can be disabled with `disableCreation`)
+
 ### 8.4.7 (2026-06-07)
 - (@GermanBluefox) Added credential component
 

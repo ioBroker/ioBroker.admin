@@ -121,6 +121,7 @@ export type AdaptersContext = {
     descHidden: boolean;
     sortPopularFirst: boolean;
     sortRecentlyUpdated: boolean;
+    sortRecentlyCreated: boolean;
     isTileView: boolean;
     updateRating: (adapter: string, rating: RatingDialogRepository) => void;
     setAdminUpgradeTo: (version: string) => void;

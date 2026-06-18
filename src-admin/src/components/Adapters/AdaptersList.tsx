@@ -135,6 +135,7 @@ interface AdaptersListProps {
     sortByName: boolean;
     sortPopularFirst: boolean;
     sortRecentlyUpdated: boolean;
+    sortRecentlyCreated: boolean;
     commandRunning: boolean;
     updateListFilter: boolean;
     /** Filter as string */
@@ -157,6 +158,7 @@ interface AdaptersListState {
     sortByName: boolean;
     sortPopularFirst: boolean;
     sortRecentlyUpdated: boolean;
+    sortRecentlyCreated: boolean;
     renderCounter: number;
     expertMode: boolean;
     commandRunning: boolean;
@@ -181,6 +183,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             sortByName: props.sortByName,
             sortPopularFirst: props.sortPopularFirst,
             sortRecentlyUpdated: props.sortRecentlyUpdated,
+            sortRecentlyCreated: props.sortRecentlyCreated,
             renderCounter: 0,
             listOfVisibleAdapter: JSON.stringify(props.listOfVisibleAdapter),
             expertMode: props.context.expertMode,
@@ -536,6 +539,10 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             console.log('Render because of sortRecentlyUpdated');
             changed = true;
         }
+        if (props.sortRecentlyCreated !== state.sortRecentlyCreated) {
+            console.log('Render because of sortRecentlyCreated');
+            changed = true;
+        }
         if (props.context.expertMode !== state.expertMode) {
             console.log('Render because of expertMode');
             changed = true;
@@ -566,6 +573,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 sortByName: props.sortByName,
                 sortPopularFirst: props.sortPopularFirst,
                 sortRecentlyUpdated: props.sortRecentlyUpdated,
+                sortRecentlyCreated: props.sortRecentlyCreated,
                 listOfVisibleAdapter,
                 renderCounter: state.renderCounter + 1,
                 expertMode: props.context.expertMode,

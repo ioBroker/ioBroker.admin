@@ -7,6 +7,7 @@
  * "write"/"action" tools and therefore go through the per-action confirmation flow.
  */
 import { execFile, type ExecFileException } from 'node:child_process';
+import * as semver from 'semver';
 import type { OpenAiFunctionTool } from './mcpClientManager';
 
 /** How a tool is treated by the confirmation gate. */
@@ -574,6 +575,9 @@ function formatScriptLogs(logs: unknown): string[] {
     });
 }
 
+/** Minimum javascript adapter version that supports the `execute` message used by run_javascript. */
+const MIN_JAVASCRIPT_VERSION = '9.3.1';
+
 /**
  * Run a one-off JS/TS script INSIDE the javascript adapter (full ioBroker scripting API) by sending it
  * an `execute` message. High-risk (arbitrary code) — only reached after per-call confirmation.
@@ -590,6 +594,7 @@ async function runJavaScript(adapter: ioBroker.Adapter, args: Record<string, unk
 
     // Pick the javascript instance: an explicit one, otherwise the first (preferably enabled) instance.
     let instance = argStr(args.instance).replace(/^system\.adapter\./, '');
+    let instanceObj: ioBroker.Object | null | undefined;
     if (!instance) {
         const instances = await adapter.getForeignObjectsAsync('system.adapter.javascript.*', 'instance');
         const ids = Object.keys(instances || {});
@@ -599,7 +604,21 @@ async function runJavaScript(adapter: ioBroker.Adapter, args: Record<string, unk
             );
         }
         const enabled = ids.find(id => instances[id]?.common?.enabled);
-        instance = (enabled || ids[0]).replace('system.adapter.', '');
+        const chosen = enabled || ids[0];
+        instance = chosen.replace('system.adapter.', '');
+        instanceObj = instances[chosen];
+    } else {
+        instanceObj = await adapter.getForeignObjectAsync(`system.adapter.${instance}`);
+    }
+
+    // The `execute` message used below is only available from javascript v9.2.4 onwards.
+    const common = instanceObj?.common as { version?: string } | undefined;
+    const version = typeof common?.version === 'string' ? common.version : '';
+    if (version && semver.valid(version) && semver.lt(version, MIN_JAVASCRIPT_VERSION)) {
+        return fail(
+            `Running scripts via the assistant requires the "javascript" adapter v${MIN_JAVASCRIPT_VERSION} or higher, ` +
+                `but ${instance} is v${version}. Please update the javascript adapter first.`,
+        );
     }
 
     const message = { source, engineType, timeout, verbose: true, maxLogs: 100 };

@@ -169,8 +169,10 @@ export type AdapterCacheEntry = {
     rightOs: boolean;
     sentry: boolean;
     daysAgo: number;
+    createdDaysAgo: number;
     stat: number;
     daysAgoText: string;
+    createdDaysAgoText: string;
 };
 
 export interface AdapterGenericProps extends AdapterInstallDialogProps {
@@ -323,7 +325,9 @@ export default abstract class AdapterGeneric<
 
         if (
             this.props.context.isTileView &&
-            (this.props.context.sortPopularFirst || this.props.context.sortRecentlyUpdated)
+            (this.props.context.sortPopularFirst ||
+                this.props.context.sortRecentlyUpdated ||
+                this.props.context.sortRecentlyCreated)
         ) {
             return null;
         }

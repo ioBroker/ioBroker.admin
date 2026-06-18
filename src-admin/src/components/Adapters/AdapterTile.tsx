@@ -273,7 +273,10 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
                     sx={Utils.getStyle(
                         this.props.context.theme,
                         this.styles.adapter,
-                        (available.stat || this.props.context.sortRecentlyUpdated) && this.styles.adapterWithAgo,
+                        (available.stat ||
+                            this.props.context.sortRecentlyUpdated ||
+                            this.props.context.sortRecentlyCreated) &&
+                            this.styles.adapterWithAgo,
                     )}
                 >
                     {this.props.adapterName}
@@ -284,7 +287,12 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
                 {this.props.context.sortRecentlyUpdated ? (
                     <div style={this.styles.versionDate}>{this.props.cached.daysAgoText}</div>
                 ) : null}
-                {!this.props.context.sortPopularFirst && !this.props.context.sortRecentlyUpdated
+                {this.props.context.sortRecentlyCreated ? (
+                    <div style={this.styles.versionDate}>{this.props.cached.createdDaysAgoText}</div>
+                ) : null}
+                {!this.props.context.sortPopularFirst &&
+                !this.props.context.sortRecentlyUpdated &&
+                !this.props.context.sortRecentlyCreated
                     ? this.renderRating()
                     : null}
                 {!this.state.openCollapse ? (
