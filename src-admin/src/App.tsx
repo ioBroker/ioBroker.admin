@@ -1673,6 +1673,7 @@ class App extends Router<AppProps, AppState> {
                         instances: instances || {},
                         nodeVersion: info ? info['Node.js'] || '?' : '?',
                         npmVersion: info ? info.NPM || '?' : '?',
+                        jsControllerVersion: this.state.installed?.['js-controller']?.version || '',
                         os: info ? info.os || '?' : '?',
                         activeRepo: this.state.systemConfig.common.activeRepo,
                         uuid,

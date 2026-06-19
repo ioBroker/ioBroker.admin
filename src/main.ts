@@ -1330,6 +1330,7 @@ class Admin extends Adapter {
         const uuid = (await this.getForeignObjectAsync('system.meta.uuid'))?.native.uuid;
         const nodeVersion = process.version;
         const npmVersion = await this.getNpmVersion();
+        const jsControllerVersion = this.getJsControllerVersion();
 
         const today = Date.now();
         for (const message of messages) {
@@ -1348,21 +1349,36 @@ class Admin extends Adapter {
                 showIt = false;
             } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
                 Object.keys(message.conditions).forEach(key => {
-                    if (showIt) {
-                        const adapter = adapters.rows.find(adapter => adapter.id === `system.adapter.${key}`);
-                        const condition = message.conditions[key];
+                    if (!showIt) {
+                        return;
+                    }
+                    const condition = message.conditions[key];
 
-                        if (!adapter && condition !== '!installed') {
+                    // js-controller is core infrastructure (always installed and active) and not a
+                    // regular adapter, so its version cannot be looked up in the adapters list.
+                    if (key === 'js-controller') {
+                        if (condition === '!installed' || condition === '!active') {
                             showIt = false;
-                        } else if (adapter && condition === '!installed') {
-                            showIt = false;
-                        } else if (adapter && condition === 'active') {
-                            showIt = this.checkActive(key, instances);
-                        } else if (adapter && condition === '!active') {
-                            showIt = !this.checkActive(key, instances);
-                        } else if (adapter?.value) {
-                            showIt = this.checkConditions(condition, adapter.value.common.version);
+                        } else if (condition === 'installed' || condition === 'active') {
+                            showIt = true;
+                        } else if (jsControllerVersion) {
+                            showIt = this.checkConditions(condition, jsControllerVersion);
                         }
+                        return;
+                    }
+
+                    const adapter = adapters.rows.find(adapter => adapter.id === `system.adapter.${key}`);
+
+                    if (!adapter && condition !== '!installed') {
+                        showIt = false;
+                    } else if (adapter && condition === '!installed') {
+                        showIt = false;
+                    } else if (adapter && condition === 'active') {
+                        showIt = this.checkActive(key, instances);
+                    } else if (adapter && condition === '!active') {
+                        showIt = !this.checkActive(key, instances);
+                    } else if (adapter?.value) {
+                        showIt = this.checkConditions(condition, adapter.value.common.version);
                     }
                 });
             }
@@ -1482,6 +1498,19 @@ class Admin extends Adapter {
         const diagData = await this.sendToHostAsync(this.host, 'getDiagData', 'normal');
         // @ts-expect-error messages are special and cannot be typed easily
         return diagData.objectsType as 'jsonl' | 'file' | 'redis';
+    }
+
+    /**
+     * Get the installed js-controller version. The controller is core infrastructure and not a
+     * regular adapter, so its version cannot be read from the `system.adapter.*` objects.
+     */
+    getJsControllerVersion(): string {
+        try {
+            return getInstalledInfo()['js-controller']?.version || '';
+        } catch (e) {
+            this.log.warn(`Cannot determine js-controller version: ${e}`);
+            return '';
+        }
     }
 
     /**
