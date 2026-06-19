@@ -24,11 +24,11 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/adapter-react-v5": "^8.2.10",
-        "@iobroker/dm-gui-components": "^9.1.0",
-        "@iobroker/json-config": "^8.4.8",
+        "@iobroker/adapter-react-v5": "^8.2.11",
+        "@iobroker/dm-gui-components": "^9.1.1",
+        "@iobroker/json-config": "^8.4.9",
         "ace-builds": "^1.44.0",
-        "http-proxy-middleware": "^3.0.5",
+        "http-proxy-middleware": "^4.1.1",
         "remark-gfm": "^4.0.1"
     },
     "devDependencies": {
@@ -38,7 +38,7 @@
         "@fnando/sparkline": "^0.3.10",
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
         "@iobroker/dm-utils": "^3.0.19",
-        "@iobroker/socket-client": "^5.1.4",
+        "@iobroker/socket-client": "^5.2.0",
         "@module-federation/runtime": "^2.0.1",
         "@module-federation/vite": "^1.11.0",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
