@@ -1168,7 +1168,7 @@
     "The host running syslogd, defaults to localhost": "L'host che esegue syslogd, per impostazione predefinita, è localhost",
     "The http(s) URL including port of the seq server. If you use HTTPS a real certificate is needed; self signed certs are ot accepted.": "L'URL http, inclusa la porta del server seq. Se utilizzi HTTPS è necessario un certificato reale; Non si accettano certificati autofirmati.",
     "The name of the application (Default: process.title).": "Il nome dell'applicazione (predefinito: process.title).",
-    "The objects, states and logs will be processed by your AI provider. It is time to peel off the tin-foil hat. 🙂": "Gli oggetti, gli stati e i log verranno elaborati dal tuo fornitore di IA. È ora di togliersi il cappello di stagnola. 🙂",
+    "The objects, states and logs will be processed by your AI provider.": "Gli oggetti, gli stati e i log verranno elaborati dal tuo fornitore di IA.",
     "The path to the syslog dgram socket (i.e. /dev/log or /var/run/syslog for OS X).": "Il percorso del socket del dgram syslog (ad esempio / dev / log o / var / run / syslog per OS X).",
     "The port on the host that syslog is running on, defaults to syslogd's default port(514/UDP).": "La porta dell'host su cui è in esecuzione syslog ha come impostazione predefinita la porta predefinita di syslogd (514 / UDP).",
     "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "I dati inviati verranno elaborati da ioBroker GmbH solo per scopi statistici e non saranno condivisi con terze parti.",

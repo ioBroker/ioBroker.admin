@@ -1168,7 +1168,7 @@
     "The host running syslogd, defaults to localhost": "运行syslogd的主机，默认为localhost",
     "The http(s) URL including port of the seq server. If you use HTTPS a real certificate is needed; self signed certs are ot accepted.": "http（s）URL，包括seq服务器的端口。如果您使用HTTPS，则需要一个真实的证书。可以接受自签名证书。",
     "The name of the application (Default: process.title).": "应用程序的名称（默认：process.title）。",
-    "The objects, states and logs will be processed by your AI provider. It is time to peel off the tin-foil hat. 🙂": "对象、状态和日志将由您的 AI 提供商处理。是时候摘下锡箔帽了。🙂",
+    "The objects, states and logs will be processed by your AI provider.": "对象、状态和日志将由您的 AI 提供商处理。是时候摘下锡箔帽了。🙂",
     "The path to the syslog dgram socket (i.e. /dev/log or /var/run/syslog for OS X).": "syslog dgram套接字的路径（对于OS X，即/ dev / log或/ var / run / syslog）。",
     "The port on the host that syslog is running on, defaults to syslogd's default port(514/UDP).": "运行syslog的主机上的端口，默认为syslogd的默认端口（514 / UDP）。",
     "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "发送的数据仅由 ioBroker GmbH 用于统计目的处理，不会与任何第三方共享。",
