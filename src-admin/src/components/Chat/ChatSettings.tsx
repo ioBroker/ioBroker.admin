@@ -255,9 +255,7 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
 
                 {canTest(value) ? (
                     <Alert severity="warning">
-                        {I18n.t(
-                            'The objects, states and logs will be processed by your AI provider.',
-                        )}
+                        {I18n.t('The objects, states and logs will be processed by your AI provider.')}
                     </Alert>
                 ) : null}
 

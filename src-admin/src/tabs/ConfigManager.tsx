@@ -1,6 +1,12 @@
 import React, { Component, type JSX } from 'react';
 
-import { AdminConnection, IobTheme, Router, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection,
+    type IobTheme,
+    type ThemeName,
+    type ThemeType,
+    Router,
+} from '@iobroker/adapter-react-v5';
 import DeviceList from '@iobroker/dm-gui-components';
 
 const styles: Record<string, React.CSSProperties> = {

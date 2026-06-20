@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.9.5 (2026-06-20)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Added "between" news rule
 - (@GermanBluefox) Better config-manager layout
 - (@GermanBluefox) Added filtering options for config-manager
