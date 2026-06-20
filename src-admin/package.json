@@ -24,9 +24,9 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/adapter-react-v5": "^8.2.11",
-        "@iobroker/dm-gui-components": "^9.1.1",
-        "@iobroker/json-config": "^8.4.9",
+        "@iobroker/adapter-react-v5": "^8.2.12",
+        "@iobroker/dm-gui-components": "^9.1.5",
+        "@iobroker/json-config": "^8.4.10",
         "ace-builds": "^1.44.0",
         "http-proxy-middleware": "^4.1.1",
         "remark-gfm": "^4.0.1"
@@ -37,13 +37,13 @@
         "@emotion/styled": "^11.14.1",
         "@fnando/sparkline": "^0.3.10",
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
-        "@iobroker/dm-utils": "^3.0.19",
+        "@iobroker/dm-utils": "^3.1.1",
         "@iobroker/socket-client": "^5.2.0",
         "@module-federation/runtime": "^2.0.1",
         "@module-federation/vite": "^1.11.0",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^3.0.0",
-        "@tsconfig/node16": "^16.1.8",
+        "@tsconfig/node20": "^20.1.9",
         "@types/ace": "^0.0.52",
         "@types/crypto-js": "^4.2.2",
         "@types/leaflet": "^1.9.21",

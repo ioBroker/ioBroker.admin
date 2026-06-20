@@ -169,12 +169,14 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Added "between" news rule
+- (@GermanBluefox) Better config-manager layout
+- (@GermanBluefox) Added filtering options for config-manager
 
 ### 7.9.4 (2026-06-18)
 - (@GermanBluefox) Moved the MCP server to a separate package
 - (@GermanBluefox) Corrected the background color of states with overloaded colors
 - (@GermanBluefox) Added gemini template for credentials
-- (@GermanBluefox) Added sorting of adapters by creation date in the adapters tab
+- (@GermanBluefox) Added sorting of adapters by creation date in the adapter tab
 
 ### 7.9.2 (2026-06-15)
 - (@GermanBluefox) AI must be enabled first in the settings to be used in the admin interface

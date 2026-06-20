@@ -127,7 +127,7 @@ const Objects = React.lazy(() => import('./tabs/Objects'));
 const Users = React.lazy(() => import('./tabs/Users'));
 const Enums = React.lazy(() => import('./tabs/Enums'));
 const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
-const DeviceManagerTab = React.lazy(() => import('./tabs/DeviceManager'));
+const DeviceManagerTab = React.lazy(() => import('./tabs/ConfigManager'));
 const Hosts = React.lazy(() => import('./tabs/Hosts'));
 const EasyMode = React.lazy(() => import('./tabs/EasyMode'));
 
@@ -624,7 +624,7 @@ class App extends Router<AppProps, AppState> {
                 ownHost: '',
                 currentTab: Router.getLocation(),
                 systemConfig: null,
-                user: null, // Logged in user
+                user: null, // Logged-in user
 
                 repository: {},
                 installed: {},
@@ -995,10 +995,14 @@ class App extends Router<AppProps, AppState> {
                 this.setTitle(this.state.currentTab.tab.replace('tab-', ''));
             }
 
+            let host = window.location.hostname;
+            if (host === 'localhost' && window.location.port === '3000') {
+                host = '192.168.1.129';
+            }
+
             this.socket = new Connection({
                 protocol: window.location.protocol as 'http:' | 'https:',
-                host: window.location.hostname,
-
+                host,
                 name: 'admin',
                 admin5only: true,
                 port: App.getPort(),
