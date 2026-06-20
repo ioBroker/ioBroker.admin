@@ -1,4 +1,7 @@
 # Older changes
+## 7.8.29 (2026-05-30)
+- (@GermanBluefox) Corrected JSON config for the select component with grouped options
+
 ## 7.8.27 (2026-05-25)
 - (@GermanBluefox) Updated packages
 

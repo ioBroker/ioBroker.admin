@@ -1822,6 +1822,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.4.10 (2026-06-20)
+- (@GermanBluefox) Fixed state component
+
 ### 8.4.9 (2026-06-19)
 - (@GermanBluefox) Moved translations from adapter-react to this repository
 
@@ -1829,7 +1832,7 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 - (@GermanBluefox) Allowed creating credentials directly in the `credential` component (templates with icons, filtered by `credentialType`; can be disabled with `disableCreation`)
 
 ### 8.4.7 (2026-06-07)
-- (@GermanBluefox) Added credential component
+- (@GermanBluefox) Added a credential component
 
 ### 8.4.5 (2026-05-30)
 - (@GermanBluefox) Fixing help rendering

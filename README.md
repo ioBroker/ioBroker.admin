@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.5 (2026-06-20)
 - (@GermanBluefox) Added "between" news rule
 - (@GermanBluefox) Better config-manager layout
 - (@GermanBluefox) Added filtering options for config-manager
@@ -187,9 +187,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.9.0 (2026-06-11)
 - (@GermanBluefox) Added the central credentials manager 
 - (@GermanBluefox) Added the possibility of installation of packages on specific hosts
-
-### 7.8.29 (2026-05-30)
-- (@GermanBluefox) Corrected JSON config for the select component with grouped options
 
 ## License
 
