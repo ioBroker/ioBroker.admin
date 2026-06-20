@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.9.5",
+    "version": "7.9.6",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.9.6": {
+        "en": "Added \"between\" news rule\nBetter config-manager layout\nAdded filtering options for config-manager",
+        "de": "Die Nachrichtenregel „zwischen“ wurde hinzugefügt.\nBesseres Layout des Konfigurationsmanagers\nFür den Konfigurationsmanager wurden Filteroptionen hinzugefügt.",
+        "ru": "Добавлено правило для новостей \"между\".\nУлучшенная компоновка менеджера конфигураций\nДобавлены параметры фильтрации для config-manager.",
+        "pt": "Adicionada regra de notícias \"entre\"\nLayout do gerenciador de configuração aprimorado\nAdicionadas opções de filtragem para o gerenciador de configuração.",
+        "nl": "Nieuwsregel \"tussen\" toegevoegd\nVerbeterde lay-out van de configuratiebeheerder\nFilteropties toegevoegd voor config-manager",
+        "fr": "Règle « entre » ajoutée\nMeilleure disposition du gestionnaire de configuration\nAjout d'options de filtrage pour config-manager",
+        "it": "Aggiunta la regola di notizie \"tra\"\nLayout migliore per il gestore di configurazione\nAggiunte opzioni di filtro per config-manager",
+        "es": "Se agregó la regla de noticias \"entre\"\nMejor diseño del gestor de configuración\nSe agregaron opciones de filtrado para config-manager.",
+        "pl": "Dodano regułę „pomiędzy” wiadomościami\nLepszy układ menedżera konfiguracji\nDodano opcje filtrowania dla menedżera konfiguracji",
+        "uk": "Додано правило «між» новинами\nКраще розташування конфігураційного менеджера\nДодано параметри фільтрації для config-manager",
+        "zh-cn": "新增“之间”新闻规则\n更好的配置管理器布局\n为配置管理器添加了筛选选项"
+      },
       "7.9.2": {
         "en": "AI must be enabled first in the settings to be used in the admin interface",
         "de": "AI muss zuerst in den Einstellungen aktiviert werden, die in der Admin-Schnittstelle verwendet werden sollen",
