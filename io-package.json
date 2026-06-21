@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.9.6",
+    "version": "7.9.7",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.9.7": {
+        "en": "Correcting the change of the AI providers",
+        "de": "Korrektur des Wechsels der KI-Anbieter",
+        "ru": "Исправление изменений в списке поставщиков ИИ.",
+        "pt": "Corrigindo a mudança dos fornecedores de IA",
+        "nl": "Het corrigeren van de wijziging van de AI-aanbieders.",
+        "fr": "Correction du changement des fournisseurs d'IA",
+        "it": "Correzione del cambiamento dei fornitori di IA",
+        "es": "Corrección del cambio de los proveedores de IA",
+        "pl": "Korygowanie zmiany dostawców AI",
+        "uk": "Виправлення зміни постачальників ШІ",
+        "zh-cn": "纠正人工智能提供商的变更"
+      },
       "7.9.6": {
         "en": "Added \"between\" news rule\nBetter config-manager layout\nAdded filtering options for config-manager",
         "de": "Die Nachrichtenregel „zwischen“ wurde hinzugefügt.\nBesseres Layout des Konfigurationsmanagers\nFür den Konfigurationsmanager wurden Filteroptionen hinzugefügt.",

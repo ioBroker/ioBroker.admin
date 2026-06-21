@@ -167,7 +167,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.7 (2026-06-21)
 - (@GermanBluefox) Correcting the change of the AI providers
 
 ### 7.9.6 (2026-06-20)
@@ -186,10 +186,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.9.1 (2026-06-12)
 - (@GermanBluefox) Added AI assistant to the admin interface
-
-### 7.9.0 (2026-06-11)
-- (@GermanBluefox) Added the central credentials manager 
-- (@GermanBluefox) Added the possibility of installation of packages on specific hosts
 
 ## License
 
