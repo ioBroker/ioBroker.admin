@@ -1,5 +1,7 @@
 import React, { useRef } from 'react';
-import { useDrag, useDrop } from 'react-dnd';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 
 import {
     Checkbox,
@@ -790,7 +792,11 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
                     </Fab>
                     {this.renderAutoUpgradePolicy()}
                 </div>
-                <TableContainer>{this.renderSortableList(items)}</TableContainer>
+                {/* The shared App-level DndProvider only wraps the drawer, so this dialog (rendered in
+                    the main content area) needs its own context — mirroring Users/Enums. */}
+                <DndProvider backend={AdminUtils.isTouchDevice() ? TouchBackend : HTML5Backend}>
+                    <TableContainer>{this.renderSortableList(items)}</TableContainer>
+                </DndProvider>
             </div>
         );
     }
