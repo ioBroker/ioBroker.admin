@@ -167,6 +167,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Correcting the change of the AI providers
+
 ### 7.9.6 (2026-06-20)
 - (@GermanBluefox) Added "between" news rule
 - (@GermanBluefox) Better config-manager layout

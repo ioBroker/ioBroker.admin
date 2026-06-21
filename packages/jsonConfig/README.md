@@ -1822,6 +1822,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.4.11 (2026-06-21)
+- (@GermanBluefox) Added missing translations
+
 ### 8.4.10 (2026-06-20)
 - (@GermanBluefox) Fixed state component
 

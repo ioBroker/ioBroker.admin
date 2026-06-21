@@ -97,11 +97,14 @@ function buildChatRequest(params: LlmChatParams): {
         };
     }
 
-    // openai or custom (OpenAI-compatible) endpoint
+    // openai or custom (OpenAI-compatible) endpoint. A base URL only applies to the "custom" provider;
+    // ignore any value left over from a previous custom configuration so OpenAI always talks to its
+    // official endpoint (https://api.openai.com) instead of the stale custom URL.
+    const customBase = provider === 'custom' ? baseUrl : undefined;
     if (apiKey) {
         headers.Authorization = `Bearer ${apiKey}`;
     }
-    const base = baseUrl || OPENAI_BASE;
+    const base = customBase || OPENAI_BASE;
     return {
         url: `${base}/chat/completions`,
         headers,
@@ -111,7 +114,7 @@ function buildChatRequest(params: LlmChatParams): {
             stream: false,
             ...(tools?.length ? { tools } : {}),
             // Disable thinking/reasoning for local models to save context and speed.
-            ...(baseUrl ? { reasoning_effort: 'none' } : {}),
+            ...(customBase ? { reasoning_effort: 'none' } : {}),
         },
     };
 }
@@ -147,7 +150,9 @@ export async function chatCompletion(params: LlmChatParams): Promise<LlmChatResu
         headers,
         timeout: params.timeoutMs ?? DEFAULT_TIMEOUT,
         validateStatus: () => true,
-        httpsAgent: httpsAgentFor(url, params.allowSelfSignedCerts),
+        // Accepting self-signed certs only makes sense for a custom endpoint; never weaken TLS for the
+        // official provider hosts even if the flag is left over from a previous custom configuration.
+        httpsAgent: httpsAgentFor(url, params.provider === 'custom' && params.allowSelfSignedCerts),
     };
 
     let response;
@@ -205,7 +210,9 @@ export async function listModels(params: LlmModelsParams): Promise<string[]> {
         url = 'https://api.deepseek.com/models';
         headers.Authorization = `Bearer ${apiKey}`;
     } else {
-        url = `${baseUrl || OPENAI_BASE}/models`;
+        // openai or custom — a base URL only applies to "custom"; ignore a stale custom URL so OpenAI
+        // always lists its models from the official endpoint.
+        url = `${(provider === 'custom' && baseUrl) || OPENAI_BASE}/models`;
         if (apiKey) {
             headers.Authorization = `Bearer ${apiKey}`;
         }
@@ -217,7 +224,7 @@ export async function listModels(params: LlmModelsParams): Promise<string[]> {
             headers,
             timeout: params.timeoutMs ?? 10_000,
             validateStatus: () => true,
-            httpsAgent: httpsAgentFor(url, params.allowSelfSignedCerts),
+            httpsAgent: httpsAgentFor(url, provider === 'custom' && params.allowSelfSignedCerts),
         });
     } catch (e) {
         throw new Error(`Connection failed: ${e instanceof Error ? e.message : String(e)}`);

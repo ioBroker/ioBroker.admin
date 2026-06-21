@@ -494,8 +494,9 @@ class Admin extends Adapter {
                     return;
                 }
                 const apiKey = message.credentialId ? await resolveAiKey(this, message.credentialId) : '';
-                // OpenAI-compatible/custom endpoints (e.g. local Ollama) may run without a key.
-                if (!apiKey && provider !== 'custom' && !message.baseUrl) {
+                // Only the custom (OpenAI-compatible, e.g. local Ollama) provider may run without a key.
+                // A base URL is custom-only, so a stale one must not let a keyless OpenAI request through.
+                if (!apiKey && provider !== 'custom') {
                     fail('No API key configured for the selected provider');
                     return;
                 }

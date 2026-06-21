@@ -24,9 +24,9 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/adapter-react-v5": "^8.2.12",
-        "@iobroker/dm-gui-components": "^9.1.5",
-        "@iobroker/json-config": "^8.4.10",
+        "@iobroker/adapter-react-v5": "^8.2.13",
+        "@iobroker/dm-gui-components": "^9.1.6",
+        "@iobroker/json-config": "^8.4.11",
         "ace-builds": "^1.44.0",
         "http-proxy-middleware": "^4.1.1",
         "remark-gfm": "^4.0.1"
@@ -83,7 +83,6 @@
         "react-monaco-editor": "^0.59.0",
         "react-qr-code": "^2.0.18",
         "react-showdown": "^2.3.1",
-        "react-sortable-hoc": "^2.0.0",
         "semver": "^7.7.4",
         "tsconfig-paths-webpack-plugin": "^4.2.0",
         "vite": "7.3.1",
