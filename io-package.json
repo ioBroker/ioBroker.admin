@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.9.9",
+    "version": "7.9.10",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.9.10": {
+        "en": "Added a dialog describing how to use the AI assistant without an API key (external MCP client)\nUpdated device manager\nAdded possibility to see the prompt and use it outside of assistant",
+        "de": "Es wurde ein Dialog hinzugefügt, der beschreibt, wie der KI-Assistent ohne API-Schlüssel (externer MCP-Client) verwendet werden kann.\nAktualisierter Geräte-Manager\nEs wurde die Möglichkeit hinzugefügt, die Eingabeaufforderung anzuzeigen und sie außerhalb des Assistenten zu verwenden.",
+        "ru": "Добавлено диалоговое окно, описывающее, как использовать ИИ-помощника без ключа API (внешний клиент MCP).\nОбновлен диспетчер устройств\nДобавлена возможность видеть подсказку и использовать её вне ассистента.",
+        "pt": "Adicionada uma caixa de diálogo descrevendo como usar o assistente de IA sem uma chave de API (cliente MCP externo).\nGerenciador de dispositivos atualizado\nAdicionada a possibilidade de visualizar o prompt e usá-lo fora do assistente.",
+        "nl": "Er is een dialoogvenster toegevoegd waarin wordt uitgelegd hoe de AI-assistent zonder API-sleutel kan worden gebruikt (externe MCP-client).\nBijgewerkte apparaatbeheerder\nEr is nu een mogelijkheid om de prompt te bekijken en deze buiten de assistent te gebruiken.",
+        "fr": "Ajout d'une boîte de dialogue expliquant comment utiliser l'assistant IA sans clé API (client MCP externe).\nGestionnaire de périphériques mis à jour\nAjout de la possibilité de consulter l'invite et de l'utiliser en dehors de l'assistant",
+        "it": "È stata aggiunta una finestra di dialogo che descrive come utilizzare l'assistente AI senza una chiave API (client MCP esterno).\nGestione dispositivi aggiornato\nAggiunta la possibilità di visualizzare il prompt e utilizzarlo al di fuori dell'assistente.",
+        "es": "Se agregó un cuadro de diálogo que describe cómo usar el asistente de IA sin una clave API (cliente MCP externo).\nAdministrador de dispositivos actualizado\nSe agregó la posibilidad de ver la solicitud y usarla fuera del asistente.",
+        "pl": "Dodano okno dialogowe opisujące sposób korzystania z asystenta AI bez klucza API (zewnętrzny klient MCP)\nZaktualizowany menedżer urządzeń\nDodano możliwość zobaczenia monitu i korzystania z niego poza asystentem",
+        "uk": "Додано діалогове вікно з описом використання помічника ШІ без ключа API (зовнішній клієнт MCP)\nОновлений диспетчер пристроїв\nДодано можливість перегляду підказки та її використання поза межами помічника",
+        "zh-cn": "新增对话框，说明如何在没有 API 密钥的情况下使用 AI 助手（外部 MCP 客户端）\n更新设备管理器\n新增了在助手之外查看和使用提示的功能"
+      },
       "7.9.9": {
         "en": "Correcting the change of the AI providers",
         "de": "Korrektur des Wechsels der KI-Anbieter",
@@ -84,19 +97,6 @@
         "zh-cn": "增加了中央证书管理员\n添加在特定主机上安装包的可能性"
       },
       "7.8.29": {
-        "en": "Corrected JSON config for the select component with grouped options",
-        "de": "JSON config für die ausgewählte Komponente mit gruppierten Optionen korrigiert",
-        "ru": "Исправленная конфигурация JSON для выбранного компонента с сгруппированными опциями",
-        "pt": "Configuração do JSON corrigida para o componente seleccionado com opções agrupadas",
-        "nl": "Gecorrigeerde JSON configuratie voor het geselecteerde component met gegroepeerde opties",
-        "fr": "Configuration JSON corrigée pour le composant sélectionné avec options groupées",
-        "it": "Configurazione JSON corretta per il componente selezionato con opzioni raggruppate",
-        "es": "Ajuste JSON corregido para el componente selecto con opciones agrupadas",
-        "pl": "Skorygowana konfiguracja JSON dla wybranego komponentu z pogrupowanymi opcjami",
-        "uk": "Виправлено налаштування JSON для вибраного компонента з позначеними опціями",
-        "zh-cn": "更正了带有分组选项的选定组件的 JSON 配置"
-      },
-      "7.8.28": {
         "en": "Corrected JSON config for the select component with grouped options",
         "de": "JSON config für die ausgewählte Komponente mit gruppierten Optionen korrigiert",
         "ru": "Исправленная конфигурация JSON для выбранного компонента с сгруппированными опциями",

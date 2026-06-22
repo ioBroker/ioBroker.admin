@@ -193,7 +193,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.10 (2026-06-22)
 - (@GermanBluefox) Added a dialog describing how to use the AI assistant without an API key (external MCP client)
 - (@GermanBluefox) Updated device manager
 - (@GermanBluefox) Added possibility to see the prompt and use it outside of assistant
@@ -214,9 +214,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.9.2 (2026-06-15)
 - (@GermanBluefox) AI must be enabled first in the settings to be used in the admin interface
-
-### 7.9.1 (2026-06-12)
-- (@GermanBluefox) Added AI assistant to the admin interface
 
 ## License
 

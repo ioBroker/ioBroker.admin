@@ -1,4 +1,7 @@
 # Older changes
+## 7.9.1 (2026-06-12)
+- (@GermanBluefox) Added AI assistant to the admin interface
+
 ## 7.9.0 (2026-06-11)
 - (@GermanBluefox) Added the central credentials manager 
 - (@GermanBluefox) Added the possibility of installation of packages on specific hosts
