@@ -49,6 +49,31 @@ export interface ChatSendResponse {
     clientActions?: ClientAction[];
 }
 
+/** An HTTP endpoint that exposes (or can expose) the in-app MCP server under `/mcp`. */
+export interface McpEndpoint {
+    /** The instance id, e.g. `admin.0`, `web.0` or `mcp.0`. */
+    id: string;
+    port: number;
+    secure: boolean;
+    /** `admin` = embedded in this admin's web server; `web` = a web-adapter extension; `mcp` = standalone. */
+    kind: 'admin' | 'web' | 'mcp';
+}
+
+/** Response of `chat:getMcpInfo` — everything the "use without an API" help dialog needs. */
+export interface ChatMcpInfoResponse {
+    error?: string;
+    /** The system prompt the assistant runs with in read-only mode. */
+    promptRead?: string;
+    /** The system prompt the assistant runs with in actions mode. */
+    promptAct?: string;
+    /** HTTP endpoints exposing the MCP server (already resolved to where each one actually listens). */
+    endpoints?: McpEndpoint[];
+    /** Whether the `iobroker.mcp` adapter is installed. */
+    mcpInstalled?: boolean;
+    /** Whether the MCP server embedded in this admin's own web server is enabled (`!native.disableMcp`). */
+    adminMcpEnabled?: boolean;
+}
+
 /** One selectable AI credential (id + display name). */
 export interface AiCredentialEntry {
     id: string;

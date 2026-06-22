@@ -28,6 +28,7 @@ import {
     AutoAwesome as AssistantIcon,
     Block as BlockIcon,
     Build as BuildIcon,
+    Cable as CableIcon,
     CheckCircle as CheckIcon,
     ChevronLeft as ChevronLeftIcon,
     Close as CloseIcon,
@@ -43,6 +44,7 @@ import {
 import { I18n, type AdminConnection, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
 
 import ChatSettings from './ChatSettings';
+import ChatMcpInfoDialog from './ChatMcpInfoDialog';
 import {
     CHAT_SETTINGS_OBJECT_ID,
     chatSettingsReady,
@@ -179,6 +181,7 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
     const [open, setOpen] = useState(() => loadChatOpen());
     const [settings, setSettings] = useState<ChatSettingsValue>(() => loadChatSettings());
     const [settingsOpen, setSettingsOpen] = useState(false);
+    const [mcpInfoOpen, setMcpInfoOpen] = useState(false);
     const [mode, setMode] = useState<ChatMode>(() => loadChatMode());
     const [items, setItems] = useState<DisplayItem[]>(restored.items);
     const [input, setInput] = useState('');
@@ -558,6 +561,11 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
                         <AddIcon />
                     </IconButton>
                 </Tooltip>
+                <Tooltip title={I18n.t('Use without an API key (external MCP client)')}>
+                    <IconButton onClick={() => setMcpInfoOpen(true)}>
+                        <CableIcon />
+                    </IconButton>
+                </Tooltip>
                 <Tooltip title={I18n.t('Settings')}>
                     <IconButton onClick={() => setSettingsOpen(true)}>
                         <SettingsIcon />
@@ -750,6 +758,16 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
                     autoApprove={autoApprove}
                     onChangeAutoApprove={setAutoApprove}
                     onClose={onCloseSettings}
+                />
+            ) : null}
+
+            {mcpInfoOpen ? (
+                <ChatMcpInfoDialog
+                    socket={props.socket}
+                    instance={props.instance}
+                    themeType={props.themeType}
+                    mode={mode}
+                    onClose={() => setMcpInfoOpen(false)}
                 />
             ) : null}
         </>

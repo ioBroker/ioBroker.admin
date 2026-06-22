@@ -24,7 +24,7 @@ import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass'
 import { DockerManager } from '@iobroker/plugin-docker';
 import { checkCommonObjects, updateDevicesObject, updateIcons, validateUserData0 } from './lib/objectFixes';
 import { McpClientManager } from './lib/chat/mcpClientManager';
-import { ChatOrchestrator, type ChatMode } from './lib/chat/chatOrchestrator';
+import { buildSystemPromptMessage, ChatOrchestrator, type ChatMode } from './lib/chat/chatOrchestrator';
 import { resolveAiKey } from './lib/chat/credentials';
 import { listModels, type AiProvider } from './lib/chat/llmProvider';
 import type { OpenAIMessage } from './lib/chat/anthropicAdapter';
@@ -462,6 +462,120 @@ class Admin extends Adapter {
                     allowSelfSignedCerts: message.allowSelfSignedCerts,
                 });
                 respond({ success: true, models, count: models.length });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        if (obj.command === 'chat:getMcpInfo') {
+            // Everything the "use the assistant without an API" help dialog needs: the exact system
+            // prompts the assistant runs with, and the HTTP endpoint(s) that expose the MCP server so the
+            // user can wire an external AI client (Claude/Codex/Gemini/…) straight to ioBroker.
+            try {
+                const promptRead = buildSystemPromptMessage(systemLanguage, 'read').content || '';
+                const promptAct = buildSystemPromptMessage(systemLanguage, 'act').content || '';
+
+                // Does THIS admin still embed the MCP server on its own web server? (off => no `/mcp` here)
+                const adminMcpEnabled = !this.config.disableMcp;
+
+                // Collect every web server and every mcp adapter instance so we can resolve WHERE each mcp
+                // instance is actually reachable: a web extension is reachable ONLY through its host web
+                // instance's port; standalone it is reachable ONLY on its own port (never both).
+                const instances = await this.getObjectViewAsync('system', 'instance', {
+                    startkey: 'system.adapter.',
+                    endkey: 'system.adapter.香',
+                });
+                const webInstances: Record<string, { port: number; secure: boolean; enabled: boolean }> = {};
+                const mcpInstances: {
+                    id: string;
+                    webInstance: string;
+                    port?: number;
+                    secure: boolean;
+                    enabled: boolean;
+                }[] = [];
+                instances.rows.forEach(row => {
+                    const id = row.value?._id?.substring('system.adapter.'.length);
+                    if (!id) {
+                        return;
+                    }
+                    const adapterName = id.replace(/\.\d+$/, '');
+                    const native = (row.value?.native || {}) as {
+                        port?: number;
+                        secure?: boolean;
+                        webInstance?: string;
+                    };
+                    const enabled = !!row.value?.common?.enabled;
+                    if (adapterName === 'web' && native.port) {
+                        webInstances[id] = { port: Number(native.port), secure: !!native.secure, enabled };
+                    } else if (adapterName === 'mcp') {
+                        mcpInstances.push({
+                            id,
+                            // ioBroker web-extension convention: '' = standalone, '*' = all web servers, else a web id.
+                            webInstance: (native.webInstance ?? '').toString(),
+                            port: native.port ? Number(native.port) : undefined,
+                            secure: !!native.secure,
+                            enabled,
+                        });
+                    }
+                });
+
+                const endpoints: { id: string; port: number; secure: boolean; kind: 'admin' | 'web' | 'mcp' }[] = [];
+                const seen = new Set<string>();
+                const add = (ep: {
+                    id: string;
+                    port: number;
+                    secure: boolean;
+                    kind: 'admin' | 'web' | 'mcp';
+                }): void => {
+                    const key = `${ep.secure ? 's' : ''}:${ep.port}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        endpoints.push(ep);
+                    }
+                };
+
+                // 1) The MCP server embedded in this admin's own web server (only when enabled here).
+                if (adminMcpEnabled && this.config.port) {
+                    add({ id: this.namespace, port: this.config.port, secure: !!this.config.secure, kind: 'admin' });
+                }
+                // 2) Each RUNNING mcp adapter instance, resolved to where it actually listens.
+                mcpInstances.forEach(inst => {
+                    if (!inst.enabled) {
+                        return; // a stopped instance exposes nothing
+                    }
+                    if (!inst.webInstance) {
+                        // standalone — its own port only
+                        if (inst.port) {
+                            add({ id: inst.id, port: inst.port, secure: inst.secure, kind: 'mcp' });
+                        }
+                    } else if (inst.webInstance === '*') {
+                        // web extension on every running web instance
+                        Object.entries(webInstances).forEach(([webId, w]) => {
+                            if (w.enabled) {
+                                add({ id: webId, port: w.port, secure: w.secure, kind: 'web' });
+                            }
+                        });
+                    } else {
+                        // web extension on one specific web instance
+                        const w = webInstances[inst.webInstance];
+                        if (w?.enabled) {
+                            add({ id: inst.webInstance, port: w.port, secure: w.secure, kind: 'web' });
+                        }
+                    }
+                });
+
+                // Whether the iobroker.mcp adapter is installed at all (so the dialog can hint to install it).
+                let mcpInstalled = mcpInstances.length > 0;
+                if (!mcpInstalled) {
+                    try {
+                        mcpInstalled = !!(await this.getForeignObjectAsync('system.adapter.mcp'));
+                    } catch {
+                        // ignore — the object may not exist
+                    }
+                }
+
+                respond({ promptRead, promptAct, endpoints, mcpInstalled, adminMcpEnabled });
             } catch (e) {
                 fail(e);
             }
