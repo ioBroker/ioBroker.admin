@@ -22,7 +22,13 @@ import { getAdapterUpdateText } from './lib/translations';
 import Web from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
 import { DockerManager } from '@iobroker/plugin-docker';
-import { checkCommonObjects, updateDevicesObject, updateIcons, validateUserData0 } from './lib/objectFixes';
+import {
+    checkCommonObjects,
+    updateDevicesObject,
+    updateIcons,
+    validateUserData0,
+    verifyAdapterCore,
+} from './lib/objectFixes';
 import { McpClientManager } from './lib/chat/mcpClientManager';
 import { buildSystemPromptMessage, ChatOrchestrator, type ChatMode } from './lib/chat/chatOrchestrator';
 import { resolveAiKey } from './lib/chat/credentials';
@@ -2221,6 +2227,7 @@ class Admin extends Adapter {
         if (!this.config.defaultUser.match(/^system\.user\./)) {
             this.config.defaultUser = `system.user.${this.config.defaultUser}`;
         }
+        verifyAdapterCore(this).catch((e: Error) => this.log.warn(`Cannot check @adapter-core version: ${e?.message}`));
 
         checkCommonObjects(this).catch((e: Error) => this.log.warn(`Cannot check common objects: ${e?.message}`));
 

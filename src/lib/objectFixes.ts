@@ -1,7 +1,12 @@
+import { exec } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { promisify } from 'node:util';
+import * as semver from 'semver';
 
 import { controllerDir } from '@iobroker/adapter-core';
+
+const execAsync = promisify(exec);
 
 // this function re-check if the common objects like '0_userdata.0' exist
 export async function checkCommonObjects(adapter: ioBroker.Adapter): Promise<void> {
@@ -142,5 +147,63 @@ export async function updateDevicesObject(adapter: ioBroker.Adapter): Promise<vo
                 await adapter.setForeignObjectAsync(obj._id, obj);
             }
         }
+    }
+}
+
+// This function checks if js-controller 7.2.2 is installed and if adapter-core 3.4.1 is available.
+// If not, it will try to reinstall adapter-core@3.4.1
+export async function verifyAdapterCore(adapter: ioBroker.Adapter): Promise<void> {
+    try {
+        const packController = JSON.parse(readFileSync(join(controllerDir, 'package.json')).toString('utf8'));
+
+        // The fix is only relevant (and possible) with js-controller >= 7.2.2
+        if (!semver.gte(packController.version, '7.2.2')) {
+            return;
+        }
+
+        // Read the version of the installed @iobroker/adapter-core (located next to the js-controller in node_modules)
+        const adapterCorePack = join(controllerDir, '..', '@iobroker', 'adapter-core', 'package.json');
+        let adapterCoreVersion: string | undefined;
+        if (existsSync(adapterCorePack)) {
+            try {
+                adapterCoreVersion = JSON.parse(readFileSync(adapterCorePack).toString('utf8')).version;
+            } catch {
+                // package.json of @iobroker/adapter-core cannot be read
+            }
+        }
+
+        // Nothing to do if adapter-core 3.4.1 or newer is already available
+        if (adapterCoreVersion && semver.gte(adapterCoreVersion, '3.4.1')) {
+            return;
+        }
+
+        adapter.log.warn(
+            `js-controller ${packController.version} is installed, but @iobroker/adapter-core ${
+                adapterCoreVersion ? `is too old (${adapterCoreVersion})` : 'is missing'
+            }. Installing @iobroker/adapter-core@3.4.1...`,
+        );
+
+        // Reinstall adapter-core in the ioBroker root directory (two levels above the js-controller)
+        const rootDir = join(controllerDir, '..', '..');
+        try {
+            const { stdout, stderr } = await execAsync('npm install @iobroker/adapter-core@3.4.1 --omit=dev', {
+                cwd: rootDir,
+                windowsHide: true,
+                maxBuffer: 1024 * 1024 * 10,
+            });
+            if (stdout) {
+                adapter.log.debug(stdout);
+            }
+            if (stderr) {
+                adapter.log.debug(stderr);
+            }
+            adapter.log.info(
+                '@iobroker/adapter-core@3.4.1 was successfully installed. Please restart the admin adapter to apply it.',
+            );
+        } catch (e) {
+            adapter.log.warn(`Cannot install @iobroker/adapter-core@3.4.1: ${e}`);
+        }
+    } catch (e) {
+        adapter.log.warn(`Cannot verify @iobroker/adapter-core: ${e}`);
     }
 }
