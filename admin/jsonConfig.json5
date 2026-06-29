@@ -161,7 +161,7 @@
                 disableMcp: {
                     type: 'checkbox',
                     newLine: true,
-                    label: 'Disable Assistent',
+                    label: 'Disable Assistant',
                     xs: 12,
                 }
             },
