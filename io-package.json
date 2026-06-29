@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.9.10",
+    "version": "7.9.11",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.9.11": {
+        "en": "Allowed creating an AI API key directly from the assistant settings dialog\nAdded provider logos (incl. DeepSeek) to the AI assistant provider and credential selectors\nThe adapter-core version will be updated if required by start\nShow status of the instance in the web-extension mode",
+        "de": "Es wurde ermöglicht, einen KI-API-Schlüssel direkt im Dialog für die Assistenteneinstellungen zu erstellen.\nAnbieterlogos (inkl. DeepSeek) wurden zu den Auswahlfeldern für KI-Assistenten und Anmeldeinformationen hinzugefügt.\nDie Adapter-Core-Version wird bei Bedarf vom Start aktualisiert.\nStatus der Instanz im Web-Erweiterungsmodus anzeigen",
+        "ru": "Разрешено создавать ключ API для ИИ непосредственно из диалогового окна настроек помощника.\nДобавлены логотипы поставщиков (включая DeepSeek) в поля выбора поставщика и учетных данных для ИИ-помощника.\nПри необходимости версия adapter-core будет обновлена к моменту запуска.\nОтображение статуса экземпляра в режиме веб-расширения",
+        "pt": "Permitido criar uma chave de API de IA diretamente da caixa de diálogo de configurações do assistente.\nAdicionamos os logotipos dos fornecedores (incluindo DeepSeek) aos seletores de fornecedores e credenciais do assistente de IA.\nA versão do adapter-core será atualizada, se necessário, pelo comando start.\nExibir o status da instância no modo de extensão da web",
+        "nl": "Het is nu mogelijk om rechtstreeks vanuit het instellingendialoogvenster van de assistent een AI API-sleutel aan te maken.\nAanbiederslogo's (inclusief DeepSeek) toegevoegd aan de selectietools voor aanbieders en referenties van de AI-assistent.\nDe adapter-core-versie wordt indien nodig door de start bijgewerkt.\nToon de status van het exemplaar in de web-extensiemodus.",
+        "fr": "Il est désormais possible de créer une clé API IA directement depuis la boîte de dialogue des paramètres de l'assistant.\nAjout des logos des fournisseurs (dont DeepSeek) aux sélecteurs de fournisseurs d'assistant IA et d'identifiants.\nLa version du noyau de l'adaptateur sera mise à jour si nécessaire au démarrage\nAfficher l'état de l'instance en mode extension Web",
+        "it": "Consente la creazione di una chiave API AI direttamente dalla finestra di dialogo delle impostazioni dell'assistente\nAggiunti i loghi dei provider (incluso DeepSeek) ai selettori di provider e credenziali dell'assistente AI.\nLa versione dell'adattatore-core verrà aggiornata se necessario all'avvio\nMostra lo stato dell'istanza nella modalità di estensione web",
+        "es": "Permitió crear una clave API de IA directamente desde el cuadro de diálogo de configuración del asistente.\nSe agregaron logotipos de proveedores (incluido DeepSeek) a los selectores de proveedores y credenciales del asistente de IA.\nLa versión del núcleo del adaptador se actualizará si es necesario al iniciar.\nMostrar el estado de la instancia en el modo de extensión web.",
+        "pl": "Umożliwiono tworzenie klucza API AI bezpośrednio z okna dialogowego ustawień asystenta\nDodano loga dostawców (w tym DeepSeek) do selektorów dostawców i poświadczeń asystenta AI\nWersja rdzenia adaptera zostanie zaktualizowana, jeśli będzie to wymagane do uruchomienia\nPokaż status instancji w trybie rozszerzenia internetowego",
+        "uk": "Дозволено створювати ключ API штучного інтелекту безпосередньо з діалогового вікна налаштувань помічника\nДодано логотипи постачальників (включно з DeepSeek) до постачальників ШІ-помічників та селекторів облікових даних.\nВерсія адаптерного ядра буде оновлена, якщо це буде потрібно, до початку роботи\nПоказати стан екземпляра в режимі веб-розширення",
+        "zh-cn": "允许直接从助手设置对话框创建 AI API 密钥\n在 AI 助手提供商和凭证选择器中添加了提供商徽标（包括 DeepSeek）。\n如果启动时需要，适配器核心版本将会更新。\n在 Web 扩展模式下显示实例状态"
+      },
       "7.9.10": {
         "en": "Added a dialog describing how to use the AI assistant without an API key (external MCP client)\nUpdated device manager\nAdded possibility to see the prompt and use it outside of assistant",
         "de": "Es wurde ein Dialog hinzugefügt, der beschreibt, wie der KI-Assistent ohne API-Schlüssel (externer MCP-Client) verwendet werden kann.\nAktualisierter Geräte-Manager\nEs wurde die Möglichkeit hinzugefügt, die Eingabeaufforderung anzuzeigen und sie außerhalb des Assistenten zu verwenden.",
@@ -95,19 +108,6 @@
         "pl": "Dodano centralnego menedżera mandatów\nDodano możliwość instalacji pakietów na poszczególnych hostach",
         "uk": "Додано центральний менеджер облікових записів\nДодано можливість установки пакетів на конкретні господарі",
         "zh-cn": "增加了中央证书管理员\n添加在特定主机上安装包的可能性"
-      },
-      "7.8.29": {
-        "en": "Corrected JSON config for the select component with grouped options",
-        "de": "JSON config für die ausgewählte Komponente mit gruppierten Optionen korrigiert",
-        "ru": "Исправленная конфигурация JSON для выбранного компонента с сгруппированными опциями",
-        "pt": "Configuração do JSON corrigida para o componente seleccionado com opções agrupadas",
-        "nl": "Gecorrigeerde JSON configuratie voor het geselecteerde component met gegroepeerde opties",
-        "fr": "Configuration JSON corrigée pour le composant sélectionné avec options groupées",
-        "it": "Configurazione JSON corretta per il componente selezionato con opzioni raggruppate",
-        "es": "Ajuste JSON corregido para el componente selecto con opciones agrupadas",
-        "pl": "Skorygowana konfiguracja JSON dla wybranego komponentu z pogrupowanymi opcjami",
-        "uk": "Виправлено налаштування JSON для вибраного компонента з позначеними опціями",
-        "zh-cn": "更正了带有分组选项的选定组件的 JSON 配置"
       }
     },
     "desc": {

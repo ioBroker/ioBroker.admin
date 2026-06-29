@@ -1,4 +1,7 @@
 # Older changes
+## 7.9.2 (2026-06-15)
+- (@GermanBluefox) AI must be enabled first in the settings to be used in the admin interface
+
 ## 7.9.1 (2026-06-12)
 - (@GermanBluefox) Added AI assistant to the admin interface
 
