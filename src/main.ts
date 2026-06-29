@@ -1331,17 +1331,22 @@ class Admin extends Adapter {
 
         const oldEtag = (await this.getStateAsync('info.newsETag'))?.val;
 
+        const newsHashUrl = 'https://iobroker.live/repo/news-hash.json';
+        const newsUrl = 'https://iobroker.live/repo/news.json';
+
         let etag;
 
         try {
-            const res = await axios.get('https://iobroker.live/repo/news-hash.json', {
+            const res = await axios.get(newsHashUrl, {
                 timeout: 13_000,
                 validateStatus: status => status < 400,
             });
 
             etag = res.data;
         } catch (e) {
-            this.log.warn(`Cannot update news: ${e.response ? e.response.data : e.message || e.code}`);
+            this.log.warn(
+                `Cannot update news from ${newsHashUrl}: ${e.response ? e.response.data : e.message || e.code}`,
+            );
         }
 
         let _newNews;
@@ -1350,14 +1355,16 @@ class Admin extends Adapter {
             newEtag = etag.hash;
 
             try {
-                const res = await axios.get('https://iobroker.live/repo/news.json', {
+                const res = await axios.get(newsUrl, {
                     timeout: 14_000,
                     validateStatus: status => status < 400,
                 });
 
                 _newNews = res.data;
             } catch (e) {
-                this.log.warn(`Cannot update news_: ${e.response ? e.response.data : e.message || e.code}`);
+                this.log.warn(
+                    `Cannot update news from ${newsUrl}: ${e.response ? e.response.data : e.message || e.code}`,
+                );
             }
         } else {
             newEtag = oldEtag;
