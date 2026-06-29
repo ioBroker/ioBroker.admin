@@ -3,7 +3,7 @@
  *
  *      Controls Adapter-Processes
  *
- *      Copyright 2014-2025 Denis Haev <dogafox@gmail.com>,
+ *      Copyright 2014-2026 Denis Haev <dogafox@gmail.com>,
  *      MIT License
  *
  */
@@ -19,10 +19,16 @@ import { Adapter, type AdapterOptions, commonTools, I18n } from '@iobroker/adapt
 import { SocketAdmin, type Server, type Store, type SocketSettings } from '@iobroker/socket-classes';
 import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
-import Web, { type AdminAdapterConfig } from './lib/web';
+import Web from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
 import { DockerManager } from '@iobroker/plugin-docker';
 import { checkCommonObjects, updateDevicesObject, updateIcons, validateUserData0 } from './lib/objectFixes';
+import { McpClientManager } from './lib/chat/mcpClientManager';
+import { buildSystemPromptMessage, ChatOrchestrator, type ChatMode } from './lib/chat/chatOrchestrator';
+import { resolveAiKey } from './lib/chat/credentials';
+import { listModels, type AiProvider } from './lib/chat/llmProvider';
+import type { OpenAIMessage } from './lib/chat/anthropicAdapter';
+import type { AdminAdapterConfig } from './types';
 
 const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
@@ -89,7 +95,7 @@ class Admin extends Adapter {
     /** secret used for the socket connection */
     public secret: string;
 
-    /** Timer to update repository */
+    /** Timer to update the repository */
     private timerRepo: NodeJS.Timeout;
 
     private updaterTimeout: NodeJS.Timeout;
@@ -101,6 +107,9 @@ class Admin extends Adapter {
     private _tasks: ioBroker.AnyObject[];
 
     private changedPasswords: WellKnownUserPassword[] = [];
+
+    /** In-process ioBroker/mcp-server connection backing the chat helper. Created on first chat message. */
+    private mcpChat: McpClientManager | null = null;
 
     constructor(options: Partial<AdapterOptions> = {}) {
         options = {
@@ -135,9 +144,7 @@ class Admin extends Adapter {
             if (id === 'system.config' && !this.config.language) {
                 if (obj.common?.language) {
                     systemLanguage = obj.common.language;
-                    if (webServer) {
-                        webServer.setLanguage(systemLanguage);
-                    }
+                    webServer?.setLanguage(systemLanguage);
                 }
             }
 
@@ -212,8 +219,26 @@ class Admin extends Adapter {
     };
 
     /**
+     * Lazily create the in-process MCP connection backing the chat helper.
+     *
+     * `allowSetState` is enabled so the `set_state`/`set_states` tools exist; the orchestrator only
+     * offers them in "act" mode and only runs them after explicit per-action confirmation. Raw
+     * object/file changes stay disabled — state creation goes through the namespace-guarded
+     * admin-local `create_user_state` tool instead.
+     */
+    private getMcpChat(): McpClientManager {
+        this.mcpChat ||= new McpClientManager(this, {
+            defaultUser: 'system.user.admin',
+            language: systemLanguage,
+            allowSetState: true,
+            allowObjectChange: false,
+        });
+        return this.mcpChat;
+    }
+
+    /**
      * Some message was sent to this instance over the message box. Used by email, pushover, text2speech, ...
-     * Using this method requires "common.messagebox" property to be set to true in io-package.json
+     * Using this method requires the "common.messagebox" property to be set to true in io-package.json
      *
      * @param obj the message object
      */
@@ -224,95 +249,395 @@ class Admin extends Adapter {
         if (obj.command === 'im') {
             // if not instance message
             socket.publishInstanceMessageAll(obj.from, obj.message.m, obj.message.s, obj.message.d);
-        } else if (obj.command === 'checkFiles') {
-            if (typeof obj.message === 'string') {
-                if (obj.callback) {
-                    try {
-                        this.sendTo(obj.from, obj.command, { result: existsSync(obj.message) }, obj.callback);
-                    } catch (e) {
-                        this.sendTo(obj.from, obj.command, { error: e.message }, obj.callback);
+        } else {
+            if (obj.command === 'checkFiles') {
+                if (typeof obj.message === 'string') {
+                    if (obj.callback) {
+                        try {
+                            this.sendTo(obj.from, obj.command, { result: existsSync(obj.message) }, obj.callback);
+                        } catch (e) {
+                            this.sendTo(obj.from, obj.command, { error: e.message }, obj.callback);
+                        }
                     }
+                    return;
+                }
+                if (Array.isArray(obj.message)) {
+                    const result: Record<string, boolean> = {};
+                    for (let f = 0; f < obj.message.length; f++) {
+                        try {
+                            result[obj.message[f]] = existsSync(obj.message[f]);
+                        } catch (e) {
+                            result[obj.message[f]] = e.message;
+                        }
+                    }
+                    return obj.callback && this.sendTo(obj.from, obj.command, result, obj.callback);
+                }
+            }
+            if (obj.command === 'autocomplete') {
+                // just for test
+                return (
+                    obj.callback &&
+                    this.sendTo(
+                        obj.from,
+                        obj.command,
+                        [
+                            { value: 1, label: 'first' },
+                            { value: 2, label: 'second' },
+                        ],
+                        obj.callback,
+                    )
+                );
+            }
+            if (obj.command === 'selectSendTo') {
+                this.log.info(`SelectSendTo: ${JSON.stringify(obj.message)}`);
+                // just for test
+                return (
+                    obj.callback &&
+                    this.sendTo(
+                        obj.from,
+                        obj.command,
+                        [
+                            { label: 'Afghanistan', value: 'AF' },
+                            { label: 'Åland Islands', value: 'AX' },
+                            { label: 'Albania', value: 'AL' },
+                        ],
+                        obj.callback,
+                    )
+                );
+            }
+            if (obj.command === 'url') {
+                this.log.info(`url: ${JSON.stringify(obj.message)}`);
+                // just for test
+                if (obj.callback) {
+                    this.sendTo(
+                        obj.from,
+                        obj.command,
+                        { openUrl: obj.message._origin, saveConfig: true },
+                        obj.callback,
+                    );
                 }
                 return;
-            } else if (Array.isArray(obj.message)) {
-                const result: Record<string, boolean> = {};
-                for (let f = 0; f < obj.message.length; f++) {
-                    try {
-                        result[obj.message[f]] = existsSync(obj.message[f]);
-                    } catch (e) {
-                        result[obj.message[f]] = e.message;
+            }
+            if (obj.command.startsWith('admin:')) {
+                return this.processNotificationsGui(obj);
+            }
+            if (obj.command.startsWith('test:')) {
+                // just for test
+                this.log.info(`test: ${JSON.stringify(obj.message)}`);
+                return;
+            }
+            if (obj.command === 'checkDocker') {
+                const dockerManager = new DockerManager({
+                    logger: {
+                        level: this.common?.loglevel || 'info',
+                        silly: this.log.silly.bind(this.log),
+                        debug: this.log.debug.bind(this.log),
+                        info: this.log.info.bind(this.log),
+                        warn: this.log.warn.bind(this.log),
+                        error: this.log.error.bind(this.log),
+                    },
+                    namespace: this.namespace,
+                });
+                void dockerManager.getDockerDaemonInfo().then(result => {
+                    if (obj.callback) {
+                        this.sendTo(obj.from, obj.command, result, obj.callback);
                     }
-                }
-                return obj.callback && this.sendTo(obj.from, obj.command, result, obj.callback);
+                    void dockerManager.destroy();
+                });
+                return;
             }
-        } else if (obj.command === 'autocomplete') {
-            // just for test
-            return (
-                obj.callback &&
-                this.sendTo(
-                    obj.from,
-                    obj.command,
-                    [
-                        { value: 1, label: 'first' },
-                        { value: 2, label: 'second' },
-                    ],
-                    obj.callback,
-                )
-            );
-        } else if (obj.command === 'selectSendTo') {
-            this.log.info(`SelectSendTo: ${JSON.stringify(obj.message)}`);
-            // just for test
-            return (
-                obj.callback &&
-                this.sendTo(
-                    obj.from,
-                    obj.command,
-                    [
-                        { label: 'Afghanistan', value: 'AF' },
-                        { label: 'Åland Islands', value: 'AX' },
-                        { label: 'Albania', value: 'AL' },
-                    ],
-                    obj.callback,
-                )
-            );
-        } else if (obj.command === 'url') {
-            this.log.info(`url: ${JSON.stringify(obj.message)}`);
-            // just for test
-            if (obj.callback) {
-                this.sendTo(obj.from, obj.command, { openUrl: obj.message._origin, saveConfig: true }, obj.callback);
+            if (obj.command.startsWith('chat:')) {
+                this.processChatMessage(obj).catch(error => this.log.error(`Error by chat processing: ${error}`));
+                return;
             }
-            return;
-        } else if (obj.command.startsWith('admin:')) {
-            return this.processNotificationsGui(obj);
-        } else if (obj.command.startsWith('test:')) {
-            // just for test
-            this.log.info(`test: ${JSON.stringify(obj.message)}`);
-            return;
-        } else if (obj.command === 'checkDocker') {
-            const dockerManager = new DockerManager({
-                logger: {
-                    level: this.common?.loglevel || 'info',
-                    silly: this.log.silly.bind(this.log),
-                    debug: this.log.debug.bind(this.log),
-                    info: this.log.info.bind(this.log),
-                    warn: this.log.warn.bind(this.log),
-                    error: this.log.error.bind(this.log),
-                },
-                namespace: this.namespace,
-            });
-            void dockerManager.getDockerDaemonInfo().then(result => {
-                if (obj.callback) {
-                    this.sendTo(obj.from, obj.command, result, obj.callback);
-                }
-                void dockerManager.destroy();
-            });
-            return;
-        } else if (webServer?.processMessage(obj)) {
-            return;
+            if (webServer?.processMessage(obj)) {
+                return;
+            }
         }
 
         socket?.sendCommand(obj);
     };
+
+    private getName(name?: ioBroker.StringOrTranslated): string | undefined {
+        if (!name) {
+            return undefined;
+        }
+        if (typeof name === 'string') {
+            return name;
+        }
+        if (typeof name === 'object') {
+            return name[this.language] || name.en;
+        }
+        return null;
+    }
+
+    /**
+     * Handle `chat:*` messages from the admin GUI chat helper.
+     *
+     * - `chat:getProviders` — list the AI credentials the user can pick (id + name, no secrets).
+     * - `chat:testConnection` — validate a provider/key by listing its models.
+     * - `chat:send` — run one chat turn: the backend drives the LLM ↔ MCP tool loop and returns the
+     *   final answer, the new messages and the executed tool steps.
+     * - `chat:getTools` / `chat:callTool` — low-level access to the in-process MCP tool layer (A1).
+     *
+     * @param obj the message object
+     */
+    private async processChatMessage(obj: ioBroker.Message): Promise<void> {
+        const respond = (response: Record<string, unknown>): void => {
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, response, obj.callback);
+            }
+        };
+        const fail = (error: unknown): void =>
+            respond({ error: error instanceof Error ? error.message : String(error as string) });
+
+        if (obj.command === 'chat:getTools') {
+            try {
+                const tools = await this.getMcpChat().getTools();
+                respond({ tools });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        if (obj.command === 'chat:callTool') {
+            const message = (obj.message || {}) as { name?: string; args?: Record<string, unknown> };
+            if (!message.name) {
+                fail('Tool name is required');
+                return;
+            }
+            try {
+                const result = await this.getMcpChat().callTool(message.name, message.args);
+                respond({ ...result });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        if (obj.command === 'chat:getProviders') {
+            // List the configured AI credentials (id + name, no secrets) the user can pick from.
+            try {
+                const credentials = await this.getObjectViewAsync('system', 'config', {
+                    startkey: 'system.credentials.',
+                    endkey: 'system.credentials.\u9999',
+                });
+                const providers: { name?: string; id: string; icon?: string }[] = [];
+                credentials.rows.forEach(row => {
+                    if ((row.value.native as any).type === 'ai') {
+                        providers.push({
+                            name: this.getName(row.value.common.name),
+                            id: row.value._id,
+                            icon: row.value.common.icon,
+                        });
+                    }
+                });
+                respond({ providers });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        if (obj.command === 'chat:testConnection') {
+            const message = (obj.message || {}) as {
+                provider?: AiProvider;
+                credentialId?: string;
+                apiKey?: string;
+                baseUrl?: string;
+                allowSelfSignedCerts?: boolean;
+            };
+            try {
+                const provider = message.provider || 'openai';
+                // Prefer an explicit key from the settings form; otherwise resolve from the store.
+                let apiKey = (message.apiKey || '').trim();
+                if (!apiKey && message.credentialId) {
+                    apiKey = await resolveAiKey(this, message.credentialId);
+                }
+                const models = await listModels({
+                    provider,
+                    apiKey,
+                    baseUrl: message.baseUrl,
+                    allowSelfSignedCerts: message.allowSelfSignedCerts,
+                });
+                respond({ success: true, models, count: models.length });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        if (obj.command === 'chat:getMcpInfo') {
+            // Everything the "use the assistant without an API" help dialog needs: the exact system
+            // prompts the assistant runs with, and the HTTP endpoint(s) that expose the MCP server so the
+            // user can wire an external AI client (Claude/Codex/Gemini/…) straight to ioBroker.
+            try {
+                const promptRead = buildSystemPromptMessage(systemLanguage, 'read').content || '';
+                const promptAct = buildSystemPromptMessage(systemLanguage, 'act').content || '';
+
+                // Does THIS admin still embed the MCP server on its own web server? (off => no `/mcp` here)
+                const adminMcpEnabled = !this.config.disableMcp;
+
+                // Collect every web server and every mcp adapter instance so we can resolve WHERE each mcp
+                // instance is actually reachable: a web extension is reachable ONLY through its host web
+                // instance's port; standalone it is reachable ONLY on its own port (never both).
+                const instances = await this.getObjectViewAsync('system', 'instance', {
+                    startkey: 'system.adapter.',
+                    endkey: 'system.adapter.香',
+                });
+                const webInstances: Record<string, { port: number; secure: boolean; enabled: boolean }> = {};
+                const mcpInstances: {
+                    id: string;
+                    webInstance: string;
+                    port?: number;
+                    secure: boolean;
+                    enabled: boolean;
+                }[] = [];
+                instances.rows.forEach(row => {
+                    const id = row.value?._id?.substring('system.adapter.'.length);
+                    if (!id) {
+                        return;
+                    }
+                    const adapterName = id.replace(/\.\d+$/, '');
+                    const native = (row.value?.native || {}) as {
+                        port?: number;
+                        secure?: boolean;
+                        webInstance?: string;
+                    };
+                    const enabled = !!row.value?.common?.enabled;
+                    if (adapterName === 'web' && native.port) {
+                        webInstances[id] = { port: Number(native.port), secure: !!native.secure, enabled };
+                    } else if (adapterName === 'mcp') {
+                        mcpInstances.push({
+                            id,
+                            // ioBroker web-extension convention: '' = standalone, '*' = all web servers, else a web id.
+                            webInstance: (native.webInstance ?? '').toString(),
+                            port: native.port ? Number(native.port) : undefined,
+                            secure: !!native.secure,
+                            enabled,
+                        });
+                    }
+                });
+
+                const endpoints: { id: string; port: number; secure: boolean; kind: 'admin' | 'web' | 'mcp' }[] = [];
+                const seen = new Set<string>();
+                const add = (ep: {
+                    id: string;
+                    port: number;
+                    secure: boolean;
+                    kind: 'admin' | 'web' | 'mcp';
+                }): void => {
+                    const key = `${ep.secure ? 's' : ''}:${ep.port}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        endpoints.push(ep);
+                    }
+                };
+
+                // 1) The MCP server embedded in this admin's own web server (only when enabled here).
+                if (adminMcpEnabled && this.config.port) {
+                    add({ id: this.namespace, port: this.config.port, secure: !!this.config.secure, kind: 'admin' });
+                }
+                // 2) Each RUNNING mcp adapter instance, resolved to where it actually listens.
+                mcpInstances.forEach(inst => {
+                    if (!inst.enabled) {
+                        return; // a stopped instance exposes nothing
+                    }
+                    if (!inst.webInstance) {
+                        // standalone — its own port only
+                        if (inst.port) {
+                            add({ id: inst.id, port: inst.port, secure: inst.secure, kind: 'mcp' });
+                        }
+                    } else if (inst.webInstance === '*') {
+                        // web extension on every running web instance
+                        Object.entries(webInstances).forEach(([webId, w]) => {
+                            if (w.enabled) {
+                                add({ id: webId, port: w.port, secure: w.secure, kind: 'web' });
+                            }
+                        });
+                    } else {
+                        // web extension on one specific web instance
+                        const w = webInstances[inst.webInstance];
+                        if (w?.enabled) {
+                            add({ id: inst.webInstance, port: w.port, secure: w.secure, kind: 'web' });
+                        }
+                    }
+                });
+
+                // Whether the iobroker.mcp adapter is installed at all (so the dialog can hint to install it).
+                let mcpInstalled = mcpInstances.length > 0;
+                if (!mcpInstalled) {
+                    try {
+                        mcpInstalled = !!(await this.getForeignObjectAsync('system.adapter.mcp'));
+                    } catch {
+                        // ignore — the object may not exist
+                    }
+                }
+
+                respond({ promptRead, promptAct, endpoints, mcpInstalled, adminMcpEnabled });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        if (obj.command === 'chat:send') {
+            const message = (obj.message || {}) as {
+                messages?: OpenAIMessage[];
+                provider?: AiProvider;
+                model?: string;
+                credentialId?: string;
+                baseUrl?: string;
+                allowSelfSignedCerts?: boolean;
+                maxToolRounds?: number;
+                mode?: ChatMode;
+                approvals?: Record<string, boolean>;
+                autoApprove?: string[];
+                uiContext?: { hash?: string };
+            };
+            try {
+                if (!Array.isArray(message.messages) || !message.messages.length) {
+                    fail('messages are required');
+                    return;
+                }
+                const provider = message.provider || 'openai';
+                const model = (message.model || '').trim();
+                if (!model) {
+                    fail('model is required');
+                    return;
+                }
+                const apiKey = message.credentialId ? await resolveAiKey(this, message.credentialId) : '';
+                // Only the custom (OpenAI-compatible, e.g. local Ollama) provider may run without a key.
+                // A base URL is custom-only, so a stale one must not let a keyless OpenAI request through.
+                if (!apiKey && provider !== 'custom') {
+                    fail('No API key configured for the selected provider');
+                    return;
+                }
+                const orchestrator = new ChatOrchestrator(this.getMcpChat(), this);
+                const result = await orchestrator.run({
+                    provider,
+                    model,
+                    apiKey,
+                    baseUrl: message.baseUrl,
+                    messages: message.messages,
+                    language: systemLanguage,
+                    allowSelfSignedCerts: message.allowSelfSignedCerts,
+                    maxToolRounds: message.maxToolRounds,
+                    mode: message.mode,
+                    approvals: message.approvals,
+                    autoApprove: message.autoApprove,
+                    uiContext: message.uiContext,
+                });
+                respond({ success: true, ...result });
+            } catch (e) {
+                fail(e);
+            }
+            return;
+        }
+
+        fail(`Unknown chat command: ${obj.command}`);
+    }
 
     processNotificationsGui(obj: ioBroker.Message): void {
         if (obj.command === 'admin:getNotificationSchema') {
@@ -519,7 +844,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Is called when adapter shuts down - callback has to be called under any circumstances!
+     * Is called when the adapter shuts down - callback has to be called under any circumstances!
      *
      * @param callback Callback after unloading
      */
@@ -542,6 +867,11 @@ class Admin extends Adapter {
         if (this.updaterTimeout) {
             clearTimeout(this.updaterTimeout);
             this.updaterTimeout = null;
+        }
+
+        if (this.mcpChat) {
+            void this.mcpChat.close();
+            this.mcpChat = null;
         }
 
         try {
@@ -754,7 +1084,7 @@ class Admin extends Adapter {
         if (!sources) {
             sources = {};
 
-            // If multi-repo case. Actual case
+            // If a multi-repo case. Actual case
             if (Array.isArray(activeRepo)) {
                 if (systemRepos?.native?.repositories) {
                     for (const repo of activeRepo) {
@@ -905,7 +1235,7 @@ class Admin extends Adapter {
         socket = new SocketAdmin(settings, this, objects);
         socket.start(server, SocketIO, { store, oauth2Only: true, noBasicAuth: this.config.noBasicAuth });
 
-        // subscribe on all object changes
+        // subscribe to all object changes
         socket.subscribe('objectChange', '*');
 
         this.getForeignObjectAsync('system.meta.uuid')
@@ -986,7 +1316,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Read news from server and register them as notifications
+     * Read news from the server and register them as notifications
      */
     async updateNews(): Promise<void> {
         if (this.timerNews) {
@@ -1115,6 +1445,7 @@ class Admin extends Adapter {
         const uuid = (await this.getForeignObjectAsync('system.meta.uuid'))?.native.uuid;
         const nodeVersion = process.version;
         const npmVersion = await this.getNpmVersion();
+        const jsControllerVersion = this.getJsControllerVersion();
 
         const today = Date.now();
         for (const message of messages) {
@@ -1133,21 +1464,36 @@ class Admin extends Adapter {
                 showIt = false;
             } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
                 Object.keys(message.conditions).forEach(key => {
-                    if (showIt) {
-                        const adapter = adapters.rows.find(adapter => adapter.id === `system.adapter.${key}`);
-                        const condition = message.conditions[key];
+                    if (!showIt) {
+                        return;
+                    }
+                    const condition = message.conditions[key];
 
-                        if (!adapter && condition !== '!installed') {
+                    // js-controller is core infrastructure (always installed and active) and not a
+                    // regular adapter, so its version cannot be looked up in the adapters list.
+                    if (key === 'js-controller') {
+                        if (condition === '!installed' || condition === '!active') {
                             showIt = false;
-                        } else if (adapter && condition === '!installed') {
-                            showIt = false;
-                        } else if (adapter && condition === 'active') {
-                            showIt = this.checkActive(key, instances);
-                        } else if (adapter && condition === '!active') {
-                            showIt = !this.checkActive(key, instances);
-                        } else if (adapter?.value) {
-                            showIt = this.checkConditions(condition, adapter.value.common.version);
+                        } else if (condition === 'installed' || condition === 'active') {
+                            showIt = true;
+                        } else if (jsControllerVersion) {
+                            showIt = this.checkConditions(condition, jsControllerVersion);
                         }
+                        return;
+                    }
+
+                    const adapter = adapters.rows.find(adapter => adapter.id === `system.adapter.${key}`);
+
+                    if (!adapter && condition !== '!installed') {
+                        showIt = false;
+                    } else if (adapter && condition === '!installed') {
+                        showIt = false;
+                    } else if (adapter && condition === 'active') {
+                        showIt = this.checkActive(key, instances);
+                    } else if (adapter && condition === '!active') {
+                        showIt = !this.checkActive(key, instances);
+                    } else if (adapter?.value) {
+                        showIt = this.checkConditions(condition, adapter.value.common.version);
                     }
                 });
             }
@@ -1204,7 +1550,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Check if adapter is active
+     * Check if the adapter is active
      *
      * @param adapterName name of the adapter
      * @param instances list of instances
@@ -1270,7 +1616,20 @@ class Admin extends Adapter {
     }
 
     /**
-     * Get current npm version from controller
+     * Get the installed js-controller version. The controller is core infrastructure and not a
+     * regular adapter, so its version cannot be read from the `system.adapter.*` objects.
+     */
+    getJsControllerVersion(): string {
+        try {
+            return getInstalledInfo()['js-controller']?.version || '';
+        } catch (e) {
+            this.log.warn(`Cannot determine js-controller version: ${e}`);
+            return '';
+        }
+    }
+
+    /**
+     * Get the current npm version from the controller
      */
     async getNpmVersion(): Promise<string> {
         const hostAlive = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
@@ -1567,7 +1926,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Add repository read timestamp to the repository data structure
+     * Add the repository read timestamp to the repository data structure
      */
     async addRepositoryReadTimestamp(repository: Record<string, any>, activeRepo: string | string[]): Promise<void> {
         try {
@@ -1614,7 +1973,7 @@ class Admin extends Adapter {
 
             for (const _adapter of adapters) {
                 if (repository[_adapter].blockedVersions) {
-                    // read a current version
+                    // read the current version
                     if (Array.isArray(repository[_adapter].blockedVersions)) {
                         const instance = instances.rows.find(
                             item => item.value?.common.name === _adapter && item.value.common.enabled,
@@ -1743,7 +2102,7 @@ class Admin extends Adapter {
     }
 
     /**
-     * Read repository information from active repository
+     * Read repository information from the active repository
      */
     async updateRegister(): Promise<void> {
         if (lastRepoUpdate && Date.now() - lastRepoUpdate < 3600000) {

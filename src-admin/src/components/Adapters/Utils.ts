@@ -11,6 +11,7 @@ export interface RepoInfo {
 
 export interface RepoAdapterObject extends ioBroker.AdapterCommon {
     versionDate: string;
+    published?: string;
     controller?: boolean;
     stat?: number;
     node?: string;

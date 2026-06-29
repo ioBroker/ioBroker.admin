@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.8.29",
+    "version": "7.9.10",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,84 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.9.10": {
+        "en": "Added a dialog describing how to use the AI assistant without an API key (external MCP client)\nUpdated device manager\nAdded possibility to see the prompt and use it outside of assistant",
+        "de": "Es wurde ein Dialog hinzugefügt, der beschreibt, wie der KI-Assistent ohne API-Schlüssel (externer MCP-Client) verwendet werden kann.\nAktualisierter Geräte-Manager\nEs wurde die Möglichkeit hinzugefügt, die Eingabeaufforderung anzuzeigen und sie außerhalb des Assistenten zu verwenden.",
+        "ru": "Добавлено диалоговое окно, описывающее, как использовать ИИ-помощника без ключа API (внешний клиент MCP).\nОбновлен диспетчер устройств\nДобавлена возможность видеть подсказку и использовать её вне ассистента.",
+        "pt": "Adicionada uma caixa de diálogo descrevendo como usar o assistente de IA sem uma chave de API (cliente MCP externo).\nGerenciador de dispositivos atualizado\nAdicionada a possibilidade de visualizar o prompt e usá-lo fora do assistente.",
+        "nl": "Er is een dialoogvenster toegevoegd waarin wordt uitgelegd hoe de AI-assistent zonder API-sleutel kan worden gebruikt (externe MCP-client).\nBijgewerkte apparaatbeheerder\nEr is nu een mogelijkheid om de prompt te bekijken en deze buiten de assistent te gebruiken.",
+        "fr": "Ajout d'une boîte de dialogue expliquant comment utiliser l'assistant IA sans clé API (client MCP externe).\nGestionnaire de périphériques mis à jour\nAjout de la possibilité de consulter l'invite et de l'utiliser en dehors de l'assistant",
+        "it": "È stata aggiunta una finestra di dialogo che descrive come utilizzare l'assistente AI senza una chiave API (client MCP esterno).\nGestione dispositivi aggiornato\nAggiunta la possibilità di visualizzare il prompt e utilizzarlo al di fuori dell'assistente.",
+        "es": "Se agregó un cuadro de diálogo que describe cómo usar el asistente de IA sin una clave API (cliente MCP externo).\nAdministrador de dispositivos actualizado\nSe agregó la posibilidad de ver la solicitud y usarla fuera del asistente.",
+        "pl": "Dodano okno dialogowe opisujące sposób korzystania z asystenta AI bez klucza API (zewnętrzny klient MCP)\nZaktualizowany menedżer urządzeń\nDodano możliwość zobaczenia monitu i korzystania z niego poza asystentem",
+        "uk": "Додано діалогове вікно з описом використання помічника ШІ без ключа API (зовнішній клієнт MCP)\nОновлений диспетчер пристроїв\nДодано можливість перегляду підказки та її використання поза межами помічника",
+        "zh-cn": "新增对话框，说明如何在没有 API 密钥的情况下使用 AI 助手（外部 MCP 客户端）\n更新设备管理器\n新增了在助手之外查看和使用提示的功能"
+      },
+      "7.9.9": {
+        "en": "Correcting the change of the AI providers",
+        "de": "Korrektur des Wechsels der KI-Anbieter",
+        "ru": "Исправление изменений в списке поставщиков ИИ.",
+        "pt": "Corrigindo a mudança dos fornecedores de IA",
+        "nl": "Het corrigeren van de wijziging van de AI-aanbieders.",
+        "fr": "Correction du changement des fournisseurs d'IA",
+        "it": "Correzione del cambiamento dei fornitori di IA",
+        "es": "Corrección del cambio de los proveedores de IA",
+        "pl": "Korygowanie zmiany dostawców AI",
+        "uk": "Виправлення зміни постачальників штучного інтелекту",
+        "zh-cn": "纠正人工智能提供商的变更"
+      },
+      "7.9.6": {
+        "en": "Added \"between\" news rule\nBetter config-manager layout\nAdded filtering options for config-manager",
+        "de": "Die Nachrichtenregel „zwischen“ wurde hinzugefügt.\nBesseres Layout des Konfigurationsmanagers\nFür den Konfigurationsmanager wurden Filteroptionen hinzugefügt.",
+        "ru": "Добавлено правило для новостей \"между\".\nУлучшенная компоновка менеджера конфигураций\nДобавлены параметры фильтрации для config-manager.",
+        "pt": "Adicionada regra de notícias \"entre\"\nLayout do gerenciador de configuração aprimorado\nAdicionadas opções de filtragem para o gerenciador de configuração.",
+        "nl": "Nieuwsregel \"tussen\" toegevoegd\nVerbeterde lay-out van de configuratiebeheerder\nFilteropties toegevoegd voor config-manager",
+        "fr": "Règle « entre » ajoutée\nMeilleure disposition du gestionnaire de configuration\nAjout d'options de filtrage pour config-manager",
+        "it": "Aggiunta la regola di notizie \"tra\"\nLayout migliore per il gestore di configurazione\nAggiunte opzioni di filtro per config-manager",
+        "es": "Se agregó la regla de noticias \"entre\"\nMejor diseño del gestor de configuración\nSe agregaron opciones de filtrado para config-manager.",
+        "pl": "Dodano regułę „pomiędzy” wiadomościami\nLepszy układ menedżera konfiguracji\nDodano opcje filtrowania dla menedżera konfiguracji",
+        "uk": "Додано правило «між» новинами\nКраще розташування конфігураційного менеджера\nДодано параметри фільтрації для config-manager",
+        "zh-cn": "新增“之间”新闻规则\n更好的配置管理器布局\n为配置管理器添加了筛选选项"
+      },
+      "7.9.2": {
+        "en": "AI must be enabled first in the settings to be used in the admin interface",
+        "de": "AI muss zuerst in den Einstellungen aktiviert werden, die in der Admin-Schnittstelle verwendet werden sollen",
+        "ru": "ИИ должен быть включен первым в настройках, которые будут использоваться в интерфейсе администратора",
+        "pt": "AI deve ser ativado primeiro nas configurações a serem usadas na interface de administração",
+        "nl": "AI moet eerst ingeschakeld zijn in de instellingen die gebruikt moeten worden in de admin interface",
+        "fr": "L'IA doit être activée d'abord dans les paramètres à utiliser dans l'interface admin",
+        "it": "L'intelligenza artificiale deve essere abilitata prima nelle impostazioni da utilizzare nell'interfaccia di amministrazione",
+        "es": "AI debe ser habilitado primero en los ajustes a utilizar en la interfaz de administración",
+        "pl": "AI musi być włączona najpierw w ustawieniach używanych w interfejsie admin",
+        "uk": "AI повинен бути включений спочатку в налаштуваннях для використання в інтерфейсі адміністратора",
+        "zh-cn": "在管理界面中使用的设置中必须首先启用AI"
+      },
+      "7.9.1": {
+        "en": "Added AI assistant to the admin interface",
+        "de": "AI-Assistent zur Admin-Schnittstelle hinzugefügt",
+        "ru": "Добавлен помощник AI в интерфейс администратора",
+        "pt": "Adicionado assistente de IA para a interface de administração",
+        "nl": "Toegevoegd AI assistent aan de admin interface",
+        "fr": "Ajout de l'assistant AI à l'interface d'administration",
+        "it": "Aggiunto AI assistente all'interfaccia di amministrazione",
+        "es": "Agregado asistente de inteligencia artificial a la interfaz de administración",
+        "pl": "Dodano asystenta AI do interfejsu admin",
+        "uk": "Доданий помічник AI в інтерфейсі адміністратора",
+        "zh-cn": "添加到管理界面的 AI 助手"
+      },
+      "7.9.0": {
+        "en": "Added the central credentials manager \nAdded the possibility of installation of packages on specific hosts",
+        "de": "Hinzufügen des zentralen Anmeldedatenmanagers\nHinzufügen der Möglichkeit der Installation von Paketen auf bestimmten Hosts",
+        "ru": "Добавлен менеджер центральных учетных данных\nДобавлена возможность установки пакетов на конкретных хостах",
+        "pt": "Adicionado o gerenciador central de credenciais\nAdicionada a possibilidade de instalação de pacotes em hosts específicos",
+        "nl": "De hoofdgegevensbeheerder toegevoegd\nToegevoegd de mogelijkheid van installatie van pakketten op specifieke hosts",
+        "fr": "Ajouté le gestionnaire central des références\nAjout de la possibilité d'installation de paquets sur des hôtes spécifiques",
+        "it": "Aggiunto il direttore delle credenziali centrali\nAggiunta la possibilità di installazione di pacchetti su host specifici",
+        "es": "Añadido el administrador central de credenciales\nSe agregó la posibilidad de instalar paquetes en hosts específicos",
+        "pl": "Dodano centralnego menedżera mandatów\nDodano możliwość instalacji pakietów na poszczególnych hostach",
+        "uk": "Додано центральний менеджер облікових записів\nДодано можливість установки пакетів на конкретні господарі",
+        "zh-cn": "增加了中央证书管理员\n添加在特定主机上安装包的可能性"
+      },
       "7.8.29": {
         "en": "Corrected JSON config for the select component with grouped options",
         "de": "JSON config für die ausgewählte Komponente mit gruppierten Optionen korrigiert",
@@ -30,84 +108,6 @@
         "pl": "Skorygowana konfiguracja JSON dla wybranego komponentu z pogrupowanymi opcjami",
         "uk": "Виправлено налаштування JSON для вибраного компонента з позначеними опціями",
         "zh-cn": "更正了带有分组选项的选定组件的 JSON 配置"
-      },
-      "7.8.28": {
-        "en": "Corrected JSON config for the select component with grouped options",
-        "de": "JSON config für die ausgewählte Komponente mit gruppierten Optionen korrigiert",
-        "ru": "Исправленная конфигурация JSON для выбранного компонента с сгруппированными опциями",
-        "pt": "Configuração do JSON corrigida para o componente seleccionado com opções agrupadas",
-        "nl": "Gecorrigeerde JSON configuratie voor het geselecteerde component met gegroepeerde opties",
-        "fr": "Configuration JSON corrigée pour le composant sélectionné avec options groupées",
-        "it": "Configurazione JSON corretta per il componente selezionato con opzioni raggruppate",
-        "es": "Ajuste JSON corregido para el componente selecto con opciones agrupadas",
-        "pl": "Skorygowana konfiguracja JSON dla wybranego komponentu z pogrupowanymi opcjami",
-        "uk": "Виправлено налаштування JSON для вибраного компонента з позначеними опціями",
-        "zh-cn": "更正了带有分组选项的选定组件的 JSON 配置"
-      },
-      "7.8.27": {
-        "en": "Updated packages",
-        "de": "Aktualisierte Pakete",
-        "ru": "Обновленные пакеты",
-        "pt": "Pacotes atualizados",
-        "nl": "Bijgewerkte pakketten",
-        "fr": "Paquets mis à jour",
-        "it": "Pacchetti aggiornati",
-        "es": "Paquetes actualizados",
-        "pl": "Aktualizacja pakietów",
-        "uk": "Оновлені пакети",
-        "zh-cn": "更新软件包"
-      },
-      "7.8.25": {
-        "en": "Extended JSON config for frigate adapter",
-        "de": "Erweiterte JSON config für frigate Adapter",
-        "ru": "Расширенный конфигуратор JSON для фрегата",
-        "pt": "Configuração estendida do JSON para adaptador fragata",
-        "nl": "Uitgebreide JSON-configuratie voor fregatadapter",
-        "fr": "Config JSON étendue pour adaptateur de frégate",
-        "it": "Configurazione estesa di JSON per l'adattatore di fregata",
-        "es": "Configuración JSON ampliada para adaptador de fragata",
-        "pl": "Rozszerzony plik konfiguracyjny JSON do adaptera fregata",
-        "uk": "Розширений налаштування JSON для адаптера фригату",
-        "zh-cn": "JSON 护卫舰适配器扩展配置"
-      },
-      "7.8.24": {
-        "en": "Correcting the IP address calculation",
-        "de": "Korrektur der IP-Adressenberechnung",
-        "ru": "Исправление расчета IP-адреса",
-        "pt": "Corrigindo o cálculo do endereço IP",
-        "nl": "Correctie van de berekening van IP-adressen",
-        "fr": "Correction du calcul de l'adresse IP",
-        "it": "Correggere il calcolo dell'indirizzo IP",
-        "es": "Corregir el cálculo de la dirección IP",
-        "pl": "Korekta obliczenia adresu IP",
-        "uk": "Виправлення розрахунку IP-адреси",
-        "zh-cn": "校正 IP 地址计算"
-      },
-      "7.8.23": {
-        "en": "Copy `common.states` by alias creation\nUpdate `devices` instances",
-        "de": "Kopieren `common.states` durch Alias-Erstellung\nAktualisieren von `devices` Instanzen",
-        "ru": "Copy 'common.states' by alias creation (недоступная ссылка)\nОбновление экземпляров «устройств»",
-        "pt": "Copiar `common.states` por criação de pseudônimos\nAtualizar instâncias de dispositivos",
-        "nl": "Kopiëren van \"common.states\" door het aanmaken van aliassen\nApparaten bijwerken",
-        "fr": "Copier `common.states` par alias creation\nMettre à jour les instances `devices`",
-        "it": "Copia `common.states` da alias creazione\nAggiornare le istanze `dispositivi'",
-        "es": "Copiar `common.states` por alias creación\nActualizar los casos de \" dispositivos \"",
-        "pl": "Kopiuj \"common.states\" przez tworzenie aliasów\nAktualizacja instancji urządzeń",
-        "uk": "Статус на сервери\nОновлення екземплярів `devices`",
-        "zh-cn": "用别名复制“ common. states ”\n更新“ 设备” 实例"
-      },
-      "7.8.20": {
-        "en": "Improved the device manager",
-        "de": "Verbessert den Gerätemanager",
-        "ru": "Улучшен диспетчер устройств",
-        "pt": "Melhorou o gerenciador de dispositivos",
-        "nl": "De apparaatbeheerder verbeterd",
-        "fr": "Amélioration du gestionnaire de périphériques",
-        "it": "Migliorato il gestore del dispositivo",
-        "es": "Mejorado el administrador del dispositivo",
-        "pl": "Ulepszenie menedżera urządzeń",
-        "uk": "Покращення диспетчера пристроїв",
-        "zh-cn": "改进设备管理器"
       }
     },
     "desc": {
@@ -219,7 +219,8 @@
     "adminUI": {
       "config": "json"
     },
-    "tier": 1
+    "tier": 1,
+    "installedFrom": "/tmp/iobroker.admin-7.9.2.tgz"
   },
   "native": {
     "autoUpdate": 24,
@@ -254,7 +255,8 @@
     "loadingHideLogo": false,
     "loadingBackgroundImage": false,
     "doNotCheckPublicIP": false,
-    "ssoActive": false
+    "ssoActive": false,
+    "disableMcp": true
   },
   "notifications": [
     {
@@ -559,6 +561,7 @@
           "uk": "Останній новинний канал у форматі JSON",
           "zh-cn": "最后一个新闻提要为 JSON"
         },
+        "role": "state",
         "type": "json",
         "read": true,
         "write": false
@@ -582,6 +585,7 @@
           "zh-cn": "用于新闻提要的 Etag"
         },
         "type": "string",
+        "role": "state",
         "read": true,
         "write": false
       }
@@ -604,6 +608,7 @@
           "zh-cn": "最新消息 ID"
         },
         "type": "string",
+        "role": "state",
         "read": true,
         "write": false
       }

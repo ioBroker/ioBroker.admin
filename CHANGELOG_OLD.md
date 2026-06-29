@@ -1,4 +1,27 @@
 # Older changes
+## 7.9.1 (2026-06-12)
+- (@GermanBluefox) Added AI assistant to the admin interface
+
+## 7.9.0 (2026-06-11)
+- (@GermanBluefox) Added the central credentials manager 
+- (@GermanBluefox) Added the possibility of installation of packages on specific hosts
+
+## 7.8.29 (2026-05-30)
+- (@GermanBluefox) Corrected JSON config for the select component with grouped options
+
+## 7.8.27 (2026-05-25)
+- (@GermanBluefox) Updated packages
+
+## 7.8.25 (2026-05-16)
+- (@GermanBluefox) Extended JSON config for frigate adapter
+
+## 7.8.24 (2026-05-05)
+- (@GermanBluefox) Correcting the IP address calculation
+
+## 7.8.23 (2026-04-27)
+- (@GermanBluefox) Copy `common.states` by alias creation
+- (@GermanBluefox) Update `devices` instances
+
 ## 7.8.20 (2026-03-30)
 - (@GermanBluefox) Improved the device manager
 

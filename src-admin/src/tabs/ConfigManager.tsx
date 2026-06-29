@@ -1,6 +1,12 @@
 import React, { Component, type JSX } from 'react';
 
-import type { AdminConnection, IobTheme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection,
+    type IobTheme,
+    type ThemeName,
+    type ThemeType,
+    Router,
+} from '@iobroker/adapter-react-v5';
 import DeviceList from '@iobroker/dm-gui-components';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -21,7 +27,7 @@ const styles: Record<string, React.CSSProperties> = {
     },
 };
 
-interface DeviceManagerTabProps {
+interface ConfigManagerTabProps {
     themeName: ThemeName;
     themeType: ThemeType;
     socket: AdminConnection;
@@ -30,7 +36,14 @@ interface DeviceManagerTabProps {
     dateFormat: string;
 }
 
-export default class DeviceManagerTab extends Component<DeviceManagerTabProps> {
+export default class ConfigManagerTab extends Component<ConfigManagerTabProps> {
+    private instance: string;
+
+    constructor(props: ConfigManagerTabProps) {
+        super(props);
+        this.instance = Router.getLocation().id || window.localStorage.getItem('dmSelectedInstance') || '';
+    }
+
     render(): JSX.Element {
         return (
             <div style={styles.root}>
@@ -41,6 +54,11 @@ export default class DeviceManagerTab extends Component<DeviceManagerTabProps> {
                     theme={this.props.theme}
                     isFloatComma={this.props.isFloatComma}
                     dateFormat={this.props.dateFormat}
+                    instance={this.instance}
+                    onInstanceChanged={instance => {
+                        this.instance = instance;
+                        Router.doNavigate(`tab-devicemanager`, 'tab', instance);
+                    }}
                 />
             </div>
         );

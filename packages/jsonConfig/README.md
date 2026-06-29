@@ -144,6 +144,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`chips`:**](#chips) User can enter words that are added to an array
 - [**`color`:**](#color) Color picker
 - [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form `latitude,longitude`
+- [**`credential`:**](#credential) Selects a credential from the central credential storage (managed in admin settings)
 - [**`cron`:**](#cron) Configures cron expressions for scheduling tasks
 - [**`custom`:**](#custom) Integrates custom components for specific functionalities (Admin 6 only)
 - [**`datePicker`:**](#datepicker) Allows users to select a date
@@ -846,6 +847,50 @@ select a certificate collection or just use all collections or don't use let's e
 | Property           | Description                        |
 |--------------------|------------------------------------|
 | `leCollectionName` | name of the certificate collection |
+
+### `credential`
+
+select a credential from the central credential storage. The credentials can be managed in the admin settings
+(Settings → Credentials), and the adapter configuration only stores the ID of the selected credential
+(like `system.credentials.anthropic`) in the given attribute.
+
+Unless `disableCreation` is set, a **➕ button** is shown next to the selector that opens a small "Add credential"
+dialog right there — similar to the admin dialog. It offers templates (with icons) filtered by `credentialType`
+(e.g. Anthropic / ChatGPT / Google Gemini for `ai`, plus the generic "Login & password" and "Key" templates).
+The chosen template defines the form, a proposed name and the icon; the secret fields are encrypted with the
+system secret on save. The newly created credential is stored as `system.credentials.<name>` and is selected
+immediately.
+
+| Property          | Description                                                                                                          |
+|-------------------|----------------------------------------------------------------------------------------------------------------------|
+| `credentialType`  | show only credentials of this type: `email`, `cloud`, `ai` or `custom`. If not defined, all credentials are listed   |
+| `disableCreation` | if `true`, hide the ➕ button so the user can only pick an existing credential (no creation at this place)            |
+
+Example:
+
+```json
+{
+  "credentialId": {
+    "type": "credential",
+    "credentialType": "email",
+    "label": "E-Mail account",
+    "disableCreation": false,
+    "sm": 6
+  }
+}
+```
+
+Every credential has one of two forms: `login` (a `login` and a `password` field) or `key`
+(a single `key` field, e.g. an API key). In the adapter, read and decrypt the credential
+with `@iobroker/adapter-core`:
+
+```typescript
+import { Credentials } from '@iobroker/adapter-core';
+
+const cred = await Credentials.getCredentials<Credentials.LoginPasswordCredentials>(this, this.config.credentialId);
+// cred.values.login, cred.values.password (already decrypted)
+// or for the key form: Credentials.KeyCredentials -> cred.values.key
+```
 
 ### `custom`
 
@@ -1777,6 +1822,21 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 8.4.11 (2026-06-21)
+- (@GermanBluefox) Added missing translations
+
+### 8.4.10 (2026-06-20)
+- (@GermanBluefox) Fixed state component
+
+### 8.4.9 (2026-06-19)
+- (@GermanBluefox) Moved translations from adapter-react to this repository
+
+### 8.4.8 (2026-06-18)
+- (@GermanBluefox) Allowed creating credentials directly in the `credential` component (templates with icons, filtered by `credentialType`; can be disabled with `disableCreation`)
+
+### 8.4.7 (2026-06-07)
+- (@GermanBluefox) Added a credential component
+
 ### 8.4.5 (2026-05-30)
 - (@GermanBluefox) Fixing help rendering
 

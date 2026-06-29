@@ -34,6 +34,8 @@ import MainSettingsDialog from './MainSettingsDialog';
 import RepositoriesDialog, { type Repository } from './RepositoriesDialog';
 import LicensesDialog from './LicensesDialog';
 import CertificatesDialog from './CertificatesDialog';
+import CredentialsDialog from './CredentialsDialog';
+import { CREDENTIALS_PREFIX } from './credentialTypes';
 import SSLDialog from './SSLDialog';
 import ACLDialog from './ACLDialog';
 import StatisticsDialog from './StatisticsDialog';
@@ -96,6 +98,7 @@ interface SystemSettingsDialogState {
     confirmExit: boolean;
     systemConfig: ioBroker.SystemConfigObject;
     systemCertificates: ioBroker.Object;
+    systemCredentials: ioBroker.Object[];
     systemRepositories: ioBroker.RepositoryObject;
     systemLicenses: ioBroker.Object;
     multipleRepos: boolean;
@@ -129,6 +132,11 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
 
     originalLicenses: string;
 
+    originalCredentials: string;
+
+    /** The unchanged credential objects (with still encrypted values) by ID, as they were loaded */
+    originalCredentialObjects: Record<string, ioBroker.Object> = {};
+
     constructor(props: SystemSettingsDialogProps) {
         super(props);
         this.state = {
@@ -136,6 +144,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             confirmExit: false,
             systemConfig: null,
             systemCertificates: null,
+            systemCredentials: null,
             systemRepositories: null,
             systemLicenses: null,
             multipleRepos: false,
@@ -213,6 +222,30 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             const systemCertificates = await this.props.socket.getObject('system.certificates');
             this.originalCertificates = JSON.stringify(systemCertificates);
             newState.systemCertificates = systemCertificates;
+
+            // Load all credentials and mask the encrypted values, so they never stay decrypted in the frontend
+            const credentialObjects = await this.props.socket.getObjectViewSystem(
+                'config',
+                CREDENTIALS_PREFIX,
+                `${CREDENTIALS_PREFIX}香`,
+            );
+            this.originalCredentialObjects = {};
+            const systemCredentials = Object.values(credentialObjects)
+                .filter(obj => !!obj)
+                .sort((a, b) => a._id.localeCompare(b._id))
+                .map(obj => {
+                    this.originalCredentialObjects[obj._id] = AdminUtils.clone(obj) as ioBroker.Object;
+                    const masked = AdminUtils.clone(obj) as ioBroker.Object;
+                    const encryptedFields: string[] = masked.native?.encryptedFields || [];
+                    encryptedFields.forEach(field => {
+                        if (masked.native[field]) {
+                            masked.native[field] = SOME_PASSWORD;
+                        }
+                    });
+                    return masked;
+                });
+            this.originalCredentials = JSON.stringify(systemCredentials);
+            newState.systemCredentials = systemCredentials;
             let systemLicenses: ioBroker.Object = await this.props.socket.getObject('system.licenses');
             systemLicenses =
                 systemLicenses ||
@@ -264,6 +297,34 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                     await this.props.socket.setSystemConfig(this.state.systemConfig);
                 }
                 await this.props.socket.setObject('system.certificates', this.state.systemCertificates);
+
+                // save credentials
+                if (JSON.stringify(this.state.systemCredentials) !== this.originalCredentials) {
+                    // delete removed credentials
+                    for (const id of Object.keys(this.originalCredentialObjects)) {
+                        if (!this.state.systemCredentials.find(credential => credential._id === id)) {
+                            await this.props.socket.delObject(id);
+                        }
+                    }
+                    for (const credential of this.state.systemCredentials) {
+                        const newObj = AdminUtils.clone(credential);
+                        const original = this.originalCredentialObjects[newObj._id];
+                        const encryptedFields: string[] = newObj.native?.encryptedFields || [];
+                        for (const field of encryptedFields) {
+                            const value = newObj.native[field];
+                            if (value === SOME_PASSWORD) {
+                                // unchanged: restore the still encrypted value
+                                newObj.native[field] = original?.native?.[field] || '';
+                            } else if (value) {
+                                // changed: encrypt the new value on the backend (the secret never leaves it)
+                                newObj.native[field] = await this.props.socket.encrypt(value);
+                            }
+                        }
+                        if (!original || JSON.stringify(newObj) !== JSON.stringify(original)) {
+                            await this.props.socket.setObject(newObj._id, newObj);
+                        }
+                    }
+                }
 
                 let systemRepositories = await this.props.socket.getObject('system.repositories');
                 systemRepositories = systemRepositories || ({} as ioBroker.RepositoryObject);
@@ -394,6 +455,16 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             },
             {
                 id: 4,
+                title: 'Credentials',
+                component: CredentialsDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
+                data: 'systemCredentials',
+                name: 'tabCredentials',
+                dataAux: null,
+                handle: null,
+                socket: this.props.socket,
+            },
+            {
+                id: 5,
                 title: "Let's encrypt SSL",
                 component: SSLDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemCertificates',
@@ -402,7 +473,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 handle: null,
             },
             {
-                id: 5,
+                id: 6,
                 title: 'Default ACL',
                 component: ACLDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemConfig',
@@ -411,7 +482,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 handle: null,
             },
             {
-                id: 6,
+                id: 7,
                 title: 'Statistics',
                 component: StatisticsDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemConfig',
@@ -489,7 +560,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             if (dataAux) {
                 (state as any)[idAux] = dataAux;
             }
-            this.setState(state, () => cb && cb());
+            this.setState(state, () => cb?.());
         }
     }
 
@@ -508,6 +579,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             JSON.stringify(this.state.systemRepositories) === this.originalRepositories &&
             JSON.stringify(this.state.systemConfig) === this.originalConfig &&
             JSON.stringify(this.state.systemCertificates) === this.originalCertificates &&
+            JSON.stringify(this.state.systemCredentials) === this.originalCredentials &&
             JSON.stringify({
                 login: this.state.systemLicenses.native.login,
                 password: this.state.systemLicenses.native.password,

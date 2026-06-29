@@ -1,4 +1,4 @@
-<img src="packages/admin/admin/admin.svg" width="100" height="100" />
+<img src="admin/admin.svg" width="100" height="100" />
 
 # ioBroker.admin
 
@@ -51,6 +51,32 @@ It could be found on the "Access to the instances" tab.
 Additionally, the allowed instances should be selected in the appeared configuration table.
 
 If this option is disabled, the simple configuration page could be accessed under `http://IP:8081/configs.html`
+
+## AI assistant
+
+The admin interface includes an AI assistant (the floating button in the lower-right corner). It can answer
+questions about your ioBroker system, recommend adapters for a device or service, and — in "Actions" mode — make
+changes after your explicit confirmation. The assistant must first be enabled in the admin instance settings
+(`native.disableMcp` must be off); then pick an AI provider, credential and model in the assistant settings dialog.
+
+### Using the assistant without an API key (external MCP client)
+
+If you do not want to configure an AI provider/API key inside ioBroker, you can instead drive the assistant from
+an external AI client (Claude Desktop, Codex, Gemini CLI, …). The client connects directly to ioBroker through the
+MCP (Model Context Protocol) server.
+
+Open the assistant and click the **"Use without an API key"** button (the cable icon in the header). The dialog
+walks you through three steps:
+
+1.  **Install the MCP server** — install the `iobroker.mcp` adapter, ideally as a web extension of your `web`
+    (or `admin`) instance. It exposes ioBroker's tools to any MCP-compatible AI client. The dialog shows whether
+    the adapter is already installed.
+2.  **Add the MCP server in your AI client** — register a new MCP server in your client using the URL shown in the
+    dialog, e.g. `http(s)://<host>:<port>/mcp`. The dialog lists the actual endpoint(s) of your installation (the
+    embedded admin endpoint and any `web`/`mcp` instances) together with a copy button.
+3.  **System prompt** — the same dialog also shows the exact system prompt the built-in assistant uses, with a
+    read-only/actions toggle and a copy button. It is intentionally not reproduced here; copy it from the dialog and
+    paste it as the system/instructions prompt in your AI client to get the same behaviour.
 
 ## Reverse proxy
 
@@ -167,21 +193,27 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.8.29 (2026-05-30)
-- (@GermanBluefox) Corrected JSON config for the select component with grouped options
+### 7.9.10 (2026-06-22)
+- (@GermanBluefox) Added a dialog describing how to use the AI assistant without an API key (external MCP client)
+- (@GermanBluefox) Updated device manager
+- (@GermanBluefox) Added possibility to see the prompt and use it outside of assistant
 
-### 7.8.27 (2026-05-25)
-- (@GermanBluefox) Updated packages
+### 7.9.9 (2026-06-21)
+- (@GermanBluefox) Correcting the change of the AI providers
 
-### 7.8.25 (2026-05-16)
-- (@GermanBluefox) Extended JSON config for frigate adapter
+### 7.9.6 (2026-06-20)
+- (@GermanBluefox) Added "between" news rule
+- (@GermanBluefox) Better config-manager layout
+- (@GermanBluefox) Added filtering options for config-manager
 
-### 7.8.24 (2026-05-05)
-- (@GermanBluefox) Correcting the IP address calculation
+### 7.9.4 (2026-06-18)
+- (@GermanBluefox) Moved the MCP server to a separate package
+- (@GermanBluefox) Corrected the background color of states with overloaded colors
+- (@GermanBluefox) Added gemini template for credentials
+- (@GermanBluefox) Added sorting of adapters by creation date in the adapter tab
 
-### 7.8.23 (2026-04-27)
-- (@GermanBluefox) Copy `common.states` by alias creation
-- (@GermanBluefox) Update `devices` instances
+### 7.9.2 (2026-06-15)
+- (@GermanBluefox) AI must be enabled first in the settings to be used in the admin interface
 
 ## License
 

@@ -1,5 +1,7 @@
-import React from 'react';
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
+import React, { useRef } from 'react';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 
 import {
     Checkbox,
@@ -120,7 +122,93 @@ function arrayToRepo(array: RepositoryArray): Repository {
     return result;
 }
 
-const DragHandle = SortableHandle(() => <DragHandleIcon style={{ marginTop: 8, marginRight: 0, cursor: 'handle' }} />);
+/** react-dnd item type for a draggable repository row. */
+const REPO_ROW_TYPE = 'repo-row';
+
+interface DragItem {
+    index: number;
+}
+
+interface DraggableRepoRowProps {
+    index: number;
+    disabled: boolean;
+    /** Tooltip shown on the drag handle. */
+    dragTitle: string;
+    /** Reorder callback: move the row from `dragIndex` to `hoverIndex`. */
+    onMove: (dragIndex: number, hoverIndex: number) => void;
+    children: React.ReactNode;
+}
+
+/**
+ * One reorderable table row. Dragging starts only from the handle in the first cell (mirroring the
+ * former `react-sortable-hoc` `useDragHandle`); the whole row is the drop target and the drag
+ * preview. The list is reordered live while hovering, like the previous implementation.
+ */
+function DraggableRepoRow({ index, disabled, dragTitle, onMove, children }: DraggableRepoRowProps): React.JSX.Element {
+    const ref = useRef<HTMLTableRowElement>(null);
+    const handleRef = useRef<HTMLSpanElement>(null);
+
+    const [, drop] = useDrop<DragItem>({
+        accept: REPO_ROW_TYPE,
+        hover(item, monitor) {
+            if (!ref.current || item.index === index) {
+                return;
+            }
+            const dragIndex = item.index;
+            const hoverIndex = index;
+            const hoverRect = ref.current.getBoundingClientRect();
+            const hoverMiddleY = (hoverRect.bottom - hoverRect.top) / 2;
+            const clientOffset = monitor.getClientOffset();
+            if (!clientOffset) {
+                return;
+            }
+            const hoverClientY = clientOffset.y - hoverRect.top;
+            // Only reorder once the cursor passes the middle of the hovered row (prevents flicker).
+            if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+                return;
+            }
+            if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+                return;
+            }
+            onMove(dragIndex, hoverIndex);
+            // Mutate the monitor item so the next hover compares against the new position.
+            item.index = hoverIndex;
+        },
+    });
+
+    const [{ isDragging }, drag, preview] = useDrag({
+        type: REPO_ROW_TYPE,
+        item: (): DragItem => ({ index }),
+        canDrag: () => !disabled,
+        collect: monitor => ({ isDragging: monitor.isDragging() }),
+    });
+
+    // Drag only from the handle; the whole row is the drop target and the drag preview.
+    drag(handleRef);
+    preview(drop(ref));
+
+    return (
+        <TableRow
+            ref={ref}
+            className="float_row"
+            style={{ opacity: isDragging ? 0 : 1 }}
+        >
+            <TableCell
+                style={styles.dragColumn}
+                className="float_cell"
+                title={dragTitle}
+            >
+                <span
+                    ref={handleRef}
+                    style={{ display: 'inline-flex', cursor: disabled ? 'default' : 'grab' }}
+                >
+                    <DragHandleIcon style={{ marginTop: 8 }} />
+                </span>
+            </TableCell>
+            {children}
+        </TableRow>
+    );
+}
 
 interface RepositoriesDialogProps {
     t: Translate;
@@ -145,9 +233,6 @@ interface RepositoriesDialogState {
         error: boolean;
     } | null;
 }
-
-const SortableList = SortableContainer<{ value: any }>(({ value }: { value: any }) => value);
-const SortableItem = SortableElement<{ value: any }>(({ value }: { value: any }) => value);
 
 export default class RepositoriesDialog extends BaseSystemSettingsDialog<
     RepositoriesDialogProps,
@@ -314,13 +399,11 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
         return newConfig;
     };
 
-    onSortEnd = ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }): void => {
-        console.log(oldIndex, newIndex);
+    onMove = (dragIndex: number, hoverIndex: number): void => {
         const newData = AdminUtils.clone(this.props.data);
         const items = repoToArray(newData.native.repositories);
-        const item = items[oldIndex];
-        items.splice(oldIndex, 1);
-        items.splice(newIndex, 0, item);
+        const [item] = items.splice(dragIndex, 1);
+        items.splice(hoverIndex, 0, item);
         newData.native.repositories = arrayToRepo(items);
 
         const newConfig = AdminUtils.clone(this.props.dataAux);
@@ -376,15 +459,14 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
             item.title.trimStart() !== item.title ||
             (item.title.length < 3 && !!item.title.match(/^\d+$/));
 
-        const result = (
-            <TableRow className="float_row">
-                <TableCell
-                    style={styles.dragColumn}
-                    className="float_cell"
-                    title={this.props.t('Drag and drop to reorder')}
-                >
-                    <DragHandle />
-                </TableCell>
+        return (
+            <DraggableRepoRow
+                key={index}
+                index={index}
+                disabled={this.props.saving}
+                dragTitle={this.props.t('Drag and drop to reorder')}
+                onMove={this.onMove}
+            >
                 <TableCell
                     style={styles.enableColumn}
                     className="float_cell"
@@ -575,21 +657,12 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
                         <DeleteIcon />
                     </Fab>
                 </TableCell>
-            </TableRow>
-        );
-
-        return (
-            <SortableItem
-                disabled={this.props.saving}
-                key={index}
-                index={index}
-                value={result}
-            />
+            </DraggableRepoRow>
         );
     }
 
     renderSortableList(items: RepositoryArray): React.JSX.Element {
-        const result = (
+        return (
             <Table style={styles.table}>
                 <TableHead>
                     <TableRow className="float_row">
@@ -632,16 +705,6 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
                 </TableHead>
                 <TableBody>{items.map((item, index) => this.renderSortableItem(item, index))}</TableBody>
             </Table>
-        );
-
-        return (
-            <SortableList
-                helperClass="draggable-item"
-                useDragHandle
-                lockAxis="y"
-                onSortEnd={this.onSortEnd}
-                value={result}
-            />
         );
     }
 
@@ -729,7 +792,11 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
                     </Fab>
                     {this.renderAutoUpgradePolicy()}
                 </div>
-                <TableContainer>{this.renderSortableList(items)}</TableContainer>
+                {/* The shared App-level DndProvider only wraps the drawer, so this dialog (rendered in
+                    the main content area) needs its own context — mirroring Users/Enums. */}
+                <DndProvider backend={AdminUtils.isTouchDevice() ? TouchBackend : HTML5Backend}>
+                    <TableContainer>{this.renderSortableList(items)}</TableContainer>
+                </DndProvider>
             </div>
         );
     }

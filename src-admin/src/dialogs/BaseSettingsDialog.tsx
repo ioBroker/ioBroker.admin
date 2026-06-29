@@ -18,6 +18,7 @@ import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 import {
     type AdminConnection,
     DialogConfirm,
+    Router,
     type ThemeType,
     type IobTheme,
     type Translate,
@@ -75,13 +76,23 @@ interface BaseSettingsDialogState {
     saving: boolean;
 }
 
+/** The base-settings tabs in their display order; the index is the MUI Tab value, the name the URL arg. */
+const BASE_SETTINGS_TABS = ['system', 'multihost', 'objects', 'states', 'log', 'plugins'];
+
 export default class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettingsDialogState> {
     originalSettings: any;
 
     constructor(props: BaseSettingsDialogProps) {
         super(props);
+        // If this dialog is the active route (#tab-hosts/base-settings/<host>/<tab>), the 4th hash
+        // segment selects the tab.
+        const location = Router.getLocation();
+        const routedTab =
+            location.tab === 'tab-hosts' && location.dialog === 'base-settings' && location.id === props.currentHost
+                ? BASE_SETTINGS_TABS.indexOf(location.arg)
+                : -1;
         this.state = {
-            currentTab: 0,
+            currentTab: routedTab >= 0 ? routedTab : 0,
             hasChanges: [],
             currentHost: this.props.currentHost,
             loading: true,
@@ -100,8 +111,23 @@ export default class BaseSettingsDialog extends Component<BaseSettingsDialogProp
         };
     }
 
+    /** True when this dialog corresponds to the active route `#tab-hosts/base-settings/<host>`. */
+    private isRouted(): boolean {
+        const location = Router.getLocation();
+        return (
+            location.tab === 'tab-hosts' &&
+            location.dialog === 'base-settings' &&
+            location.id === this.props.currentHost
+        );
+    }
+
     async componentDidMount(): Promise<void> {
         await this.getSettings(this.state.currentHost);
+
+        // Reflect the current tab in the URL (#tab-hosts/base-settings/<host>/<tab>) so deep links work.
+        if (this.isRouted() && Router.getLocation().arg !== BASE_SETTINGS_TABS[this.state.currentTab]) {
+            Router.doNavigate(null, null, null, BASE_SETTINGS_TABS[this.state.currentTab]);
+        }
     }
 
     renderDialogConfirm(): JSX.Element | null {
@@ -310,7 +336,13 @@ export default class BaseSettingsDialog extends Component<BaseSettingsDialogProp
                     <AppBar position="static">
                         <Tabs
                             value={this.state.currentTab}
-                            onChange={(_event, newTab) => this.setState({ currentTab: newTab })}
+                            onChange={(_event, newTab) => {
+                                this.setState({ currentTab: newTab });
+                                // Reflect the active tab in the URL when routed.
+                                if (this.isRouted()) {
+                                    Router.doNavigate(null, null, null, BASE_SETTINGS_TABS[newTab]);
+                                }
+                            }}
                             aria-label="system tabs"
                             indicatorColor="secondary"
                         >

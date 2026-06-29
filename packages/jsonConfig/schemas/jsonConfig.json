@@ -13,6 +13,127 @@
       },
       "additionalProperties": false
     },
+    "selectOption": {
+      "type": "object",
+      "description": "A single selectable option of a `select` control.",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "value"
+      ],
+      "properties": {
+        "label": {
+          "description": "Label of the option",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
+        },
+        "value": {
+          "description": "Value of the option"
+        },
+        "hidden": {
+          "description": "Boolean or JS formula (may use `native.attribute`) to show or hide the option",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "group": {
+          "description": "Is it a group or not",
+          "type": "boolean"
+        },
+        "color": {
+          "description": "Color of the option",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description for the value, shown below the label",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
+        },
+        "icon": {
+          "description": "Icon URL to display next to the option",
+          "type": "string"
+        }
+      }
+    },
+    "selectOptionGroup": {
+      "type": "object",
+      "description": "A group of select options. `value` is not required when `items` are provided.",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "items"
+      ],
+      "properties": {
+        "label": {
+          "description": "Label of the group",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
+        },
+        "value": {
+          "description": "Optional value of the group header"
+        },
+        "hidden": {
+          "description": "Boolean or JS formula (may use `native.attribute`) to show or hide the group",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "color": {
+          "description": "Color of the group",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description for the group, shown below the label",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
+        },
+        "icon": {
+          "description": "Icon URL to display next to the group",
+          "type": "string"
+        },
+        "items": {
+          "description": "Sub-options of this group",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/selectOption"
+          }
+        }
+      }
+    },
     "customFilter": {
       "type": "object",
       "description": "JSON schema for the ObjectBrowserCustomFilter interface from TypeScript.\n\nNote: ioBroker-specific enums (e.g., ObjectType, CommonType) are allowed here as strings or arrays of strings; typical values are mentioned in the description.",
@@ -174,6 +295,7 @@
         "chips",
         "color",
         "coordinates",
+        "credential",
         "cron",
         "custom",
         "datePicker",
@@ -1265,46 +1387,10 @@
                 "type": "string"
               },
               {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "label": {
-                    "oneOf": [
-                      {
-                        "description": "Value label",
-                        "type": "string"
-                      },
-                      {
-                        "$ref": "#/definitions/multilingual"
-                      }
-                    ]
-                  },
-                  "value": {
-                    "oneOf": [
-                      {
-                        "type": "number"
-                      },
-                      {
-                        "type": "string"
-                      }
-                    ]
-                  },
-                  "hidden": {
-                    "type": "boolean"
-                  },
-                  "color": {
-                    "type": "string",
-                    "description": "Color of the option"
-                  },
-                  "icon": {
-                    "description": "Icon URL to display next to the option",
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "label",
-                  "value"
-                ]
+                "$ref": "#/definitions/selectOption"
+              },
+              {
+                "$ref": "#/definitions/selectOptionGroup"
               }
             ]
           }
@@ -3934,38 +4020,14 @@
                   "description": "Options which can be selected",
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "required": [
-                      "label",
-                      "value"
-                    ],
-                    "additionalProperties": false,
-                    "properties": {
-                      "label": {
-                        "description": "Label"
+                    "oneOf": [
+                      {
+                        "$ref": "#/definitions/selectOption"
                       },
-                      "value": {
-                        "description": "Value"
-                      },
-                      "hidden": {
-                        "type": "string",
-                        "description": "JS function that could use `native.attribute` for calculation"
-                      },
-                      "group": {
-                        "description": "Is it a group or not",
-                        "type": "boolean"
-                      },
-                      "color": {
-                        "type": "string"
-                      },
-                      "description": {
-                        "description": "Description for the value, shown below the label"
-                      },
-                      "icon": {
-                        "description": "Icon URL to display next to the option",
-                        "type": "string"
+                      {
+                        "$ref": "#/definitions/selectOptionGroup"
                       }
-                    }
+                    ]
                   }
                 },
                 "multiple": {
@@ -4699,6 +4761,77 @@
                   "required": [
                     "type",
                     "certType"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "credential"
+                }
+              }
+            },
+            "then": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                },
+                {
+                  "properties": {
+                    "credentialType": {
+                      "description": "Show only credentials of this type, e.g. 'email', 'cloud', 'ai' or 'custom'. If not defined, all credentials are listed",
+                      "type": "string",
+                      "enum": [
+                        "email",
+                        "cloud",
+                        "ai",
+                        "custom"
+                      ]
+                    },
+                    "disableCreation": {
+                      "description": "If true, do not show the button to create a new credential",
+                      "type": "boolean"
+                    },
+                    "attr": true,
+                    "label": true,
+                    "type": true,
+                    "defaultSendTo": true,
+                    "allowSaveWithError": true,
+                    "xs": true,
+                    "sm": true,
+                    "md": true,
+                    "lg": true,
+                    "xl": true,
+                    "newLine": true,
+                    "hidden": true,
+                    "hideOnlyControl": true,
+                    "disabled": true,
+                    "helpLink": true,
+                    "help": true,
+                    "style": true,
+                    "darkStyle": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
                   ]
                 }
               ]
@@ -5965,46 +6098,10 @@
                             "type": "string"
                           },
                           {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                              "label": {
-                                "oneOf": [
-                                  {
-                                    "description": "Value label",
-                                    "type": "string"
-                                  },
-                                  {
-                                    "$ref": "#/definitions/multilingual"
-                                  }
-                                ]
-                              },
-                              "value": {
-                                "oneOf": [
-                                  {
-                                    "type": "number"
-                                  },
-                                  {
-                                    "type": "string"
-                                  }
-                                ]
-                              },
-                              "hidden": {
-                                "type": "boolean"
-                              },
-                              "color": {
-                                "type": "string",
-                                "description": "Color of the option"
-                              },
-                              "icon": {
-                                "description": "Icon URL to display next to the option",
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "label",
-                              "value"
-                            ]
+                            "$ref": "#/definitions/selectOption"
+                          },
+                          {
+                            "$ref": "#/definitions/selectOptionGroup"
                           }
                         ]
                       }
@@ -7589,38 +7686,14 @@
                         "description": "Options which can be selected",
                         "type": "array",
                         "items": {
-                          "type": "object",
-                          "required": [
-                            "label",
-                            "value"
-                          ],
-                          "additionalProperties": false,
-                          "properties": {
-                            "label": {
-                              "description": "Label"
+                          "oneOf": [
+                            {
+                              "$ref": "#/definitions/selectOption"
                             },
-                            "value": {
-                              "description": "Value"
-                            },
-                            "hidden": {
-                              "type": "string",
-                              "description": "JS function that could use `native.attribute` for calculation"
-                            },
-                            "group": {
-                              "description": "Is this a group",
-                              "type": "boolean"
-                            },
-                            "color": {
-                              "type": "string"
-                            },
-                            "description": {
-                              "description": "Description for the value, shown below the label"
-                            },
-                            "icon": {
-                              "description": "Icon URL to display next to the option",
-                              "type": "string"
+                            {
+                              "$ref": "#/definitions/selectOptionGroup"
                             }
-                          }
+                          ]
                         }
                       },
                       "multiple": {
@@ -8183,6 +8256,65 @@
                     "required": [
                       "type",
                       "certType"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "credential"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "credentialType": {
+                        "description": "Show only credentials of this type, e.g. 'email', 'cloud', 'ai' or 'custom'. If not defined, all credentials are listed",
+                        "type": "string",
+                        "enum": [
+                          "email",
+                          "cloud",
+                          "ai",
+                          "custom"
+                        ]
+                      },
+                      "disableCreation": {
+                        "description": "If true, do not show the button to create a new credential",
+                        "type": "boolean"
+                      },
+                      "label": true,
+                      "type": true,
+                      "defaultSendTo": true,
+                      "allowSaveWithError": true,
+                      "xs": true,
+                      "sm": true,
+                      "md": true,
+                      "lg": true,
+                      "xl": true,
+                      "newLine": true,
+                      "hidden": true,
+                      "hideOnlyControl": true,
+                      "disabled": true,
+                      "helpLink": true,
+                      "help": true,
+                      "style": true,
+                      "darkStyle": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "noTranslation": true,
+                      "confirm": true
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
                     ]
                   }
                 },

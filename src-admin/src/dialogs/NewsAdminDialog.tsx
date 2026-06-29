@@ -169,6 +169,8 @@ interface Context {
     instances: Record<string, CompactInstanceInfo>;
     nodeVersion: string;
     npmVersion: string;
+    /** Installed js-controller version (core infrastructure, not a regular adapter) */
+    jsControllerVersion: string;
     os: string;
     activeRepo: string[] | string;
     uuid?: string;
@@ -250,7 +252,17 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
                     const adapter = context.adapters[adapters[a]];
                     const condition = message.conditions[adapters[a]];
                     if (condition) {
-                        if (!adapter && condition !== '!installed') {
+                        if (adapters[a] === 'js-controller') {
+                            // js-controller is core infrastructure (always installed and active) and
+                            // not a regular adapter, so its version comes from the installed controller.
+                            if (condition === '!installed' || condition === '!active') {
+                                conditionResult = false;
+                            } else if (condition === 'installed' || condition === 'active') {
+                                conditionResult = true;
+                            } else if (context.jsControllerVersion) {
+                                conditionResult = checkConditions(condition, context.jsControllerVersion);
+                            }
+                        } else if (!adapter && condition !== '!installed') {
                             conditionResult = false;
                         } else if (adapter && condition === '!installed') {
                             conditionResult = false;
