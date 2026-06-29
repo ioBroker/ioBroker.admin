@@ -281,6 +281,8 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
 
     render(): JSX.Element {
         const { item, instance } = this.props;
+        // The adapter runs as a web-extension (inside a web instance) and has no own process
+        const runsAsWebExtension = item.stoppedWhenWebExtension !== undefined;
 
         return (
             <Card sx={Utils.getStyle(this.props.context.theme, styles.root, this.props.hidden && styles.hidden)}>
@@ -291,19 +293,23 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                     sx={Utils.getStyle(
                         this.props.context.theme,
                         styles.imageBlock,
-                        (!item.running || instance.mode !== 'daemon' || item.stoppedWhenWebExtension !== undefined) &&
+                        !runsAsWebExtension &&
+                            (!item.running || instance.mode !== 'daemon') &&
                             styles.instanceStateNotEnabled1,
-                        item.running &&
+                        runsAsWebExtension && styles.instanceStateAliveAndConnectedWebExtension1,
+                        !runsAsWebExtension &&
+                            item.running &&
                             instance.mode === 'daemon' &&
-                            item.stoppedWhenWebExtension === undefined &&
                             (!item.connectedToHost || !item.alive) &&
                             styles.instanceStateNotAlive1,
-                        item.running &&
+                        !runsAsWebExtension &&
+                            item.running &&
                             item.connectedToHost &&
                             item.alive &&
                             item.connected === false &&
                             styles.instanceStateAliveNotConnected1,
-                        item.running &&
+                        !runsAsWebExtension &&
+                            item.running &&
                             item.connectedToHost &&
                             item.alive &&
                             item.connected !== false &&

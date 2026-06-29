@@ -371,24 +371,37 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
 
         const stateTooltip = this.renderTooltip();
 
+        // The adapter runs as a web-extension (inside a web instance) and has no own process
+        const runsAsWebExtension = item.stoppedWhenWebExtension !== undefined;
+
         const rootStyle = {
             ...styles.row,
-            ...((!item.running || instance.mode !== 'daemon' || item.stoppedWhenWebExtension !== undefined) &&
-                (this.props.idx % 2 === 0 ? styles.instanceStateNotEnabled1 : styles.instanceStateNotEnabled2)),
-            ...(item.running &&
+            // grey - disabled or non-daemon stopped
+            ...(!runsAsWebExtension && (!item.running || instance.mode !== 'daemon')
+                ? this.props.idx % 2 === 0
+                    ? styles.instanceStateNotEnabled1
+                    : styles.instanceStateNotEnabled2
+                : undefined),
+            // green (slightly different opacity) - runs as web-extension
+            ...(runsAsWebExtension
+                ? this.props.idx % 2 === 0
+                    ? styles.instanceStateAliveAndConnectedWebExtension1
+                    : styles.instanceStateAliveAndConnectedWebExtension2
+                : undefined),
+            ...(!runsAsWebExtension &&
+            item.running &&
             instance.mode === 'daemon' &&
-            item.stoppedWhenWebExtension === undefined &&
             (!item.connectedToHost || !item.alive)
                 ? this.props.idx % 2 === 0
                     ? styles.instanceStateNotAlive1
                     : styles.instanceStateNotAlive2
                 : undefined),
-            ...(item.running && item.connectedToHost && item.alive && item.connected === false
+            ...(!runsAsWebExtension && item.running && item.connectedToHost && item.alive && item.connected === false
                 ? this.props.idx % 2 === 0
                     ? styles.instanceStateAliveNotConnected1
                     : styles.instanceStateAliveNotConnected2
                 : undefined),
-            ...(item.running && item.connectedToHost && item.alive && item.connected !== false
+            ...(!runsAsWebExtension && item.running && item.connectedToHost && item.alive && item.connected !== false
                 ? this.props.idx % 2 === 0
                     ? styles.instanceStateAliveAndConnected1
                     : styles.instanceStateAliveAndConnected2

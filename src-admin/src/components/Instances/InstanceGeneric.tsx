@@ -193,6 +193,13 @@ export const styles: Record<string, any> = {
     instanceStateAliveAndConnected2: {
         backgroundColor: 'rgba(0, 255, 0, 0.15)',
     },
+    // Runs as web-extension: green, but with a slightly different opacity to distinguish it from a normal running instance
+    instanceStateAliveAndConnectedWebExtension1: {
+        backgroundColor: 'rgba(0, 255, 0, 0.25)',
+    },
+    instanceStateAliveAndConnectedWebExtension2: {
+        backgroundColor: 'rgba(0, 255, 0, 0.3)',
+    },
     statusIcon_green: {
         // square
         border: '2px solid grey',

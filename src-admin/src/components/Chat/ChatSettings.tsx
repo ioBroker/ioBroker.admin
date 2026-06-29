@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
     Autocomplete,
@@ -11,16 +11,20 @@ import {
     DialogTitle,
     FormControl,
     FormControlLabel,
+    IconButton,
     InputLabel,
     MenuItem,
     Select,
     Switch,
     TextField,
+    Tooltip,
     Typography,
 } from '@mui/material';
-import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
+import { Add as AddIcon, Check as CheckIcon, Close as CloseIcon, Tune as TuneIcon } from '@mui/icons-material';
 import { I18n, type AdminConnection, Icon } from '@iobroker/adapter-react-v5';
 
+import { CREDENTIAL_ICON_DATA } from '../SystemSettings/credentialIcons';
+import ChatCreateCredentialDialog from './ChatCreateCredentialDialog';
 import type {
     AiCredentialEntry,
     AiProvider,
@@ -42,13 +46,31 @@ interface ChatSettingsProps {
     onClose: (value?: ChatSettingsValue) => void;
 }
 
-const PROVIDERS: { value: AiProvider; label: string }[] = [
-    { value: 'anthropic', label: 'Anthropic (Claude)' },
-    { value: 'openai', label: 'OpenAI' },
-    { value: 'gemini', label: 'Google Gemini' },
-    { value: 'deepseek', label: 'DeepSeek' },
+const PROVIDERS: { value: AiProvider; label: string; icon?: string }[] = [
+    { value: 'anthropic', label: 'Anthropic (Claude)', icon: CREDENTIAL_ICON_DATA.anthropic },
+    { value: 'openai', label: 'OpenAI', icon: CREDENTIAL_ICON_DATA.chatgpt },
+    { value: 'gemini', label: 'Google Gemini', icon: CREDENTIAL_ICON_DATA.gemini },
+    { value: 'deepseek', label: 'DeepSeek', icon: CREDENTIAL_ICON_DATA.deepseek },
+    // no brand logo for a generic OpenAI-compatible endpoint — use the "custom" (tune) glyph
     { value: 'custom', label: 'Custom (OpenAI-compatible)' },
 ];
+
+/** One provider row: its brand logo (or the generic "custom" glyph) followed by the label. */
+function renderProviderItem(provider: { label: string; icon?: string }): React.JSX.Element {
+    return (
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {provider.icon ? (
+                <Icon
+                    src={provider.icon}
+                    style={{ width: 20, height: 20 }}
+                />
+            ) : (
+                <TuneIcon style={{ width: 20, height: 20 }} />
+            )}
+            {provider.label}
+        </span>
+    );
+}
 
 function renderCredentialItem(option: AiCredentialEntry | undefined, anyIcon: boolean): React.JSX.Element {
     return (
@@ -76,17 +98,27 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
     const [testing, setTesting] = useState(false);
     const [error, setError] = useState('');
     const [info, setInfo] = useState('');
+    const [createOpen, setCreateOpen] = useState(false);
+
+    /** (Re)load the list of stored AI credentials; optionally select `selectId` once it's loaded. */
+    const loadProviders = useCallback(
+        (selectId?: string): Promise<void> =>
+            props.socket
+                .sendTo(props.instance, 'chat:getProviders', null)
+                .then((result: ChatProvidersResponse) => {
+                    setCredentials(result?.providers || []);
+                    setAnyIcons(result?.providers?.some(p => p.icon) ?? false);
+                    if (selectId) {
+                        setValue(prev => ({ ...prev, credentialId: selectId }));
+                    }
+                })
+                .catch(e => setError(e.toString())),
+        [props.socket, props.instance],
+    );
 
     useEffect(() => {
-        props.socket
-            .sendTo(props.instance, 'chat:getProviders', null)
-            .then((result: ChatProvidersResponse) => {
-                setCredentials(result?.providers || []);
-                setAnyIcons(result?.providers?.some(p => p.icon) ?? false);
-            })
-            .catch(e => setError(e.toString()));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        void loadProviders();
+    }, [loadProviders]);
 
     const update = (patch: Partial<ChatSettingsValue>): void => setValue(prev => ({ ...prev, ...patch }));
 
@@ -149,176 +181,199 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
     const isCustom = value.provider === 'custom';
 
     return (
-        <Dialog
-            open
-            onClose={() => props.onClose()}
-            maxWidth="sm"
-            fullWidth
-        >
-            <DialogTitle>{I18n.t('AI assistant settings')}</DialogTitle>
-            <DialogContent style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 8 }}>
-                <FormControl
-                    fullWidth
-                    variant="standard"
-                >
-                    <InputLabel>{I18n.t('Provider')}</InputLabel>
-                    <Select
-                        value={value.provider}
-                        onChange={e => update({ provider: e.target.value as AiProvider })}
+        <>
+            <Dialog
+                open
+                onClose={() => props.onClose()}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>{I18n.t('AI assistant settings')}</DialogTitle>
+                <DialogContent style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 8 }}>
+                    <FormControl
+                        fullWidth
+                        variant="standard"
                     >
-                        {PROVIDERS.map(p => (
-                            <MenuItem
-                                key={p.value}
-                                value={p.value}
-                            >
-                                {p.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                        <InputLabel>{I18n.t('Provider')}</InputLabel>
+                        <Select
+                            value={value.provider}
+                            onChange={e => update({ provider: e.target.value as AiProvider })}
+                        >
+                            {PROVIDERS.map(p => (
+                                <MenuItem
+                                    key={p.value}
+                                    value={p.value}
+                                >
+                                    {renderProviderItem(p)}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
-                <FormControl
-                    fullWidth
-                    variant="standard"
-                >
-                    {/* `shrink` is required because `displayEmpty` shows the "none" item, so MUI
-                        cannot auto-detect a value and would otherwise overlap the label with it. */}
-                    <InputLabel shrink>{I18n.t('API key (credential)')}</InputLabel>
-                    <Select
-                        value={value.credentialId}
-                        onChange={e => update({ credentialId: e.target.value })}
-                        displayEmpty
-                    >
-                        <MenuItem value="">
-                            <em>{I18n.t('none')}</em>
-                        </MenuItem>
-                        {credentials.map(c => (
-                            <MenuItem
-                                key={c.id}
-                                value={c.id}
-                            >
-                                {renderCredentialItem(c, anyIcons)}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                {isCustom ? (
-                    <>
-                        <TextField
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4 }}>
+                        <FormControl
+                            style={{ flex: 1, minWidth: 0 }}
                             variant="standard"
-                            label={I18n.t('Base URL')}
-                            placeholder="http://127.0.0.1:11434/v1"
-                            value={value.baseUrl}
-                            onChange={e => update({ baseUrl: e.target.value })}
-                            fullWidth
+                        >
+                            {/* `shrink` is required because `displayEmpty` shows the "none" item, so MUI
+                            cannot auto-detect a value and would otherwise overlap the label with it. */}
+                            <InputLabel shrink>{I18n.t('API key (credential)')}</InputLabel>
+                            <Select
+                                value={value.credentialId}
+                                onChange={e => update({ credentialId: e.target.value })}
+                                displayEmpty
+                            >
+                                <MenuItem value="">
+                                    <em>{I18n.t('none')}</em>
+                                </MenuItem>
+                                {credentials.map(c => (
+                                    <MenuItem
+                                        key={c.id}
+                                        value={c.id}
+                                    >
+                                        {renderCredentialItem(c, anyIcons)}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        {/* Create a new API key right here, without leaving for the System Settings → Credentials. */}
+                        <Tooltip title={I18n.t('Add credential')}>
+                            <IconButton onClick={() => setCreateOpen(true)}>
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+
+                    {isCustom ? (
+                        <>
+                            <TextField
+                                variant="standard"
+                                label={I18n.t('Base URL')}
+                                placeholder="http://127.0.0.1:11434/v1"
+                                value={value.baseUrl}
+                                onChange={e => update({ baseUrl: e.target.value })}
+                                fullWidth
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={value.allowSelfSignedCerts}
+                                        onChange={e => update({ allowSelfSignedCerts: e.target.checked })}
+                                    />
+                                }
+                                label={I18n.t('Allow self-signed certificates')}
+                            />
+                        </>
+                    ) : null}
+
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+                        <Autocomplete
+                            style={{ flex: 1 }}
+                            freeSolo
+                            options={models}
+                            value={value.model}
+                            onInputChange={(_e, newValue) => update({ model: newValue || '' })}
+                            renderInput={params => (
+                                <TextField
+                                    {...params}
+                                    variant="standard"
+                                    label={I18n.t('Model')}
+                                    placeholder="claude-..., gpt-..."
+                                />
+                            )}
                         />
+                        <Button
+                            onClick={loadModels}
+                            disabled={testing}
+                            startIcon={testing ? <CircularProgress size={16} /> : null}
+                        >
+                            {I18n.t('Load models')}
+                        </Button>
+                    </div>
+
+                    {error ? <Alert severity="error">{error}</Alert> : null}
+                    {info ? <Alert severity="success">{info}</Alert> : null}
+
+                    {canTest(value) ? (
+                        <Alert severity="warning">
+                            {I18n.t('The objects, states and logs will be processed by your AI provider.')}
+                        </Alert>
+                    ) : null}
+
+                    <div>
                         <FormControlLabel
                             control={
                                 <Switch
-                                    checked={value.allowSelfSignedCerts}
-                                    onChange={e => update({ allowSelfSignedCerts: e.target.checked })}
+                                    checked={value.hideFab}
+                                    onChange={e => update({ hideFab: e.target.checked })}
                                 />
                             }
-                            label={I18n.t('Allow self-signed certificates')}
+                            label={I18n.t('Hide assistant button')}
                         />
-                    </>
-                ) : null}
-
-                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
-                    <Autocomplete
-                        style={{ flex: 1 }}
-                        freeSolo
-                        options={models}
-                        value={value.model}
-                        onInputChange={(_e, newValue) => update({ model: newValue || '' })}
-                        renderInput={params => (
-                            <TextField
-                                {...params}
-                                variant="standard"
-                                label={I18n.t('Model')}
-                                placeholder="claude-..., gpt-..."
-                            />
-                        )}
-                    />
-                    <Button
-                        onClick={loadModels}
-                        disabled={testing}
-                        startIcon={testing ? <CircularProgress size={16} /> : null}
-                    >
-                        {I18n.t('Load models')}
-                    </Button>
-                </div>
-
-                {error ? <Alert severity="error">{error}</Alert> : null}
-                {info ? <Alert severity="success">{info}</Alert> : null}
-
-                {canTest(value) ? (
-                    <Alert severity="warning">
-                        {I18n.t('The objects, states and logs will be processed by your AI provider.')}
-                    </Alert>
-                ) : null}
-
-                <div>
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                checked={value.hideFab}
-                                onChange={e => update({ hideFab: e.target.checked })}
-                            />
-                        }
-                        label={I18n.t('Hide assistant button')}
-                    />
-                    <Typography
-                        variant="caption"
-                        color="textSecondary"
-                        component="div"
-                        style={{ marginLeft: 14 }}
-                    >
-                        {I18n.t('When hidden, move the mouse to the bottom-right corner to reveal it.')}
-                    </Typography>
-                </div>
-
-                {props.autoApprove.length ? (
-                    <div>
                         <Typography
                             variant="caption"
                             color="textSecondary"
+                            component="div"
+                            style={{ marginLeft: 14 }}
                         >
-                            {I18n.t('Operations approved without asking (click to revoke):')}
+                            {I18n.t('When hidden, move the mouse to the bottom-right corner to reveal it.')}
                         </Typography>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
-                            {props.autoApprove.map(tool => (
-                                <Chip
-                                    key={tool}
-                                    label={tool}
-                                    size="small"
-                                    onDelete={() =>
-                                        props.onChangeAutoApprove(props.autoApprove.filter(entry => entry !== tool))
-                                    }
-                                />
-                            ))}
-                        </div>
                     </div>
-                ) : null}
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<CheckIcon />}
-                    onClick={() => props.onClose(value)}
-                >
-                    {I18n.t('Save')}
-                </Button>
-                <Button
-                    color="grey"
-                    startIcon={<CloseIcon />}
-                    onClick={() => props.onClose()}
-                >
-                    {I18n.t('Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>
+
+                    {props.autoApprove.length ? (
+                        <div>
+                            <Typography
+                                variant="caption"
+                                color="textSecondary"
+                            >
+                                {I18n.t('Operations approved without asking (click to revoke):')}
+                            </Typography>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
+                                {props.autoApprove.map(tool => (
+                                    <Chip
+                                        key={tool}
+                                        label={tool}
+                                        size="small"
+                                        onDelete={() =>
+                                            props.onChangeAutoApprove(props.autoApprove.filter(entry => entry !== tool))
+                                        }
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    ) : null}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<CheckIcon />}
+                        onClick={() => props.onClose(value)}
+                    >
+                        {I18n.t('Save')}
+                    </Button>
+                    <Button
+                        color="grey"
+                        startIcon={<CloseIcon />}
+                        onClick={() => props.onClose()}
+                    >
+                        {I18n.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            {createOpen ? (
+                <ChatCreateCredentialDialog
+                    socket={props.socket}
+                    provider={value.provider}
+                    existingIds={credentials.map(c => c.id)}
+                    onClose={createdId => {
+                        setCreateOpen(false);
+                        if (createdId) {
+                            void loadProviders(createdId);
+                        }
+                    }}
+                />
+            ) : null}
+        </>
     );
 }

@@ -419,11 +419,15 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 loglevel: common.loglevel || null,
                 adapter: common.name || null,
                 version: common.version || null,
+                // The adapter runs as a web-extension (inside a web instance) and therefore has no own process.
+                // Detect this purely via the configuration (common.webExtension + native.webInstance).
+                // Only enabled instances count as "running as web-extension"; disabled ones stay grey.
                 stoppedWhenWebExtension:
-                    obj.common.mode === 'daemon'
-                        ? obj.common.webExtension !== undefined
-                            ? !!obj.common.webExtension
-                            : undefined
+                    obj.common.mode === 'daemon' &&
+                    obj.common.enabled &&
+                    !!obj.common.webExtension &&
+                    !!obj.native.webInstance
+                        ? true
                         : undefined,
                 links: [],
             };
@@ -518,14 +522,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 }
             }
 
-            if (instance.stoppedWhenWebExtension) {
-                const eId =
-                    this.states[`${instance.id}.info.extension`] ||
-                    (await this.props.socket.getState(`${instance.id}.info.extension`));
-                instance.stoppedWhenWebExtension = eId ? !!eId.val : undefined;
-            }
-
-            console.log(obj._id);
             formatted[obj._id] = instance;
         }
 
@@ -675,11 +671,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const alive = this.states[`${obj._id}.alive`];
             const connected = this.states[`${obj._id}.connected`];
             const connection = this.states[`${obj._id.replace('system.adapter.', '')}.info.connection`];
+            // The adapter runs as a web-extension inside a web instance => it has no own process, treat it as running
             if (common.webExtension && obj.native.webInstance) {
-                const extension = this.states[`${obj._id.replace('system.adapter.', '')}.info.extension`];
-                if (extension) {
-                    return extension.val ? 'green' : 'red';
-                }
+                return 'green';
             }
 
             if (!connected?.val || !alive?.val) {

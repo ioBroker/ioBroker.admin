@@ -349,10 +349,9 @@ class Config extends Component<ConfigProps, ConfigState> {
             this.state.common?.enabled &&
             (!this.state.common.webExtension || !this.state.native?.webInstance || mode === 'daemon')
         ) {
+            // The adapter runs as a web-extension inside a web instance => it has no own process, treat it as running
             if (this.state.common.webExtension && this.state.native?.webInstance) {
-                if (this.state.extension !== null) {
-                    return this.state.extension ? 'green' : 'red';
-                }
+                return 'green';
             }
 
             if (!this.state.connectedToHost || !this.state.alive) {
