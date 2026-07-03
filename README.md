@@ -190,6 +190,9 @@ ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
 ## Changelog
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added the port (native.port) to the instances table and cards and the possibility to sort instances by port
+
 ### 7.9.11 (2026-06-29)
 - (@GermanBluefox) Allowed creating an AI API key directly from the assistant settings dialog
 - (@GermanBluefox) Added provider logos (incl. DeepSeek) to the AI assistant provider and credential selectors

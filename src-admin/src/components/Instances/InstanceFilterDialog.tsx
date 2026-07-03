@@ -244,7 +244,7 @@ const statusArray: Record<string, { text: string; _class: string; status: string
     ok: { text: 'enabled and OK', _class: 'statusIcon_green', status: 'green' },
 };
 
-type SortColumn = 'name' | 'status' | 'memory' | 'id' | 'host' | 'loglevel';
+type SortColumn = 'name' | 'status' | 'memory' | 'id' | 'host' | 'loglevel' | 'port';
 type SortDirection = 'asc' | 'desc';
 
 interface InstanceFilterDialogProps {
@@ -412,6 +412,7 @@ const InstanceFilterDialog = ({
                             <MenuItem value="id">{I18n.t('ID')}</MenuItem>
                             <MenuItem value="status">{I18n.t('Status')}</MenuItem>
                             <MenuItem value="memory">{I18n.t('Memory')}</MenuItem>
+                            <MenuItem value="port">{I18n.t('Port')}</MenuItem>
                             <MenuItem value="host">{I18n.t('Host')}</MenuItem>
                             {expertMode && <MenuItem value="loglevel">{I18n.t('Log level')}</MenuItem>}
                         </Select>

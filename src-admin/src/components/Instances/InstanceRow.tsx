@@ -67,6 +67,18 @@ const styles: Record<string, any> = {
             display: 'none !important',
         },
     },
+    visible1400: {
+        display: 'none',
+        '@media screen and (max-width: 1400px)': {
+            display: 'flex !important',
+        },
+    },
+    hidden1400: {
+        display: 'flex',
+        '@media screen and (max-width: 1400px)': {
+            display: 'none !important',
+        },
+    },
     hidden800: {
         display: 'flex',
         '@media screen and (max-width: 800px)': {
@@ -248,6 +260,7 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                                 </Box>
                             )}
                             <Grid2 sx={styles.visible1050}>{this.renderMemoryUsage()}</Grid2>
+                            {item.port ? <Grid2 sx={styles.visible1400}>{this.renderPort()}</Grid2> : null}
                             {item.modeSchedule && (
                                 <Box
                                     component="div"
@@ -549,6 +562,9 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                                 </Avatar>
                             </Tooltip>
                         )}
+                        {this.props.context.hasAnyPort ? (
+                            <Grid2 sx={{ ...styles.hidden1400, width: 100 }}>{this.renderPort()}</Grid2>
+                        ) : null}
                         <Grid2
                             sx={{
                                 ...styles.hidden1050,

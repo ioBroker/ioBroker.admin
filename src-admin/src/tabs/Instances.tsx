@@ -109,7 +109,7 @@ interface InstancesProps {
     handleNavigation: (tab: string, subTab?: string, param?: string) => void;
 }
 
-type SortColumn = 'name' | 'status' | 'memory' | 'id' | 'host' | 'loglevel';
+type SortColumn = 'name' | 'status' | 'memory' | 'id' | 'host' | 'loglevel' | 'port';
 type SortDirection = 'asc' | 'desc';
 
 interface InstancesState {
@@ -809,6 +809,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const checkSentry = InstanceGeneric.getSentrySettings(instance.obj); // is it possible to enable/disable sentry for this adapter
             const currentSentry = this.isSentry(id);
 
+            const rawPort = instance.obj.native?.port;
+            const port: number | null =
+                rawPort === undefined || rawPort === null || rawPort === '' ? null : parseInt(rawPort, 10) || null;
+
             const item: InstanceItem = {
                 id,
                 running,
@@ -834,6 +838,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 modeSchedule,
                 checkSentry,
                 memoryLimitMB,
+                port,
                 stoppedWhenWebExtension: instance.stoppedWhenWebExtension,
                 allowInstanceSettings: this.props.repository[instance.adapter]
                     ? this.props.repository[instance.adapter].allowInstanceSettings
@@ -927,6 +932,15 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         comparison = (logOrder[a.logLevel] || 0) - (logOrder[b.logLevel] || 0);
                         break;
                     }
+                    case 'port': {
+                        // Instances without a port go to the end (ascending)
+                        if (a.port === null || b.port === null) {
+                            comparison = a.port === b.port ? 0 : a.port === null ? 1 : -1;
+                        } else {
+                            comparison = a.port - b.port;
+                        }
+                        break;
+                    }
                     default: {
                         comparison = 0;
                     }
@@ -984,6 +998,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
             this.cacheInstances();
         }
 
+        // If at least one shown instance has a port, the port column is displayed and
+        // all rows (even those without a port) must reserve a placeholder to keep the columns aligned
+        const hasAnyPort = this._cacheList.some(item => item.port !== null);
+
         const context = {
             adminInstance: this.props.adminInstance,
             onDeleteInstance: this.onDeleteInstance,
@@ -1001,6 +1019,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             getInstanceStatus: this.getInstanceStatus,
             theme: this.props.theme,
             onRegisterClose: this.onRegisterClose,
+            hasAnyPort,
         };
 
         const list = this._cacheList.map((item, idx) => {

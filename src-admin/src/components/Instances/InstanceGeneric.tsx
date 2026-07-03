@@ -49,6 +49,7 @@ import {
     ViewCompact as ViewCompactIcon,
     LowPriority as LowPriorityIcon,
     Storage as HostIcon,
+    SettingsEthernet as PortIcon,
 } from '@mui/icons-material';
 
 import {
@@ -365,6 +366,7 @@ export interface InstanceItem {
     compactGroup: number | null | string;
     tier: 1 | 2 | 3;
     memoryLimitMB: number;
+    port: number | null;
     name: string;
     stoppedWhenWebExtension: boolean | undefined;
     running: boolean;
@@ -408,6 +410,8 @@ export interface InstanceContext {
     states: Record<string, ioBroker.State>;
     onToggleExpanded: (inst: string, expanded: boolean) => void;
     onRegisterClose: (inst: string, close: (() => void) | null) => void;
+    /** True if at least one of the currently shown instances has a port, so the port column is displayed */
+    hasAnyPort: boolean;
 }
 
 export interface InstanceGenericProps {
@@ -1202,6 +1206,21 @@ export default abstract class InstanceGeneric<
                     {`${this.props.instance.mode === 'daemon' && !InstanceGeneric.isCompact(this.props.instance.obj) ? this.getMemory() : '-.--'} MB`}
                 </InstanceInfo>
             )
+        );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderPort(): JSX.Element | null {
+        if (!this.props.item.port) {
+            return null;
+        }
+        return (
+            <InstanceInfo
+                icon={<PortIcon />}
+                tooltip={this.props.context.t('Port')}
+            >
+                {this.props.item.port.toString()}
+            </InstanceInfo>
         );
     }
 
