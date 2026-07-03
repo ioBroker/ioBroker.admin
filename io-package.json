@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.9.11",
+    "version": "7.9.12",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.9.12": {
+        "en": "Added the port (native.port) to the instances table and cards and the possibility to sort instances by port\nCorrected the intro and instances links for adapters running as web-extension\nImproved the error message on unmet global dependencies in multihost setups by listing the hosts that do not fulfill the requirement\nSorted the notification categories by severity (alert, notify, info), so the most important notifications are shown first",
+        "de": "Der Port (native.port) wurde der Instanztabelle und den Karten hinzugefügt, und es besteht nun die Möglichkeit, Instanzen nach Port zu sortieren.\nDie Einleitung und die Instanzlinks für Adapter, die als Web-Erweiterung ausgeführt werden, wurden korrigiert.\nDie Fehlermeldung zu nicht erfüllten globalen Abhängigkeiten in Multihost-Setups wurde verbessert, indem die Hosts aufgelistet wurden, die die Anforderung nicht erfüllen.\nDie Benachrichtigungskategorien wurden nach Schweregrad (Alarm, Benachrichtigung, Info) sortiert, sodass die wichtigsten Benachrichtigungen zuerst angezeigt werden.",
+        "ru": "Добавлен порт (native.port) в таблицу экземпляров и карточки, а также возможность сортировки экземпляров по порту.\nИсправлены ссылки на вступление и примеры для адаптеров, работающих в качестве веб-расширения.\nУлучшено сообщение об ошибке, связанное с неудовлетворенными глобальными зависимостями в многохостовых конфигурациях, путем перечисления хостов, которые не соответствуют требованиям.\nКатегории уведомлений отсортированы по степени важности (предупреждение, уведомление, информация), поэтому наиболее важные уведомления отображаются первыми.",
+        "pt": "Adicionada a porta (native.port) à tabela de instâncias e aos cartões, bem como a possibilidade de ordenar as instâncias por porta.\nCorrigimos os links de introdução e instâncias para adaptadores executados como extensão da web.\nMelhoramos a mensagem de erro sobre dependências globais não atendidas em configurações com vários hosts, listando os hosts que não cumprem o requisito.\nClassificamos as categorias de notificação por gravidade (alerta, notificação, informação), para que as notificações mais importantes sejam exibidas primeiro.",
+        "nl": "De poort (native.port) is toegevoegd aan de tabel en kaarten van de instanties, en de mogelijkheid om instanties op poort te sorteren is toegevoegd.\nDe intro en de links naar instanties voor adapters die als web-extensie draaien, zijn gecorrigeerd.\nDe foutmelding over niet-vervulde globale afhankelijkheden in multihost-configuraties is verbeterd door een lijst weer te geven van de hosts die niet aan de vereiste voldoen.\nDe meldingscategorieën zijn gesorteerd op ernst (waarschuwing, melding, informatie), zodat de belangrijkste meldingen bovenaan worden weergegeven.",
+        "fr": "Ajout du port (native.port) au tableau et aux fiches des instances, ainsi que de la possibilité de trier les instances par port.\nCorrection des liens d'introduction et d'instances pour les adaptateurs exécutés en tant qu'extension Web\nAmélioration du message d'erreur relatif aux dépendances globales non satisfaites dans les configurations multi-hôtes : liste des hôtes ne répondant pas aux exigences.\nLes catégories de notifications sont triées par niveau de gravité (alerte, notification, information), les plus importantes apparaissant en premier.",
+        "it": "È stata aggiunta la porta (native.port) alla tabella e alle schede delle istanze, nonché la possibilità di ordinare le istanze per porta.\nCorretti i link introduttivi e di istanza per gli adattatori in esecuzione come estensione web\nÈ stato migliorato il messaggio di errore relativo alle dipendenze globali non soddisfatte nelle configurazioni multihost, elencando gli host che non soddisfano il requisito.\nLe categorie di notifica sono state ordinate in base alla gravità (avviso, notifica, informazione), in modo che le notifiche più importanti vengano visualizzate per prime.",
+        "es": "Se agregó el puerto (native.port) a la tabla de instancias y tarjetas, así como la posibilidad de ordenar las instancias por puerto.\nSe corrigieron los enlaces de introducción e instancias para los adaptadores que se ejecutan como extensión web.\nSe mejoró el mensaje de error sobre dependencias globales no satisfechas en configuraciones de múltiples hosts al enumerar los hosts que no cumplen el requisito.\nHe ordenado las categorías de notificación por gravedad (alerta, notificación, información), de modo que las notificaciones más importantes se muestran primero.",
+        "pl": "Dodano port (native.port) do tabeli instancji i kart oraz możliwość sortowania instancji według portu\nPoprawiono łącza wprowadzające i instancyjne dla adapterów działających jako rozszerzenie sieciowe\nUlepszono komunikat o błędzie dotyczący niespełnionych zależności globalnych w konfiguracjach wielohostowych, wyświetlając listę hostów, które nie spełniają wymagań\nKategorie powiadomień posortowano według ważności (alert, powiadomienie, informacja), dzięki czemu najważniejsze powiadomienia są wyświetlane jako pierwsze",
+        "uk": "Додано порт (native.port) до таблиці та карток екземплярів, а також можливість сортувати екземпляри за портом.\nВиправлено посилання на вступ та екземпляри для адаптерів, що працюють як веб-розширення.\nПокращено повідомлення про помилку щодо невиконаних глобальних залежностей у багатохостових налаштуваннях шляхом переліку хостів, які не відповідають вимозі.\nКатегорії сповіщень відсортовано за серйозністю (сповіщення, сповіщення, інформація), тому найважливіші сповіщення відображаються першими",
+        "zh-cn": "在实例表和卡片中添加了端口（native.port），并增加了按端口对实例进行排序的功能。\n修正了作为 Web 扩展运行的适配器的介绍和实例链接。\n改进了多主机配置中未满足全局依赖项的错误消息，列出了不满足要求的主机。\n按严重程度（警报、通知、信息）对通知类别进行排序，以便优先显示最重要的通知。"
+      },
       "7.9.11": {
         "en": "Allowed creating an AI API key directly from the assistant settings dialog\nAdded provider logos (incl. DeepSeek) to the AI assistant provider and credential selectors\nThe adapter-core version will be updated if required by start\nShow status of the instance in the web-extension mode",
         "de": "Es wurde ermöglicht, einen KI-API-Schlüssel direkt im Dialog für die Assistenteneinstellungen zu erstellen.\nAnbieterlogos (inkl. DeepSeek) wurden zu den Auswahlfeldern für KI-Assistenten und Anmeldeinformationen hinzugefügt.\nDie Adapter-Core-Version wird bei Bedarf vom Start aktualisiert.\nStatus der Instanz im Web-Erweiterungsmodus anzeigen",
@@ -95,19 +108,6 @@
         "pl": "Dodano asystenta AI do interfejsu admin",
         "uk": "Доданий помічник AI в інтерфейсі адміністратора",
         "zh-cn": "添加到管理界面的 AI 助手"
-      },
-      "7.9.0": {
-        "en": "Added the central credentials manager \nAdded the possibility of installation of packages on specific hosts",
-        "de": "Hinzufügen des zentralen Anmeldedatenmanagers\nHinzufügen der Möglichkeit der Installation von Paketen auf bestimmten Hosts",
-        "ru": "Добавлен менеджер центральных учетных данных\nДобавлена возможность установки пакетов на конкретных хостах",
-        "pt": "Adicionado o gerenciador central de credenciais\nAdicionada a possibilidade de instalação de pacotes em hosts específicos",
-        "nl": "De hoofdgegevensbeheerder toegevoegd\nToegevoegd de mogelijkheid van installatie van pakketten op specifieke hosts",
-        "fr": "Ajouté le gestionnaire central des références\nAjout de la possibilité d'installation de paquets sur des hôtes spécifiques",
-        "it": "Aggiunto il direttore delle credenziali centrali\nAggiunta la possibilità di installazione di pacchetti su host specifici",
-        "es": "Añadido el administrador central de credenciales\nSe agregó la posibilidad de instalar paquetes en hosts específicos",
-        "pl": "Dodano centralnego menedżera mandatów\nDodano możliwość instalacji pakietów na poszczególnych hostach",
-        "uk": "Додано центральний менеджер облікових записів\nДодано можливість установки пакетів на конкретні господарі",
-        "zh-cn": "增加了中央证书管理员\n添加在特定主机上安装包的可能性"
       }
     },
     "desc": {

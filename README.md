@@ -190,7 +190,7 @@ ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.9.12 (2026-07-03)
 - (@GermanBluefox) Added the port (native.port) to the instances table and cards and the possibility to sort instances by port
 - (@GermanBluefox) Corrected the intro and instances links for adapters running as web-extension
 - (@GermanBluefox) Improved the error message on unmet global dependencies in multihost setups by listing the hosts that do not fulfill the requirement
@@ -214,12 +214,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Added "between" news rule
 - (@GermanBluefox) Better config-manager layout
 - (@GermanBluefox) Added filtering options for config-manager
-
-### 7.9.4 (2026-06-18)
-- (@GermanBluefox) Moved the MCP server to a separate package
-- (@GermanBluefox) Corrected the background color of states with overloaded colors
-- (@GermanBluefox) Added gemini template for credentials
-- (@GermanBluefox) Added sorting of adapters by creation date in the adapter tab
 
 ## License
 
