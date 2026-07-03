@@ -73,6 +73,28 @@ export interface InstanceMessage {
 /** Possible message severities */
 export type Severity = 'notify' | 'info' | 'alert';
 
+/**
+ * Order of the severities by importance (most important first).
+ * Used to sort the notification categories, so the most important warnings are shown first.
+ */
+export const SEVERITY_ORDER: Record<Severity, number> = {
+    alert: 0,
+    notify: 1,
+    info: 2,
+};
+
+/**
+ * Compare two severities by importance. Most important (`alert`) first; unknown severities go last.
+ *
+ * @param a first severity
+ * @param b second severity
+ */
+export function compareSeverity(a: Severity | undefined, b: Severity | undefined): number {
+    const orderA = a !== undefined && SEVERITY_ORDER[a] !== undefined ? SEVERITY_ORDER[a] : 3;
+    const orderB = b !== undefined && SEVERITY_ORDER[b] !== undefined ? SEVERITY_ORDER[b] : 3;
+    return orderA - orderB;
+}
+
 export interface Message {
     name: ioBroker.Translated;
     severity: Severity;

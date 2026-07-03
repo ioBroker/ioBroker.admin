@@ -129,6 +129,78 @@ function getHostname(
     return hostname;
 }
 
+/**
+ * Build the link(s) for an adapter that runs as a web-extension.
+ *
+ * Such adapters have no own web-server and therefore no reachable own port.
+ * They are served by their host web instance(s) under the path `/<adapterName>/`.
+ * `native.webInstance` contains the target web instance (e.g. `web.0`) or `*` for all web instances.
+ *
+ * @param adapter adapter name (e.g. `rest-api`)
+ * @param instanceObj the web-extension instance object
+ * @param context Context object
+ * @param context.instances Object with all instances
+ * @param context.hostname Actual host name
+ * @param context.adminInstance Actual admin instance
+ * @param context.hosts Object with all hosts
+ */
+function getWebExtensionLinks(
+    adapter: string,
+    instanceObj: ioBroker.InstanceObject,
+    context: {
+        instances: Record<string, ioBroker.InstanceObject>;
+        hostname: string;
+        adminInstance: string;
+        hosts: Record<string, ioBroker.HostObject>;
+    },
+): { url: string; port: number | undefined; instance?: string }[] {
+    const webInstance: string = instanceObj.native.webInstance;
+
+    // Determine which web instance(s) serve this extension
+    let webInstanceIds: string[];
+    if (webInstance === '*') {
+        webInstanceIds = Object.keys(context.instances)
+            .filter(id => id.startsWith('system.adapter.web.') && context.instances[id].common.enabled)
+            .map(id => id.substring('system.adapter.'.length));
+        // fall back to disabled web instances if none is enabled
+        if (!webInstanceIds.length) {
+            webInstanceIds = Object.keys(context.instances)
+                .filter(id => id.startsWith('system.adapter.web.'))
+                .map(id => id.substring('system.adapter.'.length));
+        }
+    } else {
+        webInstanceIds = [webInstance];
+    }
+
+    const urls: { url: string; port: number | undefined; instance?: string }[] = [];
+
+    for (const webId of webInstanceIds) {
+        const webObj = context.instances[`system.adapter.${webId}`];
+        const webNative = webObj?.native;
+        if (!webNative) {
+            continue;
+        }
+
+        const protocolVal: string | boolean = webNative.secure === undefined ? webNative.protocol : webNative.secure;
+        const protocol: 'http' | 'https' = protocolVal === true || protocolVal === 'true' ? 'https' : 'http';
+
+        let ip: string | null = webNative.bind || webNative.ip;
+        if (!ip || ip === '0.0.0.0') {
+            ip = getHostname(webObj, context.instances, context.hosts, context.hostname, context.adminInstance);
+        }
+
+        const port: number | undefined = webNative.port;
+
+        urls.push({
+            url: `${protocol}://${ip || ''}${port ? `:${port}` : ''}/${adapter}/`,
+            port,
+            instance: webId,
+        });
+    }
+
+    return urls;
+}
+
 // internal use
 function _replaceLink(
     link: string,
@@ -232,6 +304,15 @@ export function replaceLink(
     if (link) {
         const instanceObj = context.instances[`system.adapter.${adapter}.${instance}`];
         const native = instanceObj?.native || {};
+
+        // Adapters running as web-extension have no own web-server / port.
+        // They are served by their host web instance(s) under the path /<adapterName>/.
+        if (instanceObj?.common.webExtension && native.webInstance) {
+            const webExtensionUrls = getWebExtensionLinks(adapter, instanceObj, context);
+            if (webExtensionUrls.length) {
+                return webExtensionUrls;
+            }
+        }
 
         const placeholders = link.match(/%(\w+)%/g);
 

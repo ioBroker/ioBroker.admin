@@ -34,6 +34,8 @@ import {
 
 import { I18n, Utils, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
 
+import { compareSeverity } from '../components/NotificationMessage';
+
 const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({
         backgroundColor: theme.palette.background.paper,
@@ -337,6 +339,12 @@ const HostWarningDialog = ({
 
     const dark = themeType === 'dark';
 
+    // Sort the categories by severity (most important first: alert > notify > info),
+    // so the most important notifications are shown as the first tabs.
+    const sortedNames = Object.keys(messages).sort((a, b) =>
+        compareSeverity(messages[a].severity, messages[b].severity),
+    );
+
     return (
         <Dialog
             onClose={() => onClose()}
@@ -367,16 +375,16 @@ const HostWarningDialog = ({
                             indicatorColor={dark ? 'primary' : 'secondary'}
                             textColor="primary"
                         >
-                            {Object.entries(messages).map(([name, entry], idx) => (
+                            {sortedNames.map((name, idx) => (
                                 <Tab
                                     style={dark ? { color: 'white' } : { color: 'black' }}
                                     disabled={disabled.includes(name)}
                                     key={name}
-                                    label={entry.name[I18n.getLanguage()]}
+                                    label={messages[name].name[I18n.getLanguage()]}
                                     icon={
                                         <Status
                                             name={name}
-                                            severity={entry.severity}
+                                            severity={messages[name].severity}
                                         />
                                     }
                                     {...a11yProps(idx)}
@@ -384,7 +392,7 @@ const HostWarningDialog = ({
                             ))}
                         </Tabs>
                     </AppBar>
-                    {Object.keys(messages).map((name, idx) => (
+                    {sortedNames.map((name, idx) => (
                         <TabPanel
                             sxBox={styles.classNameBox}
                             key={`tabPanel-${name}`}
@@ -409,9 +417,7 @@ const HostWarningDialog = ({
                                 <div>
                                     {messages[name].instances
                                         ? Object.keys(messages[name].instances).map(nameInst => {
-                                              const index = Object.keys(messages).indexOf(name);
-
-                                              if (autoCollapse && value === index) {
+                                              if (autoCollapse && value === idx) {
                                                   handleChangeAccordion(`${name}-${nameInst}`)('', true);
                                                   setAutoCollapse(false);
                                               }

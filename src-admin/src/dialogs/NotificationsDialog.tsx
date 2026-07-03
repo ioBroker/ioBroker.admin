@@ -29,7 +29,7 @@ import {
 import { I18n, type ThemeType, type IobTheme, type AdminConnection, type ThemeName } from '@iobroker/adapter-react-v5';
 
 import type { BackEndCommandGeneric } from '@iobroker/json-config';
-import NotificationMessage, { type Message, type Severity } from '../components/NotificationMessage';
+import NotificationMessage, { type Message, type Severity, compareSeverity } from '../components/NotificationMessage';
 
 export interface BackEndCommandOpenLink extends BackEndCommandGeneric {
     command: 'link';
@@ -327,8 +327,11 @@ const NotificationsDialog = ({
             }
         }
 
+        // Default to the most important category first (alert > notify > info)
         Object.keys(_messages).map(scope =>
-            Object.keys(_messages[scope]).map(name => (firstKey = firstKey || `${scope}--${name}`)),
+            Object.keys(_messages[scope])
+                .sort((a, b) => compareSeverity(_messages[scope][a].severity, _messages[scope][b].severity))
+                .map(name => (firstKey = firstKey || `${scope}--${name}`)),
         );
 
         // if a panel does not exist, set it to the first one
@@ -405,26 +408,31 @@ const NotificationsDialog = ({
                             textColor={black ? 'primary' : 'secondary'}
                         >
                             {Object.keys(messages).map(scope =>
-                                Object.keys(messages[scope]).map((name, idx) => {
-                                    const entry = messages[scope][name];
-                                    const key = `${scope}--${name}`;
+                                // Sort the categories by severity (most important first: alert > notify > info)
+                                Object.keys(messages[scope])
+                                    .sort((a, b) =>
+                                        compareSeverity(messages[scope][a].severity, messages[scope][b].severity),
+                                    )
+                                    .map((name, idx) => {
+                                        const entry = messages[scope][name];
+                                        const key = `${scope}--${name}`;
 
-                                    return (
-                                        <Tab
-                                            disabled={disabled.includes(key)}
-                                            key={key}
-                                            value={key}
-                                            label={`${entry.name[I18n.getLanguage()]}`}
-                                            icon={
-                                                <Status
-                                                    severity={entry.severity}
-                                                    isDark={black}
-                                                />
-                                            }
-                                            {...a11yProps(idx)}
-                                        />
-                                    );
-                                }),
+                                        return (
+                                            <Tab
+                                                disabled={disabled.includes(key)}
+                                                key={key}
+                                                value={key}
+                                                label={`${entry.name[I18n.getLanguage()]}`}
+                                                icon={
+                                                    <Status
+                                                        severity={entry.severity}
+                                                        isDark={black}
+                                                    />
+                                                }
+                                                {...a11yProps(idx)}
+                                            />
+                                        );
+                                    }),
                             )}
                         </Tabs>
                     </AppBar>

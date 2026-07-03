@@ -57,6 +57,7 @@ import GitHubInstallDialog from '@/components/Adapters/GitHubInstallDialog';
 import AdapterInstallDialog, {
     type AdapterRatingInfo,
     type InstalledInfo,
+    type InstalledHostsInfo,
     type AdaptersContext,
     type AdapterInstallDialogState,
     type AdapterInstallDialogProps,
@@ -166,6 +167,8 @@ interface AdaptersState extends AdapterInstallDialogState {
     repository: Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }>;
     installed: InstalledInfo;
     installedGlobal: InstalledInfo;
+    /** Installed version of every adapter per host (adapter name => host name => version) */
+    installedGlobalHosts: InstalledHostsInfo;
     adapters: Record<string, ioBroker.AdapterObject>;
     compactInstances: Record<string, CompactInstanceInfo> | null;
     categories: {
@@ -261,6 +264,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             installed: {},
             /** This contains the adapters installed on same and other hosts */
             installedGlobal: {},
+            /** Installed version of every adapter per host */
+            installedGlobalHosts: {},
             adapters: {},
             compactInstances: {},
             categories: [],
@@ -466,17 +471,19 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         adapters: Record<string, ioBroker.AdapterObject>;
         installedLocal: InstalledInfo;
         installedGlobal?: InstalledInfo;
+        installedGlobalHosts?: InstalledHostsInfo;
         repository?: Record<string, RepoAdapterObject>;
         cb?: () => void;
     }): void {
         let { adapters, repository } = options;
 
         const { cb, installedLocal } = options;
-        let { installedGlobal } = options;
+        let { installedGlobal, installedGlobalHosts } = options;
 
         adapters ||= this.state.adapters;
         const installed = installedLocal || this.state.installed;
         installedGlobal ||= this.state.installedGlobal;
+        installedGlobalHosts ||= this.state.installedGlobalHosts;
         repository ||= this.state.repository;
 
         const updateAvailable: string[] = [];
@@ -506,6 +513,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 installed,
                 repository,
                 installedGlobal,
+                installedGlobalHosts,
             },
             () => cb && cb(),
         );
@@ -517,11 +525,14 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
     async getInstalled(update?: boolean): Promise<{
         installedLocal: InstalledInfo;
         installedGlobal: InstalledInfo;
+        installedGlobalHosts: InstalledHostsInfo;
     }> {
         /** Installed adapters on the same host */
         let installedLocal: InstalledInfo;
         /** Installed adapters on any hosts */
         let installedGlobal: InstalledInfo = {};
+        /** Installed version of every adapter per host (adapter name => host name => version) */
+        const installedGlobalHosts: InstalledHostsInfo = {};
 
         const hosts = await this.props.socket.getHosts(update);
 
@@ -534,7 +545,16 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     if (host._id === this.state.currentHost) {
                         installedLocal = res;
                     }
-                    // TODO: handle cases where different versions of adapters are installed on different hosts
+                    // Remember the installed version of every adapter on every host, so we can tell
+                    // exactly which host does not fulfill a global dependency in a multihost setup.
+                    const hostName = host._id.replace(/^system\.host\./, '');
+                    for (const adapterName of Object.keys(res)) {
+                        if (adapterName === 'hosts' || !res[adapterName]?.version) {
+                            continue;
+                        }
+                        installedGlobalHosts[adapterName] ||= {};
+                        installedGlobalHosts[adapterName][hostName] = res[adapterName].version;
+                    }
                     installedGlobal = { ...installedGlobal, ...res };
                 }
             } catch (e) {
@@ -545,7 +565,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             }
         }
 
-        return { installedLocal, installedGlobal };
+        return { installedLocal, installedGlobal, installedGlobalHosts };
     }
 
     async getAdapters(update?: boolean, bigUpdate?: boolean, indicateUpdate?: boolean): Promise<void> {
@@ -566,7 +586,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             window.alert(`Cannot getAdapters: ${e}`);
         }
 
-        const { installedLocal, installedGlobal } = await this.getInstalled(update);
+        const { installedLocal, installedGlobal, installedGlobalHosts } = await this.getInstalled(update);
 
         let repository: Record<string, RepoAdapterObject>;
         try {
@@ -588,6 +608,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             installedLocal,
             repository,
             installedGlobal,
+            installedGlobalHosts,
         });
     }
 
@@ -1394,6 +1415,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             installed: this.state.installed,
             /** Information about all installed adapters on all hosts */
             installedGlobal: this.state.installedGlobal,
+            /** Installed version of every adapter per host */
+            installedGlobalHosts: this.state.installedGlobalHosts,
             /** very compact information about instances */
             compactInstances: this.state.compactInstances || {},
             /** Information about installed adapters */

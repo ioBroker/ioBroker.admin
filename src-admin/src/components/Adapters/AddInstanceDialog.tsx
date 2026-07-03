@@ -94,6 +94,11 @@ export interface AdapterDependencies {
     installed: boolean;
     installedVersion: string;
     rightVersion: boolean;
+    /**
+     * For global dependencies in a multihost setup: the hosts that do not fulfill the required version.
+     * Empty array means every host fulfills the requirement.
+     */
+    wrongHosts?: { host: string; installedVersion: string }[];
 }
 
 interface AddInstanceDialogProps {
@@ -187,17 +192,42 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         if (!dependencies) {
             return '';
         }
-        const array = [];
+        const array: JSX.Element[] = [];
         for (const adapter of dependencies) {
             if (!adapter.installedVersion) {
-                array.push(this.props.t('No version of %s', adapter.name, adapter.name));
+                array.push(
+                    <div key={adapter.name}>{this.props.t('No version of %s', adapter.name, adapter.name)}</div>,
+                );
+            } else if (adapter.wrongHosts?.length) {
+                // Global dependency not fulfilled on one or more hosts (multihost setup):
+                // list every host and its installed version, so the user knows which host to update.
+                array.push(
+                    <div key={adapter.name}>
+                        <div>
+                            {this.props.t(
+                                'The following hosts do not fulfill the required version %s of %s:',
+                                adapter.version,
+                                adapter.name,
+                            )}
+                        </div>
+                        <ul style={{ margin: '4px 0' }}>
+                            {adapter.wrongHosts.map(h => (
+                                <li key={h.host}>
+                                    {h.host}: {h.installedVersion}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>,
+                );
             } else if (!adapter.rightVersion) {
                 array.push(
-                    `${this.props.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version)}${adapter.installedVersion}`,
+                    <div key={adapter.name}>
+                        {`${this.props.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version)}${adapter.installedVersion}`}
+                    </div>,
                 );
             }
         }
-        return array.length ? array.map(el => <div key={el}>{el}</div>) : '';
+        return array.length ? array : '';
     }
 
     getText(text: string | { [lang: string]: string }, noTranslation?: boolean): string {

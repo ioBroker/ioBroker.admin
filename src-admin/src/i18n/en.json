@@ -630,6 +630,7 @@
     "Invalid version of %s": "Invalid version of %s",
     "Invalid version of %s. Required %s": "Invalid version of %s. Required %s",
     "Invalid version of %s. Required %s. Current": "Invalid version of %s. Required %s. Current",
+    "The following hosts do not fulfill the required version %s of %s:": "The following hosts do not fulfill the required version %s of %s:",
     "Invoice number": "Invoice number",
     "Iran": "Iran",
     "Iraq": "Iraq",

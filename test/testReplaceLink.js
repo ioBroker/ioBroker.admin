@@ -7671,4 +7671,26 @@ describe('Test replace link in front-end', function () {
 
         done();
     });
+
+    it('web-extension', function (done) {
+        // "cameras" runs as web-extension (native.webInstance = "*") and has no own reachable port.
+        // The link must point to the host web instance (web.0, port 8082) under /cameras/, NOT to cameras' own port 8200.
+        const link = '%protocol%://%ip%:%port%/';
+        const name = 'cameras';
+        const instanceId = 0;
+        const hostname = '123.456.789.123';
+        const adminInstance = 'admin.0';
+        const result = replaceLink(link, name, instanceId, {
+            instances,
+            hostname,
+            adminInstance,
+            hosts,
+        });
+
+        expect(result.length).to.be.equal(1);
+        expect(result[0].url).to.be.equal('http://123.456.789.123:8082/cameras/');
+        expect(result[0].port).to.be.equal(8082);
+
+        done();
+    });
 });

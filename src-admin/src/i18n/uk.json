@@ -622,6 +622,7 @@
     "Invalid version of %s": "Недійсна версія %s",
     "Invalid version of %s. Required %s": "Недійсна версія %s. Необхідно %s",
     "Invalid version of %s. Required %s. Current": "Недійсна версія %s. Потрібна %s. Поточна.",
+    "The following hosts do not fulfill the required version %s of %s:": "Наступні хости не відповідають необхідній версії %s для %s:",
     "Invoice number": "Номер накладної",
     "Iran": "Іран",
     "Iraq": "Ірак",

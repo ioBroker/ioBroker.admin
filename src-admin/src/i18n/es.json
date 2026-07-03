@@ -622,6 +622,7 @@
     "Invalid version of %s": "Versión no válida de %s",
     "Invalid version of %s. Required %s": "Versión no válida de %s. Necesita ser %s",
     "Invalid version of %s. Required %s. Current": "Versión no válida de %s. Se requiere %s. Actual",
+    "The following hosts do not fulfill the required version %s of %s:": "Los siguientes hosts no cumplen con la versión %s requerida de %s:",
     "Invoice number": "Número de factura",
     "Iran": "Irán",
     "Iraq": "Irak",

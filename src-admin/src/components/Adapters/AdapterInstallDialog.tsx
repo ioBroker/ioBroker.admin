@@ -78,6 +78,12 @@ export type InstalledInfo = { [adapterName: string]: AdapterInformationEx } & {
     hosts?: { [hostName: string]: ioBroker.HostCommon & { host: string; runningVersion: string } };
 };
 
+/**
+ * For each adapter name the installed version on every host (host name => version).
+ * Used to report which hosts do not fulfill a global dependency in a multihost setup.
+ */
+export type InstalledHostsInfo = { [adapterName: string]: { [hostName: string]: string } };
+
 export type AdaptersContext = {
     expertMode: boolean;
     t: Translate;
@@ -97,6 +103,8 @@ export type AdaptersContext = {
     installed: InstalledInfo;
     /** Information about all installed adapters on all hosts */
     installedGlobal: InstalledInfo;
+    /** Installed version of every adapter per host (adapter name => host name => version) */
+    installedGlobalHosts: InstalledHostsInfo;
     /** very compact information about instances */
     compactInstances: Record<string, CompactInstanceInfo>;
     /** Information about installed adapters */
@@ -324,14 +332,40 @@ export default abstract class AdapterInstallDialog<
 
                         entry.installed = !!installed;
                         entry.installedVersion = installed ? installed.version : null;
-                        try {
-                            entry.rightVersion = installed
-                                ? checkVersion
-                                    ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
-                                    : true
-                                : false;
-                        } catch {
-                            entry.rightVersion = true;
+
+                        // A global dependency must be fulfilled on EVERY host in a multihost setup.
+                        // Collect all hosts that do not fulfill the required version, so the error
+                        // message can point the user to the exact host(s) that must be updated.
+                        // Only relevant for multihost setups (more than one host has the adapter);
+                        // for a single host the concise default message below is used.
+                        const perHost = context.installedGlobalHosts?.[entry.name];
+                        if (checkVersion && perHost && Object.keys(perHost).length > 1) {
+                            const wrongHosts: { host: string; installedVersion: string }[] = [];
+                            for (const [hostName, hostVersion] of Object.entries(perHost)) {
+                                let ok: boolean;
+                                try {
+                                    ok = semver.satisfies(hostVersion, entry.version, { includePrerelease: true });
+                                } catch {
+                                    ok = true;
+                                }
+                                if (!ok) {
+                                    wrongHosts.push({ host: hostName, installedVersion: hostVersion });
+                                }
+                            }
+                            entry.wrongHosts = wrongHosts;
+                            entry.rightVersion = installed ? !wrongHosts.length : false;
+                        } else {
+                            try {
+                                entry.rightVersion = installed
+                                    ? checkVersion
+                                        ? semver.satisfies(installed.version, entry.version, {
+                                              includePrerelease: true,
+                                          })
+                                        : true
+                                    : false;
+                            } catch {
+                                entry.rightVersion = true;
+                            }
                         }
                     }
 

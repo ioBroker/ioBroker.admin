@@ -622,6 +622,7 @@
     "Invalid version of %s": "Ongeldige versie van %s",
     "Invalid version of %s. Required %s": "Ongeldige versie van %s. Benodigd %s",
     "Invalid version of %s. Required %s. Current": "Ongeldige versie van %s. Vereist %s. Huidige versie",
+    "The following hosts do not fulfill the required version %s of %s:": "De volgende hosts voldoen niet aan de vereiste versie %s van %s:",
     "Invoice number": "Factuurnummer",
     "Iran": "Ik rende",
     "Iraq": "Irak",

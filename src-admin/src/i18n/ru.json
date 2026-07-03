@@ -622,6 +622,7 @@
     "Invalid version of %s": "Неподходящая версия %s",
     "Invalid version of %s. Required %s": "Требуется другая версия драйвера %s. Требуется %s",
     "Invalid version of %s. Required %s. Current": "Неверная версия %s. Требуется %s. Текущая версия",
+    "The following hosts do not fulfill the required version %s of %s:": "Следующие хосты не соответствуют требуемой версии %s для %s:",
     "Invoice number": "Номер счета-фактуры",
     "Iran": "Иран",
     "Iraq": "Ирак",
