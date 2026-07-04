@@ -190,6 +190,13 @@ ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
 ## Changelog
+<!--
+    Placeholder for the next version (at the beginning of the line):
+    ### **WORK IN PROGRESS**
+-->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added AWS and Azure credentials in credentials manager
+
 ### 7.9.12 (2026-07-03)
 - (@GermanBluefox) Added the port (native.port) to the instances table and cards and the possibility to sort instances by port
 - (@GermanBluefox) Corrected the intro and instances links for adapters running as web-extension

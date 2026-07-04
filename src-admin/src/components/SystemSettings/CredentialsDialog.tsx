@@ -179,6 +179,20 @@ const CREDENTIAL_TEMPLATES: Record<string, CredentialTemplate> = {
         type: 'ai',
         name: 'deepseek',
     },
+    aws: {
+        label: 'AWS',
+        icon: <CredentialIcon src={ICON_DATA.aws} />,
+        form: 'aws',
+        type: 'aws',
+        name: 'aws',
+    },
+    azure: {
+        label: 'Azure',
+        icon: <CredentialIcon src={ICON_DATA.azure} />,
+        form: 'azure',
+        type: 'azure',
+        name: 'azure',
+    },
     email: {
         label: 'credential_type_email',
         translate: true,
@@ -217,6 +231,8 @@ const CREDENTIAL_TYPE_ICONS: Record<CredentialType, JSX.Element> = {
     email: <EmailIcon fontSize="small" />,
     cloud: <CloudIcon fontSize="small" />,
     ai: <SmartToyIcon fontSize="small" />,
+    aws: <CredentialIcon src={ICON_DATA.aws} />,
+    azure: <CredentialIcon src={ICON_DATA.azure} />,
     custom: <TuneIcon fontSize="small" />,
 };
 
@@ -360,6 +376,7 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
         const fields = CREDENTIAL_FORMS[template.form];
         const native: Record<string, any> = {
             type,
+            form: template.form,
             version: CREDENTIALS_VERSION,
             encryptedFields: fields.filter(field => field.encrypted).map(field => field.name),
         };
@@ -419,6 +436,44 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
         nextField: string | null,
     ): JSX.Element {
         const value = credential.native[field.name];
+
+        if (field.type === 'select') {
+            const strValue = value === undefined || value === null ? '' : String(value);
+            const options = field.options ? [...field.options] : [];
+            // keep a stored value that is not part of the predefined list selectable
+            if (strValue && !options.find(option => option.value === strValue)) {
+                options.unshift({ value: strValue });
+            }
+            return (
+                <TextField
+                    key={field.name}
+                    id={`credential_${field.name}`}
+                    select
+                    variant="standard"
+                    style={styles.field}
+                    label={this.props.t(field.label)}
+                    value={strValue}
+                    disabled={this.props.saving}
+                    required={field.required}
+                    error={field.required && !strValue}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    onChange={e => {
+                        const newCredential = AdminUtils.clone(credential);
+                        newCredential.native[field.name] = e.target.value;
+                        this.onChangeCredential(index, newCredential);
+                    }}
+                >
+                    {options.map(option => (
+                        <MenuItem
+                            key={option.value}
+                            value={option.value}
+                        >
+                            {option.label || option.value}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            );
+        }
 
         return (
             <TextField
