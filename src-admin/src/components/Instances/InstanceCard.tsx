@@ -224,7 +224,7 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
 
                         {this.props.context.expertMode && <div style={styles.displayFlex}>{this.renderRamLimit()}</div>}
 
-                        {this.props.context.expertMode && <div style={styles.displayFlex}>{this.renderLogLevel()}</div>}
+                        <div style={styles.displayFlex}>{this.renderLogLevel()}</div>
 
                         {item.modeSchedule && <div style={styles.displayFlex}>{this.renderSchedule()}</div>}
 

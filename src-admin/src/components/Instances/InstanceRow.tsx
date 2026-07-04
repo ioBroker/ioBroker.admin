@@ -243,14 +243,12 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                             size={{ xs: 12, sm: 6, md: 4 }}
                             style={styles.paddingRight200}
                         >
-                            {this.props.context.expertMode && (
-                                <Box
-                                    component="div"
-                                    sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}
-                                >
-                                    {this.renderLogLevel()}
-                                </Box>
-                            )}
+                            <Box
+                                component="div"
+                                sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}
+                            >
+                                {this.renderLogLevel()}
+                            </Box>
                             {item.running && this.props.context.expertMode && (
                                 <Box
                                     component="div"
@@ -548,20 +546,18 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                                 {this.renderInputOutput()}
                             </Box>
                         )}
-                        {this.props.context.expertMode && (
-                            <Tooltip
-                                title={
-                                    item.logLevelObject === item.logLevel
-                                        ? `${this.props.context.t('loglevel')} ${item.logLevel}`
-                                        : `${this.props.context.t('saved:')} ${item.logLevelObject} / ${this.props.context.t('actual:')} ${item.logLevel}`
-                                }
-                                slotProps={{ popper: { sx: styles.tooltip } }}
-                            >
-                                <Avatar sx={{ ...styles.smallAvatar, ...styles.hidden380, ...styles[item.logLevel] }}>
-                                    {item.loglevelIcon}
-                                </Avatar>
-                            </Tooltip>
-                        )}
+                        <Tooltip
+                            title={
+                                item.logLevelObject === item.logLevel
+                                    ? `${this.props.context.t('loglevel')} ${item.logLevel}`
+                                    : `${this.props.context.t('saved:')} ${item.logLevelObject} / ${this.props.context.t('actual:')} ${item.logLevel}`
+                            }
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <Avatar sx={{ ...styles.smallAvatar, ...styles.hidden380, ...styles[item.logLevel] }}>
+                                {item.loglevelIcon}
+                            </Avatar>
+                        </Tooltip>
                         {this.props.context.hasAnyPort ? (
                             <Grid2 sx={{ ...styles.hidden1400, width: 100 }}>{this.renderPort()}</Grid2>
                         ) : null}

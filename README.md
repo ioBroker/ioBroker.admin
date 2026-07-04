@@ -196,6 +196,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Added AWS and Azure credentials in credentials manager
+- (@GermanBluefox) Allowed to set the log level without expert mode
 
 ### 7.9.12 (2026-07-03)
 - (@GermanBluefox) Added the port (native.port) to the instances table and cards and the possibility to sort instances by port
