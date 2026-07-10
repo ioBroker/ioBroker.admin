@@ -449,6 +449,7 @@ const HostWarningDialog = ({
                                                               <Box
                                                                   component="div"
                                                                   sx={styles.textStyle}
+                                                                  style={{ marginLeft: 8 }}
                                                               >
                                                                   {nameInst.replace(/^system\.adapter\./, '')}
                                                               </Box>

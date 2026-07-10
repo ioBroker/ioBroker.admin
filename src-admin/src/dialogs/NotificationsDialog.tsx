@@ -26,7 +26,14 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, type ThemeType, type IobTheme, type AdminConnection, type ThemeName } from '@iobroker/adapter-react-v5';
+import {
+    I18n,
+    getSelectIdIcon,
+    type ThemeType,
+    type IobTheme,
+    type AdminConnection,
+    type ThemeName,
+} from '@iobroker/adapter-react-v5';
 
 import type { BackEndCommandGeneric } from '@iobroker/json-config';
 import NotificationMessage, { type Message, type Severity, compareSeverity } from '../components/NotificationMessage';
@@ -466,10 +473,10 @@ const NotificationsDialog = ({
                                           }
 
                                           const currentInstance = instances && instances[nameInst];
-                                          let icon = 'img/no-image.svg';
-                                          if (currentInstance?.common?.icon && currentInstance?.common?.name) {
-                                              icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
-                                          }
+                                          // getSelectIdIcon correctly handles base64 (data:image/...) icons,
+                                          // otherwise the "adapter/name/icon" path would break for embedded icons
+                                          const icon =
+                                              (currentInstance && getSelectIdIcon(currentInstance)) || 'img/no-image.svg';
 
                                           return (
                                               <Accordion
@@ -495,6 +502,7 @@ const NotificationsDialog = ({
                                                           <Box
                                                               component="div"
                                                               sx={styles.textStyle}
+                                                              style={{ marginLeft: 8 }}
                                                           >
                                                               {nameInst.replace(/^system\.adapter\./, '')}
                                                           </Box>

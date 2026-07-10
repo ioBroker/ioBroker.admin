@@ -105,7 +105,6 @@
     "build": "npm run build:frontend && npm run build:backend",
     "build:backend": "tsc -p tsconfig.build.json && tsx tasks.mts --backend-i18n",
     "build:frontend": "tsx tasks.mts",
-    "clean": "rimraf src-admin/build",
     "lint-backend": "eslint -c eslint.config.mjs src",
     "lint": "npm run lint-backend && cd src-admin && npm run lint",
     "react-0-configCSS": "tsx tasks.mts --react-0-configCSS",
