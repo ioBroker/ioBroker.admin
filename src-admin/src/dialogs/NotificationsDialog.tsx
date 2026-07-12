@@ -476,7 +476,8 @@ const NotificationsDialog = ({
                                           // getSelectIdIcon correctly handles base64 (data:image/...) icons,
                                           // otherwise the "adapter/name/icon" path would break for embedded icons
                                           const icon =
-                                              (currentInstance && getSelectIdIcon(currentInstance)) || 'img/no-image.svg';
+                                              (currentInstance && getSelectIdIcon(currentInstance)) ||
+                                              'img/no-image.svg';
 
                                           return (
                                               <Accordion
