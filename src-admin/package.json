@@ -65,7 +65,7 @@
         "leaflet": "^1.9.4",
         "leaflet-geosearch": "^4.2.2",
         "less": "^4.5.1",
-        "lodash": "^4.17.23",
+        "lodash": "^4.18.1",
         "moment": "^2.30.1",
         "monaco-editor": "^0.55.1",
         "react": "^18.3.1",
