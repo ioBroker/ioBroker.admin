@@ -247,10 +247,10 @@ export default class Web {
             pattern = pattern.replace(/@/g, '').replace(/'/g, '').replace(/"/g, '');
             if (pattern === 'disableDataReporting') {
                 // read sentry state
-                const state = await this.adapter.getStateAsync(
+                const state = await this.adapter.getForeignStateAsync(
                     `system.adapter.${this.adapter.namespace}.plugins.sentry.enabled`,
                 );
-                template = template.replace(/['"]@@disableDataReporting@@["']/g, state?.val ? 'true' : 'false');
+                template = template.replace(/['"]@@disableDataReporting@@["']/g, state?.val ? 'false' : 'true');
             } else if (pattern === 'loginBackgroundImage') {
                 if (this.adapter.config.loginBackgroundImage) {
                     template = template.replace(
