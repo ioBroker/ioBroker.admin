@@ -57,7 +57,7 @@
         "buffer": "^6.0.3",
         "cron-parser": "^5.5.0",
         "crypto-js": "^4.2.0",
-        "date-fns": "^4.1.0",
+        "date-fns": "^4.4.0",
         "echarts": "^5.6.0",
         "echarts-for-react": "^3.0.5",
         "ipaddr.js": "^2.3.0",
