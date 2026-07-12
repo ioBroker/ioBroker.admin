@@ -63,7 +63,7 @@
         "ipaddr.js": "^2.3.0",
         "json5": "^2.2.3",
         "leaflet": "^1.9.4",
-        "leaflet-geosearch": "^4.2.2",
+        "leaflet-geosearch": "^4.4.0",
         "less": "^4.5.1",
         "lodash": "^4.17.23",
         "moment": "^2.30.1",
