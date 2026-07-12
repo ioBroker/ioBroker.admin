@@ -7,13 +7,13 @@ describe('admin-gui', () => {
     before(async function () {
         this.timeout(240_000);
 
-        // install js-controller, web and vis-2-beta
+        // install js-controller and admin
         await engineHelper.startIoBrokerAdapters();
-        const { page } = await guiHelper.startBrowser('admin', `${__dirname}/..`, process.env.CI === 'true');
+        const { page } = await guiHelper.startBrowser('admin', `${__dirname}/..`, process.env.CI === 'true', '/');
         gPage = page;
     });
 
-    it('Check all widgets', async function () {
+    it('Check GUI', async function () {
         this.timeout(120_000);
         await gPage.waitForSelector('a[href="/#easy"]', { timeout: 120_000 });
         await guiHelper.screenshot(`${__dirname}/..`, gPage, '00_started');
