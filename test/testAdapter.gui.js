@@ -9,7 +9,7 @@ describe('admin-gui', () => {
 
         // install js-controller, web and vis-2-beta
         await engineHelper.startIoBrokerAdapters();
-        const { page } = await guiHelper.startBrowser(process.env.CI === 'true');
+        const { page } = await guiHelper.startBrowser('admin', `${__dirname}/..`, process.env.CI === 'true');
         gPage = page;
     });
 
