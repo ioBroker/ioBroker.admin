@@ -8,7 +8,7 @@ describe('admin-gui', () => {
         this.timeout(240_000);
 
         // install js-controller, web and vis-2-beta
-        await engineHelper.startIoBroker();
+        await engineHelper.startIoBrokerAdapters();
         const { page } = await guiHelper.startBrowser(process.env.CI === 'true');
         gPage = page;
     });
@@ -23,7 +23,7 @@ describe('admin-gui', () => {
         this.timeout(5_000);
         await guiHelper.stopBrowser();
         console.log('BROWSER stopped');
-        await engineHelper.stopIoBroker();
+        await engineHelper.stopIoBrokerAdapters();
         console.log('ioBroker stopped');
     });
 });
