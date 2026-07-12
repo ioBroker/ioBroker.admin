@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.9.12",
+    "version": "7.9.13",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.9.13": {
+        "en": "Added AWS and Azure credentials in credentials manager\nAllowed to set the log level without expert mode\nCorrecting sentry reporting for the admin adapter",
+        "de": "AWS- und Azure-Anmeldeinformationen im Anmeldeinformationsmanager hinzugefügt\nDie Protokollierungsstufe kann auch ohne Expertenmodus festgelegt werden.\nKorrektur der Wächterberichterstattung für den Administratoradapter",
+        "ru": "Добавлены учетные данные AWS и Azure в диспетчер учетных данных.\nРазрешено устанавливать уровень логирования без экспертного режима.\nИсправлена ошибка в отчетах Sentry для административного адаптера.",
+        "pt": "Adicionadas credenciais da AWS e do Azure no gerenciador de credenciais.\nPermite definir o nível de registro sem o modo especialista.\nCorrigindo o relatório do Sentry para o adaptador de administrador.",
+        "nl": "AWS- en Azure-referenties toegevoegd aan de referentiebeheerder.\nHet is mogelijk om het logniveau in te stellen zonder de expertmodus te gebruiken.\nCorrectie van de Sentry-rapportage voor de beheerdersadapter",
+        "fr": "Ajout des identifiants AWS et Azure dans le gestionnaire d'identifiants\nAutorisé à définir le niveau de journalisation sans mode expert\nCorrection des rapports Sentinelle pour l'adaptateur d'administration",
+        "it": "Aggiunte le credenziali AWS e Azure al gestore delle credenziali.\nConsente di impostare il livello di log senza la modalità esperto\nCorrezione dei report di Sentry per l'adattatore amministratore",
+        "es": "Se agregaron las credenciales de AWS y Azure en el administrador de credenciales.\nSe permite configurar el nivel de registro sin el modo experto.\nCorrección de informes de centinela para el adaptador de administración",
+        "pl": "Dodano poświadczenia AWS i Azure w menedżerze poświadczeń\nMożliwość ustawienia poziomu rejestrowania bez trybu eksperckiego\nKorygowanie raportowania funkcji Sentry dla adaptera administratora",
+        "uk": "Додано облікові дані AWS та Azure в менеджері облікових даних\nДозволено встановлювати рівень журналу без експертного режиму\nВиправлення звітності Sentry для адаптера адміністратора",
+        "zh-cn": "在凭证管理器中添加了 AWS 和 Azure 凭证\n允许在非专家模式下设置日志级别\n修正管理员适配器的哨兵报告"
+      },
       "7.9.12": {
         "en": "Added the port (native.port) to the instances table and cards and the possibility to sort instances by port\nCorrected the intro and instances links for adapters running as web-extension\nImproved the error message on unmet global dependencies in multihost setups by listing the hosts that do not fulfill the requirement\nSorted the notification categories by severity (alert, notify, info), so the most important notifications are shown first",
         "de": "Der Port (native.port) wurde der Instanztabelle und den Karten hinzugefügt, und es besteht nun die Möglichkeit, Instanzen nach Port zu sortieren.\nDie Einleitung und die Instanzlinks für Adapter, die als Web-Erweiterung ausgeführt werden, wurden korrigiert.\nDie Fehlermeldung zu nicht erfüllten globalen Abhängigkeiten in Multihost-Setups wurde verbessert, indem die Hosts aufgelistet wurden, die die Anforderung nicht erfüllen.\nDie Benachrichtigungskategorien wurden nach Schweregrad (Alarm, Benachrichtigung, Info) sortiert, sodass die wichtigsten Benachrichtigungen zuerst angezeigt werden.",
@@ -95,19 +108,6 @@
         "pl": "AI musi być włączona najpierw w ustawieniach używanych w interfejsie admin",
         "uk": "AI повинен бути включений спочатку в налаштуваннях для використання в інтерфейсі адміністратора",
         "zh-cn": "在管理界面中使用的设置中必须首先启用AI"
-      },
-      "7.9.1": {
-        "en": "Added AI assistant to the admin interface",
-        "de": "AI-Assistent zur Admin-Schnittstelle hinzugefügt",
-        "ru": "Добавлен помощник AI в интерфейс администратора",
-        "pt": "Adicionado assistente de IA para a interface de administração",
-        "nl": "Toegevoegd AI assistent aan de admin interface",
-        "fr": "Ajout de l'assistant AI à l'interface d'administration",
-        "it": "Aggiunto AI assistente all'interfaccia di amministrazione",
-        "es": "Agregado asistente de inteligencia artificial a la interfaz de administración",
-        "pl": "Dodano asystenta AI do interfejsu admin",
-        "uk": "Доданий помічник AI в інтерфейсі адміністратора",
-        "zh-cn": "添加到管理界面的 AI 助手"
       }
     },
     "desc": {

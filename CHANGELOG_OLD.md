@@ -1,4 +1,9 @@
 # Older changes
+## 7.9.6 (2026-06-20)
+- (@GermanBluefox) Added "between" news rule
+- (@GermanBluefox) Better config-manager layout
+- (@GermanBluefox) Added filtering options for config-manager
+
 ## 7.9.4 (2026-06-18)
 - (@GermanBluefox) Moved the MCP server to a separate package
 - (@GermanBluefox) Corrected the background color of states with overloaded colors

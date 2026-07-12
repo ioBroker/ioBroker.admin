@@ -194,7 +194,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.13 (2026-07-12)
 - (@GermanBluefox) Added AWS and Azure credentials in credentials manager
 - (@GermanBluefox) Allowed to set the log level without expert mode
 - (@GermanBluefox) Correcting sentry reporting for the admin adapter
@@ -218,11 +218,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.9.9 (2026-06-21)
 - (@GermanBluefox) Correcting the change of the AI providers
-
-### 7.9.6 (2026-06-20)
-- (@GermanBluefox) Added "between" news rule
-- (@GermanBluefox) Better config-manager layout
-- (@GermanBluefox) Added filtering options for config-manager
 
 ## License
 
