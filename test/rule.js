@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+const assert = require('node:assert');
 const semver = require('semver');
 
 function checkCondition(objMessages, oldVersion, newVersion, instances) {
@@ -184,10 +184,10 @@ describe('GUI', () => {
         ];
 
         let messages = checkCondition(conditions, '5.5.4', '5.6.0');
-        expect(messages).to.be.equal(null);
+        assert.strictEqual(messages, null);
 
         messages = checkCondition(conditions, '5.4.1', '5.6.0');
-        expect(messages.length).to.be.equal(1);
+        assert.strictEqual(messages.length, 1);
 
         done();
     });
@@ -217,10 +217,10 @@ describe('GUI', () => {
         };
 
         let messages = checkCondition(conditions, null, null, {});
-        expect(messages.length).to.be.equal(1);
+        assert.strictEqual(messages.length, 1);
 
         messages = checkCondition(conditions, null, null, instances);
-        expect(messages).to.be.equal(null);
+        assert.strictEqual(messages, null);
 
         done();
     });

@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+const assert = require('node:assert');
 
 const { replaceLink } = require('../build/lib/utils');
 
@@ -84,7 +84,7 @@ const instances = {
             ],
             compact: true,
             readme: 'https://github.com/ioBroker/ioBroker.admin/blob/master/README.md',
-            authors: ['bluefox <bluefox@ccu.io>', 'hobbyquaker <hq@ccu.io>'],
+            authors: ['bluefox <dogafox@gmail.com>', 'hobbyquaker <hq@ccu.io>'],
             dependencies: [
                 {
                     'js-controller': '>=3.3.22',
@@ -7665,9 +7665,9 @@ describe('Test replace link in front-end', function () {
             hosts,
         });
 
-        expect(result.length).to.be.equal(1);
-        expect(result[0].url).to.be.equal('http://123.456.789.123:1880/');
-        expect(result[0].port).to.be.equal(1880);
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].url, 'http://123.456.789.123:1880/');
+        assert.strictEqual(result[0].port, 1880);
 
         done();
     });
@@ -7687,9 +7687,9 @@ describe('Test replace link in front-end', function () {
             hosts,
         });
 
-        expect(result.length).to.be.equal(1);
-        expect(result[0].url).to.be.equal('http://123.456.789.123:8082/cameras/');
-        expect(result[0].port).to.be.equal(8082);
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].url, 'http://123.456.789.123:8082/cameras/');
+        assert.strictEqual(result[0].port, 8082);
 
         done();
     });
