@@ -16,7 +16,7 @@ import {
     Typography,
 } from '@mui/material';
 import { Check as CheckIcon, Close as CloseIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
-import { I18n, type AdminConnection, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection, type ThemeType } from '@iobroker/gui-components';
 
 import { type ChatMcpInfoResponse, type ChatMode, type McpEndpoint } from './chatTypes';
 

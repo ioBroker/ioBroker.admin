@@ -537,7 +537,7 @@ export function applyReverseProxyToLink(
             link = item.path;
         } else if (item.instance.startsWith('web.')) {
             const webObj = instances[`system.adapter.${item.instance}`];
-            if (webObj?.native?.port && link.includes(`:${webObj.native.port}`)) {
+            if (webObj?.native?.port && link?.includes(`:${webObj.native.port}`)) {
                 const regExp = new RegExp(`^.*:${webObj.native.port}/`);
                 link = link.replace(regExp, item.path);
             }

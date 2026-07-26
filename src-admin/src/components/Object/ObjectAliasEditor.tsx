@@ -24,7 +24,7 @@ import {
 // Icons
 import { Close, Link as IconLink, AddLink, Close as IconClose } from '@mui/icons-material';
 
-import { I18n, IconFx, type IobTheme, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
+import { I18n, IconFx, type IobTheme, type AdminConnection, type Translate } from '@iobroker/gui-components';
 
 import { DEFAULT_ROLES } from './ObjectBrowserEditObject';
 
@@ -254,7 +254,7 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
                         <Select
                             variant="standard"
                             value={this.state.newAliasType}
-                            onChange={e => this.setState({ newAliasType: e.target.value as ioBroker.CommonType })}
+                            onChange={e => this.setState({ newAliasType: e.target.value })}
                         >
                             {stateTypeArray.map(el => (
                                 <MenuItem

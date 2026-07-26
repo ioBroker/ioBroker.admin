@@ -1,20 +1,23 @@
 {
     "compilerOptions": {
+        // TypeScript 6 turns `strict` on by default. This project was never written against it,
+        // so it stays off explicitly until the backend is migrated.
+        "strict": false,
         "module": "esnext",
         "target": "esnext",
-        "moduleResolution": "node",
-        "baseUrl": "./",
+        "moduleResolution": "node16",
         "allowSyntheticDefaultImports": true,
         "checkJs": false,
         "noEmit": false,
         "outDir": "./build",
+        "rootDir": "./src",
         "sourceMap": true,
         "sourceRoot": "./src",
         "noImplicitAny": true,
         "skipLibCheck": true,
         "lib": ["es2018", "DOM"],
         "jsx": "react",
-        "types": ["@iobroker/types"],
+        "types": ["@iobroker/types", "node"],
         "paths": {
             "@/*": ["./src/*"],
         }

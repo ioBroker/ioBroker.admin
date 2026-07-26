@@ -62,7 +62,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 import { amber, blue, green, grey, orange, red } from '@mui/material/colors';
 
 import State from '@/components/State';
@@ -735,7 +735,7 @@ export default abstract class InstanceGeneric<
                         variant="standard"
                         value={this.state.logLevel}
                         fullWidth
-                        onChange={el => this.setState({ logLevel: el.target.value as ioBroker.LogLevel })}
+                        onChange={el => this.setState({ logLevel: el.target.value })}
                     >
                         {arrayLogLevel.map(el => (
                             <MenuItem
@@ -918,7 +918,7 @@ export default abstract class InstanceGeneric<
                         variant="standard"
                         value={this.state.tier}
                         fullWidth
-                        onChange={el => this.setState({ tier: parseInt(el.target.value as string, 10) as 1 | 2 | 3 })}
+                        onChange={el => this.setState({ tier: Number(el.target.value) as 1 | 2 | 3 })}
                     >
                         {arrayTier.map(el => (
                             <MenuItem

@@ -16,7 +16,6 @@ const mutableStdout = new Writable({
     },
 });
 
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
 checkWellKnownPasswords().then(found => {
     if (found) {
         console.log(`Found well-known password: ${JSON.stringify(found)}`);

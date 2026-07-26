@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, type JSX } from 'react';
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Grid2, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Grid, Button } from '@mui/material';
 import {
     TextFields as TextFieldsIcon,
     LocalOffer as LocalOfferIcon,
@@ -15,7 +15,7 @@ import {
     PersonOff as PersonOffIcon,
 } from '@mui/icons-material';
 
-import { Utils, IconPicker, type Translate } from '@iobroker/adapter-react-v5';
+import { Utils, IconPicker, type Translate } from '@iobroker/gui-components';
 
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 import AdminUtils from '../../helpers/AdminUtils';
@@ -143,12 +143,12 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                         },
                     }}
                 >
-                    <Grid2
+                    <Grid
                         container
                         spacing={this.props.innerWidth < 500 ? 1 : 4}
                         style={this.props.styles.dialog}
                     >
-                        <Grid2 size={{ xs: 12, md: 6 }}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <IOTextField
                                 label="Name"
                                 t={this.props.t}
@@ -173,8 +173,8 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                                 icon={TextFieldsIcon}
                                 styles={this.props.styles}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <IOTextField
                                 label="ID edit"
                                 t={this.props.t}
@@ -190,8 +190,8 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                                 icon={LocalOfferIcon}
                                 styles={this.props.styles}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <IOTextField
                                 label="ID preview"
                                 t={this.props.t}
@@ -200,8 +200,8 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                                 icon={PageviewIcon}
                                 styles={this.props.styles}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <IOTextField
                                 label="Description"
                                 t={this.props.t}
@@ -216,8 +216,8 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                                 icon={DescriptionIcon}
                                 styles={this.props.styles}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <IOTextField
                                 label="Password"
                                 t={this.props.t}
@@ -235,8 +235,8 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                                 icon={VpnKeyIcon}
                                 styles={this.props.styles}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <IOTextField
                                 label="Password repeat"
                                 t={this.props.t}
@@ -248,8 +248,8 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                                 icon={VpnKeyIcon}
                                 styles={this.props.styles}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <IconPicker
                                 icons={USER_ICONS}
                                 label="Icon"
@@ -267,8 +267,8 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                                 icon={ImageIcon}
                                 // classes={this.props.classes}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <IOColorPicker
                                 label="Color"
                                 t={this.props.t}
@@ -285,8 +285,8 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                                 style={this.props.styles.colorPicker}
                                 styles={this.props.styles}
                             />
-                        </Grid2>
-                    </Grid2>
+                        </Grid>
+                    </Grid>
                     {!this.props.isNew ? this.renderOidcButton() : null}
                 </DialogContent>
 

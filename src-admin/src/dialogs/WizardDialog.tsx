@@ -14,7 +14,7 @@ import {
     type ThemeName,
     type ThemeType,
     type IobTheme,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import WizardPasswordTab from '@/components/Wizard/WizardPasswordTab';
 import WizardLicenseTab from '@/components/Wizard/WizardLicenseTab';
@@ -411,7 +411,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                         style={styles.themeButton}
                         t={I18n.t}
                         toggleTheme={this.props.toggleTheme}
-                        themeName={this.props.themeName as any}
+                        themeName={this.props.themeName}
                         size="small"
                     />
                 </DialogTitle>

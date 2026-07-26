@@ -14,7 +14,7 @@ import {
 // Icons
 import { Close, Check } from '@mui/icons-material';
 
-import { type Translate, Utils, type IobTheme, type Connection, SelectID } from '@iobroker/adapter-react-v5';
+import { type Translate, Utils, type IobTheme, type Connection, SelectID } from '@iobroker/gui-components';
 
 interface ObjectEditDialogProps {
     expertMode: boolean;

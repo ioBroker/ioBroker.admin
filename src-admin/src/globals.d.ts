@@ -3,6 +3,8 @@ declare global {
         CryptoJS: any;
         _localStorage?: Storage;
         _sessionStorage?: Storage;
+        /** Vendor prefix, used to select the vendor-specific loader ('PT', 'MV', 'NW', 'HA', ...) */
+        vendorPrefix: undefined | string;
     }
 
     declare module '*.svg';

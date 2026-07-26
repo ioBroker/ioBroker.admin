@@ -1,6 +1,6 @@
 import React, { Component, createRef, type JSX } from 'react';
 
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import {
     Button,
@@ -36,7 +36,7 @@ import {
 } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 
-import { type AdminConnection, Utils, type IobTheme, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, Utils, type IobTheme, type ThemeType, type Translate } from '@iobroker/gui-components';
 
 // icons
 import { FaChartLine as SplitLineIcon } from 'react-icons/fa';
@@ -755,7 +755,6 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
         if (this.props.obj.common.type === 'boolean') {
             serie.step = 'end';
             yAxis.axisLabel.showMaxLabel = false;
-            // @ts-expect-error fix later
             yAxis.axisLabel.formatter = (value: number) => (value === 1 ? 'TRUE' : 'FALSE');
             yAxis.max = 1.5;
             // @ts-expect-error fix later
@@ -1255,7 +1254,9 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
         if (this.chartValues) {
             return (
                 <ReactEchartsCore
-                    ref={e => (this.echartsReact = e)}
+                    ref={e => {
+                        this.echartsReact = e;
+                    }}
                     echarts={echarts}
                     option={this.getOption()}
                     notMerge

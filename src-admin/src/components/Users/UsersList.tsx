@@ -5,11 +5,11 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
 
-import { LinearProgress, Grid2, Typography, Fab, Box } from '@mui/material';
+import { LinearProgress, Grid, Typography, Fab, Box } from '@mui/material';
 
 import { PersonAdd as PersonAddIcon, GroupAdd as GroupAddIcon } from '@mui/icons-material';
 
-import { Utils, type AdminConnection, type Translate, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
+import { Utils, type AdminConnection, type Translate, type IobTheme, type ThemeType } from '@iobroker/gui-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
 import UserBlock from './UserBlock';
@@ -510,12 +510,12 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                 >
                     {this.props.t('You can drag users to groups.')}
                 </Box>
-                <Grid2
+                <Grid
                     container
                     spacing={2}
                     style={styles.mainGridCont}
                 >
-                    <Grid2
+                    <Grid
                         size={{ xs: 12, md: 6 }}
                         style={{
                             ...styles.childGridCont,
@@ -578,8 +578,8 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                     />
                                 ))}
                         </div>
-                    </Grid2>
-                    <Grid2
+                    </Grid>
+                    <Grid
                         size={{ xs: 12, md: 6 }}
                         style={{
                             ...styles.childGridCont,
@@ -644,8 +644,8 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                     />
                                 ))}
                         </div>
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
                 {this.state.userEditDialog ? (
                     <UserEditDialog
                         onClose={() => this.setState({ userEditDialog: false })}

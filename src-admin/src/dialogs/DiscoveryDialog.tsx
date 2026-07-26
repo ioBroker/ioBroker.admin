@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, type JSX } from 'react';
 
 import {
     DialogActions,
@@ -47,7 +47,7 @@ import {
     type AdminConnection,
     type ThemeType,
     type ThemeName,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 import type { CompactHost } from '@/types';
 
 import Command from '../components/Command';
@@ -222,7 +222,7 @@ function TabPanel({
                 </AppBar>
                 <Box
                     style={boxHeight ? { height: 'calc(100% - 45px)' } : undefined}
-                    p={3}
+                    sx={{ p: 3 }}
                 >
                     <Typography
                         style={boxHeight ? { height: '100%' } : undefined}
@@ -281,7 +281,7 @@ function EnhancedTableHead(props: EnhancedTableHeadProps): JSX.Element {
                         indeterminate={numSelected > 0 && numSelected < rowCount}
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={(event: React.ChangeEvent) => onSelectAllClick(event)}
-                        inputProps={{ 'aria-label': 'select all desserts' }}
+                        slotProps={{ input: { 'aria-label': 'select all desserts' } }}
                     />
                 </TableCell>
                 {headCells.map(headCell => (

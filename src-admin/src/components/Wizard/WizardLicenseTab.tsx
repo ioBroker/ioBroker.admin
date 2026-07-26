@@ -3,7 +3,7 @@ import React, { createRef, Component, type JSX } from 'react';
 import {
     Toolbar,
     MenuItem,
-    Grid2,
+    Grid,
     Select,
     FormControlLabel,
     Checkbox,
@@ -21,7 +21,7 @@ import {
 
 import { Language as IconWorld, Close as IconCancel, Check as IconCheck, Close } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type ThemeType, type Translate } from '@iobroker/gui-components';
 
 import Editor from '@/components/Editor';
 import LicenseTexts from '../LicenseTexts';
@@ -237,12 +237,12 @@ export default class WizardLicenseTab extends Component<WizardLicenseTabProps, W
     render(): JSX.Element {
         return (
             <Paper style={styles.paper}>
-                <Grid2
+                <Grid
                     container
                     style={styles.gridDiv}
-                    direction="column"
+                    sx={{ flexDirection: 'column' }}
                 >
-                    <Grid2>
+                    <Grid>
                         <FormControl
                             variant="standard"
                             style={styles.languageSelect}
@@ -255,8 +255,8 @@ export default class WizardLicenseTab extends Component<WizardLicenseTabProps, W
                                 variant="standard"
                                 value={I18n.getLanguage()}
                                 onChange={e => {
-                                    I18n.setLanguage(e.target.value as ioBroker.Languages);
-                                    this.setState({ lang: e.target.value as ioBroker.Languages });
+                                    I18n.setLanguage(e.target.value);
+                                    this.setState({ lang: e.target.value });
                                 }}
                             >
                                 <MenuItem value="en">English</MenuItem>
@@ -299,12 +299,12 @@ export default class WizardLicenseTab extends Component<WizardLicenseTabProps, W
                                 </Button>
                             </div>
                         </div>
-                    </Grid2>
-                    <Grid2>
+                    </Grid>
+                    <Grid>
                         <h1>{this.props.t('License terms')}</h1>
-                    </Grid2>
-                    <Grid2 style={styles.licenseDiv}>{WizardLicenseTab.renderLicenseText()}</Grid2>
-                </Grid2>
+                    </Grid>
+                    <Grid style={styles.licenseDiv}>{WizardLicenseTab.renderLicenseText()}</Grid>
+                </Grid>
                 <Toolbar style={styles.toolbar}>
                     <div style={styles.grow} />
                     <Button

@@ -6,7 +6,7 @@ import MonacoEditor from 'react-monaco-editor';
 // Icons
 import { Close, ContentPaste } from '@mui/icons-material';
 
-import { type IobTheme, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type ThemeType, type Translate } from '@iobroker/gui-components';
 
 const styles: Record<string, any> = {
     dialog: {

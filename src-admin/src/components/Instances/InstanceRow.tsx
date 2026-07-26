@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, Grid2, Tooltip, Typography, Box } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Grid, Tooltip, Typography, Box } from '@mui/material';
 
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
@@ -214,34 +214,34 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
 
         return (
             <AccordionDetails>
-                <Grid2
+                <Grid
                     container
                     direction="row"
                 >
-                    <Grid2
+                    <Grid
                         container
                         direction="row"
                         size={{ xs: 10 }}
                     >
-                        <Grid2
+                        <Grid
                             container
-                            direction="column"
                             size={{ xs: 12, sm: 6, md: 4 }}
+                            sx={{ flexDirection: 'column' }}
                         >
                             {this.renderInfo(true)}
-                        </Grid2>
-                        <Grid2
+                        </Grid>
+                        <Grid
                             container
-                            direction="column"
                             size={{ xs: 12, sm: 6, md: 4 }}
+                            sx={{ flexDirection: 'column' }}
                         >
                             {this.renderVersion()}
-                        </Grid2>
-                        <Grid2
+                        </Grid>
+                        <Grid
                             container
-                            direction="column"
                             size={{ xs: 12, sm: 6, md: 4 }}
                             style={styles.paddingRight200}
+                            sx={{ flexDirection: 'column' }}
                         >
                             <Box
                                 component="div"
@@ -257,8 +257,8 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                                     {this.renderInputOutput()}
                                 </Box>
                             )}
-                            <Grid2 sx={styles.visible1050}>{this.renderMemoryUsage()}</Grid2>
-                            {item.port ? <Grid2 sx={styles.visible1400}>{this.renderPort()}</Grid2> : null}
+                            <Grid sx={styles.visible1050}>{this.renderMemoryUsage()}</Grid>
+                            {item.port ? <Grid sx={styles.visible1400}>{this.renderPort()}</Grid> : null}
                             {item.modeSchedule && (
                                 <Box
                                     component="div"
@@ -319,8 +319,8 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                                     {this.renderHostWithButton()}
                                 </Box>
                             ) : null}
-                        </Grid2>
-                    </Grid2>
+                        </Grid>
+                    </Grid>
                     <div style={styles.displayFlex}>
                         <IsVisible
                             config={item}
@@ -371,7 +371,7 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                             {this.renderCompactGroupEnabled()}
                         </Box>
                     </div>
-                </Grid2>
+                </Grid>
             </AccordionDetails>
         );
     }
@@ -448,13 +448,13 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                     expandIcon={<ExpandMoreIcon style={this.desktop ? styles.desktopButton : undefined} />}
                 >
                     {this.renderDialogs()}
-                    <Grid2
+                    <Grid
                         container
                         spacing={1}
-                        alignItems="center"
                         direction="row"
                         wrap="nowrap"
                         style={styles.rowGridLine}
+                        sx={{ alignItems: 'center' }}
                     >
                         <Box
                             component="div"
@@ -559,9 +559,9 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                             </Avatar>
                         </Tooltip>
                         {this.props.context.hasAnyPort ? (
-                            <Grid2 sx={{ ...styles.hidden1400, width: 100 }}>{this.renderPort()}</Grid2>
+                            <Grid sx={{ ...styles.hidden1400, width: 100 }}>{this.renderPort()}</Grid>
                         ) : null}
-                        <Grid2
+                        <Grid
                             sx={{
                                 ...styles.hidden1050,
                                 ...styles.width150,
@@ -569,13 +569,13 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                             }}
                         >
                             {this.renderMemoryUsage()}
-                        </Grid2>
+                        </Grid>
                         {this.props.context.hosts.length > 1 ||
                         (this.props.context.hosts.length &&
                             this.props.context.hosts[0].common?.name !== instance.host) ? (
-                            <Grid2 sx={styles.hidden1230}>{this.renderHost()}</Grid2>
+                            <Grid sx={styles.hidden1230}>{this.renderHost()}</Grid>
                         ) : null}
-                    </Grid2>
+                    </Grid>
                     {this.props.context.expertMode && item.checkSentry && (
                         <Box
                             component="div"

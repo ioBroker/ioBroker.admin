@@ -5,7 +5,7 @@ import { Tooltip, IconButton, Box } from '@mui/material';
 
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
-import { Icon, type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
+import { Icon, type ThemeType, type Translate, Utils } from '@iobroker/gui-components';
 import AdminUtils from '@/helpers/AdminUtils';
 
 interface CategoryLabelProps {
@@ -33,7 +33,9 @@ export default function CategoryLabel(props: CategoryLabelProps): JSX.Element {
     return (
         <Box
             component="span"
-            ref={drop}
+            ref={(node: HTMLElement | null) => {
+                drop(node);
+            }}
             style={{ ...props.styles.categoryTitle, color: textColor }}
             sx={{
                 '.enum-button': {

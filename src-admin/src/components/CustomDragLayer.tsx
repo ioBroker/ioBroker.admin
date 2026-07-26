@@ -3,7 +3,7 @@ import { useDragLayer } from 'react-dnd';
 
 import { Box } from '@mui/material';
 
-import type { IobTheme } from '@iobroker/adapter-react-v5';
+import type { IobTheme } from '@iobroker/gui-components';
 
 import DrawerItem from './DrawerItem';
 

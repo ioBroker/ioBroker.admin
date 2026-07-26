@@ -11,7 +11,7 @@ const execAsync = promisify(exec);
 // this function re-check if the common objects like '0_userdata.0' exist
 export async function checkCommonObjects(adapter: ioBroker.Adapter): Promise<void> {
     // try to find js-controller directory
-    let objects: ioBroker.Object[];
+    let objects: ioBroker.Object[] | undefined;
     try {
         const dir = require.resolve('iobroker.js-controller/io-package.json').replace(/\\/g, '/');
         // dir is something like ./node_modules/iobroker.js-controller/build/cjs/main.js

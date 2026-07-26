@@ -21,7 +21,7 @@ import {
     Typography,
 } from '@mui/material';
 import { Add as AddIcon, Check as CheckIcon, Close as CloseIcon, Tune as TuneIcon } from '@mui/icons-material';
-import { I18n, type AdminConnection, Icon } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection, Icon } from '@iobroker/gui-components';
 
 import { CREDENTIAL_ICON_DATA } from '../SystemSettings/credentialIcons';
 import ChatCreateCredentialDialog from './ChatCreateCredentialDialog';
@@ -197,7 +197,7 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
                         <InputLabel>{I18n.t('Provider')}</InputLabel>
                         <Select
                             value={value.provider}
-                            onChange={e => update({ provider: e.target.value as AiProvider })}
+                            onChange={e => update({ provider: e.target.value })}
                         >
                             {PROVIDERS.map(p => (
                                 <MenuItem

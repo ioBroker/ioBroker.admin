@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import semver from 'semver';
 
-import { Fab, Snackbar, Tooltip, LinearProgress, Skeleton } from '@mui/material';
+import { Fab, Grid, Snackbar, Tooltip, LinearProgress, Skeleton } from '@mui/material';
 
 import {
     Add as AddIcon,
@@ -18,7 +18,7 @@ import {
     type IobTheme,
     type Translate,
     TabContainer,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import type { HostInfo } from '@iobroker/socket-client';
 
@@ -944,7 +944,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         icon: string;
                     }
                  */
-                const compatibilityStructure: OldLinkStructure = instance.common.localLink as OldLinkStructure;
+                const compatibilityStructure: OldLinkStructure = instance.common.localLink;
                 if (compatibilityStructure.link) {
                     const item: LinkItem = {
                         ...defaultLink,
@@ -1034,7 +1034,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         if (instance.common.welcomeScreen && typeof instance.common.welcomeScreen === 'object') {
             const compatibilityStructureArr: OldLinkStructure[] = Array.isArray(instance.common.welcomeScreen)
                 ? (instance.common.welcomeScreen as OldLinkStructure[])
-                : [instance.common.welcomeScreen as OldLinkStructure];
+                : [instance.common.welcomeScreen];
 
             compatibilityStructureArr.forEach(compatibilityStructure => {
                 if (compatibilityStructure.link) {
@@ -1077,7 +1077,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             if (instance.common.welcomeScreenPro && typeof instance.common.welcomeScreenPro === 'object') {
                 const _compatibilityStructureArr: OldLinkStructure[] = Array.isArray(instance.common.welcomeScreenPro)
                     ? (instance.common.welcomeScreenPro as OldLinkStructure[])
-                    : [instance.common.welcomeScreenPro as OldLinkStructure];
+                    : [instance.common.welcomeScreenPro];
 
                 _compatibilityStructureArr.forEach(compatibilityStructure => {
                     if (compatibilityStructure.link) {
@@ -1592,10 +1592,15 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         {...this.state.nodeUpdateDialog}
                     />
                 ) : null}
-                <div style={styles.viewModeDiv}>
+                {/* The cards are Grid items with a `size` prop, which MUI only resolves inside a
+                    Grid container - without it they fall back to content width. */}
+                <Grid
+                    container
+                    sx={styles.viewModeDiv}
+                >
                     {this.getInstancesCards()}
                     {this.getLinkCards()}
-                </div>
+                </Grid>
                 {this.getButtons()}
                 {this.editLinkCard()}
             </TabContainer>

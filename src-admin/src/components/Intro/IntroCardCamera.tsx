@@ -1,10 +1,10 @@
 import React, { createRef, type JSX } from 'react';
 
-import { Grid2, Skeleton } from '@mui/material';
+import { Grid, Skeleton } from '@mui/material';
 
 import { Error as ErrorIcon } from '@mui/icons-material';
 
-import { type AdminConnection } from '@iobroker/adapter-react-v5';
+import { type AdminConnection } from '@iobroker/gui-components';
 
 import IntroCard, { type IntroCardProps, type IntroCardState } from '@/components/Intro/IntroCard';
 import CameraIntroDialog from './CameraIntroDialog';
@@ -172,11 +172,10 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
             }
 
             return (
-                <Grid2
+                <Grid
                     container
                     style={styles.imgContainer}
-                    justifyContent="center"
-                    alignItems="center"
+                    sx={{ alignItems: 'center', justifyContent: 'center' }}
                 >
                     <img
                         ref={this.cameraRef}
@@ -195,7 +194,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
                         />
                     )}
                     {this.state.error && <ErrorIcon fontSize="large" />}
-                </Grid2>
+                </Grid>
             );
         }
 

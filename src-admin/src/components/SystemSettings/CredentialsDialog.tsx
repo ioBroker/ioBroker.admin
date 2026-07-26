@@ -36,7 +36,7 @@ import {
     Tune as TuneIcon,
 } from '@mui/icons-material';
 
-import { DialogConfirm, type AdminConnection, type Translate, Utils } from '@iobroker/adapter-react-v5';
+import { DialogConfirm, type AdminConnection, type Translate, Utils } from '@iobroker/gui-components';
 
 import IoBrokerLogo from '@/assets/logo.svg';
 import AdminUtils from '../../helpers/AdminUtils';
@@ -644,7 +644,7 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
                             variant="standard"
                             value={type}
                             disabled={!!template.type}
-                            onChange={e => this.setState({ addType: e.target.value as CredentialType })}
+                            onChange={e => this.setState({ addType: e.target.value })}
                         >
                             {CREDENTIAL_TYPES.map(type_ => (
                                 <MenuItem

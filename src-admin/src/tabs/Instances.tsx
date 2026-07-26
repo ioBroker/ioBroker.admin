@@ -31,7 +31,7 @@ import {
     type ThemeType,
     TabHeader,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import type { HostInfo } from '@iobroker/socket-client';
 
@@ -438,7 +438,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             if (rawLinks && typeof rawLinks === 'string') {
                 links = { _default: rawLinks };
             } else if (rawLinks && typeof rawLinks === 'object') {
-                links = rawLinks as Record<string, string>;
+                links = rawLinks;
             }
 
             const names = links ? Object.keys(links) : [];

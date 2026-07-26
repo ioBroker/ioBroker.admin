@@ -1,8 +1,8 @@
 import React, { createRef, Component, type JSX } from 'react';
 
-import { Grid2, FormControlLabel, Checkbox, TextField, Paper } from '@mui/material';
+import { Grid, FormControlLabel, Checkbox, TextField, Paper } from '@mui/material';
 
-import { type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, type Translate } from '@iobroker/gui-components';
 
 const styles: Record<string, React.CSSProperties> = {
     paper: {
@@ -94,12 +94,12 @@ export default class BaseSettingsMultihost extends Component<BaseSettingsMultiho
                     noValidate
                     autoComplete="off"
                 >
-                    <Grid2 style={styles.gridSettings}>
-                        <Grid2
+                    <Grid style={styles.gridSettings}>
+                        <Grid
                             container
-                            direction="column"
+                            sx={{ flexDirection: 'column' }}
                         >
-                            <Grid2 style={styles.controlItem}>
+                            <Grid style={styles.controlItem}>
                                 <FormControlLabel
                                     control={
                                         <Checkbox
@@ -116,8 +116,8 @@ export default class BaseSettingsMultihost extends Component<BaseSettingsMultiho
                                         'When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.',
                                     )}
                                 </div>
-                            </Grid2>
-                            <Grid2 style={styles.controlItem}>
+                            </Grid>
+                            <Grid style={styles.controlItem}>
                                 <FormControlLabel
                                     control={
                                         <Checkbox
@@ -130,9 +130,9 @@ export default class BaseSettingsMultihost extends Component<BaseSettingsMultiho
                                     label={this.props.t('With password')}
                                 />
                                 <div>{this.props.t('Ask password by connection establishment')}</div>
-                            </Grid2>
+                            </Grid>
                             {this.state.secure ? (
-                                <Grid2>
+                                <Grid>
                                     <TextField
                                         variant="standard"
                                         label={this.props.t('Multi-host password')}
@@ -152,10 +152,10 @@ export default class BaseSettingsMultihost extends Component<BaseSettingsMultiho
                                             this.setState({ password: e.target.value }, () => this.onChange())
                                         }
                                     />
-                                </Grid2>
+                                </Grid>
                             ) : null}
-                        </Grid2>
-                    </Grid2>
+                        </Grid>
+                    </Grid>
                 </form>
             </Paper>
         );

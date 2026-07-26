@@ -12,7 +12,7 @@ import {
     type Folders,
     type MetaACL,
     type MetaObject,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import AdminUtils from '../helpers/AdminUtils';
 import CustomModal from '../components/CustomModal';
@@ -459,9 +459,9 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
             Object.keys(objects).forEach(_id => {
                 const obj = objects[_id];
                 if (_id.startsWith('system.group.') && obj?.type === 'group') {
-                    _groups.push(obj as ioBroker.GroupObject);
+                    _groups.push(obj);
                 } else if (_id.startsWith('system.user.') && obj?.type === 'user') {
-                    _users.push(obj as ioBroker.UserObject);
+                    _users.push(obj);
                 }
             });
 
@@ -666,7 +666,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                         style={{ marginRight: 10 }}
                         label={t('Owner user')}
                         lang={lang}
-                        list={users as ioBroker.Object[]}
+                        list={users}
                         t={t}
                         disabled={progress}
                         value={stateOwnerUser || undefined}
@@ -682,7 +682,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                         fullWidth
                         label={t('Owner group')}
                         lang={lang}
-                        list={groups as ioBroker.Object[]}
+                        list={groups}
                         t={t}
                         disabled={progress}
                         value={stateOwnerGroup || undefined}

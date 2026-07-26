@@ -2,7 +2,7 @@ import React, { createRef, type JSX } from 'react';
 import semver from 'semver';
 
 import {
-    Grid2,
+    Grid,
     Button,
     IconButton,
     LinearProgress,
@@ -43,7 +43,7 @@ import {
     type Translate,
     TabContainer,
     Utils,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import type { AdaptersWorker, AdapterEvent } from '@/Workers/AdaptersWorker';
 import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
@@ -2257,9 +2257,9 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         return (
             <TabContainer>
                 {this.state.update && (
-                    <Grid2>
+                    <Grid>
                         <LinearProgress />
-                    </Grid2>
+                    </Grid>
                 )}
 
                 {this.renderHeader()}

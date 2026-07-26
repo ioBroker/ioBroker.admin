@@ -9,7 +9,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Grid2,
+    Grid,
     IconButton,
     Typography,
 } from '@mui/material';
@@ -25,7 +25,7 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { I18n, Utils, type IobTheme, type Translate } from '@iobroker/gui-components';
 
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
@@ -498,7 +498,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
             }
 
             result.push(
-                <Grid2 key={entry.version}>
+                <Grid key={entry.version}>
                     <Typography sx={styles.version}>
                         {entry.version}
                         {latestVersion && latestVersion === entry.version ? (
@@ -530,7 +530,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                             {`• ${value}`}
                         </Typography>
                     ))}
-                </Grid2>,
+                </Grid>,
             );
         });
 
@@ -549,7 +549,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
 
     renderOneMessage(message: Message, index: number): JSX.Element {
         return (
-            <Grid2 key={index}>
+            <Grid key={index}>
                 <Typography sx={styles[`messageTitle_${message.level || 'warn'}`]}>
                     {this.getText(message.title, this.props.noTranslation) || ''}
                 </Typography>
@@ -573,22 +573,21 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                         {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
                     </Button>
                 ) : null}
-            </Grid2>
+            </Grid>
         );
     }
 
     renderMessages(): JSX.Element | null {
         if (this.messages) {
             return (
-                <Grid2
+                <Grid
                     container
                     spacing={2}
-                    direction="column"
                     wrap="nowrap"
-                    sx={{ marginBottom: 1 }}
+                    sx={{ marginBottom: 1, flexDirection: 'column' }}
                 >
                     {this.messages.map((message, i) => this.renderOneMessage(message, i))}
-                </Grid2>
+                </Grid>
             );
         }
         return null;
@@ -735,16 +734,16 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 </DialogTitle>
                 <DialogContent dividers>
                     {this.renderMessages()}
-                    <Grid2
+                    <Grid
                         container
-                        direction="column"
                         spacing={2}
                         wrap="nowrap"
+                        sx={{ flexDirection: 'column' }}
                     >
                         {this.props.dependencies &&
                             this.props.dependencies.length > 0 &&
                             this.props.dependencies.find(dependency => !dependency.rightVersion) && (
-                                <Grid2>
+                                <Grid>
                                     <Typography
                                         variant="h6"
                                         gutterBottom
@@ -752,29 +751,29 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                                         {this.t('Dependencies')}
                                     </Typography>
                                     {this.getDependencies()}
-                                </Grid2>
+                                </Grid>
                             )}
                         {news.length ? (
-                            <Grid2>
+                            <Grid>
                                 <Typography
                                     variant="h6"
                                     gutterBottom
                                 >
                                     {this.t('Change log')}
                                 </Typography>
-                                <Grid2
+                                <Grid
                                     container
                                     spacing={2}
-                                    direction="column"
                                     wrap="nowrap"
+                                    sx={{ flexDirection: 'column' }}
                                 >
                                     {news}
-                                </Grid2>
-                            </Grid2>
+                                </Grid>
+                            </Grid>
                         ) : (
                             this.t('No change log available')
                         )}
-                    </Grid2>
+                    </Grid>
                 </DialogContent>
                 <DialogActions sx={styles.wrapperButton}>
                     {!!this.props.rightDependencies && this.props.onIgnore && version && (

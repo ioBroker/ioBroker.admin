@@ -1,9 +1,9 @@
 import React, { type JSX } from 'react';
 
-import { Badge, Grid2, ListItemButton, ListItemIcon, ListItemText, Tooltip, Checkbox } from '@mui/material';
+import { Badge, Grid, ListItemButton, ListItemIcon, ListItemText, Tooltip, Checkbox } from '@mui/material';
 import { DragHandle } from '@mui/icons-material';
 
-import { Utils, ColorPicker, type IobTheme } from '@iobroker/adapter-react-v5';
+import { Utils, ColorPicker, type IobTheme } from '@iobroker/gui-components';
 import AdminUtils from '../helpers/AdminUtils';
 
 const styles: Record<string, any> = {
@@ -102,13 +102,13 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
                     title={compact ? content : ''}
                     slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                 >
-                    <Grid2
+                    <Grid
                         container
                         spacing={1}
-                        alignItems="center"
                         style={styles.noWrap}
+                        sx={{ alignItems: 'center' }}
                     >
-                        <Grid2>
+                        <Grid>
                             <ListItemIcon
                                 style={{ minWidth: 0, color }}
                                 sx={selected ? styles.selectedIcon : undefined}
@@ -121,9 +121,9 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
                                     {icon}
                                 </Badge>
                             </ListItemIcon>
-                        </Grid2>
+                        </Grid>
                         {!compact && (
-                            <Grid2>
+                            <Grid>
                                 <ListItemText style={{ color }}>
                                     <Badge
                                         badgeContent={badgeAdditionalContent || 0}
@@ -140,9 +140,9 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
                                         {content}
                                     </Badge>
                                 </ListItemText>
-                            </Grid2>
+                            </Grid>
                         )}
-                    </Grid2>
+                    </Grid>
                 </Tooltip>
             </ListItemButton>
         </div>

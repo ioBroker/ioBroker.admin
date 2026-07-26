@@ -11,7 +11,7 @@ import {
     type ThemeType,
     type ThemeName,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 // Icons
 import { Close as CloseIcon, Save as SaveIcon } from '@mui/icons-material';

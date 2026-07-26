@@ -1,6 +1,6 @@
 import React, { Component, type JSX } from 'react';
 
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
 
 import {
@@ -33,7 +33,7 @@ import {
 import { FaPlusSquare as InsertIcon, FaDownload as ExportIcon } from 'react-icons/fa';
 import { Edit as IconEdit, Delete as IconDelete, Close as IconClose } from '@mui/icons-material';
 
-import { Utils, TableResize, type AdminConnection, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { Utils, TableResize, type AdminConnection, type IobTheme, type Translate } from '@iobroker/gui-components';
 
 import { localeMap } from './utils';
 

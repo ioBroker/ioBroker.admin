@@ -11,7 +11,7 @@ import {
     type ThemeType,
     type ThemeName,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import Config from './Config';
 import EasyModeCard from '../components/EasyModeCard';
@@ -215,7 +215,7 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
                             <ToggleThemeMenu
                                 t={t}
                                 toggleTheme={toggleTheme}
-                                themeName={themeName as 'dark' | 'blue' | 'colored' | 'light'}
+                                themeName={themeName}
                                 size="large"
                             />
                         </div>

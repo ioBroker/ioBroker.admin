@@ -27,7 +27,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
 import { type DragItem } from './DragObjectBrowser';
@@ -244,7 +244,15 @@ function EnumMember(props: {
     );
 
     if (props.iconDragRef) {
-        icon = <span ref={props.iconDragRef}>{icon}</span>;
+        icon = (
+            <span
+                ref={node => {
+                    props.iconDragRef?.(node);
+                }}
+            >
+                {icon}
+            </span>
+        );
     }
 
     return (
@@ -356,7 +364,9 @@ function EnumMemberDrag(props: {
         />
     ) : (
         <div
-            ref={dragRef}
+            ref={node => {
+                dragRef(node);
+            }}
             style={{ display: 'inline-flex' }}
         >
             <EnumMember
@@ -572,7 +582,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
 
     render(): JSX.Element {
         const props = this.props;
-        const common: EnumCommon | null = props.enum?.common as EnumCommon;
+        const common: EnumCommon | null = props.enum?.common;
         const textColor = Utils.getInvertedColor(common?.color, props.themeType, true);
 
         const style: React.CSSProperties = { opacity: this.props.isDragging ? 0 : 1, color: textColor };
@@ -626,7 +636,15 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
         );
 
         if (this.props.iconDragRef) {
-            icon = <span ref={this.props.iconDragRef}>{icon}</span>;
+            icon = (
+                <span
+                    ref={node => {
+                        this.props.iconDragRef?.(node);
+                    }}
+                >
+                    {icon}
+                </span>
+            );
         }
 
         return (
@@ -863,7 +881,9 @@ export default function EnumBlockDrag(props: EnumBlockDragProps): JSX.Element {
 
     return AdminUtils.isTouchDevice() ? (
         <div
-            ref={drop}
+            ref={node => {
+                drop(node);
+            }}
             style={{ opacity: canDrop && isOver ? 0.5 : 1 }}
         >
             <div ref={widthRef}>
@@ -876,10 +896,16 @@ export default function EnumBlockDrag(props: EnumBlockDragProps): JSX.Element {
         </div>
     ) : (
         <div
-            ref={drop}
+            ref={node => {
+                drop(node);
+            }}
             style={{ opacity: canDrop && isOver ? 0.5 : 1 }}
         >
-            <div ref={dragRef}>
+            <div
+                ref={node => {
+                    dragRef(node);
+                }}
+            >
                 <div ref={widthRef}>
                     <EnumBlock
                         isDragging={isDragging}

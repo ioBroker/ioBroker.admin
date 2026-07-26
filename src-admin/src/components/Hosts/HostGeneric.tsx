@@ -38,7 +38,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import type { HostsWorker, NotificationAnswer } from '@/Workers/HostsWorker';
 import AdapterUpdateDialog, { type News } from '@/components/Adapters/AdapterUpdateDialog';

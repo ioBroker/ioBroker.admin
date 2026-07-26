@@ -13,7 +13,7 @@ import {
     ViewHeadline as ViewHeadlineIcon,
     Subscriptions as SubscriptionsIcon,
     FlashOn as FlashOnIcon,
-    PersonOutline as PersonOutlineIcon,
+    PersonOutlined as PersonOutlineIcon,
     Storage as StorageIcon,
     FileCopy as FilesIcon,
     DeveloperBoard as DeviceManagerIcon,
@@ -29,7 +29,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';

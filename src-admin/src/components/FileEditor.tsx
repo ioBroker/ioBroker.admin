@@ -6,7 +6,7 @@ import React, { type JSX } from 'react';
 import * as ace from 'ace-builds';
 import 'ace-builds/src-noconflict/ext-modelist';
 
-import { FileViewerClass, type FileViewerProps } from '@iobroker/adapter-react-v5';
+import { FileViewerClass, type FileViewerProps } from '@iobroker/gui-components';
 
 import Editor from './Editor';
 

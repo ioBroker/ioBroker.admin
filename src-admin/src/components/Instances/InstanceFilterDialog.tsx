@@ -25,7 +25,7 @@ import {
 
 import { green, grey, orange, red } from '@mui/material/colors';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 import filterIcon from '../../assets/filter.svg';
 
@@ -317,7 +317,7 @@ const InstanceFilterDialog = ({
                                 if (el.target.value === 'none') {
                                     setModeCheck(null);
                                 } else {
-                                    setModeCheck(el.target.value as 'none' | 'daemon' | 'schedule' | 'once' | null);
+                                    setModeCheck(el.target.value);
                                 }
                             }}
                         >
@@ -351,16 +351,7 @@ const InstanceFilterDialog = ({
                                 if (el.target.value === 'none') {
                                     setStatusCheck(null);
                                 } else {
-                                    setStatusCheck(
-                                        el.target.value as
-                                            | 'none'
-                                            | 'disabled'
-                                            | 'not_alive'
-                                            | 'alive_not_connected'
-                                            | 'alive_no_device'
-                                            | 'ok'
-                                            | null,
-                                    );
+                                    setStatusCheck(el.target.value);
                                 }
                             }}
                         >
@@ -403,7 +394,7 @@ const InstanceFilterDialog = ({
                                 if (el.target.value === 'none') {
                                     setSortColumnState(null);
                                 } else {
-                                    setSortColumnState(el.target.value as SortColumn);
+                                    setSortColumnState(el.target.value);
                                 }
                             }}
                         >
@@ -424,7 +415,7 @@ const InstanceFilterDialog = ({
                                 variant="standard"
                                 value={sortDirectionState}
                                 style={styles.select}
-                                onChange={el => setSortDirectionState(el.target.value as SortDirection)}
+                                onChange={el => setSortDirectionState(el.target.value)}
                             >
                                 <MenuItem value="asc">{I18n.t('Ascending')}</MenuItem>
                                 <MenuItem value="desc">{I18n.t('Descending')}</MenuItem>

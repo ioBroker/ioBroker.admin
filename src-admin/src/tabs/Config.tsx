@@ -44,7 +44,7 @@ import {
     type ThemeName,
     type ThemeType,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import { type DeviceManagerPropsProps, JsonConfig } from '@iobroker/json-config';
 import DeviceManager from '@iobroker/dm-gui-components';
@@ -486,7 +486,9 @@ class Config extends Component<ConfigProps, ConfigState> {
         if (this.state.checkedExist) {
             return (
                 <iframe
-                    ref={el => this && (this.refIframe = el)}
+                    ref={el => {
+                        this.refIframe = el;
+                    }}
                     title="config"
                     style={this.props.style}
                     src={src}
@@ -538,7 +540,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                             variant="standard"
                             value={this.state.logLevelValue}
                             fullWidth
-                            onChange={el => this.setState({ logLevelValue: el.target.value as ioBroker.LogLevel })}
+                            onChange={el => this.setState({ logLevelValue: el.target.value })}
                         >
                             {arrayLogLevel.map(el => (
                                 <MenuItem

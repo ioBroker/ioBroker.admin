@@ -1,4 +1,4 @@
-import { type AdminConnection } from '@iobroker/adapter-react-v5';
+import { type AdminConnection } from '@iobroker/gui-components';
 import AdminUtils, { type Style } from '../helpers/AdminUtils';
 
 interface LogLine {
@@ -223,7 +223,7 @@ export class LogsWorker {
         lastKey = lastKey || (length && this.logs[this.logs.length - 1].key) || 0;
 
         if (typeof line === 'object') {
-            objLine = line as LogLineSaved;
+            objLine = line;
             if (lastKey && lastKey <= objLine.ts) {
                 objLine.key = lastKey + 1;
             } else {

@@ -5,7 +5,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Fab } f
 // Icons
 import { Close as CloseIcon, PlayArrow as PlayIcon, GetApp as DownloadIcon } from '@mui/icons-material';
 
-import { type IobTheme, type Translate, type AdminConnection, Utils } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate, type AdminConnection, Utils } from '@iobroker/gui-components';
 
 import type { ioBrokerObject } from '@/types';
 

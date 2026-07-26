@@ -33,7 +33,7 @@ import {
     Pause as PauseIcon,
     Refresh as RefreshIcon,
     SaveAlt as SaveAltIcon,
-    ErrorOutline as ErrorIcon,
+    ErrorOutlined as ErrorIcon,
     Warning as WarningIcon,
     Check as CheckIcon,
     ArrowUpward,
@@ -55,7 +55,7 @@ import {
     type AdminConnection,
     TabContainer,
     TabContent,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import type { LogLineSaved, LogsWorker } from '@/Workers/LogsWorker';
 import type { CompactAdapterInfo, CompactHost } from '@/types';
@@ -78,6 +78,12 @@ const styles: Record<string, any> = {
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
+        },
+        // Messages wrap over several lines, but a token without any break opportunity (e.g. an
+        // embedded JSON blob) has none to wrap at and pushes the fixed-layout table wider than its
+        // container, which shows up as a horizontal scrollbar. Allow breaking inside such tokens.
+        '& td:last-of-type': {
+            overflowWrap: 'anywhere',
         },
     },
     row: {

@@ -8,7 +8,7 @@ import {
     CardMedia,
     Collapse,
     Divider,
-    Grid2,
+    Grid,
     IconButton,
     Link,
     Typography,
@@ -26,7 +26,7 @@ import {
 
 import { blue, grey, red } from '@mui/material/colors';
 
-import { Utils, IconCopy as SaveIcon, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { Utils, IconCopy as SaveIcon, type IobTheme, type Translate } from '@iobroker/gui-components';
 
 import AdminUtils from '../../helpers/AdminUtils';
 
@@ -269,7 +269,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
         }
 
         return (
-            <Grid2
+            <Grid
                 size={{
                     xs: 12,
                     sm: 6,
@@ -347,11 +347,11 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                         </Box>
                         <div style={{ ...styles.contentContainer, ...editClass }}>
                             <CardContent style={styles.content}>
-                                <Grid2
+                                <Grid
                                     container
-                                    direction="column"
                                     wrap="nowrap"
                                     style={styles.contentGrid}
+                                    sx={{ flexDirection: 'column' }}
                                 >
                                     <Typography
                                         gutterBottom
@@ -361,7 +361,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                                         {this.props.title}
                                     </Typography>
                                     {this.renderContent()}
-                                </Grid2>
+                                </Grid>
                             </CardContent>
                             {this.props.action?.link && <Divider />}
                             {this.props.action?.link && (
@@ -447,7 +447,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                         {this.renderDialogs()}
                     </Card>
                 </Link>
-            </Grid2>
+            </Grid>
         );
     }
 }

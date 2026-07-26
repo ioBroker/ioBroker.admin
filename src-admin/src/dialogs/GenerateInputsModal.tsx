@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, type JSX } from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, Paper, Typography, Box, AppBar } from '@mui/material';
 
 import { Settings as SettingsIcon, Close as CloseIcon, Check as CheckIcon } from '@mui/icons-material';
 
-import { I18n, type AdminConnection, type ThemeName, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection, type ThemeName, type ThemeType, type IobTheme } from '@iobroker/gui-components';
 
 import { type ConfigItemPanel, ConfigPanel } from '@iobroker/json-config';
 
@@ -67,7 +67,7 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, title, cust
                     >
                         <div style={styles.headerBlock}>{title}</div>
                     </AppBar>
-                    <Box p={3}>
+                    <Box sx={{ p: 3 }}>
                         <Typography component="div">{children}</Typography>
                     </Box>
                 </>

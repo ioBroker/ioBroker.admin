@@ -1,12 +1,12 @@
 import React, { type JSX } from 'react';
 
-import { Grid2 as Grid, IconButton, TableCell, TableRow, Typography } from '@mui/material';
+import { Grid as Grid, IconButton, TableCell, TableRow, Typography } from '@mui/material';
 
 import { blue, green } from '@mui/material/colors';
 
 import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { type Translate } from '@iobroker/adapter-react-v5';
+import { type Translate } from '@iobroker/gui-components';
 
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 
@@ -64,8 +64,8 @@ function AdapterCategoryRow(props: AdapterCategoryRowProps): JSX.Element {
                 <Grid
                     container
                     spacing={1}
-                    alignItems="center"
                     style={styles.name}
+                    sx={{ alignItems: 'center' }}
                 >
                     <Grid component="div">
                         <IconButton

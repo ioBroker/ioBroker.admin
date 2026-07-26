@@ -29,7 +29,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, DialogConfirm, type Translate, type ThemeType, InfoBox } from '@iobroker/adapter-react-v5';
+import { I18n, DialogConfirm, type Translate, type ThemeType, InfoBox } from '@iobroker/gui-components';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';

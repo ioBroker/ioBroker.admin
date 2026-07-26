@@ -13,7 +13,7 @@ import {
 
 import { Close as CloseIcon, OpenInBrowser as OpenInBrowserIcon } from '@mui/icons-material';
 
-import type { IobTheme, Translate, AdminConnection } from '@iobroker/adapter-react-v5';
+import type { IobTheme, Translate, AdminConnection } from '@iobroker/gui-components';
 import type { CommandFile } from '@/types';
 import Command from '../components/Command';
 

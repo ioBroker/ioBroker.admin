@@ -2,7 +2,7 @@ import React, { Component, type JSX } from 'react';
 import { LinearProgress } from '@mui/material';
 import JSON5 from 'json5';
 
-import { I18n, Router, type AdminConnection, type IobTheme, type ThemeName } from '@iobroker/adapter-react-v5';
+import { I18n, Router, type AdminConnection, type IobTheme, type ThemeName } from '@iobroker/gui-components';
 import DeviceManager from '@iobroker/dm-gui-components';
 import {
     type ConfigItemPanel,
@@ -321,7 +321,9 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                     </div>
                 ) : null}
                 <iframe
-                    ref={el => (this.refIframe = el)}
+                    ref={el => {
+                        this.refIframe = el;
+                    }}
                     title={this.props.tab}
                     style={{
                         display: 'block',

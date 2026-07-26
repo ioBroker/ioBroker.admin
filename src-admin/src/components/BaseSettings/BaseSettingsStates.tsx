@@ -1,7 +1,7 @@
 import React, { createRef, Component, type JSX } from 'react';
 
 import {
-    Grid2,
+    Grid,
     FormControlLabel,
     Checkbox,
     TextField,
@@ -18,7 +18,7 @@ import {
     Box,
 } from '@mui/material';
 
-import { DialogConfirm, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { DialogConfirm, type IobTheme, type Translate } from '@iobroker/gui-components';
 
 import { type AdminConnection } from '@iobroker/socket-client';
 
@@ -352,7 +352,7 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
             <Paper style={styles.paper}>
                 {this.state.loading ? <LinearProgress /> : null}
                 {this.renderWarning()}
-                <Grid2 style={{ ...styles.gridSettings, ...styles.dangerZone }}>
+                <Grid style={{ ...styles.gridSettings, ...styles.dangerZone }}>
                     <h3
                         style={styles.dangerZoneHeader}
                         title={this.props.t('Invalid settings in these fields could lead to dead host')}
@@ -365,11 +365,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                     >
                         {this.props.t('base_settings_hint')}
                     </Box>
-                    <Grid2
+                    <Grid
                         container
-                        direction="column"
+                        sx={{ flexDirection: 'column' }}
                     >
-                        <Grid2>
+                        <Grid>
                             <Tooltip
                                 title={this.props.t('switch_db_note')}
                                 slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
@@ -406,9 +406,9 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     </Select>
                                 </FormControl>
                             </Tooltip>
-                        </Grid2>
+                        </Grid>
 
-                        <Grid2 style={{ paddingLeft: 8 }}>
+                        <Grid style={{ paddingLeft: 8 }}>
                             <FormControlLabel
                                 control={
                                     <Switch
@@ -420,9 +420,9 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                 }
                                 label={this.props.t('IP is domain or more than one address')}
                             />
-                        </Grid2>
+                        </Grid>
 
-                        <Grid2>
+                        <Grid>
                             {this.state.textIP ? (
                                 <TextField
                                     variant="standard"
@@ -455,9 +455,9 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     </Select>
                                 </FormControl>
                             )}
-                        </Grid2>
+                        </Grid>
 
-                        <Grid2>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 style={styles.controlItem}
@@ -467,10 +467,10 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                 onChange={e => this.setState({ port: e.target.value }, () => this.onChange())}
                                 label={this.props.t('Port')}
                             />
-                        </Grid2>
+                        </Grid>
 
                         {this.state.type === 'file' || this.state.type === 'jsonl' ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -479,10 +479,10 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     onChange={e => this.setState({ dataDir: e.target.value }, () => this.onChange())}
                                     label={this.props.t('Directory path')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
-                        <Grid2>
+                        <Grid>
                             <TextField
                                 variant="standard"
                                 style={styles.controlItem}
@@ -507,16 +507,16 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                         : this.props.t('Connection password')
                                 }
                             />
-                        </Grid2>
-                    </Grid2>
-                </Grid2>
-                <Grid2 style={styles.gridSettings}>
-                    <Grid2
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid style={styles.gridSettings}>
+                    <Grid
                         container
-                        direction="column"
+                        sx={{ flexDirection: 'column' }}
                     >
                         {this.state.type === 'file' || this.state.type === 'jsonl' ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -529,11 +529,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Connect timeout')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'file' || this.state.type === 'jsonl' ? (
-                            <Grid2>
+                            <Grid>
                                 <FormControl
                                     component="fieldset"
                                     variant="standard"
@@ -560,11 +560,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                         )}
                                     </FormHelperText>
                                 </FormControl>
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'file' ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -577,11 +577,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Store file interval')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'redis' ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -595,11 +595,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Retry maximum delay')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'redis' ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -613,11 +613,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Retry maximum count')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'redis' ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -627,11 +627,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     onChange={e => this.setState({ options_db: e.target.value }, () => this.onChange())}
                                     label={this.props.t('DB number')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'redis' ? (
-                            <Grid2>
+                            <Grid>
                                 <FormControl
                                     style={styles.controlItem}
                                     variant="standard"
@@ -650,11 +650,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     </Select>
                                     <FormHelperText>{this.props.t('Used for sentinels')}</FormHelperText>
                                 </FormControl>
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'jsonl' ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -671,11 +671,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Auto-compress size factor')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'jsonl' ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -693,11 +693,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Auto-compress size factor minimum size')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'jsonl' ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -714,11 +714,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Minimal write interval')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'jsonl' ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -736,11 +736,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Maximum changes before write')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {this.state.type === 'file' || this.state.type === 'jsonl' ? (
-                            <Grid2>
+                            <Grid>
                                 <FormControl
                                     component="fieldset"
                                     style={styles.controlItem}
@@ -765,11 +765,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                         {this.props.t('By every write the backup of object.json will be created.')}
                                     </FormHelperText>
                                 </FormControl>
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -783,11 +783,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Number of files')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -801,11 +801,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Backup hours')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -819,11 +819,11 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('How often')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
 
                         {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? (
-                            <Grid2>
+                            <Grid>
                                 <TextField
                                     variant="standard"
                                     style={styles.controlItem}
@@ -836,10 +836,10 @@ export default class BaseSettingsStates extends Component<BaseSettingsStatesProp
                                     }
                                     label={this.props.t('Path')}
                                 />
-                            </Grid2>
+                            </Grid>
                         ) : null}
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
             </Paper>
         );
     }

@@ -7,7 +7,7 @@ import {
     DialogContent,
     DialogTitle,
     FormControl,
-    Grid2,
+    Grid,
     IconButton,
     InputLabel,
     MenuItem,
@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { Close as CloseIcon, Add as AddIcon, Public as IconWeb, Language as LanguageIcon } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/gui-components';
 
 import type { HostsWorker } from '@/Workers/HostsWorker';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
@@ -242,7 +242,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
 
     renderOneMessage(message: Message, index: number): JSX.Element {
         return (
-            <Grid2 key={index}>
+            <Grid key={index}>
                 <Typography sx={styles[`messageTitle_${message.level || 'warn'}`]}>
                     {this.getText(message.title, this.props.noTranslation) || ''}
                 </Typography>
@@ -266,22 +266,21 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                         {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
                     </Button>
                 ) : null}
-            </Grid2>
+            </Grid>
         );
     }
 
     renderMessages(): JSX.Element | null {
         if (this.messages) {
             return (
-                <Grid2
+                <Grid
                     container
                     spacing={2}
-                    direction="column"
                     wrap="nowrap"
-                    sx={{ marginBottom: 1 }}
+                    sx={{ marginBottom: 1, flexDirection: 'column' }}
                 >
                     {this.messages.map((message, i) => this.renderOneMessage(message, i))}
-                </Grid2>
+                </Grid>
             );
         }
         return null;
@@ -329,9 +328,9 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                 <DialogContent dividers>
                     {this.renderMessages()}
                     {!checkDeps && this.props.expertMode ? (
-                        <Grid2
+                        <Grid
                             container
-                            direction="column"
+                            sx={{ flexDirection: 'column' }}
                         >
                             <HostSelectors
                                 tooltip={this.t('Select host to add the instance')}
@@ -357,7 +356,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                                     {this.getAvailableInstances()}
                                 </Select>
                             </FormControl>
-                        </Grid2>
+                        </Grid>
                     ) : null}
                     <Box
                         component="div"

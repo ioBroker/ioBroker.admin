@@ -17,7 +17,7 @@ import {
 
 import { Check as CheckIcon, Close as CloseIcon, AddBox as AddIcon } from '@mui/icons-material';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, Utils } from '@iobroker/gui-components';
 import type { ioBrokerObject } from '@/types';
 
 const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', 'object', 'string'];
@@ -164,7 +164,6 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
             open={!0}
             fullWidth
             maxWidth="md"
-            disableEscapeKeyDown={false}
             // titleButtonApply="add"
             onClose={onClose}
             // onApply={() => onLocalApply()}
@@ -214,7 +213,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
                                     setUnique(!!objects[buildId(names[el.target.value])]);
                                 }
 
-                                setType(el.target.value as ioBrokerObject['type']);
+                                setType(el.target.value);
                             }}
                         >
                             {types.map(el => (
@@ -244,7 +243,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
                                         'App.lastStateType',
                                         el.target.value,
                                     );
-                                    setStateType(el.target.value as keyof typeof stateDefValues);
+                                    setStateType(el.target.value);
                                 }}
                             >
                                 {stateTypeArray.map(el => (

@@ -9,7 +9,7 @@ import {
     Tooltip,
     Typography,
     Rating,
-    Grid2,
+    Grid,
     Link,
     TextField,
     InputAdornment,
@@ -39,7 +39,7 @@ import {
     Build as BuildIcon,
 } from '@mui/icons-material';
 
-import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import { type IobTheme, Utils } from '@iobroker/gui-components';
 
 import AdapterUpdateDialog from '@/components/Adapters/AdapterUpdateDialog';
 import CustomModal from '@/components/CustomModal';
@@ -427,12 +427,10 @@ export default abstract class AdapterGeneric<
                 href={link}
                 target="_blank"
                 rel="noopener"
-                sx={
-                    ((theme: IobTheme) => ({
-                        color: theme.palette.mode === 'dark' ? 'white' : 'black',
-                        '&:hover': { color: theme.palette.mode === 'dark' ? 'white' : 'black' },
-                    })) as any
-                }
+                sx={(theme: IobTheme) => ({
+                    color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                    '&:hover': { color: theme.palette.mode === 'dark' ? 'white' : 'black' },
+                })}
             >
                 {adapter.licenseInformation?.type === 'paid' ? (
                     <Tooltip
@@ -607,22 +605,22 @@ export default abstract class AdapterGeneric<
             const installedCount = installed?.count;
 
             return (
-                <Grid2
+                <Grid
                     container
                     wrap="nowrap"
-                    alignItems="center"
                     spacing={1}
+                    sx={{ alignItems: 'center' }}
                 >
                     {this.installedVersion ? (
-                        <Grid2>
+                        <Grid>
                             {displayVersion +
                                 (installedCount
                                     ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})`
                                     : '')}
-                        </Grid2>
+                        </Grid>
                     ) : null}
                     {isGitHubInstall && (
-                        <Grid2 container>
+                        <Grid container>
                             <Tooltip
                                 title={`${this.props.context.t('Non-NPM-Version')}: ${installedFrom}`}
                                 slotProps={{ popper: { sx: this.styles.tooltip } }}
@@ -632,9 +630,9 @@ export default abstract class AdapterGeneric<
                                     style={this.styles.versionWarn}
                                 />
                             </Tooltip>
-                        </Grid2>
+                        </Grid>
                     )}
-                </Grid2>
+                </Grid>
             );
         }
 
@@ -1054,7 +1052,7 @@ export default abstract class AdapterGeneric<
                                 ? adapter.news[version].en
                                 : adapter.news[version][this.props.context.lang] || adapter.news[version].en;
                         } else {
-                            text = adapter.news[version] as any as string;
+                            text = adapter.news[version];
                         }
 
                         news.push({

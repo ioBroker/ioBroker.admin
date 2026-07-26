@@ -200,7 +200,7 @@ export function setLinuxPassword(login: string, oldPassword: string, newPassword
         try {
             const su = spawn('su', [login]);
             let result: true | string = 'Cannot change password';
-            let responseTimeout = setTimeout(() => {
+            let responseTimeout: NodeJS.Timeout | null = setTimeout(() => {
                 responseTimeout = null;
                 result = 'Timeout';
                 su.kill();
@@ -268,13 +268,15 @@ export function setLinuxPassword(login: string, oldPassword: string, newPassword
 
             // Listen for the close event
             su.on('close', () => {
-                responseTimeout && clearTimeout(responseTimeout);
-                responseTimeout = null;
+                if (responseTimeout) {
+                    clearTimeout(responseTimeout);
+                    responseTimeout = null;
+                }
                 resolve(result);
             });
         } catch (e) {
-            console.error(`Cannot change password: ${e.toString()}`);
-            throw new Error(e);
+            console.error(`Cannot change password: ${(e as Error).toString()}`);
+            throw new Error(e instanceof Error ? e.message : String(e));
         }
     });
 }

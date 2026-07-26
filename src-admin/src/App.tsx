@@ -19,7 +19,7 @@ import {
     DialogContentText,
     DialogTitle,
     FormControlLabel,
-    Grid2 as Grid,
+    Grid,
     IconButton,
     ListItemIcon,
     ListItemText,
@@ -70,7 +70,7 @@ import {
     type ThemeType,
     Utils,
     dictionary,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
 import type { AdminGuiConfig, CommandFile, CompactAdapterInfo, CompactHost, NotificationsCount } from '@/types';
@@ -508,14 +508,14 @@ class App extends Router<AppProps, AppState> {
     private expireInSecInterval: ReturnType<typeof setInterval> | null = null;
     private readonly toggleThemePossible: boolean;
     private adminGuiConfig: AdminGuiConfig;
-    private logsWorker: LogsWorker | null;
-    private instancesWorker: InstancesWorker | null;
-    private hostsWorker: HostsWorker | null;
-    private adaptersWorker: AdaptersWorker | null;
-    private objectsWorker: ObjectsWorker | null;
+    private logsWorker: LogsWorker | null = null;
+    private instancesWorker: InstancesWorker | null = null;
+    private hostsWorker: HostsWorker | null = null;
+    private adaptersWorker: AdaptersWorker | null = null;
+    private objectsWorker: ObjectsWorker | null = null;
     private guiSettings: ObjectGuiSettings;
     private localStorageTimer: ReturnType<typeof setTimeout> | null = null;
-    private languageSet: boolean;
+    private languageSet: boolean = false;
     private socket: AdminConnection;
     private adminInstance: string = '';
     private newsInstance: number = 0;
@@ -1270,7 +1270,7 @@ class App extends Router<AppProps, AppState> {
                         this.showAlert(errorStr, 'error');
                     }
                 },
-            }) as unknown as AdminConnection;
+            });
         }
     }
 
@@ -1754,7 +1754,7 @@ class App extends Router<AppProps, AppState> {
                 if ((e as Error).toString().includes('timeout')) {
                     this.setState({ showSlowConnectionWarning: true });
                 }
-                return {} as CompactRepository;
+                return {};
             });
 
         const installed: CompactInstalledInfo = await this.socket
@@ -1764,14 +1764,14 @@ class App extends Router<AppProps, AppState> {
                 if ((e as Error).toString().includes('timeout')) {
                     this.setState({ showSlowConnectionWarning: true });
                 }
-                return {} as CompactInstalledInfo;
+                return {};
             });
 
         const adapters: Record<string, CompactAdapterInfo> = await this.socket
             .getCompactAdapters(update)
             .catch((e: unknown): Record<string, CompactAdapterInfo> => {
                 window.alert(`Cannot read adapters: ${e as Error}`);
-                return {} as Record<string, CompactAdapterInfo>;
+                return {};
             });
 
         if (installed && adapters) {
@@ -1870,7 +1870,7 @@ class App extends Router<AppProps, AppState> {
                 themeType: App.getThemeType(theme),
             },
             () => {
-                // DH (2026.04.12) Remove this line after all adapters update adapter-react-v5 to V8.2.x
+                // DH (2026.04.12) Remove this line after all adapters update gui-components to V8.2.x
                 this.refConfigIframe?.contentWindow?.postMessage('updateTheme', '*');
                 this.refConfigIframe?.contentWindow?.postMessage({ type: 'updateTheme', themeName: newThemeName }, '*');
             },
@@ -2748,7 +2748,7 @@ class App extends Router<AppProps, AppState> {
                             <ToggleThemeMenu
                                 size="large"
                                 toggleTheme={this.toggleTheme}
-                                themeName={this.state.themeName as 'dark' | 'light' | 'colored' | 'blue'}
+                                themeName={this.state.themeName}
                                 t={I18n.t}
                             />
                         </IsVisible>
@@ -2902,7 +2902,7 @@ class App extends Router<AppProps, AppState> {
                                 ...(this.state.drawerState !== DrawerStates.opened ? styles.avatarVisible : undefined),
                             }}
                             spacing={1}
-                            alignItems="center"
+                            sx={{ alignItems: 'center' }}
                         >
                             {!this.state.user ? (
                                 <Box

@@ -7,7 +7,7 @@ import {
     DialogContent,
     DialogTitle,
     TextField,
-    Grid2,
+    Grid,
     IconButton,
     Typography,
     FormControlLabel,
@@ -23,7 +23,7 @@ import {
 // icons
 import { Add as AddIcon, Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
-import { UploadImage, type AdminConnection, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import { UploadImage, type AdminConnection, type IobTheme, type Translate } from '@iobroker/gui-components';
 
 import IntroCardCamera from '@/components/Intro/IntroCardCamera';
 import IntroCard from './IntroCard';
@@ -218,12 +218,12 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                     </Typography>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Grid2
+                    <Grid
                         style={styles.rootGrid}
                         container
                         direction="row"
                     >
-                        <Grid2
+                        <Grid
                             size={{
                                 xs: 12,
                                 sm: 6,
@@ -231,9 +231,9 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                 lg: 9,
                             }}
                         >
-                            <Grid2
+                            <Grid
                                 container
-                                direction="column"
+                                sx={{ flexDirection: 'column' }}
                             >
                                 <FormControl
                                     variant="standard"
@@ -408,7 +408,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                         style={styles.editItemSlider}
                                         value={this.state.interval}
                                         getAriaValueText={() => `${this.state.interval}ms`}
-                                        onChange={(e, interval) => this.setState({ interval: interval as number })}
+                                        onChange={(e, interval) => this.setState({ interval: interval })}
                                         step={100}
                                         min={500}
                                         max={60000}
@@ -436,9 +436,9 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                     onChange={base64 => this.setState({ image: base64 })}
                                     // t={this.props.t}
                                 />
-                            </Grid2>
-                        </Grid2>
-                        <Grid2
+                            </Grid>
+                        </Grid>
+                        <Grid
                             size={{
                                 xs: 12,
                                 sm: 6,
@@ -478,8 +478,8 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                     theme={this.props.theme}
                                 />
                             )}
-                        </Grid2>
-                    </Grid2>
+                        </Grid>
+                    </Grid>
                 </DialogContent>
                 <DialogActions>
                     <Button

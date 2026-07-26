@@ -1,10 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import commonjs from 'vite-plugin-commonjs';
-import viteTsConfigPaths from 'vite-tsconfig-paths';
 import { federation } from '@module-federation/vite';
 import { resolve } from 'node:path';
-import { moduleFederationShared } from '@iobroker/adapter-react-v5/modulefederation.admin.config';
+import { moduleFederationShared } from '@iobroker/gui-components/modulefederation.admin.config';
 
 // Make all shared modules eager for the host application,
 // so they are available in the shared scope for remote modules
@@ -24,7 +23,6 @@ export default defineConfig({
             manifest: true,
         }),
         react(),
-        viteTsConfigPaths(),
         commonjs(),
     ],
     server: {
@@ -41,6 +39,7 @@ export default defineConfig({
     },
     base: './',
     resolve: {
+        tsconfigPaths: true,
         alias: {
             '@': resolve(__dirname, 'src'),
         },

@@ -5,7 +5,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, LinearP
 
 import { Close as IconClose, Check as IconCheck, ArrowDownward as IconArrowDownward } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 const styles: Record<string, any> = {
     root: {
@@ -173,30 +173,32 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
     let content: JSX.Element;
     if (!loading && text) {
         if (text.startsWith('#')) {
+            // react-markdown dropped the `className` prop, so the CSS hook moves to a wrapper
             content = (
-                <Markdown
-                    className="markdown"
-                    components={{
-                        h1: h1Props => (
-                            <Box
-                                component="h1"
-                                sx={styles.header1}
-                            >
-                                {h1Props.children}
-                            </Box>
-                        ),
-                        h2: h2Props => (
-                            <Box
-                                component="h2"
-                                sx={styles.header2}
-                            >
-                                {h2Props.children}
-                            </Box>
-                        ),
-                    }}
-                >
-                    {text}
-                </Markdown>
+                <div className="markdown">
+                    <Markdown
+                        components={{
+                            h1: h1Props => (
+                                <Box
+                                    component="h1"
+                                    sx={styles.header1}
+                                >
+                                    {h1Props.children}
+                                </Box>
+                            ),
+                            h2: h2Props => (
+                                <Box
+                                    component="h2"
+                                    sx={styles.header2}
+                                >
+                                    {h2Props.children}
+                                </Box>
+                            ),
+                        }}
+                    >
+                        {text}
+                    </Markdown>
+                </div>
             );
         } else {
             content = (

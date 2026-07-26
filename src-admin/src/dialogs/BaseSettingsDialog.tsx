@@ -22,7 +22,7 @@ import {
     type ThemeType,
     type IobTheme,
     type Translate,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import BaseSettingsSystem, { type SystemSettings } from '../components/BaseSettings/BaseSettingsSystem';
 import BaseSettingsMultihost, { type MultihostSettings } from '../components/BaseSettings/BaseSettingsMultihost';
@@ -186,7 +186,7 @@ export default class BaseSettingsDialog extends Component<BaseSettingsDialogProp
 
     async getSettings(host: string): Promise<void> {
         const settings = await this.props.socket.readBaseSettings(host || this.state.currentHost);
-        const answer = settings as { config?: ioBroker.IoBrokerJson; isActive?: boolean };
+        const answer = settings;
 
         if (answer?.config) {
             this.originalSettings = AdminUtils.clone(answer.config);

@@ -507,7 +507,7 @@ function unansweredToolCalls(messages: OpenAIMessage[]): OpenAIToolCall[] {
 function lastAssistantText(messages: OpenAIMessage[]): string {
     for (let i = messages.length - 1; i >= 0; i--) {
         if (messages[i].role === 'assistant') {
-            return typeof messages[i].content === 'string' ? messages[i].content : '';
+            return typeof messages[i].content === 'string' ? messages[i].content || '' : '';
         }
     }
     return '';

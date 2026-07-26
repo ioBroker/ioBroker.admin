@@ -1,7 +1,7 @@
 import React, { Component, type JSX } from 'react';
 import semver from 'semver';
 
-import { type Translate, type AdminConnection, type ThemeType, type IobTheme, I18n } from '@iobroker/adapter-react-v5';
+import { type Translate, type AdminConnection, type ThemeType, type IobTheme, I18n } from '@iobroker/gui-components';
 
 import { checkCondition, type CompactInstanceInfo } from './AdapterUpdateDialog';
 
@@ -373,7 +373,7 @@ export default abstract class AdapterInstallDialog<
                 }
             }
 
-            const dependencies: Record<string, string> = adapter.ifInstalledDependencies as Record<string, string>;
+            const dependencies: Record<string, string> = adapter.ifInstalledDependencies;
 
             if (dependencies && typeof dependencies === 'object' && !Array.isArray(dependencies)) {
                 const adapters = Object.keys(dependencies);

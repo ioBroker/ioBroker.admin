@@ -6,7 +6,7 @@
         "noEmit": false,
         "declaration": false,
         "skipLibCheck": true,
-        "module": "commonjs"
+        "module": "node16"
     },
     "include": ["src/**/*.ts", "src/**/*.js"]
 }

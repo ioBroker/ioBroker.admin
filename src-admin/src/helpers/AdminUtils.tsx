@@ -1,5 +1,5 @@
 import semver from 'semver';
-import { type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import { type ThemeType, type Translate } from '@iobroker/gui-components';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import { replaceLink } from './utils';
 

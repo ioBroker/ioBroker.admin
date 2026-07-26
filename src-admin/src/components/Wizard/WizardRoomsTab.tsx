@@ -4,7 +4,7 @@ import { Toolbar, Button, Paper, Typography, Checkbox, Box } from '@mui/material
 
 import { Check as IconCheck, ArrowForward as IconNext } from '@mui/icons-material';
 
-import { type AdminConnection, Icon, type Translate, Utils } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, Icon, type Translate, Utils } from '@iobroker/gui-components';
 
 // Import room SVGs
 let typedRooms: {

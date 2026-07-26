@@ -12,7 +12,7 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { Icon, Utils, type AdminConnection, type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
+import { Icon, Utils, type AdminConnection, type Translate, type ThemeType } from '@iobroker/gui-components';
 
 interface UserBlockProps {
     t: Translate;
@@ -163,7 +163,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
 };
 
 const UserBlockDrag: React.FC<UserBlockProps> = props => {
-    const widthRef = useRef<HTMLDivElement>();
+    const widthRef = useRef<HTMLDivElement>(null);
     const [{ isDragging }, dragRef, preview] = useDrag({
         type: 'user',
         item: () => ({
@@ -191,7 +191,11 @@ const UserBlockDrag: React.FC<UserBlockProps> = props => {
     }, [preview]);
 
     return (
-        <div ref={dragRef}>
+        <div
+            ref={node => {
+                dragRef(node);
+            }}
+        >
             <div ref={widthRef}>
                 <UserBlock
                     isDragging={isDragging}

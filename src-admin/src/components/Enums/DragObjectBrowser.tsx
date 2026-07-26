@@ -17,7 +17,7 @@ import {
     type TreeItem,
     getSelectIdIconFromObjects,
     ITEM_IMAGES,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 export interface DragItem {
     data: TreeItemData;
@@ -130,7 +130,9 @@ const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element => {
                 <Box
                     key={dragProps.item.data.id}
                     sx={dragProps.style}
-                    ref={dragRef}
+                    ref={(node: HTMLElement | null) => {
+                        dragRef(node);
+                    }}
                     style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}
                 >
                     {dragProps.children}
@@ -150,6 +152,8 @@ const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element => {
             lang={props.lang}
             dragEnabled
             theme={props.theme}
+            themeName={props.theme.name}
+            themeType={props.theme.palette.mode}
             DragWrapper={wrapperState.DragWrapper}
             setObjectsReference={(objects: Record<string, ioBroker.Object>) => (objectRef.current = objects)}
             levelPadding={10}

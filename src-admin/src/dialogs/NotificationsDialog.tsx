@@ -33,7 +33,7 @@ import {
     type IobTheme,
     type AdminConnection,
     type ThemeName,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import type { BackEndCommandGeneric } from '@iobroker/json-config';
 import NotificationMessage, { type Message, type Severity, compareSeverity } from '../components/NotificationMessage';

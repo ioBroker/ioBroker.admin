@@ -10,7 +10,7 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { Utils, Icon, type Translate, type ThemeType, type IobTheme } from '@iobroker/adapter-react-v5';
+import { Utils, Icon, type Translate, type ThemeType, type IobTheme } from '@iobroker/gui-components';
 
 interface GroupBlockProps {
     t: Translate;
@@ -65,7 +65,9 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
     return (
         <Card
             style={style}
-            ref={drop}
+            ref={(node: HTMLElement | null) => {
+                drop(node);
+            }}
             sx={Utils.getStyle(props.theme, props.styles.userGroupCard2, backgroundColor)}
         >
             <div style={props.styles.right}>

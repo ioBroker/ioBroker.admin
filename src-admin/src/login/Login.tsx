@@ -7,7 +7,7 @@ import {
     Checkbox,
     CircularProgress,
     FormControlLabel,
-    Grid2,
+    Grid,
     IconButton,
     Link,
     Paper,
@@ -17,7 +17,7 @@ import {
 
 import { Visibility } from '@mui/icons-material';
 
-import { type IobTheme, I18n, Connection } from '@iobroker/adapter-react-v5';
+import { type IobTheme, I18n, Connection } from '@iobroker/gui-components';
 
 export interface OAuth2Response {
     access_token: string;
@@ -255,10 +255,9 @@ export default class Login extends Component<object, LoginState> {
         } else {
             content = (
                 <Paper sx={styles.paper}>
-                    <Grid2
+                    <Grid
                         container
-                        direction="column"
-                        alignItems="center"
+                        sx={{ flexDirection: 'column', alignItems: 'center' }}
                     >
                         {window.loginLogo && window.loginLogo !== '@@loginLogo@@' ? (
                             <Box
@@ -393,7 +392,7 @@ export default class Login extends Component<object, LoginState> {
                                 {I18n.t('Use Single-Sign On')}
                             </Button>
                         ) : null}
-                    </Grid2>
+                    </Grid>
                     <Box style={styles.marginTop}>
                         <Typography
                             variant="body2"

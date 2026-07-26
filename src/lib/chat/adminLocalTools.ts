@@ -281,9 +281,7 @@ export const AUTO_RUN_TOOLS = new Set(['navigate_admin_ui']);
 
 /** An action the frontend must perform after the chat turn (the backend cannot do it itself). */
 export type ClientAction =
-    | { type: 'install'; adapter: string }
-    | { type: 'navigate'; hash: string }
-    | { type: 'command'; command: string };
+    { type: 'install'; adapter: string } | { type: 'navigate'; hash: string } | { type: 'command'; command: string };
 
 /** Result of executing an admin-local tool. */
 export interface AdminLocalResult {
@@ -499,7 +497,7 @@ async function assignToEnums(adapter: ioBroker.Adapter, args: Record<string, unk
                     continue;
                 }
                 const enumId = resolveEnum(category, r);
-                const members = working[enumId].common.members;
+                const members = working[enumId].common.members || [];
                 if (!members.includes(objId)) {
                     members.push(objId);
                     summary[enumId] = (summary[enumId] || 0) + 1;

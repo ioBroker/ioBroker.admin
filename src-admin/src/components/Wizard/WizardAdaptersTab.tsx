@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { Check as IconCheck, ExpandMore as ExpandMoreIcon, ArrowForward as IconNext } from '@mui/icons-material';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/gui-components';
 import type { Repository } from '@/types';
 
 interface WizardAdaptersTabProps {

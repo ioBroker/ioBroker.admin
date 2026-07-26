@@ -16,7 +16,7 @@ import {
 
 import { Update as UpdateIcon } from '@mui/icons-material';
 
-import { TabContent, InfoBox } from '@iobroker/adapter-react-v5';
+import { TabContent, InfoBox } from '@iobroker/gui-components';
 
 import type { AdaptersContext } from '@/components/Adapters/AdapterInstallDialog';
 import AdapterCategoryRow from '@/components/Adapters/AdapterCategoryRow';

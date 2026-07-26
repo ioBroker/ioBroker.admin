@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import type { I18n, AdminConnection, ThemeType, ThemeName } from '@iobroker/adapter-react-v5';
+import type { I18n, AdminConnection, ThemeType, ThemeName } from '@iobroker/gui-components';
 
 declare module '*.png';
 declare module '*.svg';

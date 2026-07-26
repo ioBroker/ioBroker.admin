@@ -26,7 +26,7 @@ import {
     type AdminConnection,
     type ThemeType,
     type ThemeName,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import AdminUtils from '@/helpers/AdminUtils';
@@ -234,7 +234,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 .filter(obj => !!obj)
                 .sort((a, b) => a._id.localeCompare(b._id))
                 .map(obj => {
-                    this.originalCredentialObjects[obj._id] = AdminUtils.clone(obj) as ioBroker.Object;
+                    this.originalCredentialObjects[obj._id] = AdminUtils.clone(obj);
                     const masked = AdminUtils.clone(obj) as ioBroker.Object;
                     const encryptedFields: string[] = masked.native?.encryptedFields || [];
                     encryptedFields.forEach(field => {

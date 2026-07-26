@@ -10,7 +10,7 @@ import {
     TextField,
 } from '@mui/material';
 import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
-import { I18n, Utils, Icon, type AdminConnection } from '@iobroker/adapter-react-v5';
+import { I18n, Utils, Icon, type AdminConnection } from '@iobroker/gui-components';
 
 import { CREDENTIALS_PREFIX, CREDENTIALS_VERSION, CREDENTIAL_FORMS } from '../SystemSettings/credentialTypes';
 import { CREDENTIAL_ICON_DATA } from '../SystemSettings/credentialIcons';

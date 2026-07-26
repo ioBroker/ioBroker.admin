@@ -1,6 +1,6 @@
 import { commonTools, EXIT_CODES } from '@iobroker/adapter-core';
 import { checkPublicIP, WebServer, createOAuth2Server, type OAuth2Model } from '@iobroker/webserver';
-import * as express from 'express';
+import express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
 import type { Server } from 'node:http';
 import { readFileSync, existsSync, createReadStream, readdirSync, lstatSync } from 'node:fs';
@@ -8,19 +8,18 @@ import { inherits } from 'node:util';
 import { join, normalize, parse, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { Transform } from 'node:stream';
-import * as compression from 'compression';
+import compression from 'compression';
 import { getType } from 'mime';
 import { gunzipSync } from 'node:zlib';
-import * as archiver from 'archiver';
 import axios from 'axios';
 import { Ajv } from 'ajv';
 import { parse as JSON5 } from 'json5';
-import * as fileUpload from 'express-fileupload';
+import fileUpload from 'express-fileupload';
 
 import type { Store } from 'express-session';
 import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import type { InternalStorageToken } from '@iobroker/socket-classes';
 import { McpServer, type McpConfig } from '@iobroker/mcp-server';
 import type { AdminAdapterConfig } from '../types';
@@ -1075,7 +1074,10 @@ export default class Web {
                     } else {
                         const filesOfDir = await readFolderRecursive(this.adapter, adapterName, url);
 
-                        const archive = archiver('zip', {
+                        // archiver 8 is ESM-only, so it cannot be `require`d from this CommonJS
+                        // build; it also replaced the former `archiver('zip')` factory with classes.
+                        const { ZipArchive } = await import('archiver');
+                        const archive = new ZipArchive({
                             zlib: { level: 9 },
                         });
 

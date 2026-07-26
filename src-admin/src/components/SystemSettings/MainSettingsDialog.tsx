@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import {
-    Grid2,
+    Grid,
     InputLabel,
     MenuItem,
     FormControl,
@@ -21,7 +21,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 
 import { Marker, type DragEndEvent, type LatLngTuple, type Map } from 'leaflet';
 
-import { DialogConfirm, I18n, type Translate } from '@iobroker/adapter-react-v5';
+import { DialogConfirm, I18n, type Translate } from '@iobroker/gui-components';
 import { type AdminGuiConfig } from '@/types';
 
 import AdminUtils from '../../helpers/AdminUtils';
@@ -337,7 +337,7 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
 
         if (e.autocomplete && e.values) {
             return (
-                <Grid2
+                <Grid
                     size={{ sm: 6, xs: 12 }}
                     key={i}
                 >
@@ -383,14 +383,14 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                             />
                         )}
                     />
-                </Grid2>
+                </Grid>
             );
         }
 
         // If value is not in known values, show text input
         if (e.allowText && value && !e.values.find(elem => elem.id === value)) {
             return (
-                <Grid2
+                <Grid
                     size={{ sm: 6, xs: 12 }}
                     key={i}
                 >
@@ -433,7 +433,7 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                             }}
                         />
                     </FormControl>
-                </Grid2>
+                </Grid>
             );
         }
 
@@ -447,7 +447,7 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
         ));
 
         return (
-            <Grid2
+            <Grid
                 size={{ sm: 6, xs: 12 }}
                 key={i}
             >
@@ -474,7 +474,7 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                     </Select>
                     {e.help ? <FormHelperText>{this.props.t(e.help)}</FormHelperText> : null}
                 </FormControl>
-            </Grid2>
+            </Grid>
         );
     }
 
@@ -661,16 +661,16 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
         return (
             <div style={styles.tabPanel}>
                 {this.renderDialogConfirm()}
-                <Grid2
+                <Grid
                     container
                     spacing={3}
                 >
-                    <Grid2 size={{ lg: 6, md: 12 }}>
-                        <Grid2
+                    <Grid size={{ lg: 6, md: 12 }}>
+                        <Grid
                             container
                             spacing={3}
                         >
-                            <Grid2 size={{ xs: 12 }}>
+                            <Grid size={{ xs: 12 }}>
                                 <TextField
                                     disabled={this.props.saving}
                                     fullWidth
@@ -699,11 +699,11 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                                         },
                                     }}
                                 />
-                            </Grid2>
+                            </Grid>
                             {selectors}
-                        </Grid2>
-                    </Grid2>
-                    <Grid2 size={{ lg: 6, md: 12 }}>
+                        </Grid>
+                    </Grid>
+                    <Grid size={{ lg: 6, md: 12 }}>
                         <MapContainer
                             style={styles.map}
                             center={center}
@@ -720,14 +720,14 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                             <TileLayer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />
                             <MyMapComponent addMap={map => this.onMap(map)} />
                         </MapContainer>
-                    </Grid2>
-                </Grid2>
-                <Grid2
+                    </Grid>
+                </Grid>
+                <Grid
                     container
                     spacing={6}
                 >
-                    <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>{this.getCounters()}</Grid2>
-                    <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
+                    <Grid size={{ sm: 6, xs: 12, md: 3 }}>{this.getCounters()}</Grid>
+                    <Grid size={{ sm: 6, xs: 12, md: 3 }}>
                         <FormControl
                             style={styles.formControl}
                             variant="standard"
@@ -767,8 +767,8 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                                 }}
                             />
                         </FormControl>
-                    </Grid2>
-                    <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
+                    </Grid>
+                    <Grid size={{ sm: 6, xs: 12, md: 3 }}>
                         <FormControl
                             style={styles.formControl}
                             variant="standard"
@@ -796,8 +796,8 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                                 onChange={evt => this.onChangeText(evt, 'latitude')}
                             />
                         </FormControl>
-                    </Grid2>
-                    <Grid2 size={{ sm: 6, xs: 12, md: 3 }}>
+                    </Grid>
+                    <Grid size={{ sm: 6, xs: 12, md: 3 }}>
                         <FormControl
                             style={styles.formControl}
                             variant="standard"
@@ -825,8 +825,8 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                                 onChange={evt => this.onChangeText(evt, 'longitude')}
                             />
                         </FormControl>
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
             </div>
         );
     }

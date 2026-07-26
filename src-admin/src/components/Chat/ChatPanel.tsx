@@ -32,7 +32,7 @@ import {
     CheckCircle as CheckIcon,
     ChevronLeft as ChevronLeftIcon,
     Close as CloseIcon,
-    ErrorOutline as ErrorIcon,
+    ErrorOutlined as ErrorIcon,
     ExpandMore as ExpandMoreIcon,
     PlayArrow as PlayArrowIcon,
     Send as SendIcon,
@@ -41,7 +41,7 @@ import {
     ViewSidebar as DockIcon,
     WebAsset as OverlayIcon,
 } from '@mui/icons-material';
-import { I18n, type AdminConnection, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection, type IobTheme, type ThemeType } from '@iobroker/gui-components';
 
 import ChatSettings from './ChatSettings';
 import ChatMcpInfoDialog from './ChatMcpInfoDialog';
@@ -318,8 +318,7 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
         window.addEventListener('mouseup', onUp);
     };
 
-    const addItem = (item: NewDisplayItem): void =>
-        setItems(prev => [...prev, { ...item, id: nextIdRef.current++ } as DisplayItem]);
+    const addItem = (item: NewDisplayItem): void => setItems(prev => [...prev, { ...item, id: nextIdRef.current++ }]);
 
     /** Run an `iobroker <command>` on the current host and stream its output live into the chat. */
     const runCliCommand = (command: string): void => {
@@ -743,8 +742,10 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
                     onClose={() => setOpen(false)}
                     // disableScrollLock prevents the underlying page from shifting (scrollbar
                     // compensation) when the drawer opens/closes — that was the width "jumping".
-                    ModalProps={{ disableScrollLock: true }}
-                    PaperProps={{ style: { width, maxWidth: '100%' } }}
+                    slotProps={{
+                        root: { disableScrollLock: true },
+                        paper: { style: { width, maxWidth: '100%' } },
+                    }}
                 >
                     {panelBody}
                 </Drawer>

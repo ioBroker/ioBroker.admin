@@ -31,7 +31,7 @@ import {
     UploadFile as UploadFileIcon,
 } from '@mui/icons-material';
 
-import { I18n, Icon, type IobTheme, type AdminConnection, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, Icon, type IobTheme, type AdminConnection, type ThemeType } from '@iobroker/gui-components';
 
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
@@ -392,26 +392,27 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         }}
                         options={this.getList()}
                         getOptionLabel={option => option?.name ?? ''}
-                        renderInput={params => {
-                            const _params = { ...params };
-                            _params.InputProps = _params.InputProps || ({} as any);
-                            _params.InputProps.startAdornment = (
-                                <InputAdornment position="start">
-                                    <Icon
-                                        src={this.state.autoCompleteValue?.icon || ''}
-                                        style={styles.listIcon}
-                                    />
-                                </InputAdornment>
-                            );
-
-                            return (
-                                <TextField
-                                    variant="standard"
-                                    {...params}
-                                    label={I18n.t('Select adapter')}
-                                />
-                            );
-                        }}
+                        renderInput={params => (
+                            <TextField
+                                variant="standard"
+                                {...params}
+                                slotProps={{
+                                    ...params.slotProps,
+                                    input: {
+                                        ...params.slotProps.input,
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Icon
+                                                    src={this.state.autoCompleteValue?.icon || ''}
+                                                    style={styles.listIcon}
+                                                />
+                                            </InputAdornment>
+                                        ),
+                                    },
+                                }}
+                                label={I18n.t('Select adapter')}
+                            />
+                        )}
                         renderOption={(props, option) => (
                             <Box
                                 component="li"
@@ -500,26 +501,27 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         }}
                         options={this.getList()}
                         getOptionLabel={option => option?.name ?? ''}
-                        renderInput={params => {
-                            const _params = { ...params };
-                            _params.InputProps = _params.InputProps || ({} as any);
-                            _params.InputProps.startAdornment = (
-                                <InputAdornment position="start">
-                                    <Icon
-                                        src={this.state.autoCompleteValue?.icon || ''}
-                                        style={styles.listIconWithMargin}
-                                    />
-                                </InputAdornment>
-                            );
-
-                            return (
-                                <TextField
-                                    variant="standard"
-                                    {...params}
-                                    label={I18n.t('Select adapter')}
-                                />
-                            );
-                        }}
+                        renderInput={params => (
+                            <TextField
+                                variant="standard"
+                                {...params}
+                                slotProps={{
+                                    ...params.slotProps,
+                                    input: {
+                                        ...params.slotProps.input,
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Icon
+                                                    src={this.state.autoCompleteValue?.icon || ''}
+                                                    style={styles.listIconWithMargin}
+                                                />
+                                            </InputAdornment>
+                                        ),
+                                    },
+                                }}
+                                label={I18n.t('Select adapter')}
+                            />
+                        )}
                     />
                 </div>
                 <div

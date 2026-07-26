@@ -13,7 +13,7 @@ import {
     FileBrowser,
     type FileBrowserClass,
     type MetaObject,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import FileEditor from '../components/FileEditor';
 import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';

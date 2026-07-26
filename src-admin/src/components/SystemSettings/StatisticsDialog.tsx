@@ -1,7 +1,7 @@
 import React, { type JSX } from 'react';
 
 import {
-    Grid2,
+    Grid,
     Paper,
     Card,
     Typography,
@@ -12,7 +12,7 @@ import {
     type SelectChangeEvent,
 } from '@mui/material';
 
-import { type Translate, type ThemeType } from '@iobroker/adapter-react-v5';
+import { type Translate, type ThemeType } from '@iobroker/gui-components';
 import AdminUtils from '@/helpers/AdminUtils';
 import Editor from '../../components/Editor';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
@@ -114,7 +114,7 @@ export default class StatisticsDialog extends BaseSystemSettingsDialog<Statistic
                     value={common.diag}
                     displayEmpty
                     onChange={(e: SelectChangeEvent<'none' | 'normal' | 'no-city' | 'extended'>) =>
-                        this.handleChangeType(e.target.value as 'none' | 'normal' | 'no-city' | 'extended')
+                        this.handleChangeType(e.target.value)
                     }
                 >
                     {items}
@@ -139,13 +139,13 @@ export default class StatisticsDialog extends BaseSystemSettingsDialog<Statistic
     render(): JSX.Element {
         return (
             <div style={{ ...styles.tabPanel, height: '100%' }}>
-                <Grid2
+                <Grid
                     container
                     spacing={3}
                     className="sendData-grid"
                     style={{ height: '100%' }}
                 >
-                    <Grid2
+                    <Grid
                         size={{ lg: 4, md: 4, xs: 12 }}
                         style={{ display: 'flex', flexDirection: 'column' }}
                     >
@@ -176,8 +176,8 @@ export default class StatisticsDialog extends BaseSystemSettingsDialog<Statistic
                                 </ul>
                             </Paper>
                         ) : null}
-                    </Grid2>
-                    <Grid2
+                    </Grid>
+                    <Grid
                         size={{ lg: 8, md: 4, xs: 12 }}
                         className="sendData-grid"
                         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
@@ -198,8 +198,8 @@ export default class StatisticsDialog extends BaseSystemSettingsDialog<Statistic
                             themeType={this.props.themeType}
                             value={JSON.stringify(this.props.dataAux, null, 2)}
                         />
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
             </div>
         );
     }

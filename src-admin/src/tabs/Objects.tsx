@@ -25,7 +25,7 @@ import {
     type ObjectBrowserClass,
     type ObjectBrowserFilter,
     type TreeItemData,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import type { ObjectsWorker } from '@/Workers/ObjectsWorker';
 
@@ -269,13 +269,10 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
                 }}
                 dialogName="admin"
                 objectsWorker={this.props.objectsWorker}
-                prefix={this.props.prefix}
                 defaultFilters={this.filters}
-                statesOnly={this.props.statesOnly}
                 style={{ width: '100%', height: '100%' }}
                 socket={this.props.socket}
                 selected={navigateTo?.id || this.state.selected}
-                name={this.state.name}
                 expertMode={this.props.expertMode}
                 isFloatComma={this.props.isFloatComma}
                 dateFormat={this.props.dateFormat}
@@ -293,7 +290,6 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
                 objectMoveRenameDialog={ObjectMoveRenameDialog}
                 objectBrowserInsertJsonObjects={ObjectImportFromTextDialog}
                 router={Router}
-                enableStateValueEdit
                 onObjectDelete={(id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) =>
                     this.setState({
                         deleteObjectShow: {

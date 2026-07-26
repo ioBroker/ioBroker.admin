@@ -1,6 +1,6 @@
 /** Shared types for the admin chat helper frontend, mirroring the backend `chat:*` message API. */
 
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { AdminConnection } from '@iobroker/gui-components';
 
 export type AiProvider = 'openai' | 'anthropic' | 'gemini' | 'deepseek' | 'custom';
 
