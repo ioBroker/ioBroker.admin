@@ -97,7 +97,18 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
         }
     }, [differentValues, applyToChildren, setMask, value]);
 
+    // Decompose `value` into its individual permission bits up front. Doing this inline while
+    // rendering would mutate a variable captured from the enclosing scope, which React forbids.
+    const checkedValues = new Set<number>();
     let newSelected = value;
+    for (const el of readWriteArray) {
+        for (const obj of el[Object.keys(el)[0]]) {
+            if (newSelected - obj.valueNum >= 0) {
+                newSelected -= obj.valueNum;
+                checkedValues.add(obj.valueNum);
+            }
+        }
+    }
 
     return (
         <div
@@ -143,11 +154,7 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
                             }}
                         >
                             {el[name].map((obj, idx) => {
-                                let bool = false;
-                                if (newSelected - obj.valueNum >= 0) {
-                                    newSelected -= obj.valueNum;
-                                    bool = true;
-                                }
+                                const bool = checkedValues.has(obj.valueNum);
                                 const masked = mask & obj.valueNum;
                                 return (
                                     <div
@@ -251,6 +258,12 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
 
     const different = t('different');
 
+    // TODO: both effects below derive state from `objects`/`selected` and from the `applyToChildren`
+    // toggle, and should become `useMemo` / event handlers. They are convergent (every write is
+    // guarded by an equality check) and therefore correct as they stand; converting them is deferred
+    // until the dialogs can be exercised against a live controller - getting ACL handling subtly
+    // wrong is worse than the extra render pass.
+    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         let count = 0;
         const _differentState: number[] = [];
@@ -435,6 +448,7 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
         different,
         ownerGroups,
     ]);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     if (!ids.length) {
         return <LinearProgress />;

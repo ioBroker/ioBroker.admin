@@ -351,33 +351,33 @@ function NewsAdminDialog({
     current: string;
     onSetLastNewsId: (id?: string) => void;
 }): JSX.Element {
-    const [id, setId] = useState(current);
-    const [last, setLast] = useState(false);
-    const [indexArr, setIndexArr] = useState(0);
+    // Start at the first entry the user has not seen yet. `-1` means everything was already read.
+    const [startIndex] = useState(() => {
+        const item = newsArr.find(el => el.id === current);
+        if (!item) {
+            return 0;
+        }
+        const index = newsArr.indexOf(item);
+        return index + 1 < newsArr.length ? index + 1 : -1;
+    });
+    const [indexArr, setIndexArr] = useState(startIndex < 0 ? 0 : startIndex);
 
     useEffect(() => {
-        const item = newsArr.find(el => el.id === id);
-        if (item) {
-            const index = newsArr.indexOf(item);
-            if (index + 1 < newsArr.length) {
-                const newId = newsArr[index + 1].id;
-                if (newId) {
-                    setId(newId);
-                    setIndexArr(index + 1);
-                }
-            } else {
-                onSetLastNewsId();
-            }
-        } else {
-            setId(newsArr[0].id);
+        if (startIndex < 0) {
+            onSetLastNewsId();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [last]);
+    }, []);
 
+    // Advancing is triggered by closing the current entry, so it belongs into the handler and not
+    // into an effect that synchronizes state with itself.
     const onClose = (): void => {
-        // setOpen(false);
-        setLast(!last);
-        onSetLastNewsId(id);
+        onSetLastNewsId(newsArr[indexArr].id);
+        if (indexArr + 1 < newsArr.length) {
+            setIndexArr(indexArr + 1);
+        } else {
+            onSetLastNewsId();
+        }
     };
 
     const lang = I18n.getLanguage();

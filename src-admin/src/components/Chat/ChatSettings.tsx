@@ -92,6 +92,8 @@ function renderCredentialItem(option: AiCredentialEntry | undefined, anyIcon: bo
 /** Settings dialog: pick the AI provider, the stored credential and the model for the chat helper. */
 export default function ChatSettings(props: ChatSettingsProps): React.JSX.Element {
     const [value, setValue] = useState<ChatSettingsValue>({ ...props.value });
+    // Settings as they were when the dialog opened, to offer "save" only after an actual edit
+    const [originalData] = useState(() => JSON.stringify(props.value));
     const [credentials, setCredentials] = useState<AiCredentialEntry[]>([]);
     const [anyIcons, setAnyIcons] = useState<boolean>(false);
     const [models, setModels] = useState<string[]>([]);
@@ -170,7 +172,6 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
     // whenever the provider / credential / base URL changes (debounced so typing a URL doesn't spam).
     useEffect(() => {
         if (!canTest(value)) {
-            setModels([]);
             return;
         }
         const timer = setTimeout(() => loadModels(), 500);
@@ -270,7 +271,8 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
                         <Autocomplete
                             style={{ flex: 1 }}
                             freeSolo
-                            options={models}
+                            // derived instead of cleared in an effect: an incomplete config offers no models
+                            options={canTest(value) ? models : []}
                             value={value.model}
                             onInputChange={(_e, newValue) => update({ model: newValue || '' })}
                             renderInput={params => (
@@ -348,6 +350,7 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
                         variant="contained"
                         color="primary"
                         startIcon={<CheckIcon />}
+                        disabled={JSON.stringify(value) === originalData}
                         onClick={() => props.onClose(value)}
                     >
                         {I18n.t('Save')}

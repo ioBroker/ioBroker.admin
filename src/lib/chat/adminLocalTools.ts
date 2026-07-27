@@ -463,9 +463,7 @@ async function assignToEnums(adapter: ioBroker.Adapter, args: Record<string, unk
             id = match || `${prefix}${seg}`;
         }
         if (!working[id]) {
-            working[id] =
-                enumObjs[id] ||
-                ({ _id: id, type: 'enum', common: { name: ref, members: [] }, native: {} } as ioBroker.EnumObject);
+            working[id] = enumObjs[id] || { _id: id, type: 'enum', common: { name: ref, members: [] }, native: {} };
             if (!Array.isArray(working[id].common.members)) {
                 working[id].common.members = [];
             }

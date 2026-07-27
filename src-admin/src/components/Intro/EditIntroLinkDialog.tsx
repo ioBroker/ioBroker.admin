@@ -132,6 +132,9 @@ interface EditIntroLinkDialogState {
 }
 
 class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroLinkDialogState> {
+    /** Serialized link as it was when the dialog opened, to detect unsaved changes */
+    private readonly originalData: string;
+
     constructor(props: EditIntroLinkDialogProps) {
         super(props);
 
@@ -147,6 +150,26 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
             camera: 'text',
             cameraList: [],
             ...props.link,
+        };
+
+        this.originalData = JSON.stringify(this.getData());
+    }
+
+    /**
+     * The fields that are actually saved. `cameraList` is deliberately left out: it is filled
+     * asynchronously from the cameras adapter and is not user input.
+     */
+    getData(): Record<string, any> {
+        return {
+            link: this.state.link,
+            name: this.state.name,
+            desc: this.state.desc,
+            linkName: this.state.linkName,
+            color: this.state.color,
+            image: this.state.image,
+            addTs: this.state.addTs,
+            camera: this.state.camera,
+            interval: this.state.interval,
         };
     }
 
@@ -485,19 +508,9 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                     <Button
                         variant="contained"
                         autoFocus
-                        onClick={() => {
-                            this.props.onClose({
-                                link: this.state.link,
-                                name: this.state.name,
-                                desc: this.state.desc,
-                                linkName: this.state.linkName,
-                                color: this.state.color,
-                                image: this.state.image,
-                                addTs: this.state.addTs,
-                                camera: this.state.camera,
-                                interval: this.state.interval,
-                            });
-                        }}
+                        onClick={() => this.props.onClose(this.getData())}
+                        // a new link is always saveable, an existing one only after an edit
+                        disabled={!this.props.isNew && JSON.stringify(this.getData()) === this.originalData}
                         color="primary"
                         startIcon={this.props.isNew ? <AddIcon /> : <CheckIcon />}
                     >

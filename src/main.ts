@@ -145,7 +145,7 @@ class Admin extends Adapter {
      */
     onObjectChange = (id: string, obj: ioBroker.Object | null | undefined): void => {
         if (obj) {
-            objects[id] = obj as ioBroker.StateObject;
+            objects[id] = obj;
 
             if (id === 'system.config' && !this.config.language) {
                 if (obj.common?.language) {
@@ -395,7 +395,10 @@ class Admin extends Adapter {
             }
         };
         const fail = (error: unknown): void =>
-            respond({ error: error instanceof Error ? error.message : String(error as string) });
+            respond({
+                error:
+                    error instanceof Error ? error.message : typeof error === 'string' ? error : JSON.stringify(error),
+            });
 
         if (obj.command === 'chat:getTools') {
             try {
@@ -1273,7 +1276,7 @@ class Admin extends Adapter {
                 this._tasks = this._tasks || [];
 
                 for (const row of doc.rows) {
-                    const obj: ioBroker.AnyObject = row.value as ioBroker.AnyObject;
+                    const obj: ioBroker.AnyObject = row.value;
                     if (!obj.acl || obj.acl.owner !== this.config.defaultUser) {
                         obj.acl.owner = this.config.defaultUser;
                         await this.setForeignObjectAsync(obj._id, obj);

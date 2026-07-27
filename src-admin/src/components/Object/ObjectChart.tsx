@@ -479,8 +479,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
 
         this.props.customsInstances.forEach(instance => {
             const instObj: ioBroker.InstanceObject = this.props.objects[`system.adapter.${instance}`] as
-                | ioBroker.InstanceObject
-                | undefined;
+                ioBroker.InstanceObject | undefined;
             if (instObj?.common?.getHistory) {
                 const listObj = { id: instance, alive: false };
                 list.push(listObj);

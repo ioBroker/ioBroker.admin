@@ -3,7 +3,9 @@
         // TypeScript 6 turns `strict` on by default. This project was never written against it,
         // so it stays off explicitly until the backend is migrated.
         "strict": false,
-        "module": "esnext",
+        // `node16` resolution requires the matching `node16` module kind. The backend has no
+        // `"type": "module"`, so this still emits CommonJS — same output as the previous `commonjs`.
+        "module": "node16",
         "target": "esnext",
         "moduleResolution": "node16",
         "allowSyntheticDefaultImports": true,

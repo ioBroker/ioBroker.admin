@@ -58,6 +58,8 @@ interface UserEditDialogProps {
 interface UserEditDialogState {
     originalId: string | null;
     passwordRepeat: string;
+    /** Serialized user as it was when the dialog opened, to detect unsaved changes */
+    originalData: string;
 }
 
 export default class UserEditDialog extends Component<UserEditDialogProps, UserEditDialogState> {
@@ -66,6 +68,7 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
         this.state = {
             originalId: props.user._id,
             passwordRepeat: props.user.common.password,
+            originalData: JSON.stringify(props.user),
         };
     }
 
@@ -114,7 +117,10 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
             this.state.passwordRepeat,
         );
 
-        let canSave = this.props.user._id !== 'system.user.' && !errorPassword && !errorPasswordRepeat;
+        // Offer "save" only once something was actually edited. A new user is always saveable.
+        const changed = this.props.isNew || JSON.stringify(this.props.user) !== this.state.originalData;
+
+        let canSave = this.props.user._id !== 'system.user.' && !errorPassword && !errorPasswordRepeat && changed;
 
         if (this.props.isNew && idExists) {
             canSave = false;

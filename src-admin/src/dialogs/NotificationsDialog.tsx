@@ -1,4 +1,4 @@
-import React, { useState, type JSX, useEffect } from 'react';
+import React, { useState, type JSX, useMemo } from 'react';
 
 import {
     Button,
@@ -296,15 +296,14 @@ const NotificationsDialog = ({
     isFloatComma,
     socket,
 }: NotificationDialogOptions): JSX.Element => {
-    const [panel, setPanel] = useState('');
+    const [selectedPanel, setSelectedPanel] = useState('');
     const [disabled, setDisabled] = useState<string[]>([]);
     const [expanded, setExpanded] = useState('');
     const [autoCollapse, setAutoCollapse] = useState(true);
-    const [messages, setMessages] = useState<MessagesPerScope>({});
 
     const handleChange = (_event: React.SyntheticEvent, newValue: string): void => {
         setAutoCollapse(true);
-        setPanel(newValue);
+        setSelectedPanel(newValue);
         setExpanded('');
     };
 
@@ -317,9 +316,8 @@ const NotificationsDialog = ({
         instance => instance.common.name === 'notification-manager',
     );
 
-    useEffect(() => {
+    const messages: MessagesPerScope = useMemo(() => {
         const _messages: MessagesPerScope = {};
-        let firstKey = '';
 
         for (const [host, hostDetails] of Object.entries(notifications)) {
             for (const [scope, scopeDetails] of Object.entries(hostDetails.result)) {
@@ -333,33 +331,35 @@ const NotificationsDialog = ({
                 }
             }
         }
+        return _messages;
+    }, [notifications]);
 
-        // Default to the most important category first (alert > notify > info)
-        Object.keys(_messages).map(scope =>
-            Object.keys(_messages[scope])
-                .sort((a, b) => compareSeverity(_messages[scope][a].severity, _messages[scope][b].severity))
-                .map(name => (firstKey = firstKey || `${scope}--${name}`)),
+    // Default to the most important category first (alert > notify > info)
+    const firstKey: string = useMemo(() => {
+        let key = '';
+        Object.keys(messages).map(scope =>
+            Object.keys(messages[scope])
+                .sort((a, b) => compareSeverity(messages[scope][a].severity, messages[scope][b].severity))
+                .map(name => (key = key || `${scope}--${name}`)),
         );
+        return key;
+    }, [messages]);
 
-        // if a panel does not exist, set it to the first one
-        if (panel) {
-            const [scope, name] = panel.split('--');
-            if (!_messages[scope]) {
-                setPanel(firstKey);
-            } else if (!_messages[scope][name]) {
-                // take the first message in this scope
-                const key = Object.keys(_messages[scope])[0];
-                if (key) {
-                    setPanel(`${scope}--${key}`);
-                } else {
-                    setPanel(firstKey);
-                }
-            }
-        } else {
-            setPanel(firstKey);
+    // The selected panel can disappear when the notifications change, so the effective panel is
+    // derived instead of being repaired in an effect.
+    let panel = selectedPanel;
+    if (!panel) {
+        panel = firstKey;
+    } else {
+        const [scope, name] = panel.split('--');
+        if (!messages[scope]) {
+            panel = firstKey;
+        } else if (!messages[scope][name]) {
+            // take the first message in this scope
+            const key = Object.keys(messages[scope])[0];
+            panel = key ? `${scope}--${key}` : firstKey;
         }
-        setMessages(_messages);
-    }, [instances, notifications, panel]);
+    }
 
     const [currentScope, currentName] = panel.split('--');
     const entry: (Message & { host: string }) | null =

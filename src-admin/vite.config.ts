@@ -40,9 +40,19 @@ export default defineConfig({
     base: './',
     resolve: {
         tsconfigPaths: true,
-        alias: {
-            '@': resolve(__dirname, 'src'),
-        },
+        alias: [
+            { find: '@', replacement: resolve(__dirname, 'src') },
+            {
+                // leaflet 1.9 declares neither `module` nor `exports`, so bundlers treat it as CommonJS.
+                // Module federation wraps every shared module in `export * from "<pkg>"`, and that cannot
+                // enumerate the named exports of a CommonJS module. react-leaflet is pure ESM and does
+                // `import { Circle } from 'leaflet'`, which then fails with "does not provide an export
+                // named 'Circle'" - fatal in dev, and the source of the "Unable to interop" build warning.
+                // Leaflet ships an ESM build that exports them properly, so resolve the bare specifier to it.
+                find: /^leaflet$/,
+                replacement: resolve(__dirname, 'node_modules/leaflet/dist/leaflet-src.esm.js'),
+            },
+        ],
     },
     build: {
         target: 'chrome89',

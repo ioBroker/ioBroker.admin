@@ -6,6 +6,8 @@
         "baseUrl": "./",
         // Vite/rolldown resolves through the `exports` map; matching that here keeps the types in
         // sync with what the bundler actually loads (e.g. monaco-editor ships its types that way).
+        // `bundler` resolution is only valid with an ESM module kind, so override the backend's `node16`.
+        "module": "esnext",
         "moduleResolution": "bundler",
         "allowSyntheticDefaultImports": true,
         "checkJs": false,

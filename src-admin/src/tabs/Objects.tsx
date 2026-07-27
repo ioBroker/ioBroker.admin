@@ -247,10 +247,7 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
             location.tab === 'tab-objects' && location.id
                 ? {
                       mode: (location.dialog === 'view' ? 'viewFile' : location.dialog || 'select') as
-                          | 'select'
-                          | 'edit'
-                          | 'settings'
-                          | 'viewFile',
+                          'select' | 'edit' | 'settings' | 'viewFile',
                       id: location.id,
                   }
                 : null;

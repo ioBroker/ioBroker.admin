@@ -562,7 +562,7 @@ class App extends Router<AppProps, AppState> {
         );
 
         // init translations
-        I18n.setTranslations(this.translations);
+        I18n.extendTranslations(this.translations);
         I18n.setLanguage(
             (window.navigator.language || window.navigator.userLanguage || 'en')
                 .substring(0, 2)

@@ -1822,7 +1822,10 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 9.0.4 (2026-07-26)
+### 9.0.8 (2026-07-27)
+- (@GermanBluefox) Improvement of I18n
+
+### 9.0.7 (2026-07-26)
 - (@GermanBluefox) Breaking: React 19 + MUI 9 + TS 6
 - (@GermanBluefox) Added loading of the new custom components
 

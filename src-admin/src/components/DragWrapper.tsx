@@ -81,7 +81,11 @@ const DragWrapper = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const opacity = isDragging ? 0 : 1;
-    drag(drop(ref));
+
+    // Attach the react-dnd connectors after the ref is bound - touching refs during render is not allowed.
+    useEffect(() => {
+        drag(drop(ref));
+    }, [drag, drop]);
 
     return (
         <div

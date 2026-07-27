@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type JSX } from 'react';
+import React, { useMemo, useState, type JSX } from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, Paper, Typography, Box, AppBar } from '@mui/material';
 
@@ -201,14 +201,9 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
 }) => {
     const [error, setError] = useState<Record<string, string>>({});
 
-    const [schema, setSchema] = useState<{ type: 'panel'; items: Record<string, Partial<SchemaItem>> }>({
-        type: 'panel',
-        items: {},
-    });
-
-    const [schemaData, setSchemaData] = useState<Record<string, string | boolean | number>>({});
-
-    useEffect(() => {
+    // The form definition and its initial values follow directly from `newInstance` - deriving them
+    // here keeps the dialog from rendering an empty form for one frame first.
+    const { schema, initialData } = useMemo(() => {
         const objSchema: {
             [key: string]: Partial<SchemaItem>;
         } = {};
@@ -250,10 +245,21 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                     objValue[idx + 1] = false;
                 }
             });
-            setSchemaData(objValue);
-            setSchema({ type: 'panel', items: objSchema });
         }
+        return {
+            schema: { type: 'panel' as const, items: objSchema },
+            initialData: objValue,
+        };
     }, [newInstance]);
+
+    const [schemaData, setSchemaData] = useState<Record<string, string | boolean | number>>(initialData);
+
+    // Start over whenever a different instance is configured.
+    const [appliedInstance, setAppliedInstance] = useState(newInstance);
+    if (appliedInstance !== newInstance) {
+        setAppliedInstance(newInstance);
+        setSchemaData(initialData);
+    }
 
     return (
         <Dialog

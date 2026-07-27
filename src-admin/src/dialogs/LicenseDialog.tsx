@@ -70,9 +70,16 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
     const divRef = React.useRef<HTMLDivElement>(null);
     const installTimer = React.useRef<ReturnType<typeof setInterval> | null | undefined>(undefined);
 
-    useEffect(() => {
+    // Show the spinner again as soon as a different license is requested. Adjusting during render
+    // avoids one frame of the previous license text before the fetch effect runs.
+    const [loadedUrl, setLoadedUrl] = useState(url);
+    if (loadedUrl !== url) {
+        setLoadedUrl(url);
         setLoading(true);
         setText('');
+    }
+
+    useEffect(() => {
         let _url = url;
         if (_url.startsWith('https://github.com/')) {
             _url = _url.replace('https://github.com/', 'https://raw.githubusercontent.com/').replace('/blob/', '/');

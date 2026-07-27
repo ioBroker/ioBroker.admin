@@ -441,23 +441,21 @@ function DiscoveryDialog({
     }, [socket]);
 
     const [aliveHosts, setAliveHosts] = useState<Record<string, boolean>>({});
-    const [checkSelectHosts, setCheckSelectHosts] = useState(false);
     const [hostInstances, setHostInstances] = useState<Record<string, string>>({});
 
     useEffect(() => {
         hosts.forEach(async ({ _id }: { _id: string }) => {
             const aliveValue = await socket.getState(`${_id}.alive`);
+            const alive = !aliveValue || aliveValue.val === null ? false : !!aliveValue.val;
 
-            setAliveHosts(prev => ({
-                ...prev,
-                [_id]: !aliveValue || aliveValue.val === null ? false : !!aliveValue.val,
-            }));
+            // Keep the previous object when nothing changed: `aliveHosts` must not get a new identity
+            // on every run, otherwise this effect would re-trigger itself endlessly.
+            setAliveHosts(prev => (prev[_id] === alive ? prev : { ...prev, [_id]: alive }));
         });
+    }, [hosts, socket]);
 
-        if (Object.keys(aliveHosts).filter(key => aliveHosts[key]).length > 1) {
-            setCheckSelectHosts(true);
-        }
-    }, [hosts, socket, aliveHosts]);
+    // Offer the host selection as soon as more than one host is alive - a plain derivation of `aliveHosts`.
+    const checkSelectHosts = Object.keys(aliveHosts).filter(key => aliveHosts[key]).length > 1;
 
     const [devicesFound, setDevicesFound] = useState(0);
     const [devicesProgress, setDevicesProgress] = useState(0);

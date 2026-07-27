@@ -5,7 +5,7 @@ import { Box, Grid, LinearProgress, Paper, Switch, Typography } from '@mui/mater
 import { Router, type AdminConnection, type Translate } from '@iobroker/gui-components';
 
 import type { CommandFile } from '@/types';
-import AdminUtils, { type Style } from '../helpers/AdminUtils';
+import AdminUtils from '../helpers/AdminUtils';
 
 const styles: Record<string, React.CSSProperties> = {
     log: {

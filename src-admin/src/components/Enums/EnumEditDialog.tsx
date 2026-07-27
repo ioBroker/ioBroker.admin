@@ -15,7 +15,6 @@ import {
 
 import { Utils, IconPicker, type Translate } from '@iobroker/gui-components';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
-import type { EnumCommon } from './EnumBlock';
 
 const styles: Record<string, React.CSSProperties> = {
     contentRoot: {
@@ -165,7 +164,7 @@ export default function EnumEditDialog(props: EnumEditDialogProps): React.JSX.El
                             t={props.t}
                             value={getText(props.enum.common.desc, props.lang)}
                             onChange={(value: string) => {
-                                const newData = props.enum;
+                                const newData: ioBroker.EnumObject = JSON.parse(JSON.stringify(props.enum));
                                 newData.common.desc = value;
                                 props.onChange(newData);
                             }}
@@ -180,7 +179,7 @@ export default function EnumEditDialog(props: EnumEditDialogProps): React.JSX.El
                             onlyRooms={props.enum._id.startsWith('enum.rooms.')}
                             value={props.enum.common.icon}
                             onChange={(fileBlob: string) => {
-                                const newData = props.enum;
+                                const newData: ioBroker.EnumObject = JSON.parse(JSON.stringify(props.enum));
                                 newData.common.icon = fileBlob;
                                 props.onChange(newData);
                             }}
@@ -195,7 +194,7 @@ export default function EnumEditDialog(props: EnumEditDialogProps): React.JSX.El
                             value={props.enum.common.color}
                             previewStyle={styles.iconPreview}
                             onChange={(color: string) => {
-                                const newData = props.enum;
+                                const newData: ioBroker.EnumObject = JSON.parse(JSON.stringify(props.enum));
                                 newData.common.color = color;
                                 props.onChange(newData);
                             }}

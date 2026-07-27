@@ -33,9 +33,7 @@ export interface PendingAction {
 
 /** An action the frontend performs after a turn (the backend handed it over). */
 export type ClientAction =
-    | { type: 'install'; adapter: string }
-    | { type: 'navigate'; hash: string }
-    | { type: 'command'; command: string };
+    { type: 'install'; adapter: string } | { type: 'navigate'; hash: string } | { type: 'command'; command: string };
 
 /** Response of the `chat:send` backend command. */
 export interface ChatSendResponse {

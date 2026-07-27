@@ -244,7 +244,6 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
     // otherwise block clicks on the admin UI in that corner.
     useEffect(() => {
         if (!hideFab || open) {
-            setPeek(false);
             return undefined;
         }
         const onMove = (e: MouseEvent): void => {
@@ -254,7 +253,12 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
             setPeek(prev => (prev === near ? prev : near));
         };
         window.addEventListener('mousemove', onMove);
-        return () => window.removeEventListener('mousemove', onMove);
+        // Hide the arrow again once the launcher reappears or the panel opens, so it does not show
+        // up already revealed the next time it is needed.
+        return () => {
+            window.removeEventListener('mousemove', onMove);
+            setPeek(false);
+        };
     }, [hideFab, open]);
 
     // The assistant configuration lives in the shared `system.ai` object so it is identical on every

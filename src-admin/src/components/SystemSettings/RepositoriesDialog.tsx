@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -184,8 +184,11 @@ function DraggableRepoRow({ index, disabled, dragTitle, onMove, children }: Drag
     });
 
     // Drag only from the handle; the whole row is the drop target and the drag preview.
-    drag(handleRef);
-    preview(drop(ref));
+    // Wired in an effect because refs must not be touched while rendering.
+    useEffect(() => {
+        drag(handleRef);
+        preview(drop(ref));
+    }, [drag, drop, preview]);
 
     return (
         <TableRow

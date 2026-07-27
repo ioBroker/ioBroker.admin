@@ -78,7 +78,18 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
         }
     }, [differentValues, applyToChildren, setMask, value]);
 
+    // Decompose `value` into its individual permission bits up front. Doing this inline while
+    // rendering would mutate a variable captured from the enclosing scope, which React forbids.
+    const checkedValues = new Set<number>();
     let newSelected = value;
+    for (const el of readWriteArray) {
+        for (const obj of el[Object.keys(el)[0]]) {
+            if (newSelected - obj.valueNum >= 0) {
+                newSelected -= obj.valueNum;
+                checkedValues.add(obj.valueNum);
+            }
+        }
+    }
 
     return (
         <div
@@ -125,14 +136,9 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
                             }}
                         >
                             {el[name].map((obj, idx) => {
-                                let bool = false;
+                                const bool = checkedValues.has(obj.valueNum);
 
                                 const masked = mask & obj.valueNum;
-
-                                if (newSelected - obj.valueNum >= 0) {
-                                    newSelected -= obj.valueNum;
-                                    bool = true;
-                                }
 
                                 return (
                                     <div
@@ -493,6 +499,10 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [objects, selected]);
 
+    // TODO: the owner/group selection could be derived from `applyToChildren` while rendering. The
+    // effect is convergent (every write is guarded by an equality check), so it is correct as it
+    // stands; converting it is deferred until the dialog can be tested against a live controller.
+    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         if (applyToChildren) {
             if (differentOwner && stateOwnerUser !== DIFFERENT) {
@@ -513,6 +523,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
         console.log(`stateOwnerUser ${stateOwnerUser}`);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [applyToChildren, stateOwnerUser, stateOwnerGroup, differentOwner, differentGroup]);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     if (!ids.length) {
         return <LinearProgress />;

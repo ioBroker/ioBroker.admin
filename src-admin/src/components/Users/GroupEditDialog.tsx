@@ -56,82 +56,23 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
             return mapFunction(value, key);
         });
 
-    let acl = props.group.common.acl;
+    const source = props.group.common.acl || ({} as ioBroker.GroupObject['common']['acl']);
 
-    // Initialize ACL if not exists or is invalid
-    acl = acl || ({} as ioBroker.GroupObject['common']['acl']);
-
-    acl.object = acl.object || {
-        read: true,
-        list: true,
-        write: true,
-        delete: false,
-        create: undefined,
-    };
-    acl.object = {
-        read: true,
-        list: true,
-        write: true,
-        delete: false,
-        ...acl.object,
-    };
-
-    acl.state = acl.state || {
-        read: true,
-        list: true,
-        write: true,
-        delete: false,
-        create: undefined,
-    };
-    acl.state = {
-        read: true,
-        list: true,
-        write: true,
-        delete: false,
-        ...acl.state,
-    };
-
-    acl.users = acl.users || {
-        write: false,
-        delete: false,
-        create: false,
-        list: undefined,
-        read: undefined,
-    };
-    acl.users = {
-        write: false,
-        delete: false,
-        create: false,
-        ...acl.users,
-    };
-
-    acl.other = acl.other || {
-        http: false,
-        execute: false,
-        sendto: true,
-    };
-    acl.other = {
-        http: false,
-        execute: false,
-        sendto: true,
-        ...acl.other,
-    };
-
-    acl.file = acl.file || {
-        read: true,
-        list: true,
-        write: false,
-        delete: false,
-        create: false,
-    };
-
-    acl.file = {
-        read: true,
-        list: true,
-        write: false,
-        delete: false,
-        create: false,
-        ...acl.file,
+    // Initialize the ACL if it does not exist or is incomplete. This builds a new object instead of
+    // patching `props.group` in place - mutating props during render is not allowed in React.
+    const acl: ioBroker.GroupObject['common']['acl'] = {
+        ...source,
+        object: source.object
+            ? { read: true, list: true, write: true, delete: false, ...source.object }
+            : { read: true, list: true, write: true, delete: false, create: undefined },
+        state: source.state
+            ? { read: true, list: true, write: true, delete: false, ...source.state }
+            : { read: true, list: true, write: true, delete: false, create: undefined },
+        users: source.users
+            ? { write: false, delete: false, create: false, ...source.users }
+            : { write: false, delete: false, create: false, list: undefined, read: undefined },
+        other: { http: false, execute: false, sendto: true, ...source.other },
+        file: { read: true, list: true, write: false, delete: false, create: false, ...source.file },
     };
 
     return (
@@ -141,7 +82,7 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
             style={props.styles.dialog}
             key="PermissionsTab"
         >
-            {mapObject(props.group.common.acl || {}, (block, blockKey) => (
+            {mapObject(acl as unknown as Record<string, unknown>, (block, blockKey) => (
                 <Grid
                     size={{ xs: 12, md: 12 }}
                     key={blockKey}
@@ -163,6 +104,8 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
                                         const newData: ioBroker.GroupObject = Utils.clone(
                                             props.group,
                                         ) as ioBroker.GroupObject;
+                                        // carry over the normalized ACL, `props.group` may still be incomplete
+                                        newData.common.acl = Utils.clone(acl) as ioBroker.GroupObject['common']['acl'];
                                         (newData.common.acl as any as Record<string, Record<string, boolean>>)[
                                             blockKey
                                         ][permKey] = e.target.checked;
@@ -200,6 +143,8 @@ interface GroupEditDialogProps extends PermissionsTabProps {
 interface GroupEditDialogState {
     tab: 0;
     originalId: string;
+    /** Serialized group as it was when the dialog opened, to detect unsaved changes */
+    originalData: string;
 }
 
 class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogState> {
@@ -208,6 +153,7 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
         this.state = {
             tab: 0,
             originalId: props.group._id,
+            originalData: JSON.stringify(props.group),
         };
     }
 
@@ -229,9 +175,13 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
         const idExists = this.props.groups.find(group => group._id === this.props.group._id);
         const idChanged = this.props.group._id !== this.state.originalId;
 
+        // Offer "save" only once something was actually edited. A new group is always saveable.
+        const changed = this.props.isNew || JSON.stringify(this.props.group) !== this.state.originalData;
+
         let canSave =
             this.props.group._id !== 'system.group.' &&
-            (this.props.group.common as any).password === (this.props.group.common as any).passwordRepeat;
+            (this.props.group.common as any).password === (this.props.group.common as any).passwordRepeat &&
+            changed;
 
         const getShortId = (_id: string): string => _id.split('.').pop();
 

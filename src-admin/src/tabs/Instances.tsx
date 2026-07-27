@@ -232,13 +232,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 ? filterStatusStr === 'null'
                     ? null
                     : (filterStatusStr as
-                          | 'none'
-                          | 'disabled'
-                          | 'not_alive'
-                          | 'alive_not_connected'
-                          | 'alive_no_device'
-                          | 'ok'
-                          | null)
+                          'none' | 'disabled' | 'not_alive' | 'alive_not_connected' | 'alive_no_device' | 'ok' | null)
                 : null,
             sortColumn: (this.localStorage.getItem('Instances.sortColumn') as SortColumn) || null,
             sortDirection: (this.localStorage.getItem('Instances.sortDirection') as SortDirection) || 'asc',

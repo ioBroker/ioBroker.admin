@@ -41,7 +41,7 @@ function CustomSelectButton({
     noTranslation,
 }: CustomSelectButtonProps): JSX.Element {
     const [anchorEl, setAnchorEl] = useState(null);
-    translateSuffix = translateSuffix || '';
+    const suffix = translateSuffix || '';
 
     return (
         <>
@@ -62,7 +62,7 @@ function CustomSelectButton({
                                 style={styles.icon}
                             />
                         ))}
-                    {typeof value === 'number' ? value : noTranslation ? value : t(value + translateSuffix)}
+                    {typeof value === 'number' ? value : noTranslation ? value : t(value + suffix)}
                 </Button>
             </Tooltip>
             <Menu
@@ -90,7 +90,7 @@ function CustomSelectButton({
                                 style={styles.icon}
                             />
                         )}
-                        {typeof name === 'number' ? name : noTranslation ? name : t(name + translateSuffix)}
+                        {typeof name === 'number' ? name : noTranslation ? name : t(name + suffix)}
                     </MenuItem>
                 ))}
             </Menu>

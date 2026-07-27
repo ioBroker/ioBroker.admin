@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type JSX } from 'react';
+import React, { useState, type JSX } from 'react';
 
 import {
     Dialog,
@@ -89,9 +89,13 @@ const CustomModal = ({
     theme,
 }: CustomModalProps): JSX.Element => {
     const [value, setValue] = useState(defaultValue);
-    useEffect(() => {
+    // Reset the edited value when the caller supplies a new default. Adjusting during render is the
+    // documented alternative to an effect and avoids rendering the stale value for one frame.
+    const [appliedDefault, setAppliedDefault] = useState(defaultValue);
+    if (appliedDefault !== defaultValue) {
+        setAppliedDefault(defaultValue);
         setValue(defaultValue);
-    }, [defaultValue]);
+    }
 
     const muiTheme = useTheme();
     const isSmallScreen = useMediaQuery(muiTheme.breakpoints.down('md'));
