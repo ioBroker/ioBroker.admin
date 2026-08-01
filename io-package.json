@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "8.0.1-alpha.0",
+    "version": "8.0.1-alpha.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "8.0.1-alpha.1": {
+        "en": "Breaking: React19 + MUI9\nBreaking: Node 22 or higher required",
+        "de": "Bruch: React19 + MUI9\nBreaking: Node 22 oder höher erforderlich",
+        "ru": "Обсуждение React19 + MUI9\nТребуется прорыв: Узел 22 или выше",
+        "pt": "Quebra: React19 + MUI9\nQuebrar: Nó 22 ou superior requerido",
+        "nl": "Breaking: React19 + MUI9\nBreken: Node 22 of hoger vereist",
+        "fr": "Breaking: Réaction19 + MUI9\nBreaking: Noeud 22 ou plus requis",
+        "it": "Breaking: React19 + MUI9\nRipartizione: Nodo 22 o superiore richiesto",
+        "es": "Breaking: React19 + MUI9\nBreaking: Nodo 22 o superior requerido",
+        "pl": "Breaking: React 19 + MUI9\nZłamanie: wymagany węzeł 22 lub wyższy",
+        "uk": "Перерва: React19 + MUI9\nПерерва: Node 22 або вище потрібно",
+        "zh-cn": "断裂:反应19 + MUI9\n中断: 需要22号或更高节点"
+      },
       "8.0.1-alpha.0": {
         "en": "Breaking: React19 + MUI9",
         "de": "Bruch: React19 + MUI9",
@@ -95,19 +108,6 @@
         "pl": "Korygowanie zmiany dostawców AI",
         "uk": "Виправлення зміни постачальників штучного інтелекту",
         "zh-cn": "纠正人工智能提供商的变更"
-      },
-      "7.9.6": {
-        "en": "Added \"between\" news rule\nBetter config-manager layout\nAdded filtering options for config-manager",
-        "de": "Die Nachrichtenregel „zwischen“ wurde hinzugefügt.\nBesseres Layout des Konfigurationsmanagers\nFür den Konfigurationsmanager wurden Filteroptionen hinzugefügt.",
-        "ru": "Добавлено правило для новостей \"между\".\nУлучшенная компоновка менеджера конфигураций\nДобавлены параметры фильтрации для config-manager.",
-        "pt": "Adicionada regra de notícias \"entre\"\nLayout do gerenciador de configuração aprimorado\nAdicionadas opções de filtragem para o gerenciador de configuração.",
-        "nl": "Nieuwsregel \"tussen\" toegevoegd\nVerbeterde lay-out van de configuratiebeheerder\nFilteropties toegevoegd voor config-manager",
-        "fr": "Règle « entre » ajoutée\nMeilleure disposition du gestionnaire de configuration\nAjout d'options de filtrage pour config-manager",
-        "it": "Aggiunta la regola di notizie \"tra\"\nLayout migliore per il gestore di configurazione\nAggiunte opzioni di filtro per config-manager",
-        "es": "Se agregó la regla de noticias \"entre\"\nMejor diseño del gestor de configuración\nSe agregaron opciones de filtrado para config-manager.",
-        "pl": "Dodano regułę „pomiędzy” wiadomościami\nLepszy układ menedżera konfiguracji\nDodano opcje filtrowania dla menedżera konfiguracji",
-        "uk": "Додано правило «між» новинами\nКраще розташування конфігураційного менеджера\nДодано параметри фільтрації для config-manager",
-        "zh-cn": "新增“之间”新闻规则\n更好的配置管理器布局\n为配置管理器添加了筛选选项"
       }
     },
     "desc": {
