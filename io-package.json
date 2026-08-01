@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "8.0.1-alpha.1",
+    "version": "8.0.1-alpha.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "8.0.1-alpha.2": {
+        "en": "Breaking: React19 + MUI9\nBreaking: Node 22 or higher required",
+        "de": "Bruch: React19 + MUI9\nBreaking: Node 22 oder höher erforderlich",
+        "ru": "Обсуждение React19 + MUI9\nТребуется прорыв: Узел 22 или выше",
+        "pt": "Quebra: React19 + MUI9\nQuebrar: Nó 22 ou superior requerido",
+        "nl": "Breaking: React19 + MUI9\nBreken: Node 22 of hoger vereist",
+        "fr": "Breaking: Réaction19 + MUI9\nBreaking: Noeud 22 ou plus requis",
+        "it": "Breaking: React19 + MUI9\nRipartizione: Nodo 22 o superiore richiesto",
+        "es": "Breaking: React19 + MUI9\nBreaking: Nodo 22 o superior requerido",
+        "pl": "Breaking: React 19 + MUI9\nZłamanie: wymagany węzeł 22 lub wyższy",
+        "uk": "Перерва: React19 + MUI9\nПерерва: Node 22 або вище потрібно",
+        "zh-cn": "断裂:反应19 + MUI9\n中断: 需要22号或更高节点"
+      },
       "8.0.1-alpha.1": {
         "en": "Breaking: React19 + MUI9\nBreaking: Node 22 or higher required",
         "de": "Bruch: React19 + MUI9\nBreaking: Node 22 oder höher erforderlich",
@@ -95,19 +108,6 @@
         "pl": "Dodano okno dialogowe opisujące sposób korzystania z asystenta AI bez klucza API (zewnętrzny klient MCP)\nZaktualizowany menedżer urządzeń\nDodano możliwość zobaczenia monitu i korzystania z niego poza asystentem",
         "uk": "Додано діалогове вікно з описом використання помічника ШІ без ключа API (зовнішній клієнт MCP)\nОновлений диспетчер пристроїв\nДодано можливість перегляду підказки та її використання поза межами помічника",
         "zh-cn": "新增对话框，说明如何在没有 API 密钥的情况下使用 AI 助手（外部 MCP 客户端）\n更新设备管理器\n新增了在助手之外查看和使用提示的功能"
-      },
-      "7.9.9": {
-        "en": "Correcting the change of the AI providers",
-        "de": "Korrektur des Wechsels der KI-Anbieter",
-        "ru": "Исправление изменений в списке поставщиков ИИ.",
-        "pt": "Corrigindo a mudança dos fornecedores de IA",
-        "nl": "Het corrigeren van de wijziging van de AI-aanbieders.",
-        "fr": "Correction du changement des fournisseurs d'IA",
-        "it": "Correzione del cambiamento dei fornitori di IA",
-        "es": "Corrección del cambio de los proveedores de IA",
-        "pl": "Korygowanie zmiany dostawców AI",
-        "uk": "Виправлення зміни постачальників штучного інтелекту",
-        "zh-cn": "纠正人工智能提供商的变更"
       }
     },
     "desc": {
