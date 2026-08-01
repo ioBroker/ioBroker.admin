@@ -194,7 +194,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.1-alpha.0 (2026-08-01)
 - (@GermanBluefox) Breaking: React19 + MUI9
 
 ### 7.9.13 (2026-07-12)
@@ -218,9 +218,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Added a dialog describing how to use the AI assistant without an API key (external MCP client)
 - (@GermanBluefox) Updated device manager
 - (@GermanBluefox) Added possibility to see the prompt and use it outside of assistant
-
-### 7.9.9 (2026-06-21)
-- (@GermanBluefox) Correcting the change of the AI providers
 
 ## License
 

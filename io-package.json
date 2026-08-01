@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "8.0.0",
+    "version": "8.0.1-alpha.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "8.0.1-alpha.0": {
+        "en": "Breaking: React19 + MUI9",
+        "de": "Bruch: React19 + MUI9",
+        "ru": "Обсуждение React19 + MUI9",
+        "pt": "Quebra: React19 + MUI9",
+        "nl": "Breaking: React19 + MUI9",
+        "fr": "Breaking: Réaction19 + MUI9",
+        "it": "Breaking: React19 + MUI9",
+        "es": "Breaking: React19 + MUI9",
+        "pl": "Breaking: React 19 + MUI9",
+        "uk": "Перерва: React19 + MUI9",
+        "zh-cn": "断裂:反应19 + MUI9"
+      },
       "7.9.13": {
         "en": "Added AWS and Azure credentials in credentials manager\nAllowed to set the log level without expert mode\nCorrecting sentry reporting for the admin adapter",
         "de": "AWS- und Azure-Anmeldeinformationen im Anmeldeinformationsmanager hinzugefügt\nDie Protokollierungsstufe kann auch ohne Expertenmodus festgelegt werden.\nKorrektur der Wächterberichterstattung für den Administratoradapter",
@@ -95,19 +108,6 @@
         "pl": "Dodano regułę „pomiędzy” wiadomościami\nLepszy układ menedżera konfiguracji\nDodano opcje filtrowania dla menedżera konfiguracji",
         "uk": "Додано правило «між» новинами\nКраще розташування конфігураційного менеджера\nДодано параметри фільтрації для config-manager",
         "zh-cn": "新增“之间”新闻规则\n更好的配置管理器布局\n为配置管理器添加了筛选选项"
-      },
-      "7.9.2": {
-        "en": "AI must be enabled first in the settings to be used in the admin interface",
-        "de": "AI muss zuerst in den Einstellungen aktiviert werden, die in der Admin-Schnittstelle verwendet werden sollen",
-        "ru": "ИИ должен быть включен первым в настройках, которые будут использоваться в интерфейсе администратора",
-        "pt": "AI deve ser ativado primeiro nas configurações a serem usadas na interface de administração",
-        "nl": "AI moet eerst ingeschakeld zijn in de instellingen die gebruikt moeten worden in de admin interface",
-        "fr": "L'IA doit être activée d'abord dans les paramètres à utiliser dans l'interface admin",
-        "it": "L'intelligenza artificiale deve essere abilitata prima nelle impostazioni da utilizzare nell'interfaccia di amministrazione",
-        "es": "AI debe ser habilitado primero en los ajustes a utilizar en la interfaz de administración",
-        "pl": "AI musi być włączona najpierw w ustawieniach używanych w interfejsie admin",
-        "uk": "AI повинен бути включений спочатку в налаштуваннях для використання в інтерфейсі адміністратора",
-        "zh-cn": "在管理界面中使用的设置中必须首先启用AI"
       }
     },
     "desc": {
