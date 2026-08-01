@@ -36,7 +36,12 @@ import {
 } from '@iobroker/gui-components';
 
 import type { BackEndCommandGeneric } from '@iobroker/json-config';
-import NotificationMessage, { type Message, type Severity, compareSeverity } from '../components/NotificationMessage';
+import NotificationMessage, {
+    type Message,
+    type Severity,
+    compareSeverity,
+    normalizeSeverity,
+} from '../components/NotificationMessage';
 
 export interface BackEndCommandOpenLink extends BackEndCommandGeneric {
     command: 'link';
@@ -153,6 +158,9 @@ interface StatusOptions {
 }
 
 function Status({ severity, isDark, ...props }: StatusOptions): JSX.Element {
+    // the same normalisation the sorting uses, so icon and position always agree
+    severity = normalizeSeverity(severity);
+
     if (severity === 'notify') {
         return (
             <BellIcon
@@ -334,16 +342,23 @@ const NotificationsDialog = ({
         return _messages;
     }, [notifications]);
 
-    // Default to the most important category first (alert > notify > info)
-    const firstKey: string = useMemo(() => {
-        let key = '';
-        Object.keys(messages).map(scope =>
-            Object.keys(messages[scope])
-                .sort((a, b) => compareSeverity(messages[scope][a].severity, messages[scope][b].severity))
-                .map(name => (key = key || `${scope}--${name}`)),
-        );
-        return key;
-    }, [messages]);
+    /**
+     * All categories of all scopes in one list, most important first (alert > notify > info).
+     *
+     * Sorting within a scope is not enough: the scopes are appended in the order they arrive, so a
+     * warning of a later scope ended up behind the notifications of an earlier one.
+     */
+    const tabs = useMemo(
+        () =>
+            Object.keys(messages)
+                .flatMap(scope =>
+                    Object.keys(messages[scope]).map(name => ({ scope, name, entry: messages[scope][name] })),
+                )
+                .sort((a, b) => compareSeverity(a.entry.severity, b.entry.severity)),
+        [messages],
+    );
+
+    const firstKey: string = tabs.length ? `${tabs[0].scope}--${tabs[0].name}` : '';
 
     // The selected panel can disappear when the notifications change, so the effective panel is
     // derived instead of being repaired in an effect.
@@ -414,33 +429,25 @@ const NotificationsDialog = ({
                             indicatorColor={black ? 'primary' : 'secondary'}
                             textColor={black ? 'primary' : 'secondary'}
                         >
-                            {Object.keys(messages).map(scope =>
-                                // Sort the categories by severity (most important first: alert > notify > info)
-                                Object.keys(messages[scope])
-                                    .sort((a, b) =>
-                                        compareSeverity(messages[scope][a].severity, messages[scope][b].severity),
-                                    )
-                                    .map((name, idx) => {
-                                        const entry = messages[scope][name];
-                                        const key = `${scope}--${name}`;
+                            {tabs.map(({ scope, name, entry }, idx) => {
+                                const key = `${scope}--${name}`;
 
-                                        return (
-                                            <Tab
-                                                disabled={disabled.includes(key)}
-                                                key={key}
-                                                value={key}
-                                                label={`${entry.name[I18n.getLanguage()]}`}
-                                                icon={
-                                                    <Status
-                                                        severity={entry.severity}
-                                                        isDark={black}
-                                                    />
-                                                }
-                                                {...a11yProps(idx)}
+                                return (
+                                    <Tab
+                                        disabled={disabled.includes(key)}
+                                        key={key}
+                                        value={key}
+                                        label={`${entry.name[I18n.getLanguage()]}`}
+                                        icon={
+                                            <Status
+                                                severity={entry.severity}
+                                                isDark={black}
                                             />
-                                        );
-                                    }),
-                            )}
+                                        }
+                                        {...a11yProps(idx)}
+                                    />
+                                );
+                            })}
                         </Tabs>
                     </AppBar>
                     {entry ? (

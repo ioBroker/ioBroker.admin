@@ -24,9 +24,9 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/gui-components": "^10.0.9",
-        "@iobroker/dm-gui-components": "^10.0.14",
-        "@iobroker/json-config": "^9.0.12",
+        "@iobroker/gui-components": "^10.0.11",
+        "@iobroker/dm-gui-components": "^10.0.16",
+        "@iobroker/json-config": "^9.0.14",
         "ace-builds": "^1.44.0",
         "remark-gfm": "^4.0.1"
     },

@@ -405,7 +405,9 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                                     <Icon
                                         src={adapter.icon}
                                         alt={adapter.name}
-                                        style={{ width: 18, height: 18 }}
+                                        // rounded as well: the square adapter images poked out of
+                                        // the round ring at the corners
+                                        style={{ width: 18, height: 18, borderRadius: '50%' }}
                                     />
                                 ) : null}
                             </Box>

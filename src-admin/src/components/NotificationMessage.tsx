@@ -84,15 +84,27 @@ export const SEVERITY_ORDER: Record<Severity, number> = {
 };
 
 /**
- * Compare two severities by importance. Most important (`alert`) first; unknown severities go last.
+ * Reduce a severity to one of the three known values.
+ *
+ * The type says the field is mandatory, but the notifications come from any adapter and at runtime
+ * it can be missing or carry an unknown value. Everything that is not `notify` or `info` is drawn as
+ * a warning, so it also has to *sort* like a warning - otherwise a category shows a warning triangle
+ * and still stands at the very end. That was exactly the case with the backup errors.
+ *
+ * @param severity severity as it came from the notification
+ */
+export function normalizeSeverity(severity: Severity | undefined): Severity {
+    return severity === 'notify' || severity === 'info' ? severity : 'alert';
+}
+
+/**
+ * Compare two severities by importance, most important (`alert`) first.
  *
  * @param a first severity
  * @param b second severity
  */
 export function compareSeverity(a: Severity | undefined, b: Severity | undefined): number {
-    const orderA = a !== undefined && SEVERITY_ORDER[a] !== undefined ? SEVERITY_ORDER[a] : 3;
-    const orderB = b !== undefined && SEVERITY_ORDER[b] !== undefined ? SEVERITY_ORDER[b] : 3;
-    return orderA - orderB;
+    return SEVERITY_ORDER[normalizeSeverity(a)] - SEVERITY_ORDER[normalizeSeverity(b)];
 }
 
 export interface Message {
