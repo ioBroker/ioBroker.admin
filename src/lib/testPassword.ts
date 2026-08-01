@@ -40,9 +40,9 @@ checkWellKnownPasswords().then(found => {
                     process.exit(1);
                 }
                 rl.close();
-                void setLinuxPassword(found.login, found.password, password).then(result => {
-                    console.log(`Result: ${JSON.stringify(result)}`);
-                });
+                setLinuxPassword(found.login, found.password, password)
+                    .then(result => console.log(`Result: ${JSON.stringify(result)}`))
+                    .catch(err => console.error(`Cannot set password: ${err}`));
             });
             maskOutput = true;
         });
