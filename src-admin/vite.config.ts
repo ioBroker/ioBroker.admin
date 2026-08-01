@@ -52,6 +52,14 @@ export default defineConfig({
                 find: /^leaflet$/,
                 replacement: resolve(__dirname, 'node_modules/leaflet/dist/leaflet-src.esm.js'),
             },
+            {
+                // monaco-editor 0.56 has an `exports` map with `"./*": "./esm/vs/*.js"`, so the deep
+                // path that react-monaco-editor 0.59 imports resolves to `esm/vs/esm/vs/...` and
+                // fails. react-monaco-editor declares `monaco-editor: ^0.52.0` as a peer, where the
+                // map did not exist yet. Point the old specifier at the file that is really meant.
+                find: 'monaco-editor/esm/vs/editor/editor.api',
+                replacement: resolve(__dirname, 'node_modules/monaco-editor/esm/vs/editor/editor.api.js'),
+            },
         ],
     },
     build: {

@@ -7,7 +7,7 @@
  *
  * Mirrors the request/response shapes of ioBroker.javascript's `chatCompletion` handler.
  */
-import axios, { type AxiosRequestConfig } from 'axios';
+import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import * as https from 'node:https';
 import {
     translateMessagesToAnthropic,
@@ -42,6 +42,17 @@ export interface LlmChatResult {
 const DEFAULT_TIMEOUT = 600_000;
 const DEFAULT_MAX_TOKENS = 8192;
 const OPENAI_BASE = 'https://api.openai.com/v1';
+
+/**
+ * Models that refuse function tools unless the reasoning is switched off explicitly.
+ *
+ * OpenAI answers such a request with "Function tools with reasoning_effort are not supported for
+ * <model> in /v1/chat/completions ... or set reasoning_effort to 'none'". Which models behave that
+ * way changes with every release, so they are not kept in a list here but learned from the error:
+ * the first request of a session runs into it, is repeated, and every later one carries the
+ * parameter right away.
+ */
+const needReasoningEffortNone = new Set<string>();
 
 /** Build an https agent that tolerates self-signed certs, but only for https URLs when requested. */
 function httpsAgentFor(url: string, allowSelfSigned?: boolean): https.Agent | undefined {
@@ -105,6 +116,9 @@ function buildChatRequest(params: LlmChatParams): {
         headers.Authorization = `Bearer ${apiKey}`;
     }
     const base = customBase || OPENAI_BASE;
+    // Local models: switch reasoning off to save context and time. Hosted models: only when they
+    // have already refused tools without it, see `needReasoningEffortNone`.
+    const noReasoning = !!customBase || needReasoningEffortNone.has(`${provider}:${model}`);
     return {
         url: `${base}/chat/completions`,
         headers,
@@ -113,8 +127,7 @@ function buildChatRequest(params: LlmChatParams): {
             messages,
             stream: false,
             ...(tools?.length ? { tools } : {}),
-            // Disable thinking/reasoning for local models to save context and speed.
-            ...(customBase ? { reasoning_effort: 'none' } : {}),
+            ...(noReasoning ? { reasoning_effort: 'none' } : {}),
         },
     };
 }
@@ -155,11 +168,25 @@ export async function chatCompletion(params: LlmChatParams): Promise<LlmChatResu
         httpsAgent: httpsAgentFor(url, params.provider === 'custom' && params.allowSelfSignedCerts),
     };
 
-    let response;
-    try {
-        response = await axios.post(url, body, config);
-    } catch (e) {
-        throw new Error(`Connection failed: ${e instanceof Error ? e.message : String(e)}`);
+    const post = async (data: Record<string, unknown>): Promise<AxiosResponse> => {
+        try {
+            return await axios.post(url, data, config);
+        } catch (e) {
+            throw new Error(`Connection failed: ${e instanceof Error ? e.message : String(e)}`);
+        }
+    };
+
+    let response = await post(body);
+
+    // The model rejects function tools while it is reasoning. It says so itself, so repeat the
+    // request with the reasoning switched off and remember the model for the next time.
+    if (
+        response.status === 400 &&
+        body.reasoning_effort === undefined &&
+        /reasoning_effort/.test(errorDetail(response.status, response.data))
+    ) {
+        needReasoningEffortNone.add(`${params.provider}:${params.model}`);
+        response = await post({ ...body, reasoning_effort: 'none' });
     }
 
     if (response.status < 200 || response.status >= 300) {

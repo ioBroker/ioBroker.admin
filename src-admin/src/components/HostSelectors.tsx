@@ -84,7 +84,8 @@ interface HostSelectorsProps {
     hostsWorker: InstanceType<typeof HostsWorker>;
     expertMode: boolean;
     setCurrentHost: (hostname: string, aliveHost: string) => void;
-    tooltip: string;
+    /** Overrides the default tooltip. It used to explain why the selector is greyed out in the app bar */
+    tooltip?: string;
     themeType?: string;
 }
 

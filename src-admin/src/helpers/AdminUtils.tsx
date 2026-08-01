@@ -418,6 +418,40 @@ export default class AdminUtils {
         }
     }
 
+    /**
+     * Count the adapters that have a newer version in the repository.
+     *
+     * `js-controller` is not counted here: it is updated as a host, not as an adapter, and is
+     * reported by the hosts. Versions the user explicitly ignored do not count either.
+     *
+     * @param installed installed adapters with their versions
+     * @param repository the repository the versions are compared against
+     */
+    static countAdapterUpdates(
+        installed: Record<string, { version: string; ignoreVersion?: string }>,
+        repository: Record<string, { version: string }>,
+    ): number {
+        if (!installed) {
+            return 0;
+        }
+        let count = 0;
+        for (const name of Object.keys(installed)) {
+            const _installed = installed[name];
+            const adapter = repository?.[name];
+            if (
+                name !== 'js-controller' &&
+                name !== 'hosts' &&
+                _installed?.version &&
+                adapter?.version &&
+                _installed.ignoreVersion !== adapter.version &&
+                AdminUtils.updateAvailable(_installed.version, adapter.version)
+            ) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     static getText(word: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
         if (typeof word === 'object') {
             if (!word) {

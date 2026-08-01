@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.9.13",
+    "version": "8.0.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -219,8 +219,7 @@
     "adminUI": {
       "config": "json"
     },
-    "tier": 1,
-    "installedFrom": "/tmp/iobroker.admin-7.9.2.tgz"
+    "tier": 1
   },
   "native": {
     "autoUpdate": 24,

@@ -41,8 +41,9 @@ const styles: Record<string, any> = {
         // maxHeight: 200,
     },
     listOwn: (theme: IobTheme) => ({
-        backgroundColor:
-            theme.name === 'colored' || theme.name === 'light' ? '#16516e2e' : theme.palette.secondary.dark,
+        // decided by the type, not by the name - otherwise every new light theme (modernLight)
+        // would get the dark colour of the else branch
+        backgroundColor: theme.palette.mode === 'light' ? '#16516e2e' : theme.palette.secondary.dark,
     }),
     listTitle: (theme: IobTheme) => ({
         backgroundColor: theme.palette.primary.dark,

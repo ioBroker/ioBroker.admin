@@ -107,6 +107,10 @@ interface InstancesProps {
 
     configStored: (allStored: boolean) => void;
     handleNavigation: (tab: string, subTab?: string, param?: string) => void;
+    /** Host selector, built by the app - sits at the right end of the header on every host tab */
+    hostSelector?: JSX.Element;
+    /** Keep the upper left corner of the toolbar free for the floating menu button */
+    menuButtonSpace?: boolean;
 }
 
 type SortColumn = 'name' | 'status' | 'memory' | 'id' | 'host' | 'loglevel' | 'port';
@@ -1326,6 +1330,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             <TabContainer>
                 {this.renderFilterDialog()}
                 <TabHeader>
+                    {this.props.menuButtonSpace ? <Box sx={{ width: 40, flexShrink: 0 }} /> : null}
                     <Tooltip
                         title={this.t('Show / hide List')}
                         slotProps={{ popper: { sx: styles.tooltip } }}
@@ -1543,6 +1548,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     >
                         {hostInfo}
                     </Box>
+                    <Box sx={{ ml: 'auto', pl: 1 }}>{this.props.hostSelector}</Box>
                 </TabHeader>
                 <TabContent overflow="auto">
                     <div

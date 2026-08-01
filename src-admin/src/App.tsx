@@ -1,4 +1,4 @@
-import React, { type RefObject, Suspense, type JSX } from 'react';
+import React, { Suspense, type JSX } from 'react';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -26,6 +26,7 @@ import {
     Menu,
     MenuItem,
     Paper,
+    Alert,
     Snackbar,
     Toolbar,
     Tooltip,
@@ -35,11 +36,9 @@ import {
 // @mui/icons-material
 import {
     Menu as MenuIcon,
-    Build as BuildIcon,
     Update as UpdateIcon,
     Visibility as VisibilityIcon,
     PictureInPictureAlt as PictureInPictureAltIcon,
-    Person as UserIcon,
     CloudSync as SyncIcon,
     SyncDisabled as SyncIconDisabled,
     Close as CancelIcon,
@@ -59,10 +58,10 @@ import {
     I18n,
     Router,
     DialogConfirm,
-    Icon,
     withWidth,
     Theme,
     IconExpert,
+    ScrollbarStyles,
     ToggleThemeMenu,
     type IobTheme,
     type ThemeName,
@@ -118,6 +117,13 @@ import ukLocal from './i18n/uk.json';
 import zhCNLocal from './i18n/zh-cn.json';
 
 // Tabs
+/**
+ * Tabs that get `menuButtonSpace` handed over and keep the upper left corner free themselves.
+ * Every other tab - above all the custom tabs of the adapters - gets a strip above its content.
+ */
+const TABS_WITH_OWN_TOOLBAR = ['tab-overview', 'tab-adapters', 'tab-instances', 'tab-logs'];
+
+const Overview = React.lazy(() => import('./tabs/Overview'));
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
 const Instances = React.lazy(() => import('./tabs/Instances'));
 const Intro = React.lazy(() => import('./tabs/Intro'));
@@ -208,6 +214,8 @@ const styles: Record<string, any> = {
     content: (theme: IobTheme) => ({
         flexGrow: 1,
         padding: 1,
+        // the tabs bring their own spacing at the top - a second one only wastes height
+        paddingTop: 0,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -256,13 +264,6 @@ const styles: Record<string, any> = {
     baseSettingsButton: {
         color: 'red',
     },
-    alert_info: {},
-    alert_error: {
-        backgroundColor: '#f44336',
-    },
-    alert_success: {
-        backgroundColor: '#4caf50',
-    },
     avatarNotVisible: {
         opacity: 0,
         marginLeft: 5,
@@ -294,33 +295,31 @@ const styles: Record<string, any> = {
     flexGrow: {
         flexGrow: 2,
     },
-    userBadge: {
-        lineHeight: '48px',
-        display: 'inline-block',
+    floatingButtons: {
+        position: 'fixed',
+        top: 4,
+        left: 4,
+        zIndex: 1200,
+        display: 'flex',
+        gap: 0.5,
     },
-    userIcon: {
-        borderRadius: 4,
-        width: 44,
-        height: 44,
-        verticalAlign: 'middle',
-        marginLeft: 10,
-        marginRight: 10,
+    /**
+     * Without an app bar the content starts at the very top - the three breakpoints of
+     *  `mixins.toolbar` in `content` all have to be overridden
+     */
+    contentNoAppBar: {
+        mt: 0,
+        '@media (min-width:0px) and (orientation: landscape)': { mt: 0 },
+        '@media (min-width:600px)': { mt: 0 },
     },
-    userText: {
-        verticalAlign: 'middle',
-        fontSize: 16,
-        maxWidth: 250,
-        marginRight: 10,
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        display: 'inline-block',
+    /**
+     * Room for the floating menu button on tabs that cannot make room for it themselves (custom
+     * tabs of adapters, mostly iframes). A strip above the content, not an indent on the left:
+     * indenting would push the whole page aside instead of just the toolbar row.
+     */
+    contentMenuButtonSpace: {
+        pt: '44px',
     },
-    userBackground: (theme: IobTheme) => ({
-        borderRadius: 1,
-        backgroundColor: theme.palette.mode === 'dark' ? '#EEE' : '#222',
-        p: 0.5,
-    }),
     styleVersion: {
         fontSize: 10,
     },
@@ -418,7 +417,8 @@ interface AppState {
         id?: string;
         arg?: string;
     };
-    systemConfig: ioBroker.SystemConfigObject;
+    /** Null until the configuration has been read - the app renders before that */
+    systemConfig: ioBroker.SystemConfigObject | null;
     showHostWarning: {
         host: string;
         instances: Record<string, ioBroker.InstanceObject>;
@@ -430,6 +430,8 @@ interface AppState {
         color?: string;
         icon?: string;
         invertBackground: boolean;
+        /** Name of the leading group, shown below the name in the menu */
+        group?: string;
     } | null;
     repository: CompactRepository;
     installed: CompactInstalledInfo;
@@ -496,15 +498,12 @@ interface AppState {
         lastNewsId: string | undefined;
     } | null;
     askForTokenRefresh: { expireAt: number; resolve: (prolong: boolean) => void; doNotAsk: boolean } | null;
-    userMenuAnchor: HTMLElement | null;
 }
 
 class App extends Router<AppProps, AppState> {
     private readonly translations: Record<ioBroker.Languages, Record<string, string>>;
     private _tempAllStored = true;
     private refConfigIframe: HTMLIFrameElement | null = null;
-    private readonly refUser: RefObject<HTMLDivElement>;
-    private readonly refUserDiv: RefObject<HTMLDivElement>;
     private expireInSecInterval: ReturnType<typeof setInterval> | null = null;
     private readonly toggleThemePossible: boolean;
     private adminGuiConfig: AdminGuiConfig;
@@ -569,8 +568,6 @@ class App extends Router<AppProps, AppState> {
                 .toLowerCase() as ioBroker.Languages,
         );
 
-        this.refUser = React.createRef<HTMLDivElement>();
-        this.refUserDiv = React.createRef<HTMLDivElement>();
         this.adminGuiConfig = {
             admin: {
                 menu: {},
@@ -697,7 +694,6 @@ class App extends Router<AppProps, AppState> {
                 showHostWarning: null,
                 adapters: {},
                 askForTokenRefresh: null,
-                userMenuAnchor: null,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -990,7 +986,7 @@ class App extends Router<AppProps, AppState> {
             window.addEventListener('hashchange', this.onHashChanged, false);
 
             if (!this.state.currentTab.tab) {
-                this.handleNavigation('tab-intro');
+                this.handleNavigation('tab-overview');
             } else {
                 this.setTitle(this.state.currentTab.tab.replace('tab-', ''));
             }
@@ -1208,6 +1204,7 @@ class App extends Router<AppProps, AppState> {
                                             color: userObj.common.color,
                                             icon: userObj.common.icon,
                                             invertBackground: this.mustInvertBackground(userObj.common.color),
+                                            group: await this.getLeadingGroupName(userObj._id),
                                         },
                                     });
                                 }
@@ -1877,6 +1874,48 @@ class App extends Router<AppProps, AppState> {
         );
     };
 
+    /**
+     * The host selector for the tabs that show the data of one host.
+     *
+     * It used to sit in the app bar and was only greyed out on the other tabs. Now it is handed to
+     * the four tabs that show data of one host (overview, adapters, instances, logs), and each of
+     * them puts it at the right end of its header - so the app bar can be emptied step by step.
+     * The element is built here because switching the host also has to reload the repository and
+     * the notifications, and that logic must not be duplicated in four tabs.
+     */
+    renderHostSelector(): JSX.Element {
+        return (
+            <IsVisible
+                name="admin.appBar.hostSelector"
+                config={this.adminGuiConfig}
+            >
+                <HostSelectors
+                    themeType={this.state.themeType}
+                    expertMode={this.state.expertMode}
+                    socket={this.socket}
+                    hostsWorker={this.hostsWorker}
+                    currentHost={this.state.currentHost}
+                    setCurrentHost={(hostName, host) => {
+                        this.setState(
+                            {
+                                currentHostName: hostName,
+                                currentHost: host,
+                            },
+                            async () => {
+                                this.logsWorkerChanged(host);
+                                (window._localStorage || window.localStorage).setItem('App.currentHost', host);
+                                await this.readRepoAndInstalledInfo(host, this.state.hosts);
+                                // read notifications from the host
+                                const notifications = await this.hostsWorker.getNotifications(host);
+                                await this.handleNewNotifications(notifications);
+                            },
+                        );
+                    }}
+                />
+            </IsVisible>
+        );
+    }
+
     setCurrentTabTitle(): void {
         this.setTitle(this.state.currentTab.tab.replace('tab-', ''));
     }
@@ -1927,6 +1966,8 @@ class App extends Router<AppProps, AppState> {
                             adminInstance={this.adminInstance}
                             currentAdminVersion={this.state.versionAdmin}
                             onUpdating={updating => this.setState({ updating })}
+                            hostSelector={this.renderHostSelector()}
+                            menuButtonSpace={this.needsMenuButtonSpace()}
                         />
                     </Suspense>
                 );
@@ -1977,6 +2018,34 @@ class App extends Router<AppProps, AppState> {
                                 }
                             }}
                             handleNavigation={this.handleNavigation}
+                            hostSelector={this.renderHostSelector()}
+                            menuButtonSpace={this.needsMenuButtonSpace()}
+                        />
+                    </Suspense>
+                );
+            }
+            if (this.state.currentTab.tab === 'tab-overview') {
+                return (
+                    <Suspense fallback={<Connecting />}>
+                        <Overview
+                            key="overview"
+                            t={I18n.t}
+                            lang={this.state.lang}
+                            socket={this.socket}
+                            theme={this.state.theme}
+                            themeType={this.state.themeType}
+                            currentHost={this.state.currentHost}
+                            currentHostName={this.state.currentHostName}
+                            hostsWorker={this.hostsWorker}
+                            instancesWorker={this.instancesWorker}
+                            objectsWorker={this.objectsWorker}
+                            logsWorker={this.logsWorker}
+                            expertMode={this.state.expertMode}
+                            installed={this.state.installed}
+                            repository={this.state.repository}
+                            handleNavigation={(tab: string) => this.handleNavigation(tab)}
+                            hostSelector={this.renderHostSelector()}
+                            menuButtonSpace={this.needsMenuButtonSpace()}
                         />
                     </Suspense>
                 );
@@ -2018,6 +2087,8 @@ class App extends Router<AppProps, AppState> {
                             currentHost={this.state.currentHost}
                             hostsWorker={this.hostsWorker}
                             clearErrors={() => this.clearLogErrors()}
+                            hostSelector={this.renderHostSelector()}
+                            menuButtonSpace={this.needsMenuButtonSpace()}
                         />
                     </Suspense>
                 );
@@ -2492,94 +2563,109 @@ class App extends Router<AppProps, AppState> {
         ) : null;
     }
 
-    renderLoggedUser(): JSX.Element | null {
-        if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
-            return (
-                <div>
-                    {this.state.systemConfig.common.siteName ? (
-                        <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>
-                    ) : null}
-
-                    <Box
-                        component="div"
-                        title={this.state.user.id}
-                        sx={{
-                            ...styles.userBadge,
-                            ...(this.state.user.invertBackground ? styles.userBackground : undefined),
-                            ...(this.socket.isSecure ? { cursor: 'pointer' } : {}),
-                        }}
-                        ref={this.refUser}
-                        {...(this.socket.isSecure
-                            ? {
-                                  onClick: (event: React.MouseEvent<HTMLDivElement>) =>
-                                      this.setState({ userMenuAnchor: event.currentTarget }),
-                              }
-                            : {})}
-                    >
-                        {this.state.user.icon ? (
-                            <Icon
-                                src={this.state.user.icon}
-                                style={styles.userIcon}
-                            />
-                        ) : (
-                            <UserIcon style={styles.userIcon} />
-                        )}
-                        <div
-                            ref={this.refUserDiv}
-                            style={{
-                                ...styles.userText,
-                                color: this.state.user?.color || undefined,
-                            }}
-                        >
-                            {this.state.user.name}
-                        </div>
-                    </Box>
-
-                    {this.socket.isSecure && (
-                        <Menu
-                            anchorEl={this.state.userMenuAnchor}
-                            open={Boolean(this.state.userMenuAnchor)}
-                            onClose={() => this.setState({ userMenuAnchor: null })}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                        >
-                            <MenuItem
-                                onClick={() => {
-                                    this.setState({ userMenuAnchor: null });
-                                    App.logout();
-                                }}
-                            >
-                                <ListItemIcon>
-                                    <Logout fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText>{I18n.t('ra_Logout')}</ListItemText>
-                            </MenuItem>
-                        </Menu>
-                    )}
-                </div>
-            );
+    /**
+     * The site name in the app bar.
+     *
+     * The logged-in user with its logout menu used to be here as well - it sits at the lower edge of
+     * the menu now, see the `user` prop of the drawer.
+     */
+    /**
+     * Name of the group that says the most about a user, for the line below the name in the menu.
+     *
+     * `administrator` wins when the user is a member of it - being an administrator matters more
+     * than any other membership. Otherwise the first group is taken.
+     *
+     * @param userId e.g. `system.user.admin`
+     */
+    async getLeadingGroupName(userId: `system.user.${string}`): Promise<string> {
+        try {
+            const groups = await this.socket.getForeignObjects('system.group.*', 'group');
+            const own = Object.values(groups || {}).filter(group => group?.common?.members?.includes(userId));
+            const leading = own.find(group => group._id === 'system.group.administrator') || own[0];
+            return leading ? Utils.getObjectNameFromObj(leading, this.socket.systemLang) : '';
+        } catch (e) {
+            // the group is only additional information - the menu works without it
+            console.warn(`Cannot read groups of ${userId}: ${e as Error}`);
+            return '';
         }
-        if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
-            return <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>;
+    }
+
+    renderSiteName(): JSX.Element | null {
+        const siteName = this.state.systemConfig?.common?.siteName;
+        if (siteName) {
+            return <div style={styles.siteName}>{siteName}</div>;
         }
         return null;
+    }
+
+    /**
+     * Replaces the app bar when there is no site name.
+     *
+     * Without it the menu could not be reached again once it is fully closed - the drawer hides
+     * completely in that state and the button for it used to live in the bar. The indicator of a
+     * running command would be lost as well.
+     */
+    /**
+     * True when the floating menu button covers the upper left corner of the tab, so the tab has to
+     * keep that spot free. Only the case without an app bar and with a completely hidden menu.
+     */
+    needsMenuButtonSpace(): boolean {
+        return !this.state.systemConfig?.common?.siteName && this.state.drawerState === DrawerStates.closed;
+    }
+
+    renderFloatingButtons(): JSX.Element | null {
+        const showMenuButton = this.state.drawerState === DrawerStates.closed;
+        const showCmd = this.state.cmd && !this.state.cmdDialog;
+
+        if (!showMenuButton && !showCmd) {
+            return null;
+        }
+
+        return (
+            <Box sx={styles.floatingButtons}>
+                {showMenuButton ? (
+                    <IconButton onClick={() => this.handleDrawerState(DrawerStates.opened as 0)}>
+                        <MenuIcon />
+                    </IconButton>
+                ) : null}
+                {showCmd ? (
+                    <IconButton onClick={() => this.setState({ cmdDialog: true })}>
+                        <PictureInPictureAltIcon
+                            style={
+                                this.state.commandError
+                                    ? styles.errorCmd
+                                    : this.state.performed
+                                      ? Utils.getStyle(this.state.theme, styles.performed)
+                                      : styles.cmd
+                            }
+                        />
+                    </IconButton>
+                ) : null}
+            </Box>
+        );
     }
 
     renderAlertSnackbar(): JSX.Element {
         return (
             <Snackbar
-                style={styles[`alert_${this.state.alertType}`]}
                 open={this.state.alert}
                 autoHideDuration={6000}
                 onClose={() => this.handleAlertClose()}
-                message={this.state.alertMessage}
-            />
+            >
+                {/*
+                 * The color has to sit on the `Alert`, not on the `Snackbar`: the snackbar itself is
+                 * only the positioning container, the visible box is its content. Painting the
+                 * container left the content in the MUI default color - a light grey block on the
+                 * dark theme with only a red rim showing.
+                 */}
+                <Alert
+                    severity={this.state.alertType}
+                    variant="filled"
+                    onClose={() => this.handleAlertClose()}
+                >
+                    {this.state.alertMessage}
+                </Alert>
+            </Snackbar>
         );
     }
 
@@ -2665,13 +2751,146 @@ class App extends Router<AppProps, AppState> {
         ) : null;
     }
 
-    renderToolbar(small: boolean): JSX.Element {
+    /**
+     * The global buttons that used to sit in the app bar: notifications, discovery, theme, expert
+     * mode and the settings synchronisation.
+     *
+     * They are rendered by the drawer at its lower edge now. The app bar is supposed to disappear
+     * completely, so nothing that the user needs permanently may stay in it.
+     */
+    renderMenuButtons(): JSX.Element {
         const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem('App.expertMode');
         const expertModePermanent =
             !storedExpertMode || (storedExpertMode === 'true') === !!this.state.systemConfig.common.expertMode;
-
-        const performedStyle = Utils.getStyle(this.state.theme, styles.performed);
         const sumNotification = this.state.noNotifications.warning + this.state.noNotifications.other;
+
+        return (
+            <>
+                <Tooltip
+                    title={I18n.t('Notifications')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <IconButton
+                        disableRipple={!sumNotification}
+                        style={{ opacity: sumNotification ? 1 : 0.3 }}
+                        onClick={sumNotification ? () => this.setState({ notificationsDialog: true }) : null}
+                    >
+                        <Badge
+                            badgeContent={this.state.noNotifications.other + this.state.noNotifications.warning}
+                            color={this.state.noNotifications.warning > 0 ? 'error' : 'secondary'}
+                            max={99}
+                        >
+                            <NotificationsIcon />
+                        </Badge>
+                    </IconButton>
+                </Tooltip>
+                <IsVisible
+                    name="admin.appBar.discovery"
+                    config={this.adminGuiConfig}
+                >
+                    {this.state.discoveryAlive && (
+                        <Tooltip
+                            title={I18n.t('Discovery devices')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <IconButton onClick={() => Router.doNavigate(null, 'discovery')}>
+                                <VisibilityIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                </IsVisible>
+                {this.toggleThemePossible ? (
+                    <IsVisible
+                        name="admin.appBar.toggleTheme"
+                        config={this.adminGuiConfig}
+                    >
+                        <ToggleThemeMenu
+                            toggleTheme={this.toggleTheme}
+                            themeName={this.state.themeName}
+                            t={I18n.t}
+                        />
+                    </IsVisible>
+                ) : null}
+                <IsVisible
+                    name="admin.appBar.expertMode"
+                    config={this.adminGuiConfig}
+                >
+                    <Tooltip
+                        title={`${I18n.t('Toggle expert mode')} ${
+                            expertModePermanent ? '' : ` (${I18n.t('only in this browser session')})`
+                        }`}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <Badge
+                            color="secondary"
+                            variant="dot"
+                            sx={{ '& .MuiBadge-badge': styles.expertBadge }}
+                            invisible={expertModePermanent}
+                        >
+                            <IconButton
+                                onClick={() => {
+                                    if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
+                                        (window._sessionStorage || window.sessionStorage).setItem(
+                                            'App.expertMode',
+                                            this.state.expertMode ? 'false' : 'true',
+                                        );
+                                        this.setState({ expertMode: !this.state.expertMode });
+                                        this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                    } else if (
+                                        (window._sessionStorage || window.sessionStorage).getItem(
+                                            'App.doNotShowExpertDialog',
+                                        ) === 'true'
+                                    ) {
+                                        (window._sessionStorage || window.sessionStorage).setItem(
+                                            'App.expertMode',
+                                            this.state.expertMode ? 'false' : 'true',
+                                        );
+                                        this.setState({ expertMode: !this.state.expertMode });
+                                        this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                    } else {
+                                        this.setState({ expertModeDialog: true });
+                                    }
+                                }}
+                                style={{
+                                    color: this.state.expertMode ? this.state.theme.palette.expert : undefined,
+                                }}
+                                color="default"
+                            >
+                                <IconExpert
+                                    style={{
+                                        ...styles.expertIcon,
+                                        ...(this.state.expertMode ? styles.expertIconActive : undefined),
+                                    }}
+                                />
+                            </IconButton>
+                        </Badge>
+                    </Tooltip>
+                </IsVisible>
+                {this.state.expertMode ? (
+                    <Tooltip
+                        title={I18n.t('Synchronize admin settings between all opened browser windows')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <IconButton
+                            onClick={e =>
+                                this.state.guiSettings
+                                    ? this.enableGuiSettings(false)
+                                    : this.setState({ showGuiSettings: e.target as HTMLButtonElement })
+                            }
+                            style={{
+                                color: this.state.guiSettings ? this.state.theme.palette.expert : undefined,
+                            }}
+                        >
+                            {this.state.guiSettings ? <SyncIcon /> : <SyncIconDisabled />}
+                        </IconButton>
+                    </Tooltip>
+                ) : null}
+            </>
+        );
+    }
+
+    renderToolbar(small: boolean): JSX.Element {
+        const performedStyle = Utils.getStyle(this.state.theme, styles.performed);
 
         return (
             <Toolbar>
@@ -2687,190 +2906,8 @@ class App extends Router<AppProps, AppState> {
                     <MenuIcon />
                 </IconButton>
                 <div style={styles.wrapperButtons}>
-                    <Tooltip
-                        title={I18n.t('Notifications')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
-                    >
-                        <IconButton
-                            size="large"
-                            disableRipple={!sumNotification}
-                            style={{ opacity: sumNotification ? 1 : 0.3 }}
-                            onClick={sumNotification ? () => this.setState({ notificationsDialog: true }) : null}
-                        >
-                            <Badge
-                                badgeContent={this.state.noNotifications.other + this.state.noNotifications.warning}
-                                color={this.state.noNotifications.warning > 0 ? 'error' : 'secondary'}
-                                max={99}
-                            >
-                                <NotificationsIcon />
-                            </Badge>
-                        </IconButton>
-                    </Tooltip>
-                    <IsVisible
-                        name="admin.appBar.discovery"
-                        config={this.adminGuiConfig}
-                    >
-                        {this.state.discoveryAlive && (
-                            <Tooltip
-                                title={I18n.t('Discovery devices')}
-                                slotProps={{ popper: { sx: styles.tooltip } }}
-                            >
-                                <IconButton
-                                    size="large"
-                                    onClick={() => Router.doNavigate(null, 'discovery')}
-                                >
-                                    <VisibilityIcon />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-                    </IsVisible>
-                    <IsVisible
-                        name="admin.appBar.systemSettings"
-                        config={this.adminGuiConfig}
-                    >
-                        <Tooltip
-                            title={I18n.t('System settings')}
-                            slotProps={{ popper: { sx: styles.tooltip } }}
-                        >
-                            <IconButton
-                                size="large"
-                                onClick={() => Router.doNavigate(null, 'system')}
-                            >
-                                <BuildIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </IsVisible>
-                    {this.toggleThemePossible ? (
-                        <IsVisible
-                            name="admin.appBar.toggleTheme"
-                            config={this.adminGuiConfig}
-                        >
-                            <ToggleThemeMenu
-                                size="large"
-                                toggleTheme={this.toggleTheme}
-                                themeName={this.state.themeName}
-                                t={I18n.t}
-                            />
-                        </IsVisible>
-                    ) : null}
-                    <IsVisible
-                        name="admin.appBar.expertMode"
-                        config={this.adminGuiConfig}
-                    >
-                        <Tooltip
-                            title={`${I18n.t('Toggle expert mode')} ${
-                                expertModePermanent ? '' : ` (${I18n.t('only in this browser session')})`
-                            }`}
-                            slotProps={{ popper: { sx: styles.tooltip } }}
-                        >
-                            <Badge
-                                color="secondary"
-                                variant="dot"
-                                sx={{ '& .MuiBadge-badge': styles.expertBadge }}
-                                invisible={expertModePermanent}
-                            >
-                                <IconButton
-                                    size="large"
-                                    onClick={() => {
-                                        if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
-                                            (window._sessionStorage || window.sessionStorage).setItem(
-                                                'App.expertMode',
-                                                this.state.expertMode ? 'false' : 'true',
-                                            );
-                                            this.setState({ expertMode: !this.state.expertMode });
-                                            this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                        } else if (
-                                            (window._sessionStorage || window.sessionStorage).getItem(
-                                                'App.doNotShowExpertDialog',
-                                            ) === 'true'
-                                        ) {
-                                            (window._sessionStorage || window.sessionStorage).setItem(
-                                                'App.expertMode',
-                                                this.state.expertMode ? 'false' : 'true',
-                                            );
-                                            this.setState({ expertMode: !this.state.expertMode });
-                                            this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                        } else {
-                                            this.setState({ expertModeDialog: true });
-                                        }
-                                    }}
-                                    style={{
-                                        color: this.state.expertMode ? this.state.theme.palette.expert : undefined,
-                                    }}
-                                    color="default"
-                                >
-                                    <IconExpert
-                                        // glowColor={this.state.theme.palette.secondary.main}
-                                        // active={this.state.expertMode}
-                                        style={{
-                                            ...styles.expertIcon,
-                                            ...(this.state.expertMode ? styles.expertIconActive : undefined),
-                                        }}
-                                    />
-                                </IconButton>
-                            </Badge>
-                        </Tooltip>
-                    </IsVisible>
-                    {this.state.expertMode ? (
-                        <Tooltip
-                            title={I18n.t('Synchronize admin settings between all opened browser windows')}
-                            slotProps={{ popper: { sx: styles.tooltip } }}
-                        >
-                            <IconButton
-                                size="large"
-                                onClick={e =>
-                                    this.state.guiSettings
-                                        ? this.enableGuiSettings(false)
-                                        : this.setState({ showGuiSettings: e.target as HTMLButtonElement })
-                                }
-                                style={{
-                                    color: this.state.guiSettings ? this.state.theme.palette.expert : undefined,
-                                }}
-                            >
-                                {this.state.guiSettings ? <SyncIcon /> : <SyncIconDisabled />}
-                            </IconButton>
-                        </Tooltip>
-                    ) : null}
-                    <IsVisible
-                        name="admin.appBar.hostSelector"
-                        config={this.adminGuiConfig}
-                    >
-                        <HostSelectors
-                            tooltip={
-                                this.state.currentTab.tab !== 'tab-instances' &&
-                                this.state.currentTab.tab !== 'tab-adapters' &&
-                                this.state.currentTab.tab !== 'tab-logs'
-                                    ? I18n.t('You can change host on Instances, Adapters or Logs pages')
-                                    : undefined
-                            }
-                            themeType={this.state.themeType}
-                            expertMode={this.state.expertMode}
-                            socket={this.socket}
-                            hostsWorker={this.hostsWorker}
-                            currentHost={this.state.currentHost}
-                            setCurrentHost={(hostName, host) => {
-                                this.setState(
-                                    {
-                                        currentHostName: hostName,
-                                        currentHost: host,
-                                    },
-                                    async () => {
-                                        this.logsWorkerChanged(host);
-                                        (window._localStorage || window.localStorage).setItem('App.currentHost', host);
-                                        await this.readRepoAndInstalledInfo(host, this.state.hosts);
-                                        // read notifications from the host
-                                        const notifications = await this.hostsWorker.getNotifications(host);
-                                        await this.handleNewNotifications(notifications);
-                                    },
-                                );
-                            }}
-                            disabled={
-                                this.state.currentTab.tab !== 'tab-instances' &&
-                                this.state.currentTab.tab !== 'tab-adapters' &&
-                                this.state.currentTab.tab !== 'tab-logs'
-                            }
-                        />
-                    </IsVisible>
+                    {/* notifications, discovery, theme, expert mode and the settings synchronisation
+                        moved to the lower edge of the menu, see `renderMenuButtons` */}
                     <div style={styles.flexGrow} />
                     {this.state.cmd && !this.state.cmdDialog && (
                         <IconButton
@@ -2890,7 +2927,7 @@ class App extends Router<AppProps, AppState> {
                     )}
                 </div>
 
-                {this.renderLoggedUser()}
+                {this.renderSiteName()}
 
                 {this.state.drawerState !== DrawerStates.opened &&
                     !this.state.expertMode &&
@@ -3077,6 +3114,11 @@ class App extends Router<AppProps, AppState> {
 
     render(): JSX.Element {
         const small = this.props.width === 'xs' || this.props.width === 'sm';
+        // The bar has nothing left to show but the name of the installation.
+        // Optional chaining is required: this runs before the early returns below, and until the
+        // configuration has been read `systemConfig` is null - the type says otherwise.
+        const showAppBar = !!this.state.systemConfig?.common?.siteName;
+        const menuButtonSpace = this.needsMenuButtonSpace();
 
         if (this.state.cloudNotConnected) {
             return (
@@ -3139,6 +3181,7 @@ class App extends Router<AppProps, AppState> {
         return (
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.state.theme}>
+                    <ScrollbarStyles theme={this.state.theme} />
                     <style>
                         {`@keyframes myEffect2 {
                         0% {
@@ -3167,29 +3210,39 @@ class App extends Router<AppProps, AppState> {
                         // Reserve room on the right when the chat assistant is docked side-by-side.
                         style={{ ...styles.root, paddingRight: this.state.chatDockWidth || undefined }}
                     >
-                        <AppBar
-                            color="default"
-                            position="fixed"
-                            sx={Utils.getStyle(
-                                this.state.theme,
-                                styles.appBar,
-                                !small &&
-                                    this.state.drawerState === DrawerStates.opened &&
-                                    !this.state.editMenuList &&
-                                    styles.appBarShift,
-                                !small &&
-                                    this.state.drawerState === DrawerStates.opened &&
-                                    this.state.editMenuList &&
-                                    styles.appBarShiftEdit,
-                                !small && this.state.drawerState === DrawerStates.compact && styles.appBarShiftCompact,
-                                // Keep the toolbar controls left of the docked chat panel.
-                                this.state.chatDockWidth
-                                    ? { paddingRight: `${this.state.chatDockWidth}px` }
-                                    : undefined,
-                            )}
-                        >
-                            {this.renderToolbar(small)}
-                        </AppBar>
+                        {/*
+                         * The app bar only exists for the site name. Without a name there is
+                         * nothing left to show in it, and the space is better used by the content.
+                         */}
+                        {showAppBar ? (
+                            <AppBar
+                                color="default"
+                                position="fixed"
+                                sx={Utils.getStyle(
+                                    this.state.theme,
+                                    styles.appBar,
+                                    !small &&
+                                        this.state.drawerState === DrawerStates.opened &&
+                                        !this.state.editMenuList &&
+                                        styles.appBarShift,
+                                    !small &&
+                                        this.state.drawerState === DrawerStates.opened &&
+                                        this.state.editMenuList &&
+                                        styles.appBarShiftEdit,
+                                    !small &&
+                                        this.state.drawerState === DrawerStates.compact &&
+                                        styles.appBarShiftCompact,
+                                    // Keep the toolbar controls left of the docked chat panel.
+                                    this.state.chatDockWidth
+                                        ? { paddingRight: `${this.state.chatDockWidth}px` }
+                                        : undefined,
+                                )}
+                            >
+                                {this.renderToolbar(small)}
+                            </AppBar>
+                        ) : (
+                            this.renderFloatingButtons()
+                        )}
                         <DndProvider backend={!small ? HTML5Backend : TouchBackend}>
                             <Drawer
                                 adminGuiConfig={this.adminGuiConfig}
@@ -3223,6 +3276,9 @@ class App extends Router<AppProps, AppState> {
                                 provideTabsInfo={(tabs: AdminTab[]): void => {
                                     this.tabsInfo = tabs;
                                 }}
+                                onSystemSettings={() => Router.doNavigate(null, 'system')}
+                                menuButtons={this.renderMenuButtons()}
+                                user={this.state.user}
                             />
                         </DndProvider>
                         <Paper
@@ -3242,6 +3298,10 @@ class App extends Router<AppProps, AppState> {
                                     styles.contentMarginEdit,
                                 !small && this.state.drawerState !== DrawerStates.opened && styles.contentMarginCompact,
                                 !small && this.state.drawerState !== DrawerStates.closed && styles.contentShift,
+                                !showAppBar && styles.contentNoAppBar,
+                                menuButtonSpace &&
+                                    !TABS_WITH_OWN_TOOLBAR.includes(this.state.currentTab.tab) &&
+                                    styles.contentMenuButtonSpace,
                             )}
                         >
                             {this.getCurrentTab()}

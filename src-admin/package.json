@@ -24,9 +24,9 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/gui-components": "^10.0.5",
-        "@iobroker/dm-gui-components": "^10.0.10",
-        "@iobroker/json-config": "^9.0.8",
+        "@iobroker/gui-components": "^10.0.9",
+        "@iobroker/dm-gui-components": "^10.0.14",
+        "@iobroker/json-config": "^9.0.12",
         "ace-builds": "^1.44.0",
         "remark-gfm": "^4.0.1"
     },
@@ -35,10 +35,10 @@
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@fnando/sparkline": "^0.3.10",
-        "@iobroker/dm-utils": "^3.1.4",
+        "@iobroker/dm-utils": "^3.2.0",
         "@iobroker/socket-client": "^5.2.1",
-        "@module-federation/runtime": "^2.8.0",
-        "@module-federation/vite": "^1.19.1",
+        "@module-federation/runtime": "^2.8.1",
+        "@module-federation/vite": "^1.20.1",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^3.0.0",
         "@tsconfig/node20": "^20.1.9",
@@ -48,11 +48,11 @@
         "@types/less": "^3.0.8",
         "@types/lodash": "^4.17.24",
         "@types/mocha": "^10.0.10",
-        "@types/node": "^26.1.1",
-        "@types/react": "^19.2.17",
+        "@types/node": "^26.1.2",
+        "@types/react": "^19.2.18",
         "@types/react-color": "^3.0.13",
-        "@types/react-dom": "^19.2.3",
-        "@vitejs/plugin-react": "^6.0.4",
+        "@types/react-dom": "^19.2.4",
+        "@vitejs/plugin-react": "^6.0.5",
         "buffer": "^6.0.3",
         "cron-parser": "^5.6.2",
         "crypto-js": "^4.2.0",
@@ -63,12 +63,12 @@
         "json5": "^2.2.3",
         "leaflet": "^1.9.4",
         "leaflet-geosearch": "^4.4.0",
-        "less": "^4.8.0",
+        "less": "^4.8.1",
         "lodash": "^4.18.1",
         "moment": "^2.30.1",
-        "monaco-editor": "^0.55.1",
+        "monaco-editor": "^0.56.0",
         "react": "^19.2.8",
-        "react-ace": "^14.0.1",
+        "react-ace": "^15.0.0",
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",
         "react-dnd-multi-backend": "^9.0.0",
@@ -84,7 +84,7 @@
         "react-showdown": "^2.3.1",
         "semver": "^7.8.5",
         "tsconfig-paths-webpack-plugin": "^4.2.0",
-        "vite": "8.1.5",
+        "vite": "8.2.0",
         "vite-plugin-commonjs": "^0.10.4",
         "vite-plugin-svgr": "^5.2.0"
     },
@@ -106,5 +106,5 @@
             }
         ]
     ],
-    "version": "7.9.13"
+    "version": "8.0.0"
 }

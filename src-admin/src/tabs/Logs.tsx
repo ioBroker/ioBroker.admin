@@ -309,6 +309,10 @@ interface LogsProps {
     t: Translate;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     theme: IobTheme;
+    /** Host selector, built by the app - sits at the right end of the header on every host tab */
+    hostSelector?: JSX.Element;
+    /** Keep the upper left corner of the toolbar free for the floating menu button */
+    menuButtonSpace?: boolean;
 }
 
 interface LogsState {
@@ -975,6 +979,7 @@ class Logs extends Component<LogsProps, LogsState> {
 
         return (
             <TabHeader>
+                {this.props.menuButtonSpace ? <Box sx={{ width: 40, flexShrink: 0 }} /> : null}
                 <Tooltip
                     title={this.props.t('Refresh log')}
                     slotProps={{ popper: { sx: styles.tooltip } }}
@@ -1147,6 +1152,7 @@ class Logs extends Component<LogsProps, LogsState> {
                         </span>
                     </Typography>
                 )}
+                <Box sx={{ ml: 'auto', pl: 1 }}>{this.props.hostSelector}</Box>
             </TabHeader>
         );
     }

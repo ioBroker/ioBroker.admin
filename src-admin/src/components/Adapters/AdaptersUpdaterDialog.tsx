@@ -44,7 +44,9 @@ const styles: Record<string, any> = {
         position: 'sticky',
         bottom: -10,
         pl: 1,
-        background: theme.name === 'blue' ? '#5d6467' : theme.name === 'dark' ? '#5b5b5b' : '#FFF',
+        // from the palette instead of per theme name: the old list knew only 'blue' and 'dark',
+        // so every newer theme got the white value
+        background: theme.palette.background.paper,
     }),
     container: {
         overflow: 'hidden',

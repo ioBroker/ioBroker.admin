@@ -142,6 +142,10 @@ interface AdaptersProps extends AdapterInstallDialogProps {
     theme: IobTheme;
     /** Called when admin updates itself */
     onUpdating: (isUpdating: boolean) => void;
+    /** Host selector, built by the app - sits at the right end of the header on every host tab */
+    hostSelector?: JSX.Element;
+    /** Keep the upper left corner of the toolbar free for the floating menu button */
+    menuButtonSpace?: boolean;
     ready: boolean;
     /** Current selected host */
     currentHost: string;
@@ -1874,6 +1878,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
 
         return (
             <TabHeader>
+                {this.props.menuButtonSpace ? <Box sx={{ width: 40, flexShrink: 0 }} /> : null}
                 <Tooltip
                     title={this.t('Change view mode')}
                     slotProps={{ popper: { sx: styles.tooltip } }}
@@ -2105,6 +2110,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                         </Box>
                     </Box>
                 </IsVisible>
+                <Box sx={{ ml: 'auto', pl: 1 }}>{this.props.hostSelector}</Box>
             </TabHeader>
         );
     }

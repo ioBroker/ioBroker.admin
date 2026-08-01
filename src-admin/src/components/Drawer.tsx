@@ -1,22 +1,36 @@
 import React, { Component, type RefObject, type JSX } from 'react';
 
-import { Avatar, Drawer as MaterialDrawer, IconButton, List, Typography, SwipeableDrawer, Box } from '@mui/material';
+import {
+    alpha,
+    Avatar,
+    Drawer as MaterialDrawer,
+    IconButton,
+    List,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    Typography,
+    SwipeableDrawer,
+    Box,
+} from '@mui/material';
 
 import {
     ChevronLeft as ChevronLeftIcon,
-    Apps as AppsIcon,
+    GridView as QuickAccessIcon,
+    SpaceDashboard as DashboardIcon,
     Info as InfoIcon,
-    Store as StoreIcon,
-    Subtitles as SubtitlesIcon,
-    ViewList as ViewListIcon,
-    ArtTrack as ArtTrackIcon,
-    ViewHeadline as ViewHeadlineIcon,
-    Subscriptions as SubscriptionsIcon,
-    FlashOn as FlashOnIcon,
-    PersonOutlined as PersonOutlineIcon,
-    Storage as StorageIcon,
-    FileCopy as FilesIcon,
-    DeveloperBoard as DeviceManagerIcon,
+    Extension as AdapterIcon,
+    AccountTree as ObjectsIcon,
+    Article as LogsIcon,
+    AutoAwesome as ScenesIcon,
+    Timeline as EventsIcon,
+    Group as UsersIcon,
+    Dns as HostsIcon,
+    Folder as FilesIcon,
+    Devices as DeviceManagerIcon,
+    Settings as SystemSettingsIcon,
+    PersonOutlined as UserIcon,
 } from '@mui/icons-material';
 
 import {
@@ -32,10 +46,13 @@ import {
 } from '@iobroker/gui-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
+import { IconInstance } from '@/icons/IconInstance';
+import { IconCategories } from '@/icons/IconCategories';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import type { HostsWorker, NotificationAnswer } from '@/Workers/HostsWorker';
 import type { LogsWorker } from '@/Workers/LogsWorker';
 import type { AdminGuiConfig, NotificationsCount } from '@/types';
+import IsVisible from './IsVisible';
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
@@ -72,6 +89,9 @@ const styles: Record<string, any> = {
     paper: {
         width: 'inherit',
         overflowX: 'hidden',
+        // the paper itself must not scroll - only the navigation list does, so that the header and
+        // the footer stay in place
+        overflowY: 'hidden',
     },
     header: (theme: IobTheme) => ({
         display: 'flex',
@@ -83,7 +103,11 @@ const styles: Record<string, any> = {
         position: 'sticky',
         top: 0,
         zIndex: 2,
-        background: theme.palette.background.default,
+        // The header must not paint its own color: `background.default` differs from the drawer paper
+        // (the modern themes give the sidebar its own tone) and the header then shows as a box around
+        // the hide button. It cannot be transparent either - being sticky, the list would scroll
+        // through it. `inherit` takes the color of the paper, which is this element's parent.
+        background: 'inherit',
     }),
     headerCompact: {
         padding: 0,
@@ -93,7 +117,46 @@ const styles: Record<string, any> = {
     },
     list: {
         paddingTop: 0,
-        flex: '1 0 auto',
+        // `1 1 auto` instead of `1 0 auto`: the list has to be allowed to shrink, otherwise it
+        // pushes the footer out of the drawer instead of scrolling
+        flex: '1 1 auto',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+    },
+    footer: (theme: IobTheme) => ({
+        flexShrink: 0,
+        borderTop: `1px solid ${theme.palette.divider}`,
+    }),
+    editButton: {
+        // Floats in the lower right corner of the navigation and scrolls with it, so it stays next
+        // to the entries it edits. It is only shown while the mouse is over the drawer.
+        position: 'sticky',
+        bottom: 0,
+        right: 0,
+        width: 'fit-content',
+        marginLeft: 'auto',
+        transition: 'opacity 0.5s',
+    },
+    userAvatar: (theme: IobTheme) => ({
+        width: 24,
+        height: 24,
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+        overflow: 'hidden',
+        backgroundColor: alpha(theme.palette.primary.main, 0.2),
+        border: `1px solid ${alpha(theme.palette.primary.main, 0.5)}`,
+        color: theme.palette.primary.main,
+    }),
+    footerButtons: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+        // in the compact drawer only one button fits per row - `wrap` stacks them by itself
+        p: '2px',
     },
     icon: {
         width: 20,
@@ -124,15 +187,6 @@ const styles: Record<string, any> = {
         alignSelf: 'center',
         ml: '5px',
     }),
-    editButton: {
-        position: 'sticky',
-        bottom: 0,
-        right: 0,
-        width: 'fit-content',
-        marginLeft: 'auto',
-        marginTop: 'auto',
-        transition: 'opacity 0.5s',
-    },
 };
 
 export const STATES = {
@@ -142,17 +196,20 @@ export const STATES = {
 };
 
 const tabsInfo: Record<string, { order: number; icon?: JSX.Element; host?: boolean; instance?: number }> = {
-    'tab-intro': { order: 1, icon: <AppsIcon /> },
+    // `order` must stay truthy: the sort below tests `if (a.order)`, so a 0 would end up last
+    'tab-overview': { order: 1, icon: <DashboardIcon />, host: true },
+    'tab-intro': { order: 2, icon: <QuickAccessIcon /> },
     'tab-info': { order: 5, icon: <InfoIcon />, host: true },
-    'tab-adapters': { order: 10, icon: <StoreIcon />, host: true },
-    'tab-instances': { order: 15, icon: <SubtitlesIcon />, host: true },
-    'tab-objects': { order: 20, icon: <ViewListIcon /> },
-    'tab-enums': { order: 25, icon: <ArtTrackIcon /> },
+    // adapter and instance share the puzzle piece on purpose: an instance is a running adapter
+    'tab-adapters': { order: 10, icon: <AdapterIcon />, host: true },
+    'tab-instances': { order: 15, icon: <IconInstance />, host: true },
+    'tab-objects': { order: 20, icon: <ObjectsIcon /> },
+    'tab-enums': { order: 25, icon: <IconCategories /> },
     'tab-devices': { order: 27, host: true },
-    'tab-logs': { order: 30, icon: <ViewHeadlineIcon />, host: true },
-    'tab-scenes': { order: 35, icon: <SubscriptionsIcon /> },
-    'tab-events': { order: 40, icon: <FlashOnIcon /> },
-    'tab-users': { order: 45, icon: <PersonOutlineIcon /> },
+    'tab-logs': { order: 30, icon: <LogsIcon />, host: true },
+    'tab-scenes': { order: 35, icon: <ScenesIcon /> },
+    'tab-events': { order: 40, icon: <EventsIcon /> },
+    'tab-users': { order: 45, icon: <UsersIcon /> },
     'tab-javascript': { order: 50 },
     'tab-text2command-0': { order: 55, instance: 0 },
     'tab-text2command-1': { order: 56, instance: 1 },
@@ -167,7 +224,7 @@ const tabsInfo: Record<string, { order: number; icon?: JSX.Element; host?: boole
     'tab-eventlist-0': { order: 80, instance: 0 },
     'tab-eventlist-1': { order: 81, instance: 1 },
     'tab-eventlist-2': { order: 82, instance: 2 },
-    'tab-hosts': { order: 100, icon: <StorageIcon /> },
+    'tab-hosts': { order: 100, icon: <HostsIcon /> },
     'tab-files': { order: 110, icon: <FilesIcon /> },
     'tab-devicemanager': { order: 120, icon: <DeviceManagerIcon /> },
 };
@@ -210,6 +267,19 @@ interface DrawerProps {
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     theme: IobTheme;
     provideTabsInfo: (tabs: AdminTab[]) => void;
+    /** Opens the system settings. Sits at the bottom of the menu, not in the app bar */
+    onSystemSettings: () => void;
+    /** Global buttons (notifications, theme, expert mode, ...) shown at the lower edge of the menu */
+    menuButtons?: JSX.Element;
+    /** Logged-in user. Shown at the lower edge of the menu, it used to sit in the app bar */
+    user?: {
+        id: string;
+        name: string;
+        color?: string;
+        icon?: string;
+        /** Name of the leading group, shown below the user name */
+        group?: string;
+    } | null;
 }
 
 interface DrawerState {
@@ -220,12 +290,14 @@ interface DrawerState {
     hostsUpdate: number;
     adaptersUpdate: number;
     deviceManagerVisible: boolean;
+    /** Anchor of the logout menu below the user entry */
+    userMenuAnchor: HTMLElement | null;
 }
 
 class Drawer extends Component<DrawerProps, DrawerState> {
     private logsHandlerRegistered: boolean;
 
-    private readonly refEditButton: RefObject<HTMLDivElement>;
+    private readonly refEditButton: RefObject<HTMLDivElement | null> = React.createRef();
 
     constructor(props: DrawerProps) {
         super(props);
@@ -238,9 +310,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             hostsUpdate: Drawer.calculateHostUpdates(this.props.hosts, this.props.repository),
             adaptersUpdate: Drawer.calculateAdapterUpdates(this.props.installed, this.props.repository),
             deviceManagerVisible: false,
+            userMenuAnchor: null,
         };
-
-        this.refEditButton = React.createRef();
     }
 
     static getDerivedStateFromProps(props: DrawerProps, state: DrawerState): Partial<DrawerState> | null {
@@ -273,29 +344,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         installed: Record<string, { version: string; ignoreVersion?: string }>,
         repository: Record<string, { icon: string; version: string }>,
     ): number {
-        if (installed) {
-            let count = 0;
-
-            Object.keys(installed)
-                .sort()
-                .forEach(element => {
-                    const _installed = installed[element];
-                    const adapter = repository && repository[element];
-                    if (
-                        element !== 'js-controller' &&
-                        element !== 'hosts' &&
-                        _installed?.version &&
-                        adapter?.version &&
-                        _installed.ignoreVersion !== adapter.version &&
-                        AdminUtils.updateAvailable(_installed.version, adapter.version)
-                    ) {
-                        count++;
-                    }
-                });
-
-            return count;
-        }
-        return 0;
+        // the overview tab shows the same number, so the counting lives in AdminUtils
+        return AdminUtils.countAdapterUpdates(installed, repository);
     }
 
     instanceChangedHandler = (): Promise<void> => this.getTabs(true);
@@ -460,6 +510,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             }
 
             const READY_TO_USE = [
+                'tab-overview',
                 'tab-intro',
                 'tab-adapters',
                 'tab-instances',
@@ -559,6 +610,110 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         } catch (error) {
             window.alert(`Cannot get instances: ${error}`);
         }
+    }
+
+    /**
+     * Everything below the navigation: system settings, logout and the global buttons that used to
+     * sit in the app bar. The block never scrolls - only the list above it does.
+     */
+    renderFooter(): JSX.Element {
+        const compact = !this.isSwipeable() && this.props.state !== STATES.opened;
+        const user = this.props.user;
+
+        return (
+            <Box sx={styles.footer}>
+                <IsVisible
+                    name="admin.appBar.systemSettings"
+                    config={this.props.adminGuiConfig}
+                >
+                    <DrawerItem
+                        theme={this.props.theme}
+                        compact={compact}
+                        onClick={this.props.onSystemSettings}
+                        text={this.props.t('System settings')}
+                        icon={<SystemSettingsIcon />}
+                    />
+                </IsVisible>
+                {this.props.isSecure ? (
+                    <>
+                        {/* Shows who is logged in - that used to be in the app bar. A click does not
+                            log out at once, it opens the menu below: logging out by accident while
+                            aiming for the entry above it would be annoying. */}
+                        <DrawerItem
+                            theme={this.props.theme}
+                            compact={compact}
+                            onClick={e => this.setState({ userMenuAnchor: e?.currentTarget as HTMLElement })}
+                            text={user?.name || this.props.t('Logout')}
+                            secondaryText={user?.group}
+                            color={user?.color}
+                            icon={
+                                // the ring makes it recognisable as a person even when the user
+                                // brought no picture of their own
+                                <Box sx={styles.userAvatar}>
+                                    {user?.icon ? (
+                                        <Icon
+                                            src={user.icon}
+                                            style={{ width: 22, height: 22, borderRadius: '50%' }}
+                                        />
+                                    ) : (
+                                        <UserIcon sx={{ fontSize: 15 }} />
+                                    )}
+                                </Box>
+                            }
+                        />
+                        <Menu
+                            anchorEl={this.state.userMenuAnchor}
+                            open={!!this.state.userMenuAnchor}
+                            onClose={() => this.setState({ userMenuAnchor: null })}
+                            // centre to centre: the menu appears directly beside the user entry.
+                            // Anchoring it to a corner pushed it up next to the entry above it.
+                            anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
+                            transformOrigin={{ vertical: 'center', horizontal: 'left' }}
+                        >
+                            <MenuItem
+                                onClick={() => {
+                                    this.setState({ userMenuAnchor: null });
+                                    this.props.onLogout();
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <LogoutIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>{this.props.t('ra_Logout')}</ListItemText>
+                            </MenuItem>
+                        </Menu>
+                    </>
+                ) : null}
+                {this.props.menuButtons ? <Box sx={styles.footerButtons}>{this.props.menuButtons}</Box> : null}
+            </Box>
+        );
+    }
+
+    /**
+     * The pencil that switches the menu into edit mode.
+     *
+     * It is rendered inside the navigation, not in the footer: it belongs to the entries it edits
+     * and scrolls along with them. `sticky` keeps it in the lower right corner of the visible area,
+     * and it only becomes visible while the mouse is over the drawer.
+     */
+    renderEditButton(): JSX.Element | null {
+        if (this.props.adminGuiConfig.admin.menu.editable === false || this.props.state !== STATES.opened) {
+            return null;
+        }
+
+        return (
+            <Box
+                sx={styles.editButton}
+                style={{ opacity: this.isSwipeable() ? 1 : 0 }}
+                ref={this.refEditButton}
+            >
+                <CustomPopper
+                    size="small"
+                    editMenuList={this.props.editMenuList}
+                    onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
+                />
+            </Box>
+        );
     }
 
     getHeader(): JSX.Element {
@@ -804,24 +959,11 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
                     {this.getHeader()}
 
-                    <List>{this.getNavigationItems()}</List>
-                    {this.props.isSecure && (
-                        <DrawerItem
-                            theme={this.props.theme}
-                            compact={!this.isSwipeable() && this.props.state !== STATES.opened}
-                            onClick={this.props.onLogout}
-                            text={this.props.t('Logout')}
-                            icon={<LogoutIcon />}
-                        />
-                    )}
-                    {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && (
-                        <div style={styles.editButton}>
-                            <CustomPopper
-                                editMenuList={this.props.editMenuList}
-                                onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
-                            />
-                        </div>
-                    )}
+                    <List style={styles.list}>
+                        {this.getNavigationItems()}
+                        {this.renderEditButton()}
+                    </List>
+                    {this.renderFooter()}
                 </SwipeableDrawer>
             );
         }
@@ -848,29 +990,11 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             >
                 <CustomDragLayer theme={this.props.theme} />
                 {this.getHeader()}
-                <List style={styles.list}>{this.getNavigationItems()}</List>
-                {this.props.isSecure && (
-                    <DrawerItem
-                        theme={this.props.theme}
-                        style={{ flexShrink: 0 }}
-                        compact={!this.isSwipeable() && this.props.state !== STATES.opened}
-                        onClick={this.props.onLogout}
-                        text={this.props.t('Logout')}
-                        icon={<LogoutIcon />}
-                    />
-                )}
-                {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && (
-                    <div
-                        style={{ ...styles.editButton, opacity: 0 }}
-                        ref={this.refEditButton}
-                    >
-                        <CustomPopper
-                            size="small"
-                            editMenuList={this.props.editMenuList}
-                            onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
-                        />
-                    </div>
-                )}
+                <List style={styles.list}>
+                    {this.getNavigationItems()}
+                    {this.renderEditButton()}
+                </List>
+                {this.renderFooter()}
             </MaterialDrawer>
         );
     }

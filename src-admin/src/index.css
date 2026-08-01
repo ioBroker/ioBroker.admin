@@ -12,26 +12,45 @@
     display: none;
 }
 
+/*
+ * Scrollbars.
+ *
+ * The colors come from the theme and are set as custom properties by `ScrollbarStyles`. They are
+ * declared on `html` here and overwritten on `:root` there - `:root` has the higher specificity, so
+ * the theme always wins no matter in which order the stylesheets end up in the document. The values
+ * below are only the fallback for the moment before React has mounted.
+ */
+html {
+    --iob-scrollbar-thumb: rgba(128, 128, 128, 0.5);
+    --iob-scrollbar-thumb-hover: rgba(128, 128, 128, 0.8);
+}
+
 ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-    background-color: #ccc;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #575757;
-    border-radius: 5px;
+    background-color: var(--iob-scrollbar-thumb);
+    border-radius: 8px;
+    /* transparent border + content-box keeps the thumb slim on any background */
+    border: 2px solid transparent;
+    background-clip: content-box;
 }
 
-::-webkit-scrollbar-track {
-    background-color: #ccc;
-    border-radius: 5px;
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--iob-scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+    background-color: transparent;
 }
 
 * {
     box-sizing: inherit;
     scrollbar-width: thin;
-    scrollbar-color: #575757 #ccc;
+    scrollbar-color: var(--iob-scrollbar-thumb) transparent;
 }
 
 html,

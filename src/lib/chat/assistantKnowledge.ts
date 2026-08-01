@@ -192,7 +192,7 @@ export const KNOWLEDGE_SECTIONS: KnowledgeSection[] = [
             'The ioBroker adapter API is NOT available; for states/objects use the dedicated tools. Use it',
             'for OS-level diagnostics, e.g. test a raw TCP/HTTP connection, resolve DNS, read a file or check',
             'disk/permissions, inspect process.version / os details, or a quick computation. Examples:',
-            '`const net=require("net"); const s=net.connect(2001,"192.168.10.5"); s.on("connect",()=>{console.log("open");s.end()}); s.on("error",e=>console.log("err",e.code)); s.setTimeout(2000,()=>{console.log("timeout");s.destroy()});`',
+            '`const net=require("node:net"); const s=net.connect(2001,"192.168.10.5"); s.on("connect",()=>{console.log("open");s.end()}); s.on("error",e=>console.log("err",e.code)); s.setTimeout(2000,()=>{console.log("timeout");s.destroy()});`',
             'Rules: keep it short, prefer READ-ONLY checks, NEVER do destructive/irreversible things, and put',
             'the answer in console.log. Each run must be confirmed by the user (the code is shown), so explain',
             'briefly what the script does before proposing it.',

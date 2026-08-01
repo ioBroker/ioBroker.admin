@@ -7,7 +7,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/
 // Icons
 import { Close as CloseIcon, Check as CheckIcon } from '@mui/icons-material';
 
-import { type Translate, type ThemeName } from '@iobroker/gui-components';
+import { Utils, type Translate, type ThemeName } from '@iobroker/gui-components';
 import type { ioBrokerObject } from '@/types';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -74,7 +74,9 @@ export default class ObjectEditDialog extends Component<ObjectEditDialogProps, O
                         width="100%"
                         height="100%"
                         language="json"
-                        theme={this.props.themeName === 'dark' ? 'vs-dark' : 'vs-light'}
+                        //  knows every dark theme, a comparison against the name
+                        // would show a bright editor in e.g. 'modernDark'
+                        theme={Utils.getThemeType(this.props.themeName) === 'dark' ? 'vs-dark' : 'vs-light'}
                         value={this.state.code}
                         options={{ selectOnLineNumbers: true }}
                         onChange={(newValue, e) => ObjectEditDialog.onChange(newValue, e)}
