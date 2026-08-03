@@ -194,9 +194,10 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### 8.0.1-alpha.2 (2026-08-01)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Breaking: React19 + MUI9
 - (@GermanBluefox) Breaking: Node 22 or higher required
+- (@GermanBluefox) Improved charts in tooltip
 
 ### 7.9.13 (2026-07-12)
 - (@GermanBluefox) Added AWS and Azure credentials in credentials manager

@@ -24,15 +24,6 @@ async function build(): Promise<void> {
         );
     }
 
-    writeFileSync(
-        `${src}public/lib/js/sparkline.js`,
-        readFileSync(`${rootFolder}/src-admin/node_modules/@fnando/sparkline/dist/sparkline.js`),
-    );
-    writeFileSync(
-        `${src}public/lib/js/sparkline.js.map`,
-        readFileSync(`${rootFolder}/src-admin/node_modules/@fnando/sparkline/dist/sparkline.js.map`),
-    );
-
     const ace = `${rootFolder}/src-admin/node_modules/ace-builds/src-min-noconflict/`;
     writeFileSync(`${dirName}/${srcRx}public/lib/js/ace/worker-json.js`, readFileSync(`${ace}worker-json.js`));
     writeFileSync(`${dirName}/${srcRx}public/lib/js/ace/ext-searchbox.js`, readFileSync(`${ace}ext-searchbox.js`));

@@ -26,6 +26,7 @@ import type { HostsWorker, NotificationAnswer, HostAliveEvent, HostEvent } from 
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import { blinkClasses } from '@/components/Hosts/HostGeneric';
 import HostCard from '../components/Hosts/HostCard';
+// import NewHosts from '../components/Hosts/NewHosts';
 import HostRow from '../components/Hosts/HostRow';
 
 const styles: Record<string, any> = {
@@ -527,6 +528,15 @@ export default class Hosts extends Component<HostsProps, HostsState> {
                             </InfoBox>
                         </Box>
                     ) : null}
+                    {/* Hosts on the network that belong to no system yet - renders nothing when there are none */}
+                    {/*<Box sx={{ marginX: 2, width: 'calc(100% - 32px)', alignSelf: 'center' }}>
+                        <NewHosts
+                            socket={this.props.socket}
+                            currentHost={this.props.currentHost}
+                            t={this.props.t}
+                            theme={this.props.theme}
+                        />
+                    </Box>*/}
                     <div style={this.state.viewMode ? styles.cards : undefined}>
                         {!this.state.viewMode && this.renderTableHeader()}
                         {this.getPanelsOrRows()}
