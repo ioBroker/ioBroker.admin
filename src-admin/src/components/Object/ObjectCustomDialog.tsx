@@ -65,6 +65,7 @@ interface ObjectCustomDialogProps {
 
 interface ObjectCustomDialogState {
     hasChanges: boolean;
+    validationError: boolean;
     currentTab: number;
     confirmDialog: boolean;
     mobile: boolean;
@@ -100,6 +101,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
 
         this.state = {
             hasChanges: false,
+            validationError: false,
             currentTab,
             confirmDialog: false,
             mobile: MobileDialog.isMobile(),
@@ -167,6 +169,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                 customsInstances={this.props.customsInstances}
                 objects={this.props.objects}
                 onProgress={(progressRunning: boolean) => this.setState({ progressRunning })}
+                onError={(validationError = false) => this.setState({ validationError })}
                 reportChangedIds={this.props.reportChangedIds}
                 onChange={(hasChanges: boolean, update: boolean) => {
                     this.setState({ hasChanges }, () => {
@@ -335,7 +338,9 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                             id="object-custom-dialog-save"
                             variant="contained"
                             color="primary"
-                            disabled={!this.state.hasChanges || this.state.progressRunning}
+                            disabled={
+                                !this.state.hasChanges || this.state.progressRunning || this.state.validationError
+                            }
                             onClick={() => this.saveFunc && this.saveFunc()}
                         >
                             {this.getButtonTitle(<SaveIcon />, this.props.t('Save'))}
@@ -346,7 +351,9 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                             id="object-custom-dialog-save-close"
                             variant="contained"
                             color="primary"
-                            disabled={!this.state.hasChanges || this.state.progressRunning}
+                            disabled={
+                                !this.state.hasChanges || this.state.progressRunning || this.state.validationError
+                            }
                             onClick={() => {
                                 if (this.saveFunc) {
                                     this.saveFunc(error => !error && this.onClose());

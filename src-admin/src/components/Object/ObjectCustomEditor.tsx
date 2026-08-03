@@ -15,7 +15,7 @@ import {
 // Icons
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { DialogError, DialogConfirm, type IobTheme } from '@iobroker/gui-components';
+import { DialogConfirm, type IobTheme } from '@iobroker/gui-components';
 
 import { ConfigGeneric, JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
 import AdminUtils from '@/helpers/AdminUtils';
@@ -118,7 +118,6 @@ interface ObjectCustomEditorState {
     maxOids: number;
     confirmed: boolean;
     showConfirmation: boolean;
-    error?: boolean;
     systemConfig?: ioBroker.SystemConfigObject;
 }
 
@@ -138,6 +137,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
 
     /** Cached per-instance filter functions: returns true if objectId is allowed */
     private statesFilterFunctions: Record<string, (objectId: string) => boolean> = {};
+    private validationErrors = new Set<string>();
     private cb?: () => void;
     private cachedNewValues?: Record<string, any>;
 
@@ -198,6 +198,20 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
     componentWillUnmount(): void {
         if (this.props.registerSaveFunc) {
             this.props.registerSaveFunc();
+        }
+        this.props.onError?.(false);
+    }
+
+    private setValidationError(instance: string, error: boolean): void {
+        const hadErrors = this.validationErrors.size > 0;
+        if (error) {
+            this.validationErrors.add(instance);
+        } else {
+            this.validationErrors.delete(instance);
+        }
+        const hasErrors = this.validationErrors.size > 0;
+        if (hadErrors !== hasErrors) {
+            this.props.onError?.(hasErrors);
         }
     }
 
@@ -303,6 +317,13 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                 let jsonSchema: ConfigItemPanel;
                 try {
                     jsonSchema = JSON5.parse(jsonText);
+                    if (jsonSchema.validatorNoSaveOnError) {
+                        Object.values(ObjectCustomEditor.flattenItems(jsonSchema.items)).forEach(item => {
+                            if (item.validator && item.validatorNoSaveOnError === undefined) {
+                                item.validatorNoSaveOnError = true;
+                            }
+                        });
+                    }
                     this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};
                     this.jsonConfigs[adapter].json = jsonSchema;
                 } catch (e) {
@@ -686,9 +707,10 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                     onChange={e => {
                                         this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                         const newValues = AdminUtils.deepClone(this.cachedNewValues);
+                                        const willEnable = !!isIndeterminate || e.target.checked;
 
                                         newValues[instance] = newValues[instance] || {};
-                                        if (isIndeterminate || e.target.checked) {
+                                        if (willEnable) {
                                             newValues[instance].enabled = true;
                                         } else if (enabled) {
                                             if (this.commonConfig[instance].enabled) {
@@ -698,6 +720,9 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                             }
                                         } else {
                                             delete newValues[instance];
+                                        }
+                                        if (!willEnable) {
+                                            this.setValidationError(instance, false);
                                         }
                                         this.cachedNewValues = newValues;
                                         this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
@@ -729,9 +754,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                 data={data}
                                 isFloatComma={this.props.systemConfig.common.isFloatComma}
                                 dateFormat={this.props.systemConfig.common.dateFormat}
-                                onError={(error: boolean) =>
-                                    this.setState({ error }, () => this.props.onError?.(error))
-                                }
+                                onError={(error: boolean) => this.setValidationError(instance, error)}
                                 onValueChange={(attr: string, value: any) => {
                                     this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                     console.log(`${attr} => ${value}`);
@@ -763,18 +786,6 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                     </div>
                 </AccordionDetails>
             </Accordion>
-        );
-    }
-
-    renderErrorMessage(): JSX.Element {
-        return (
-            !!this.state.error && (
-                <DialogError
-                    title={this.props.t('Error')}
-                    text={this.state.error ? 'Error' : ''}
-                    onClose={() => this.setState({ error: false })}
-                />
-            )
         );
     }
 
@@ -1006,7 +1017,6 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                             return null;
                         })}
                 </div>
-                {this.renderErrorMessage()}
                 {this.renderConfirmationDialog()}
             </Paper>
         );
