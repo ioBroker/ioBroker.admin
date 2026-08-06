@@ -434,14 +434,14 @@ class Intro extends React.Component<IntroProps, IntroState> {
         // restore old state
         this.setState(
             {
-                deactivated: this.deactivatedOriginal,
-                introLinks: JSON.parse(this.introLinksOriginal),
+                deactivated: this.deactivatedOriginal || null,
+                introLinks: JSON.parse(this.introLinksOriginal || '[]'),
                 hasUnsavedChanges: false,
                 edit: false,
             },
             () => {
-                this.deactivatedOriginal = null;
-                this.introLinksOriginal = null;
+                this.deactivatedOriginal = undefined;
+                this.introLinksOriginal = undefined;
             },
         );
     }
@@ -470,7 +470,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
     }
 
     getInstancesCards(): (JSX.Element | null)[] {
-        return this.state.instances?.map(instance => {
+        return (this.state.instances || []).map(instance => {
             const enabled = !this.state.deactivated?.includes(`${instance.id}_${instance.linkName}`);
             if (enabled || this.state.edit) {
                 let linkText = instance.link ? instance.link.replace(/^https?:\/\//, '') : '';
@@ -501,7 +501,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 return (
                     <IntroCard
                         key={`${instance.id}_${instance.link}`}
-                        image={instance.image}
+                        image={instance.image || ''}
                         title={
                             <>
                                 <span
@@ -516,25 +516,25 @@ class Intro extends React.Component<IntroProps, IntroState> {
                                 ) : null}
                             </>
                         }
-                        action={{ link: instance.link, text: linkText }}
+                        action={{ link: instance.link || '', text: linkText }}
                         t={this.props.t}
                         lang={this.props.lang}
-                        color={instance.color}
+                        color={instance.color || ''}
                         showInfo={!!instance.info}
                         edit={this.state.edit}
-                        offline={hostData && hostData.alive === false}
+                        offline={!!hostData && hostData.alive === false}
                         warning={
                             timeDiff > this.#THRESHOLD_TIME_DIFF_MS && isDataFresh
                                 ? this.t(
                                       'Backend time differs by %s minutes',
                                       Math.round(timeDiff / this.#ONE_MINUTE_MS).toString(),
                                   )
-                                : null
+                                : undefined
                         }
                         enabled={enabled}
                         disabled={!hostData || typeof hostData !== 'object'}
                         getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
-                        toggleActivation={() => this.toggleCard(instance.id, instance.linkName)}
+                        toggleActivation={() => this.toggleCard(instance.id, instance.linkName || '')}
                         openSnackBarFunc={() => this.setState({ openSnackBar: true })}
                         theme={this.props.theme}
                     >
@@ -559,7 +559,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
     }
 
     getLinkCards(): (JSX.Element | null)[] {
-        return this.state.introLinks?.map((item, i) => {
+        return (this.state.introLinks || []).map((item, i) => {
             if (!item.enabled && !this.state.edit) {
                 return null;
             }
@@ -641,7 +641,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         if (this.state.editLink) {
             return (
                 <EditIntroLinkDialog
-                    link={this.state.link}
+                    link={this.state.link as ItemElement}
                     socket={this.props.socket}
                     isNew={this.state.editLinkIndex === -1}
                     t={this.props.t}
@@ -745,7 +745,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         const systemConfig = await this.props.socket.getSystemConfig(true);
         let changed = false;
         if (JSON.stringify(systemConfig.common.intro) !== JSON.stringify(this.state.deactivated)) {
-            systemConfig.common.intro = this.state.deactivated;
+            systemConfig.common.intro = this.state.deactivated || undefined;
             changed = true;
         }
         if (!changed && JSON.stringify(systemConfig.native.introLinks) !== JSON.stringify(this.state.introLinks)) {
@@ -814,7 +814,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
         results.forEach(res => {
             hostsData[res.id] = Intro.preprocessHostData(res.data);
-            alive[res.id] = res.data.alive;
+            alive[res.id] = !!res.data.alive;
             timestampMap.set(res.id, currentTime);
         });
 
@@ -843,7 +843,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
         const _urls: {
             url: string;
-            port: number;
+            port?: number;
             instance?: string;
         }[] = replaceLink(linkItem.link, common.name, instanceId, {
             instances,
@@ -894,7 +894,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    static getText(text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
+    static getText(text: ioBroker.StringOrTranslated | undefined, lang: ioBroker.Languages): string {
         if (!text) {
             return '';
         }
@@ -970,9 +970,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
             }
         }
 
-        if (instance.common.localLinks && typeof instance.common.localLinks === 'object') {
-            Object.keys(instance.common.localLinks).forEach((linkName: string) => {
-                const linkItem: unknown = instance.common.localLinks[linkName];
+        const localLinks = instance.common.localLinks;
+        if (localLinks && typeof localLinks === 'object') {
+            Object.keys(localLinks).forEach((linkName: string) => {
+                const linkItem: unknown = localLinks[linkName];
                 if (typeof linkItem === 'string') {
                     result.push({
                         ...defaultLink,
@@ -1058,7 +1059,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     }
 
                     if (compatibilityStructure.localLinks) {
-                        const link: unknown = instance.common.localLinks[compatibilityStructure.localLinks];
+                        const link: unknown = instance.common.localLinks?.[compatibilityStructure.localLinks];
                         if (link && typeof link === 'string') {
                             item.link = link;
                         } else if (link && typeof link === 'object' && (link as any).link) {
@@ -1101,7 +1102,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         }
 
                         if (compatibilityStructure.localLinks) {
-                            const link: unknown = instance.common.localLinks[compatibilityStructure.localLinks];
+                            const link: unknown = instance.common.localLinks?.[compatibilityStructure.localLinks];
                             if (link && typeof link === 'string') {
                                 item.link = link;
                             } else if (link && typeof link === 'object' && (link as any).link) {
@@ -1209,7 +1210,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         hosts: CompactHost[] | null,
         systemConfig: ioBroker.SystemConfigObject,
     ): Promise<{ instances: IntroInstanceItem[]; deactivated: string[] }> {
-        hosts = hosts || this.state.hosts;
+        hosts = hosts || this.state.hosts || [];
 
         const oHosts: Record<string, ioBroker.HostObject> = {};
         hosts.forEach(obj => (oHosts[obj._id] = obj as ioBroker.HostObject));
@@ -1232,7 +1233,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 }
                 const common = obj.common || null;
                 const objId = obj._id.split('.');
-                const instanceId: number = parseInt(objId.pop(), 10);
+                const instanceId: number = parseInt(objId.pop() || '', 10);
                 let name: string;
                 if (common?.name && typeof common.name === 'object') {
                     const commonName: ioBroker.Translated = common?.name;

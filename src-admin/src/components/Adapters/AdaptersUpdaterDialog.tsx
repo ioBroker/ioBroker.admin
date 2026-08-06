@@ -101,9 +101,9 @@ interface AdaptersUpdaterDialogState {
 class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, AdaptersUpdaterDialogState> {
     updateAvailable: string[] = [];
 
-    onAdapterFinished: () => void;
+    onAdapterFinished: (() => void) | null = null;
 
-    processList: { adapter: string; version: string }[];
+    processList: { adapter: string; version: string }[] = [];
 
     constructor(props: AdaptersUpdaterDialogProps) {
         super(props);
@@ -166,7 +166,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                 cb();
             }
         } else {
-            const { adapter, version } = this.processList.shift();
+            const { adapter, version } = this.processList.shift() as { adapter: string; version: string };
 
             this.updateAdapter(adapter, version, () => {
                 const updated = [...this.state.updated];
@@ -223,7 +223,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                             <IconButton
                                 size="large"
                                 style={{ ...styles.languageButton, ...languageButtonActive }}
-                                onClick={() => this.props.toggleTranslation()}
+                                onClick={() => this.props.toggleTranslation?.()}
                                 title={I18n.t('Disable/Enable translation')}
                             >
                                 <LanguageIcon />
@@ -252,9 +252,9 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                     lang={this.props.lang}
                                     installed={this.props.installed}
                                     repository={this.props.repository}
-                                    noTranslation={this.props.noTranslation}
-                                    toggleTranslation={this.props.toggleTranslation}
-                                    onUpdateSelected={(selected: string[], updateAvailable: string[]) => {
+                                    noTranslation={!!this.props.noTranslation}
+                                    toggleTranslation={this.props.toggleTranslation || (() => {})}
+                                    onUpdateSelected={(selected: string[], updateAvailable?: string[]) => {
                                         if (updateAvailable) {
                                             this.updateAvailable = updateAvailable;
                                         }
@@ -282,14 +282,14 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                     socket={this.props.socket}
                                     t={this.props.t}
                                     cmd={`upgrade ${this.state.current}@${this.state.currentVersion}${this.state.debug ? ' --debug' : ''}`}
-                                    onFinished={() => this.onAdapterFinished()}
+                                    onFinished={() => this.onAdapterFinished?.()}
                                     errorFunc={() => {
                                         if (this.state.stopOnError) {
                                             this.setState({ stopped: true, finished: true });
                                             this.onAdapterFinished = null;
                                             this.props.onSetCommandRunning(false);
                                         } else {
-                                            this.onAdapterFinished();
+                                            this.onAdapterFinished?.();
                                         }
                                     }}
                                 />

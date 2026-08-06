@@ -275,7 +275,7 @@ export default class CertificatesDialog extends BaseSystemSettingsDialog<
                                     if (acceptedFiles.length) {
                                         acceptedFiles.forEach(file => {
                                             const reader = new FileReader();
-                                            reader.onload = e => this.onAdd(file.name, e.target.result as string);
+                                            reader.onload = e => this.onAdd(file.name, e.target?.result as string);
                                             reader.readAsText(file);
                                         });
                                     } else if (!fileRejections.length) {
@@ -346,7 +346,10 @@ export default class CertificatesDialog extends BaseSystemSettingsDialog<
     onChangeText = (value: string, id: string, name: 'title' | 'data'): void => {
         const newData = AdminUtils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
-        array.find(element => element.title === id)[name] = value;
+        const entry = array.find(element => element.title === id);
+        if (entry) {
+            entry[name] = value;
+        }
         newData.native.certificates = CertificatesDialog.arrayToCert(array);
         this.props.onChange(newData);
     };

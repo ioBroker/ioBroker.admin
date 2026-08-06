@@ -349,7 +349,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 noToolbar
                 defaultHistory={this.props.defaultHistory}
                 customsInstances={[]}
-                objects={undefined}
+                objects={{}}
                 historyInstance={''}
             />
         );
@@ -390,8 +390,8 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
             this.props.object.common.max !== undefined &&
             this.props.object.common.min !== undefined
         ) {
-            const options = Object.keys(this.props.states).map(key => ({
-                label: this.props.states[key],
+            const options = Object.keys(this.props.states || {}).map(key => ({
+                label: this.props.states?.[key],
                 value: key,
             }));
 
@@ -439,7 +439,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                             key={i}
                             value={key}
                         >
-                            {this.props.states[key]}
+                            {this.props.states?.[key]}
                         </MenuItem>
                     ))}
                 </Select>
@@ -686,7 +686,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                 helperText={this.props.t(
                                                     'Press ENTER to write the value, when focused',
                                                 )}
-                                                value={this.state.targetValue.toString()}
+                                                value={this.state.targetValue?.toString()}
                                                 label={
                                                     this.props.t('Value') +
                                                     (this.props.object.common.min !== undefined ||

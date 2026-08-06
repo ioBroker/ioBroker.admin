@@ -23,7 +23,7 @@ export default class FileEditor extends FileViewerClass {
         });
     }
 
-    static getEditFile(ext: string | null): 'json' | 'json5' | 'javascript' | 'html' | 'text' {
+    static getEditFile(ext: string | null | undefined): 'json' | 'json5' | 'javascript' | 'html' | 'text' {
         switch (ext) {
             case 'json':
                 return 'json';
@@ -37,14 +37,14 @@ export default class FileEditor extends FileViewerClass {
                 return 'html';
             default:
                 // e.g. ace/mode/text or ace/mode/csv
-                return modelist.getModeForPath(`testFile.${ext}`).mode.split('/').pop();
+                return (modelist.getModeForPath(`testFile.${ext}`).mode.split('/').pop() || 'text') as 'text';
         }
     }
 
     writeFile64 = (): void => {
         // File viewer in adapter-react does not support write
         const parts = this.props.href.split('/');
-        const data = this.state.editingValue;
+        const data = this.state.editingValue || '';
         parts.splice(0, 2);
         const adapter = parts[0];
         const name = parts.splice(1).join('/');
@@ -60,7 +60,7 @@ export default class FileEditor extends FileViewerClass {
             <Editor
                 mode={FileEditor.getEditFile(this.props.formatEditFile)}
                 themeType={this.props.themeType}
-                value={this.state.editingValue || this.state.code || this.state.text}
+                value={this.state.editingValue || this.state.code || this.state.text || undefined}
                 onChange={
                     this.state.editing
                         ? newValue => this.setState({ editingValue: newValue, changed: true })

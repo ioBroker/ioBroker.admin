@@ -60,12 +60,12 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
     async componentDidMount(): Promise<void> {
         try {
             const repository = await this.props.socket.getRepository(this.props.host, {
-                repo: this.props.socket.systemConfig.common.activeRepo,
+                repo: this.props.socket.systemConfig?.common.activeRepo,
             });
 
             this.setState({ repository });
         } catch (e) {
-            console.error(`Could not read repository: ${e.message}`);
+            console.error(`Could not read repository: ${(e as Error).message}`);
         }
     }
 

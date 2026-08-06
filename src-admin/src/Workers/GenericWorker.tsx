@@ -99,7 +99,10 @@ export class GenericWorker<T extends ioBroker.ObjectType> {
         return this.forceUpdate;
     }
 
-    objectChangeHandler = (id: GetRootFromType<T>, obj: GetObjectFromType<T> | null | undefined): void => {
+    // The socket delivers any object type, so the parameters are the wide ones and get narrowed here
+    objectChangeHandler = (_id: string, _obj: ioBroker.Object | null | undefined): void => {
+        const id = _id as GetRootFromType<T>;
+        const obj = _obj as GetObjectFromType<T> | null | undefined;
         this.objects = this.objects || {};
 
         // if our object
@@ -139,7 +142,7 @@ export class GenericWorker<T extends ioBroker.ObjectType> {
                 cb([
                     {
                         id,
-                        obj,
+                        obj: obj || undefined,
                         type,
                         oldObj,
                     },
@@ -163,12 +166,13 @@ export class GenericWorker<T extends ioBroker.ObjectType> {
                 this.root ? `${this.root}.\u9999` : '\u9999',
             )
             .then(objects => {
-                this.objects = objects as Record<string, GetObjectFromType<T>>;
+                const result = objects as Record<string, GetObjectFromType<T>>;
+                this.objects = result;
                 if (this.objectType === 'adapter' || this.objectType === 'instance') {
-                    Object.keys(this.objects).forEach(id => AdminUtils.fixAdminUI(this.objects[id]));
+                    Object.keys(result).forEach(id => AdminUtils.fixAdminUI(result[id]));
                 }
 
-                return this.objects;
+                return result;
             })
             .catch((e: unknown): null => {
                 window.alert(`Cannot get objects of type ${this.objectType}, with root "${this.root}": ${e as Error}`);
@@ -192,9 +196,7 @@ export class GenericWorker<T extends ioBroker.ObjectType> {
                         // read all hosts anew and inform about it
                         void this.getObjects(true).then(objects => {
                             if (objects) {
-                                Object.keys(objects).forEach(id =>
-                                    this.objectChangeHandler(id as GetRootFromType<T>, objects[id]),
-                                );
+                                Object.keys(objects).forEach(id => this.objectChangeHandler(id, objects[id]));
                             }
                         });
                     })
@@ -219,9 +221,7 @@ export class GenericWorker<T extends ioBroker.ObjectType> {
                             // read all hosts anew and inform about it
                             void this.getObjects(true).then(objects => {
                                 if (objects) {
-                                    Object.keys(objects).forEach(id =>
-                                        this.objectChangeHandler(id as GetRootFromType<T>, objects[id]),
-                                    );
+                                    Object.keys(objects).forEach(id => this.objectChangeHandler(id, objects[id]));
                                 }
                             });
                         }

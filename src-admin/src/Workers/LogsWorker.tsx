@@ -24,7 +24,7 @@ export class LogsWorker {
 
     private logs: LogLineSaved[] | null;
 
-    private newLogs: LogLineSaved[] | null;
+    private newLogs: LogLineSaved[] | null = null;
 
     private errorCountHandlers: ((errors: number) => void)[];
 
@@ -44,9 +44,9 @@ export class LogsWorker {
 
     private readonly isSafari: boolean;
 
-    private logTimeout: ReturnType<typeof setTimeout> | null;
+    private logTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    private logSize: number;
+    private logSize = 0;
 
     constructor(socket: AdminConnection, maxLogs?: number) {
         this.socket = socket;
@@ -64,9 +64,9 @@ export class LogsWorker {
         this.maxLogs = maxLogs || 1000;
         this.logs = null;
         this.isSafari =
-            navigator.vendor &&
+            !!navigator.vendor &&
             navigator.vendor.includes('Apple') &&
-            navigator.userAgent &&
+            !!navigator.userAgent &&
             !navigator.userAgent.includes('CriOS') &&
             !navigator.userAgent.includes('FxiOS');
 
@@ -131,7 +131,7 @@ export class LogsWorker {
             if (!this.logTimeout) {
                 this.logTimeout = setTimeout(() => {
                     this.logTimeout = null;
-                    const newLogs = this.newLogs;
+                    const newLogs = this.newLogs || [];
                     this.newLogs = null;
 
                     this.handlers.forEach(handler => handler && handler(newLogs, JSON.stringify(line).length - 65));
@@ -217,10 +217,12 @@ export class LogsWorker {
             "_id": 48358425
         }; */
 
-        let objLine: LogLineSaved;
+        // local reference, so the narrowing above survives the calls below
+        const logs = this.logs;
+        let objLine: LogLineSaved | undefined;
         let isNew = true;
-        const length = this.logs.length;
-        lastKey = lastKey || (length && this.logs[this.logs.length - 1].key) || 0;
+        const length = logs.length;
+        lastKey = lastKey || (length && logs[length - 1].key) || 0;
 
         if (typeof line === 'object') {
             objLine = line;
@@ -238,7 +240,7 @@ export class LogsWorker {
                 // Safari sucks. It is a very idiotic browser, and because of it, we must parse every number apart
                 if (this.isSafari) {
                     // parse every number
-                    const tt = line.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3})/);
+                    const tt = line.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3})/) || [];
                     ts = new Date(
                         parseInt(tt[1], 10),
                         parseInt(tt[2], 10) - 1,
@@ -261,18 +263,23 @@ export class LogsWorker {
                 // detect from
                 const from = line.match(/: (host\..+? |[-\w]+\.\d+ \()/);
 
+                // the level is normally colorized (`…[32minfo…`), but a log file written
+                // with `colorize: false` has no escape sequences
+                const severity =
+                    line.match(/\d+m(silly|debug|info|warn|error)/) || line.match(/ - (silly|debug|info|warn|error):/);
+
                 objLine = {
                     key,
                     from: from ? from[0].replace(/[ :(]/g, '') : '',
                     message: line.split(/\[\d+m: /)[1],
-                    severity: line.match(/\d+m(silly|debug|info|warn|error)/)[0].replace(/[\dm]/g, ''),
+                    severity: severity ? severity[1] : 'info',
                     ts,
                 } as LogLineSaved;
             } else {
                 isNew = false;
                 // if no time found
                 if (length) {
-                    objLine = this.logs[length - 1];
+                    objLine = logs[length - 1];
                     if (objLine) {
                         if (typeof objLine.message === 'object') {
                             objLine.message = AdminUtils.parseColorMessage(objLine.message.original + line);
@@ -293,26 +300,27 @@ export class LogsWorker {
         }
 
         if (isNew) {
+            const objKey = objLine.key || 0;
             // if new message time is less than last message in log
-            if (length && this.logs[length - 1].key > objLine.key) {
+            if (length && (logs[length - 1].key || 0) > objKey) {
                 let i;
                 // find the place
                 for (i = length - 1; i >= 0; i--) {
-                    if (this.logs[i].key < objLine.key) {
+                    if ((logs[i].key || 0) < objKey) {
                         break;
                     }
                 }
                 if (i === -1) {
-                    this.logs.unshift(objLine);
+                    logs.unshift(objLine);
                 } else {
-                    this.logs.splice(i + 1, 0, objLine);
+                    logs.splice(i + 1, 0, objLine);
                 }
             } else {
-                this.logs.push(objLine);
+                logs.push(objLine);
             }
 
             if (length + 1 === this.maxLogs) {
-                this.logs.shift();
+                logs.shift();
             }
         }
 
@@ -338,22 +346,24 @@ export class LogsWorker {
             .then(lines => {
                 // @ts-expect-error it can return error string or error object { error: 'permissionError' }
                 if ((lines as string) === 'permissionError' || lines?.error !== undefined) {
-                    this.logs = [];
+                    const empty: LogLineSaved[] = [];
+                    this.logs = empty;
 
                     window.alert('Cannot get logs: no permission');
 
-                    return { logs: this.logs, logSize: 0 };
+                    return { logs: empty, logSize: 0 };
                 }
 
-                const logSizeStr: string | null = lines ? (lines as string[]).pop() : null;
+                const logSizeStr: string | null | undefined = lines ? (lines as string[]).pop() : null;
                 let logSize = 0;
 
                 if (typeof logSizeStr === 'string') {
                     logSize = parseInt(logSizeStr, 10);
                 }
 
-                this.logs = [];
-                let lastKey: number;
+                const logs: LogLineSaved[] = [];
+                this.logs = logs;
+                let lastKey: number | undefined;
 
                 (lines as string[]).forEach(line => {
                     const result = this._processLine(line, lastKey);
@@ -369,14 +379,14 @@ export class LogsWorker {
                     }
                 });
 
-                if (this.logs?.length && this.logs[0].ts) {
-                    this.logs.sort((a, b) => (a.ts > b.ts ? 1 : a.ts < b.ts ? -1 : 0));
+                if (logs.length && logs[0].ts) {
+                    logs.sort((a, b) => (a.ts > b.ts ? 1 : a.ts < b.ts ? -1 : 0));
                 }
 
                 this.logSize = logSize;
 
                 // inform subscribes about each line
-                this.handlers.forEach(cb => cb && cb(this.logs, logSize));
+                this.handlers.forEach(cb => cb && cb(logs, logSize));
 
                 if (oldErrors !== this.errors) {
                     this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
@@ -385,11 +395,11 @@ export class LogsWorker {
                     this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
                 }
 
-                return { logs: this.logs, logSize };
+                return { logs, logSize };
             })
-            .catch((e: unknown): { logs: LogLineSaved[] | null; logSize: number } => {
+            .catch((e: unknown): { logs: LogLineSaved[]; logSize: number } => {
                 window.alert(`Cannot get logs: ${e as Error}`);
-                return { logs: this.logs, logSize: 0 };
+                return { logs: this.logs || [], logSize: 0 };
             });
 
         return this.promise;

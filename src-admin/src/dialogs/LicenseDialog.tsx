@@ -110,7 +110,7 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
 
     useEffect(() => {
         const installOnscroll = (): boolean => {
-            const divMarkdown: HTMLDivElement | null = divRef.current?.querySelector('.markdown');
+            const divMarkdown: HTMLDivElement | null = divRef.current?.querySelector('.markdown') || null;
             if (divMarkdown) {
                 // install on scroll only if the scrollbar is visible
                 if (divMarkdown.scrollHeight <= divMarkdown.clientHeight) {
@@ -177,7 +177,7 @@ function LicenseDialog({ url, onClose, licenseType }: LicenseDialogProps): JSX.E
         };
     }, [loading, scrolled, text]);
 
-    let content: JSX.Element;
+    let content: JSX.Element | null = null;
     if (!loading && text) {
         if (text.startsWith('#')) {
             // react-markdown dropped the `className` prop, so the CSS hook moves to a wrapper

@@ -94,13 +94,13 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
         };
     }
 
-    marker: Marker;
+    marker: Marker | null = null;
 
-    map: Map;
+    map: Map | null = null;
 
-    cityTimer: ReturnType<typeof setTimeout>;
+    cityTimer: ReturnType<typeof setTimeout> | null = null;
 
-    latLongTimer: ReturnType<typeof setTimeout>;
+    latLongTimer: ReturnType<typeof setTimeout> | null = null;
 
     getSettings(): Setting[] {
         return [
@@ -329,7 +329,7 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
 
         // if disabled by vendor settings
         if (
-            this.props.adminGuiConfig.admin.settings &&
+            this.props.adminGuiConfig.admin?.settings &&
             (this.props.adminGuiConfig.admin.settings as { [id: string]: boolean })[e.id] === false
         ) {
             return null;
@@ -485,7 +485,7 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                     text={this.props.t('confirm_change_repo')}
                     onClose={result => {
                         const value = this.state.confirmValue;
-                        this.setState({ confirm: false, confirmValue: null }, () => {
+                        this.setState({ confirm: false, confirmValue: '' }, () => {
                             if (result) {
                                 this.doChange('activeRepo', value);
                             }
@@ -550,11 +550,11 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
             }
             this.latLongTimer = setTimeout(() => {
                 this.latLongTimer = null;
-                this.map.flyTo([
+                this.map?.flyTo([
                     parseFloat(this.props.data.common.latitude as any as string),
                     parseFloat(this.props.data.common.longitude as any as string),
                 ]);
-                this.marker.setLatLng([
+                this.marker?.setLatLng([
                     parseFloat(this.props.data.common.latitude as any as string),
                     parseFloat(this.props.data.common.longitude as any as string),
                 ]);
@@ -582,8 +582,8 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                             this.onChangeInput(results[0].y, 'latitude', () =>
                                 this.onChangeInput(results[0].x, 'longitude', () =>
                                     this.onChangeInput(23, 'zoom', () => {
-                                        this.map.flyTo([results[0].y, results[0].x]);
-                                        this.marker.setLatLng([results[0].y, results[0].x]);
+                                        this.map?.flyTo([results[0].y, results[0].x]);
+                                        this.marker?.setLatLng([results[0].y, results[0].x]);
                                     }),
                                 ),
                             ),

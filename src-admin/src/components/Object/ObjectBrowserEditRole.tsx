@@ -37,18 +37,22 @@ class ObjectBrowserEditRole extends Component<ObjectBrowserEditRoleProps, Object
     componentDidMount(): void {
         void this.props.socket
             .getObject(this.props.id)
-            .then((obj: ioBroker.Object) => {
-                this.object = obj;
-                const value = obj?.common?.role || null;
+            .then(obj => {
+                this.object = (obj as ioBroker.Object) || null;
+                const value = obj?.common?.role || '';
                 this.setState({ role: value, initRole: value, roleInput: value });
             })
             .catch((e: string) => console.error(e));
     }
 
     onUpdate(): void {
-        this.object.common = this.object.common || ({} as ioBroker.ObjectCommon);
-        this.object.common.role = this.state.roleInput;
-        void this.props.socket.setObject(this.object._id, this.object).then(() => this.props.onClose(this.object));
+        const object = this.object;
+        if (!object) {
+            return;
+        }
+        object.common = object.common || ({} as ioBroker.ObjectCommon);
+        object.common.role = this.state.roleInput || undefined;
+        void this.props.socket.setObject(object._id, object).then(() => this.props.onClose(object));
     }
 
     static filterRoles(roleArray: { role: string; type: ioBroker.CommonType }[], type: ioBroker.CommonType): string[] {

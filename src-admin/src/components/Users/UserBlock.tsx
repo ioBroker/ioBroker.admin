@@ -23,7 +23,7 @@ interface UserBlockProps {
     updateData: () => void;
     addUserToGroup?: (userId: string, groupId: string) => void;
     removeUserFromGroup: (userId: string, groupId: string) => void;
-    getText: (text: ioBroker.StringOrTranslated) => string;
+    getText: (text: ioBroker.StringOrTranslated | undefined) => string;
     themeType: ThemeType;
     styles: Record<string, any>;
     socket: AdminConnection;
@@ -79,7 +79,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                         onClick={() => props.showUserDeleteDialog(props.user)}
                         disabled={props.user.common.dontDelete}
                     >
-                        <DeleteIcon style={props.user.common.dontDelete ? null : { color: textColor }} />
+                        <DeleteIcon style={props.user.common.dontDelete ? undefined : { color: textColor }} />
                     </IconButton>
                 </div>
                 <CardContent>
@@ -177,7 +177,7 @@ const UserBlockDrag: React.FC<UserBlockProps> = props => {
         end: (item, monitor) => {
             const dropResult = monitor.getDropResult<{ groupId: string }>();
             if (item && dropResult) {
-                props.addUserToGroup(item.userId, dropResult.groupId);
+                props.addUserToGroup?.(item.userId, dropResult.groupId);
             }
         },
         collect: monitor => ({

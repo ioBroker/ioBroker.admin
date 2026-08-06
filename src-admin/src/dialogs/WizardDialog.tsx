@@ -138,8 +138,8 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
     componentDidMount(): void {
         void this.props.socket.getCurrentInstance().then((namespace: string) =>
             this.props.socket.getObject(`system.adapter.${namespace}`).then(obj => {
-                this.adminInstance = obj;
-                this.setState({ auth: obj.native.auth, secure: obj.native.secure });
+                this.adminInstance = (obj as ioBroker.AdapterObject) || null;
+                this.setState({ auth: obj?.native.auth, secure: obj?.native.secure });
             }),
         );
     }
@@ -195,7 +195,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         return (
             <WizardPasswordTab
                 t={I18n.t}
-                onDone={async (pass: string, goToBackItUp: boolean): Promise<void> => {
+                onDone={async (pass: string, goToBackItUp?: boolean): Promise<void> => {
                     if (goToBackItUp) {
                         this.props.onNavigate('tab-backitup-0');
                     } else {
@@ -334,8 +334,8 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                         return;
                     }
                     this.adminInstance.native.secure = this.state.secure;
-                    this.adminInstance.native.certPublic = this.adminInstance.native.certPublic || certPublic.name;
-                    this.adminInstance.native.certPrivate = this.adminInstance.native.certPrivate || certPrivate.name;
+                    this.adminInstance.native.certPublic = this.adminInstance.native.certPublic || certPublic?.name;
+                    this.adminInstance.native.certPrivate = this.adminInstance.native.certPrivate || certPrivate?.name;
                 }
 
                 await this.props.socket.setObject(this.adminInstance._id, this.adminInstance);

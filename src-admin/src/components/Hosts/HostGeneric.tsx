@@ -397,15 +397,16 @@ export default abstract class HostGeneric<
         this.diskSizeCache = (diskSizeState?.val as number) ?? this.diskSizeCache;
     }
 
-    notificationHandler = (notifications: Record<string, NotificationAnswer>): void =>
-        notifications &&
-        notifications[this.props.hostId] &&
-        this.setState({
-            hostNotifications: {
-                notifications: notifications[this.props.hostId],
-                ...HostGeneric.calculateWarning(notifications[this.props.hostId]),
-            },
-        });
+    notificationHandler = (notifications: Record<string, NotificationAnswer>): void => {
+        if (notifications?.[this.props.hostId]) {
+            this.setState({
+                hostNotifications: {
+                    notifications: notifications[this.props.hostId],
+                    ...HostGeneric.calculateWarning(notifications[this.props.hostId]),
+                },
+            });
+        }
+    };
 
     readChangeLog(): void {
         if (!this.state.changeLog) {
@@ -455,7 +456,7 @@ export default abstract class HostGeneric<
         this.props.socket.unsubscribeState(`${this.props.hostId}.logLevel`, this.logLevelFunc);
     }
 
-    eventsInputFunc = (_id: string, input: ioBroker.State): void => {
+    eventsInputFunc = (_id: string, input: ioBroker.State | null | undefined): void => {
         this.inputCache = input && input.val !== null ? `⇥${input.val}` : '-';
         if (this.refEvents.current) {
             this.refEvents.current.innerHTML = `${this.inputCache} / ${this.outputCache}`;
@@ -463,7 +464,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    eventsOutputFunc = (_id: string, output: ioBroker.State): void => {
+    eventsOutputFunc = (_id: string, output: ioBroker.State | null | undefined): void => {
         this.outputCache = output && output.val !== null ? `↦${output.val}` : '-';
         if (this.refEvents.current) {
             this.refEvents.current.innerHTML = `${this.inputCache} / ${this.outputCache}`;
@@ -471,7 +472,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    warningFunc = (name_: string, state: ioBroker.State): void => {
+    warningFunc = (name_: string, state: ioBroker.State | null | undefined): void => {
         if (name_.endsWith('diskFree')) {
             this.diskFreeCache = (state?.val as number) || 0;
         } else if (name_.endsWith('diskSize')) {
@@ -491,7 +492,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    cpuFunc = (_id: string, state: ioBroker.State): void => {
+    cpuFunc = (_id: string, state: ioBroker.State | null | undefined): void => {
         this.cpuCache = this.formatValue(state, '%');
         if (this.refCpu.current) {
             this.refCpu.current.innerHTML = this.cpuCache;
@@ -499,7 +500,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    memFunc = (_id: string, state: ioBroker.State): void => {
+    memFunc = (_id: string, state: ioBroker.State | null | undefined): void => {
         this.memCache = this.formatValue(state, '%');
         if (this.refMem.current) {
             this.refMem.current.innerHTML = this.memCache;
@@ -507,7 +508,7 @@ export default abstract class HostGeneric<
         }
     };
 
-    uptimeFunc = (_id: string, state: ioBroker.State): void => {
+    uptimeFunc = (_id: string, state: ioBroker.State | null | undefined): void => {
         if (state?.val) {
             const d = Math.floor((state.val as number) / (3600 * 24));
             const h = Math.floor(((state.val as number) % (3600 * 24)) / 3600);
@@ -541,7 +542,7 @@ export default abstract class HostGeneric<
         return count;
     }
 
-    formatValue(state: ioBroker.State, unit: string): string {
+    formatValue(state: ioBroker.State | null | undefined, unit: string): string {
         if (!state || state.val === null || state.val === undefined) {
             return `-${unit ? ` ${unit}` : ''}`;
         }
@@ -551,13 +552,13 @@ export default abstract class HostGeneric<
         return state.val + (unit ? ` ${unit}` : '');
     }
 
-    logLevelFunc = (_id: string, state: ioBroker.State): void => {
+    logLevelFunc = (_id: string, state: ioBroker.State | null | undefined): void => {
         if (state) {
             this.setState({ logLevel: state.val as ioBroker.LogLevel, logLevelSelect: state.val as ioBroker.LogLevel });
         }
     };
 
-    renderDialogLogLevel(): React.JSX.Element {
+    renderDialogLogLevel(): React.JSX.Element | null {
         if (!this.state.openDialogLogLevel) {
             return null;
         }
@@ -949,16 +950,17 @@ export default abstract class HostGeneric<
         const installed = this.props.host.common.installedVersion;
         const news: News[] = [];
 
-        if (installed && adapter?.news) {
-            Object.keys(adapter.news).forEach(version => {
+        const adapterNews = adapter?.news;
+        if (installed && adapterNews) {
+            Object.keys(adapterNews).forEach(version => {
                 try {
                     if (semver.gt(version, installed) || all) {
                         let downloaded = false;
                         let newsText: string = this.props.noTranslation
-                            ? adapter.news[version].en
-                            : adapter.news[version][this.props.lang] || adapter.news[version].en;
+                            ? adapterNews[version].en
+                            : adapterNews[version][this.props.lang] || adapterNews[version].en;
 
-                        if (adapter.news[version].en === 'see CHANGELOG.md' && this.state.changeLog) {
+                        if (adapterNews[version].en === 'see CHANGELOG.md' && this.state.changeLog) {
                             // try to find news in CHANGELOG
                             const found = HostGeneric.extractNews(this.state.changeLog, version);
                             if (found) {

@@ -119,9 +119,9 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
             newAliasRole: this.props.obj.common.role || '',
             newAliasRead: this.props.obj.common.read as undefined | boolean,
             newAliasWrite: this.props.obj.common.write as undefined | boolean,
-            newAliasUnit: this.props.obj.common.unit,
+            newAliasUnit: this.props.obj.common.unit || '',
             newAliasDesc: ObjectAliasEditor.getText(this.props.obj.common.desc) || '',
-            newAliasType: this.props.obj.common.type,
+            newAliasType: this.props.obj.common.type || 'mixed',
             newAliasMin:
                 this.props.obj.common.min === undefined ? '' : (this.props.obj.common.min as number).toString(),
             newAliasMax:
@@ -129,13 +129,13 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
             newAliasUseFormula: false,
             newAliasReadFormula: 'val',
             newAliasWriteFormula: 'val',
-            newAliasColor: this.props.obj.common.color,
-            newAliasIcon: this.props.obj.common.icon,
+            newAliasColor: this.props.obj.common.color || '',
+            newAliasIcon: this.props.obj.common.icon || '',
             newAliasCopyStates: !!this.props.obj.common.states,
         };
     }
 
-    static getText(text: ioBroker.StringOrTranslated): string {
+    static getText(text: ioBroker.StringOrTranslated | undefined): string {
         if (!text) {
             return '';
         }
@@ -327,11 +327,16 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
                         style={{ ...styles.formControlLabel }}
                         fullWidth
                         value={this.state.newAliasRole}
-                        onChange={(_, e: string): void => {
+                        onChange={(_, _e: string | null): void => {
+                            const e = _e || '';
                             const role = DEFAULT_ROLES.find(r => r.role === e);
                             if (role) {
                                 if (role.w !== undefined && role.r !== undefined) {
-                                    this.setState({ newAliasRole: e, newAliasRead: role.r, newAliasWrite: role.w });
+                                    this.setState({
+                                        newAliasRole: e || '',
+                                        newAliasRead: role.r,
+                                        newAliasWrite: role.w,
+                                    });
                                     return;
                                 }
                                 if (role.w !== undefined) {

@@ -4,10 +4,8 @@ import express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
 import type { Server } from 'node:http';
 import { readFileSync, existsSync, createReadStream, readdirSync, lstatSync } from 'node:fs';
-import { inherits } from 'node:util';
 import { join, normalize, parse, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
-import { Transform } from 'node:stream';
 import compression from 'compression';
 import { getType } from 'mime';
 import { gunzipSync } from 'node:zlib';
@@ -122,21 +120,6 @@ async function readFolderRecursive(
     return filesOfDir;
 }
 
-function MemoryWriteStream(): void {
-    Transform.call(this);
-    this._chunks = [];
-    this._transform = (chunk: Buffer, _enc: string, cb: () => void): void => {
-        this._chunks.push(chunk);
-        cb();
-    };
-    this.collect = (): Buffer<ArrayBuffer> => {
-        const result = Buffer.concat(this._chunks);
-        this._chunks = [];
-        return result;
-    };
-}
-inherits(MemoryWriteStream, Transform);
-
 interface WebOptions {
     systemLanguage: ioBroker.Languages;
 }
@@ -164,11 +147,11 @@ export default class Web {
         'https://raw.githubusercontent.com/ioBroker/json-config/main/schemas/jsonConfig.json';
 
     private store: Store | null = null;
-    private indexHTML: string;
+    private indexHTML = '';
     baseDir = join(__dirname, '..', '..');
     dirName = normalize(`${this.baseDir}/admin/`.replace(/\\/g, '/')).replace(/\\/g, '/');
-    private unprotectedFiles: { name: string; isDir: boolean }[];
-    systemConfig: Partial<ioBroker.SystemConfigObject>;
+    private unprotectedFiles: { name: string; isDir: boolean }[] | null = null;
+    systemConfig: Partial<ioBroker.SystemConfigObject> = {};
 
     // todo delete after React will be main
     wwwDir = join(this.baseDir, 'adminWww');
@@ -178,12 +161,13 @@ export default class Web {
     private options: WebOptions;
     private readonly onReady: (
         server: Server & { __server: { app: null | Express; server: null | Server } },
-        store: Store,
+        /** the session store only exists if authentication is enabled */
+        store: Store | null,
         adapter: AdminAdapter,
     ) => void;
     private systemLanguage: ioBroker.Languages;
-    private checkTimeout: ioBroker.Timeout;
-    private oauth2Model: OAuth2Model;
+    private checkTimeout: ioBroker.Timeout | undefined;
+    private oauth2Model: OAuth2Model | null = null;
     private mcpServer: McpServer | null = null;
 
     /**
@@ -199,7 +183,7 @@ export default class Web {
         adapter: AdminAdapter,
         onReady: (
             server: Server & { __server: { app: null | Express; server: null | Server } },
-            store: Store,
+            store: Store | null,
             adapter: AdminAdapter,
         ) => void,
         options: WebOptions,
@@ -236,12 +220,12 @@ export default class Web {
     }
 
     processMessage(msg: ioBroker.Message): boolean {
-        return this.oauth2Model?.processMessage(msg);
+        return this.oauth2Model?.processMessage(msg) ?? false;
     }
 
     async prepareIndex(index: string): Promise<string> {
         let template = readFileSync(join(this.wwwDir, index)).toString('utf8');
-        const m = template.match(/(["']?@@\w+@@["']?)/g);
+        const m = template.match(/(["']?@@\w+@@["']?)/g) || [];
         for (let pattern of m) {
             pattern = pattern.replace(/@/g, '').replace(/'/g, '').replace(/"/g, '');
             if (pattern === 'disableDataReporting') {
@@ -281,19 +265,19 @@ export default class Web {
             } else if (pattern === 'vendorPrefix') {
                 template = template.replace(
                     `@@vendorPrefix@@`,
-                    this.systemConfig.native.vendor.uuidPrefix || (uuid.length > 36 ? uuid.substring(0, 2) : ''),
+                    this.systemConfig.native?.vendor.uuidPrefix || (uuid.length > 36 ? uuid.substring(0, 2) : ''),
                 );
             } else if (pattern === 'loginMotto') {
                 template = template.replace(
                     `@@loginMotto@@`,
-                    this.systemConfig.native.vendor.admin.login.motto || this.adapter.config.loginMotto || '',
+                    this.systemConfig.native?.vendor.admin.login.motto || this.adapter.config.loginMotto || '',
                 );
             } else if (pattern === 'loginLogo') {
-                template = template.replace(`@@loginLogo@@`, this.systemConfig.native.vendor.icon || '');
+                template = template.replace(`@@loginLogo@@`, this.systemConfig.native?.vendor.icon || '');
             } else if (pattern === 'loginLink') {
-                template = template.replace(`@@loginLink@@`, this.systemConfig.native.vendor.admin.login.link || '');
+                template = template.replace(`@@loginLink@@`, this.systemConfig.native?.vendor.admin.login.link || '');
             } else if (pattern === 'loginTitle') {
-                template = template.replace(`@@loginTitle@@`, this.systemConfig.native.vendor.admin.login.title || '');
+                template = template.replace(`@@loginTitle@@`, this.systemConfig.native?.vendor.admin.login.title || '');
             } else {
                 template = template.replace(
                     `@@${pattern}@@`,
@@ -361,13 +345,12 @@ export default class Web {
             const schemaRes = await axios.get(this.JSON_CONFIG_SCHEMA_URL);
             schema = schemaRes.data as Record<string, any>;
         } catch (e) {
-            this.adapter.log.debug(`Could not get jsonConfig schema: ${e.message}`);
+            this.adapter.log.debug(`Could not get jsonConfig schema: ${(e as Error).message}`);
             return;
         }
 
-        const res: ioBroker.AdapterObject | null = await this.adapter.getForeignObjectAsync<`system.adapter.${string}`>(
-            `system.adapter.${adapterName}`,
-        );
+        const res: ioBroker.AdapterObject | null | undefined =
+            await this.adapter.getForeignObjectAsync<`system.adapter.${string}`>(`system.adapter.${adapterName}`);
 
         if (res?.common.adminUI?.config === 'json') {
             try {
@@ -401,7 +384,7 @@ export default class Web {
                     );
                 }
             } catch (e) {
-                this.adapter.log.debug(`Error validating schema of ${adapterName}: ${e.message}`);
+                this.adapter.log.debug(`Error validating schema of ${adapterName}: ${(e as Error).message}`);
             }
         }
     }
@@ -420,7 +403,7 @@ export default class Web {
         } catch (e) {
             res.header('Content-Type', 'application/gzip');
             res.send(data);
-            this.adapter.log.error(`Cannot extract file ${fileName}: ${e}`);
+            this.adapter.log.error(`Cannot extract file ${fileName}: ${(e as Error).toString()}`);
         }
     }
 
@@ -469,7 +452,7 @@ export default class Web {
                     res.json({ auth: this.settings.auth });
                 } else if (url === '/favicon.ico') {
                     res.set('Content-Type', 'image/x-icon');
-                    if (this.systemConfig.native.vendor.ico) {
+                    if (this.systemConfig.native?.vendor.ico) {
                         // convert base64 to ico
                         const text = this.systemConfig.native.vendor.ico.split(',')[1];
                         res.send(Buffer.from(text, 'base64'));
@@ -583,7 +566,7 @@ export default class Web {
                     // return favicon always
                     if (req.url === '/favicon.ico') {
                         res.set('Content-Type', 'image/x-icon');
-                        if (this.systemConfig.native.vendor.ico) {
+                        if (this.systemConfig.native?.vendor.ico) {
                             // convert base64 to ico
                             const text = this.systemConfig.native.vendor.ico.split(',')[1];
                             res.send(Buffer.from(text, 'base64'));
@@ -644,7 +627,7 @@ export default class Web {
             });
 
             this.server.app.get('/validate_config/*any', async (req: Request, res: Response): Promise<void> => {
-                const adapterName = req.url.split('/').pop();
+                const adapterName = req.url.split('/').pop() || '';
 
                 await this.validateJsonConfig(adapterName.toLowerCase());
 
@@ -681,8 +664,10 @@ export default class Web {
                                 }
                                 res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
                             } else {
-                                if (_result.gz) {
-                                    if (_result.size > 1024 * 1024) {
+                                if (_result.data === undefined || _result.data === null) {
+                                    res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
+                                } else if (_result.gz) {
+                                    if ((_result.size || 0) > 1024 * 1024) {
                                         res.header('Content-Type', 'application/gzip');
                                         res.send(_result.data);
                                     } else {
@@ -691,12 +676,12 @@ export default class Web {
                                         } catch (e) {
                                             res.header('Content-Type', 'application/gzip');
                                             res.send(_result.data);
-                                            this.adapter.log.error(`Cannot extract file ${fileName}: ${e}`);
+                                            this.adapter.log.error(
+                                                `Cannot extract file ${fileName}: ${(e as Error).toString()}`,
+                                            );
                                         }
                                     }
-                                } else if (_result.data === undefined || _result.data === null) {
-                                    res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
-                                } else if (_result.size > 2 * 1024 * 1024) {
+                                } else if ((_result.size || 0) > 2 * 1024 * 1024) {
                                     res.header('Content-Type', 'text/plain');
                                     res.send(_result.data);
                                 } else {
@@ -757,7 +742,9 @@ export default class Web {
                                         } catch (e) {
                                             res.header('Content-Type', 'application/gzip');
                                             res.sendFile(fileName);
-                                            this.adapter.log.error(`Cannot extract file ${fileName}: ${e}`);
+                                            this.adapter.log.error(
+                                                `Cannot extract file ${fileName}: ${(e as Error).toString()}`,
+                                            );
                                         }
                                     }
                                 } else if (stat.size > 2 * 1024 * 1024) {
@@ -797,7 +784,7 @@ export default class Web {
                     }
 
                     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-                    let myFile: fileUpload.UploadedFile;
+                    let myFile: fileUpload.UploadedFile | undefined;
                     // take the first non-empty file
                     for (const file of Object.values(req.files)) {
                         if (file) {
@@ -839,7 +826,7 @@ export default class Web {
                         return;
                     }
 
-                    let myFile: fileUpload.UploadedFile;
+                    let myFile: fileUpload.UploadedFile | undefined;
                     for (const file of Object.values(req.files)) {
                         if (file) {
                             myFile = file as fileUpload.UploadedFile;
@@ -1019,7 +1006,7 @@ export default class Web {
                 // Skip first /files
                 parts.shift();
                 // Get ID
-                const adapterName = parts.shift();
+                const adapterName = parts.shift() || '';
                 url = parts.join('/');
                 const pos = url.indexOf('?');
                 let _instance = 0;
@@ -1095,7 +1082,7 @@ export default class Web {
                         res.send(Buffer.concat(zip));
                     }
                 } catch (e) {
-                    this.adapter.log.warn(`Cannot read file ("${adapterName}"/"${url}"): ${e.message}`);
+                    this.adapter.log.warn(`Cannot read file ("${adapterName}"/"${url}"): ${(e as Error).message}`);
                     res.contentType('text/html');
                     res.status(404).send(get404Page(`File ${escapeHtml(url)} not found`));
                 }
@@ -1123,7 +1110,7 @@ export default class Web {
                     query.timeout = 30_000;
                 }
 
-                let timeout: NodeJS.Timeout = setTimeout(
+                let timeout: NodeJS.Timeout | null = setTimeout(
                     (): void => {
                         if (timeout) {
                             timeout = null;
@@ -1173,7 +1160,7 @@ export default class Web {
                 // @ts-expect-error tbd
                 this.server.server = await webserver.init();
             } catch (err) {
-                this.adapter.log.error(`Cannot create web-server: ${err}`);
+                this.adapter.log.error(`Cannot create web-server: ${(err as Error).toString()}`);
                 this.adapter.terminate(EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
                 return;
             }
@@ -1203,9 +1190,11 @@ export default class Web {
         }
 
         if (this.server.server) {
+            // keep a local reference, so the callbacks below do not have to re-check `this.server.server`
+            const server = this.server.server;
             let serverListening = false;
             let serverPort: number;
-            this.server.server.on('error', e => {
+            server.on('error', e => {
                 if (e.toString().includes('EACCES') && serverPort <= 1024) {
                     this.adapter.log.error(
                         `node.js process has no rights to start server on the port ${serverPort}.\n` +
@@ -1237,7 +1226,7 @@ export default class Web {
                     {
                         defaultUser: this.settings.defaultUser,
                         auth: false,
-                        language: systemConfig.common.language,
+                        language: systemConfig?.common.language,
                     },
                     this.adapter,
                     // Run as a web extension on admin's own web server: a minimal instance object puts
@@ -1247,7 +1236,7 @@ export default class Web {
                         native: {
                             defaultUser: this.settings.defaultUser,
                             auth: false,
-                            language: systemConfig.common.language,
+                            language: systemConfig?.common.language,
                         } as unknown as McpConfig,
                     } as unknown as ioBroker.InstanceObject,
                     this.server.app,
@@ -1261,7 +1250,7 @@ export default class Web {
                     serverPort = port;
 
                     // Start the web server
-                    this.server.server.listen(
+                    server.listen(
                         port,
                         !this.settings.bind || this.settings.bind === '0.0.0.0'
                             ? undefined
@@ -1300,7 +1289,7 @@ export default class Web {
                                             },
                                         );
 
-                                        this.adapter.log.error(e.toString());
+                                        this.adapter.log.error((e as Error).toString());
                                     }
                                 }, 1000);
                             }
@@ -1308,7 +1297,7 @@ export default class Web {
                     );
 
                     if (typeof this.onReady === 'function') {
-                        this.onReady(this.server.server, this.store, this.adapter);
+                        this.onReady(server, this.store, this.adapter);
                     }
                 },
             );

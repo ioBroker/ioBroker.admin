@@ -1,10 +1,7 @@
 {
     "compilerOptions": {
-        // TypeScript 6 turns `strict` on by default. This project was never written against it,
-        // so it stays off explicitly until the backend is migrated.
-        "strict": false,
-        // `node16` resolution requires the matching `node16` module kind. The backend has no
-        // `"type": "module"`, so this still emits CommonJS — same output as the previous `commonjs`.
+        "strict": true,
+        "strictNullChecks": true,
         "module": "node16",
         "target": "esnext",
         "moduleResolution": "node16",
@@ -21,7 +18,7 @@
         "jsx": "react",
         "types": ["@iobroker/types", "node"],
         "paths": {
-            "@/*": ["./src/*"],
+            "@/*": ["./src/*"]
         }
     },
     "exclude": ["**/node_modules", "**/build", "adminWww/**"],

@@ -377,7 +377,7 @@ export interface InstanceItem {
         stateInput: number;
         stateOutput: number;
     };
-    loglevelIcon: JSX.Element;
+    loglevelIcon: JSX.Element | null;
     logLevelObject: ioBroker.LogLevel;
     modeSchedule: boolean;
     checkCompact: boolean;
@@ -571,7 +571,7 @@ export default abstract class InstanceGeneric<
             this.props.context.socket
                 .getObject(`system.adapter.${instance.id}`)
                 .then(obj => {
-                    if (obj.common.schedule !== '') {
+                    if (obj && obj.common.schedule !== '') {
                         obj.common.schedule = '';
                         this.props.context.socket
                             .setObject(obj._id, obj)
@@ -597,7 +597,7 @@ export default abstract class InstanceGeneric<
             void this.setCommonValue(`system.adapter.${instance.id}`, { restartSchedule });
         } else {
             void this.props.context.socket.getObject(`system.adapter.${instance.id}`).then(obj => {
-                if (obj.common.restartSchedule !== '') {
+                if (obj && obj.common.restartSchedule !== '') {
                     obj.common.restartSchedule = '';
                     void this.props.context.socket.setObject(obj._id, obj);
                 }
@@ -830,7 +830,7 @@ export default abstract class InstanceGeneric<
                     this.setState({
                         openDialogCompact: false,
                         openDialog: false,
-                        compactGroup: this.props.item.compactGroup,
+                        compactGroup: this.props.item.compactGroup || 0,
                         maxCompactGroupNumber: this.props.context.maxCompactGroupNumber,
                     })
                 }
@@ -976,7 +976,7 @@ export default abstract class InstanceGeneric<
                 title={this.props.context.t('Edit restart rule for %s', this.props.instance.id)}
                 clearButton
                 cron={InstanceGeneric.getRestartSchedule(this.props.instance.obj)}
-                onOk={(cron: string) => this.setRestartSchedule(this.props.instance, cron)}
+                onOk={(cron: string | false) => this.setRestartSchedule(this.props.instance, cron || '')}
                 onClose={() => this.setState({ openDialogCron: false, openDialog: false })}
             />
         );
@@ -988,7 +988,7 @@ export default abstract class InstanceGeneric<
                 title={this.props.context.t('Edit schedule rule for %s', this.props.instance.id)}
                 clearButton
                 cron={InstanceGeneric.getSchedule(this.props.instance.obj)}
-                onOk={(cron: string) => this.setSchedule(this.props.instance, cron)}
+                onOk={(cron: string | false) => this.setSchedule(this.props.instance, cron || null)}
                 onClose={() => this.setState({ openDialogSchedule: false, openDialog: false })}
             />
         );
@@ -1196,7 +1196,7 @@ export default abstract class InstanceGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderMemoryUsage(): JSX.Element {
+    renderMemoryUsage(): JSX.Element | false {
         return (
             this.props.item.running && (
                 <InstanceInfo
@@ -1454,7 +1454,7 @@ export default abstract class InstanceGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderSentry(): JSX.Element {
+    renderSentry(): JSX.Element | null {
         if (!this.props.item.checkSentry) {
             return null;
         }
@@ -1557,7 +1557,7 @@ export default abstract class InstanceGeneric<
         return (
             <>
                 <InstanceInfo
-                    icon={this.props.item.loglevelIcon}
+                    icon={this.props.item.loglevelIcon || undefined}
                     tooltip={
                         this.props.item.logLevelObject === this.props.item.logLevel
                             ? `${this.props.context.t('loglevel')} ${this.props.item.logLevel}`

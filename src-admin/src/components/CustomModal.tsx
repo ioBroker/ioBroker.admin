@@ -119,7 +119,7 @@ const CustomModal = ({
         >
             {title && (
                 <DialogTitle>
-                    {icon ? <Icon style={styles.titleIcon} /> : null}
+                    {Icon ? <Icon style={styles.titleIcon} /> : null}
                     {title}
                     {I18n.getLanguage() !== 'en' && toggleTranslation ? (
                         <IconButton
@@ -174,7 +174,7 @@ const CustomModal = ({
                     <Button
                         startIcon={<CheckIcon />}
                         disabled={disableApply || progress || (disableApplyIfNotChanged && defaultValue === value)}
-                        onClick={() => onApply && onApply(textInput ? value : '')}
+                        onClick={() => onApply && onApply(textInput ? (value ?? '') : '')}
                         variant="contained"
                         color="primary"
                     >

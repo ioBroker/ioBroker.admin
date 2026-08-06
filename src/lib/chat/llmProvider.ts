@@ -155,7 +155,7 @@ function errorDetail(status: number, data: unknown): string {
  *
  * @param params provider, model, key, messages and (optional) tools
  * @returns the assistant content and any requested tool calls (OpenAI shape)
- * @throws Error with a human-readable message on connection or API errors
+ * @throws {Error} with a human-readable message on connection or API errors
  */
 export async function chatCompletion(params: LlmChatParams): Promise<LlmChatResult> {
     const { url, headers, body } = buildChatRequest(params);
@@ -217,7 +217,7 @@ export interface LlmModelsParams {
  *
  * @param params provider, key and (optional) base URL
  * @returns sorted list of model ids
- * @throws Error on an invalid key or a connection/API error
+ * @throws {Error} on an invalid key or a connection/API error
  */
 export async function listModels(params: LlmModelsParams): Promise<string[]> {
     const { provider, apiKey, baseUrl } = params;

@@ -65,7 +65,7 @@ interface CommandState {
 }
 
 export default class Command extends Component<CommandProps, CommandState> {
-    private readonly logRef: React.RefObject<HTMLDivElement>;
+    private readonly logRef: React.RefObject<HTMLDivElement | null>;
 
     private static pattern = ['error', 'warn', 'info'];
 
@@ -115,9 +115,12 @@ export default class Command extends Component<CommandProps, CommandState> {
     executeCommand(): void {
         this.setState({ init: true }, () => this.props.onSetCommandRunning && this.props.onSetCommandRunning(true));
 
-        this.props.socket.registerCmdStdoutHandler(this.cmdStdoutHandler.bind(this));
-        this.props.socket.registerCmdStderrHandler(this.cmdStderrHandler.bind(this));
-        this.props.socket.registerCmdExitHandler(this.cmdExitHandler.bind(this));
+        // the socket types the command id as string, but `cmdExec` echoes back the numeric id generated below
+        this.props.socket.registerCmdStdoutHandler((id, text) => this.cmdStdoutHandler(id as unknown as number, text));
+        this.props.socket.registerCmdStderrHandler((id, text) => this.cmdStderrHandler(id as unknown as number, text));
+        this.props.socket.registerCmdExitHandler((id, exitCode) =>
+            this.cmdExitHandler(id as unknown as number, exitCode),
+        );
 
         const activeCmdId = Math.floor(Math.random() * 0xffffffe) + 1;
 
@@ -127,13 +130,7 @@ export default class Command extends Component<CommandProps, CommandState> {
 
         // The 5th parameter `files` exists only in newer socket-client versions; cast the method so the
         // admin compiles against the currently installed typings. The controller feature is checked by the caller.
-        const cmdExec = this.props.socket.cmdExec.bind(this.props.socket) as (
-            host: string,
-            cmd: string,
-            cmdId: number,
-            cmdTimeout?: number,
-            files?: CommandFile[],
-        ) => Promise<void>;
+        const cmdExec = this.props.socket.cmdExec.bind(this.props.socket);
 
         cmdExec(
             host,
@@ -258,7 +255,7 @@ export default class Command extends Component<CommandProps, CommandState> {
             const result = [];
 
             while (text.search(this.regExp) >= 0) {
-                const [match] = text.match(this.regExp);
+                const [match] = text.match(this.regExp) || [''];
                 const pos = text.search(this.regExp);
 
                 if (pos > 0) {
@@ -354,7 +351,7 @@ export default class Command extends Component<CommandProps, CommandState> {
                     <Grid>
                         {!this.state.stopped && (
                             <LinearProgress
-                                style={this.props.commandError ? { backgroundColor: '#f44336' } : null}
+                                style={this.props.commandError ? { backgroundColor: '#f44336' } : undefined}
                                 variant={this.props.inBackground ? 'determinate' : 'indeterminate'}
                                 value={
                                     this.state.max && this.state.value

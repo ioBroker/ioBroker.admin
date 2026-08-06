@@ -147,7 +147,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                 t={this.props.t}
                 isFloatComma={this.props.isFloatComma}
                 lang={this.props.lang}
-                expertMode={this.props.expertMode}
+                expertMode={!!this.props.expertMode}
                 socket={this.props.socket}
                 obj={this.props.objects[this.props.objectIDs[0]] as ioBroker.StateObject}
                 customsInstances={this.props.customsInstances}
@@ -159,7 +159,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
     renderCustomEditor(): JSX.Element {
         return (
             <ObjectCustomEditor
-                registerSaveFunc={(func: (cb?: (error?: boolean) => void) => void) => (this.saveFunc = func)}
+                registerSaveFunc={func => (this.saveFunc = func as (cb?: (error?: boolean) => void) => void)}
                 t={this.props.t}
                 lang={this.props.lang}
                 socket={this.props.socket}
@@ -168,8 +168,8 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                 objects={this.props.objects}
                 onProgress={(progressRunning: boolean) => this.setState({ progressRunning })}
                 reportChangedIds={this.props.reportChangedIds}
-                onChange={(hasChanges: boolean, update: boolean) => {
-                    this.setState({ hasChanges }, () => {
+                onChange={(hasChanges?: boolean, update?: boolean) => {
+                    this.setState({ hasChanges: !!hasChanges }, () => {
                         if (update) {
                             const chartAvailable = this.isChartAvailable();
                             if (chartAvailable !== this.chartAvailable) {

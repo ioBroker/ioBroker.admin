@@ -74,14 +74,15 @@ if (
         integrations: [Sentry.dedupeIntegration()],
         beforeSend(event: Sentry.ErrorEvent) {
             const text = event?.exception?.values?.map(e => e.value).join(' ');
+            const message = event?.message;
             // Modify the event here
             if (text && versionChanged.find(error => text.includes(error))) {
                 window.location.reload();
             } else if (text && ignoreErrors.find(error => text.includes(error))) {
                 return null;
-            } else if (event?.message && versionChanged.find(error => event.message.includes(error))) {
+            } else if (message && versionChanged.find(error => message.includes(error))) {
                 window.location.reload();
-            } else if (event?.message && ignoreErrors.find(error => event.message.includes(error))) {
+            } else if (message && ignoreErrors.find(error => message.includes(error))) {
                 return null;
             }
             return event;
@@ -109,7 +110,7 @@ if (
             }
             throw new Error(error);
         }
-        throw error;
+        throw error instanceof Error ? error : new Error(String(error));
     };
     window.onunhandledrejection = (event: PromiseRejectionEvent) => {
         const errText = event.reason?.toString() ?? String(event.reason);

@@ -22,8 +22,10 @@ import {
     KeyboardArrowLeft as StepEndIcon,
 } from '@mui/icons-material';
 
-import ReactEchartsCore from 'echarts-for-react/lib/core';
-import type { EChartsOption, YAXisComponentOption } from 'echarts/types/dist/echarts';
+// Deliberately the ESM build: `echarts-for-react/lib/core` is CommonJS, and importing that subpath
+// hands us the module object instead of the component ("Element type is invalid ... but got: object").
+import ReactEchartsCore from 'echarts-for-react/esm/core';
+import type { EChartsOption, XAXisComponentOption, YAXisComponentOption } from 'echarts/types/dist/echarts';
 
 import * as echarts from 'echarts/core';
 import { LineChart } from 'echarts/charts';
@@ -195,9 +197,9 @@ interface HistoryItem {
 }
 
 export default class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
-    private echartsReact: ReactEchartsCore;
+    private echartsReact: ReactEchartsCore | null;
 
-    private readonly rangeRef: React.RefObject<HTMLDivElement>;
+    private readonly rangeRef: React.RefObject<HTMLDivElement | null>;
 
     private readTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -209,11 +211,13 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
 
     private readonly unit: string;
 
-    private readonly divRef: React.RefObject<HTMLDivElement>;
+    private readonly divRef: React.RefObject<HTMLDivElement | null>;
 
     private chart: {
-        min?: number;
-        max?: number;
+        // `min`/`max` are always set before the chart is drawn, so they are not optional -
+        // otherwise every arithmetic use of them would need a fallback
+        min: number;
+        max: number;
         withSeconds?: boolean;
         withTime?: boolean;
         diff?: number;
@@ -225,15 +229,15 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
 
     private updateTimer: ReturnType<typeof setTimeout> | null = null;
 
-    private minY: number;
+    private minY: number | undefined;
 
-    private maxY: number;
+    private maxY: number | undefined;
 
     private timeTimer: ReturnType<typeof setTimeout> | null = null;
 
     private maxYLenTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    private mouseDown: boolean;
+    private mouseDown = false;
 
     private start: number;
 
@@ -258,8 +262,8 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
             this.end = this.props.end;
         }
         let relativeRange = this.localStorage.getItem('App.relativeRange') || '30';
-        const min = parseInt(this.localStorage.getItem('App.absoluteStart'), 10) || 0;
-        const max = parseInt(this.localStorage.getItem('App.absoluteEnd'), 10) || 0;
+        const min = parseInt(this.localStorage.getItem('App.absoluteStart') || '', 10) || 0;
+        const max = parseInt(this.localStorage.getItem('App.absoluteEnd') || '', 10) || 0;
 
         if ((!min || !max) && (!relativeRange || relativeRange === 'absolute')) {
             relativeRange = '30';
@@ -297,14 +301,18 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
 
         this.divRef = createRef();
 
-        this.chart = {};
+        this.chart = { min: 0, max: 0 };
     }
 
     componentDidMount(): void {
         void this.props.socket.subscribeState(this.props.obj._id, this.onChange);
         window.addEventListener('resize', this.onResize);
         void this.prepareData()
-            .then(() => !this.props.noToolbar && this.readHistoryRange())
+            .then(async () => {
+                if (!this.props.noToolbar) {
+                    await this.readHistoryRange();
+                }
+            })
             .then(() => this.setRelativeInterval(this.state.relativeRange, true, () => this.forceUpdate()));
     }
 
@@ -358,7 +366,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
         });
     };
 
-    onChange = (id: string, state: ioBroker.State): void => {
+    onChange = (id: string, state: ioBroker.State | null | undefined): void => {
         if (
             id === this.props.obj._id &&
             state &&
@@ -413,9 +421,11 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                 this.setState(
                     {
                         // dateFormat: this.props.dateFormat.replace(/D/g, 'd').replace(/Y/g, 'y'),
-                        defaultHistory: this.props.defaultHistory,
-                        historyInstance: this.props.defaultHistory,
-                        historyInstances: [{ id: this.props.defaultHistory, alive: !!isAlive?.val }],
+                        defaultHistory: this.props.defaultHistory || '',
+                        historyInstance: this.props.defaultHistory || '',
+                        historyInstances: [
+                            { id: this.props.defaultHistory || '', alive: !!(isAlive as ioBroker.State)?.val },
+                        ],
                     },
                     () => resolve(null),
                 );
@@ -435,7 +445,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
         const defaultHistory = config?.common?.defaultHistory;
         // filter out history instances, that does not have data for this object
         if (this.props.obj.common.custom) {
-            list = list.filter(it => this.props.obj.common.custom[it.id]);
+            list = list.filter(it => this.props.obj.common.custom?.[it.id]);
         }
 
         // find current history
@@ -477,9 +487,8 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
         const list: { id: string; alive: boolean }[] = [];
         const ids: string[] = [];
 
-        this.props.customsInstances.forEach(instance => {
-            const instObj: ioBroker.InstanceObject = this.props.objects[`system.adapter.${instance}`] as
-                ioBroker.InstanceObject | undefined;
+        this.props.customsInstances?.forEach(instance => {
+            const instObj = this.props.objects[`system.adapter.${instance}`] as ioBroker.InstanceObject | undefined;
             if (instObj?.common?.getHistory) {
                 const listObj = { id: instance, alive: false };
                 list.push(listObj);
@@ -574,7 +583,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
 
         // if more than 24 hours => aggregate
         if (
-            end - start > 60000 * 24 &&
+            (end || 0) - (start || 0) > 60000 * 24 &&
             !(
                 this.props.obj.common.type === 'boolean' ||
                 (this.props.obj.common.type === 'number' && this.props.obj.common.states)
@@ -591,8 +600,8 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                 const chart = [];
                 let r = 0;
                 const range = this.rangeValues;
-                let minY = null;
-                let maxY = null;
+                let minY: ioBroker.StateValue = null;
+                let maxY: ioBroker.StateValue = null;
 
                 for (let t = 0; t < values.length; t++) {
                     if (range) {
@@ -612,10 +621,10 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                     ) {
                         console.error('Strange data!');
                     }
-                    if (minY === null || values[t].val < minY) {
+                    if (minY === null || (values[t].val as number) < (minY as number)) {
                         minY = values[t].val;
                     }
-                    if (maxY === null || values[t].val > maxY) {
+                    if (maxY === null || (values[t].val as number) > (maxY as number)) {
                         maxY = values[t].val;
                     }
                 }
@@ -643,7 +652,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                 if (this.maxY < 10) {
                     this.maxY = Math.round(this.maxY * 10) / 10;
                 } else {
-                    this.maxY = Math.ceil(this.maxY);
+                    this.maxY = Math.ceil(this.maxY || 0);
                 }
 
                 return chart;
@@ -651,7 +660,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
     }
 
     convertData(values?: HistoryItem[]): { value: number[]; exact?: boolean }[] {
-        values = values || this.chartValues;
+        values = values || this.chartValues || [];
         const data: { value: number[]; exact?: boolean }[] = [];
         if (!values.length) {
             return [];
@@ -672,7 +681,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
     }
 
     getOption(): EChartsOption {
-        let widthAxis;
+        let widthAxis = 0;
         if (this.minY !== null && this.minY !== undefined) {
             widthAxis = (this.minY.toString() + this.unit).length * 9 + 12;
         }
@@ -753,6 +762,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
 
         if (this.props.obj.common.type === 'boolean') {
             serie.step = 'end';
+            yAxis.axisLabel = yAxis.axisLabel || {};
             yAxis.axisLabel.showMaxLabel = false;
             yAxis.axisLabel.formatter = (value: number) => (value === 1 ? 'TRUE' : 'FALSE');
             yAxis.max = 1.5;
@@ -761,6 +771,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
             widthAxis = 50;
         } else if (this.props.obj.common.type === 'number' && this.props.obj.common.states) {
             serie.step = 'end';
+            yAxis.axisLabel = yAxis.axisLabel || {};
             yAxis.axisLabel.showMaxLabel = false;
             const states = this.props.obj.common.states as Record<string, string>;
             // @ts-expect-error fix later
@@ -825,9 +836,9 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                 min: this.chart.min,
                 max: this.chart.max,
                 axisTick: {
-                    // @ts-expect-error fix later
+                    // `alignWithLabel` only exists on category axes in the echarts typings
                     alignWithLabel: true,
-                },
+                } as XAXisComponentOption['axisTick'],
                 axisLabel: {
                     formatter: (value: number) => {
                         const date = new Date(value);
@@ -1153,7 +1164,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
             });
             zr.on('mousemove', (e: MouseEvent) => {
                 if (this.mouseDown) {
-                    const moved = this.chart.lastX - (e.offsetX - GRID_PADDING_LEFT);
+                    const moved = (this.chart.lastX || 0) - (e.offsetX - GRID_PADDING_LEFT);
                     this.chart.lastX = e.offsetX - GRID_PADDING_LEFT;
                     const diff = this.chart.max - this.chart.min;
                     const width = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
@@ -1175,7 +1186,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                     if (touches.length > 1) {
                         this.chart.lastWidth = Math.abs(touches[0].pageX - touches[1].pageX);
                     } else {
-                        this.chart.lastWidth = null;
+                        this.chart.lastWidth = undefined;
                     }
                 }
             });
@@ -1195,11 +1206,11 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                     if (touches.length > 1) {
                         // zoom
                         const fingerWidth = Math.abs(touches[0].pageX - touches[1].pageX);
-                        if (this.chart.lastWidth !== null && fingerWidth !== this.chart.lastWidth) {
+                        if (this.chart.lastWidth !== undefined && fingerWidth !== this.chart.lastWidth) {
                             let diff = this.chart.max - this.chart.min;
                             const chartWidth = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
 
-                            const amount = fingerWidth > this.chart.lastWidth ? 1.1 : 0.9;
+                            const amount = fingerWidth > (this.chart.lastWidth || 0) ? 1.1 : 0.9;
                             const positionX =
                                 touches[0].pageX > touches[1].pageX
                                     ? touches[1].pageX - GRID_PADDING_LEFT + fingerWidth / 2
@@ -1219,7 +1230,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                         this.chart.lastWidth = fingerWidth;
                     } else {
                         // swipe
-                        const moved = this.chart.lastX - pageX;
+                        const moved = (this.chart.lastX || 0) - pageX;
                         const diff = this.chart.max - this.chart.min;
                         const chartWidth = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
 
@@ -1344,7 +1355,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
         // save in an object
         const obj = await this.props.socket.getObject(this.props.obj._id);
         if (
-            obj.common.custom &&
+            obj?.common.custom &&
             obj.common.custom[this.state.historyInstance] &&
             obj.common.custom[this.state.historyInstance].chartStep !== stepType
         ) {
@@ -1378,7 +1389,7 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                                 this.setState({ historyInstance: e.target.value });
                             }}
                         >
-                            {this.state.historyInstances.map(it => (
+                            {this.state.historyInstances?.map(it => (
                                 <MenuItem
                                     key={it.id}
                                     value={it.id}
@@ -1505,14 +1516,14 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                             sx={styles.toolbarDate}
                             disabled={this.state.relativeRange !== 'absolute'}
                             value={new Date(this.state.min)}
-                            onChange={date => this.setStartDate(date)}
+                            onChange={date => date && this.setStartDate(date)}
                         />
                         <TimePicker
                             disabled={this.state.relativeRange !== 'absolute'}
                             sx={styles.toolbarTime}
                             ampm={this.state.ampm}
                             value={new Date(this.state.min)}
-                            onChange={date => this.setStartDate(date)}
+                            onChange={date => date && this.setStartDate(date)}
                         />
                     </div>
                     <div style={styles.toolbarTimeGrid}>
@@ -1528,14 +1539,14 @@ export default class ObjectChart extends Component<ObjectChartProps, ObjectChart
                             disabled={this.state.relativeRange !== 'absolute'}
                             sx={styles.toolbarDate}
                             value={new Date(this.state.max)}
-                            onChange={date => this.setEndDate(date)}
+                            onChange={date => date && this.setEndDate(date)}
                         />
                         <TimePicker
                             disabled={this.state.relativeRange !== 'absolute'}
                             sx={styles.toolbarTime}
                             ampm={this.state.ampm}
                             value={new Date(this.state.max)}
-                            onChange={date => this.setEndDate(date)}
+                            onChange={date => date && this.setEndDate(date)}
                         />
                     </div>
                 </LocalizationProvider>
