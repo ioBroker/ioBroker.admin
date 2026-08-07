@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "8.0.1",
+    "version": "8.0.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "8.0.2": {
+        "en": "Corrected charts\nCorrected the authentication for the OAuth2 callbacks\nDisabled the save button in the custom settings as long as a value is invalid\nAdded the folder selection to the alias creation dialog\nHidden the chart in the value editor in the mobile view\nSmall GUI improvements",
+        "de": "Korrigierte Charts\nKorrektur der Authentifizierung für die OAuth2-Callbacks\nDeaktivieren der Schaltfläche Speichern in den benutzerdefinierten Einstellungen, solange ein Wert ungültig ist\nHinzufügen der Ordnerauswahl zum Alias-Erstellungsdialog\nVersteckt das Diagramm im Wert-Editor in der mobilen Ansicht\nKleine GUI Verbesserungen",
+        "ru": "Исправленные диаграммы\nИсправлена аутентификация для обратных вызовов OAuth2\nОтключите кнопку сохранения в пользовательских настройках, если значение недействительно\nДобавлен выбор папки в диалог создания псевдонимов\nСкрытый график в редакторе ценностей в мобильном представлении\nНебольшие улучшения GUI",
+        "pt": "Gráficos corrigidos\nCorrigido a autenticação para os retornos de chamadas do OAuth2\nDesactivar o botão de gravação nas configurações personalizadas desde que um valor seja inválido\nAdiciona a selecção da pasta à janela de criação de nomes falsos\nEscondeu o gráfico no editor de valores na vista móvel\nPequenas melhorias na interface gráfica",
+        "nl": "Gecorrigeerde kaarten\nDe authenticatie voor de OAuth2-callbacks gecorrigeerd\nDe opslagknop in de aangepaste instellingen uitgeschakeld zolang een waarde ongeldig is\nDe mapselectie toegevoegd aan het dialoogvenster alias aanmaken\nDe grafiek in de waarde-editor in de mobiele weergave verborgen houden\nKleine GUI verbeteringen",
+        "fr": "Graphiques corrigés\nCorrection de l'authentification des rappels OAuth2\nDésactive le bouton de sauvegarde dans les paramètres personnalisés tant qu'une valeur est invalide\nAjout de la sélection du dossier dans la boîte de dialogue de création d'alias\nCaché le graphique dans l'éditeur de valeurs dans la vue mobile\nPetites améliorations de l'interface graphique",
+        "it": "Carte corrette\nCorretto l'autenticazione per i callback OAuth2\nDisattivare il pulsante di salvataggio nelle impostazioni personalizzate finché un valore non è valido\nAggiunto la selezione della cartella alla finestra di dialogo creazione alias\nNascosto il grafico nell'editor del valore nella vista mobile\nPiccoli miglioramenti alla GUI",
+        "es": "Gráficos corregidos\nCorregido la autenticación para los callbacks OAuth2\nDesactiva el botón Guardar en la configuración personalizada mientras un valor sea inválido\nSe agregó la selección de carpetas al diálogo de creación de alias\nOculto el gráfico en el editor de valor en la vista móvil\nPequeñas mejoras de la interfaz",
+        "pl": "Poprawione wykresy\nPoprawiono uwierzytelnianie połączeń OAuth2\nWyłączył przycisk zapisu w niestandardowych ustawieniach, o ile wartość jest nieprawidłowa\nDodano wybór folderów do okna tworzenia aliasów\nUkryty wykres w edytorze wartości w widoku mobilnym\nMałe ulepszenia GUI",
+        "uk": "Виправлені діаграми\nВиправлено автентифікацію для викликів OAuth2\nВимкнено кнопку збереження в користувацьких налаштуваннях до тих пір, поки значення не буде\nДодано виділення папки до діалогу створення псевдонімів\nПрихована графіка в редакторі значень у мобільному виді\nМалі покращення інтерфейсу",
+        "zh-cn": "更正的图表\n纠正了 OAuth2 回调的认证\n在自定义设置中禁用保存按钮, 只要一个值无效\n将文件夹选择添加到化名创建对话框\n在移动视图中的值编辑器中隐藏图表\n小型图形界面改进"
+      },
       "8.0.1": {
         "en": "Breaking: React19 + MUI9\nBreaking: Node 22 or higher required\nImproved charts in tooltip",
         "de": "Bruch: React19 + MUI9\nBreaking: Node 22 oder höher erforderlich\nVerbesserte Charts im Tooltip",

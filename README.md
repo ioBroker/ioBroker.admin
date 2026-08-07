@@ -196,7 +196,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.2 (2026-08-07)
 - (@GermanBluefox) Corrected charts
 - (@GermanBluefox) Corrected the authentication for the OAuth2 callbacks
 - (@GermanBluefox) Disabled the save button in the custom settings as long as a value is invalid
@@ -225,11 +225,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Added provider logos (incl. DeepSeek) to the AI assistant provider and credential selectors
 - (@GermanBluefox) The adapter-core version will be updated if required by start
 - (@GermanBluefox) Show status of the instance in the web-extension mode
-
-### 7.9.10 (2026-06-22)
-- (@GermanBluefox) Added a dialog describing how to use the AI assistant without an API key (external MCP client)
-- (@GermanBluefox) Updated device manager
-- (@GermanBluefox) Added possibility to see the prompt and use it outside of assistant
 
 ## License
 
