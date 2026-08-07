@@ -590,7 +590,7 @@
       "_id": "info.updatesList",
       "type": "state",
       "common": {
-        "role": "indicator.updates",
+        "role": "state",
         "name": {
           "en": "List of adapters to update",
           "de": "Liste der zu aktualisierenden Adapter",

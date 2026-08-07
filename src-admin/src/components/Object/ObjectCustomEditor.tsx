@@ -15,7 +15,7 @@ import {
 // Icons
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { DialogError, DialogConfirm, type IobTheme } from '@iobroker/gui-components';
+import { DialogConfirm, type IobTheme } from '@iobroker/gui-components';
 
 import { ConfigGeneric, JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
 import AdminUtils from '@/helpers/AdminUtils';
@@ -769,18 +769,6 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
         );
     }
 
-    renderErrorMessage(): JSX.Element | false {
-        return (
-            !!this.state.error && (
-                <DialogError
-                    title={this.props.t('Error')}
-                    text={this.state.error ? 'Error' : ''}
-                    onClose={() => this.setState({ error: false })}
-                />
-            )
-        );
-    }
-
     getObject(
         objects: Record<string, ioBroker.AnyObject>,
         oldObjects: Record<string, ioBroker.AnyObject>,
@@ -1010,7 +998,6 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                             return null;
                         })}
                 </div>
-                {this.renderErrorMessage()}
                 {this.renderConfirmationDialog()}
             </Paper>
         );

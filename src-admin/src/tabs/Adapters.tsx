@@ -2095,7 +2095,9 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     <Box
                         component="div"
                         sx={Utils.getStyle(this.props.theme, styles.infoAdapters, {
-                            display: { sm: 'none', md: 'inline-block' },
+                            // `xs`, not `sm`: MUI breakpoints are min-width, so without an `xs` entry
+                            // the counters stayed visible on the narrowest screens
+                            display: { xs: 'none', md: 'inline-block' },
                         })}
                         onClick={() => this.setState({ showStatistics: true })}
                     >

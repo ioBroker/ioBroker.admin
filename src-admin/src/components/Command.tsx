@@ -1,6 +1,7 @@
 import React, { Component, type JSX } from 'react';
 
 import { Box, Grid, LinearProgress, Paper, Switch, Typography } from '@mui/material';
+import type { Theme } from '@mui/material/styles';
 
 import { Router, type AdminConnection, type Translate } from '@iobroker/gui-components';
 
@@ -251,6 +252,21 @@ export default class Command extends Component<CommandProps, CommandState> {
             text = text.substring(0, maxLength);
         }
 
+        // Installers and build scripts colorize their output with ANSI escape sequences. Without
+        // this they were printed verbatim ("[32m> Cleaning release folder...[0m"). If the process
+        // brought its own colors, they win over the keyword heuristic below.
+        const ansi = AdminUtils.parseColorMessage(text);
+        if (typeof ansi === 'object') {
+            return ansi.parts.map((part, i) => (
+                <span
+                    key={i}
+                    style={part.style}
+                >
+                    {part.text}
+                </span>
+            ));
+        }
+
         if (text.search(this.regExp) !== -1) {
             const result = [];
 
@@ -327,16 +343,39 @@ export default class Command extends Component<CommandProps, CommandState> {
     }
 
     getLog(): JSX.Element[] {
-        return this.state.log.map((value, index) => (
-            <Typography
-                ref={index === this.state.log.length - 1 ? this.logRef : undefined}
-                key={index}
-                component="p"
-                variant="body2"
-            >
-                {this.colorize(value)}
-            </Typography>
-        ));
+        return this.state.log.map((value, index) => {
+            // The echoed command ("$ iobroker ...") is the input, everything else is output.
+            // It is marked by weight and a faint band, not by color: color is already taken by the
+            // severities (error/warn/info) and another one would read as just another severity.
+            const isCommand = value.startsWith('$ ');
+
+            return (
+                <Typography
+                    ref={index === this.state.log.length - 1 ? this.logRef : undefined}
+                    key={index}
+                    component="p"
+                    variant="body2"
+                    sx={
+                        isCommand
+                            ? (theme: Theme) => ({
+                                  fontWeight: 'bold',
+                                  backgroundColor:
+                                      theme.palette.mode === 'dark'
+                                          ? 'rgba(255, 255, 255, 0.08)'
+                                          : 'rgba(0, 0, 0, 0.06)',
+                                  borderRadius: '4px',
+                                  py: '2px',
+                                  px: '6px',
+                                  mx: '-6px',
+                                  mb: '6px',
+                              })
+                            : undefined
+                    }
+                >
+                    {this.colorize(value)}
+                </Typography>
+            );
+        });
     }
 
     render(): JSX.Element {

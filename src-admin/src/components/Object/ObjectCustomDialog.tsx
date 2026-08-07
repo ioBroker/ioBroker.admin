@@ -65,6 +65,8 @@ interface ObjectCustomDialogProps {
 
 interface ObjectCustomDialogState {
     hasChanges: boolean;
+    /** At least one field of the JSON config currently fails its validator */
+    error: boolean;
     currentTab: number;
     confirmDialog: boolean;
     mobile: boolean;
@@ -100,6 +102,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
 
         this.state = {
             hasChanges: false,
+            error: false,
             currentTab,
             confirmDialog: false,
             mobile: MobileDialog.isMobile(),
@@ -167,6 +170,9 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                 customsInstances={this.props.customsInstances}
                 objects={this.props.objects}
                 onProgress={(progressRunning: boolean) => this.setState({ progressRunning })}
+                // JSON config reports whether any field currently fails its `validator`
+                // (`validatorNoSaveOnError`). Saving stays blocked until every field is valid again.
+                onError={(error?: boolean) => this.setState({ error: !!error })}
                 reportChangedIds={this.props.reportChangedIds}
                 onChange={(hasChanges?: boolean, update?: boolean) => {
                     this.setState({ hasChanges: !!hasChanges }, () => {
@@ -335,7 +341,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                             id="object-custom-dialog-save"
                             variant="contained"
                             color="primary"
-                            disabled={!this.state.hasChanges || this.state.progressRunning}
+                            disabled={!this.state.hasChanges || this.state.error || this.state.progressRunning}
                             onClick={() => this.saveFunc && this.saveFunc()}
                         >
                             {this.getButtonTitle(<SaveIcon />, this.props.t('Save'))}
@@ -346,7 +352,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                             id="object-custom-dialog-save-close"
                             variant="contained"
                             color="primary"
-                            disabled={!this.state.hasChanges || this.state.progressRunning}
+                            disabled={!this.state.hasChanges || this.state.error || this.state.progressRunning}
                             onClick={() => {
                                 if (this.saveFunc) {
                                     this.saveFunc(error => !error && this.onClose());

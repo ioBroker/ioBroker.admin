@@ -116,13 +116,13 @@ class Admin extends Adapter {
     public secret = '';
 
     /** Timer to update the repository */
-    private timerRepo: NodeJS.Timeout | null = null;
+    private timerRepo: ioBroker.Timeout | undefined;
 
-    private updaterTimeout: NodeJS.Timeout | null = null;
+    private updaterTimeout: ioBroker.Timeout | undefined;
 
-    private ratingTimeout: NodeJS.Timeout | null = null;
+    private ratingTimeout: ioBroker.Timeout | undefined;
 
-    private timerNews: NodeJS.Timeout | null = null;
+    private timerNews: ioBroker.Timeout | undefined;
 
     private _tasks: ioBroker.AnyObject[] = [];
 
@@ -170,10 +170,10 @@ class Admin extends Adapter {
 
             if (id === 'system.repositories' || id.match(/^system\.adapter\.[^.]+$/)) {
                 if (this.updaterTimeout) {
-                    clearTimeout(this.updaterTimeout);
+                    this.clearTimeout(this.updaterTimeout);
                 }
-                this.updaterTimeout = setTimeout(() => {
-                    this.updaterTimeout = null;
+                this.updaterTimeout = this.setTimeout(() => {
+                    this.updaterTimeout = undefined;
                     void this.writeUpdateInfo();
                 }, 5_000);
             }
@@ -873,23 +873,23 @@ class Admin extends Adapter {
      */
     onUnload = (callback: () => void): void => {
         if (this.timerRepo) {
-            clearTimeout(this.timerRepo);
-            this.timerRepo = null;
+            this.clearTimeout(this.timerRepo);
+            this.timerRepo = undefined;
         }
 
         if (this.timerNews) {
-            clearTimeout(this.timerNews);
-            this.timerNews = null;
+            this.clearTimeout(this.timerNews);
+            this.timerNews = undefined;
         }
 
         if (this.ratingTimeout) {
-            clearTimeout(this.ratingTimeout);
-            this.ratingTimeout = null;
+            this.clearTimeout(this.ratingTimeout);
+            this.ratingTimeout = undefined;
         }
 
         if (this.updaterTimeout) {
-            clearTimeout(this.updaterTimeout);
-            this.updaterTimeout = null;
+            this.clearTimeout(this.updaterTimeout);
+            this.updaterTimeout = undefined;
         }
 
         if (this.mcpChat) {
@@ -919,7 +919,7 @@ class Admin extends Adapter {
                 _id: 'info.updatesNumber',
                 type: 'state',
                 common: {
-                    role: 'indicator.updates',
+                    role: 'state',
                     name: {
                         en: 'Number of adapters to update',
                         de: 'Anzahl der zu aktualisierenden Adapter',
@@ -1343,8 +1343,8 @@ class Admin extends Adapter {
      */
     async updateNews(): Promise<void> {
         if (this.timerNews) {
-            clearTimeout(this.timerNews);
-            this.timerNews = null;
+            this.clearTimeout(this.timerNews);
+            this.timerNews = undefined;
         }
 
         this.checkNodeJsVersion().catch(e => this.log.warn(`Cannot check node.js versions: ${e}`));
@@ -1445,7 +1445,7 @@ class Admin extends Adapter {
             this.log.warn(`Cannot update news: ${getRequestErrorText(e)}`);
         }
 
-        this.timerNews = setTimeout(() => this.updateNews(), 24 * ONE_HOUR_MS + 1);
+        this.timerNews = this.setTimeout(() => this.updateNews(), 24 * ONE_HOUR_MS + 1);
     }
 
     /**
@@ -2069,15 +2069,15 @@ class Admin extends Adapter {
         // start the next cycle
         if (this.config.autoUpdate) {
             if (this.timerRepo) {
-                clearTimeout(this.timerRepo);
-                this.timerRepo = null;
+                this.clearTimeout(this.timerRepo);
+                this.timerRepo = undefined;
             }
             this.log.debug(
                 `Next repo update on ${new Date(
                     Date.now() + this.config.autoUpdate * ONE_HOUR_MS + 1,
                 ).toLocaleString()}`,
             );
-            this.timerRepo = setTimeout(
+            this.timerRepo = this.setTimeout(
                 async () => {
                     this.timerRepo = null;
                     await this.updateRegister();
@@ -2219,10 +2219,10 @@ class Admin extends Adapter {
                         }
                         this.log.debug(`Next repo update on ${new Date(Date.now() + interval).toLocaleString()}`);
                         if (this.timerRepo) {
-                            clearTimeout(this.timerRepo);
+                            this.clearTimeout(this.timerRepo);
                         }
-                        this.timerRepo = setTimeout(async () => {
-                            this.timerRepo = null;
+                        this.timerRepo = this.setTimeout(async () => {
+                            this.timerRepo = undefined;
                             await this.updateRegister();
                         }, interval);
                     }

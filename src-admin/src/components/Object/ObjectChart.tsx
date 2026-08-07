@@ -93,32 +93,48 @@ const styles: Record<string, any> = {
         flexGrow: 1,
     },
     toolbarDate: {
-        width: 124,
-        mt: '9px',
+        width: 108,
+        mt: '6px',
         '& fieldset': {
             display: 'none',
         },
         '& input': {
-            padding: '8px 0 0 0',
+            padding: '6px 0 0 0',
+            fontSize: '0.875rem',
         },
         '& .MuiInputAdornment-root': {
             ml: 0,
-            mt: '7px',
+            mt: '5px',
+        },
+        // The picker button is ~40px wide by default and pushed the value out of the field,
+        // so the date was cut off ("06.08.202"). A smaller button leaves room for the full value.
+        '& .MuiIconButton-root': {
+            padding: '2px',
+        },
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.125rem',
         },
     },
     toolbarTime: {
-        width: 84,
-        mt: '9px',
+        width: 92,
+        mt: '6px',
         // marginLeft: 8,
         '& fieldset': {
             display: 'none',
         },
         '& input': {
-            padding: '8px 0 0 0',
+            padding: '6px 0 0 0',
+            fontSize: '0.875rem',
         },
         '& .MuiInputAdornment-root': {
             ml: 0,
-            mt: '7px',
+            mt: '5px',
+        },
+        '& .MuiIconButton-root': {
+            padding: '2px',
+        },
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.125rem',
         },
     },
     toolbarTimeLabel: {

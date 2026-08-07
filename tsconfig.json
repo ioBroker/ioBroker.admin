@@ -1,4 +1,5 @@
 {
+    "extends": "@tsconfig/node22/tsconfig.json",
     "compilerOptions": {
         "strict": true,
         "strictNullChecks": true,

@@ -48,6 +48,12 @@ export class LogsWorker {
 
     private logSize = 0;
 
+    /** Cached answer of the `CONTROLLER_GET_LOGS_LOG_LEVEL` feature check */
+    private logLevelFilterSupported: boolean | null = null;
+
+    /** Level the cached request was made with */
+    private lastLogLevel: ioBroker.LogLevel | undefined;
+
     constructor(socket: AdminConnection, maxLogs?: number) {
         this.socket = socket;
         this.handlers = [];
@@ -327,9 +333,55 @@ export class LogsWorker {
         return { objLine, isNew };
     }
 
-    getLogs(update?: boolean): Promise<{ logs: LogLineSaved[]; logSize: number }> {
+    /**
+     * Does the connected controller understand `getLogs` with a log level?
+     *
+     * Asked once and then cached. Without the feature the message must stay a plain number: older
+     * controllers compute the read offset as `150 * lines`, and an object there yields `NaN`, which
+     * makes them return the complete log file.
+     */
+    private async isLogLevelFilterSupported(): Promise<boolean> {
+        this.logLevelFilterSupported ??= await this.socket
+            .checkFeatureSupported('CONTROLLER_GET_LOGS_LOG_LEVEL')
+            .catch(() => false);
+
+        return !!this.logLevelFilterSupported;
+    }
+
+    /**
+     * Ask the host for the last log lines, with the level filter if the controller can do it.
+     *
+     * `socket.getLogs` types the message as a number, but it passes it through unchanged, so the
+     * object form of the host message can be used once the controller announces the feature.
+     */
+    private async readLogLines(
+        logLevel?: ioBroker.LogLevel,
+    ): Promise<(string | number)[] | string | { error: string } | null> {
+        const lines = 200;
+
+        if (logLevel && (await this.isLogLevelFilterSupported())) {
+            return this.socket.getLogs(this.currentHost, { lines, logLevel } as unknown as number);
+        }
+
+        return this.socket.getLogs(this.currentHost, lines);
+    }
+
+    /**
+     * Read the log history of the current host.
+     *
+     * @param update ignore the cached request and read anew
+     * @param logLevel only return entries of this level and above. Needs a controller with
+     * `CONTROLLER_GET_LOGS_LOG_LEVEL`; without it everything is read as before and the caller filters.
+     */
+    getLogs(update?: boolean, logLevel?: ioBroker.LogLevel): Promise<{ logs: LogLineSaved[]; logSize: number }> {
         if (!this.currentHost) {
             return Promise.resolve({ logs: [], logSize: 0 });
+        }
+
+        // a different level means a different result, so the cached request cannot be reused
+        if (logLevel !== this.lastLogLevel) {
+            this.lastLogLevel = logLevel;
+            update = true;
         }
 
         if (!update && this.promise instanceof Promise) {
@@ -341,8 +393,11 @@ export class LogsWorker {
         this.errors = 0;
         this.warnings = 0;
 
-        this.promise = this.socket
-            .getLogs(this.currentHost, 200)
+        // Every level includes errors, so the error count is always complete. Warnings are only
+        // complete while they are part of the answer - with `error` the badge would drop to zero.
+        const warningsAreComplete = logLevel !== 'error';
+
+        this.promise = this.readLogLines(logLevel)
             .then(lines => {
                 // @ts-expect-error it can return error string or error object { error: 'permissionError' }
                 if ((lines as string) === 'permissionError' || lines?.error !== undefined) {
@@ -391,8 +446,13 @@ export class LogsWorker {
                 if (oldErrors !== this.errors) {
                     this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
                 }
-                if (oldWarnings !== this.warnings) {
-                    this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
+                if (warningsAreComplete) {
+                    if (oldWarnings !== this.warnings) {
+                        this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
+                    }
+                } else {
+                    // keep whatever was counted before instead of reporting a filtered-away zero
+                    this.warnings = oldWarnings;
                 }
 
                 return { logs, logSize };

@@ -189,11 +189,16 @@ This project uses icons from [Flaticon](https://www.flaticon.com/).
 ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
+[Older changelog](CHANGELOG_OLD.md)
+
 ## Changelog
 <!--
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Corrected charts
+
 ### 8.0.1 (2026-08-03)
 - (@GermanBluefox) Breaking: React19 + MUI9
 - (@GermanBluefox) Breaking: Node 22 or higher required

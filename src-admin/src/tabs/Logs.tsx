@@ -402,7 +402,10 @@ class Logs extends Component<LogsProps, LogsState> {
         cb?: () => void,
     ): void {
         if (this.props.logsWorker && this.state.hosts) {
-            void this.props.logsWorker.getLogs(force).then(results => {
+            // Ask the host for the selected severity only. A controller that can do it returns a
+            // window that actually holds that many entries of this level instead of a fixed byte
+            // window that a chatty debug log fills up on its own (#3578).
+            void this.props.logsWorker.getLogs(force, this.getRequestedLogLevel()).then(results => {
                 if (!results) {
                     return;
                 }
@@ -644,9 +647,21 @@ class Logs extends Component<LogsProps, LogsState> {
         this.setState({ source });
     }
 
+    /**
+     * The severity to request from the host.
+     *
+     * `silly` and `debug` mean "everything", so nothing is gained by sending them - the plain
+     * request stays and the host keeps its cheap single-chunk read.
+     */
+    getRequestedLogLevel(): ioBroker.LogLevel | undefined {
+        const severity = this.state.severity as ioBroker.LogLevel;
+        return severity === 'silly' || severity === 'debug' ? undefined : severity;
+    }
+
     handleSeverityChange(event: SelectChangeEvent<string>): void {
         (((window as any)._localStorage as Storage) || window.localStorage).setItem('Log.severity', event.target.value);
-        this.setState({ severity: event.target.value });
+        // A coarser severity reaches further back, so the history is read anew for the new level
+        this.setState({ severity: event.target.value }, () => this.readLogs(true));
     }
 
     handleLogDelete(): void {

@@ -210,7 +210,7 @@ export default class Web {
     close(): void {
         if (this.checkTimeout) {
             this.adapter.clearTimeout(this.checkTimeout);
-            this.checkTimeout = null;
+            this.checkTimeout = undefined;
         }
 
         this.mcpServer?.unload();
@@ -591,6 +591,13 @@ export default class Web {
                         const pathName = req.url.split('?')[0];
                         if (
                             pathName.startsWith('/login/') ||
+                            // An OAuth redirect target is reached by a cross-site top-level navigation
+                            // from the authorization server. The session cookie is `SameSite=Strict`, so
+                            // the browser never sends it here and even a logged-in user would be bounced
+                            // to the login page. The route only forwards the query to the addressed
+                            // instance; deciding whether the callback belongs to a login it started is
+                            // the adapter's job, which is what the OAuth `state` parameter is for.
+                            pathName.startsWith('/oauth2_callbacks/') ||
                             pathName.endsWith('.ico') ||
                             pathName.endsWith('manifest.json')
                         ) {
@@ -1093,8 +1100,20 @@ export default class Web {
                 // extract instance from "http://localhost:8081/oauth2_callbacks/netatmo.0/?state=ABC&code=CDE"
                 const [_instance, params] = req.url.split('?');
                 const instance = _instance.replace(/^\//, '').replace(/\/$/, ''); // remove last and first "/" in "/netatmo.0/"
+
+                // The route is reachable without a login, so only well-formed "<adapter>.<instance>"
+                // targets are addressed instead of forwarding whatever stands in the path.
+                if (!/^[a-z0-9][a-z0-9\-_]*\.\d+$/.test(instance)) {
+                    res.status(404).send(get404Page(`Invalid instance "${escapeHtml(instance)}"`));
+                    return;
+                }
+
                 const query: Record<string, string | boolean | number> = {};
-                params.split('&').forEach(param => {
+                // a callback without any parameter is not useful, but it must not throw either
+                (params || '').split('&').forEach(param => {
+                    if (!param) {
+                        return;
+                    }
                     const [key, value] = param.split('=');
                     query[key] = value === undefined ? true : value;
                     if (Number.isFinite(query[key])) {
@@ -1110,10 +1129,10 @@ export default class Web {
                     query.timeout = 30_000;
                 }
 
-                let timeout: NodeJS.Timeout | null = setTimeout(
+                let timeout: ioBroker.Timeout | undefined = this.adapter.setTimeout(
                     (): void => {
                         if (timeout) {
-                            timeout = null;
+                            timeout = undefined;
                             let text = readFileSync(`${this.baseDir}/public/oauthError.html`).toString('utf8');
                             text = text.replace('%LANGUAGE%', this.systemLanguage);
                             text = text.replace('%ERROR%', 'TIMEOUT');
@@ -1127,8 +1146,8 @@ export default class Web {
                 this.adapter.sendTo(instance, 'oauth2Callback', query, result => {
                     const _result = result as { error?: string; result?: string };
                     if (timeout) {
-                        clearTimeout(timeout);
-                        timeout = null;
+                        this.adapter.clearTimeout(timeout);
+                        timeout = undefined;
                         if (_result?.error) {
                             let text = readFileSync(`${this.baseDir}/public/oauthError.html`).toString('utf8');
                             text = text.replace('%LANGUAGE%', this.systemLanguage);
@@ -1268,7 +1287,7 @@ export default class Web {
 
                             if (!this.adapter.config.doNotCheckPublicIP && !this.adapter.config.auth) {
                                 this.checkTimeout = this.adapter.setTimeout(async (): Promise<void> => {
-                                    this.checkTimeout = null;
+                                    this.checkTimeout = undefined;
                                     try {
                                         await checkPublicIP(this.settings.port, 'ioBroker', '/iobroker_check.html');
                                     } catch (e) {
