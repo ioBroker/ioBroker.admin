@@ -34,7 +34,7 @@ const styles: Record<string, React.CSSProperties> = {
         height: 32,
     },
     titleEnabled: {
-        float: 'right',
+        // no `float` here: the summary content is a flex box, which centers the label vertically
         fontSize: 16,
         color: '#7ff57f',
         textTransform: 'uppercase',
@@ -651,6 +651,8 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     data-id={instance}
+                    // align icon, title and the "enabled" label on one middle line
+                    sx={{ '& .MuiAccordionSummary-content': { alignItems: 'center' } }}
                     style={
                         i % 2
                             ? enabled

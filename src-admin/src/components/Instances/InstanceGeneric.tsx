@@ -1427,6 +1427,8 @@ export default abstract class InstanceGeneric<
                 removePrefix="system.host."
                 themeType={this.props.context.themeType}
                 lang={this.props.context.lang}
+                // not every host object has `common.icon`, but the names must stay aligned in the list
+                reserveIconSpace
             />
         );
     }

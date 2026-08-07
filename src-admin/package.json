@@ -24,7 +24,7 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/gui-components": "^10.0.14",
+        "@iobroker/gui-components": "^10.0.15",
         "@iobroker/dm-gui-components": "^10.0.18",
         "@iobroker/json-config": "^9.0.18",
         "ace-builds": "^1.44.0",
