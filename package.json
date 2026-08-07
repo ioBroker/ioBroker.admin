@@ -74,7 +74,7 @@
     "less": "^4.8.1",
     "puppeteer": "^25.5.0",
     "tsx": "^4.23.10",
-    "typescript": "~6.0.3"
+    "typescript": "~7.0.2"
   },
   "overrides": {
     "oauth2-server": {
