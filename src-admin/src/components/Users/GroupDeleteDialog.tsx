@@ -11,7 +11,7 @@ interface GroupDeleteDialogProps {
     group: ioBroker.GroupObject;
     deleteGroup: (groupId: string) => void;
     styles: Record<string, React.CSSProperties>;
-    getText: (text: ioBroker.StringOrTranslated) => string;
+    getText: (text: ioBroker.StringOrTranslated | undefined) => string;
 }
 
 export default function GroupDeleteDialog(props: GroupDeleteDialogProps): JSX.Element {

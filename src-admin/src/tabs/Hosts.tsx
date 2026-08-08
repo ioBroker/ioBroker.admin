@@ -209,7 +209,7 @@ export default class Hosts extends Component<HostsProps, HostsState> {
         for (let h = 0; h < hosts.length; h++) {
             if (_alive[hosts[h]._id]) {
                 const promise = this.props.socket
-                    .getHostInfo(hosts[h]._id, null, this.state.readTimeoutMs)
+                    .getHostInfo(hosts[h]._id, undefined, this.state.readTimeoutMs)
                     .catch((error: string) => {
                         console.error(`Cannot get getHostInfo: ${error}`);
                         if (error.toString().includes('timeout')) {
@@ -288,7 +288,7 @@ export default class Hosts extends Component<HostsProps, HostsState> {
                     const state = await this.props.socket.getState(`${event.id}.alive`);
                     alive[event.id] = !!state?.val;
                     // new
-                    hosts.push(event.obj);
+                    hosts.push(event.obj as ioBroker.HostObject);
                 }
             }),
         ).then(() => {
@@ -323,7 +323,7 @@ export default class Hosts extends Component<HostsProps, HostsState> {
         }
     };
 
-    getPanelsOrRows(): string | JSX.Element[] {
+    getPanelsOrRows(): string | (JSX.Element | null)[] {
         const items = this.renderHosts().filter(host => host);
 
         return items.length ? items : this.t('All items are filtered out');

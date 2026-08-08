@@ -136,7 +136,7 @@ export default class LicensesDialog extends BaseSystemSettingsDialog<LicensesDia
             this.props.socket
                 .subscribeObject('system.licenses', this.onLicensesChanged)
                 .catch(e => window.alert(`Cannot subscribe on system.licenses: ${e}`));
-            this.setState({ uuid: obj.native.uuid });
+            this.setState({ uuid: obj?.native.uuid });
         });
     }
 
@@ -153,20 +153,20 @@ export default class LicensesDialog extends BaseSystemSettingsDialog<LicensesDia
     async requestLicenses(): Promise<void> {
         this.setState({ requesting: true });
         try {
-            let password = this.props.data.native.password;
+            let password: string = this.props.data.native.password;
             // if the password was not changed
             if (password === '__SOME_PASSWORD__') {
                 const obj = await this.props.socket.getObject('system.licenses');
                 // if login was changed
-                if (obj.native.login !== this.props.data.native.login) {
-                    password = await this.props.socket.decrypt(obj.native.password);
+                if (obj?.native.login !== this.props.data.native.login) {
+                    password = await this.props.socket.decrypt(obj?.native.password);
                 } else {
-                    password = null;
+                    password = '';
                 }
             }
 
             const licenses = await this.props.socket.updateLicenses(
-                password ? this.props.data.native.login : null,
+                password ? this.props.data.native.login : '',
                 password,
             );
 
@@ -188,7 +188,7 @@ export default class LicensesDialog extends BaseSystemSettingsDialog<LicensesDia
             } else if (error === 'Authentication required') {
                 window.alert(this.props.t('Cannot update licenses: %s', this.props.t('Authentication required')));
             } else {
-                window.alert(this.props.t('Cannot update licenses: %s', error));
+                window.alert(this.props.t('Cannot update licenses: %s', (error as Error).toString()));
             }
         }
     }

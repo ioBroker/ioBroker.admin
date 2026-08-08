@@ -19,7 +19,7 @@ interface GroupBlockProps {
     showGroupEditDialog: (group: ioBroker.GroupObject, isNew: boolean) => void;
     showGroupDeleteDialog: (group: ioBroker.GroupObject) => void;
     removeUserFromGroup: (userId: string, groupId: string) => void;
-    getText: (text: ioBroker.StringOrTranslated) => string;
+    getText: (text: ioBroker.StringOrTranslated | undefined) => string;
     themeType: ThemeType;
     styles: Record<string, any>;
     theme: IobTheme;
@@ -82,7 +82,7 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
                     onClick={() => props.showGroupDeleteDialog(props.group)}
                     disabled={props.group.common.dontDelete}
                 >
-                    <DeleteIcon style={props.group.common.dontDelete ? null : { color: textColor }} />
+                    <DeleteIcon style={props.group.common.dontDelete ? undefined : { color: textColor }} />
                 </IconButton>
             </div>
             <CardContent>

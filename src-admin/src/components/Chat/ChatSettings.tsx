@@ -84,7 +84,7 @@ function renderCredentialItem(option: AiCredentialEntry | undefined, anyIcon: bo
                 // if at least one option has an icon, keep the labels aligned
                 <span style={{ width: 20, height: 20, flexShrink: 0 }} />
             ) : null}
-            {option.name || option.id.replace('system.credentials.', '')}
+            {option?.name || option?.id.replace('system.credentials.', '')}
         </span>
     );
 }

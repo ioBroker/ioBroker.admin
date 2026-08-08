@@ -30,7 +30,7 @@ interface LinksDialogProps {
 }
 
 class LinksDialog extends Component<LinksDialogProps> {
-    render(): JSX.Element {
+    render(): JSX.Element | null {
         if (!this.props.links || !this.props.links.length) {
             return null;
         }

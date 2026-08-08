@@ -402,12 +402,12 @@ interface MarkdownState {
     text: string;
     notFound: boolean;
     affiliate: any;
-    adapterNews: Record<string, ioBroker.StringOrTranslated>;
+    adapterNews: Record<string, ioBroker.StringOrTranslated> | null;
     hideContent: boolean;
 }
 
 class Markdown extends Component<MarkdownProps, MarkdownState> {
-    private readonly contentRef: React.RefObject<HTMLDivElement>;
+    private readonly contentRef: React.RefObject<HTMLDivElement | null>;
 
     private mounted: boolean;
 
@@ -619,7 +619,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             if (this.mounted) {
                 this.setState({ notFound: false, parts: [] });
             }
-            this.load(null, nextProps.language);
+            this.load(undefined, nextProps.language);
         }
     }
 
@@ -631,7 +631,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         }
     } */
 
-    static onNavigate(id: string, link?: string): void {
+    static onNavigate(id: string | null, link?: string): void {
         if (link && link.match(/^https?:\/\//)) {
             Utils.openLink(link);
         } else if (id) {
@@ -682,7 +682,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
     static parseChangeLog(changeLog: string): Record<string, MarkdownEntry> {
         const lines = changeLog.split('\n');
         const entries: Record<string, MarkdownEntry> = {};
-        let oneEntry: MarkdownEntry;
+        let oneEntry: MarkdownEntry | null = null;
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i];
             if (line.startsWith('##')) {
@@ -693,9 +693,11 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 // ### 3.0.5 (2020-10-30) or ### 3.0.5 [2020-10-30] or ### 3.0.5
                 const [version, date] = line.replace(/^#+\s?/, '').split(/[\s([]+/);
                 if (version) {
-                    oneEntry = { lines: [] } as MarkdownEntry;
-                    oneEntry.version = version.trim();
-                    oneEntry.date = (date || '').trim().replace(/\)/, '');
+                    oneEntry = {
+                        version: version.trim(),
+                        date: (date || '').trim().replace(/\)/, ''),
+                        lines: [],
+                    };
                 }
             } else if (line.trim() && oneEntry) {
                 // extract author
@@ -745,16 +747,18 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             }
         }
 
-        let _changeLog: Record<string, MarkdownEntry>;
+        let _changeLog: Record<string, MarkdownEntry> | undefined;
         // try to add missing news
         if (changeLog) {
             // split news
-            _changeLog = Markdown.parseChangeLog(changeLog);
-            if (_changeLog && typeof _changeLog === 'object' && this.state.adapterNews) {
+            const changeLogEntries = Markdown.parseChangeLog(changeLog);
+            _changeLog = changeLogEntries;
+            const allNews = this.state.adapterNews;
+            if (typeof changeLogEntries === 'object' && allNews) {
                 const lang: ioBroker.Languages = I18n.getLanguage();
-                Object.keys(this.state.adapterNews).forEach(version => {
-                    if (!_changeLog[version]) {
-                        const adapterNews = this.state.adapterNews[version];
+                Object.keys(allNews).forEach(version => {
+                    if (!changeLogEntries[version]) {
+                        const adapterNews = allNews[version];
                         let news: string;
                         if (typeof adapterNews === 'object') {
                             news = adapterNews[lang] || adapterNews.en || '';
@@ -762,7 +766,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                             news = adapterNews;
                         }
 
-                        _changeLog[version] = { version, lines: news.split('\\n') };
+                        changeLogEntries[version] = { version, lines: news.split('\\n') };
                     }
                 });
             }
@@ -844,8 +848,8 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         };
     }
 
-    formatAuthors(text: string): JSX.Element[] {
-        const parts = text
+    formatAuthors(text: string | undefined): JSX.Element[] {
+        const parts = (text || '')
             .split(',')
             .map(t => t.trim())
             .filter(t => t);
@@ -898,7 +902,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                     sx={styles.headerTranslated}
                     onClick={() => {
                         if (this.props.onNavigate) {
-                            this.props.onNavigate(this.state.header.translatedFrom);
+                            this.props.onNavigate(this.state.header.translatedFrom || '');
                         } else {
                             // read this.props.link
                             fetch(this.props.link)
@@ -1066,7 +1070,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                         <li key={link || i}>
                             <Box
                                 component="span"
-                                onClick={() => Markdown.onNavigate(item, link)}
+                                onClick={() => Markdown.onNavigate(item, link || undefined)}
                                 sx={styles.contentLinks}
                             >
                                 {this.state.content[item].title}
@@ -1116,7 +1120,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         );
     }
 
-    renderContent(): JSX.Element {
+    renderContent(): JSX.Element | null {
         const links = Object.keys(this.state.content);
         if (!links.length) {
             return null;
@@ -1155,7 +1159,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                                 >
                                     <Box
                                         component="span"
-                                        onClick={() => Markdown.onNavigate(item, link)}
+                                        onClick={() => Markdown.onNavigate(item, link || undefined)}
                                         className={styles.contentLinks}
                                     >
                                         {title}
@@ -1416,7 +1420,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         const mm = line.match(/^#+\s.+/g);
         if (mm) {
             mm.forEach(header => {
-                const level = header.match(/^(#+)\s/)[1].length;
+                const level = (header.match(/^(#+)\s/) || ['', ''])[1].length;
                 const text = header.substring(level + 1);
                 line = line.replace(
                     header,

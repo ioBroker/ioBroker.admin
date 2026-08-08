@@ -79,7 +79,7 @@ export interface SettingsStates {
     writeFileInterval?: number;
     dataDir?: string;
     options?: {
-        auth_pass: string;
+        auth_pass: string | null;
         retry_max_delay: number;
         retry_max_count: number;
         db: number;
@@ -144,7 +144,7 @@ interface BaseSettingsStatesState {
 }
 
 export default class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettingsStatesState> {
-    private focusRef: React.RefObject<HTMLInputElement>;
+    private focusRef: React.RefObject<HTMLInputElement | null>;
 
     constructor(props: BaseSettingsStatesProps) {
         super(props);

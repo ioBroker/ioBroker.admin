@@ -43,7 +43,7 @@ interface IntroCardCameraState extends IntroCardState {
 }
 
 class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraState> {
-    private readonly cameraRef: React.RefObject<HTMLImageElement>;
+    private readonly cameraRef: React.RefObject<HTMLImageElement | null>;
 
     private cameraUpdateTimer: ReturnType<typeof setTimeout> | null;
 
@@ -61,13 +61,13 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         this.cameraRef = createRef<HTMLImageElement>();
         this.cameraUpdateTimer = null;
 
-        this.interval = props.interval;
+        this.interval = props.interval || 0;
     }
 
     updateCamera(): void {
         if (this.cameraRef.current) {
             if (this.props.camera === 'custom') {
-                let url = this.props.cameraUrl;
+                let url = this.props.cameraUrl || '';
                 if (this.props.addTs) {
                     if (url.includes('?')) {
                         url += `&ts=${Date.now()}`;
@@ -77,7 +77,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
                 }
                 this.cameraRef.current.src = url;
             } else {
-                const parts = this.props.camera.split('.');
+                const parts = (this.props.camera || '').split('.');
                 const adapter = parts.shift();
                 const instance = parts.shift();
                 this.props.socket
@@ -119,7 +119,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         return (
             <CameraIntroDialog
                 socket={this.props.socket}
-                camera={this.props.camera}
+                camera={this.props.camera || ''}
                 name={this.props.title}
                 t={this.props.t}
                 onClose={() => {
@@ -136,7 +136,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
 
                     this.setState({ dialog: false });
                 }}
-                cameraUrl={this.props.cameraUrl}
+                cameraUrl={this.props.cameraUrl || ''}
             />
         );
     }
@@ -161,7 +161,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
 
     renderContent(): JSX.Element | null {
         if (this.props.camera === 'custom') {
-            let url = this.props.cameraUrl;
+            let url = this.props.cameraUrl || '';
 
             if (this.props.addTs) {
                 if (url.includes('?')) {
@@ -198,7 +198,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
             );
         }
 
-        if (this.props.camera.startsWith('cameras.')) {
+        if (this.props.camera?.startsWith('cameras.')) {
             return (
                 <img
                     ref={this.cameraRef}
@@ -215,7 +215,7 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
     render(): JSX.Element {
         if (this.props.camera && this.props.camera !== 'text') {
             if (this.interval !== this.props.interval) {
-                this.interval = this.props.interval;
+                this.interval = this.props.interval || 0;
                 if (this.cameraUpdateTimer) {
                     clearInterval(this.cameraUpdateTimer);
                 }

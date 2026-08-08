@@ -349,7 +349,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 noToolbar
                 defaultHistory={this.props.defaultHistory}
                 customsInstances={[]}
-                objects={undefined}
+                objects={{}}
                 historyInstance={''}
             />
         );
@@ -390,8 +390,8 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
             this.props.object.common.max !== undefined &&
             this.props.object.common.min !== undefined
         ) {
-            const options = Object.keys(this.props.states).map(key => ({
-                label: this.props.states[key],
+            const options = Object.keys(this.props.states || {}).map(key => ({
+                label: this.props.states?.[key],
                 value: key,
             }));
 
@@ -439,7 +439,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                             key={i}
                             value={key}
                         >
-                            {this.props.states[key]}
+                            {this.props.states?.[key]}
                         </MenuItem>
                     ))}
                 </Select>
@@ -544,7 +544,9 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                             style={{ height: '100%' }}
                         >
                             <Grid
-                                size={{ xs: this.state.chart && this.state.chartEnabled ? 6 : 12 }}
+                                // the chart only exists from `md` upward, so below that the form gets
+                                // the full width instead of leaving half the dialog empty
+                                size={{ xs: 12, md: this.state.chart && this.state.chartEnabled ? 6 : 12 }}
                                 style={{ height: '100%' }}
                             >
                                 <Grid
@@ -686,7 +688,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                 helperText={this.props.t(
                                                     'Press ENTER to write the value, when focused',
                                                 )}
-                                                value={this.state.targetValue.toString()}
+                                                value={this.state.targetValue?.toString()}
                                                 label={
                                                     this.props.t('Value') +
                                                     (this.props.object.common.min !== undefined ||
@@ -808,9 +810,12 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                             </Grid>
                             {this.state.chart && this.state.chartEnabled && this.state.type !== 'json' ? (
                                 <Grid
-                                    size={{ xs: 6 }}
+                                    size={{ xs: 12, md: 6 }}
                                     style={{ minHeight: 300 }}
-                                    sx={{ display: { sm: 'none', md: 'inline-block' } }}
+                                    // MUI breakpoints are min-width: without an `xs` entry the property
+                                    // stays unset below `sm` and the chart showed up on exactly the narrow
+                                    // screens it was meant to be hidden on.
+                                    sx={{ display: { xs: 'none', md: 'inline-block' } }}
                                 >
                                     {this.renderChart()}
                                 </Grid>

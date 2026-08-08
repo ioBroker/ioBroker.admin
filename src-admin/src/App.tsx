@@ -477,7 +477,7 @@ interface AppState {
     noTranslation: boolean;
     cloudNotConnected: boolean;
     cloudReconnect: number;
-    showRedirect: string;
+    showRedirect: string | undefined;
     redirectCountDown: number;
     triggerAdapterUpdate: number;
     updating: boolean;
@@ -512,10 +512,10 @@ class App extends Router<AppProps, AppState> {
     private hostsWorker: HostsWorker | null = null;
     private adaptersWorker: AdaptersWorker | null = null;
     private objectsWorker: ObjectsWorker | null = null;
-    private guiSettings: ObjectGuiSettings;
+    private guiSettings: ObjectGuiSettings | null = null;
     private localStorageTimer: ReturnType<typeof setTimeout> | null = null;
     private languageSet: boolean = false;
-    private socket: AdminConnection;
+    private socket: AdminConnection | null = null;
     private adminInstance: string = '';
     private newsInstance: number = 0;
     private doNotAskSessionExpiration: number = 0;
@@ -556,8 +556,8 @@ class App extends Router<AppProps, AppState> {
         };
 
         // merge together
-        Object.keys(translations).forEach((lang: ioBroker.Languages) =>
-            Object.assign(this.translations[lang], translations[lang]),
+        Object.keys(translations).forEach(lang =>
+            Object.assign(this.translations[lang as ioBroker.Languages], translations[lang as ioBroker.Languages]),
         );
 
         // init translations
@@ -728,12 +728,12 @@ class App extends Router<AppProps, AppState> {
         const searchParams = new URLSearchParams(window.location.search);
 
         if (searchParams.has('id_token')) {
-            window.localStorage.setItem('oidc_id_token', searchParams.get('id_token'));
+            window.localStorage.setItem('oidc_id_token', searchParams.get('id_token') as string);
             window.location.search = '';
         }
 
         if (searchParams.has('ssoLoginResponse')) {
-            const res = JSON.parse(searchParams.get('ssoLoginResponse'));
+            const res = JSON.parse(searchParams.get('ssoLoginResponse') as string);
             Connection.saveTokensStatic(res, true);
             window.location.search = '';
         }
@@ -758,7 +758,7 @@ class App extends Router<AppProps, AppState> {
         return invertedColor === '#000000' && this.state.themeType === 'light';
     }
 
-    localStorageGetItem = (name: string): any => this.guiSettings.native.localStorage[name];
+    localStorageGetItem = (name: string): any => this.guiSettings?.native.localStorage[name];
 
     localStorageSetItem = (name: string, value: any): void => {
         if (value === null) {
@@ -767,19 +767,21 @@ class App extends Router<AppProps, AppState> {
             this.localStorageRemoveItem(name);
             return;
         }
-        this.guiSettings.native.localStorage[name] = value.toString();
+        if (this.guiSettings) {
+            this.guiSettings.native.localStorage[name] = value.toString();
+        }
 
         this.localStorageSave();
     };
 
     localStorageRemoveItem = (name: string): void => {
-        if (Object.prototype.hasOwnProperty.call(this.guiSettings.native.localStorage, name)) {
+        if (this.guiSettings && Object.prototype.hasOwnProperty.call(this.guiSettings.native.localStorage, name)) {
             delete this.guiSettings.native.localStorage[name];
             this.localStorageSave();
         }
     };
 
-    sessionStorageGetItem = (name: string): any => this.guiSettings.native.sessionStorage[name];
+    sessionStorageGetItem = (name: string): any => this.guiSettings?.native.sessionStorage[name];
 
     sessionStorageSetItem = (name: string, value: any): void => {
         if (value === null) {
@@ -788,12 +790,14 @@ class App extends Router<AppProps, AppState> {
             this.sessionStorageRemoveItem(name);
             return;
         }
-        this.guiSettings.native.sessionStorage[name] = value.toString();
+        if (this.guiSettings) {
+            this.guiSettings.native.sessionStorage[name] = value.toString();
+        }
         this.localStorageSave();
     };
 
     sessionStorageRemoveItem = (name: string): void => {
-        if (Object.prototype.hasOwnProperty.call(this.guiSettings.native.sessionStorage, name)) {
+        if (this.guiSettings && Object.prototype.hasOwnProperty.call(this.guiSettings.native.sessionStorage, name)) {
             delete this.guiSettings.native.sessionStorage[name];
             this.localStorageSave();
         }
@@ -805,7 +809,9 @@ class App extends Router<AppProps, AppState> {
         }
         this.localStorageTimer = setTimeout(async () => {
             this.localStorageTimer = null;
-            await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
+            if (this.guiSettings && this.socket) {
+                await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
+            }
         }, 200);
     }
 
@@ -818,24 +824,27 @@ class App extends Router<AppProps, AppState> {
     };
 
     async getGUISettings(): Promise<void> {
-        let obj;
+        let obj: ObjectGuiSettings | null | undefined = null;
 
-        if (!this.adminInstance) {
+        if (!this.adminInstance || !this.socket) {
             return;
         }
 
         try {
-            obj = await this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`);
+            obj = (await this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)) as
+                ObjectGuiSettings | null | undefined;
         } catch (e) {
-            console.warn(`Could not get "system.adapter.${this.adminInstance}.guiSettings": ${e.message}`);
+            console.warn(`Could not get "system.adapter.${this.adminInstance}.guiSettings": ${(e as Error).message}`);
         }
 
         if (!obj) {
             obj = JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
             try {
-                await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, obj);
+                await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, obj!);
             } catch (e) {
-                console.warn(`Could not update "system.adapter.${this.adminInstance}.guiSettings": ${e}`);
+                console.warn(
+                    `Could not update "system.adapter.${this.adminInstance}.guiSettings": ${(e as Error).message}`,
+                );
             }
         }
 
@@ -846,10 +855,10 @@ class App extends Router<AppProps, AppState> {
             state = { val: false };
         }
         if (state?.val) {
-            this.guiSettings = obj;
-            this.guiSettings.native ||= { localStorage: {}, sessionStorage: {} };
-            if (!this.guiSettings.native.localStorage) {
-                this.guiSettings.native = { localStorage: this.guiSettings.native, sessionStorage: {} };
+            this.guiSettings = obj || JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
+            this.guiSettings!.native ||= { localStorage: {}, sessionStorage: {} };
+            if (!this.guiSettings!.native.localStorage) {
+                this.guiSettings!.native = { localStorage: this.guiSettings!.native, sessionStorage: {} };
             }
 
             // @ts-expect-error it is not a full implementation of storage
@@ -882,99 +891,97 @@ class App extends Router<AppProps, AppState> {
                 }
             });
         } else if (this.state.guiSettings) {
-            window._localStorage = null;
-            window._sessionStorage = null;
+            window._localStorage = undefined;
+            window._sessionStorage = undefined;
 
             this.setState({ guiSettings: false });
         }
     }
 
-    enableGuiSettings(enabled: boolean, ownSettings?: boolean): void {
-        if (enabled && !this.guiSettings) {
-            void this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`).then(async obj => {
-                this.guiSettings = obj || JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
+    async enableGuiSettings(enabled: boolean, ownSettings?: boolean): Promise<void> {
+        if (enabled && !this.guiSettings && this.socket) {
+            const obj = await this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`);
+            this.guiSettings = obj || JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
 
-                if (ownSettings || !this.guiSettings.native || !Object.keys(this.guiSettings.native).length) {
-                    this.guiSettings.native = { localStorage: {}, sessionStorage: {} };
-                    Object.keys(window.localStorage).forEach(name => {
-                        if (
-                            name !== 'getItem' &&
-                            name !== 'setItem' &&
-                            name !== 'removeItem' &&
-                            name !== 'clear' &&
-                            name !== 'key' &&
-                            name !== 'length'
-                        ) {
-                            this.guiSettings.native.localStorage[name] = window.localStorage.getItem(name);
-                        }
-                    });
-
-                    Object.keys(window.sessionStorage).forEach(name => {
-                        if (
-                            name !== 'getItem' &&
-                            name !== 'setItem' &&
-                            name !== 'removeItem' &&
-                            name !== 'clear' &&
-                            name !== 'key' &&
-                            name !== 'length'
-                        ) {
-                            this.guiSettings.native.sessionStorage[name] = window.sessionStorage.getItem(name);
-                        }
-                    });
-                    await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
-                    await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
-                        val: true,
-                        ack: true,
-                    });
-                } else {
-                    await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
-                        val: true,
-                        ack: true,
-                    });
-                    window.location.reload();
-                }
-
-                await this.getGUISettings();
-            });
-        } else if (!enabled && this.guiSettings) {
-            void this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`).then(async obj => {
-                if (!obj) {
-                    try {
-                        // create an object if not exists
-                        await this.socket.setObject(
-                            `system.adapter.${this.adminInstance}.guiSettings`,
-                            DEFAULT_GUI_SETTINGS_OBJECT,
-                        );
-                    } catch (e) {
-                        console.error(`Cannot create system.adapter.${this.adminInstance}.guiSettings": ${e}`);
+            if (ownSettings || !this.guiSettings!.native || !Object.keys(this.guiSettings!.native).length) {
+                this.guiSettings!.native = { localStorage: {}, sessionStorage: {} };
+                Object.keys(window.localStorage).forEach(name => {
+                    if (
+                        name !== 'getItem' &&
+                        name !== 'setItem' &&
+                        name !== 'removeItem' &&
+                        name !== 'clear' &&
+                        name !== 'key' &&
+                        name !== 'length'
+                    ) {
+                        this.guiSettings!.native.localStorage[name] = window.localStorage.getItem(name);
                     }
-                }
-                window._localStorage = null;
-                window._sessionStorage = null;
+                });
 
-                // clear localStorage
-                Object.keys(window.localStorage).forEach(key => window.localStorage.removeItem(key));
-                Object.keys(window.sessionStorage).forEach(key => window.sessionStorage.removeItem(key));
+                Object.keys(window.sessionStorage).forEach(name => {
+                    if (
+                        name !== 'getItem' &&
+                        name !== 'setItem' &&
+                        name !== 'removeItem' &&
+                        name !== 'clear' &&
+                        name !== 'key' &&
+                        name !== 'length'
+                    ) {
+                        this.guiSettings!.native.sessionStorage[name] = window.sessionStorage.getItem(name);
+                    }
+                });
+                await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings!);
+                await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
+                    val: true,
+                    ack: true,
+                });
+            } else {
+                await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
+                    val: true,
+                    ack: true,
+                });
+                window.location.reload();
+            }
 
-                Object.keys(this.guiSettings.native.localStorage).forEach(name =>
-                    window.localStorage.setItem(name, this.guiSettings.native.localStorage[name]),
-                );
-                Object.keys(this.guiSettings.native.sessionStorage).forEach(name =>
-                    window.sessionStorage.setItem(name, this.guiSettings.native.sessionStorage[name]),
-                );
-
-                this.guiSettings = null;
-
+            await this.getGUISettings();
+        } else if (!enabled && this.guiSettings && this.socket) {
+            const obj = await this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`);
+            if (!obj) {
                 try {
-                    await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
-                        val: false,
-                        ack: true,
-                    });
+                    // create an object if not exists
+                    await this.socket.setObject(
+                        `system.adapter.${this.adminInstance}.guiSettings`,
+                        DEFAULT_GUI_SETTINGS_OBJECT,
+                    );
                 } catch (e) {
-                    window.alert(`Cannot disable settings: ${e}`);
+                    console.error(`Cannot create system.adapter.${this.adminInstance}.guiSettings": ${e}`);
                 }
-                this.setState({ guiSettings: false });
-            });
+            }
+            window._localStorage = undefined;
+            window._sessionStorage = undefined;
+
+            // clear localStorage
+            Object.keys(window.localStorage).forEach(key => window.localStorage.removeItem(key));
+            Object.keys(window.sessionStorage).forEach(key => window.sessionStorage.removeItem(key));
+
+            Object.keys(this.guiSettings.native.localStorage).forEach(name =>
+                window.localStorage.setItem(name, this.guiSettings!.native.localStorage[name]),
+            );
+            Object.keys(this.guiSettings.native.sessionStorage).forEach(name =>
+                window.sessionStorage.setItem(name, this.guiSettings!.native.sessionStorage[name]),
+            );
+
+            this.guiSettings = null;
+
+            try {
+                await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
+                    val: false,
+                    ack: true,
+                });
+            } catch (e) {
+                window.alert(`Cannot disable settings: ${e}`);
+            }
+            this.setState({ guiSettings: false });
         }
     }
 
@@ -991,113 +998,107 @@ class App extends Router<AppProps, AppState> {
                 this.setTitle(this.state.currentTab.tab.replace('tab-', ''));
             }
 
-            let host = window.location.hostname;
-            if (host === 'localhost' && window.location.port === '3000') {
-                host = '192.168.1.129';
-            }
-
             this.socket = new Connection({
                 protocol: window.location.protocol as 'http:' | 'https:',
-                host,
+                host: window.location.hostname,
                 name: 'admin',
                 admin5only: true,
                 port: App.getPort(),
                 autoSubscribes: ['system.adapter.*'], // Do not subscribe on '*' and really we don't need a 'system.adapter.*' either. Every tab must subscribe itself to everything that it needs
                 autoSubscribeLog: true,
                 tokenTimeoutHandler: this.onSessionExpiration,
-                onProgress: progress => {
+                onProgress: async (progress: number): Promise<void> => {
+                    if (!this.socket) {
+                        return;
+                    }
                     if (progress === PROGRESS.CONNECTING) {
                         this.setState({
                             connected: false,
                         });
                     } else if (progress === PROGRESS.READY) {
                         // BF: (2022.05.09) here must be this.socket.getVersion(true), but I have no idea why it does not work :(
-                        this.socket
-                            .getVersion()
-                            .then(async versionInfo => {
-                                console.log(
-                                    `Stored version: ${this.state.versionAdmin}, new version: ${versionInfo.version}`,
-                                );
-                                if (this.state.versionAdmin && this.state.versionAdmin !== versionInfo.version) {
-                                    window.alert('New adapter version detected. Reloading...');
-                                    setTimeout(() => window.location.reload(), 500);
-                                }
-                                if (!this.adminInstance) {
-                                    this.adminInstance = await this.socket.getCurrentInstance();
-                                }
+                        try {
+                            const versionInfo = await this.socket.getVersion();
+                            console.log(
+                                `Stored version: ${this.state.versionAdmin}, new version: ${versionInfo.version}`,
+                            );
+                            if (this.state.versionAdmin && this.state.versionAdmin !== versionInfo.version) {
+                                window.alert('New adapter version detected. Reloading...');
+                                setTimeout(() => window.location.reload(), 500);
+                            }
+                            this.adminInstance ||= await this.socket.getCurrentInstance();
 
-                                // read settings anew
-                                await this.getGUISettings();
+                            // read settings anew
+                            await this.getGUISettings();
 
-                                const newState: Partial<AppState> = {
-                                    connected: true,
-                                    progress: 100,
-                                    versionAdmin: versionInfo.version,
-                                    // Default to enabled; overridden from the admin settings below. Setting it
-                                    // together with `connected` avoids briefly showing the assistant launcher.
-                                    disableMcp: false,
-                                };
+                            const newState: Partial<AppState> = {
+                                connected: true,
+                                progress: 100,
+                                versionAdmin: versionInfo.version,
+                                // Default to enabled; overridden from the admin settings below. Setting it
+                                // together with `connected` avoids briefly showing the assistant launcher.
+                                disableMcp: false,
+                            };
 
-                                if (this.state.cmd && this.state.cmd.match(/ admin(@[-.\w]+)?$/)) {
-                                    // close the command dialog after reconnecting (maybe admin was restarted, and the update is now finished)
-                                    newState.commandRunning = false;
-                                    newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;
+                            if (this.state.cmd?.match(/ admin(@[-.\w]+)?$/)) {
+                                // close the command dialog after reconnecting (maybe admin was restarted, and the update is now finished)
+                                newState.commandRunning = false;
+                                newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;
 
-                                    this.closeCmdDialog(() => {
-                                        this.setState(newState as AppState);
-                                        window.location.reload();
-                                    });
-                                } else {
-                                    try {
-                                        const adminObj = await this.socket.getObject(
-                                            `system.adapter.${this.adminInstance}`,
-                                        );
-                                        // Hide the AI assistant launcher when MCP is disabled in the settings.
-                                        newState.disableMcp = !!adminObj?.native?.disableMcp;
-                                        // use instance language
-                                        if (adminObj?.native?.language) {
-                                            if (adminObj.native.language !== I18n.getLanguage()) {
-                                                console.log(`Language changed to ${adminObj.native.language}`);
-                                                I18n.setLanguage(adminObj.native.language);
-                                                if (this.languageSet) {
-                                                    window.location.reload();
-                                                } else {
-                                                    this.languageSet = true;
-                                                }
-                                            }
-                                        } else if (this.socket.systemLang !== I18n.getLanguage()) {
-                                            console.log(`Language changed to ${this.socket.systemLang}`);
-                                            I18n.setLanguage(this.socket.systemLang);
+                                this.closeCmdDialog(() => {
+                                    this.setState(newState as AppState);
+                                    window.location.reload();
+                                });
+                            } else {
+                                try {
+                                    const adminObj = await this.socket.getObject(
+                                        `system.adapter.${this.adminInstance}`,
+                                    );
+                                    // Hide the AI assistant launcher when MCP is disabled in the settings.
+                                    newState.disableMcp = !!adminObj?.native?.disableMcp;
+                                    // use instance language
+                                    if (adminObj?.native?.language) {
+                                        if (adminObj.native.language !== I18n.getLanguage()) {
+                                            console.log(`Language changed to ${adminObj.native.language}`);
+                                            I18n.setLanguage(adminObj.native.language);
                                             if (this.languageSet) {
                                                 window.location.reload();
                                             } else {
                                                 this.languageSet = true;
                                             }
                                         }
-                                    } catch (e) {
-                                        console.error(`Cannot read admin settings: ${e}`);
-                                    }
-
-                                    this.setState(newState as AppState);
-                                }
-                            })
-                            .catch(err => {
-                                console.error(`Cannot read version: ${err}`);
-                                if (err === 'ioBroker is not connected') {
-                                    setInterval(() => {
-                                        if (this.state.cloudReconnect > 0) {
-                                            this.setState({ cloudReconnect: this.state.cloudReconnect - 1 });
-                                        } else {
+                                    } else if (this.socket.systemLang !== I18n.getLanguage()) {
+                                        console.log(`Language changed to ${this.socket.systemLang}`);
+                                        I18n.setLanguage(this.socket.systemLang);
+                                        if (this.languageSet) {
                                             window.location.reload();
+                                        } else {
+                                            this.languageSet = true;
                                         }
-                                    }, 1_000);
-
-                                    this.setState({
-                                        cloudNotConnected: true,
-                                        cloudReconnect: 10,
-                                    });
+                                    }
+                                } catch (e) {
+                                    console.error(`Cannot read admin settings: ${e}`);
                                 }
-                            });
+
+                                this.setState(newState as AppState);
+                            }
+                        } catch (err) {
+                            console.error(`Cannot read version: ${err}`);
+                            if (err === 'ioBroker is not connected') {
+                                setInterval(() => {
+                                    if (this.state.cloudReconnect > 0) {
+                                        this.setState({ cloudReconnect: this.state.cloudReconnect - 1 });
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                }, 1_000);
+
+                                this.setState({
+                                    cloudNotConnected: true,
+                                    cloudReconnect: 10,
+                                });
+                            }
+                        }
                     } else {
                         this.setState({
                             connected: true,
@@ -1106,6 +1107,9 @@ class App extends Router<AppProps, AppState> {
                     }
                 },
                 onReady: async () => {
+                    if (!this.socket) {
+                        throw new Error('Socket not initialized');
+                    }
                     // Combine adminGuiConfig with user settings
                     this.adminGuiConfig = {
                         admin: {
@@ -1114,17 +1118,15 @@ class App extends Router<AppProps, AppState> {
                             adapters: {},
                             login: {},
                         },
-                        ...this.socket.systemConfig.native?.vendor,
+                        ...this.socket?.systemConfig?.native?.vendor,
                     };
-                    this.adminGuiConfig.admin.menu ||= {};
-                    this.adminGuiConfig.admin.settings ||= {};
-                    this.adminGuiConfig.admin.adapters ||= {};
-                    this.adminGuiConfig.admin.login ||= {};
+                    this.adminGuiConfig.admin!.menu ||= {};
+                    this.adminGuiConfig.admin!.settings ||= {};
+                    this.adminGuiConfig.admin!.adapters ||= {};
+                    this.adminGuiConfig.admin!.login ||= {};
 
                     try {
-                        if (!this.adminInstance) {
-                            this.adminInstance = await this.socket.getCurrentInstance();
-                        }
+                        this.adminInstance ||= await this.socket.getCurrentInstance();
                         if (!this.adminInstance) {
                             console.error('Cannot read admin instance!');
                         }
@@ -1168,9 +1170,11 @@ class App extends Router<AppProps, AppState> {
                             newState.systemConfig = await this.socket.getCompactSystemConfig();
                             newState.wizard = !newState.systemConfig.common.licenseConfirmed;
                             await this.findCurrentHost(newState);
-                            await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
+                            if (newState.currentHost) {
+                                await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
+                            }
                         } catch (e) {
-                            console.log(`Error reading repo in onReady: ${e.stack}`);
+                            console.log(`Error reading repo in onReady: ${(e as Error).stack}`);
                         }
 
                         this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
@@ -1183,34 +1187,38 @@ class App extends Router<AppProps, AppState> {
                         );
                         newState.expertMode = storedExpertMode
                             ? storedExpertMode === 'true'
-                            : !!newState.systemConfig.common.expertMode;
+                            : !!newState.systemConfig?.common.expertMode;
 
                         // Read the user and show him
-                        if (this.socket.isSecure || this.socket.systemConfig.native?.vendor) {
+                        if (this.socket.isSecure || this.socket.systemConfig?.native?.vendor) {
                             try {
                                 const user = await this.socket.getCurrentUser();
 
                                 const userObj = await this.socket.getObject(`system.user.${user}`);
 
-                                if (userObj.native?.vendor) {
+                                if (userObj?.native?.vendor) {
                                     Object.assign(this.adminGuiConfig, userObj.native.vendor);
                                 }
 
-                                if (this.socket.isSecure) {
+                                if (this.socket.isSecure && userObj) {
                                     this.setState({
                                         user: {
                                             id: userObj._id,
                                             name: Utils.getObjectNameFromObj(userObj, this.socket.systemLang),
                                             color: userObj.common.color,
                                             icon: userObj.common.icon,
-                                            invertBackground: this.mustInvertBackground(userObj.common.color),
+                                            invertBackground: userObj.common.color
+                                                ? this.mustInvertBackground(userObj.common.color)
+                                                : false,
                                             group: await this.getLeadingGroupName(userObj._id),
                                         },
                                     });
                                 }
                             } catch (e) {
-                                console.error(`Could not determine user to show: ${e.toString()}, ${e.stack}`);
-                                this.showAlert(e.toString(), 'error');
+                                console.error(
+                                    `Could not determine user to show: ${(e as Error).toString()}, ${(e as Error).stack}`,
+                                );
+                                this.showAlert((e as Error).toString(), 'error');
                             }
                         }
 
@@ -1225,18 +1233,18 @@ class App extends Router<AppProps, AppState> {
                             () =>
                                 this.findNewsInstance().then(instance => {
                                     this.newsInstance = instance;
-                                    void this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.onNews);
+                                    void this.socket?.subscribeState(`admin.${instance}.info.newsFeed`, this.onNews);
                                 }),
                             5_000,
                         );
 
                         setTimeout(async () => {
-                            const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
+                            const notifications = await this.hostsWorker?.getNotifications(newState.currentHost);
                             await this.handleNewNotifications(notifications);
                         }, 3_000);
                     } catch (e) {
-                        console.error(`Error in onReady: ${e.stack}`);
-                        this.showAlert(`Error in onReady: ${e.stack}`, 'error');
+                        console.error(`Error in onReady: ${(e as Error).stack}`);
+                        this.showAlert(`Error in onReady: ${(e as Error).stack}`, 'error');
                     }
                 },
                 onError: (error: string | Error) => {
@@ -1285,8 +1293,8 @@ class App extends Router<AppProps, AppState> {
         }
 
         if (window._localStorage) {
-            window._localStorage = null;
-            window._sessionStorage = null;
+            window._localStorage = undefined;
+            window._sessionStorage = undefined;
         }
     }
 
@@ -1333,8 +1341,9 @@ class App extends Router<AppProps, AppState> {
             } else if (installed[adapter]) {
                 Object.keys(installed[adapter]).forEach(attr => {
                     if (
+                        event.obj &&
                         (installed[adapter] as Record<string, any>)[attr] !==
-                        (event.obj.common as Record<string, any>)[attr]
+                            (event.obj.common as Record<string, any>)[attr]
                     ) {
                         (installed[adapter] as Record<string, any>)[attr] = (event.obj.common as Record<string, any>)[
                             attr
@@ -1354,6 +1363,9 @@ class App extends Router<AppProps, AppState> {
     };
 
     async findCurrentHost(newState: Partial<AppState>): Promise<void> {
+        if (!this.socket) {
+            return;
+        }
         newState.hosts = await this.socket.getCompactHosts();
 
         if (!this.state.currentHost) {
@@ -1418,9 +1430,12 @@ class App extends Router<AppProps, AppState> {
                                 <Checkbox
                                     checked={this.state.askForTokenRefresh.doNotAsk}
                                     onChange={() => {
-                                        const askForTokenRefresh = { ...this.state.askForTokenRefresh };
-                                        this.state.askForTokenRefresh.doNotAsk =
-                                            !this.state.askForTokenRefresh.doNotAsk;
+                                        const askForTokenRefresh = { ...this.state.askForTokenRefresh } as {
+                                            expireAt: number;
+                                            resolve: (prolong: boolean) => void;
+                                            doNotAsk: boolean;
+                                        };
+                                        askForTokenRefresh.doNotAsk = !this.state.askForTokenRefresh?.doNotAsk;
                                         this.setState({ askForTokenRefresh });
                                     }}
                                 />
@@ -1431,9 +1446,9 @@ class App extends Router<AppProps, AppState> {
                 <DialogActions>
                     <Button
                         onClick={() => {
-                            const resolve = this.state.askForTokenRefresh.resolve;
+                            const resolve = this.state.askForTokenRefresh?.resolve;
 
-                            if (this.state.askForTokenRefresh.doNotAsk) {
+                            if (this.state.askForTokenRefresh?.doNotAsk) {
                                 // Add 2 hours for the session
                                 this.doNotAskSessionExpiration = Date.now() + 3_600_000 * 2;
                             }
@@ -1443,7 +1458,7 @@ class App extends Router<AppProps, AppState> {
                                 this.expireInSecInterval = null;
                             }
 
-                            this.setState({ askForTokenRefresh: null }, () => resolve(true));
+                            this.setState({ askForTokenRefresh: null }, () => resolve?.(true));
                         }}
                         variant="contained"
                         startIcon={<UpdateIcon />}
@@ -1468,15 +1483,17 @@ class App extends Router<AppProps, AppState> {
             const tokens = Connection.readTokens();
             if (
                 (this.doNotAskSessionExpiration && Date.now() < this.doNotAskSessionExpiration) ||
-                tokens.refresh_token_expires_in.getTime() > Date.now()
+                (tokens && tokens.refresh_token_expires_in.getTime() > Date.now())
             ) {
                 resolve(true);
             } else {
                 this.setState({ askForTokenRefresh: { expireAt, resolve, doNotAsk: false } }, () => {
                     this.expireInSecInterval ||= setInterval(() => {
-                        if (Date.now() >= this.state.askForTokenRefresh.expireAt) {
-                            clearInterval(this.expireInSecInterval);
-                            this.expireInSecInterval = null;
+                        if (this.state.askForTokenRefresh && Date.now() >= this.state.askForTokenRefresh.expireAt) {
+                            if (this.expireInSecInterval) {
+                                clearInterval(this.expireInSecInterval);
+                                this.expireInSecInterval = null;
+                            }
                             // On session expiration will be called only if the connection is the owner of the token
                             Connection.deleteTokensStatic();
                             window.location.reload();
@@ -1496,33 +1513,36 @@ class App extends Router<AppProps, AppState> {
         }
     };
 
-    getDiscoveryModal = (): JSX.Element => (
-        <DiscoveryDialog
-            themeType={this.state.themeType}
-            themeName={this.state.themeName}
-            theme={this.state.theme}
-            socket={this.socket}
-            systemConfig={this.state.systemConfig.common}
-            dateFormat={this.state.systemConfig.common.dateFormat}
-            currentHost={this.state.currentHost}
-            defaultLogLevel={this.state.systemConfig.common.defaultLogLevel}
-            repository={this.state.repository}
-            hosts={this.state.hosts}
-            onClose={() => Router.doNavigate(null)}
-        />
-    );
+    getDiscoveryModal = (): JSX.Element | null =>
+        this.state.systemConfig && this.socket ? (
+            <DiscoveryDialog
+                themeType={this.state.themeType}
+                themeName={this.state.themeName}
+                theme={this.state.theme}
+                socket={this.socket}
+                systemConfig={this.state.systemConfig.common}
+                dateFormat={this.state.systemConfig.common.dateFormat}
+                currentHost={this.state.currentHost}
+                defaultLogLevel={this.state.systemConfig.common.defaultLogLevel || 'info'}
+                repository={this.state.repository}
+                hosts={this.state.hosts}
+                onClose={() => Router.doNavigate(null)}
+            />
+        ) : null;
 
     async findNewsInstance(): Promise<number> {
         const maxCount = 200;
-        for (let instance = 0; instance < maxCount; instance++) {
-            try {
-                const adminAlive = await this.socket.getState(`system.adapter.admin.${instance}.alive`);
-                if (adminAlive?.val) {
-                    return instance;
+        if (this.socket) {
+            for (let instance = 0; instance < maxCount; instance++) {
+                try {
+                    const adminAlive = await this.socket.getState(`system.adapter.admin.${instance}.alive`);
+                    if (adminAlive?.val) {
+                        return instance;
+                    }
+                } catch (e) {
+                    console.error(`Cannot find news instance: ${(e as Error).stack}`);
+                    this.showAlert(`Cannot find news instance: ${(e as Error).stack}`, 'error');
                 }
-            } catch (e) {
-                console.error(`Cannot find news instance: ${e.stack}`);
-                this.showAlert(`Cannot find news instance: ${e.stack}`, 'error');
             }
         }
         return 0;
@@ -1532,7 +1552,7 @@ class App extends Router<AppProps, AppState> {
      * Render the notification dialog
      */
     renderNotificationsDialog(): JSX.Element | null {
-        if (!this.state.notificationsDialog) {
+        if (!this.state.notificationsDialog || !this.state.systemConfig || !this.socket) {
             return null;
         }
 
@@ -1541,7 +1561,7 @@ class App extends Router<AppProps, AppState> {
                 notifications={this.state.notifications?.notifications || {}}
                 instances={this.state.notifications?.instances || {}}
                 onClose={() => this.setState({ notificationsDialog: false })}
-                ackCallback={(host, name) => this.socket.clearNotifications(host, name)}
+                ackCallback={(host, name) => this.socket!.clearNotifications(host, name)}
                 dateFormat={this.state.systemConfig.common.dateFormat}
                 isFloatComma={this.state.systemConfig.common.isFloatComma}
                 themeType={this.state.themeType}
@@ -1553,7 +1573,7 @@ class App extends Router<AppProps, AppState> {
     }
 
     renderHostWarningDialog(): JSX.Element | null {
-        if (!this.state.showHostWarning) {
+        if (!this.state.showHostWarning || !this.state.systemConfig || !this.socket) {
             return null;
         }
 
@@ -1563,14 +1583,16 @@ class App extends Router<AppProps, AppState> {
                 messages={this.state.showHostWarning.result.system.categories}
                 dateFormat={this.state.systemConfig.common.dateFormat}
                 themeType={this.state.themeType}
-                ackCallback={name => this.socket.clearNotifications(this.state.showHostWarning.host, name)}
+                ackCallback={name => this.socket!.clearNotifications(this.state.showHostWarning!.host, name)}
                 onClose={() => this.setState({ showHostWarning: null })}
             />
         );
     }
 
     /** Called when notifications detected, updates the notification indicator */
-    handleNewNotifications = async (notifications: Record<string, NotificationAnswer>): Promise<void> => {
+    handleNewNotifications = async (
+        notifications: Record<string, NotificationAnswer> | undefined | null,
+    ): Promise<void> => {
         const noNotifications: NotificationsCount = {
             warning: 0,
             other: 0,
@@ -1600,9 +1622,10 @@ class App extends Router<AppProps, AppState> {
             }
         }
 
-        const instances = await this.instancesWorker.getObjects();
-
-        this.setState({ noNotifications, notifications: { notifications, instances } });
+        if (this.instancesWorker) {
+            const instances = await this.instancesWorker.getObjects();
+            this.setState({ noNotifications, notifications: { notifications, instances } });
+        }
     };
 
     /**
@@ -1622,14 +1645,16 @@ class App extends Router<AppProps, AppState> {
         const result = notifications[host].result;
 
         if (result?.system && Object.keys(result.system.categories).length) {
-            await this.instancesWorker.getObjects().then(instances =>
-                this.setState({
-                    showHostWarning: {
-                        host,
-                        instances,
-                        result,
-                    },
-                }),
+            await this.instancesWorker?.getObjects().then(
+                instances =>
+                    instances &&
+                    this.setState({
+                        showHostWarning: {
+                            host,
+                            instances,
+                            result,
+                        },
+                    }),
             );
         }
     };
@@ -1637,9 +1662,12 @@ class App extends Router<AppProps, AppState> {
     /**
      * Get news for a specific adapter instance
      */
-    onNews = async (_id: string, newsFeed: ioBroker.State): Promise<void> => {
+    onNews = async (_id: string, newsFeed: ioBroker.State | null | undefined): Promise<void> => {
+        if (!this.socket) {
+            throw new Error('Socket not initialized');
+        }
         try {
-            if (!this.state.systemConfig.common.licenseConfirmed) {
+            if (!this.state.systemConfig?.common.licenseConfirmed) {
                 return;
             }
 
@@ -1662,10 +1690,13 @@ class App extends Router<AppProps, AppState> {
                         .getCompactInstances()
                         .catch((): null => null);
 
-                    const objectsDbType: DbType = (await this.socket.getDiagData(this.state.currentHost, 'normal'))
-                        .objectsType;
+                    let objectsDbType: DbType | undefined;
+                    if (this.state.currentHost) {
+                        const diagData = await this.socket.getDiagData(this.state.currentHost, 'normal');
+                        objectsDbType = diagData?.objectsType;
+                    }
 
-                    const objects = await this.objectsWorker.getObjects(true);
+                    const objects = await this.objectsWorker?.getObjects(true);
                     const noObjects = Object.keys(objects || {}).length;
 
                     const checkNews = checkMessages(news, lastNewsId?.val as string, {
@@ -1678,7 +1709,7 @@ class App extends Router<AppProps, AppState> {
                         os: info ? info.os || '?' : '?',
                         activeRepo: this.state.systemConfig.common.activeRepo,
                         uuid,
-                        objectsDbType,
+                        objectsDbType: objectsDbType || 'jsonl',
                         noObjects,
                     });
 
@@ -1693,13 +1724,13 @@ class App extends Router<AppProps, AppState> {
                 }
             }
         } catch (e) {
-            console.error(`Could not process news: ${e.stack}`);
-            this.showAlert(`Could not process news: ${e.stack}`, 'error');
+            console.error(`Could not process news: ${(e as Error).stack}`);
+            this.showAlert(`Could not process news: ${(e as Error).stack}`, 'error');
         }
     };
 
     renderNewsDialog(): JSX.Element | null {
-        if (!this.state.showNews) {
+        if (!this.state.showNews || !this.socket) {
             return null;
         }
         return (
@@ -1708,7 +1739,7 @@ class App extends Router<AppProps, AppState> {
                 current={this.state.showNews.lastNewsId}
                 onSetLastNewsId={async id => {
                     if (id) {
-                        await this.socket.setState(`admin.${this.newsInstance}.info.newsLastId`, {
+                        await this.socket!.setState(`admin.${this.newsInstance}.info.newsLastId`, {
                             val: id,
                             ack: true,
                         });
@@ -1743,6 +1774,9 @@ class App extends Router<AppProps, AppState> {
 
     async readRepoAndInstalledInfo(currentHost: string, hosts?: CompactHost[] | null, update?: boolean): Promise<void> {
         hosts ||= this.state.hosts;
+        if (!this.socket) {
+            throw new Error('Socket not initialized');
+        }
 
         const repository: CompactRepository = await this.socket
             .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
@@ -1883,7 +1917,11 @@ class App extends Router<AppProps, AppState> {
      * The element is built here because switching the host also has to reload the repository and
      * the notifications, and that logic must not be duplicated in four tabs.
      */
-    renderHostSelector(): JSX.Element {
+    renderHostSelector(): JSX.Element | null {
+        if (!this.socket || !this.hostsWorker) {
+            return null;
+        }
+
         return (
             <IsVisible
                 name="admin.appBar.hostSelector"
@@ -1906,7 +1944,7 @@ class App extends Router<AppProps, AppState> {
                                 (window._localStorage || window.localStorage).setItem('App.currentHost', host);
                                 await this.readRepoAndInstalledInfo(host, this.state.hosts);
                                 // read notifications from the host
-                                const notifications = await this.hostsWorker.getNotifications(host);
+                                const notifications = await this.hostsWorker?.getNotifications(host);
                                 await this.handleNewNotifications(notifications);
                             },
                         );
@@ -1925,7 +1963,19 @@ class App extends Router<AppProps, AppState> {
     }
 
     getCurrentTab(): JSX.Element | null {
-        if (this.state && this.state.currentTab && this.state.currentTab.tab) {
+        if (
+            !this.socket ||
+            !this.hostsWorker ||
+            !this.adaptersWorker ||
+            !this.instancesWorker ||
+            !this.objectsWorker ||
+            !this.state.systemConfig ||
+            !this.logsWorker
+        ) {
+            return null;
+        }
+
+        if (this.state?.currentTab?.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 const small = this.props.width === 'xs' || this.props.width === 'sm';
                 const opened = !small && this.state.drawerState === DrawerStates.opened;
@@ -1953,7 +2003,7 @@ class App extends Router<AppProps, AppState> {
                             executeCommand={(
                                 cmd: string,
                                 host?: string,
-                                callback?: (exitCode: number) => void,
+                                callback?: (exitCode?: number) => void,
                                 files?: CommandFile[],
                             ) => this.executeCommand(cmd, host, callback, files)}
                             commandRunning={this.state.commandRunning}
@@ -2007,7 +2057,7 @@ class App extends Router<AppProps, AppState> {
                             executeCommand={(
                                 cmd: string,
                                 host?: string,
-                                callback?: (exitCode: number) => void,
+                                callback?: (exitCode?: number) => void,
                                 files?: CommandFile[],
                             ) => this.executeCommand(cmd, host, callback, files)}
                             inBackgroundCommand={this.state.commandError || this.state.performed}
@@ -2177,7 +2227,7 @@ class App extends Router<AppProps, AppState> {
                             executeCommand={(
                                 cmd: string,
                                 host?: string,
-                                callback?: (exitCode: number) => void,
+                                callback?: (exitCode?: number) => void,
                                 files?: CommandFile[],
                             ) => this.executeCommand(cmd, host, callback, files)}
                             systemConfig={this.state.systemConfig}
@@ -2240,8 +2290,8 @@ class App extends Router<AppProps, AppState> {
     }
 
     clearLogErrors(): void {
-        this.logsWorker.resetErrors();
-        this.logsWorker.resetWarnings();
+        this.logsWorker?.resetErrors();
+        this.logsWorker?.resetWarnings();
     }
 
     getCurrentDialog(): JSX.Element | null {
@@ -2270,12 +2320,14 @@ class App extends Router<AppProps, AppState> {
                 onClose={async (repoChanged?: boolean) => {
                     Router.doNavigate(null);
                     // read systemConfig anew
-                    const systemConfig = await this.socket.getObject('system.config');
+                    const systemConfig = await this.socket?.getObject('system.config');
 
-                    if (repoChanged) {
-                        this.setState({ triggerAdapterUpdate: this.state.triggerAdapterUpdate + 1, systemConfig });
-                    } else {
-                        this.setState({ systemConfig });
+                    if (systemConfig) {
+                        if (repoChanged) {
+                            this.setState({ triggerAdapterUpdate: this.state.triggerAdapterUpdate + 1, systemConfig });
+                        } else {
+                            this.setState({ systemConfig });
+                        }
                     }
                 }}
                 lang={this.state.lang}
@@ -2341,7 +2393,7 @@ class App extends Router<AppProps, AppState> {
         }
     }
 
-    handleNavigation = (tab: string, subTab?: string, param?: string): void => {
+    handleNavigation = (tab: string | undefined, subTab?: string, param?: string): void => {
         if (tab) {
             if (this._tempAllStored) {
                 Router.doNavigate(tab, subTab, param);
@@ -2390,10 +2442,15 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    executeCommand(cmd: string, host?: string, callback?: (exitCode: number) => void, files?: CommandFile[]): void {
+    executeCommand(
+        cmd: string,
+        host?: string,
+        callback?: ((exitCode?: number) => void) | null,
+        files?: CommandFile[],
+    ): void {
         if (typeof host === 'boolean') {
             callback = host;
-            host = null;
+            host = undefined;
         }
 
         if (this.state.performed || this.state.commandError) {
@@ -2450,7 +2507,7 @@ class App extends Router<AppProps, AppState> {
                     executeCommand={(
                         cmd: string,
                         host?: string,
-                        callback?: (exitCode: number) => void,
+                        callback?: (exitCode?: number) => void,
                         files?: CommandFile[],
                     ) => this.executeCommand(cmd, host, callback, files)}
                     host={this.state.currentHost}
@@ -2466,7 +2523,7 @@ class App extends Router<AppProps, AppState> {
                                     if (this.state.redirectCountDown > 0) {
                                         this.setState({ redirectCountDown: this.state.redirectCountDown - 1 });
                                     } else {
-                                        window.location.href = this.state.showRedirect;
+                                        window.location.href = this.state.showRedirect!;
                                     }
                                 }, 1_000);
                             }
@@ -2506,10 +2563,15 @@ class App extends Router<AppProps, AppState> {
                         (window.document.all && window.external?.AddFavorite) ? (
                             <Button
                                 onClick={() => {
-                                    if (window.sidebar) {
+                                    if (window.sidebar && this.state.showRedirect) {
                                         // Firefox
                                         window.sidebar.addPanel('ioBroker.admin', this.state.showRedirect, '');
-                                    } else if (window.opera && window.print) {
+                                    } else if (
+                                        window.opera &&
+                                        this.state.showRedirect &&
+                                        // @ts-expect-error ignore
+                                        window.print
+                                    ) {
                                         // Opera
                                         const elem = document.createElement('a');
                                         elem.setAttribute('href', this.state.showRedirect);
@@ -2529,7 +2591,9 @@ class App extends Router<AppProps, AppState> {
                         {this.state.redirectCountDown ? (
                             <Button
                                 variant="contained"
-                                onClick={() => (window.location.href = this.state.showRedirect)}
+                                onClick={() =>
+                                    this.state.showRedirect && (window.location.href = this.state.showRedirect)
+                                }
                             >
                                 {I18n.t('Go to admin now')}
                             </Button>
@@ -2542,12 +2606,12 @@ class App extends Router<AppProps, AppState> {
     }
 
     renderCommandDialog(): JSX.Element | null {
-        return this.state.cmd ? (
+        return this.state.cmd && this.socket ? (
             <CommandDialog
                 onSetCommandRunning={(commandRunning: boolean) => this.setState({ commandRunning })}
                 onClose={() => this.closeCmdDialog(() => this.setState({ commandRunning: false }))}
                 visible={this.state.cmdDialog}
-                callback={this.state.callback}
+                callback={this.state.callback as () => void}
                 onInBackground={() => this.setState({ cmdDialog: false })}
                 cmd={this.state.cmd}
                 files={this.state.cmdFiles || undefined}
@@ -2578,6 +2642,9 @@ class App extends Router<AppProps, AppState> {
      * @param userId e.g. `system.user.admin`
      */
     async getLeadingGroupName(userId: `system.user.${string}`): Promise<string> {
+        if (!this.socket) {
+            throw new Error('Socket not ready');
+        }
         try {
             const groups = await this.socket.getForeignObjects('system.group.*', 'group');
             const own = Object.values(groups || {}).filter(group => group?.common?.members?.includes(userId));
@@ -2761,7 +2828,7 @@ class App extends Router<AppProps, AppState> {
     renderMenuButtons(): JSX.Element {
         const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem('App.expertMode');
         const expertModePermanent =
-            !storedExpertMode || (storedExpertMode === 'true') === !!this.state.systemConfig.common.expertMode;
+            !storedExpertMode || (storedExpertMode === 'true') === !!this.state.systemConfig?.common.expertMode;
         const sumNotification = this.state.noNotifications.warning + this.state.noNotifications.other;
 
         return (
@@ -2773,7 +2840,7 @@ class App extends Router<AppProps, AppState> {
                     <IconButton
                         disableRipple={!sumNotification}
                         style={{ opacity: sumNotification ? 1 : 0.3 }}
-                        onClick={sumNotification ? () => this.setState({ notificationsDialog: true }) : null}
+                        onClick={sumNotification ? () => this.setState({ notificationsDialog: true }) : undefined}
                     >
                         <Badge
                             badgeContent={this.state.noNotifications.other + this.state.noNotifications.warning}
@@ -2788,7 +2855,7 @@ class App extends Router<AppProps, AppState> {
                     name="admin.appBar.discovery"
                     config={this.adminGuiConfig}
                 >
-                    {this.state.discoveryAlive && (
+                    {this.state.discoveryAlive ? (
                         <Tooltip
                             title={I18n.t('Discovery devices')}
                             slotProps={{ popper: { sx: styles.tooltip } }}
@@ -2797,6 +2864,8 @@ class App extends Router<AppProps, AppState> {
                                 <VisibilityIcon />
                             </IconButton>
                         </Tooltip>
+                    ) : (
+                        <div style={{ display: 'none' }} />
                     )}
                 </IsVisible>
                 {this.toggleThemePossible ? (
@@ -2829,7 +2898,7 @@ class App extends Router<AppProps, AppState> {
                         >
                             <IconButton
                                 onClick={() => {
-                                    if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
+                                    if (!!this.state.systemConfig?.common.expertMode === !this.state.expertMode) {
                                         (window._sessionStorage || window.sessionStorage).setItem(
                                             'App.expertMode',
                                             this.state.expertMode ? 'false' : 'true',
@@ -3003,8 +3072,8 @@ class App extends Router<AppProps, AppState> {
     }
 
     renderSampleError(): JSX.Element {
-        const message = this.state.hasGlobalError.message;
-        const stack = this.state.hasGlobalError.stack;
+        const message = this.state.hasGlobalError?.message;
+        const stack = this.state.hasGlobalError?.stack;
 
         return (
             <div
@@ -3073,7 +3142,11 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    renderEasyMode(): JSX.Element {
+    renderEasyMode(): JSX.Element | null {
+        if (!this.socket) {
+            return null;
+        }
+
         return (
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.state.theme}>
@@ -3093,8 +3166,8 @@ class App extends Router<AppProps, AppState> {
                                 configs={this.state.easyModeConfigs}
                                 socket={this.socket}
                                 configStored={value => this.allStored(value)}
-                                isFloatComma={this.state.systemConfig?.common.isFloatComma}
-                                dateFormat={this.state.systemConfig?.common.dateFormat}
+                                isFloatComma={!!this.state.systemConfig?.common.isFloatComma}
+                                dateFormat={this.state.systemConfig?.common.dateFormat || 'DD.MM.YYYY'}
                                 t={I18n.t}
                                 lang={I18n.getLanguage()}
                                 onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
@@ -3112,7 +3185,7 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    render(): JSX.Element {
+    render(): JSX.Element | null {
         const small = this.props.width === 'xs' || this.props.width === 'sm';
         // The bar has nothing left to show but the name of the installation.
         // Optional chaining is required: this runs before the early returns below, and until the
@@ -3258,7 +3331,7 @@ class App extends Router<AppProps, AppState> {
                                 hostsWorker={this.hostsWorker}
                                 logsWorker={this.logsWorker}
                                 logoutTitle={I18n.t('ra_Logout')}
-                                isSecure={this.socket.isSecure}
+                                isSecure={this.socket?.isSecure}
                                 versionAdmin={this.state.versionAdmin}
                                 t={I18n.t}
                                 lang={I18n.getLanguage()}

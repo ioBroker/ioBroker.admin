@@ -159,7 +159,7 @@ export default class AdminUtils {
      * @param seconds the number of seconds
      * @param t i18n.t function
      */
-    static formatSeconds(seconds: number, t: Translate): string {
+    static formatSeconds(seconds: number, t?: Translate): string {
         const days = Math.floor(seconds / (3600 * 24));
         let minutesRes: string;
         let secondsRes: string;
@@ -191,7 +191,7 @@ export default class AdminUtils {
 
         let text = '';
         if (days) {
-            text += `${days} ${t('daysShortText')} `;
+            text += `${days} ${t ? t('daysShortText') : 'd'} `;
         }
         text += `${hoursRes}:${minutesRes}:${secondsRes}`;
 
@@ -209,7 +209,7 @@ export default class AdminUtils {
         return result;
     }
 
-    static fixAdminUI(obj: Record<string, any>): void {
+    static fixAdminUI(obj: Record<string, any> | null | undefined): void {
         if (obj?.common) {
             if (!obj.common.adminUI) {
                 if (obj.common.noConfig) {
@@ -452,7 +452,7 @@ export default class AdminUtils {
         return count;
     }
 
-    static getText(word: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
+    static getText(word: ioBroker.StringOrTranslated | undefined, lang: ioBroker.Languages): string {
         if (typeof word === 'object') {
             if (!word) {
                 return '';
@@ -479,19 +479,19 @@ export default class AdminUtils {
         let adapter = tab.replace(/^tab-/, '');
         const m = adapter.match(/-(\d+)$/);
         const instanceNumber: number | null = m ? parseInt(m[1], 10) : null;
-        let instance;
+        let instanceId: string | undefined;
         if (instances) {
             if (instanceNumber !== null) {
                 adapter = adapter.replace(/-(\d+)$/, '');
                 const name = `system.adapter.${adapter}.${instanceNumber}`;
-                instance = Object.keys(instances).find(id => id === name);
+                instanceId = Object.keys(instances).find(id => id === name);
             } else {
                 const name = `system.adapter.${adapter}.`;
 
-                instance = instances && Object.keys(instances).find(id => id.startsWith(name));
+                instanceId = Object.keys(instances).find(id => id.startsWith(name));
             }
         }
-        instance = instances?.[instance];
+        const instance = instanceId ? instances?.[instanceId] : undefined;
         AdminUtils.fixAdminUI(instance);
         if (!instance?.common?.adminTab) {
             console.error(`Cannot find instance ${tab}`);
@@ -516,7 +516,7 @@ export default class AdminUtils {
             let _instNum: number;
             // fix for singletons
             if (instanceNumber === null) {
-                _instNum = parseInt(instance._id.split('.').pop(), 10);
+                _instNum = parseInt(instance._id.split('.').pop() || '', 10);
             } else {
                 _instNum = instanceNumber;
             }
@@ -525,7 +525,7 @@ export default class AdminUtils {
             const hrefs = replaceLink(href, adapter, _instNum, {
                 hostname,
                 // it cannot be void
-                instances,
+                instances: instances || {},
                 hosts,
                 adminInstance,
             });

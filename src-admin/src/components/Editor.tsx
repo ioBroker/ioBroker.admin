@@ -50,7 +50,7 @@ class Editor extends Component<EditorProps> {
                 theme={this.props.themeType === 'dark' ? 'clouds_midnight' : 'chrome'}
                 value={this.props.value}
                 readOnly={!this.props.onChange}
-                onChange={newValue => this.props.onChange(newValue)}
+                onChange={newValue => this.props.onChange?.(newValue)}
                 name={this.props.name || 'UNIQUE_ID_OF_DIV1'}
                 fontSize={this.props.fontSize || 14}
                 setOptions={{

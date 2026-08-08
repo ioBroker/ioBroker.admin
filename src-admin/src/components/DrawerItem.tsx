@@ -144,14 +144,14 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
             {!!editMenuList && (
                 <Checkbox
                     checked={visible}
-                    onClick={() => editListFunc(true)}
+                    onClick={() => editListFunc?.(true)}
                 />
             )}
             {!!editMenuList && (
                 <ColorPicker
                     value={color}
                     noInputField
-                    onChange={value => editListFunc(false, value || null)}
+                    onChange={value => editListFunc?.(false, value || null)}
                 />
             )}
             <ListItemButton

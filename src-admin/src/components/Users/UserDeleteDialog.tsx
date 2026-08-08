@@ -10,7 +10,7 @@ interface UserDeleteDialogProps {
     onClose: () => void;
     user: ioBroker.UserObject;
     deleteUser: (userId: string) => void;
-    getText: (text: ioBroker.StringOrTranslated) => string;
+    getText: (text: ioBroker.StringOrTranslated | undefined) => string;
 }
 
 export default function UserDeleteDialog(props: UserDeleteDialogProps): JSX.Element {

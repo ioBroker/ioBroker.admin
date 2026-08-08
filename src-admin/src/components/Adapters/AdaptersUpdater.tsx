@@ -137,7 +137,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
     /** Key adapterName, value: version */
     private readonly initialVersions: Record<string, string>;
 
-    private readonly currentRef: React.RefObject<HTMLLIElement>;
+    private readonly currentRef: React.RefObject<HTMLLIElement | null>;
 
     private current: string;
 
@@ -229,15 +229,16 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         const installed = this.props.installed[adapter];
         const news: GetNewsResultEntry[] = [];
 
-        if (installed && adapterObj?.news) {
-            Object.keys(adapterObj.news).forEach(version => {
+        const adapterNews = adapterObj?.news;
+        if (installed && adapterNews) {
+            Object.keys(adapterNews).forEach(version => {
                 try {
                     if (semver.gt(version, installed.version)) {
                         news.push({
                             version,
                             news: this.props.noTranslation
-                                ? adapterObj.news[version].en
-                                : adapterObj.news[version][this.props.lang] || adapterObj.news[version].en,
+                                ? adapterNews[version].en
+                                : adapterNews[version][this.props.lang] || adapterNews[version].en,
                         });
                     }
                 } catch {
@@ -352,8 +353,8 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         fromVersion = fromVersion || installed.version;
         const result: JSX.Element[] = [];
 
-        let stableVersion: string;
-        let latestVersion: string;
+        let stableVersion: string | undefined;
+        let latestVersion: string | undefined;
         const repoInfo: RepoInfo = this.props.repository._repoInfo as unknown as RepoInfo;
         if (repoInfo?.stable) {
             stableVersion = this.props.repository[adapter]?.version;
@@ -363,13 +364,14 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
             latestVersion = this.props.repository[adapter]?.version;
         }
 
-        if (installed && adapterObj?.news) {
-            Object.keys(adapterObj.news).forEach(version => {
+        const adapterNews = adapterObj?.news;
+        if (installed && adapterNews) {
+            Object.keys(adapterNews).forEach(version => {
                 try {
-                    if (semver.gt(version, fromVersion) && adapterObj.news[version]) {
+                    if (semver.gt(version, fromVersion) && adapterNews[version]) {
                         const newsText: string = this.props.noTranslation
-                            ? adapterObj.news[version].en || ''
-                            : adapterObj.news[version][this.props.lang] || adapterObj.news[version].en || '';
+                            ? adapterNews[version].en || ''
+                            : adapterNews[version][this.props.lang] || adapterNews[version].en || '';
 
                         const news = newsText
                             .split('\n')

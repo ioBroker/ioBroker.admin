@@ -212,7 +212,7 @@ export function checkCondition(
                     // - "vis-2>=1.0.0"
                     // - "vis"
                     // - "!vis-2"
-                    let version;
+                    let version: string | null | undefined;
                     let op;
                     let ver;
 
@@ -242,22 +242,22 @@ export function checkCondition(
                                     ver = split[3];
                                     try {
                                         if (op === '==') {
-                                            return semver.eq(version, ver);
+                                            return semver.eq(version || '', ver);
                                         }
                                         if (op === '>') {
-                                            return semver.gt(version, ver);
+                                            return semver.gt(version || '', ver);
                                         }
                                         if (op === '<') {
-                                            return semver.lt(version, ver);
+                                            return semver.lt(version || '', ver);
                                         }
                                         if (op === '>=') {
-                                            return semver.gte(version, ver);
+                                            return semver.gte(version || '', ver);
                                         }
                                         if (op === '<=') {
-                                            return semver.lte(version, ver);
+                                            return semver.lte(version || '', ver);
                                         }
                                         if (op === '!=') {
-                                            return semver.neq(version, ver);
+                                            return semver.neq(version || '', ver);
                                         }
                                         console.warn(`Unknown rule ${version}${rule}`);
                                         return false;
@@ -294,22 +294,22 @@ export function checkCondition(
                     }
                     try {
                         if (op === '==') {
-                            return semver.eq(version, ver);
+                            return semver.eq(version || '', ver);
                         }
                         if (op === '>') {
-                            return semver.gt(version, ver);
+                            return semver.gt(version || '', ver);
                         }
                         if (op === '<') {
-                            return semver.lt(version, ver);
+                            return semver.lt(version || '', ver);
                         }
                         if (op === '>=') {
-                            return semver.gte(version, ver);
+                            return semver.gte(version || '', ver);
                         }
                         if (op === '<=') {
-                            return semver.lte(version, ver);
+                            return semver.lte(version || '', ver);
                         }
                         if (op === '!=') {
-                            return semver.neq(version, ver);
+                            return semver.neq(version || '', ver);
                         }
                         console.warn(`Unknown rule ${version}${rule}`);
                     } catch {
@@ -319,7 +319,7 @@ export function checkCondition(
                 });
 
                 if (message.condition.operand === 'or') {
-                    show = results.find(res => res);
+                    show = !!results.find(res => res);
                 } else {
                     show = results.findIndex(res => !res) === -1;
                 }
@@ -537,14 +537,14 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
         return result;
     }
 
-    getText(text: string | { [lang: string]: string }, noTranslation?: boolean): string {
+    getText(text: string | { [lang: string]: string } | undefined, noTranslation?: boolean): string {
         if (text && typeof text === 'object') {
             if (noTranslation) {
-                return text.en;
+                return text.en || '';
             }
-            return text[this.lang] || text.en;
+            return text[this.lang] || text.en || '';
         }
-        return typeof text === 'object' ? '' : text;
+        return typeof text === 'object' ? '' : text || '';
     }
 
     renderOneMessage(message: Message, index: number): JSX.Element {
@@ -563,8 +563,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 {message.link ? (
                     <Button
                         onClick={() => {
-                            const w = window.open(message.link, '_blank');
-                            w.focus();
+                            window.open(message.link, '_blank')?.focus();
                         }}
                         startIcon={<IconWeb />}
                         variant="contained"
@@ -597,8 +596,11 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
         if (!this.state.showMessageDialog) {
             return null;
         }
-        const message = this.messages.find(m => m.buttons);
+        const message = this.messages?.find(m => m.buttons);
         const version = this.props.adapterObject?.version;
+        if (!message) {
+            return null;
+        }
 
         return (
             <Dialog
@@ -624,8 +626,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     {message.link ? (
                         <Button
                             onClick={() => {
-                                const w = window.open(message.link, '_blank');
-                                w.focus();
+                                window.open(message.link, '_blank')?.focus();
                             }}
                             startIcon={<IconWeb />}
                             variant="contained"
@@ -635,7 +636,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                         </Button>
                     ) : null}
                     {message.link ? <div style={{ flexGrow: 1 }} /> : null}
-                    {message.buttons.map((button, i) => {
+                    {message.buttons?.map((button, i) => {
                         if (button === 'ok') {
                             return (
                                 <Button
@@ -716,7 +717,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                         >
                             <CloseIcon />
                         </IconButton>
-                        {this.lang !== 'en' && this.props.toggleTranslation && !allDownloaded ? (
+                        {this.lang !== 'en' && !allDownloaded ? (
                             <IconButton
                                 size="large"
                                 style={Utils.getStyle(
@@ -780,7 +781,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                         <Button
                             id="adapter-update-dialog-ignore"
                             variant="outlined"
-                            onClick={() => this.props.onIgnore(version)}
+                            onClick={() => this.props.onIgnore?.(version)}
                             color="primary"
                         >
                             {this.t('Ignore version %s', version)}
@@ -813,7 +814,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                                 if (this.messages?.find(message => message.buttons)) {
                                     this.setState({ showMessageDialog: true });
                                 } else {
-                                    this.props.onInstruction();
+                                    this.props.onInstruction?.();
                                 }
                             }}
                             color="primary"

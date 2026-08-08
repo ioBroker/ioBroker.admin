@@ -41,7 +41,7 @@ export default defineConfig({
     resolve: {
         tsconfigPaths: true,
         alias: [
-            { find: '@', replacement: resolve(__dirname, 'src') },
+            { find: '@', replacement: resolve(import.meta.dirname, 'src') },
             {
                 // leaflet 1.9 declares neither `module` nor `exports`, so bundlers treat it as CommonJS.
                 // Module federation wraps every shared module in `export * from "<pkg>"`, and that cannot
@@ -50,7 +50,7 @@ export default defineConfig({
                 // named 'Circle'" - fatal in dev, and the source of the "Unable to interop" build warning.
                 // Leaflet ships an ESM build that exports them properly, so resolve the bare specifier to it.
                 find: /^leaflet$/,
-                replacement: resolve(__dirname, 'node_modules/leaflet/dist/leaflet-src.esm.js'),
+                replacement: resolve(import.meta.dirname, 'node_modules/leaflet/dist/leaflet-src.esm.js'),
             },
             {
                 // monaco-editor 0.56 has an `exports` map with `"./*": "./esm/vs/*.js"`, so the deep
@@ -58,7 +58,7 @@ export default defineConfig({
                 // fails. react-monaco-editor declares `monaco-editor: ^0.52.0` as a peer, where the
                 // map did not exist yet. Point the old specifier at the file that is really meant.
                 find: 'monaco-editor/esm/vs/editor/editor.api',
-                replacement: resolve(__dirname, 'node_modules/monaco-editor/esm/vs/editor/editor.api.js'),
+                replacement: resolve(import.meta.dirname, 'node_modules/monaco-editor/esm/vs/editor/editor.api.js'),
             },
         ],
     },

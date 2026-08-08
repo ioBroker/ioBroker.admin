@@ -49,9 +49,9 @@ interface UserEditDialogProps {
     /** If user creation or edit dialog */
     isNew: boolean;
     onChange: (user: ioBroker.UserObject) => void;
-    saveData: (originalId: string) => Promise<void>;
+    saveData: (originalId: string | null) => Promise<void>;
     innerWidth: number;
-    getText: (text: ioBroker.StringOrTranslated) => string;
+    getText: (text: ioBroker.StringOrTranslated | undefined) => string;
     styles: Record<string, React.CSSProperties>;
 }
 
@@ -90,7 +90,7 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
         const idExists = this.props.users.find(user => user._id === this.props.user._id);
         const idChanged = this.props.user._id !== this.state.originalId;
 
-        const getShortId = (_id: string): string => _id.split('.').pop();
+        const getShortId = (_id: string): string => _id.split('.').pop() || '';
 
         const name2Id = (name: string): string =>
             name
@@ -278,7 +278,7 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                             <IOColorPicker
                                 label="Color"
                                 t={this.props.t}
-                                value={this.props.user.common.color}
+                                value={this.props.user.common.color || ''}
                                 previewStyle={this.props.styles.iconPreview}
                                 onChange={color => {
                                     const newData: ioBroker.UserObject = Utils.clone(
@@ -323,7 +323,7 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
     /**
      * Render the button for OIDC connect/disconnect
      */
-    renderOidcButton(): JSX.Element {
+    renderOidcButton(): JSX.Element | null {
         if (window.ssoActive !== 'true') {
             // SSO is not active, do not show the button
             return null;
@@ -350,7 +350,7 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                 startIcon={<PersonOffIcon />}
                 sx={{ marginTop: 2 }}
                 onClick={async () => {
-                    delete this.props.user.common.externalAuthentication.oidc;
+                    delete this.props.user.common.externalAuthentication?.oidc;
                     await this.props.saveData(this.state.originalId);
                     window.alert('Single-Sign On disconnected!');
                 }}

@@ -53,7 +53,7 @@ interface OverviewProps {
     repository: Record<string, { version: string }>;
     handleNavigation: (tab: string) => void;
     /** Host selector, built by the app - sits at the right end of the header on every host tab */
-    hostSelector?: React.JSX.Element;
+    hostSelector?: React.JSX.Element | null;
     /** Keep the upper left corner of the toolbar free for the floating menu button */
     menuButtonSpace?: boolean;
 }
@@ -349,7 +349,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                             t('RAM'),
                             this.state.mem,
                             usedGb !== null
-                                ? `${usedGb.toFixed(1)} GB / ${ramGb.toFixed(1)} GB (${Math.round(this.state.mem)}%)`
+                                ? `${usedGb.toFixed(1)} GB / ${ramGb?.toFixed(1)} GB (${Math.round(this.state.mem ?? 0)}%)`
                                 : '-',
                         )}
                         {Overview.renderGaugeRow(

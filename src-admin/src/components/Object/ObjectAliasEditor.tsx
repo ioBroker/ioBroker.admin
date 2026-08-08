@@ -19,6 +19,7 @@ import {
     Select,
     FormControl,
     Autocomplete,
+    createFilterOptions,
 } from '@mui/material';
 
 // Icons
@@ -56,6 +57,7 @@ const styles: Record<string, any> = {
     }),
 };
 const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', 'object', 'string'];
+const aliasFolderFilter = createFilterOptions<string>();
 
 // todo: icon, enum function, enum room, write from other object
 
@@ -93,6 +95,10 @@ interface ObjectAliasEditorState {
 export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEditorState> {
     aliasIDs: string[];
 
+    aliasFolders: string[];
+
+    sourceName: string;
+
     constructor(props: ObjectAliasEditorProps) {
         super(props);
 
@@ -111,6 +117,10 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
             }
         }
 
+        this.aliasFolders = ObjectAliasEditor.getAliasFolders(this.aliasIDs, this.props.objects);
+        // The last part of the source ID is used as name, if the user selects a folder
+        this.sourceName = id.split('.').pop() || '';
+
         this.state = {
             usedInAliases,
             showAddNewAlias: !usedInAliases.length,
@@ -119,9 +129,9 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
             newAliasRole: this.props.obj.common.role || '',
             newAliasRead: this.props.obj.common.read as undefined | boolean,
             newAliasWrite: this.props.obj.common.write as undefined | boolean,
-            newAliasUnit: this.props.obj.common.unit,
+            newAliasUnit: this.props.obj.common.unit || '',
             newAliasDesc: ObjectAliasEditor.getText(this.props.obj.common.desc) || '',
-            newAliasType: this.props.obj.common.type,
+            newAliasType: this.props.obj.common.type || 'mixed',
             newAliasMin:
                 this.props.obj.common.min === undefined ? '' : (this.props.obj.common.min as number).toString(),
             newAliasMax:
@@ -129,13 +139,13 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
             newAliasUseFormula: false,
             newAliasReadFormula: 'val',
             newAliasWriteFormula: 'val',
-            newAliasColor: this.props.obj.common.color,
-            newAliasIcon: this.props.obj.common.icon,
+            newAliasColor: this.props.obj.common.color || '',
+            newAliasIcon: this.props.obj.common.icon || '',
             newAliasCopyStates: !!this.props.obj.common.states,
         };
     }
 
-    static getText(text: ioBroker.StringOrTranslated): string {
+    static getText(text: ioBroker.StringOrTranslated | undefined): string {
         if (!text) {
             return '';
         }
@@ -143,6 +153,34 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
             return text[I18n.getLanguage()] || text.en || '';
         }
         return text.toString();
+    }
+
+    // Collect all existing folders under "alias.0." to suggest them as prefix for a new alias ID
+    static getAliasFolders(aliasIDs: string[], objects: Record<string, ioBrokerObject>): string[] {
+        const folders: string[] = [];
+        const prefixLength = 'alias.0.'.length;
+
+        for (let i = 0; i < aliasIDs.length; i++) {
+            const aliasID = aliasIDs[i];
+            if (!aliasID.startsWith('alias.0.')) {
+                continue;
+            }
+            const parts = aliasID.substring(prefixLength).split('.');
+            // A state itself cannot be a folder, so ignore its last part
+            if (objects[aliasID]?.type === 'state') {
+                parts.pop();
+            }
+            let folder = '';
+            for (let j = 0; j < parts.length; j++) {
+                folder += `${parts[j]}.`;
+                if (!folders.includes(folder)) {
+                    folders.push(folder);
+                }
+            }
+        }
+
+        folders.sort();
+        return folders;
     }
 
     static filterRoles(roleArray: { role: string; type: ioBroker.CommonType }[], type: ioBroker.CommonType): string[] {
@@ -176,28 +214,52 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
             >
                 <DialogTitle>{I18n.t('Create new alias: %s', `alias.0.${this.state.newAliasId}`)}</DialogTitle>
                 <DialogContent>
-                    <TextField
+                    <Autocomplete
                         style={styles.formControlLabel}
-                        variant="standard"
+                        freeSolo
+                        options={this.aliasFolders}
                         value={this.state.newAliasId}
-                        slotProps={{
-                            input: {
-                                endAdornment: this.state.newAliasId ? (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            tabIndex={-1}
-                                            size="small"
-                                            onClick={() => this.setState({ newAliasId: '' })}
-                                        >
-                                            <IconClose />
-                                        </IconButton>
-                                    </InputAdornment>
-                                ) : null,
-                            },
+                        inputValue={this.state.newAliasId}
+                        onChange={(_, value: string | null, reason): void =>
+                            // Every option is a folder, so append the name of the source state to it
+                            this.setState({
+                                newAliasId: reason === 'selectOption' && value ? value + this.sourceName : value || '',
+                            })
+                        }
+                        onInputChange={(_, value: string): void => this.setState({ newAliasId: value })}
+                        disableCloseOnSelect
+                        filterOptions={(options, params) => {
+                            // Do not use params.inputValue: directly after a selection the Autocomplete
+                            // reports an empty input, because it assumes the user is done with it
+                            const input = this.state.newAliasId;
+                            const base = input.substring(0, input.lastIndexOf('.') + 1);
+                            // Offer only the folders of the current level, so the user can step down folder by folder
+                            const level = options.filter(
+                                folder =>
+                                    folder.length > base.length &&
+                                    folder.startsWith(base) &&
+                                    !folder.slice(base.length, -1).includes('.'),
+                            );
+                            // The appended name of the source state is not a part of the folder, so ignore it
+                            const filtered = aliasFolderFilter(level, {
+                                ...params,
+                                inputValue: input === base + this.sourceName ? base : input,
+                            });
+                            // If the input matches no folder at all - by default it is pre-filled
+                            // with the source ID - start at the top level again
+                            if (!filtered.length && base && !options.includes(base)) {
+                                return options.filter(folder => !folder.slice(0, -1).includes('.'));
+                            }
+                            return filtered;
                         }}
-                        onChange={e => this.setState({ newAliasId: e.target.value })}
-                        label={I18n.t('Alias ID')}
-                        helperText={`alias.0.${this.state.newAliasId}`}
+                        renderInput={params => (
+                            <TextField
+                                variant="standard"
+                                {...params}
+                                label={I18n.t('Alias ID')}
+                                helperText={`alias.0.${this.state.newAliasId}`}
+                            />
+                        )}
                         fullWidth
                     />
                     <TextField
@@ -327,11 +389,16 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
                         style={{ ...styles.formControlLabel }}
                         fullWidth
                         value={this.state.newAliasRole}
-                        onChange={(_, e: string): void => {
+                        onChange={(_, _e: string | null): void => {
+                            const e = _e || '';
                             const role = DEFAULT_ROLES.find(r => r.role === e);
                             if (role) {
                                 if (role.w !== undefined && role.r !== undefined) {
-                                    this.setState({ newAliasRole: e, newAliasRead: role.r, newAliasWrite: role.w });
+                                    this.setState({
+                                        newAliasRole: e || '',
+                                        newAliasRead: role.r,
+                                        newAliasWrite: role.w,
+                                    });
                                     return;
                                 }
                                 if (role.w !== undefined) {

@@ -193,7 +193,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
     }
 
     getRow(adapterName: string, context: AdaptersContext): JSX.Element | null {
-        const cached = this.props.cachedAdapters[adapterName];
+        const cached = this.props.cachedAdapters?.[adapterName];
         if (cached) {
             return (
                 <AdapterRow
@@ -209,7 +209,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return null;
     }
 
-    getRows(context: AdaptersContext): JSX.Element | JSX.Element[] | null {
+    getRows(context: AdaptersContext): JSX.Element | (JSX.Element | null)[] | null {
         if (!this.props.listOfVisibleAdapter) {
             return (
                 <TableRow>
@@ -222,7 +222,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
 
         let count = 0;
 
-        let rows: JSX.Element[] = [];
+        let rows: (JSX.Element | null)[] = [];
 
         if (this.props.oneListView) {
             for (let i = 0; i < this.props.listOfVisibleAdapter.length; i++) {
@@ -231,7 +231,10 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 if (rows.length > 50 && !this.props.context.installed[adapterName]?.version) {
                     continue;
                 }
-                rows.push(this.getRow(adapterName, context));
+                const row = this.getRow(adapterName, context);
+                if (row) {
+                    rows.push(row);
+                }
             }
             count = rows.length;
 
@@ -256,7 +259,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         } else {
             rows = this.props.categories.map(category => {
                 const showCategory = category.adapters.find(adapterName =>
-                    this.props.listOfVisibleAdapter.includes(adapterName),
+                    this.props.listOfVisibleAdapter?.includes(adapterName),
                 );
                 if (!showCategory) {
                     return null;
@@ -329,7 +332,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return rows;
     }
 
-    getTiles(context: AdaptersContext): JSX.Element | JSX.Element[] {
+    getTiles(context: AdaptersContext): JSX.Element | JSX.Element[] | null {
         if (!this.props.listOfVisibleAdapter) {
             return <LinearProgress />;
         }
@@ -375,9 +378,12 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
 
         for (let i = 0; i < this.props.listOfVisibleAdapter.length; i++) {
             const adapterName = this.props.listOfVisibleAdapter[i];
-            const cached = this.props.cachedAdapters[adapterName];
+            const cached = this.props.cachedAdapters?.[adapterName];
 
             if (items.length > 50 && !this.props.context.installed[adapterName]?.version) {
+                continue;
+            }
+            if (!cached) {
                 continue;
             }
             items.push(

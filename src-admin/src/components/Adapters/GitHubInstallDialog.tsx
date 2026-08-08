@@ -51,7 +51,7 @@ function fileToBase64(file: File): Promise<string> {
             const comma = result.indexOf(',');
             resolve(comma === -1 ? result : result.substring(comma + 1));
         };
-        reader.onerror = () => reject(reader.error);
+        reader.onerror = () => reject(reader.error || new Error('Cannot read file'));
         reader.readAsDataURL(file);
     });
 }
@@ -155,7 +155,7 @@ interface AutoCompleteValue {
     value: string;
     nogit: boolean;
     name: string;
-    icon: string;
+    icon?: string;
     title: string;
 }
 
@@ -386,9 +386,9 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         onChange={(_, newValue) => {
                             ((window as any)._localstorage || window.localStorage).setItem(
                                 'App.autocomplete',
-                                newValue,
+                                newValue || undefined,
                             );
-                            this.setState({ autoCompleteValue: newValue });
+                            this.setState({ autoCompleteValue: newValue || null });
                         }}
                         options={this.getList()}
                         getOptionLabel={option => option?.name ?? ''}
@@ -571,14 +571,14 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 'App.userUrl',
                                 newValue || '',
                             );
-                            this.setState({ url: newValue });
+                            this.setState({ url: newValue || '' });
                         }}
                         onChange={(_, newValue) => {
                             ((window as any)._localstorage || window.localStorage).setItem(
                                 'App.userUrl',
                                 newValue || '',
                             );
-                            this.setState({ url: newValue });
+                            this.setState({ url: newValue || '' });
                         }}
                         renderOption={(props, option) => (
                             <Box
@@ -752,7 +752,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         ) : null;
     }
 
-    getList(): ({ value: string; name: string; icon: string; nogit: boolean; title: string } | null)[] {
+    getList(): ({ value: string; name: string; icon?: string; nogit: boolean; title: string } | null)[] {
         const adaptersArrays: string[][] = this.props.categories.map(category => category.adapters);
         const adapters: string[] = arrayFlat(adaptersArrays);
         adapters.sort();
@@ -767,7 +767,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                     // @ts-expect-error meta / readme
                     const parts = (adapter.extIcon || adapter.meta || adapter.readme || '').toString().split('/');
 
-                    let name: ioBroker.StringOrTranslated = adapter?.name;
+                    let name: ioBroker.StringOrTranslated | undefined = adapter?.name;
                     if (!name) {
                         name = adapter.titleLang;
                         if (name && typeof name === 'object') {
@@ -780,7 +780,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                     const item = {
                         value: `${el}/${parts[3]}`,
                         name: `${name} [${parts[3]}]`,
-                        icon: adapter.extIcon || adapter.icon,
+                        icon: adapter.extIcon || adapter.icon || '',
                         nogit: !!adapter.nogit,
                         title: el,
                     };

@@ -213,7 +213,7 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
         if (newInstance?.comment?.add && Array.isArray(newInstance?.comment?.add)) {
             newInstance.comment.add.forEach((text: string, idx: number) => (objSchema[idx] = { type: 'header', text }));
 
-            newInstance.comment.inputs.forEach((el, idx) => {
+            newInstance.comment.inputs?.forEach((el, idx) => {
                 objSchema[idx + 1] = {
                     ...el,
                     type: types[el.type],
@@ -263,7 +263,7 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
 
     return (
         <Dialog
-            onClose={onClose}
+            onClose={() => onClose()}
             open={!0}
             sx={{ '& .MuiDialog-paper': styles.paper }}
         >
@@ -306,9 +306,9 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                                 }}
                                 data={schemaData}
                                 themeName={themeName}
-                                onChange={setSchemaData}
-                                onError={(attr: string, _error?: string): void =>
-                                    setError({ ...error, [attr]: _error })
+                                onChange={data => setSchemaData(data as Record<string, string | number | boolean>)}
+                                onError={(attr: string | undefined, _error?: string): void =>
+                                    setError({ ...error, [attr || '']: _error || '' })
                                 }
                                 schema={schema as unknown as ConfigItemPanel}
                                 // all unused properties
@@ -336,7 +336,7 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                                     err = true;
                                     alert(`no data ${schema.items[key].label}`);
                                 } else {
-                                    setValueInObj(obj, schema.items[key].name, schemaData[key]);
+                                    setValueInObj(obj, schema.items[key].name || '', schemaData[key]);
                                 }
                             } else if (schema.items[key].name) {
                                 err = false;

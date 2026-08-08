@@ -116,7 +116,7 @@ interface BaseSettingsLogState {
 }
 
 export default class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogState> {
-    private focusRef: React.RefObject<HTMLInputElement>;
+    private focusRef: React.RefObject<HTMLInputElement | null>;
 
     constructor(props: BaseSettingsLogProps) {
         super(props);
@@ -124,6 +124,9 @@ export default class BaseSettingsLog extends Component<BaseSettingsLogProps, Bas
         const settings: SettingsLog = this.props.settings || {};
         settings.transport ||= {};
         Object.keys(settings.transport).forEach(id => {
+            if (!settings.transport?.[id]) {
+                return;
+            }
             if (settings.transport[id].type === 'file') {
                 const maxSize = settings.transport[id].maxSize;
                 const multiplier =
@@ -183,44 +186,45 @@ export default class BaseSettingsLog extends Component<BaseSettingsLogProps, Bas
             noStdout: this.state.noStdout,
             transport: {},
         };
+        const transport = settings.transport as Record<string, TransportSettings>;
 
         Object.keys(this.state.transport).forEach(id => {
-            settings.transport[id] = JSON.parse(JSON.stringify(this.state.transport[id])) as TransportSettings;
+            transport[id] = JSON.parse(JSON.stringify(this.state.transport[id])) as TransportSettings;
 
             if (this.state.transport[id].type === 'file') {
-                settings.transport[id].maxSize = parseInt(settings.transport[id].maxSize as string, 10) || null;
-                if (settings.transport[id].maxSize) {
+                transport[id].maxSize = parseInt(transport[id].maxSize as string, 10) || undefined;
+                if (transport[id].maxSize) {
                     // 'k', 'm', or 'g'
-                    settings.transport[id].maxSize = `${settings.transport[id].maxSize.toString()}m`;
+                    transport[id].maxSize = `${transport[id].maxSize?.toString()}m`;
                 }
-                settings.transport[id].maxFiles = parseInt(settings.transport[id].maxFiles as string, 10) || null;
+                transport[id].maxFiles = parseInt(transport[id].maxFiles as string, 10) || undefined;
             } else if (this.state.transport[id].type === 'syslog') {
-                if (!settings.transport[id].port) {
-                    delete settings.transport[id].port;
+                if (!transport[id].port) {
+                    delete transport[id].port;
                 }
-                if (!settings.transport[id].path) {
-                    delete settings.transport[id].path;
+                if (!transport[id].path) {
+                    delete transport[id].path;
                 }
-                if (!settings.transport[id].sysLogType) {
-                    delete settings.transport[id].sysLogType;
+                if (!transport[id].sysLogType) {
+                    delete transport[id].sysLogType;
                 }
-                if (!settings.transport[id].app_name) {
-                    delete settings.transport[id].app_name;
+                if (!transport[id].app_name) {
+                    delete transport[id].app_name;
                 }
-                if (!settings.transport[id].eol) {
-                    delete settings.transport[id].eol;
+                if (!transport[id].eol) {
+                    delete transport[id].eol;
                 }
             } else if (this.state.transport[id].type === 'http') {
-                settings.transport[id].host = settings.transport[id].host || '';
-                settings.transport[id].port = parseInt(settings.transport[id].port as string, 10) || 80;
-                settings.transport[id].path = settings.transport[id].path || '/';
-                settings.transport[id].auth = settings.transport[id].auth || '';
-                settings.transport[id].ssl = settings.transport[id].ssl || false;
+                transport[id].host = transport[id].host || '';
+                transport[id].port = parseInt(transport[id].port as string, 10) || 80;
+                transport[id].path = transport[id].path || '/';
+                transport[id].auth = transport[id].auth || '';
+                transport[id].ssl = transport[id].ssl || false;
             } else if (this.state.transport[id].type === 'stream') {
-                settings.transport[id].stream = settings.transport[id].stream || '';
-                settings.transport[id].level = settings.transport[id].level || 'info';
-                settings.transport[id].silent = settings.transport[id].silent || false;
-                settings.transport[id].eol = settings.transport[id].eol || '';
+                transport[id].stream = transport[id].stream || '';
+                transport[id].level = transport[id].level || 'info';
+                transport[id].silent = transport[id].silent || false;
+                transport[id].eol = transport[id].eol || '';
             }
         });
 

@@ -189,11 +189,25 @@ This project uses icons from [Flaticon](https://www.flaticon.com/).
 ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
+[Older changelog](CHANGELOG_OLD.md)
+
 ## Changelog
 <!--
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@softwarecrash) Corrected the validation state in the custom settings if more than one instance is shown
+- (@softwarecrash) Corrected the disabled save button in the custom settings after an invalid instance was switched off
+
+### 8.0.2 (2026-08-07)
+- (@GermanBluefox) Corrected charts
+- (@GermanBluefox) Corrected the authentication for the OAuth2 callbacks
+- (@GermanBluefox) Disabled the save button in the custom settings as long as a value is invalid
+- (@GermanBluefox) Added the folder selection to the alias creation dialog
+- (@GermanBluefox) Hidden the chart in the value editor in the mobile view
+- (@GermanBluefox) Small GUI improvements
+
 ### 8.0.1 (2026-08-03)
 - (@GermanBluefox) Breaking: React19 + MUI9
 - (@GermanBluefox) Breaking: Node 22 or higher required
@@ -215,11 +229,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Added provider logos (incl. DeepSeek) to the AI assistant provider and credential selectors
 - (@GermanBluefox) The adapter-core version will be updated if required by start
 - (@GermanBluefox) Show status of the instance in the web-extension mode
-
-### 7.9.10 (2026-06-22)
-- (@GermanBluefox) Added a dialog describing how to use the AI assistant without an API key (external MCP client)
-- (@GermanBluefox) Updated device manager
-- (@GermanBluefox) Added possibility to see the prompt and use it outside of assistant
 
 ## License
 

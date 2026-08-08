@@ -193,7 +193,7 @@ export interface AdapterGenericState extends AdapterInstallDialogState {
     showInstallVersion: boolean;
     showSetRating: {
         version: string;
-        rating: AdapterRatingInfo;
+        rating?: AdapterRatingInfo;
     } | null;
 }
 
@@ -227,7 +227,7 @@ export default abstract class AdapterGeneric<
     static renderImage(imageProps: ImageProps): JSX.Element {
         const { style, alt, ...other } = imageProps;
 
-        const img = style.backgroundImage.substring(5, style.backgroundImage.length - 2);
+        const img = style.backgroundImage?.substring(5, style.backgroundImage.length - 2);
 
         return (
             <img
@@ -279,7 +279,7 @@ export default abstract class AdapterGeneric<
         }
 
         // 'none' | 'patch' | 'minor' | 'major'
-        const autoUpgrade: ioBroker.AutoUpgradePolicy = adapterObj.common?.automaticUpgrade;
+        const autoUpgrade: ioBroker.AutoUpgradePolicy | undefined = adapterObj.common?.automaticUpgrade;
 
         return (
             <Tooltip
@@ -362,7 +362,7 @@ export default abstract class AdapterGeneric<
         );
     }
 
-    renderConnectionType(): JSX.Element {
+    renderConnectionType(): JSX.Element | null {
         const connectionType = this.props.context.repository[this.props.adapterName]?.connectionType;
         return connectionType === 'cloud' ? (
             <Tooltip
@@ -427,7 +427,7 @@ export default abstract class AdapterGeneric<
                 href={link}
                 target="_blank"
                 rel="noopener"
-                sx={(theme: IobTheme) => ({
+                sx={theme => ({
                     color: theme.palette.mode === 'dark' ? 'white' : 'black',
                     '&:hover': { color: theme.palette.mode === 'dark' ? 'white' : 'black' },
                 })}
@@ -495,7 +495,7 @@ export default abstract class AdapterGeneric<
                 array.push(this.props.context.t('No version of %s', adapter.name, adapter.name));
             } else if (!adapter.rightVersion) {
                 array.push(
-                    `${this.props.context.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version)}${adapter.installedVersion}`,
+                    `${this.props.context.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version || 'unknown')}${adapter.installedVersion}`,
                 );
             }
         }
@@ -705,24 +705,20 @@ export default abstract class AdapterGeneric<
             ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate
             : true;
 
-        return (
-            this.props.context.expertMode &&
-            allowAdapterUpdate !== false &&
-            this.installedVersion && (
-                <Tooltip
-                    title={this.props.context.t('Install a specific version')}
-                    slotProps={{ popper: { sx: this.styles.tooltip } }}
+        return this.props.context.expertMode && allowAdapterUpdate !== false && this.installedVersion ? (
+            <Tooltip
+                title={this.props.context.t('Install a specific version')}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
+            >
+                <IconButton
+                    disabled={this.props.commandRunning}
+                    size="small"
+                    onClick={() => this.setState({ showInstallVersion: true, showDialog: true })}
                 >
-                    <IconButton
-                        disabled={this.props.commandRunning}
-                        size="small"
-                        onClick={() => this.setState({ showInstallVersion: true, showDialog: true })}
-                    >
-                        <AddToPhotosIcon />
-                    </IconButton>
-                </Tooltip>
-            )
-        );
+                    <AddToPhotosIcon />
+                </IconButton>
+            </Tooltip>
+        ) : null;
     }
 
     renderRebuildButton(): JSX.Element | null {
@@ -837,8 +833,8 @@ export default abstract class AdapterGeneric<
         if (!this.state.showInstallVersion) {
             return null;
         }
-        let stableVersion: string;
-        let latestVersion: string;
+        let stableVersion: string | undefined;
+        let latestVersion: string | undefined;
         const repoInfo: RepoInfo = this.props.context.repository._repoInfo as unknown as RepoInfo;
         if (repoInfo?.stable) {
             stableVersion = this.props.context.repository[this.props.adapterName]?.version;
@@ -919,7 +915,7 @@ export default abstract class AdapterGeneric<
                                             `https://www.npmjs.com/package/iobroker.${this.props.adapterName}?activeTab=versions`,
                                             this.props.adapterName,
                                         )
-                                        .focus();
+                                        ?.focus();
                                 }}
                             >
                                 <LinkIcon />
@@ -1001,7 +997,7 @@ export default abstract class AdapterGeneric<
                 version={this.state.showSetRating.version}
                 adapter={this.props.adapterName}
                 currentRating={this.state.showSetRating.rating}
-                onClose={(update: RatingDialogRepository) => {
+                onClose={(update?: RatingDialogRepository | null) => {
                     if (update) {
                         this.props.context.updateRating(this.props.adapterName, update);
                     }
@@ -1047,12 +1043,12 @@ export default abstract class AdapterGeneric<
                 try {
                     if (semver.gt(version, installed.version) || all) {
                         let text: string;
-                        if (typeof adapter.news[version] === 'object') {
+                        if (typeof adapter.news![version] === 'object') {
                             text = this.props.noTranslation
-                                ? adapter.news[version].en
-                                : adapter.news[version][this.props.context.lang] || adapter.news[version].en;
+                                ? adapter.news![version].en
+                                : adapter.news![version][this.props.context.lang] || adapter.news![version].en;
                         } else {
-                            text = adapter.news[version];
+                            text = adapter.news![version];
                         }
 
                         news.push({

@@ -1,6 +1,7 @@
 import React, { Component, type JSX } from 'react';
 
 import { green, grey, orange, red } from '@mui/material/colors';
+import type { Theme } from '@mui/material/styles';
 
 import {
     AppBar,
@@ -184,7 +185,7 @@ interface ConfigState {
     logOnTheFlyValue: boolean;
     logLevel: ioBroker.LogLevel;
     logLevelValue: ioBroker.LogLevel;
-    tempLogLevel: ioBroker.LogLevel;
+    tempLogLevel?: ioBroker.LogLevel;
     common?: Record<string, any>;
     native?: Record<string, any>;
     adapterDocLangs?: ioBroker.Languages[];
@@ -290,7 +291,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 
                     this.setState({
                         checkedExist: true,
-                        running: obj?.common?.onlyWWW || obj?.common?.enabled,
+                        running: !!(obj?.common?.onlyWWW || obj?.common?.enabled),
                         canStart: !obj?.common?.onlyWWW,
                         alive: !!alive?.val,
                         extension: extension ? !!extension?.val : null,
@@ -317,17 +318,14 @@ class Config extends Component<ConfigProps, ConfigState> {
             this.props.onRegisterIframeRef(this.refIframe);
         }
 
-        (window.addEventListener || window.attachEvent)(
-            window.addEventListener ? 'message' : 'onmessage',
-            this.closeConfig,
-            false,
-        );
+        window.addEventListener('message', this.closeConfig as unknown as EventListener, false);
     }
 
-    onObjectChange = (id: string, obj: ioBroker.InstanceObject | null): void => {
+    onObjectChange = (id: string, _obj: ioBroker.Object | null | undefined): void => {
+        const obj = _obj as ioBroker.InstanceObject | null | undefined;
         if (id === `system.adapter.${this.props.adapter}.${this.props.instance}`) {
             this.setState({
-                running: obj?.common?.onlyWWW || obj?.common?.enabled,
+                running: !!(obj?.common?.onlyWWW || obj?.common?.enabled),
                 canStart: !obj?.common?.onlyWWW,
                 logLevel: obj?.common?.loglevel || 'info',
             });
@@ -386,7 +384,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                 this.setState({ extension: state ? !!state.val : null });
             }
         } else if (id === `${instanceId}.logLevel`) {
-            this.setState({ tempLogLevel: state ? (state.val as ioBroker.LogLevel) : null });
+            this.setState({ tempLogLevel: state ? (state.val as ioBroker.LogLevel) : undefined });
         }
     };
 
@@ -396,11 +394,7 @@ class Config extends Component<ConfigProps, ConfigState> {
             this.onObjectChange,
         );
 
-        (window.removeEventListener || window.detachEvent)(
-            window.removeEventListener ? 'message' : 'onmessage',
-            this.closeConfig,
-            false,
-        );
+        window.removeEventListener('message', this.closeConfig as unknown as EventListener, false);
 
         if (this.registered && this.refIframe) {
             this.props.onUnregisterIframeRef(this.refIframe);
@@ -764,7 +758,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                             ) : null}
                             <Box
                                 component="span"
-                                sx={(theme: IobTheme): any => ({
+                                sx={(theme: Theme): any => ({
                                     [theme.breakpoints.down('md')]: {
                                         display: 'none',
                                     },
@@ -776,7 +770,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                             {`${this.props.adapter}.${this.props.instance}`}
                             <Box
                                 component="div"
-                                sx={(theme: IobTheme): any => ({
+                                sx={(theme: Theme): any => ({
                                     [theme.breakpoints.down('sm')]: {
                                         display: 'none',
                                     },
@@ -786,7 +780,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                             </Box>
                             <Box
                                 component="span"
-                                sx={(theme: IobTheme): any => ({
+                                sx={(theme: Theme): any => ({
                                     [theme.breakpoints.up('sm')]: {
                                         display: 'none',
                                     },

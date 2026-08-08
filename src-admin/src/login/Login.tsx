@@ -110,7 +110,7 @@ interface LoginState {
 }
 
 export default class Login extends Component<object, LoginState> {
-    private readonly passwordRef: React.RefObject<HTMLInputElement>;
+    private readonly passwordRef: React.RefObject<HTMLInputElement | null>;
 
     constructor(props: object) {
         super(props);

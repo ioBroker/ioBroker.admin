@@ -132,32 +132,48 @@ const styles: Record<string, any> = {
         color: '#FF6666',
     },
     toolbarDate: {
-        width: 124,
-        mt: '9px',
+        width: 108,
+        mt: '6px',
         '& fieldset': {
             display: 'none',
         },
         '& input': {
-            padding: '8px 0 0 0',
+            padding: '6px 0 0 0',
+            fontSize: '0.875rem',
         },
         '& .MuiInputAdornment-root': {
             ml: 0,
-            mt: '7px',
+            mt: '5px',
+        },
+        // The picker button is ~40px wide by default and pushed the value out of the field,
+        // so the date was cut off ("06.08.202"). A smaller button leaves room for the full value.
+        '& .MuiIconButton-root': {
+            padding: '2px',
+        },
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.125rem',
         },
     },
     toolbarTime: {
-        width: 84,
-        mt: '9px',
+        width: 116,
+        mt: '6px',
         // marginLeft: 8,
         '& fieldset': {
             display: 'none',
         },
         '& input': {
-            padding: '8px 0 0 0',
+            padding: '6px 0 0 0',
+            fontSize: '0.875rem',
         },
         '& .MuiInputAdornment-root': {
             ml: 0,
-            mt: '7px',
+            mt: '5px',
+        },
+        '& .MuiIconButton-root': {
+            padding: '2px',
+        },
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.125rem',
         },
     },
     toolbarTimeGrid: {
@@ -281,10 +297,10 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
         this.localStorage = (window as any)._localStorage || window.localStorage;
 
         let relativeRange = this.localStorage.getItem('App.relativeRange') || 'absolute';
-        const start = parseInt(this.localStorage.getItem('App.absoluteStart'), 10) || 0;
-        const end = parseInt(this.localStorage.getItem('App.absoluteEnd'), 10) || 0;
+        const start = parseInt(this.localStorage.getItem('App.absoluteStart') || '', 10) || 0;
+        const end = parseInt(this.localStorage.getItem('App.absoluteEnd') || '', 10) || 0;
         const selectedStr = this.localStorage.getItem('App.historySelected') || '';
-        const lastSelected = parseInt(this.localStorage.getItem('App.historyLastSelected'), 10) || null;
+        const lastSelected = parseInt(this.localStorage.getItem('App.historyLastSelected') || '', 10) || null;
         const lastSelectedColumn = this.localStorage.getItem('App.historyLastSelectedColumn') || null;
 
         if ((!start || !end) && (!relativeRange || relativeRange === 'absolute')) {
@@ -394,7 +410,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
         this.props.socket.unsubscribeState(this.props.obj._id, this.onChange);
     }
 
-    onChange = (id: string, state: ioBroker.State): void => {
+    onChange = (id: string, state: ioBroker.State | null | undefined): void => {
         if (
             id === this.props.obj._id &&
             state &&
@@ -405,7 +421,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
             this.setState({ values });
         } else if (id.startsWith('system.adapter.') && id.endsWith('.alive')) {
             const instance = id.substring('system.adapter.'.length, id.length - '.alive'.length);
-            const list = this.state.historyInstances;
+            const list = this.state.historyInstances || [];
             const itemIndex = list.findIndex(it => it.id === instance);
             if (itemIndex !== -1) {
                 if (list[itemIndex].alive !== !!state?.val) {
@@ -502,7 +518,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
             !this.state.historyInstance ||
             !this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)
         ) {
-            return null;
+            return Promise.resolve(null);
         }
 
         this.setState({ loading: true });
@@ -649,33 +665,34 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
     }
 
     onToggleSelect(e: React.KeyboardEvent | React.MouseEvent, ts: number, column: string): void {
+        const stateValues = this.state.values || [];
         let selected = [...this.state.selected];
         const pos = selected.indexOf(ts);
         if (e.shiftKey && this.state.lastSelected) {
             let pps = -1;
             let ppls = -1;
             selected = [];
-            for (let i = 0; i < this.state.values.length; i++) {
-                if (this.state.values[i].ts === ts) {
+            for (let i = 0; i < stateValues.length; i++) {
+                if (stateValues[i].ts === ts) {
                     pps = i;
                     if (ppls !== pps) {
-                        selected.push(this.state.values[i].ts);
+                        selected.push(stateValues[i].ts);
                     }
                     if (pps !== -1 && ppls !== -1) {
                         break;
                     }
                 }
-                if (this.state.values[i].ts === this.state.lastSelected) {
+                if (stateValues[i].ts === this.state.lastSelected) {
                     ppls = i;
                     if (ppls !== pps) {
-                        selected.push(this.state.values[i].ts);
+                        selected.push(stateValues[i].ts);
                     }
                     if (pps !== -1 && ppls !== -1) {
                         break;
                     }
                 }
                 if (pps !== -1 || ppls !== -1) {
-                    selected.push(this.state.values[i].ts);
+                    selected.push(stateValues[i].ts);
                 }
             }
         } else if (e.ctrlKey) {
@@ -697,8 +714,9 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
 
     getTableRows(): JSX.Element[] {
         const rows = [];
-        for (let r = this.state.values.length - 1; r >= 0; r--) {
-            const state = this.state.values[r];
+        const stateValues = this.state.values || [];
+        for (let r = stateValues.length - 1; r >= 0; r--) {
+            const state = stateValues[r];
             const ts = state.ts;
             if (state.e) {
                 rows.push(
@@ -1105,12 +1123,12 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
     }
 
     onUpdate(): void {
-        let val = this.state.edit.val;
+        let val = this.state.edit?.val;
 
         if (this.props.obj.common) {
             if (this.props.obj.common.type === 'number') {
                 if (typeof val !== 'number') {
-                    val = parseFloat(val.toString().replace(',', '.'));
+                    val = parseFloat((val ?? '').toString().replace(',', '.'));
                 }
             } else if (this.props.obj.common.type === 'boolean') {
                 val = val === 'true' || val === 'TRUE' || val === true || val === '1' || val === 1;
@@ -1141,21 +1159,26 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
     }
 
     onInsert(): void {
-        let val = this.state.edit.val;
+        let val = this.state.edit?.val;
 
         if (this.props.obj.common) {
             if (this.props.obj.common.type === 'number') {
-                val = parseFloat(val.toString().replace(',', '.'));
+                val = parseFloat((val ?? '').toString().replace(',', '.'));
             } else if (this.props.obj.common.type === 'boolean') {
                 val = val === 'true' || val === 'TRUE' || val === true || val === '1' || val === 1;
             }
         }
 
-        const ts = this.state.edit.date;
-        ts.setHours(this.state.edit.time.getHours());
-        ts.setMinutes(this.state.edit.time.getMinutes());
-        ts.setSeconds(this.state.edit.time.getSeconds());
-        ts.setMilliseconds(parseInt(this.state.edit.ms as any as string, 10));
+        const edit = this.state.edit;
+        const ts = edit?.date;
+        const editTime = edit?.time;
+        if (!ts || !edit || !editTime) {
+            return;
+        }
+        ts.setHours(editTime.getHours());
+        ts.setMinutes(editTime.getMinutes());
+        ts.setSeconds(editTime.getSeconds());
+        ts.setMilliseconds(parseInt(edit.ms as any as string, 10));
 
         const state: ioBroker.SettableState = {
             ts: ts.getTime(),
@@ -1244,15 +1267,15 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                                     <div style={styles.toolbarTimeLabel}>{this.props.t('Time')}</div>
                                     <DatePicker
                                         sx={styles.toolbarDate}
-                                        value={this.state.edit.date}
-                                        onChange={date => this.updateEdit('date', date)}
+                                        value={this.state.edit?.date}
+                                        onChange={date => date && this.updateEdit('date', date)}
                                     />
                                     <TimePicker
                                         sx={styles.toolbarTime}
                                         ampm={this.state.ampm}
                                         views={['hours', 'minutes', 'seconds']}
-                                        value={this.state.edit.time}
-                                        onChange={time => this.updateEdit('time', time)}
+                                        value={this.state.edit?.time}
+                                        onChange={time => time && this.updateEdit('time', time)}
                                     />
                                     <TextField
                                         variant="standard"
@@ -1471,14 +1494,14 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                             sx={styles.toolbarDate}
                             disabled={this.state.relativeRange !== 'absolute'}
                             value={new Date(this.state.start)}
-                            onChange={date => this.setStartDate(date)}
+                            onChange={date => date && this.setStartDate(date)}
                         />
                         <TimePicker
                             disabled={this.state.relativeRange !== 'absolute'}
                             sx={styles.toolbarTime}
                             ampm={this.state.ampm}
                             value={new Date(this.state.start)}
-                            onChange={date => this.setStartDate(date)}
+                            onChange={date => date && this.setStartDate(date)}
                         />
                     </div>
                     <div style={styles.toolbarTimeGrid}>
@@ -1494,14 +1517,14 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                             disabled={this.state.relativeRange !== 'absolute'}
                             sx={styles.toolbarDate}
                             value={new Date(this.state.end)}
-                            onChange={date => this.setEndDate(date)}
+                            onChange={date => date && this.setEndDate(date)}
                         />
                         <TimePicker
                             disabled={this.state.relativeRange !== 'absolute'}
                             sx={styles.toolbarTime}
                             ampm={this.state.ampm}
                             value={new Date(this.state.end)}
-                            onChange={date => this.setEndDate(date)}
+                            onChange={date => date && this.setEndDate(date)}
                         />
                     </div>
                 </LocalizationProvider>
@@ -1527,8 +1550,8 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                             const time = new Date();
 
                             const edit: ObjectHistoryDataEdit = {
-                                ack: this.state.values[this.state.values.length - 1].ack,
-                                val: this.state.values[this.state.values.length - 1].val,
+                                ack: this.state.values?.[this.state.values.length - 1].ack,
+                                val: this.state.values?.[this.state.values.length - 1].val ?? undefined,
                                 date: new Date(time),
                                 ms: 0,
                                 time: new Date(time),
@@ -1551,7 +1574,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                         onClick={() => {
                             const state = JSON.parse(
                                 JSON.stringify(
-                                    this.state.values.find((it: HistoryItem) => it.ts === this.state.lastSelected),
+                                    this.state.values?.find((it: HistoryItem) => it.ts === this.state.lastSelected),
                                 ),
                             );
                             const time = new Date(state.ts);
@@ -1600,7 +1623,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
 
         const lines = ['timestamp;value;acknowledged;from;'];
 
-        this.state.values.forEach(
+        this.state.values?.forEach(
             (state: HistoryItem) =>
                 !state.i &&
                 !state.e &&

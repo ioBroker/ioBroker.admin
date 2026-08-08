@@ -238,7 +238,7 @@ const JsControllerDialog = ({ socket, hostId, version, onClose }: JsControllerDi
 
     const renderReadme = (): JSX.Element => (
         <>
-            {readme.map((text, i) =>
+            {readme?.map((text, i) =>
                 typeof text === 'object' ? (
                     text
                 ) : (

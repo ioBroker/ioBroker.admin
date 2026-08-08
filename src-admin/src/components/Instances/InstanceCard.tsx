@@ -172,7 +172,7 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
         this.state = Object.assign(this.getDefaultState(props), { mouseOver: false });
     }
 
-    renderSecondCardInfo(): JSX.Element {
+    renderSecondCardInfo(): JSX.Element | null {
         if (this.props.deleting || !this.state.expanded) {
             return null;
         }
