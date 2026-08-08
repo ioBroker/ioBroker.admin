@@ -1,4 +1,10 @@
 # Older changes
+## 7.9.11 (2026-06-29)
+- (@GermanBluefox) Allowed creating an AI API key directly from the assistant settings dialog
+- (@GermanBluefox) Added provider logos (incl. DeepSeek) to the AI assistant provider and credential selectors
+- (@GermanBluefox) The adapter-core version will be updated if required by start
+- (@GermanBluefox) Show status of the instance in the web-extension mode
+
 ## 7.9.10 (2026-06-22)
 - (@GermanBluefox) Added a dialog describing how to use the AI assistant without an API key (external MCP client)
 - (@GermanBluefox) Updated device manager

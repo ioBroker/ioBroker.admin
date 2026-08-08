@@ -196,7 +196,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.3 (2026-08-08)
 - (@softwarecrash) Corrected the validation state in the custom settings if more than one instance is shown
 - (@softwarecrash) Corrected the disabled save button in the custom settings after an invalid instance was switched off
 
@@ -223,12 +223,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Corrected the intro and instances links for adapters running as web-extension
 - (@GermanBluefox) Improved the error message on unmet global dependencies in multihost setups by listing the hosts that do not fulfill the requirement
 - (@GermanBluefox) Sorted the notification categories by severity (alert, notify, info), so the most important notifications are shown first
-
-### 7.9.11 (2026-06-29)
-- (@GermanBluefox) Allowed creating an AI API key directly from the assistant settings dialog
-- (@GermanBluefox) Added provider logos (incl. DeepSeek) to the AI assistant provider and credential selectors
-- (@GermanBluefox) The adapter-core version will be updated if required by start
-- (@GermanBluefox) Show status of the instance in the web-extension mode
 
 ## License
 

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "8.0.2",
+    "version": "8.0.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "8.0.3": {
+        "en": "Corrected the validation state in the custom settings if more than one instance is shown\nCorrected the disabled save button in the custom settings after an invalid instance was switched off",
+        "de": "Korrektur des Validierungsstatus in den benutzerdefinierten Einstellungen, wenn mehr als eine Instanz angezeigt wird\nKorrigiert die deaktivierte Speichertaste in den benutzerdefinierten Einstellungen, nachdem eine ungültige Instanz ausgeschaltet wurde",
+        "ru": "Исправлено состояние проверки в пользовательских настройках, если показано более одного экземпляра\nИсправлена отключенная кнопка сохранения в пользовательских настройках после выключения недействительного экземпляра",
+        "pt": "Corrigido o estado de validação nas configurações personalizadas se mais de uma instância for mostrada\nCorrigido o botão de gravação desabilitado nas configurações personalizadas após uma instância inválida ser desligada",
+        "nl": "De validatiestatus in de aangepaste instellingen gecorrigeerd indien meer dan één instantie wordt getoond\nDe uitgeschakelde knop opslaan in de aangepaste instellingen gecorrigeerd nadat een ongeldige instantie is uitgeschakeld",
+        "fr": "Correction de l'état de validation dans les paramètres personnalisés si plus d'une instance est affichée\nCorrection du bouton de sauvegarde désactivé dans les paramètres personnalisés après l'arrêt d'une instance invalide",
+        "it": "Corretto lo stato di validazione nelle impostazioni personalizzate se viene mostrato più di un'istanza\nCorretto il pulsante di salvataggio disabilitato nelle impostazioni personalizzate dopo che un'istanza non valida è stata disattivata",
+        "es": "Corregido el estado de validación en la configuración personalizada si se muestra más de una instancia\nCorregido el botón Guardar Desactivado en la configuración personalizada después de que se apaga una instancia inválida",
+        "pl": "Poprawiono stan walidacji w ustawieniach niestandardowych, jeżeli pokazano więcej niż jedną instancję\nPo wyłączeniu niepoprawnej instancji poprawiono wyłączony przycisk zapisu w ustawień niestandardowych",
+        "uk": "Виправлено стан валідації в налаштуваннях, якщо показано більше одного екземпляра\nВиправлено кнопку збереження відключення в налаштуваннях користувача після вимкненого екземпляра",
+        "zh-cn": "如果显示一个以上实例, 纠正了自定义设置中的验证状态\n关闭无效实例后纠正自定义设置中禁用的保存按钮"
+      },
       "8.0.2": {
         "en": "Corrected charts\nCorrected the authentication for the OAuth2 callbacks\nDisabled the save button in the custom settings as long as a value is invalid\nAdded the folder selection to the alias creation dialog\nHidden the chart in the value editor in the mobile view\nSmall GUI improvements",
         "de": "Korrigierte Charts\nKorrektur der Authentifizierung für die OAuth2-Callbacks\nDeaktivieren der Schaltfläche Speichern in den benutzerdefinierten Einstellungen, solange ein Wert ungültig ist\nHinzufügen der Ordnerauswahl zum Alias-Erstellungsdialog\nVersteckt das Diagramm im Wert-Editor in der mobilen Ansicht\nKleine GUI Verbesserungen",
