@@ -655,10 +655,15 @@
         },
         "bundlerType": {
           "type": "string",
-          "description": "If module written with TypeScript, set it to `module`. From Admin 7.5.x",
+          "description": "Deprecated: ignored since GUI API generation 2 - such components are always built as ES modules. If module written with TypeScript, set it to `module`. From Admin 7.5.x",
           "enum": [
             "module"
           ]
+        },
+        "guiApi": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Generation of the GUI API this component was built against. `2` means it uses `@iobroker/gui-components` (React 19 / MUI 9). Omitted or `1` means it was built against the legacy `@iobroker/adapter-react-v5` (React 18 / MUI 6). A component that declares an older generation than the admin provides is not loaded at all. From Admin 8.0.x"
         },
         "custom": {
           "type": "object",
@@ -3685,10 +3690,15 @@
                     },
                     "bundlerType": {
                       "type": "string",
-                      "description": "If module written with TypeScript, set it to `module`. From Admin 7.5.x",
+                      "description": "Deprecated: ignored since GUI API generation 2 - such components are always built as ES modules. If module written with TypeScript, set it to `module`. From Admin 7.5.x",
                       "enum": [
                         "module"
                       ]
+                    },
+                    "guiApi": {
+                      "type": "number",
+                      "minimum": 1,
+                      "description": "Generation of the GUI API this component was built against. `2` means it uses `@iobroker/gui-components` (React 19 / MUI 9). Omitted or `1` means it was built against the legacy `@iobroker/adapter-react-v5` (React 18 / MUI 6). A component that declares an older generation than the admin provides is not loaded at all. From Admin 8.0.x"
                     },
                     "custom": {
                       "type": "object",

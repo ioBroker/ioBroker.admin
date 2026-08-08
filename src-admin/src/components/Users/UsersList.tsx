@@ -226,21 +226,21 @@ const USER_TEMPLATE: ioBroker.UserObject = {
 };
 
 const GROUP_TEMPLATE: ioBroker.GroupObject = {
-    _id: undefined,
+    _id: '' as `system.group.${string}`,
     native: {},
     type: 'group',
     common: {
         name: '',
         desc: '',
         members: [],
-        dontDelete: undefined,
+        dontDelete: true,
         acl: {
             object: {
                 list: false,
                 read: false,
                 write: false,
                 delete: false,
-                create: undefined,
+                create: false,
             },
             state: {
                 list: false,
@@ -286,8 +286,8 @@ interface UsersListProps {
 
 interface UsersListState {
     innerWidth: number;
-    users: ioBroker.UserObject[];
-    groups: ioBroker.GroupObject[];
+    users: ioBroker.UserObject[] | null;
+    groups: ioBroker.GroupObject[] | null;
     userEditDialog: ioBroker.UserObject | false;
     userEditDialogNew: boolean;
     groupEditDialog: ioBroker.GroupObject | false;
@@ -304,9 +304,9 @@ class UsersList extends Component<UsersListProps, UsersListState> {
             users: null,
             groups: null,
             userEditDialog: false,
-            userEditDialogNew: null,
+            userEditDialogNew: false,
             groupEditDialog: false,
-            groupEditDialogNew: null,
+            groupEditDialogNew: false,
             userDeleteDialog: false,
             groupDeleteDialog: false,
             innerWidth: 0,
@@ -323,7 +323,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         }
     }
 
-    getText = (name: ioBroker.StringOrTranslated): string =>
+    getText = (name: ioBroker.StringOrTranslated | undefined): string =>
         (name && (typeof name === 'object' ? name[this.props.lang] || name.en || '' : name || '')) || '';
 
     showUserEditDialog = (user: ioBroker.UserObject, isNew: boolean): void => {
@@ -373,11 +373,11 @@ class UsersList extends Component<UsersListProps, UsersListState> {
 
     changeGroupFormData = (group: ioBroker.GroupObject): void => this.setState({ groupEditDialog: group });
 
-    saveUser = async (originalId: ioBroker.ObjectIDs.User): Promise<void> => {
+    saveUser = async (originalId: string | null): Promise<void> => {
         const user: ioBroker.UserObject = Utils.clone(
             this.state.userEditDialog as ioBroker.UserObject,
         ) as ioBroker.UserObject;
-        const originalUser = this.state.users.find(element => element._id === user._id);
+        const originalUser = this.state.users?.find(element => element._id === user._id);
         const newPassword = user.common.password && user.common.password !== PASSWORD_SET ? user.common.password : '';
 
         if (originalUser) {
@@ -394,11 +394,14 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         ) {
             try {
                 await this.props.socket.delObject(originalId);
-                for (let i = 0; i < this.state.groups.length; i++) {
-                    const group = this.state.groups[i];
-                    if (group.common.members.includes(originalId)) {
+                const groups = this.state.groups || [];
+                for (let i = 0; i < groups.length; i++) {
+                    const group = groups[i];
+                    if (group.common.members.includes(originalId as ioBroker.ObjectIDs.User)) {
                         const groupChanged: ioBroker.GroupObject = Utils.clone(group) as ioBroker.GroupObject;
-                        groupChanged.common.members[groupChanged.common.members.indexOf(originalId)] = user._id;
+                        groupChanged.common.members[
+                            groupChanged.common.members.indexOf(originalId as ioBroker.ObjectIDs.User)
+                        ] = user._id;
                         await this.props.socket.setObject(groupChanged._id, groupChanged);
                     }
                 }
@@ -416,7 +419,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         this.setState({ userEditDialog: false }, () => this.updateData());
     };
 
-    saveGroup = async (originalId: string): Promise<void> => {
+    saveGroup = async (originalId: string | null): Promise<void> => {
         if (typeof this.state.groupEditDialog === 'object') {
             await this.props.socket.setObject(this.state.groupEditDialog._id, this.state.groupEditDialog);
             if (originalId && originalId !== this.state.groupEditDialog._id) {
@@ -434,15 +437,18 @@ class UsersList extends Component<UsersListProps, UsersListState> {
 
     showGroupDeleteDialog = (group: ioBroker.GroupObject): void => this.setState({ groupDeleteDialog: group });
 
-    deleteUser = (userId: ioBroker.ObjectIDs.User): void => {
+    deleteUser = (userId: string): void => {
         void this.props.socket
             .delObject(userId)
             .then(() =>
                 Promise.all(
-                    this.state.groups.map(group => {
-                        if (group.common.members.includes(userId)) {
+                    (this.state.groups || []).map(group => {
+                        if (group.common.members.includes(userId as ioBroker.ObjectIDs.User)) {
                             const groupChanged: ioBroker.GroupObject = Utils.clone(group) as ioBroker.GroupObject;
-                            groupChanged.common.members.splice(groupChanged.common.members.indexOf(userId), 1);
+                            groupChanged.common.members.splice(
+                                groupChanged.common.members.indexOf(userId as ioBroker.ObjectIDs.User),
+                                1,
+                            );
                             return this.props.socket.setObject(groupChanged._id, groupChanged);
                         }
                         return Promise.resolve(null);
@@ -461,11 +467,11 @@ class UsersList extends Component<UsersListProps, UsersListState> {
             .then(() => this.setState({ groupDeleteDialog: false }, () => this.updateData()))
             .catch(e => window.alert(`Cannot delete user: ${e}`));
 
-    addUserToGroup = (userId: ioBroker.ObjectIDs.User, groupId: string): void => {
-        const group = this.state.groups.find(g => g._id === groupId);
-        const members = group.common.members;
-        if (!members.includes(userId)) {
-            members.push(userId);
+    addUserToGroup = (userId: string, groupId: string): void => {
+        const group = this.state.groups?.find(g => g._id === groupId);
+        const members = group?.common.members || [];
+        if (group && !members.includes(userId as ioBroker.ObjectIDs.User)) {
+            members.push(userId as ioBroker.ObjectIDs.User);
             this.props.socket
                 .setObject(group._id, group)
                 .then(() => this.updateData())
@@ -473,11 +479,11 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         }
     };
 
-    removeUserFromGroup = (userId: ioBroker.ObjectIDs.User, groupId: string): void => {
-        const group = this.state.groups.find(g => g._id === groupId);
-        const members = group.common.members;
-        if (members.includes(userId)) {
-            members.splice(members.indexOf(userId), 1);
+    removeUserFromGroup = (userId: string, groupId: string): void => {
+        const group = this.state.groups?.find(g => g._id === groupId);
+        const members = group?.common.members || [];
+        if (group && members.includes(userId as ioBroker.ObjectIDs.User)) {
+            members.splice(members.indexOf(userId as ioBroker.ObjectIDs.User), 1);
             void this.props.socket.setObject(group._id, group).then(() => this.updateData());
         }
     };
@@ -529,7 +535,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                 onClick={() => {
                                     const { _id, name } = UsersList.findNewUniqueName(
                                         true,
-                                        this.state.groups,
+                                        this.state.groups || [],
                                         this.props.t('Group'),
                                     );
                                     const template: ioBroker.GroupObject = Utils.clone(
@@ -565,10 +571,9 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                 })
                                 .map(group => (
                                     <GroupBlock
-                                        themeType={this.props.themeType}
                                         group={group}
                                         key={group._id}
-                                        users={this.state.users}
+                                        users={this.state.users || []}
                                         showGroupEditDialog={this.showGroupEditDialog}
                                         showGroupDeleteDialog={this.showGroupDeleteDialog}
                                         removeUserFromGroup={this.removeUserFromGroup}
@@ -593,7 +598,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                 onClick={() => {
                                     const { _id, name } = UsersList.findNewUniqueName(
                                         false,
-                                        this.state.users,
+                                        this.state.users || [],
                                         this.props.t('User'),
                                     );
                                     const template: ioBroker.UserObject = Utils.clone(
@@ -629,10 +634,9 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                 })
                                 .map(user => (
                                     <UserBlock
-                                        themeType={this.props.themeType}
                                         user={user}
                                         key={user._id}
-                                        groups={this.state.groups}
+                                        groups={this.state.groups || []}
                                         showUserEditDialog={this.showUserEditDialog}
                                         showUserDeleteDialog={this.showUserDeleteDialog}
                                         updateData={this.updateData}

@@ -328,9 +328,9 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
                     created: message.created,
                     link: message.link,
                     linkTitle:
-                        typeof message.linkTitle === 'object'
+                        (typeof message.linkTitle === 'object'
                             ? message.linkTitle[context.lang] || message.linkTitle.en
-                            : message.linkTitle,
+                            : message.linkTitle) || '',
                     img: message.img,
                 });
             }
@@ -348,7 +348,7 @@ function NewsAdminDialog({
     onSetLastNewsId,
 }: {
     newsArr: ShowMessage[];
-    current: string;
+    current: string | undefined;
     onSetLastNewsId: (id?: string) => void;
 }): JSX.Element {
     // Start at the first entry the user has not seen yet. `-1` means everything was already read.

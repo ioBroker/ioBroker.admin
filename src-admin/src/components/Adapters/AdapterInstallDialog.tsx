@@ -64,7 +64,7 @@ export interface AdapterInformation {
 
 export type AdapterRating = {
     rating?: { r: number; c: number };
-    [version: string]: { r: number; c: number };
+    [version: string]: { r: number; c: number } | undefined;
 };
 export type AdapterRatingInfo = AdapterRating & { title: string };
 
@@ -289,7 +289,7 @@ export default abstract class AdapterInstallDialog<
 
                     const checkVersion = typeof dependency !== 'string';
                     const keys = Object.keys(dependency);
-                    entry.name = !checkVersion ? dependency : keys ? keys[0] : null;
+                    entry.name = (!checkVersion ? dependency : keys ? keys[0] : '') || '';
                     entry.version = checkVersion ? dependency[entry.name] : null;
 
                     if (entry.name) {
@@ -300,7 +300,9 @@ export default abstract class AdapterInstallDialog<
                         try {
                             entry.rightVersion = installed
                                 ? checkVersion
-                                    ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
+                                    ? semver.satisfies(installed.version, entry.version || '*', {
+                                          includePrerelease: true,
+                                      })
                                     : true
                                 : false;
                         } catch {
@@ -324,7 +326,7 @@ export default abstract class AdapterInstallDialog<
 
                     const checkVersion = typeof dependency !== 'string';
                     const keys = Object.keys(dependency);
-                    entry.name = !checkVersion ? dependency : keys ? keys[0] : null;
+                    entry.name = (!checkVersion ? dependency : keys ? keys[0] : '') || '';
                     entry.version = checkVersion ? dependency[entry.name] : null;
 
                     if (entry.name) {
@@ -344,7 +346,9 @@ export default abstract class AdapterInstallDialog<
                             for (const [hostName, hostVersion] of Object.entries(perHost)) {
                                 let ok: boolean;
                                 try {
-                                    ok = semver.satisfies(hostVersion, entry.version, { includePrerelease: true });
+                                    ok = semver.satisfies(hostVersion, entry.version || '*', {
+                                        includePrerelease: true,
+                                    });
                                 } catch {
                                     ok = true;
                                 }
@@ -358,7 +362,7 @@ export default abstract class AdapterInstallDialog<
                             try {
                                 entry.rightVersion = installed
                                     ? checkVersion
-                                        ? semver.satisfies(installed.version, entry.version, {
+                                        ? semver.satisfies(installed.version, entry.version || '*', {
                                               includePrerelease: true,
                                           })
                                         : true
@@ -373,7 +377,7 @@ export default abstract class AdapterInstallDialog<
                 }
             }
 
-            const dependencies: Record<string, string> = adapter.ifInstalledDependencies;
+            const dependencies: Record<string, string> = adapter.ifInstalledDependencies || {};
 
             if (dependencies && typeof dependencies === 'object' && !Array.isArray(dependencies)) {
                 const adapters = Object.keys(dependencies);
@@ -393,7 +397,9 @@ export default abstract class AdapterInstallDialog<
                         entry.installedVersion = installed ? installed.version : null;
                         try {
                             entry.rightVersion = installed
-                                ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
+                                ? semver.satisfies(installed.version, entry.version || '*', {
+                                      includePrerelease: true,
+                                  })
                                 : true;
                         } catch {
                             entry.rightVersion = true;

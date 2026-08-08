@@ -108,7 +108,7 @@ function MaterialDynamicIcon({
             />
         );
     }
-    const Element = objIcon[iconName] || Help;
+    const Element = (iconName && objIcon[iconName]) || Help;
 
     return (
         <Element

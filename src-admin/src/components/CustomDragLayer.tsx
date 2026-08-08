@@ -24,8 +24,8 @@ function snapToGrid(x: number, y: number): [number, number] {
 }
 
 function getItemStyles(
-    initialOffset: { x: number; y: number },
-    currentOffset: { x: number; y: number },
+    initialOffset: { x: number; y: number } | null,
+    currentOffset: { x: number; y: number } | null,
     isSnapToGrid?: boolean,
 ): React.CSSProperties {
     if (!initialOffset || !currentOffset) {
@@ -54,7 +54,7 @@ const styles: Record<string, any> = {
     }),
 };
 
-function CustomDragLayer(props: { theme: IobTheme }): JSX.Element {
+function CustomDragLayer(props: { theme: IobTheme }): JSX.Element | null {
     const {
         itemType,
         isDragging,

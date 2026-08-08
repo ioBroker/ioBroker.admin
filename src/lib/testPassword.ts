@@ -16,39 +16,44 @@ const mutableStdout = new Writable({
     },
 });
 
-checkWellKnownPasswords().then(found => {
-    if (found) {
-        console.log(`Found well-known password: ${JSON.stringify(found)}`);
-        // enter new password
-        const rl = createInterface({
-            input: process.stdin,
-            output: mutableStdout,
-            terminal: true,
-        });
-        rl.question(`Enter new password for "${found.login} (min 6 chars): `, (password: string) => {
-            maskOutput = false;
-            password = password.replace(/\r/g, '').replace(/\n/g, '');
-            if (password.length < 6) {
-                console.error('password is too short');
-                process.exit(1);
-            }
-            rl.question(`Repeat new password for "${found.login}: `, (passwordRepeat: string) => {
+checkWellKnownPasswords()
+    .then(found => {
+        if (found) {
+            console.log(`Found well-known password: ${JSON.stringify(found)}`);
+            // enter new password
+            const rl = createInterface({
+                input: process.stdin,
+                output: mutableStdout,
+                terminal: true,
+            });
+            rl.question(`Enter new password for "${found.login} (min 6 chars): `, (password: string) => {
                 maskOutput = false;
-                passwordRepeat = passwordRepeat.replace(/\r/g, '').replace(/\n/g, '');
-                if (password !== passwordRepeat) {
-                    console.error('passwords are not equal');
+                password = password.replace(/\r/g, '').replace(/\n/g, '');
+                if (password.length < 6) {
+                    console.error('password is too short');
                     process.exit(1);
                 }
-                rl.close();
-                setLinuxPassword(found.login, found.password, password)
-                    .then(result => console.log(`Result: ${JSON.stringify(result)}`))
-                    .catch(err => console.error(`Cannot set password: ${err}`));
+                rl.question(`Repeat new password for "${found.login}: `, (passwordRepeat: string) => {
+                    maskOutput = false;
+                    passwordRepeat = passwordRepeat.replace(/\r/g, '').replace(/\n/g, '');
+                    if (password !== passwordRepeat) {
+                        console.error('passwords are not equal');
+                        process.exit(1);
+                    }
+                    rl.close();
+                    setLinuxPassword(found.login, found.password, password)
+                        .then(result => console.log(`Result: ${JSON.stringify(result)}`))
+                        .catch(err => console.error(`Cannot set password: ${err}`));
+                });
+                maskOutput = true;
             });
             maskOutput = true;
-        });
-        maskOutput = true;
-    } else {
-        console.log(`No well known passwords found`);
-        process.exit(0);
-    }
-});
+        } else {
+            console.log(`No well known passwords found`);
+            process.exit(0);
+        }
+    })
+    .catch(err => {
+        console.error(`Cannot check well-known passwords: ${(err as Error).toString()}`);
+        process.exit(1);
+    });

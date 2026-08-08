@@ -129,7 +129,7 @@ class MDUtils {
     }
 
     static onCopy(e: Event | null, text: string): void {
-        Utils.copyToClipboard(text, e);
+        Utils.copyToClipboard(text, e || undefined);
     }
 
     static decorateText(
@@ -149,7 +149,7 @@ class MDUtils {
 
         const lines = body.split('\n');
         const content: Record<string, MarkdownContent> = {};
-        const current: MarkdownContent[] = [null, null, null, null];
+        const current: (MarkdownContent | null)[] = [null, null, null, null];
 
         const parts: {
             type: 'chapter' | 'table' | '@@@' | 'code' | 'warn' | 'alarm' | 'notice' | 'p';
@@ -163,7 +163,7 @@ class MDUtils {
             lines.pop();
         }
 
-        let title;
+        let title = '';
 
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i].trimRight();
@@ -186,14 +186,12 @@ class MDUtils {
             } else if (line.match(/^##+ /)) {
                 parts.push({ lines: [line], type: 'chapter' });
                 last++;
-                let level = line.split('#').length - 3;
+                const level: number = line.split('#').length - 3;
                 const cont = MDUtils.findTitle(line, level, path);
                 content[cont.href] = cont;
                 current[level] = cont;
-                level++;
-                while (current[level] !== undefined) {
-                    level = null;
-                }
+                // there used to be a `while (current[level] !== undefined) { level = null; }` loop here.
+                // It ran exactly once and changed nothing but the already unused `level`, so it is gone.
             } else if (line.startsWith('@@@')) {
                 line = line.substring(3).trim();
                 parts.push({ lines: [line], type: '@@@' });
@@ -249,7 +247,7 @@ class MDUtils {
             parts,
             content,
             title,
-            changeLog: changelog,
+            changeLog: changelog || '',
             license,
         };
     }
@@ -350,7 +348,7 @@ class MDUtils {
         };
     }
 
-    static text2docLink(text: string, path: string): { link: string; name: string } {
+    static text2docLink(text: string, path: string): { link: string; name: string } | null {
         const m = text.match(/\[([^\]]*)]\(([^)]*)\)/);
         if (m) {
             const parts = path.split('/');

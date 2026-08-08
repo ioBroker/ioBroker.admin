@@ -295,7 +295,7 @@ interface DrawerState {
 }
 
 class Drawer extends Component<DrawerProps, DrawerState> {
-    private logsHandlerRegistered: boolean;
+    private logsHandlerRegistered = false;
 
     private readonly refEditButton: RefObject<HTMLDivElement | null> = React.createRef();
 
@@ -351,7 +351,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     instanceChangedHandler = (): Promise<void> => this.getTabs(true);
 
     async isDeviceManagerVisible(): Promise<boolean> {
-        const instances: Record<string, ioBroker.InstanceObject> = await this.props.instancesWorker.getObjects();
+        const instances: Record<string, ioBroker.InstanceObject> =
+            (await this.props.instancesWorker.getObjects()) || {};
         const result = Object.values(instances).find(it => it?.common?.supportedMessages?.deviceManager);
         return !!result;
     }
@@ -697,7 +698,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
      * and it only becomes visible while the mouse is over the drawer.
      */
     renderEditButton(): JSX.Element | null {
-        if (this.props.adminGuiConfig.admin.menu.editable === false || this.props.state !== STATES.opened) {
+        if (this.props.adminGuiConfig.admin?.menu?.editable === false || this.props.state !== STATES.opened) {
             return null;
         }
 
@@ -786,18 +787,24 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         const { tabs } = this.state;
         const { socket } = this.props;
         const newTabs: AdminTab[] = JSON.parse(JSON.stringify(tabs)) as AdminTab[];
-        if (isVisibility) {
-            newTabs[idx].visible = !newTabs[idx].visible;
-        }
-        if (newColor !== undefined) {
-            if (newColor === null) {
-                delete newTabs[idx].color;
-            } else {
-                newTabs[idx].color = newColor;
+        if (idx !== undefined) {
+            if (isVisibility) {
+                newTabs[idx].visible = !newTabs[idx].visible;
+            }
+            if (newColor !== undefined) {
+                if (newColor === null) {
+                    delete newTabs[idx].color;
+                } else {
+                    newTabs[idx].color = newColor;
+                }
             }
         }
         const newObjCopy = await this.props.socket.getSystemConfig(true);
-        newObjCopy.common.tabsVisible = newTabs.map(({ name, visible, color }) => ({ name, visible, color }));
+        newObjCopy.common.tabsVisible = newTabs.map(({ name, visible, color }) => ({
+            name,
+            visible: !!visible,
+            color,
+        }));
 
         if (isVisibility || newColor !== undefined) {
             this.setState({ tabs: newTabs }, () =>
@@ -812,7 +819,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         }
     };
 
-    getNavigationItems(): JSX.Element[] {
+    getNavigationItems(): (JSX.Element | null)[] {
         const { tabs, logErrors, logWarnings } = this.state;
         const { currentTab, state, handleNavigation } = this.props;
 
@@ -824,7 +831,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 return null;
             }
 
-            if (this.props.adminGuiConfig.admin.menu && this.props.adminGuiConfig.admin.menu[tab.name] === false) {
+            const menuConfig = this.props.adminGuiConfig.admin?.menu as Record<string, any> | undefined;
+            if (menuConfig && menuConfig[tab.name] === false) {
                 return null;
             }
 
@@ -835,7 +843,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                     name={tab.name}
                     iconJSX={
                         tabsInfo[tab.name]?.icon ? (
-                            tabsInfo[tab.name].icon
+                            (tabsInfo[tab.name].icon as JSX.Element)
                         ) : (
                             <Icon
                                 style={styles.icon}
@@ -851,17 +859,19 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                     badgeColor={logErrors ? 'error' : logWarnings ? 'warn' : ''}
                     tabs={tabs}
                     setEndDrag={() => this.tabsEditSystemConfig()}
-                    setTabs={(newObj: AdminTab[]) => this.setState({ tabs: newObj })}
+                    setTabs={newObj => this.setState({ tabs: newObj as AdminTab[] })}
                 >
                     <DrawerItem
                         key={tab.name}
                         editMenuList={this.props.editMenuList}
                         visible={tab.visible}
                         color={tab.color}
-                        editListFunc={(isVisibility, color) => this.tabsEditSystemConfig(idx, isVisibility, color)}
+                        editListFunc={(isVisibility, color) =>
+                            this.tabsEditSystemConfig(idx, isVisibility, color ?? undefined)
+                        }
                         compact={!this.isSwipeable() && state !== STATES.opened}
                         onClick={e => {
-                            if (e.ctrlKey || e.shiftKey) {
+                            if (e?.ctrlKey || e?.shiftKey) {
                                 void AdminUtils.getHref(
                                     this.props.instancesWorker,
                                     tab.name,
@@ -878,7 +888,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                                 `${window.location.protocol}//${window.location.host}/${result.href}`,
                                                 tab.name,
                                             )
-                                            .focus();
+                                            ?.focus();
                                     } else {
                                         handleNavigation(tab.name);
                                     }
@@ -889,7 +899,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         }}
                         icon={
                             tabsInfo[tab.name]?.icon ? (
-                                tabsInfo[tab.name].icon
+                                (tabsInfo[tab.name].icon as JSX.Element)
                             ) : (
                                 <Icon
                                     src={tab.icon}
@@ -897,7 +907,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                 />
                             )
                         }
-                        text={tab.title}
+                        text={tab.title || ''}
                         selected={currentTab === tab.name}
                         badgeContent={this.badge(tab).content}
                         badgeColor={this.badge(tab).color}

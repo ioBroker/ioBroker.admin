@@ -92,7 +92,7 @@ export interface AdapterDependencies {
     name: string;
     version: string | null;
     installed: boolean;
-    installedVersion: string;
+    installedVersion: string | null;
     rightVersion: boolean;
     /**
      * For global dependencies in a multihost setup: the hosts that do not fulfill the required version.
@@ -149,13 +149,15 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
     }
 
     componentDidMount(): void {
-        void this.props.instancesWorker.getObjects().then((instances: Record<string, ioBroker.InstanceObject>) => {
-            const instanceNumbers = Object.keys(instances)
-                .filter(id => instances[id]?.common?.name === this.props.adapter)
-                .map(id => id.substring(id.lastIndexOf('.') + 1));
+        void this.props.instancesWorker
+            .getObjects()
+            .then((instances: Record<string, ioBroker.InstanceObject> | null) => {
+                const instanceNumbers = Object.keys(instances || {})
+                    .filter(id => instances?.[id]?.common?.name === this.props.adapter)
+                    .map(id => id.substring(id.lastIndexOf('.') + 1));
 
-            this.setState({ instanceNumbers });
-        });
+                this.setState({ instanceNumbers });
+            });
     }
 
     getAvailableInstances(): JSX.Element[] {
@@ -206,7 +208,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                         <div>
                             {this.props.t(
                                 'The following hosts do not fulfill the required version %s of %s:',
-                                adapter.version,
+                                adapter.version || 'unknown',
                                 adapter.name,
                             )}
                         </div>
@@ -222,7 +224,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
             } else if (!adapter.rightVersion) {
                 array.push(
                     <div key={adapter.name}>
-                        {`${this.props.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version)}${adapter.installedVersion}`}
+                        {`${this.props.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version || 'unknown')}${adapter.installedVersion}`}
                     </div>,
                 );
             }
@@ -257,13 +259,13 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                     <Button
                         onClick={() => {
                             const w = window.open(message.link, '_blank');
-                            w.focus();
+                            w?.focus();
                         }}
                         startIcon={<IconWeb />}
                         variant="contained"
                         color="grey"
                     >
-                        {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
+                        {this.getText(message.linkText || '', this.props.noTranslation) || this.props.t('More info')}
                     </Button>
                 ) : null}
             </Grid>

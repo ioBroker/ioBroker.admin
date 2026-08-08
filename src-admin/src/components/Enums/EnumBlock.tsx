@@ -183,7 +183,7 @@ interface EnumBlockProps {
     showEnumEditDialog: (category: ioBroker.EnumObject, isNew: boolean) => void;
     showEnumDeleteDialog: (category: ioBroker.EnumObject) => void;
     copyEnum: (id: string) => void;
-    getName: (name: ioBroker.StringOrTranslated) => string;
+    getName: (name: ioBroker.StringOrTranslated | undefined) => string;
     theme: IobTheme;
     closed: boolean;
     collapsed: boolean;
@@ -214,7 +214,7 @@ export interface EnumCommon extends ioBroker.EnumCommon {
 }
 
 function EnumMember(props: {
-    getName: (name: ioBroker.StringOrTranslated) => string;
+    getName: (name: ioBroker.StringOrTranslated | undefined) => string;
     member: ioBroker.Object;
     t: Translate;
     theme: IobTheme;
@@ -302,7 +302,7 @@ function EnumMember(props: {
 }
 
 function EnumMemberDrag(props: {
-    getName: (name: ioBroker.StringOrTranslated) => string;
+    getName: (name: ioBroker.StringOrTranslated | undefined) => string;
     member: ioBroker.Object;
     t: Translate;
     theme: IobTheme;
@@ -401,7 +401,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                 for (let i = 0; i < icons.length; i++) {
                     if (!icons[i]) {
                         // check the parent
-                        const channelId = Utils.getParentId(memberIds[i]);
+                        const channelId = Utils.getParentId(memberIds[i]) || '';
 
                         if (cachedIcons[channelId] !== undefined) {
                             if (cachedIcons[channelId]) {
@@ -434,10 +434,10 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                                                 changed = true;
                                             }
                                         }
-                                        cachedIcons[deviceId] = cachedIcons[deviceId] || null;
+                                        cachedIcons[deviceId] = cachedIcons[deviceId] || '';
                                     }
                                 }
-                                cachedIcons[channelId] = cachedIcons[channelId] || null;
+                                cachedIcons[channelId] = cachedIcons[channelId] || '';
                             }
                         }
                     }
@@ -494,7 +494,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                     <IconButton
                         className="enum-block-button"
                         size="small"
-                        onClick={() => props.showEnumEditDialog(props.enum, false)}
+                        onClick={() => props.enum && props.showEnumEditDialog(props.enum, false)}
                     >
                         <Tooltip
                             title={props.t('Edit')}
@@ -523,7 +523,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                 <IconButton
                     className="enum-block-button"
                     size="small"
-                    onClick={() => props.showEnumDeleteDialog(props.enum)}
+                    onClick={() => props.enum && props.showEnumDeleteDialog(props.enum)}
                     disabled={common?.dontDelete}
                 >
                     <Tooltip
@@ -531,7 +531,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         placement="top"
                         slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                     >
-                        <DeleteIcon style={common?.dontDelete ? null : { color: textColor }} />
+                        <DeleteIcon style={common?.dontDelete ? undefined : { color: textColor }} />
                     </Tooltip>
                 </IconButton>
             </div>
@@ -582,8 +582,8 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
 
     render(): JSX.Element {
         const props = this.props;
-        const common: EnumCommon | null = props.enum?.common;
-        const textColor = Utils.getInvertedColor(common?.color, props.themeType, true);
+        const common: EnumCommon | undefined = props.enum?.common;
+        const textColor = Utils.getInvertedColor(common?.color, props.themeType, true) || '';
 
         const style: React.CSSProperties = { opacity: this.props.isDragging ? 0 : 1, color: textColor };
 
@@ -774,7 +774,7 @@ interface EnumBlockDragProps {
     copyEnum: (enumId: string) => void;
     currentCategory: string;
     getEnumTemplate: (prefix: string) => ioBroker.EnumObject;
-    getName: (name: ioBroker.StringOrTranslated) => string;
+    getName: (name: ioBroker.StringOrTranslated | undefined) => string;
     idText?: JSX.Element[];
     members: Record<string, ioBroker.Object>;
     name?: JSX.Element[];
@@ -829,7 +829,7 @@ export default function EnumBlockDrag(props: EnumBlockDragProps): JSX.Element {
         [props.enum?.common?.members],
     );
 
-    const widthRef = useRef(null);
+    const widthRef = useRef<HTMLDivElement>(null);
 
     const [{ isDragging }, dragRef, preview] = useDrag({
         type: 'enum',

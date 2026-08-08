@@ -33,7 +33,7 @@ export class ObjectsWorker {
         this.objects = null;
     }
 
-    objectChangeHandler = (id: string, obj: ioBroker.Object | null): void => {
+    objectChangeHandler = (id: string, obj: ioBroker.Object | null | undefined): void => {
         this.objects = this.objects || {};
         // if instance
         let oldObj: ioBroker.Object | undefined;
@@ -70,7 +70,7 @@ export class ObjectsWorker {
             cb([
                 {
                     id,
-                    obj,
+                    obj: obj || undefined,
                     type,
                     oldObj,
                 },

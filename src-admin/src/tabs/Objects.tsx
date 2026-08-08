@@ -239,7 +239,7 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
         );
     }
 
-    render(): JSX.Element[] {
+    render(): (JSX.Element | null)[] {
         // Derive the browser's navigation target from the URL hash `#tab-objects/<mode>/<id>`.
         // The ObjectBrowser stays URL-agnostic; we translate the route here and back (onNavigateTo).
         const location = Router.getLocation();
@@ -278,12 +278,12 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
                 theme={this.props.theme}
-                objectCustomDialog={ObjectCustomDialog}
-                objectBrowserValue={ObjectBrowserValue}
-                objectBrowserEditObject={ObjectBrowserEditObject}
-                objectBrowserEditRole={ObjectBrowserEditRole}
-                objectBrowserViewFile={ObjectViewFileDialog}
-                objectBrowserAliasEditor={ObjectAliasEditor}
+                objectCustomDialog={ObjectCustomDialog as unknown as React.ComponentType<any>}
+                objectBrowserValue={ObjectBrowserValue as unknown as React.ComponentType<any>}
+                objectBrowserEditObject={ObjectBrowserEditObject as unknown as React.ComponentType<any>}
+                objectBrowserEditRole={ObjectBrowserEditRole as unknown as React.ComponentType<any>}
+                objectBrowserViewFile={ObjectViewFileDialog as unknown as React.ComponentType<any>}
+                objectBrowserAliasEditor={ObjectAliasEditor as unknown as React.ComponentType<any>}
                 objectMoveRenameDialog={ObjectMoveRenameDialog}
                 objectBrowserInsertJsonObjects={ObjectImportFromTextDialog}
                 router={Router}
@@ -329,9 +329,9 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
                         setObject={(id, data) =>
                             this.props.socket.setObject(id, data).catch(error => window.alert(error))
                         }
-                        selected={context.state.modalNewObj.id}
-                        initialType={context.state.modalNewObj.initialType}
-                        initialStateType={context.state.modalNewObj.initialStateType}
+                        selected={context.state.modalNewObj?.id || ''}
+                        initialType={context.state.modalNewObj?.initialType}
+                        initialStateType={context.state.modalNewObj?.initialStateType}
                         onClose={() => context.setState({ modalNewObj: null })}
                         onApply={() => context.setState({ modalNewObj: null })}
                     />
@@ -343,15 +343,19 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
                         extendObject={(id: string, data: Partial<ioBroker.Object>): void => {
                             this.props.socket.extendObject(id, data).catch(error => window.alert(error));
 
-                            objData.aclTooltip = null;
+                            objData.aclTooltip = undefined;
                         }}
                         selected={context.state.selected[0]}
                         // If an object is virtual, it has no obj attribute
                         modalEmptyId={objData.obj ? '' : objData.id}
                         objects={context.objects}
                         t={this.t}
-                        onClose={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })}
-                        onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })}
+                        onClose={() =>
+                            context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: undefined })
+                        }
+                        onApply={() =>
+                            context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: undefined })
+                        }
                     />
                 )}
             />,

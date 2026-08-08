@@ -59,7 +59,7 @@ interface ObjectViewFileDialogState {
 }
 
 export default class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectViewFileDialogState> {
-    audioRef: React.RefObject<HTMLAudioElement>;
+    audioRef: React.RefObject<HTMLAudioElement | null>;
 
     constructor(props: ObjectViewFileDialogProps) {
         super(props);
@@ -68,7 +68,7 @@ export default class ObjectViewFileDialog extends Component<ObjectViewFileDialog
 
         this.state = {
             error: '',
-            image: null,
+            image: false,
             text: null,
             binary: null,
             fileName: `${parts[parts.length - 2]}.${parts[parts.length - 1]}`,
@@ -80,7 +80,8 @@ export default class ObjectViewFileDialog extends Component<ObjectViewFileDialog
     componentDidMount(): void {
         this.props.socket
             .getBinaryState(this.props.obj._id)
-            .then((data: string) => {
+            .then(data => {
+                data = data || '';
                 let ext = this.props.obj._id.toLowerCase().split('.').pop();
 
                 const detectedMimeType = Utils.detectMimeType(data);

@@ -138,7 +138,7 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
     constructor(props: EasyModeProps) {
         super(props);
         this.state = {
-            configs: this.props.configs,
+            configs: this.props.configs || [],
             strictMode: !this.props.configs,
         };
     }
@@ -189,7 +189,7 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
                                 onClick={
                                     (strictMode && !getLocation().dialog) || currentInstance?.tab
                                         ? () => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')
-                                        : null
+                                        : undefined
                                 }
                                 style={{
                                     ...styles.img,

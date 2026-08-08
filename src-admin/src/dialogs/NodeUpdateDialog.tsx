@@ -125,7 +125,7 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
         this.setState({
             inProgress: false,
             success: res.success,
-            error: res.error,
+            error: res.error || '',
             finished: true,
         });
     }

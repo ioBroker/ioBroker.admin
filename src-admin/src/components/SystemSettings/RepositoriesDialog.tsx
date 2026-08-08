@@ -221,7 +221,7 @@ interface RepositoriesDialogProps {
     repoInfo: Repository;
     saving: boolean;
     onChange: (
-        data: ioBrokerObject<{ repositories: Repository }>,
+        data: ioBrokerObject<{ repositories: Repository }> | undefined,
         dataAux?: ioBrokerObject<object, { activeRepo: string | string[] }>,
     ) => void;
     adminGuiConfig: AdminGuiConfig;
@@ -260,8 +260,10 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
         const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         const item = array.find(element => element.title === id);
-        const oldTitle = item.title;
-        item[name] = value;
+        const oldTitle = item?.title;
+        if (item) {
+            item[name] = value;
+        }
         newData.native.repositories = arrayToRepo(array);
 
         let newConfig;
@@ -361,7 +363,6 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
         newConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
 
         this.props.onChange(newData, newConfig);
-        return null;
     };
 
     getUpdateDefaultRepo = (
@@ -376,7 +377,7 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
             return newConfig;
         }
         newData = newData || AdminUtils.clone(this.props.data);
-        if (oldTitle !== undefined && typeof newConfig.common.activeRepo !== 'string') {
+        if (oldTitle !== undefined && newTitle !== undefined && typeof newConfig.common.activeRepo !== 'string') {
             const pos = newConfig.common.activeRepo.indexOf(oldTitle);
             if (pos !== -1) {
                 newConfig.common.activeRepo[pos] = newTitle;
@@ -433,11 +434,11 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
         if (showWarning) {
             this.setState({ confirm: true, confirmValue: { newData, error } });
         } else {
-            this.setState({ error }, () => this.props.onChange(null, newData));
+            this.setState({ error }, () => this.props.onChange(undefined, newData));
         }
     }
 
-    renderDialogConfirm(): React.JSX.Element {
+    renderDialogConfirm(): React.JSX.Element | null {
         if (this.state.confirm) {
             return (
                 <DialogConfirm
@@ -446,7 +447,9 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
                         const value = this.state.confirmValue;
                         this.setState({ confirm: false, confirmValue: null }, () => {
                             if (result) {
-                                this.setState({ error: value.error }, () => this.props.onChange(null, value.newData));
+                                this.setState({ error: !!value?.error }, () =>
+                                    this.props.onChange(undefined, value?.newData),
+                                );
                             }
                         });
                     }}
@@ -478,7 +481,7 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
                     {this.props.multipleRepos ? (
                         <Checkbox
                             disabled={
-                                this.props.adminGuiConfig.admin.settings.activeRepo === false || this.props.saving
+                                this.props.adminGuiConfig.admin?.settings?.activeRepo === false || this.props.saving
                             }
                             sx={this.state.error ? styles.checkboxError : undefined}
                             title={this.state.error ? I18n.t('At least one repo must be selected') : ''}

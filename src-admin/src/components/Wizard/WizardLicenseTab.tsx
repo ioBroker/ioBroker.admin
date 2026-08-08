@@ -101,7 +101,7 @@ interface WizardLicenseTabState {
 }
 
 export default class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTabState> {
-    private readonly focusRef: React.RefObject<HTMLButtonElement>;
+    private readonly focusRef: React.RefObject<HTMLButtonElement | null>;
 
     constructor(props: WizardLicenseTabProps) {
         super(props);

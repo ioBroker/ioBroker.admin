@@ -86,7 +86,7 @@ interface ChatPanelProps {
     /** Currently selected host id (e.g. `system.host.xxx`) — used for adapter installation. */
     host: string;
     /** Open the command dialog to run a CLI command (used to install adapters). */
-    executeCommand: (cmd: string, host?: string, callback?: (exitCode: number) => void) => void;
+    executeCommand: (cmd: string, host?: string, callback?: ((exitCode?: number) => void) | null) => void;
     /** Navigate the admin UI to a tab. */
     onNavigate: (tab: string, instance?: string) => void;
     /** Reports how many px to reserve on the right so admin content isn't hidden (0 = overlay/closed). */

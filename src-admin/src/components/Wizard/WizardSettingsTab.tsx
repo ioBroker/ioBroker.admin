@@ -152,13 +152,13 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
         marker?: Feature;
     } | null = null;*/
 
-    private marker: Marker;
+    private marker: Marker | null = null;
 
-    private map: Map;
+    private map: Map | null = null;
 
-    private cityTimer: ReturnType<typeof setTimeout>;
+    private cityTimer: ReturnType<typeof setTimeout> | null = null;
 
-    private latLongTimer: ReturnType<typeof setTimeout>;
+    private latLongTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(props: WizardSettingsTabProps) {
         super(props);
@@ -203,12 +203,12 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
         const systemConfig = await this.props.socket.getCompactSystemConfig(true);
         this.setState(
             {
-                tempUnit: systemConfig.common.tempUnit,
-                currency: systemConfig.common.currency,
+                tempUnit: systemConfig.common.tempUnit || '°C',
+                currency: systemConfig.common.currency || '€',
                 dateFormat: systemConfig.common.dateFormat,
                 isFloatComma: systemConfig.common.isFloatComma,
-                country: systemConfig.common.country,
-                city: systemConfig.common.city,
+                country: systemConfig.common.country || '',
+                city: systemConfig.common.city || '',
                 address: '',
                 longitude: systemConfig.common.longitude || '',
                 latitude: systemConfig.common.latitude || '',
@@ -250,11 +250,11 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
         this.latLongTimer = setTimeout(
             () => {
                 this.latLongTimer = null;
-                this.map.flyTo([
+                this.map?.flyTo([
                     parseFloat(this.state.latitude as any as string),
                     parseFloat(this.state.longitude as any as string),
                 ]);
-                this.marker.setLatLng([
+                this.marker?.setLatLng([
                     parseFloat(this.state.latitude as any as string),
                     parseFloat(this.state.longitude as any as string),
                 ]);
@@ -366,11 +366,15 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                                         freeSolo
                                         options={CURRENCY}
                                         inputValue={this.state.currency}
-                                        onChange={(_event, newValue: { id: string; title: string }) =>
-                                            this.setState({ currency: newValue ? newValue.id : '' })
+                                        onChange={(_event, newValue: string | { id: string; title: string } | null) =>
+                                            this.setState({
+                                                currency: typeof newValue === 'object' ? newValue?.id || '' : newValue,
+                                            })
                                         }
                                         onInputChange={(_event, currency) => this.setState({ currency })}
-                                        getOptionLabel={(option: { id: string; title: string }) => option.title}
+                                        getOptionLabel={(option: string | { id: string; title: string }) =>
+                                            typeof option === 'object' ? option.title : option
+                                        }
                                         renderOption={(props, option: { id: string; title: string }) => (
                                             <li {...props}>{option.title}</li>
                                         )}

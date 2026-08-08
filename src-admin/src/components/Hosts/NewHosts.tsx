@@ -88,7 +88,7 @@ export default class NewHosts extends Component<NewHostsProps, NewHostsState> {
                     });
             } catch (e) {
                 clearTimeout(timer);
-                reject(e as Error);
+                reject(e instanceof Error ? e : new Error(String(e)));
             }
         });
     }

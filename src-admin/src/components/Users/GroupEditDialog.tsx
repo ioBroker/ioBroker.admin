@@ -60,19 +60,46 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
 
     // Initialize the ACL if it does not exist or is incomplete. This builds a new object instead of
     // patching `props.group` in place - mutating props during render is not allowed in React.
+    // A stored block may be missing single flags, so the defaults come first and whatever is stored
+    // overrides them. The `Partial<>` casts say what the stored blocks really are - without them
+    // TS declares the defaults dead code, because the declared types have all flags required.
+    const asPartial = <T,>(value: T | undefined): Partial<T> | undefined => value;
+
     const acl: ioBroker.GroupObject['common']['acl'] = {
         ...source,
-        object: source.object
-            ? { read: true, list: true, write: true, delete: false, ...source.object }
-            : { read: true, list: true, write: true, delete: false, create: undefined },
-        state: source.state
-            ? { read: true, list: true, write: true, delete: false, ...source.state }
-            : { read: true, list: true, write: true, delete: false, create: undefined },
-        users: source.users
-            ? { write: false, delete: false, create: false, ...source.users }
-            : { write: false, delete: false, create: false, list: undefined, read: undefined },
-        other: { http: false, execute: false, sendto: true, ...source.other },
-        file: { read: true, list: true, write: false, delete: false, create: false, ...source.file },
+        object: {
+            read: true,
+            list: true,
+            write: true,
+            delete: false,
+            create: false,
+            ...asPartial(source.object),
+        },
+        state: {
+            read: true,
+            list: true,
+            write: true,
+            delete: false,
+            create: false,
+            ...asPartial(source.state),
+        },
+        users: {
+            read: false,
+            list: false,
+            write: false,
+            delete: false,
+            create: false,
+            ...asPartial(source.users),
+        },
+        other: { http: false, execute: false, sendto: true, ...asPartial(source.other) },
+        file: {
+            read: true,
+            list: true,
+            write: false,
+            delete: false,
+            create: false,
+            ...asPartial(source.file),
+        },
     };
 
     return (
@@ -135,7 +162,7 @@ interface GroupEditDialogProps extends PermissionsTabProps {
     isNew: boolean;
     onChange: (group: ioBroker.GroupObject) => void;
     saveData: (originalId: string | null) => void;
-    getText: (text: ioBroker.StringOrTranslated) => string;
+    getText: (text: ioBroker.StringOrTranslated | undefined) => string;
     group: ioBroker.GroupObject;
     styles: Record<string, React.CSSProperties>;
 }
@@ -183,7 +210,7 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
             (this.props.group.common as any).password === (this.props.group.common as any).passwordRepeat &&
             changed;
 
-        const getShortId = (_id: string): string => _id.split('.').pop();
+        const getShortId = (_id: string): string => _id.split('.').pop() || '';
 
         const name2Id = (name: string): string =>
             name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
@@ -292,7 +319,7 @@ class GroupEditDialog extends Component<GroupEditDialogProps, GroupEditDialogSta
                     <IOColorPicker
                         label="Color"
                         t={this.props.t}
-                        value={this.props.group.common.color}
+                        value={this.props.group.common.color || ''}
                         previewStyle={this.props.styles.iconPreview}
                         onChange={color => {
                             const newData: ioBroker.GroupObject = Utils.clone(this.props.group) as ioBroker.GroupObject;

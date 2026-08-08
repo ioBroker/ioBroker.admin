@@ -289,7 +289,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                     sx={{ ...styles.wrapperFlex, ...(!this.props.alive ? styles.cursorNoDrop : undefined) }}
                     onClick={
                         this.state.openDialogLogLevel
-                            ? null
+                            ? undefined
                             : () => this.setState({ openCollapse: !this.state.openCollapse })
                     }
                 >
@@ -391,7 +391,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                                     <div style={styles.emptyButton} />
                                 )}
                                 {this.renderRemoveButton()}
-                                {this.renderExtendButton(this.state.openCollapse)}
+                                {this.renderExtendButton(!!this.state.openCollapse)}
                             </Typography>
                         </div>
                     </CardContent>

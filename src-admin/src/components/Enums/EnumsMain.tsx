@@ -146,8 +146,8 @@ function sort(
     getName: (name: ioBroker.StringOrTranslated) => string | undefined,
 ): (a: string, b: string) => number {
     return (a: string, b: string): number => {
-        let aName = getName(enums[a]?.common?.name || '') || a.split('.').pop();
-        let bName = getName(enums[b]?.common?.name || '') || b.split('.').pop();
+        let aName = getName(enums[a]?.common?.name || '') || a.split('.').pop() || '';
+        let bName = getName(enums[b]?.common?.name || '') || b.split('.').pop() || '';
         aName = aName.toLowerCase();
         bName = bName.toLowerCase();
         if (aName > bName) {
@@ -215,15 +215,15 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
 
     private fastUpdate: boolean;
 
-    private readonly refFilter: React.RefObject<HTMLInputElement>;
+    private readonly refFilter: React.RefObject<HTMLInputElement | null>;
 
-    private readonly refClearButton: React.RefObject<HTMLButtonElement>;
+    private readonly refClearButton: React.RefObject<HTMLButtonElement | null>;
 
     private updateTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    private changeEnums: Record<string, ioBroker.EnumObject>;
+    private changeEnums: Record<string, ioBroker.EnumObject> = {};
 
-    private scrollToItem: string | null;
+    private scrollToItem: string | null = null;
 
     private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -234,15 +234,15 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
 
         let enumsClosed = {};
         try {
-            enumsClosed = localStorage.getItem('enumsClosed') ? JSON.parse(localStorage.getItem('enumsClosed')) : {};
+            const stored = localStorage.getItem('enumsClosed');
+            enumsClosed = stored ? JSON.parse(stored) : {};
         } catch {
             // ignore
         }
         let enumsCollapsed = [];
         try {
-            enumsCollapsed = localStorage.getItem('enumsCollapsed')
-                ? JSON.parse(localStorage.getItem('enumsCollapsed'))
-                : [];
+            const stored = localStorage.getItem('enumsCollapsed');
+            enumsCollapsed = stored ? JSON.parse(stored) : [];
         } catch {
             // ignore
         }
@@ -288,7 +288,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
         const enumTemplate: ioBroker.EnumObject = JSON.parse(JSON.stringify(ENUM_TEMPLATE));
         const { _id, name } = EnumsList.findNewUniqueName(
             prefix,
-            Object.values(this.state.enums),
+            Object.values(this.state.enums || {}),
             this.props.t('Enum'),
         );
         enumTemplate._id = _id;
@@ -364,7 +364,8 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
         }
     }
 
-    onObjectChange = (id: string, obj: ioBroker.EnumObject): void => {
+    onObjectChange = (id: string, _obj: ioBroker.Object | null | undefined): void => {
+        const obj = _obj as ioBroker.EnumObject | null | undefined;
         let changed;
 
         if (this.state.enums && id.startsWith('enum.')) {
@@ -395,7 +396,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                 () => {
                     this.updateTimeout = null;
                     const changeEnums = this.changeEnums;
-                    this.changeEnums = null;
+                    this.changeEnums = {};
                     this.updateData(changeEnums)
                         .then(() => {
                             if (this.scrollToItem) {
@@ -426,7 +427,10 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                     const member = enums[id].common.members[j];
                     if (!members[member]) {
                         try {
-                            members[member] = await this.props.socket.getObject(member);
+                            const memberObj = await this.props.socket.getObject(member);
+                            if (memberObj) {
+                                members[member] = memberObj;
+                            }
                         } catch {
                             window.alert(`Cannot read member "${member}"`);
                         }
@@ -491,7 +495,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
     };
 
     addItemToEnum = (itemId: string, enumId: string): void => {
-        const enumItem = JSON.parse(JSON.stringify(this.state.enums[enumId]));
+        const enumItem = JSON.parse(JSON.stringify(this.state.enums?.[enumId]));
         if (!enumItem.common?.members) {
             enumItem.common = enumItem.common || {};
             enumItem.common.members = [];
@@ -506,7 +510,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
     };
 
     removeMemberFromEnum = (memberId: string, enumId: string): void => {
-        const enumItem = JSON.parse(JSON.stringify(this.state.enums[enumId]));
+        const enumItem = JSON.parse(JSON.stringify(this.state.enums?.[enumId]));
         const members = enumItem.common.members;
         const pos = members.indexOf(memberId);
         if (pos !== -1) {
@@ -532,13 +536,14 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
             return;
         }
 
-        const ids = Object.keys(this.state.enums);
+        const stateEnums = this.state.enums || {};
+        const ids = Object.keys(stateEnums);
 
         const updating = [...this.state.updating];
 
         try {
             for (let i = 0; i < ids.length; i++) {
-                const enumItem = this.state.enums[ids[i]];
+                const enumItem = stateEnums[ids[i]];
                 if (ids[i].startsWith(fromId)) {
                     const newId = ids[i].replace(fromPrefix, toPrefix);
                     const newEnum = JSON.parse(JSON.stringify(enumItem));
@@ -564,15 +569,15 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
             const enums: Record<string, ioBroker.EnumObject> = {};
             for (let i = 0; i < ids.length; i++) {
                 const id = ids[i];
-                enums[id] = container.children[id].data;
+                enums[id] = container.children[id].data as ioBroker.EnumObject;
             }
             ids.sort(sort(enums, this.getName));
         }
 
         const name: string = this.getName(container.data?.common?.name);
         const idText: string = container.id;
-        let nameRx: JSX.Element[] | null;
-        let idRx: JSX.Element[] | null;
+        let nameRx: JSX.Element[] | undefined;
+        let idRx: JSX.Element[] | undefined;
         if (this.state.search) {
             const search = this.state.search;
             const pos = name.toLowerCase().indexOf(search);
@@ -592,7 +597,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                           </span>,
                           <span key="2">{name.substring(pos + this.state.search.length)}</span>,
                       ]
-                    : null;
+                    : undefined;
             }
             if (posId !== -1) {
                 idRx = name
@@ -606,7 +611,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                           </span>,
                           <span key="2">{idText.substring(posId + this.state.search.length)}</span>,
                       ]
-                    : null;
+                    : undefined;
             }
         }
 
@@ -622,7 +627,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                     collapsed={this.state.enumsCollapsed.includes(container.id)}
                     copyEnum={this.copyEnum}
                     currentCategory={this.state.currentCategory}
-                    enum={container.data}
+                    enum={container.data as ioBroker.EnumObject}
                     getEnumTemplate={this.getEnumTemplate}
                     getName={this.getName}
                     id={container.id}
@@ -667,7 +672,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
         );
     }
 
-    showEnumEditDialog = (enumItem: ioBroker.EnumObject, isNew: boolean): void => {
+    showEnumEditDialog = (enumItem: ioBroker.EnumObject, isNew?: boolean): void => {
         const enumEditDialog: EnumEditDialogProps = { changed: false };
         enumEditDialog.newItem = JSON.parse(JSON.stringify(enumItem));
         enumEditDialog.originalItem = JSON.parse(JSON.stringify(enumItem));
@@ -680,10 +685,14 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
     showEnumDeleteDialog = (enumItem: ioBroker.EnumObject): void => this.setState({ enumDeleteDialog: enumItem });
 
     saveEnum = async (): Promise<void> => {
-        const newItem = this.state.enumEditDialog.newItem;
-        const originalId = this.state.enumEditDialog.originalItem._id;
+        const newItem = this.state.enumEditDialog?.newItem;
+        const originalId = this.state.enumEditDialog?.originalItem?._id;
+        if (!newItem || !originalId) {
+            return;
+        }
+        const stateEnums = this.state.enums || {};
 
-        if (this.state.enumEditDialog.isNew) {
+        if (this.state.enumEditDialog?.isNew) {
             this.scrollToItem = newItem._id;
         }
 
@@ -699,11 +708,11 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
             try {
                 await this.props.socket.delObject(originalId);
 
-                const ids = Object.keys(this.state.enums);
+                const ids = Object.keys(stateEnums);
                 for (let i = 0; i < ids.length; i++) {
                     const id = ids[i];
                     if (id.startsWith(`${originalId}.`)) {
-                        const newEnumChild = JSON.parse(JSON.stringify(this.state.enums[id]));
+                        const newEnumChild = JSON.parse(JSON.stringify(stateEnums[id]));
                         newEnumChild._id = newEnumChild._id.replace(`${originalId}.`, `${newItem._id}.`);
 
                         if (!updating.includes(id)) {
@@ -728,17 +737,18 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                 updating.push(enumId);
             }
 
-            if (this.state.enums[enumId]) {
+            const stateEnums = this.state.enums || {};
+            if (stateEnums[enumId]) {
                 await this.props.socket.delObject(enumId);
             }
-            const ids = Object.keys(this.state.enums);
+            const ids = Object.keys(stateEnums);
             for (let i = 0; i < ids.length; i++) {
                 const id = ids[i];
                 if (id.startsWith(`${enumId}.`)) {
                     if (!updating.includes(id)) {
                         updating.push(id);
                     }
-                    if (this.state.enums[enumId]) {
+                    if (stateEnums[enumId]) {
                         await this.props.socket.delObject(id);
                     }
                 }
@@ -751,13 +761,13 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
     };
 
     copyEnum = (enumId: string): void => {
-        const enumItem = JSON.parse(JSON.stringify(this.state.enums[enumId]));
+        const enumItem = JSON.parse(JSON.stringify(this.state.enums?.[enumId]));
         let newId;
         let index = 1;
         do {
             newId = enumId + index.toString();
             index++;
-        } while (this.state.enums[newId]);
+        } while (this.state.enums?.[newId]);
 
         enumItem._id = newId;
 
@@ -776,11 +786,11 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
         enumEditDialog.newItem = JSON.parse(JSON.stringify(newItem));
         enumEditDialog.changed =
             JSON.stringify(enumEditDialog.newItem) !==
-            JSON.stringify(this.state.enums[enumEditDialog.originalItem] || {});
+            JSON.stringify(this.state.enums?.[enumEditDialog.originalItem as unknown as string] || {});
         this.setState({ enumEditDialog });
     };
 
-    getName = (name: ioBroker.StringOrTranslated): string => AdminUtils.getText(name, this.props.lang);
+    getName = (name: ioBroker.StringOrTranslated | undefined): string => AdminUtils.getText(name, this.props.lang);
 
     static _isUniqueName(prefix: string, list: ioBroker.EnumObject[], word: string, i: number): boolean {
         return !list.find(item => item._id === `${prefix}.${word.toLowerCase()}_${i}`);
@@ -823,10 +833,10 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
         return this.state.enumEditDialog ? (
             <EnumEditDialog
                 onClose={() => this.setState({ enumEditDialog: null })}
-                enums={Object.values(this.state.enums)}
-                enum={this.state.enumEditDialog.newItem}
+                enums={Object.values(this.state.enums || {})}
+                enum={this.state.enumEditDialog.newItem as ioBroker.EnumObject}
                 getName={this.getName}
-                isNew={this.state.enumEditDialog.isNew}
+                isNew={!!this.state.enumEditDialog.isNew}
                 t={this.props.t}
                 lang={this.props.lang}
                 changed={this.state.enumEditDialog.changed}
@@ -859,19 +869,18 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                 lang={this.props.lang}
                 createEnumTemplate={this.createEnumTemplate}
                 showEnumEditDialog={this.showEnumEditDialog}
-                enums={this.state.enums}
+                enums={this.state.enums || {}}
                 getEnumTemplate={this.getEnumTemplate}
             />
         ) : null;
     }
 
     render(): JSX.Element {
-        if (!this.state.enumsTree) {
+        const enumsTree = this.state.enumsTree;
+        if (!enumsTree) {
             return <LinearProgress />;
         }
-        const enumItems = Object.values(
-            this.state.enumsTree.children.enum.children[this.state.currentCategory].children,
-        );
+        const enumItems = Object.values(enumsTree.children.enum.children[this.state.currentCategory].children);
         const showFolderIcons = !!enumItems.find(item => item.children && Object.keys(item.children).length);
 
         return (
@@ -882,7 +891,8 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                         direction={SplitDirection.Horizontal}
                         initialSizes={this.state.splitSizes}
                         minWidths={[450, 450]}
-                        onResizeFinished={(gutterIdx: number, splitSizes: [number, number]) => {
+                        onResizeFinished={(gutterIdx: number, newSizes: number[]) => {
+                            const splitSizes: [number, number] = [newSizes[0], newSizes[1]];
                             this.setState({ splitSizes });
                             ((window as any)._localStorage || window.localStorage).setItem(
                                 'enumsSplitSizes',
@@ -909,7 +919,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                                         size="small"
                                         style={styles.toolbarButton}
                                         onClick={() =>
-                                            this.state.enumsTree.children.enum.children.favorites
+                                            enumsTree.children.enum.children.favorites
                                                 ? this.showEnumEditDialog(this.getEnumTemplate('enum'), true)
                                                 : this.setState({ categoryPopoverOpen: true })
                                         }
@@ -924,7 +934,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                 >
                                     <MenuList>
-                                        {this.state.enumsTree.children.enum.children.favorites ? null : (
+                                        {enumsTree.children.enum.children.favorites ? null : (
                                             <MenuItem
                                                 onClick={() => this.createEnumTemplate('enum', enumTemplates.favorites)}
                                             >
@@ -944,15 +954,11 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                                     scrollButtons="auto"
                                     onChange={(e, newTab) => this.setCurrentCategory(newTab)}
                                 >
-                                    {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) => {
-                                        let categoryData = this.state.enumsTree.children.enum.children[category].data;
-                                        categoryData = categoryData || {
-                                            _id: this.state.enumsTree.children.enum.children[category].id,
-                                            common: {
-                                                name: this.state.enumsTree.children.enum.children[category].id
-                                                    .split('.')
-                                                    .pop(),
-                                            },
+                                    {Object.keys(enumsTree.children.enum.children).map((category, index) => {
+                                        const child = enumsTree.children.enum.children[category];
+                                        const categoryData: ioBroker.EnumObject = child.data || {
+                                            _id: child.id,
+                                            common: { name: child.id.split('.').pop() || '' },
                                             type: 'enum',
                                             native: {},
                                         };
@@ -966,10 +972,18 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                                                 }}
                                                 label={
                                                     <CategoryLabel
-                                                        themeType={this.props.themeType}
                                                         categoryData={categoryData}
-                                                        showEnumEditDialog={this.showEnumEditDialog}
-                                                        showEnumDeleteDialog={this.showEnumDeleteDialog}
+                                                        showEnumEditDialog={
+                                                            this.showEnumEditDialog as unknown as (
+                                                                category: Record<string, any>,
+                                                                isNew: boolean,
+                                                            ) => void
+                                                        }
+                                                        showEnumDeleteDialog={
+                                                            this.showEnumDeleteDialog as unknown as (
+                                                                category: Record<string, any>,
+                                                            ) => void
+                                                        }
                                                         styles={styles}
                                                         {...this.props}
                                                     />
@@ -1016,7 +1030,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                                         // size="small"
                                         style={styles.toolbarButton}
                                         onClick={() => {
-                                            const enumsCollapsed = Object.keys(this.state.enums);
+                                            const enumsCollapsed = Object.keys(this.state.enums || {});
                                             this.setState({ enumsCollapsed });
                                             ((window as any)._localStorage || window.localStorage).setItem(
                                                 'enumsCollapsed',
@@ -1059,7 +1073,9 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                                             style={styles.toolbarButton}
                                             onClick={() => {
                                                 const enumsClosed: Record<string, boolean> = {};
-                                                Object.keys(this.state.enums).forEach(id => (enumsClosed[id] = true));
+                                                Object.keys(this.state.enums || {}).forEach(
+                                                    id => (enumsClosed[id] = true),
+                                                );
                                                 this.setState({ enumsClosed });
                                                 ((window as any)._localStorage || window.localStorage).setItem(
                                                     'enumsClosed',

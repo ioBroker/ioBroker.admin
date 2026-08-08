@@ -41,9 +41,9 @@ interface CameraIntroLinkDialogProps {
 }
 
 class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
-    cameraUpdateTimer: ReturnType<typeof setInterval>;
+    cameraUpdateTimer: ReturnType<typeof setInterval> | null;
 
-    cameraRef: React.RefObject<HTMLImageElement>;
+    cameraRef: React.RefObject<HTMLImageElement | null>;
 
     constructor(props: CameraIntroLinkDialogProps) {
         super(props);
@@ -56,7 +56,7 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
         if (this.props.camera && this.props.camera !== 'text') {
             this.cameraUpdateTimer = setInterval(
                 () => this.updateCamera(),
-                Math.max(parseInt(this.props.interval, 10), 500),
+                Math.max(parseInt(this.props.interval || '', 10), 500),
             );
             this.updateCamera();
         }

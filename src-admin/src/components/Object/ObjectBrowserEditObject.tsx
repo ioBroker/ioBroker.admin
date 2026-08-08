@@ -227,7 +227,7 @@ const styles: Record<string, any> = {
     },
 };
 
-function valueBlink(theme: IobTheme, color: string): any {
+function valueBlink(theme: IobTheme, color: string | undefined): any {
     return {
         '@keyframes newStateEditorAnimation': {
             '0%': {
@@ -712,7 +712,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         if (b.order !== undefined) {
                             return 1;
                         }
-                        return a.key > b.key ? 1 : -1;
+                        return (a.key || '') > (b.key || '') ? 1 : -1;
                     });
                     this.setState({ customEditTabs });
                 }
@@ -767,7 +767,8 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         void this.props.socket.unsubscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
-    onObjectUpdated = (_id: string, obj: ioBroker.AnyObject): void => {
+    onObjectUpdated = (_id: string, _obj: ioBroker.Object | null | undefined): void => {
+        const obj = _obj as ioBroker.AnyObject;
         if (this.originalObj !== JSON.stringify(obj, null, 2)) {
             this.originalObj = JSON.stringify(obj, null, 2);
             if (!this.state.changed) {
@@ -829,7 +830,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             ? this.props.t('Type of result is not as expected: %s', finalType)
                             : '';
                     } catch (e) {
-                        return `${this.props.t('Cannot execute function')}: ${e.toString()}`;
+                        return `${this.props.t('Cannot execute function')}: ${(e as Error).toString()}`;
                     }
                 }
             }
@@ -838,7 +839,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         return '';
     }
 
-    prepareObject(value: string): ioBroker.Object {
+    prepareObject(value: string): ioBroker.Object | null {
         value = value || this.state.text;
         try {
             const obj = JSON.parse(value);
@@ -965,7 +966,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         if (data === undefined) {
             return text;
         }
-        data = setAttrInObject(data, path.split('.'), value);
+        data = setAttrInObject(data, (path || '').split('.'), value);
         return JSON.stringify(data, null, 2);
     }
 
@@ -1016,7 +1017,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
-    renderCustomTab(tab: EditSchemaTabEditor, parsedObj: ioBroker.Object | null | undefined): JSX.Element {
+    renderCustomTab(tab: EditSchemaTabEditor, parsedObj: ioBroker.Object | null | undefined): JSX.Element | null {
         let style: React.CSSProperties | undefined;
         if (!parsedObj) {
             return null;
@@ -1029,16 +1030,16 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         if (tab.color) {
             style = {
                 backgroundColor: tab.color,
-                color: Utils.invertColor(tab.color, true),
+                color: Utils.invertColor(tab.color || '', true),
             };
         }
 
         const label: string | React.JSX.Element =
             tab.label && typeof tab.label === 'object'
-                ? tab.label[this.state.lang] || tab.label.en
+                ? tab.label[this.state.lang] || tab.label.en || ''
                 : tab.noTranslation
-                  ? (tab.label as string) || tab.key
-                  : this.props.t((tab.label as string) || tab.key);
+                  ? (tab.label as string) || tab.key || ''
+                  : this.props.t((tab.label as string) || tab.key || '');
 
         return (
             <Tab
@@ -1106,7 +1107,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             styleValue.color = '#0047b1';
             styleValue.fontStyle = 'italic';
         } else if (
-            typeof this.props.obj.common.role === 'string' &&
+            typeof this.props.obj.common?.role === 'string' &&
             this.props.obj.common.role.match(/^value\.time|^date/)
         ) {
             // if timestamp
@@ -1159,7 +1160,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     />
                 );
             } else {
-                strVal = v.toString();
+                strVal = v?.toString();
             }
         }
 
@@ -1400,7 +1401,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         );
     }
 
-    renderSelectDialog(): JSX.Element {
+    renderSelectDialog(): JSX.Element | null {
         if (!this.state.selectId && !this.state.selectRead && !this.state.selectWrite) {
             return null;
         }
@@ -1444,11 +1445,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     const stateId = Array.isArray(idx) ? idx[0] : idx;
                     this.setState({ selectId: false, selectRead: false, selectWrite: false }, () => {
                         if (selectRead) {
-                            this.setAliasItem(json, 'id.read', stateId);
+                            this.setAliasItem(json, 'id.read', stateId || '');
                         } else if (selectWrite) {
-                            this.setAliasItem(json, 'id.write', stateId);
+                            this.setAliasItem(json, 'id.write', stateId || '');
                         } else if (selectId) {
-                            this.setAliasItem(json, 'id', stateId);
+                            this.setAliasItem(json, 'id', stateId || '');
                         }
                     });
                 }}
@@ -1459,7 +1460,8 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
     setAliasItem(json: ioBroker.StateObject, name: string, value: string, cb?: () => void): void {
         json.common = json.common || ({} as ioBroker.StateCommon);
-        const commonAlias = json.common.alias || ({} as ioBroker.StateCommon['alias']);
+        const commonAlias: NonNullable<ioBroker.StateCommon['alias']> =
+            json.common.alias || ({} as NonNullable<ioBroker.StateCommon['alias']>);
 
         if (name === 'id.read') {
             if (commonAlias.id && typeof commonAlias.id === 'object') {
@@ -2430,7 +2432,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             dialogStyle = { ...dialogStyle, maxWidth: 'calc(100% - 150px)' };
         }
 
-        let parsedObj: ioBroker.Object;
+        let parsedObj: ioBroker.Object | undefined;
         try {
             parsedObj = JSON.parse(this.state.text);
         } catch {

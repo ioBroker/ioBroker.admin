@@ -36,7 +36,7 @@ export function IOTextField(props: IOTextFieldProps): JSX.Element {
                     error={!!props.error}
                     helperText={props.error || ''}
                     value={props.value}
-                    onChange={e => props.onChange(e.target.value)}
+                    onChange={e => props.onChange?.(e.target.value)}
                     disabled={props.disabled}
                     type={props.type}
                     slotProps={{
@@ -50,7 +50,7 @@ export function IOTextField(props: IOTextFieldProps): JSX.Element {
                                     <IconButton
                                         tabIndex={-1}
                                         size="small"
-                                        onClick={() => props.onChange('')}
+                                        onClick={() => props.onChange?.('')}
                                     >
                                         <CloseIcon />
                                     </IconButton>

@@ -46,16 +46,16 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
     private updating = false;
 
     /** Ref to the textarea element where the update information is shown to the user */
-    private readonly textareaRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
+    private readonly textareaRef: React.RefObject<HTMLTextAreaElement | null> = React.createRef();
 
     /** The address of the server to get update information from with protocol and port */
     private link = `${window.location.protocol}//${window.location.host}/`;
 
     /** Interval to poll update status from server */
-    private interval: ReturnType<typeof setTimeout> | null;
+    private interval: ReturnType<typeof setTimeout> | null = null;
 
     /** Initial timeout to give server time to start without showing an error */
-    private startTimeout: ReturnType<typeof setTimeout> | null;
+    private startTimeout: ReturnType<typeof setTimeout> | null = null;
 
     constructor(props: JsControllerUpdaterProps) {
         super(props);
@@ -97,7 +97,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
         // we are updating some slave => try to find the common ip address
         const host = await this.props.socket.getObject(this.props.hostId);
         const settings = await this.props.socket.readBaseSettings(this.props.hostId);
-        let hostIp: string | string[] = settings?.config?.objects?.host;
+        let hostIp: string | string[] = settings?.config?.objects?.host || '';
 
         if (!hostIp || hostIp === 'localhost') {
             return;
@@ -143,7 +143,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
         try {
             await this.findIpAddress();
         } catch (e) {
-            console.error(`Cannot find ip address: ${e.message}`);
+            console.error(`Cannot find ip address: ${(e as Error).message}`);
         }
 
         try {
@@ -151,10 +151,10 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             await this.props.socket.upgradeController(
                 this.props.hostId,
                 this.props.version,
-                parseInt(this.props.adminInstance.split('.').pop(), 10),
+                parseInt(this.props.adminInstance.split('.').pop() || '', 10),
             );
         } catch (e) {
-            console.error(`Cannot update controller: ${e.message}`);
+            console.error(`Cannot update controller: ${(e as Error).message}`);
             this.setState({ error: I18n.t('Not updatable'), starting: false });
             this.setUpdating(false);
             return;
@@ -225,12 +225,17 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
 
                 // scroll down
                 if (this.textareaRef.current) {
-                    setTimeout(() => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight), 100);
+                    setTimeout(
+                        () =>
+                            this.textareaRef.current &&
+                            (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight),
+                        100,
+                    );
                 }
             });
         } catch (e) {
             if (!this.state.starting) {
-                this.setState({ error: e.toString() }, () => this.setUpdating(false));
+                this.setState({ error: (e as Error).toString() }, () => this.setUpdating(false));
             }
         }
     }
