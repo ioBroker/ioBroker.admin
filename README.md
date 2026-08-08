@@ -196,6 +196,10 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@softwarecrash) Corrected the validation state in the custom settings if more than one instance is shown
+- (@softwarecrash) Corrected the disabled save button in the custom settings after an invalid instance was switched off
+
 ### 8.0.2 (2026-08-07)
 - (@GermanBluefox) Corrected charts
 - (@GermanBluefox) Corrected the authentication for the OAuth2 callbacks

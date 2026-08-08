@@ -118,7 +118,6 @@ interface ObjectCustomEditorState {
     maxOids: number;
     confirmed: boolean;
     showConfirmation: boolean;
-    error?: boolean;
     systemConfig?: ioBroker.SystemConfigObject;
 }
 
@@ -138,6 +137,9 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
 
     /** Cached per-instance filter functions: returns true if objectId is allowed */
     private statesFilterFunctions: Record<string, (objectId: string) => boolean> = {};
+
+    /** Instances that currently have at least one invalid field. Every instance has its own JSON config */
+    private readonly validationErrors = new Set<string>();
     private cb?: () => void;
     private cachedNewValues?: Record<string, any>;
 
@@ -198,6 +200,28 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
     componentWillUnmount(): void {
         if (this.props.registerSaveFunc) {
             this.props.registerSaveFunc();
+        }
+        // The editor is gone (e.g., tab switch), so no validation error can be shown anymore
+        this.validationErrors.clear();
+        this.props.onError?.(false);
+    }
+
+    /**
+     * Remember the validation state of one instance and inform the parent only if the aggregated state changed
+     *
+     * @param instance instance ID, like `history.0`
+     * @param error true if at least one field of this instance is invalid
+     */
+    private setValidationError(instance: string, error: boolean): void {
+        const hadErrors = !!this.validationErrors.size;
+        if (error) {
+            this.validationErrors.add(instance);
+        } else {
+            this.validationErrors.delete(instance);
+        }
+        const hasErrors = !!this.validationErrors.size;
+        if (hadErrors !== hasErrors) {
+            this.props.onError?.(hasErrors);
         }
     }
 
@@ -691,9 +715,10 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                     onChange={e => {
                                         this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                         const newValues = AdminUtils.deepClone(this.cachedNewValues);
+                                        const willBeEnabled = isIndeterminate || e.target.checked;
 
                                         newValues[instance] = newValues[instance] || {};
-                                        if (isIndeterminate || e.target.checked) {
+                                        if (willBeEnabled) {
                                             newValues[instance].enabled = true;
                                         } else if (enabled) {
                                             if (this.commonConfig[instance].enabled) {
@@ -703,6 +728,11 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                             }
                                         } else {
                                             delete newValues[instance];
+                                        }
+                                        if (!willBeEnabled) {
+                                            // The JSON config of this instance will be unmounted and cannot report
+                                            // that its fields are valid again
+                                            this.setValidationError(instance, false);
                                         }
                                         this.cachedNewValues = newValues;
                                         this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
@@ -734,9 +764,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                 data={data}
                                 isFloatComma={!!this.props.systemConfig?.common.isFloatComma}
                                 dateFormat={this.props.systemConfig?.common.dateFormat || ''}
-                                onError={(error: boolean) =>
-                                    this.setState({ error }, () => this.props.onError?.(error))
-                                }
+                                onError={(error: boolean) => this.setValidationError(instance, error)}
                                 onValueChange={(attr: string, value: any) => {
                                     this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                     console.log(`${attr} => ${value}`);
