@@ -44,7 +44,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - uses: ioBroker/testing-action-adapter@v1.1.1
+      - uses: ioBroker/testing-action-adapter@v1.1.2
         with:
           node-version: ${{ matrix.node-version }}
           os: ${{ matrix.os }}
