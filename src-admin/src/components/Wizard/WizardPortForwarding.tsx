@@ -67,7 +67,7 @@ interface WizardPortForwardingState {
 }
 
 export default class WizardPortForwarding extends Component<WizardPortForwardingProps, WizardPortForwardingState> {
-    private readonly focusRef: React.RefObject<HTMLInputElement>;
+    private readonly focusRef: React.RefObject<HTMLInputElement | null>;
 
     constructor(props: WizardPortForwardingProps) {
         super(props);

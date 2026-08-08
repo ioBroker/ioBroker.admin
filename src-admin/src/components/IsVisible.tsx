@@ -1,14 +1,14 @@
 import { type ReactElement, type JSX } from 'react';
 
-function getAttr(obj: Record<any, any>, attr: string | string[]): boolean {
-    if (!obj) {
+function getAttr(obj: Record<any, any>, attr: string | string[] | undefined): boolean | null {
+    if (!obj || attr === undefined) {
         return null;
     }
     if (typeof attr !== 'object') {
         attr = attr.split('.');
     }
     const att = attr.shift();
-    const val = obj[att];
+    const val = att === undefined ? undefined : obj[att];
     if (!attr.length) {
         return val;
     }
@@ -25,7 +25,7 @@ interface IsVisibleProps {
     children: JSX.Element | JSX.Element[];
 }
 
-function IsVisible(props: IsVisibleProps): ReactElement<any, any> {
+function IsVisible(props: IsVisibleProps): ReactElement<any, any> | null {
     const { config, children, name, value } = props;
 
     if (value !== undefined) {

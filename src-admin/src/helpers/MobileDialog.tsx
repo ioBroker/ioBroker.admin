@@ -7,9 +7,9 @@ interface MobileDialogState {
 }
 
 class MobileDialog<TProps, TState extends MobileDialogState = MobileDialogState> extends Component<TProps, TState> {
-    private _resizeHandlerInstalled: boolean;
+    private _resizeHandlerInstalled = false;
 
-    private _timerOnResize: ReturnType<typeof setTimeout> = null;
+    private _timerOnResize: ReturnType<typeof setTimeout> | null = null;
 
     static isMobile(): boolean {
         return window.innerWidth < MOBILE_WIDTH;

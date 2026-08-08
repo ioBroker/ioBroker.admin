@@ -35,7 +35,7 @@ export class HostsWorker extends GenericWorker<'host'> {
         this.aliveStates = {};
     }
 
-    aliveChangeHandler = (id: string, state: ioBroker.State): void => {
+    aliveChangeHandler = (id: string, state: ioBroker.State | null | undefined): void => {
         // if instance
         if (id.startsWith('system.host.') && id.endsWith('.alive')) {
             let type: HostEventType;
@@ -139,7 +139,7 @@ export class HostsWorker extends GenericWorker<'host'> {
                 if (state?.val) {
                     return this.socket
                         .getNotifications(hostId, '')
-                        .then((notifications: NotificationAnswer) => ({ [hostId]: notifications || null }))
+                        .then((notifications: NotificationAnswer | void) => ({ [hostId]: notifications || null }))
                         .catch((e: unknown): Record<string, NotificationAnswer | null> => {
                             console.warn(`Cannot read notifications from "${hostId}": ${e as Error}`);
                             return { [hostId]: null };

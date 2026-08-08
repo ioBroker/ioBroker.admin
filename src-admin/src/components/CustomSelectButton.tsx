@@ -40,7 +40,7 @@ function CustomSelectButton({
     translateSuffix,
     noTranslation,
 }: CustomSelectButtonProps): JSX.Element {
-    const [anchorEl, setAnchorEl] = useState(null);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const suffix = translateSuffix || '';
 
     return (

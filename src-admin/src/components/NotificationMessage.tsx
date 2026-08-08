@@ -218,7 +218,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
         }
     }
 
-    onAliveChanged = (id: string, state: ioBroker.State): void => {
+    onAliveChanged = (id: string, state: ioBroker.State | null | undefined): void => {
         if (id === `${this.props.instanceId}.alive` && state && this.state.alive !== !!state.val) {
             if (state.val) {
                 if (this.lastAlive && Date.now() - this.lastAlive < 500) {
@@ -267,8 +267,11 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                     schema={this.state.schema}
                     data={this.state.data}
                     onError={(error?: boolean) => this.setState({ error })}
-                    onChange={(data: Record<string, any>) => this.setState({ data })}
+                    onChange={(data: Record<string, any> | null) => this.setState({ data: data || {} })}
                     onBackEndCommand={(command?: BackEndCommand) => {
+                        if (!command) {
+                            return;
+                        }
                         if (command.schema) {
                             this.setState({
                                 schema: command.schema,

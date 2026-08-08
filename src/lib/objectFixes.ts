@@ -105,7 +105,7 @@ export async function validateUserData0(adapter: ioBroker.Adapter): Promise<void
                 }
             }
         } catch (e) {
-            adapter.log.error(`Cannot read ${controllerDir}/io-package.json: ${e}`);
+            adapter.log.error(`Cannot read ${controllerDir}/io-package.json: ${(e as Error).toString()}`);
         }
     }
 }
@@ -201,9 +201,9 @@ export async function verifyAdapterCore(adapter: ioBroker.Adapter): Promise<void
                 '@iobroker/adapter-core@3.4.1 was successfully installed. Please restart the admin adapter to apply it.',
             );
         } catch (e) {
-            adapter.log.warn(`Cannot install @iobroker/adapter-core@3.4.1: ${e}`);
+            adapter.log.warn(`Cannot install @iobroker/adapter-core@3.4.1: ${(e as Error).toString()}`);
         }
     } catch (e) {
-        adapter.log.warn(`Cannot verify @iobroker/adapter-core: ${e}`);
+        adapter.log.warn(`Cannot verify @iobroker/adapter-core: ${(e as Error).toString()}`);
     }
 }

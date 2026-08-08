@@ -342,13 +342,13 @@ class Logs extends Component<LogsProps, LogsState> {
 
     private readonly t: Translate;
 
-    private ignoreNextLogs: boolean;
+    private ignoreNextLogs = false;
 
-    private lastRowRender: number;
+    private lastRowRender = 0;
 
     private lastRowRenderTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    private readLogsInProcess: boolean;
+    private readLogsInProcess = false;
 
     private hostsTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -380,7 +380,7 @@ class Logs extends Component<LogsProps, LogsState> {
             adapters: {},
             sources: {},
             currentHost: this.props.currentHost,
-            hosts: null,
+            hosts: {},
         };
 
         this.scrollToEnd = this.state.reverse;
@@ -402,7 +402,10 @@ class Logs extends Component<LogsProps, LogsState> {
         cb?: () => void,
     ): void {
         if (this.props.logsWorker && this.state.hosts) {
-            void this.props.logsWorker.getLogs(force).then(results => {
+            // Ask the host for the selected severity only. A controller that can do it returns a
+            // window that actually holds that many entries of this level instead of a fixed byte
+            // window that a chatty debug log fills up on its own (#3578).
+            void this.props.logsWorker.getLogs(force, this.getRequestedLogLevel()).then(results => {
                 if (!results) {
                     return;
                 }
@@ -482,10 +485,7 @@ class Logs extends Component<LogsProps, LogsState> {
             // first 2018-01-01
             list.forEach(file => {
                 const parts = file.fileName.split('/');
-                const name = parts
-                    .pop()
-                    .replace(/iobroker\.?/, '')
-                    .replace('.log', '');
+                const name = (parts.pop() || '').replace(/iobroker\.?/, '').replace('.log', '');
 
                 if (name[0] <= '9') {
                     logFiles.push({
@@ -499,10 +499,7 @@ class Logs extends Component<LogsProps, LogsState> {
             list.sort();
             list.forEach(file => {
                 const parts = file.fileName.split('/');
-                const name = parts
-                    .pop()
-                    .replace(/iobroker\.?/, '')
-                    .replace('.log', '');
+                const name = (parts.pop() || '').replace(/iobroker\.?/, '').replace('.log', '');
 
                 if (name[0] > '9') {
                     logFiles.push({
@@ -541,7 +538,7 @@ class Logs extends Component<LogsProps, LogsState> {
         this.props.clearErrors();
     }
 
-    getSourceIcon(from: string): string | null {
+    getSourceIcon(from: string): string {
         const adapterName = from.replace(/\.\d+$/, '');
         let icon = this.state.adapters[adapterName]?.icon;
         if (icon) {
@@ -551,7 +548,7 @@ class Logs extends Component<LogsProps, LogsState> {
         } else if (this.state.hosts) {
             icon = this.state.hosts[`system.${from}`]?.common?.icon || 'img/no-image.svg';
         }
-        return icon || null;
+        return icon || '';
     }
 
     logHandler = (newLogs: LogLineSaved[], size: number): void => {
@@ -570,7 +567,7 @@ class Logs extends Component<LogsProps, LogsState> {
         let logWarnings = 0;
         let logErrors = 0;
         let lastOdd = false;
-        let sources: Record<string, { active: boolean; icon: string; color?: string }>;
+        let sources: Record<string, { active: boolean; icon: string; color?: string }> | undefined;
         let color = Object.keys(this.state.sources).length;
         const COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
 
@@ -596,7 +593,7 @@ class Logs extends Component<LogsProps, LogsState> {
             if (item.from) {
                 if (!this.state.sources[item.from] && !sources?.[item.from]) {
                     sources = sources || JSON.parse(JSON.stringify(this.state.sources));
-                    sources[item.from] = {
+                    sources![item.from] = {
                         active: true,
                         color: COLORS[color % COLORS.length],
                         icon: this.getSourceIcon(item.from),
@@ -604,14 +601,14 @@ class Logs extends Component<LogsProps, LogsState> {
                     color++;
                 } else if (!this.state.sources[item.from]?.active && !sources?.[item.from]?.active) {
                     sources = sources || JSON.parse(JSON.stringify(this.state.sources));
-                    sources[item.from].active = true;
+                    sources![item.from].active = true;
                 }
             }
         });
 
         const newState: Partial<LogsState> = {
             logs,
-            logSize: this.state.logSize + size,
+            logSize: (this.state.logSize ?? 0) + size,
             estimatedSize: true,
             logWarnings,
             logErrors,
@@ -650,16 +647,28 @@ class Logs extends Component<LogsProps, LogsState> {
         this.setState({ source });
     }
 
+    /**
+     * The severity to request from the host.
+     *
+     * `silly` and `debug` mean "everything", so nothing is gained by sending them - the plain
+     * request stays and the host keeps its cheap single-chunk read.
+     */
+    getRequestedLogLevel(): ioBroker.LogLevel | undefined {
+        const severity = this.state.severity as ioBroker.LogLevel;
+        return severity === 'silly' || severity === 'debug' ? undefined : severity;
+    }
+
     handleSeverityChange(event: SelectChangeEvent<string>): void {
         (((window as any)._localStorage as Storage) || window.localStorage).setItem('Log.severity', event.target.value);
-        this.setState({ severity: event.target.value });
+        // A coarser severity reaches further back, so the history is read anew for the new level
+        this.setState({ severity: event.target.value }, () => this.readLogs(true));
     }
 
     handleLogDelete(): void {
         this.props.socket
             .delLogs(this.state.currentHost)
             .then(() => this.clearLog())
-            .then(() => this.readLogs(true, null, () => this.setState({ logDeleteDialog: false })))
+            .then(() => this.readLogs(true, undefined, () => this.setState({ logDeleteDialog: false })))
             .catch((error: string) => {
                 this.setState({ logDeleteDialog: false });
                 window.alert(error);
@@ -667,12 +676,11 @@ class Logs extends Component<LogsProps, LogsState> {
     }
 
     handleLogPause(): void {
-        this.setState({ pause: this.state.pause ? 0 : this.state.logs.length });
+        this.setState({ pause: this.state.pause ? 0 : (this.state.logs?.length ?? 0) });
     }
 
     static openTab(path: string): void {
-        const tab = window.open(path, '_blank');
-        tab.focus();
+        window.open(path, '_blank')?.focus();
     }
 
     getLogFiles(): JSX.Element[] {
@@ -750,7 +758,7 @@ class Logs extends Component<LogsProps, LogsState> {
             length: number;
         },
     ): void {
-        const row = this.state.logs[i];
+        const row = this.state.logs?.[i];
         if (!row) {
             return;
         }
@@ -768,7 +776,7 @@ class Logs extends Component<LogsProps, LogsState> {
 
             if (matches) {
                 message = message.replace(matches[0], '');
-                id = matches[0].split(' ')[1].match(/\d+/g)[0];
+                id = (matches[0].split(' ')[1].match(/\d+/g) || [''])[0];
             } else {
                 message = message.replace(`${row.from} `, '');
             }
@@ -785,8 +793,8 @@ class Logs extends Component<LogsProps, LogsState> {
             }
         }
 
-        const key = options.previousKey === row.key ? i : row.key;
-        options.previousKey = row.key;
+        const key = options.previousKey === row.key ? i : (row.key ?? i);
+        options.previousKey = row.key ?? 0;
 
         rows.push(
             <TableRow
@@ -866,7 +874,7 @@ class Logs extends Component<LogsProps, LogsState> {
 
         options.previousKey = 0;
         options.keyPrefix = this.state.reverse ? 'r' : '';
-        options.length = this.state.pause > 0 ? this.state.pause - 1 : this.state.logs.length - 1;
+        options.length = this.state.pause > 0 ? this.state.pause - 1 : (this.state.logs?.length ?? 0) - 1;
         if (this.state.reverse) {
             for (let i = 0; i <= options.length; i++) {
                 this.getOneRow(i, rows, options);
@@ -898,7 +906,7 @@ class Logs extends Component<LogsProps, LogsState> {
         return rows;
     }
 
-    renderClearDialog(): JSX.Element {
+    renderClearDialog(): JSX.Element | null {
         if (!this.state.logDeleteDialog) {
             return null;
         }
@@ -954,7 +962,7 @@ class Logs extends Component<LogsProps, LogsState> {
         const pauseChild = !this.state.pause ? (
             <PauseIcon />
         ) : (
-            <Typography style={styles.pauseCount}>{this.state.logs.length - this.state.pause}</Typography>
+            <Typography style={styles.pauseCount}>{(this.state.logs?.length ?? 0) - this.state.pause}</Typography>
         );
 
         const isMobile = this.props.width === 'xs' || this.props.width === 'sm';
@@ -1313,7 +1321,7 @@ class Logs extends Component<LogsProps, LogsState> {
                         {
                             currentHost: this.props.currentHost,
                             logs: [],
-                            logFiles: null,
+                            logFiles: [],
                         },
                         () => this.readLogs(true),
                     );

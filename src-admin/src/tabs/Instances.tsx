@@ -169,9 +169,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     private readonly t: Translate;
 
-    private readonly inputRef: React.RefObject<HTMLInputElement>;
+    private readonly inputRef: React.RefObject<HTMLInputElement | null>;
 
-    private readonly refTabContent: React.RefObject<HTMLDivElement>;
+    private readonly refTabContent: React.RefObject<HTMLDivElement | null>;
 
     private subscribed: boolean = false;
 
@@ -191,7 +191,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         let expandedFolder = [];
         if (this.localStorage.getItem('Instances.expandedFolder')) {
             try {
-                expandedFolder = JSON.parse(this.localStorage.getItem('Instances.expandedFolder'));
+                expandedFolder = JSON.parse(this.localStorage.getItem('Instances.expandedFolder') || '[]');
             } catch {
                 // ignore
             }
@@ -389,7 +389,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         for (let i = 0; i < instances.length; i++) {
             const obj = instances[i];
             const common = obj.common || null;
-            const instanceId = parseInt(obj._id.split('.').pop(), 10);
+            const instanceId = parseInt(obj._id.split('.').pop() || '', 10);
 
             if (
                 common.compactGroup &&
@@ -408,15 +408,15 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 image: common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.svg',
                 enabled: common.enabled,
                 canStart: !common.onlyWWW,
-                config: common.adminUI.config !== 'none',
-                jsonConfig: common.adminUI.config === 'json',
-                materialize: common.adminUI.config === 'materialize',
+                config: common.adminUI?.config !== 'none',
+                jsonConfig: common.adminUI?.config === 'json',
+                materialize: common.adminUI?.config === 'materialize',
                 compactMode: common.runAsCompactMode || false,
                 mode: common.mode || null,
                 schedule: common.schedule === undefined || common.schedule === null ? null : common.schedule,
-                loglevel: common.loglevel || null,
-                adapter: common.name || null,
-                version: common.version || null,
+                loglevel: common.loglevel || 'info',
+                adapter: common.name || '',
+                version: common.version || '',
                 // The adapter runs as a web-extension (inside a web instance) and therefore has no own process.
                 // Detect this purely via the configuration (common.webExtension + native.webInstance).
                 // Only enabled instances count as "running as web-extension"; disabled ones stay grey.
@@ -444,11 +444,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
             names.forEach(linkName => {
                 instance.links ||= [];
                 let link: InstanceLink;
-                const linkObject = links[linkName];
+                const linkObject = links?.[linkName];
                 if (typeof linkObject === 'string') {
                     link = { link: linkObject };
                 } else {
-                    link = linkObject;
+                    link = linkObject as InstanceLink;
                 }
 
                 const urls =
@@ -561,14 +561,14 @@ class Instances extends Component<InstancesProps, InstancesState> {
         let playArrow: 0 | 1 | 2 = 0;
         let filterCompactGroup: string | number = 'All';
         try {
-            playArrow = JSON.parse(this.localStorage.getItem('Instances.playArrow')) as 0 | 1 | 2;
+            playArrow = JSON.parse(this.localStorage.getItem('Instances.playArrow') || '0') as 0 | 1 | 2;
             // back compatibility
             if (playArrow.toString() === 'true') {
                 playArrow = 1;
             } else if (playArrow.toString() === 'false') {
                 playArrow = 0;
             }
-            filterCompactGroup = JSON.parse(this.localStorage.getItem('Instances.filterCompactGroup'));
+            filterCompactGroup = JSON.parse(this.localStorage.getItem('Instances.filterCompactGroup') || '"All"');
         } catch {
             // ignore
         }
@@ -614,9 +614,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
     }
 
-    onStateChange = (id: string, state: ioBroker.State | null): void => {
+    onStateChange = (id: string, state: ioBroker.State | null | undefined): void => {
         const oldState = this.states[id];
-        this.states[id] = state;
+        this.states[id] = state as ioBroker.State;
         if ((!oldState && state) || (oldState && !state) || (oldState && state && oldState.val !== state.val)) {
             if (this.state.dialog === 'config' && this.state.dialogProp) {
                 if (this.statesUpdateTimer) {
@@ -728,10 +728,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
     }
 
     getConnected(id: string): boolean | string | null {
-        const instance = this.state.instances[id];
-        return this.states[`${instance.id}.info.connection`]
-            ? this.isAlive(id) && (this.states[`${instance.id}.info.connection`].val as string | boolean)
-            : null;
+        const instance = this.state.instances?.[id];
+        const connState = instance && this.states[`${instance.id}.info.connection`];
+        return connState ? this.isAlive(id) && (connState.val as string | boolean) : null;
     }
 
     static getStatusFilter(value: string): InstanceStatusType {
@@ -770,7 +769,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return null;
     }
 
-    onDeleteInstance = (instance: InstanceEntry, deleteCustom: boolean, deleteAdapter: boolean): void => {
+    onDeleteInstance = (instance: InstanceEntry, deleteCustom: boolean, deleteAdapter?: boolean): void => {
         this.setState({ deleting: instance.id }, () =>
             this.props.executeCommand(
                 `del ${deleteAdapter ? instance.id.split('.')[0] : instance.id}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`,
@@ -785,8 +784,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
     cacheInstances(): InstanceItem[] {
         const currentHostNoPrefix = this.state.currentHost.replace(/^system.host./, '');
 
-        this._cacheList = Object.keys(this.state.instances).map(id => {
-            const instance = this.state.instances[id];
+        const stateInstances = this.state.instances || {};
+        this._cacheList = Object.keys(stateInstances).map(id => {
+            const instance = stateInstances[id];
             const running = InstanceGeneric.isRunning(instance.obj);
             const compactGroup = InstanceGeneric.isCompactGroup(instance.obj);
             const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
@@ -853,18 +853,18 @@ class Instances extends Component<InstancesProps, InstancesState> {
         });
 
         if (this.state.playArrow) {
-            this._cacheList = this._cacheList.filter(({ running }) =>
+            this._cacheList = (this._cacheList || []).filter(({ running }) =>
                 this.state.playArrow === 1 ? running : !running,
             );
         }
 
         if (this.state.onlyCurrentHost) {
-            this._cacheList = this._cacheList.filter(({ host }) => host === currentHostNoPrefix);
+            this._cacheList = (this._cacheList || []).filter(({ host }) => host === currentHostNoPrefix);
         }
 
         if (this.state.filterText) {
             const filterText = this.state.filterText.toLowerCase();
-            this._cacheList = this._cacheList.filter(
+            this._cacheList = (this._cacheList || []).filter(
                 ({ name, nameId }) =>
                     name.toLowerCase().includes(filterText) || nameId.toLowerCase().includes(filterText),
             );
@@ -875,7 +875,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             (this.state.filterCompactGroup || this.state.filterCompactGroup === 0) &&
             this.state.compact
         ) {
-            this._cacheList = this._cacheList.filter(
+            this._cacheList = (this._cacheList || []).filter(
                 ({ compactGroup }) =>
                     compactGroup === this.state.filterCompactGroup ||
                     this.state.filterCompactGroup === 'All' ||
@@ -884,16 +884,16 @@ class Instances extends Component<InstancesProps, InstancesState> {
             );
         }
         if (this.state.filterMode) {
-            this._cacheList = this._cacheList.filter(item => item.mode === this.state.filterMode);
+            this._cacheList = (this._cacheList || []).filter(item => item.mode === this.state.filterMode);
         }
         if (this.state.filterStatus) {
             const status = Instances.getStatusFilter(this.state.filterStatus);
-            this._cacheList = this._cacheList.filter(item => status === item.status);
+            this._cacheList = (this._cacheList || []).filter(item => status === item.status);
         }
 
         // Apply sorting
         if (this.state.sortColumn) {
-            this._cacheList = this._cacheList.sort((a, b) => {
+            this._cacheList = (this._cacheList || []).sort((a, b) => {
                 let comparison = 0;
 
                 switch (this.state.sortColumn) {
@@ -948,7 +948,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             });
         }
 
-        return this._cacheList;
+        return this._cacheList || [];
     }
 
     clearAllFilters(): void {
@@ -998,7 +998,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
         // If at least one shown instance has a port, the port column is displayed and
         // all rows (even those without a port) must reserve a placeholder to keep the columns aligned
-        const hasAnyPort = this._cacheList.some(item => item.port !== null);
+        const hasAnyPort = (this._cacheList || []).some(item => item.port !== null);
 
         const context = {
             adminInstance: this.props.adminInstance,
@@ -1020,9 +1020,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
             hasAnyPort,
         };
 
-        const list = this._cacheList.map((item, idx) => {
+        const list = (this._cacheList || []).map((item, idx) => {
             const id = item.id;
-            const instance = this.state.instances[id];
+            const instance = (this.state.instances || {})[id];
 
             if (this.state.viewMode) {
                 return {
@@ -1125,10 +1125,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
     }
 
     onToggleExpanded = (panel: string, expanded: boolean): void => {
-        if (this.expanded !== panel && expanded && this.closeCommands[this.expanded]) {
-            this.closeCommands[this.expanded]();
+        const closeCommand = this.closeCommands[this.expanded];
+        if (this.expanded !== panel && expanded && closeCommand) {
+            closeCommand();
         }
-        this.expanded = expanded ? panel : null;
+        this.expanded = expanded ? panel : '';
     };
 
     async getHostsData(): Promise<void> {
@@ -1214,8 +1215,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 onClose={newState => {
                     if (newState) {
                         this._cacheList = null;
-                        this.localStorage.setItem('Instances.filterMode', newState.filterMode);
-                        this.localStorage.setItem('Instances.filterStatus', newState.filterStatus);
+                        this.localStorage.setItem('Instances.filterMode', newState.filterMode || '');
+                        this.localStorage.setItem('Instances.filterStatus', newState.filterStatus || '');
 
                         // Handle sorting state
                         if (newState.sortColumn) {
@@ -1377,7 +1378,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                                     onClick={() => {
                                         // all folders
                                         const expandedFolder: string[] = [];
-                                        this._cacheList.forEach(
+                                        (this._cacheList || []).forEach(
                                             ({ category }) =>
                                                 !expandedFolder.includes(category) && expandedFolder.push(category),
                                         );
@@ -1453,7 +1454,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                             onClick={() => this.changeStartedStopped()}
                         >
                             <PlayArrowIcon
-                                style={this.state.playArrow === 2 ? { color: 'red' } : null}
+                                style={this.state.playArrow === 2 ? { color: 'red' } : undefined}
                                 color={this.state.playArrow === 1 ? 'primary' : 'inherit'}
                             />
                         </IconButton>
@@ -1528,7 +1529,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
                                             tabIndex={-1}
                                             size="small"
                                             onClick={() => {
-                                                this.inputRef.current.value = '';
+                                                if (this.inputRef.current) {
+                                                    this.inputRef.current.value = '';
+                                                }
                                                 this._cacheList = null;
                                                 this.setState({ filterText: '' });
                                                 this.localStorage.setItem('instances.filter', '');

@@ -184,13 +184,14 @@ type CompactRepository = Record<
 >;
 
 interface TabPanelProps {
-    children: JSX.Element | JSX.Element[];
+    children: React.ReactNode;
     value: number;
     index: number;
     title: string;
     custom?: boolean;
     boxHeight?: boolean;
     black?: boolean;
+    style?: React.CSSProperties;
     [other: string]: unknown;
 }
 
@@ -551,7 +552,7 @@ function DiscoveryDialog({
 
     const handleSelectAllClick = (event: any): void => {
         if (event.target.checked) {
-            const newSelected = discoveryData?.native?.newInstances?.map(n => n._id);
+            const newSelected = discoveryData?.native?.newInstances?.map(n => n._id) || [];
             setSelected(newSelected);
             return;
         }
@@ -578,10 +579,13 @@ function DiscoveryDialog({
     };
 
     const checkLicenseAndInputs = (objName: string, cb: () => void): void => {
-        const instanceObj: DiscoveryInstance | null = discoveryData?.native?.newInstances.find(
+        const instanceObj: DiscoveryInstance | undefined = discoveryData?.native?.newInstances.find(
             ob => ob._id === objName,
         );
         const obj: DiscoveryInstance | null = instanceObj ? JSON.parse(JSON.stringify(instanceObj)) : null;
+        if (!obj) {
+            return;
+        }
         let license = true;
         if (obj?.comment?.license && obj.comment.license !== 'MIT') {
             license = false;
@@ -591,8 +595,8 @@ function DiscoveryDialog({
             if (obj.common.licenseUrl && typeof obj.common.licenseUrl === 'object') {
                 obj.common.licenseUrl = obj.common.licenseUrl[I18n.getLanguage()] || obj.common.licenseUrl.en;
             }
-            if ((obj.common.licenseUrl as string).includes('github.com')) {
-                obj.common.licenseUrl = (obj.common.licenseUrl as string)
+            if (typeof obj.common.licenseUrl === 'string' && obj.common.licenseUrl.includes('github.com')) {
+                obj.common.licenseUrl = obj.common.licenseUrl
                     .replace('github.com', 'raw.githubusercontent.com')
                     .replace('/blob/', '/');
             }
@@ -673,7 +677,7 @@ function DiscoveryDialog({
 
     const licenseDialog = showLicenseDialog ? (
         <LicenseDialog
-            licenseType={showLicenseDialog.obj.comment.license}
+            licenseType={showLicenseDialog.obj.comment?.license || ''}
             url={showLicenseDialog.obj.common.licenseUrl as string}
             onClose={result => {
                 const { cb, obj } = showLicenseDialog;
@@ -1022,7 +1026,8 @@ function DiscoveryDialog({
                                                 let adapterId = data._id.split('.');
                                                 adapterId.pop();
                                                 adapterId = adapterId.join('.');
-                                                void socket.getObject(adapterId).then((obj: ioBroker.AdapterObject) => {
+                                                void socket.getObject(adapterId).then(_obj => {
+                                                    const obj = _obj as ioBroker.AdapterObject;
                                                     data = { ...obj, ...data };
                                                     data.common = Object.assign(obj.common, data.common);
                                                     data.native = Object.assign(obj.native, data.native);

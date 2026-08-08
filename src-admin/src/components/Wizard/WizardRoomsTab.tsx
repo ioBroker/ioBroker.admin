@@ -199,7 +199,7 @@ export default class WizardRoomsTab extends Component<WizardRoomsTabProps, Wizar
             roomList.sort((a, b) => {
                 const roomA = typedRooms.find(room => room._id === a);
                 const roomB = typedRooms.find(room => room._id === b);
-                if (roomA && roomB) {
+                if (roomA?.translatedName && roomB?.translatedName) {
                     return roomA.translatedName.localeCompare(roomB.translatedName);
                 }
                 return 0; // If either room is not found, maintain the original order

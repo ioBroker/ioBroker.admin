@@ -368,7 +368,7 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
     async onAdd(): Promise<void> {
         const template = CREDENTIAL_TEMPLATES[this.state.addTemplate];
         const type: CredentialType = template.type || this.state.addType;
-        const name = (template.fixedName ? template.name : this.state.addName.trim()).replace(
+        const name = ((template.fixedName ? template.name : this.state.addName.trim()) || '').replace(
             Utils.FORBIDDEN_CHARS,
             '_',
         );
@@ -422,7 +422,7 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
         if (name && typeof name === 'object') {
             return (name as Record<string, string>).en || Object.values(name)[0] || '';
         }
-        return (name as string) || '';
+        return name || '';
     }
 
     /**
@@ -591,7 +591,7 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
         }
         const template = CREDENTIAL_TEMPLATES[this.state.addTemplate];
         const type: CredentialType = template.type || this.state.addType;
-        const name = template.fixedName ? template.name : this.state.addName.trim();
+        const name = (template.fixedName ? template.name : this.state.addName.trim()) || '';
         const id = `${CREDENTIALS_PREFIX}${name.replace(Utils.FORBIDDEN_CHARS, '_')}`;
         const idError =
             name && this.props.data.find(credential => credential._id === id)
@@ -719,7 +719,9 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
                 }
                 onClose={result => {
                     if (result) {
-                        this.onDelete(this.state.deleteIndex);
+                        if (this.state.deleteIndex !== null) {
+                            this.onDelete(this.state.deleteIndex);
+                        }
                     } else {
                         this.setState({ deleteIndex: null });
                     }

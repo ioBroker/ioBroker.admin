@@ -75,9 +75,9 @@ const name2Id = (name: string): string =>
         .replace(/__/g, '_')
         .toLowerCase();
 
-const getShortId = (_id: string): string => _id.split('.').pop();
+const getShortId = (_id: string): string => _id.split('.').pop() || '';
 
-const getText = (text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string =>
+const getText = (text: ioBroker.StringOrTranslated | undefined, lang: ioBroker.Languages): string =>
     text && typeof text === 'object' ? text[lang] || text.en : (text as string) || '';
 
 const changeShortId = (_id: string, short: string): string => {
@@ -191,7 +191,7 @@ export default function EnumEditDialog(props: EnumEditDialogProps): React.JSX.El
                     <Grid size={{ xs: 12, md: 6 }}>
                         <IOColorPicker
                             label="Color"
-                            value={props.enum.common.color}
+                            value={props.enum.common.color || ''}
                             previewStyle={styles.iconPreview}
                             onChange={(color: string) => {
                                 const newData: ioBroker.EnumObject = JSON.parse(JSON.stringify(props.enum));

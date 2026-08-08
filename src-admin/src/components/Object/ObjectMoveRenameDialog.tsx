@@ -112,7 +112,7 @@ class ObjectMoveRenameDialog extends Component<ObjectEditDialogProps, ObjectEdit
                 // Try to find all instances with common.getHistory flag
                 if (
                     Object.keys(obj.common.custom).find(
-                        key => instances.includes(key) && !obj.common.custom[key].aliasId,
+                        key => instances.includes(key) && !obj.common.custom?.[key].aliasId,
                     )
                 ) {
                     withHistory.push(obj._id);
@@ -151,7 +151,7 @@ class ObjectMoveRenameDialog extends Component<ObjectEditDialogProps, ObjectEdit
                             await this.renameCopyObject(
                                 this.props.id,
                                 newID,
-                                this.props.childrenIds.length && this.state.renameAllChildren,
+                                !!this.props.childrenIds.length && this.state.renameAllChildren,
                                 false,
                             );
                             this.props.onClose();
@@ -185,7 +185,7 @@ class ObjectMoveRenameDialog extends Component<ObjectEditDialogProps, ObjectEdit
         }
         let state: ioBroker.State | undefined;
         if (obj?.type === 'state') {
-            state = await this.props.socket.getState(oldId);
+            state = (await this.props.socket.getState(oldId)) || undefined;
         }
         if (withChildren) {
             for (const id of this.props.childrenIds) {
@@ -276,7 +276,7 @@ class ObjectMoveRenameDialog extends Component<ObjectEditDialogProps, ObjectEdit
                     if (!objects[id]) {
                         return Promise.resolve(true);
                     }
-                    if (objects[id].type === 'state') {
+                    if (objects[id]?.type === 'state') {
                         return Promise.resolve(false);
                     }
                     if (id.startsWith('system.')) {
@@ -285,12 +285,12 @@ class ObjectMoveRenameDialog extends Component<ObjectEditDialogProps, ObjectEdit
                     return Promise.resolve(true);
                 }}
                 onClose={() => this.setState({ showParentDialog: false })}
-                onOk={(_id: string[] | string) => {
+                onOk={(_id: string | string[] | undefined) => {
                     let parentId: string;
                     if (Array.isArray(_id)) {
                         parentId = _id[0];
                     } else {
-                        parentId = _id;
+                        parentId = _id || '';
                     }
                     if (parentId && parentId.split('.').length > 1) {
                         this.setState({ parentId });
@@ -385,7 +385,7 @@ class ObjectMoveRenameDialog extends Component<ObjectEditDialogProps, ObjectEdit
                             await this.renameCopyObject(
                                 this.props.id,
                                 newID,
-                                this.props.childrenIds.length && this.state.renameAllChildren,
+                                !!this.props.childrenIds.length && this.state.renameAllChildren,
                                 true,
                             );
                             this.props.onClose();
@@ -402,7 +402,7 @@ class ObjectMoveRenameDialog extends Component<ObjectEditDialogProps, ObjectEdit
                                 await this.renameCopyObject(
                                     this.props.id,
                                     newID,
-                                    this.props.childrenIds.length && this.state.renameAllChildren,
+                                    !!this.props.childrenIds.length && this.state.renameAllChildren,
                                     false,
                                 );
                                 this.props.onClose();

@@ -282,7 +282,9 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
             >
                 <Link
                     href={
-                        !this.props.edit && this.props.action && this.props.action.link ? this.props.action.link : null
+                        !this.props.edit && this.props.action && this.props.action.link
+                            ? this.props.action.link
+                            : undefined
                     }
                     underline="none"
                     target="_blank"
@@ -413,7 +415,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                                             </IconButton>
                                         </div>
                                     </Box>
-                                    <CardContent>{this.props.getHostDescriptionAll().el}</CardContent>
+                                    <CardContent>{this.props.getHostDescriptionAll?.().el}</CardContent>
                                 </Card>
                             </Collapse>
                         )}
@@ -421,7 +423,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                             <IconButton
                                 size="large"
                                 sx={this.props.enabled ? styles.enabled : styles.disabled}
-                                onClick={() => this.props.toggleActivation()}
+                                onClick={() => this.props.toggleActivation?.()}
                             >
                                 <CheckIcon />
                             </IconButton>
@@ -430,7 +432,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                             <IconButton
                                 size="large"
                                 sx={styles.editButton}
-                                onClick={() => this.props.onEdit()}
+                                onClick={() => this.props.onEdit?.()}
                             >
                                 <EditIcon />
                             </IconButton>
@@ -439,7 +441,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                             <IconButton
                                 size="large"
                                 sx={styles.deleteButton}
-                                onClick={() => this.props.onRemove()}
+                                onClick={() => this.props.onRemove?.()}
                             >
                                 <DeleteIcon />
                             </IconButton>

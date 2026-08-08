@@ -1822,7 +1822,7 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 9.0.16 (2026-08-03)
+### 9.0.18 (2026-08-07)
 - (@GermanBluefox) Updated packages
 
 ### 9.0.14 (2026-07-31)

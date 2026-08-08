@@ -86,11 +86,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
-        (window.addEventListener || window.attachEvent)(
-            window.addEventListener ? 'message' : 'onmessage',
-            this.onMessage,
-            false,
-        );
+        window.addEventListener('message', this.onMessage as unknown as EventListener, false);
 
         const hosts: Record<string, CompactHost> = {};
         for (const host of this.props.hosts) {
@@ -112,7 +108,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
         // Check if jsonTab.json(5) exists
         if (fileName.endsWith('.json') || fileName.endsWith('.json5')) {
             try {
-                let jsonText: string;
+                let jsonText = '';
                 const json: {
                     file: string;
                     mimeType: string;
@@ -176,14 +172,10 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
             this.loadingTimer = null;
         }
         if (this.registered) {
-            this.props.onUnregisterIframeRef(this.refIframe);
+            this.props.onUnregisterIframeRef(this.refIframe as HTMLIFrameElement);
             this.registered = false;
         }
-        (window.removeEventListener || window.detachEvent)(
-            window.removeEventListener ? 'message' : 'onmessage',
-            this.onMessage,
-            false,
-        );
+        window.removeEventListener('message', this.onMessage as unknown as EventListener, false);
     }
 
     componentDidUpdate(/* prevProps, prevState, snapshot */): void {

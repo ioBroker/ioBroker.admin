@@ -44,7 +44,7 @@ interface BaseSettingsMultihostState {
 }
 
 export default class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSettingsMultihostState> {
-    private focusRef: React.RefObject<HTMLInputElement>;
+    private focusRef: React.RefObject<HTMLInputElement | null>;
 
     constructor(props: BaseSettingsMultihostProps) {
         super(props);

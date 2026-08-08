@@ -82,7 +82,8 @@ export default class Files extends Component<FilesProps> {
                         ]);
                     }
                 }}
-                applyChangesToFile={async (adapter: string, file: string, data: Partial<ioBroker.FileACL>) => {
+                applyChangesToFile={async (adapter: string, file: string, _data?: Partial<ioBroker.FileACL>) => {
+                    const data = _data || {};
                     let result: ioBroker.ChownFileResult[] | undefined;
                     if ((data.owner || data.ownerGroup) && data.permissions) {
                         await this.props.socket.chownFile(adapter, file, {

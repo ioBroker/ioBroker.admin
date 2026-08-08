@@ -2,11 +2,11 @@ import _ from 'lodash';
 
 const funcSet = _.throttle((setTabs, tabs) => setTabs(tabs), 200);
 
-const findCard = (id: string, cards: { name: string }[]): { card: { name: string }; index: number } => {
+const findCard = (id: string, cards: { name: string }[]): { card: { name: string } | undefined; index: number } => {
     const card = cards.find(c => c.name === id);
     return {
         card,
-        index: cards.indexOf(card),
+        index: card ? cards.indexOf(card) : -1,
     };
 };
 

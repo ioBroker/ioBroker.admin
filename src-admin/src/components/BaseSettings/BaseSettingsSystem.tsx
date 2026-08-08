@@ -58,7 +58,7 @@ interface BaseSettingsSystemState {
 }
 
 export default class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettingsSystemState> {
-    private focusRef: React.RefObject<HTMLInputElement>;
+    private focusRef: React.RefObject<HTMLInputElement | null>;
 
     constructor(props: BaseSettingsSystemProps) {
         super(props);

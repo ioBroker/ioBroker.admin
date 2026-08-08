@@ -49,11 +49,11 @@ interface AdminUpdaterState {
 class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
     private updating: boolean;
 
-    private interval: ReturnType<typeof setInterval>;
+    private interval: ReturnType<typeof setInterval> | null = null;
 
-    private startTimeout: ReturnType<typeof setTimeout>;
+    private startTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    private readonly textareaRef: React.RefObject<HTMLTextAreaElement>;
+    private readonly textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 
     private readonly link: string;
 
@@ -92,10 +92,10 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         const obj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
 
         return {
-            useHttps: obj.native.secure,
-            port: obj.native.port,
-            certPrivateName: obj.native.certPrivate,
-            certPublicName: obj.native.certPublic,
+            useHttps: obj?.native.secure,
+            port: obj?.native.port,
+            certPrivateName: obj?.native.certPrivate,
+            certPublicName: obj?.native.certPublic,
         };
     }
 
@@ -209,7 +209,9 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
                         // scroll down
                         if (this.textareaRef.current) {
                             setTimeout(
-                                () => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight),
+                                () =>
+                                    this.textareaRef.current &&
+                                    (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight),
                                 100,
                             );
                         }
@@ -225,7 +227,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         } catch (e) {
             if (!this.state.starting) {
                 // after 10 seconds, show error
-                this.setState({ error: e.toString() }, () => this.setUpdating(false));
+                this.setState({ error: (e as Error).toString() }, () => this.setUpdating(false));
             }
         }
     }
@@ -237,7 +239,9 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         this.interval = setInterval(async () => {
             try {
                 await fetch(this.link);
-                clearInterval(this.interval);
+                if (this.interval) {
+                    clearInterval(this.interval);
+                }
                 this.interval = null;
                 this.setState({ upAgain: true });
             } catch {
@@ -287,9 +291,9 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
                             value={
                                 this.state.error
                                     ? this.state.error
-                                    : this.state.response.stderr && this.state.response.stderr.length
+                                    : this.state.response?.stderr?.length
                                       ? this.state.response.stderr.join('\n')
-                                      : this.state.response.stdout.join('\n')
+                                      : this.state.response?.stdout?.join('\n')
                             }
                             readOnly
                         />

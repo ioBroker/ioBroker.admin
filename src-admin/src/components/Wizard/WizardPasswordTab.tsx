@@ -52,7 +52,7 @@ interface WizardPasswordTabState {
 }
 
 export default class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPasswordTabState> {
-    private readonly focusRef: React.RefObject<HTMLInputElement>;
+    private readonly focusRef: React.RefObject<HTMLInputElement | null>;
 
     constructor(props: WizardPasswordTabProps) {
         super(props);

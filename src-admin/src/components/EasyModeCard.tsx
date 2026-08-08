@@ -81,7 +81,7 @@ function getText(text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): s
     if (text && typeof text === 'object') {
         return text[lang] || text.en || '';
     }
-    return (text as string) || '';
+    return text || '';
 }
 
 interface EasyModeCardProps {

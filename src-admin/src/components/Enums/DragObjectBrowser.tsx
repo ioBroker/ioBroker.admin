@@ -48,16 +48,18 @@ interface DragObjectBrowserProps {
     socket: AdminConnection;
     addItemToEnum: (id: string, enumId: string) => void;
     stylesParent: Record<string, React.CSSProperties>;
-    getName: (name: string | Record<string, string>) => string;
+    getName: (name: ioBroker.StringOrTranslated | undefined) => string;
     theme: IobTheme;
 }
 
-const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element => {
-    const [wrapperState, setWrapperState] = useState({ DragWrapper: null });
+const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element | null => {
+    const [wrapperState, setWrapperState] = useState<{
+        DragWrapper: React.ComponentType<DragWrapperProps> | null;
+    }>({ DragWrapper: null });
     const objectRef = React.useRef<Record<string, ioBroker.Object> | null>(null);
 
     useEffect(() => {
-        const DragWrapper = (dragProps: DragWrapperProps): JSX.Element => {
+        const DragWrapper = (dragProps: DragWrapperProps): JSX.Element | null => {
             const onDragEnd = (item: TreeItem, monitor: DragSourceMonitor<TreeItem, { enumId: string }>): void => {
                 const dropResult = monitor.getDropResult();
                 if (item.data && dropResult) {
@@ -154,7 +156,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element => {
             theme={props.theme}
             themeName={props.theme.name}
             themeType={props.theme.palette.mode}
-            DragWrapper={wrapperState.DragWrapper}
+            DragWrapper={(wrapperState.DragWrapper as React.ComponentType<any>) || undefined}
             setObjectsReference={(objects: Record<string, ioBroker.Object>) => (objectRef.current = objects)}
             levelPadding={10}
         />

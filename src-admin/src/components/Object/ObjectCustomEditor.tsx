@@ -15,7 +15,7 @@ import {
 // Icons
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { DialogError, DialogConfirm, type IobTheme } from '@iobroker/gui-components';
+import { DialogConfirm, type IobTheme } from '@iobroker/gui-components';
 
 import { ConfigGeneric, JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
 import AdminUtils from '@/helpers/AdminUtils';
@@ -34,7 +34,7 @@ const styles: Record<string, React.CSSProperties> = {
         height: 32,
     },
     titleEnabled: {
-        float: 'right',
+        // no `float` here: the summary content is a flex box, which centers the label vertically
         fontSize: 16,
         color: '#7ff57f',
         textTransform: 'uppercase',
@@ -118,7 +118,6 @@ interface ObjectCustomEditorState {
     maxOids: number;
     confirmed: boolean;
     showConfirmation: boolean;
-    error?: boolean;
     systemConfig?: ioBroker.SystemConfigObject;
 }
 
@@ -130,14 +129,17 @@ interface JsonConfigStorage {
 
 export default class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustomEditorState> {
     private readonly changedIds: string[];
-    private readonly scrollDivRef: React.RefObject<HTMLDivElement>;
+    private readonly scrollDivRef: React.RefObject<HTMLDivElement | null>;
     private readonly jsonConfigs: Record<string, null | JsonConfigStorage>;
-    private readonly refTemplate: Record<string, RefObject<HTMLDivElement>>;
+    private readonly refTemplate: Record<string, RefObject<HTMLDivElement | null>>;
     private readonly customObj: ioBroker.AnyObject;
     private commonConfig: Record<string, any> = {};
 
     /** Cached per-instance filter functions: returns true if objectId is allowed */
     private statesFilterFunctions: Record<string, (objectId: string) => boolean> = {};
+
+    /** Instances that currently have at least one invalid field. Every instance has its own JSON config */
+    private readonly validationErrors = new Set<string>();
     private cb?: () => void;
     private cachedNewValues?: Record<string, any>;
 
@@ -198,6 +200,28 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
     componentWillUnmount(): void {
         if (this.props.registerSaveFunc) {
             this.props.registerSaveFunc();
+        }
+        // The editor is gone (e.g., tab switch), so no validation error can be shown anymore
+        this.validationErrors.clear();
+        this.props.onError?.(false);
+    }
+
+    /**
+     * Remember the validation state of one instance and inform the parent only if the aggregated state changed
+     *
+     * @param instance instance ID, like `history.0`
+     * @param error true if at least one field of this instance is invalid
+     */
+    private setValidationError(instance: string, error: boolean): void {
+        const hadErrors = !!this.validationErrors.size;
+        if (error) {
+            this.validationErrors.add(instance);
+        } else {
+            this.validationErrors.delete(instance);
+        }
+        const hasErrors = !!this.validationErrors.size;
+        if (hadErrors !== hasErrors) {
+            this.props.onError?.(hasErrors);
         }
     }
 
@@ -300,7 +324,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                     // @ts-expect-error deprecated, but still possible
                     jsonText = json;
                 }
-                let jsonSchema: ConfigItemPanel;
+                let jsonSchema: ConfigItemPanel | undefined;
                 try {
                     jsonSchema = JSON5.parse(jsonText);
                     this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};
@@ -310,7 +334,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                     window.alert(`Cannot parse jsonConfig of ${adapter}: ${e}`);
                 }
 
-                await JsonConfigComponent.loadI18n(this.props.socket, jsonSchema.i18n, adapter);
+                await JsonConfigComponent.loadI18n(this.props.socket, jsonSchema?.i18n, adapter);
                 return;
             } catch (e1) {
                 console.error(`Cannot load jsonConfig of ${adapter}: ${e1}`);
@@ -326,7 +350,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
         func: string | { func: string; alsoDependsOn: string[] },
         data: Record<string, any>,
         customObj: Record<string, any>,
-        instanceObj: ioBroker.InstanceObject,
+        instanceObj: ioBroker.InstanceObject | undefined,
         items: Record<string, any>,
         attr: string,
         processed: string[],
@@ -346,7 +370,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
             }
             strFunc = func.func;
         } else {
-            strFunc = func as string;
+            strFunc = func;
         }
 
         alsoDependsOn.forEach(_attr => {
@@ -404,7 +428,10 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
         return data[attr];
     }
 
-    static flattenItems(items: Record<string, any>, _result: Record<string, any> = {}): Record<string, any> {
+    static flattenItems(
+        items: Record<string, any> | undefined,
+        _result: Record<string, any> = {},
+    ): Record<string, any> {
         if (items) {
             Object.keys(items).forEach(attr => {
                 if (items[attr].items) {
@@ -423,7 +450,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
         const adapter = instance.split('.')[0];
 
         if (this.jsonConfigs[adapter] && !this.jsonConfigs[adapter].disabled) {
-            const items = ObjectCustomEditor.flattenItems(this.jsonConfigs[adapter].json.items);
+            const items = ObjectCustomEditor.flattenItems(this.jsonConfigs[adapter]?.json?.items);
 
             if (items) {
                 const processed: string[] = [];
@@ -442,7 +469,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                             items[attr].defaultFunc,
                             defaultValues,
                             obj,
-                            this.jsonConfigs[adapter].instanceObjs[instance],
+                            this.jsonConfigs[adapter]?.instanceObjs?.[instance],
                             items,
                             attr,
                             processed,
@@ -584,7 +611,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
         const disabled = this.jsonConfigs[adapter]?.json?.disabled;
 
         const data = this.combineNewAndOld(instance);
-        const hidden = this.jsonConfigs[adapter].json.hidden;
+        const hidden = this.jsonConfigs[adapter]?.json?.hidden;
 
         if (disabled && hidden === true) {
             return null;
@@ -598,7 +625,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                     data,
                     customObj,
                     instanceObj,
-                    this.jsonConfigs[adapter].json.items,
+                    this.jsonConfigs[adapter]?.json?.items || {},
                     'enabled',
                     [],
                 )
@@ -608,7 +635,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
         }
 
         let help = null;
-        const helpObject = this.jsonConfigs[adapter].json.help;
+        const helpObject = this.jsonConfigs[adapter]?.json?.help;
         if (disabled && helpObject) {
             if (typeof helpObject === 'object') {
                 help = helpObject[this.props.lang] || helpObject.en;
@@ -648,6 +675,8 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     data-id={instance}
+                    // align icon, title and the "enabled" label on one middle line
+                    sx={{ '& .MuiAccordionSummary-content': { alignItems: 'center' } }}
                     style={
                         i % 2
                             ? enabled
@@ -686,9 +715,10 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                     onChange={e => {
                                         this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                         const newValues = AdminUtils.deepClone(this.cachedNewValues);
+                                        const willBeEnabled = isIndeterminate || e.target.checked;
 
                                         newValues[instance] = newValues[instance] || {};
-                                        if (isIndeterminate || e.target.checked) {
+                                        if (willBeEnabled) {
                                             newValues[instance].enabled = true;
                                         } else if (enabled) {
                                             if (this.commonConfig[instance].enabled) {
@@ -698,6 +728,11 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                             }
                                         } else {
                                             delete newValues[instance];
+                                        }
+                                        if (!willBeEnabled) {
+                                            // The JSON config of this instance will be unmounted and cannot report
+                                            // that its fields are valid again
+                                            this.setValidationError(instance, false);
                                         }
                                         this.cachedNewValues = newValues;
                                         this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
@@ -725,13 +760,11 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                 themeType={this.props.themeType}
                                 theme={this.props.theme}
                                 multiEdit={this.props.objectIDs.length > 1}
-                                schema={this.jsonConfigs[adapter].json}
+                                schema={this.jsonConfigs[adapter]?.json as ConfigItemPanel}
                                 data={data}
-                                isFloatComma={this.props.systemConfig.common.isFloatComma}
-                                dateFormat={this.props.systemConfig.common.dateFormat}
-                                onError={(error: boolean) =>
-                                    this.setState({ error }, () => this.props.onError?.(error))
-                                }
+                                isFloatComma={!!this.props.systemConfig?.common.isFloatComma}
+                                dateFormat={this.props.systemConfig?.common.dateFormat || ''}
+                                onError={(error: boolean) => this.setValidationError(instance, error)}
                                 onValueChange={(attr: string, value: any) => {
                                     this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                     console.log(`${attr} => ${value}`);
@@ -766,30 +799,19 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
         );
     }
 
-    renderErrorMessage(): JSX.Element {
-        return (
-            !!this.state.error && (
-                <DialogError
-                    title={this.props.t('Error')}
-                    text={this.state.error ? 'Error' : ''}
-                    onClose={() => this.setState({ error: false })}
-                />
-            )
-        );
-    }
-
     getObject(
         objects: Record<string, ioBroker.AnyObject>,
         oldObjects: Record<string, ioBroker.AnyObject>,
         id: string,
-    ): Record<string, any> {
+    ): Promise<Record<string, any>> {
         if (objects[id]) {
             return Promise.resolve(objects[id]);
         }
-        return this.props.socket.getObject(id).then((obj: ioBroker.AnyObject) => {
-            oldObjects[id] = AdminUtils.deepClone(obj);
-            objects[id] = obj;
-            return obj;
+        return this.props.socket.getObject(id).then(obj => {
+            const anyObj = obj as ioBroker.AnyObject;
+            oldObjects[id] = AdminUtils.deepClone(anyObj);
+            objects[id] = anyObj;
+            return anyObj as Record<string, any>;
         });
     }
 
@@ -809,7 +831,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                 this.setState({
                     progress: Math.round(((this.state.maxOids - keys.length) / this.state.maxOids) * 50) + 50,
                 });
-                const id = keys.shift();
+                const id = keys.shift() as string;
                 if (JSON.stringify(_objects[id].common) !== JSON.stringify(_oldObjects[id].common)) {
                     if (!this.changedIds.includes(id)) {
                         this.changedIds.push(id);
@@ -818,7 +840,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                     void this.props.socket.setObject(id, _objects[id]).then(async () => {
                         delete _objects[id];
                         delete _oldObjects[id];
-                        this.props.objects[id] = await this.props.socket.getObject(id);
+                        this.props.objects[id] = (await this.props.socket.getObject(id)) as ioBroker.Object;
                         setTimeout(() => this.saveOneState(ids, cb, _objects, _oldObjects), 0);
                     });
                     return;
@@ -837,7 +859,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
             // 0 - 50
             this.setState({ progress: Math.round(((maxOids - ids.length) / maxOids) * 50) });
 
-            const id = ids.shift();
+            const id = ids.shift() as string;
             this.getObject(_objects, _oldObjects, id).then((obj: Record<string, any>) => {
                 if (!obj) {
                     window.alert(`Invalid object ${id}`);
@@ -994,10 +1016,10 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                     {this.state.maxOids === 0 &&
                         Object.values(this.jsonConfigs).map(jsonConfig => {
                             if (jsonConfig) {
-                                return Object.keys(jsonConfig.instanceObjs).map(instance =>
+                                return Object.keys(jsonConfig.instanceObjs || {}).map(instance =>
                                     this.renderOneCustom(
                                         instance,
-                                        jsonConfig.instanceObjs[instance],
+                                        jsonConfig.instanceObjs?.[instance] as ioBroker.InstanceObject,
                                         this.customObj,
                                         index++,
                                     ),
@@ -1006,7 +1028,6 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                             return null;
                         })}
                 </div>
-                {this.renderErrorMessage()}
                 {this.renderConfirmationDialog()}
             </Paper>
         );

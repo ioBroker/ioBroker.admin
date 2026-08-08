@@ -8,7 +8,7 @@ export type AdapterEvent = GenericEvent<'adapter'>;
 export class AdaptersWorker extends GenericWorker<'adapter'> {
     private readonly repositoryHandlers: (() => void)[];
 
-    private repoTimer: ReturnType<typeof setTimeout> | null;
+    private repoTimer: ReturnType<typeof setTimeout> | null = null;
 
     private lastActiveRepo: string | string[] | undefined;
 
@@ -19,7 +19,7 @@ export class AdaptersWorker extends GenericWorker<'adapter'> {
     }
 
     protected checkObjectId(id: string, obj: ioBroker.AdapterObject | null | undefined): boolean {
-        return id.match(/^system\.adapter\.[^.]+$/) && (!obj || obj.type === this.objectType);
+        return !!id.match(/^system\.adapter\.[^.]+$/) && (!obj || obj.type === this.objectType);
     }
 
     protected postProcessing(_id: string, _obj: ioBroker.AdapterObject | null | undefined): void {
@@ -37,13 +37,13 @@ export class AdaptersWorker extends GenericWorker<'adapter'> {
         }, 500);
     };
 
-    systemConfigChangeHandler = (id: string, obj: ioBroker.SystemConfigObject | null | undefined): void => {
+    systemConfigChangeHandler = (id: string, obj: ioBroker.Object | null | undefined): void => {
         // Only handle system.config object changes
         if (id !== 'system.config' || !obj?.common) {
             return;
         }
 
-        const currentActiveRepo = obj.common.activeRepo;
+        const currentActiveRepo = (obj as ioBroker.SystemConfigObject).common.activeRepo;
 
         // Check if activeRepo has changed
         if (JSON.stringify(this.lastActiveRepo) !== JSON.stringify(currentActiveRepo)) {

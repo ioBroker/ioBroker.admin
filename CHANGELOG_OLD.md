@@ -1,4 +1,9 @@
 # Older changes
+## 7.9.10 (2026-06-22)
+- (@GermanBluefox) Added a dialog describing how to use the AI assistant without an API key (external MCP client)
+- (@GermanBluefox) Updated device manager
+- (@GermanBluefox) Added possibility to see the prompt and use it outside of assistant
+
 ## 7.9.9 (2026-06-21)
 - (@GermanBluefox) Correcting the change of the AI providers
 
