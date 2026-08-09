@@ -1,4 +1,10 @@
 # Older changes
+## 7.9.12 (2026-07-03)
+- (@GermanBluefox) Added the port (native.port) to the instances table and cards and the possibility to sort instances by port
+- (@GermanBluefox) Corrected the intro and instances links for adapters running as web-extension
+- (@GermanBluefox) Improved the error message on unmet global dependencies in multihost setups by listing the hosts that do not fulfill the requirement
+- (@GermanBluefox) Sorted the notification categories by severity (alert, notify, info), so the most important notifications are shown first
+
 ## 7.9.11 (2026-06-29)
 - (@GermanBluefox) Allowed creating an AI API key directly from the assistant settings dialog
 - (@GermanBluefox) Added provider logos (incl. DeepSeek) to the AI assistant provider and credential selectors

@@ -196,7 +196,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.4 (2026-08-09)
 - (@GermanBluefox) Better handlling of autocompleteSendTo JsonConfig components
 
 ### 8.0.3 (2026-08-08)
@@ -220,12 +220,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Added AWS and Azure credentials in credentials manager
 - (@GermanBluefox) Allowed to set the log level without expert mode
 - (@GermanBluefox) Correcting sentry reporting for the admin adapter
-
-### 7.9.12 (2026-07-03)
-- (@GermanBluefox) Added the port (native.port) to the instances table and cards and the possibility to sort instances by port
-- (@GermanBluefox) Corrected the intro and instances links for adapters running as web-extension
-- (@GermanBluefox) Improved the error message on unmet global dependencies in multihost setups by listing the hosts that do not fulfill the requirement
-- (@GermanBluefox) Sorted the notification categories by severity (alert, notify, info), so the most important notifications are shown first
 
 ## License
 
