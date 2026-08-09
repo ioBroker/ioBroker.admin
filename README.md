@@ -196,6 +196,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Better handlling of autocompleteSendTo JsonConfig components
+
 ### 8.0.3 (2026-08-08)
 - (@softwarecrash) Corrected the validation state in the custom settings if more than one instance is shown
 - (@softwarecrash) Corrected the disabled save button in the custom settings after an invalid instance was switched off

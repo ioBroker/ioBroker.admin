@@ -26,7 +26,7 @@
     "dependencies": {
         "@iobroker/gui-components": "^10.0.15",
         "@iobroker/dm-gui-components": "^10.0.18",
-        "@iobroker/json-config": "^9.0.18",
+        "@iobroker/json-config": "^9.0.19",
         "ace-builds": "^1.44.0",
         "remark-gfm": "^4.0.1"
     },

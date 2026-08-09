@@ -11,6 +11,7 @@ import {
     Badge,
     Box,
     Button,
+    CssBaseline,
     Checkbox,
     CircularProgress,
     Dialog,
@@ -3241,6 +3242,7 @@ class App extends Router<AppProps, AppState> {
             return (
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
+                        <CssBaseline />
                         <Loader themeType={this.state.themeType} />
                         {this.renderAlertSnackbar()}
                     </ThemeProvider>
@@ -3255,6 +3257,7 @@ class App extends Router<AppProps, AppState> {
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.state.theme}>
                     <ScrollbarStyles theme={this.state.theme} />
+                    <CssBaseline />
                     <style>
                         {`@keyframes myEffect2 {
                         0% {
