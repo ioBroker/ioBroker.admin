@@ -1822,6 +1822,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 9.0.20 (2026-08-13)
+- (@GermanBluefox) Correcting ConfigSelect component
+
 ### 9.0.19 (2026-08-09)
 - (@GermanBluefox) Correcting autocompleteSendTo component
 
