@@ -157,3 +157,51 @@ The socket client will then correctly try to connect to e.g. `http://iobroker-te
 
 Why not just use the root (admins) socket (e.g. `ws://iobroker-test.revproxy.home.arpa/?sid=1780827297411&name=echarts-show`)?: 
 Admin needs authentication and web usually not, so you would have to be logged in to admin for your views (served by web!) to load. Also, when not using a proxy setup, it would also use the web adapters socket (request to :8082/?sid=...) - so also using the web adapters socket for reverse proxy setup is the correct approach.
+
+## Complete nginx configuration
+
+Same layout as the table above: Admin at `/admin/`, web at `/web/`, esphome at `/esphome/`, optional welcome at `/`. The trailing slash on `proxy_pass` strips the location prefix so Admin sees `/` (and `:8081/admin/` still works).
+
+```nginx
+# Redirect HTTP → HTTPS
+server {
+    listen 80;
+    listen [::]:80;
+    server_name iobroker.example.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name iobroker.example.com;
+
+    ssl_certificate     /etc/nginx/ssl/iobroker.example.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/iobroker.example.com.key;
+
+    # Optional: landing page (welcome adapter) at the host root
+    location / {
+        proxy_pass http://LOCAL_IOBROKER_IP:1234/;
+    }
+
+    location /admin/ {
+        proxy_pass http://LOCAL_IOBROKER_IP:8081/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+    }
+
+    location /web/ {
+        proxy_pass http://LOCAL_IOBROKER_IP:8082/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+    }
+
+    location /esphome/ {
+        proxy_pass http://LOCAL_IOBROKER_IP:6052/;
+    }
+}
+```
+
+Replace `LOCAL_IOBROKER_IP`, the welcome port, and the certificate paths. Add further `location` blocks the same way.
