@@ -527,10 +527,7 @@ export interface ReverseProxyItem {
  * Looks up `admin.0` and joins it with `globalPath`.
  * Returns `/` when the instance is not listed.
  */
-export function getAdminPublicPath(
-    reverseProxy: ReverseProxyItem[] | undefined | null,
-    adminInstance: string,
-): string {
+export function getAdminPublicPath(reverseProxy: ReverseProxyItem[] | undefined | null, adminInstance: string): string {
     if (!reverseProxy?.length) {
         return '/';
     }

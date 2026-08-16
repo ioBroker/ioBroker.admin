@@ -653,9 +653,7 @@ export default class Web {
                     }
                 });
             } else {
-                this.server.app.get('/logout', (_req: Request, res: Response): void =>
-                    res.redirect(this.publicPath),
-                );
+                this.server.app.get('/logout', (_req: Request, res: Response): void => res.redirect(this.publicPath));
             }
 
             this.server.app.get('/iobroker_check.html', (_req: Request, res: Response): void => {
