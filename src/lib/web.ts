@@ -324,6 +324,23 @@ export default class Web {
         return result.join('\n');
     }
 
+    /*
+        force load _socket/info.js so window.socketPath is set for adapters that do not load info.js themselves.
+        (typically tab.html and index.html (admin instance settings page) for non json-config adapters)
+     */
+    private withInfoJs(url: string, body: Buffer | string): Buffer | string {
+        if (this.publicPath === '/' || !/\.html?$/i.test(url.split('?')[0])) {
+            return body;
+        }
+        let html = typeof body === 'string' ? body : body.toString('utf8');
+        if (html.includes('_socket/info.js') || html.includes('window.socketPath')) {
+            return body;
+        }
+        const script = `<script src="${this.publicPath}_socket/info.js"></script>`;
+        html = html.includes('<head>') ? html.replace('<head>', `<head>${script}`) : script + html;
+        return html;
+    }
+
     getErrorRedirect(origin: string): string {
         // LOGIN_PAGE /index.html?login
         // origin can be "?login&href=" -
@@ -1017,7 +1034,7 @@ export default class Web {
                                 res.contentType('text/javascript');
                             }
                         }
-                        res.send(buffer);
+                        res.send(this.withInfoJs(url, buffer));
                     }
                 });
             });
