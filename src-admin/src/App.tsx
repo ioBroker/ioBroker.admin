@@ -3031,7 +3031,7 @@ class App extends Router<AppProps, AppState> {
                             ) : null}
                             <Grid>
                                 <a
-                                    href="/#easy"
+                                    href="#easy"
                                     onClick={event => event.preventDefault()}
                                     style={{ color: 'inherit', textDecoration: 'none' }}
                                 >

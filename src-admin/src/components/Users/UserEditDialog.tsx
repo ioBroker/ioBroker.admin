@@ -17,6 +17,8 @@ import {
 
 import { Utils, IconPicker, type Translate } from '@iobroker/gui-components';
 
+import { adminHref } from '@/helpers/utils';
+
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 import AdminUtils from '../../helpers/AdminUtils';
 
@@ -335,7 +337,9 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                 color="secondary"
                 fullWidth
                 onClick={() => {
-                    window.location.href = `/sso?redirectUrl=${encodeURIComponent(`${window.origin}/#tab-users`)}&method=register&user=${this.props.getText(this.props.user.common.name)}`;
+                    window.location.href = adminHref(
+                        `sso?redirectUrl=${encodeURIComponent(`${window.origin}${adminHref('#tab-users')}`)}&method=register&user=${this.props.getText(this.props.user.common.name)}`,
+                    );
                 }}
                 startIcon={<PersonIcon />}
                 sx={{ marginTop: 2 }}

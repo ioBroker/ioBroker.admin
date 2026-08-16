@@ -1,6 +1,6 @@
 const assert = require('node:assert');
 
-const { replaceLink } = require('../build/lib/utils');
+const { replaceLink, getAdminPublicPath } = require('../build/lib/utils');
 
 const instances = {
     'system.adapter.admin.0': {
@@ -7693,4 +7693,42 @@ describe('Test replace link in front-end', function () {
 
         done();
     });
+});
+
+describe('admin public path (reverse proxy)', () => {
+    describe('getAdminPublicPath', () => {
+        it('returns / when reverseProxy is empty', () => {
+            assert.strictEqual(getAdminPublicPath([], 'admin.0'), '/');
+            assert.strictEqual(getAdminPublicPath(undefined, 'admin.0'), '/');
+        });
+
+        it('joins globalPath with the admin instance path', () => {
+            assert.strictEqual(
+                getAdminPublicPath(
+                    [
+                        {
+                            globalPath: '/iobroker',
+                            paths: [
+                                { instance: 'admin.0', path: '/admin/' },
+                                { instance: 'web.0', path: '/web/' },
+                            ],
+                        },
+                    ],
+                    'admin.0',
+                ),
+                '/iobroker/admin/',
+            );
+        });
+
+        it('returns / when this admin instance is not listed', () => {
+            assert.strictEqual(
+                getAdminPublicPath(
+                    [{ globalPath: '/iobroker/', paths: [{ instance: 'web.0', path: '/web/' }] }],
+                    'admin.0',
+                ),
+                '/',
+            );
+        });
+    });
+
 });

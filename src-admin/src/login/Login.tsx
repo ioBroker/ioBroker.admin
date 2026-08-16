@@ -19,6 +19,8 @@ import { Visibility } from '@mui/icons-material';
 
 import { type IobTheme, I18n, Connection } from '@iobroker/gui-components';
 
+import { adminHref } from '@/helpers/utils';
+
 export interface OAuth2Response {
     access_token: string;
     expires_in: number;
@@ -96,6 +98,8 @@ declare global {
         loginTitle: string;
         /** If the SSO feature is active, it is set to string 'true' */
         ssoActive: string;
+        /** Public path of this admin instance, injected by the server */
+        socketPath?: string;
     }
 }
 
@@ -170,7 +174,7 @@ export default class Login extends Component<object, LoginState> {
         const tokens = Connection.readTokens();
 
         if (tokens?.refresh_token) {
-            void fetch('../oauth/token', {
+            void fetch(adminHref('oauth/token'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -202,7 +206,7 @@ export default class Login extends Component<object, LoginState> {
 
     onLogin(): void {
         this.setState({ inProcess: true, error: '' }, async () => {
-            const response = await fetch('../oauth/token', {
+            const response = await fetch(adminHref('oauth/token'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -383,7 +387,9 @@ export default class Login extends Component<object, LoginState> {
                         {window.ssoActive === 'true' ? (
                             <Button
                                 onClick={() => {
-                                    window.location.href = `/sso?redirectUrl=${encodeURIComponent(`${window.origin}/#tab-intro`)}&method=login`;
+                                    window.location.href = adminHref(
+                                        `sso?redirectUrl=${encodeURIComponent(`${window.origin}${adminHref('#tab-intro')}`)}&method=login`,
+                                    );
                                 }}
                                 fullWidth
                                 variant="contained"

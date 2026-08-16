@@ -738,7 +738,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                     }}
                 >
                     <a
-                        href="/#easy"
+                        href="#easy"
                         onClick={event => event.preventDefault()}
                         style={{ color: 'inherit', textDecoration: 'none' }}
                     >

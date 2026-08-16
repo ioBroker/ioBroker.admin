@@ -19,6 +19,7 @@ import { Check as CheckIcon, Close as CloseIcon, ContentCopy as CopyIcon } from 
 import { I18n, type AdminConnection, type ThemeType } from '@iobroker/gui-components';
 
 import { type ChatMcpInfoResponse, type ChatMode, type McpEndpoint } from './chatTypes';
+import { adminHref } from '@/helpers/utils';
 
 interface ChatMcpInfoDialogProps {
     socket: AdminConnection;
@@ -38,7 +39,7 @@ function endpointUrl(ep: McpEndpoint): string {
     // The admin instance embeds MCP on its OWN web server → reuse the current origin (this also keeps
     // a reverse proxy / custom port correct). Other instances are reached on their own port.
     if (ep.kind === 'admin') {
-        return `${window.location.origin}/mcp`;
+        return `${window.location.origin}${adminHref('mcp')}`;
     }
     return `${ep.secure ? 'https' : 'http'}://${window.location.hostname}:${ep.port}/mcp`;
 }

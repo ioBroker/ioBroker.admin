@@ -27,6 +27,7 @@ import WizardAuthSSLTab from '@/components/Wizard/WizardAuthSSLTab';
 import WizardPortForwarding from '@/components/Wizard/WizardPortForwarding';
 import WizardAdaptersTab from '@/components/Wizard/WizardAdaptersTab';
 import WizardRoomsTab from '@/components/Wizard/WizardRoomsTab';
+import { adminHref } from '@/helpers/utils';
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -327,7 +328,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                         await this.props.socket.setObject(this.adminInstance._id, this.adminInstance);
                         setTimeout(
                             () =>
-                                (window.location.href = `http://${window.location.host}/#tab-adapters${discovery?.val ? '/discovery' : ''}`),
+                                (window.location.href = `http://${window.location.host}${adminHref(`#tab-adapters${discovery?.val ? '/discovery' : ''}`)}`),
                             1000,
                         );
                         this.props.onClose();
@@ -343,9 +344,9 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                 // redirect to https or http
                 let redirect;
                 if (this.adminInstance.native.secure) {
-                    redirect = `https://${window.location.host}/#tab-adapters${discovery?.val ? '/discovery' : ''}`;
+                    redirect = `https://${window.location.host}${adminHref(`#tab-adapters${discovery?.val ? '/discovery' : ''}`)}`;
                 } else {
-                    redirect = `http://${window.location.host}/#tab-adapters${discovery?.val ? '/discovery' : ''}`;
+                    redirect = `http://${window.location.host}${adminHref(`#tab-adapters${discovery?.val ? '/discovery' : ''}`)}`;
                 }
 
                 this.props.onClose(redirect);
